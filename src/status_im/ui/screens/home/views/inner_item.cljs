@@ -54,20 +54,15 @@
            content])])}))
 
 (defview message-status [{:keys [chat-id contacts]}
-                         {:keys [message-id message-status user-statuses message-type outgoing] :as msg}]
-  (letsubs [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
-    (let [delivery-status (get-in user-statuses [chat-id :status])]
-      (when (and outgoing
-                 (or (some #(= (keyword %) :seen) [delivery-status
-                                                   message-status
-                                                   app-db-message-status-value])
-                     (and (= (keyword message-type) :group-user-message)
-                          (and (= (count user-statuses) (count contacts))
-                               (every? (fn [[_ {:keys [status]}]]
-                                         (= (keyword status) :seen)) user-statuses)))
-                     (= chat-id const/console-chat-id)))
-        [react/image {:source {:uri :icon_ok_small}
-                      :style  st/status-image}]))))
+                         {:keys [message-id user-statuses outgoing] :as msg}]
+  (letsubs [current-public-key [:get-current-public-key]]
+    (let [delivery-statuses (dissoc user-statuses current-public-key)
+          seen-by-everyone  (and (= (count delivery-statuses) (count contacts)
+                                    (every? (comp (partial = :seen) second)
+                                            delivery-statuses)))]
+      (when (and outgoing (or (= chat-id const/console-chat-id)
+                              seen-by-everyone))
+        [vi/icon :icons/ok {:style st/status-image}]))))
 
 (defn message-timestamp [{:keys [timestamp]}]
   (when timestamp

@@ -9,7 +9,7 @@
     (not= (str/index-of name text) nil)))
 
 (reg-sub :filtered-chats
-  :<- [:get :chats]
+  :<- [:chats]
   :<- [:get-in [:toolbar-search :text]]
   :<- [:get-in [:toolbar-search :show]]
   (fn [[chats search-text show-search]]
