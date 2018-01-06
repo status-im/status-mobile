@@ -19,7 +19,7 @@
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
-            "figwheel-repl"    ["run" "-m" "clojure.main" "env/dev/figwheel_api.clj"]
+            "figwheel-repl"    ["run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}

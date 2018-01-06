@@ -45,28 +45,31 @@
         :id id))
     ids))
 
-(defn start-cljs-repl []
-  (hawk/watch! [{:paths   ["resources"]
-                 :handler (fn [ctx e]
-                            (let [path "src/status_im/utils/js_resources.cljs"
-                                  js-resourced (slurp path)]
-                              (spit path (str js-resourced " ;;"))
-                              (spit path js-resourced))
-                            ctx)}])
-  (let [build-ids (if *command-line-args*
-                    (map keyword *command-line-args*)
-                    [:android])
-        ;; read project.clj to get build configs
-        profiles (->> "project.clj"
-                      slurp
-                      read-string
-                      (drop-while #(not= % :profiles))
-                      (apply hash-map)
-                      :profiles)
-        cljs-builds (get-in profiles [:dev :cljsbuild :builds])
-        builds (get-builds build-ids cljs-builds)]
-    (start-figwheel build-ids builds)
-    (rfs/-main))
-  (ra/cljs-repl))
+(defn start
+  ([]
+   (start (if *command-line-args*
+            (map keyword *command-line-args*)
+            [:android])))
+  ([build-ids]
+   (hawk/watch! [{:paths   ["resources"]
+                  :handler (fn [ctx e]
+                             (let [path "src/status_im/utils/js_resources.cljs"
+                                   js-resourced (slurp path)]
+                               (spit path (str js-resourced " ;;"))
+                               (spit path js-resourced))
+                             ctx)}])
+   ;; read project.clj to get build configs
+   (let [profiles (->> "project.clj"
+                       slurp
+                       read-string
+                       (drop-while #(not= % :profiles))
+                       (apply hash-map)
+                       :profiles)
+         cljs-builds (get-in profiles [:dev :cljsbuild :builds])
+         builds (get-builds build-ids cljs-builds)]
+     (start-figwheel build-ids builds)
+     (rfs/-main))))
 
-(start-cljs-repl)
+(def stop ra/stop-figwheel!)
+
+(def start-cljs-repl ra/cljs-repl)
