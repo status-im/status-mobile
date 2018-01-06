@@ -96,7 +96,7 @@
     [react/keyboard-avoiding-view {:style styles/profile}
      [status-bar]
      [edit-my-profile-toolbar]
-     [react/view styles/edit-my-profile-form
+     [react/scroll-view styles/edit-my-profile-form
       [edit-profile-badge changed-account]
       [edit-profile-status]
       [status-prompt changed-account]]

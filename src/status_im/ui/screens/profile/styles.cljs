@@ -181,7 +181,7 @@
    :ios          {:font-size      17
                   :padding-bottom 0
                   :padding-top    0
-                  :height         74
+                  :height         60
                   :letter-spacing -0.2}
    :android      {:font-size           16
                   :padding-top         5
@@ -199,7 +199,7 @@
 (defstyle edit-profile-status
   {:background-color   color-light-gray
    :border-radius      4
-   :height             104
+   :height             90
    :padding-horizontal 16
    :padding-bottom     16
    :margin-left        16
