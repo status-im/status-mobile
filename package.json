@@ -36,6 +36,7 @@
     "identicon.js": "github:status-im/identicon.js",
     "instabug-reactnative": "git+https://github.com/status-im/instabug-reactnative.git",
     "level-filesystem": "1.2.0",
+    "moment": "^2.20.1",
     "nfc-react-native": "github:status-im/nfc-react-native",
     "os-browserify": "^0.1.2",
     "path-browserify": "0.0.0",
