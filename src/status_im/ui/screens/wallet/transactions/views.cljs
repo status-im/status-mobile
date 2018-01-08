@@ -52,8 +52,8 @@
    [button/secondary-button {:on-press #(on-delete-transaction transaction)}
     (i18n/label :t/delete)]])
 
-(defn- inbound? [type] (= "inbound" type))
-(defn- unsigned? [type] (= "unsigned" type))
+(defn- inbound? [type] (= :inbound type))
+(defn- unsigned? [type] (= :unsigned type))
 
 (defn- transaction-icon [k background-color color]
   {:icon      k
