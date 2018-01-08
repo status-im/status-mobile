@@ -44,8 +44,9 @@
   (let [chat (merge (or (get-stored-chat chat-id)
                         (create-new-chat cofx chat-id {}))
                     chat)]
-    {:db            (update-in db [:chats chat-id] merge chat)
-     :save-chat     chat}))
+    {:db        (cond-> db
+                  (:is-active chat) (update-in [:chats chat-id] merge chat))
+     :save-chat chat}))
 
 ;; TODO (yenda): an upsert is suppose to add the entry if it doesn't
 ;; exist and update it if it does
