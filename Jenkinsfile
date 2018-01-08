@@ -30,6 +30,9 @@ node ('macos1') {
       sh 'git checkout -- .'
       sh 'git checkout develop'
       sh 'git checkout remotes/origin/' + BRANCH_NAME
+
+      sh 'printenv'
+      sh 'exit 1'
       
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
