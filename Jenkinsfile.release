@@ -31,7 +31,7 @@ node ('macos1'){
       // Checkout master because used for iOS Plist version information
       sh 'git fetch --tags'
       sh 'git checkout -- .'
-      sh 'git checkout develop'
+      sh 'git checkout release/0.9.13'
       sh 'rm -rf node_modules'
       sh 'cp .env.prod .env'
       sh 'lein deps'
