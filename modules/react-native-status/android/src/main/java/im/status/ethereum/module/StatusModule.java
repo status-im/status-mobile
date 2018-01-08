@@ -182,7 +182,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             String gethLogFileName = "geth.log";
             jsonConfig.put("LogEnabled", !TextUtils.isEmpty(this.logLevel));
             jsonConfig.put("LogFile", gethLogFileName);
-            jsonConfig.put("LogLevel", this.logLevel.toUpperCase());
+            jsonConfig.put("LogLevel", TextUtils.isEmpty(this.logLevel) ? "ERROR" : this.logLevel.toUpperCase());
             jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
             jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
             try {
@@ -228,7 +228,12 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Log.d(TAG, "Node config " + config);
 
         String res = Statusgo.StartNode(config);
-        Log.d(TAG, "StartNode result: " + res);
+        if (res.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "StartNode result: " + res);
+        }
+        else {
+            Log.e(TAG, "StartNode result: " + res);
+        }
         Log.d(TAG, "Geth node started");
 	status.sendMessage();
     }
