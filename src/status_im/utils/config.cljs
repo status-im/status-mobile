@@ -24,6 +24,7 @@
 (def mainnet-networks-enabled? (enabled? (get-config :MAINNET_NETWORKS_ENABLED 0)))
 (def erc20-enabled? (enabled? (get-config :ERC20_ENABLED 0)))
 (def offline-inbox-enabled? (enabled? (get-config :OFFLINE_INBOX_ENABLED 0)))
+(def offline-inbox-many-enabled? (enabled? (get-config :OFFLINE_INBOX_MANY_ENABLED 0)))
 (def log-level
   (-> (get-config :LOG_LEVEL "error")
       string/lower-case
