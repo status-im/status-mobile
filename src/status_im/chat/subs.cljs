@@ -103,20 +103,15 @@
   "Transforms message-datemark-groups into flat sequence of messages interspersed with
   datemark messages.
   Additionaly enhances the messages in message sequence with derived stream context information,
-  like `:same-author?`, `:same-direction?`, `:last?` and `:last-outgoing?` flags + contact info/status
-  message for the last dategroup."
-  [[[last-datemark last-messages] :as message-datemark-groups]]
+  like `:same-author?`, `:same-direction?`, `:last?` and `:last-outgoing?` flags. "
+  [message-datemark-groups]
   (if (seq message-datemark-groups)
     (let [messages-seq (mapcat second message-datemark-groups)
           {last-message-id :message-id} (first messages-seq)
           {last-outgoing-message-id :message-id} (->> messages-seq
                                                       (filter :outgoing)
                                                       first)]
-      ;; TODO janherich: why the heck do we display contact user info/status in chat as a message in stream ?
-      ;; This makes no sense, user wants to have this information always available, not as something which
-      ;; scrolls with message stream
-      (->> (conj (rest message-datemark-groups)
-                 [last-datemark (conj (into [] last-messages) {:content-type constants/content-type-status})])
+      (->> message-datemark-groups
            (mapcat (fn [[datemark messages]]
                      (let [prepared-messages (into []
                                                    (map (fn [{:keys [message-id] :as message} previous-message]
@@ -133,14 +128,13 @@
                                                         (concat (rest messages) '(nil))))]
                        (conj prepared-messages {:type :datemark
                                                 :value datemark}))))))
-    ;; when no messages are in chat, we need to at least fake-out today datemark + status messages
-    (list {:content-type constants/content-type-status}
-          {:type  :datemark
+    ;; when no messages are in chat, we need to at least fake-out today's datemark
+    (list {:type  :datemark
            :value (i18n/label :t/datetime-today)})))
 
 (reg-sub
-  :get-chat-messages 
-  (fn [[_ chat-id]] 
+  :get-chat-messages
+  (fn [[_ chat-id]]
     (subscribe [:get-chat-message-datemark-groups chat-id]))
   (fn [message-datemark-groups]
     (messages-stream message-datemark-groups)))
