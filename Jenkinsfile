@@ -24,13 +24,13 @@ node ('macos1') {
   try {
 
     stage('Git & Dependencies') {
-      slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
+      slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
       checkout scm
       sh 'git checkout -- .'
       sh 'git checkout develop'
       sh 'git checkout remotes/origin/' + BRANCH_NAME
-      
+
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
       sh 'lein deps'
