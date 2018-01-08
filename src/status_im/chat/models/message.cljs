@@ -42,13 +42,15 @@
     :or   {clock-value 0}}]
   (let [{:keys [access-scope->commands-responses] :contacts/keys [contacts]} db
         {:keys [public-key] :as current-account} (get-current-account db)
-        chat-identifier (or group-id chat-id from)]
+        chat-identifier (or group-id chat-id from)
+        direct-message? (nil? group-id)]
     ;; proceed with adding message if message is not already stored in realm,
     ;; it's not from current user (outgoing message) and it's for relevant chat
-    ;; (either current active chat or new chat not existing yet)
+    ;; (either current active chat or new chat not existing yet or it's a direct message)
     (when (and (not (message-exists? message-id))
                (not= from public-key)
-               (pop-up-chat? chat-identifier))
+               (or (pop-up-chat? chat-identifier)
+                   direct-message?))
       (let [fx               (if (get-in db [:chats chat-identifier])
                                (chat-model/upsert-chat cofx {:chat-id chat-identifier
                                                              :group-chat (boolean group-id)})
