@@ -27,7 +27,7 @@ node ('macos1'){
 
     stage('Git & Dependencies') {
       slackSend color: 'good', message: 'Release build started. ' + env.BUILD_URL
-      git([url: 'https://github.com/status-im/status-react.git', branch: 'develop'])
+      git([url: 'https://github.com/status-im/status-react.git', branch: 'release/0.9.13'])
       // Checkout master because used for iOS Plist version information
       sh 'git fetch --tags'
       sh 'git checkout -- .'
