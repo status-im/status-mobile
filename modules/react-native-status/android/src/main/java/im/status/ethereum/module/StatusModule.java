@@ -229,7 +229,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.d(TAG, "StartNode result: " + res);
         }
         else {
-            Log.e(TAG, "StartNode result: " + res);
+            Log.e(TAG, "StartNode failed: " + res);
         }
         Log.d(TAG, "Geth node started");
 	status.sendMessage();
