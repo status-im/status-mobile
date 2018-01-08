@@ -16,7 +16,8 @@
     "react-native-config",
     "react-native-linear-gradient",
     "react-native-qrcode",
-    "react-native-status"
+    "react-native-status",
+    "react-native-autolink"
   ],
   "imageDirs": [
     "resources/images",

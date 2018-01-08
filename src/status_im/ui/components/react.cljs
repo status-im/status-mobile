@@ -188,12 +188,11 @@
 
 ;; Autolink
 
-;;(def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
+(def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
 
-(def autolink (get-class "View"))
-;;(defn autolink [opts]
-;;  (r/as-element
-;;   [autolink-class (add-font-style :style opts)]))
+(defn autolink [opts]
+  (r/as-element
+    [autolink-class (add-font-style :style opts)]))
 
 (print "----react.cljs 8")
 

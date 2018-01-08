@@ -287,9 +287,9 @@
                           [:send-account-update-if-needed]
                           [:start-requesting-discoveries]
                           [:remove-old-discoveries!]
-                          ;[:update-wallet]
-                          ;[:update-transactions]
-                          ;[:get-fcm-token]]
+                          [:update-wallet]
+                          [:update-transactions]
+                          [:get-fcm-token]
                           ]
                    (seq events-after)
                    (into events-after))}))

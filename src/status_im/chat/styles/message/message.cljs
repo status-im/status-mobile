@@ -111,7 +111,8 @@
   (merge {:padding         12
           :backgroundColor color-white
           :android         {:border-radius 4}
-          :ios             {:border-radius 8}}
+          :ios             {:border-radius 8}
+          :desktop         {:border-radius 8}}
          (when (= content-type content-type-command)
            {:paddingTop    10
             :paddingBottom 14})))
