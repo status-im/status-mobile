@@ -22,6 +22,7 @@
             status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
+            status-im.ui.screens.dev.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
@@ -251,7 +252,7 @@
         :or [network (get app-db :network)]
         :as db} [_ address]]
     (let [console-contact (get contacts console-chat-id)]
-      (cond-> (assoc app-db 
+      (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address
                      :layout-height layout-height
@@ -279,7 +280,7 @@
                           [:initialize-sync-listener]
                           [:initialize-chats]
                           [:load-contacts]
-                          [:load-contact-groups] 
+                          [:load-contact-groups]
                           [:init-discoveries]
                           [:initialize-debugging {:address address}]
                           [:send-account-update-if-needed]

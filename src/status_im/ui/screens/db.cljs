@@ -13,7 +13,8 @@
             status-im.commands.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.discover.db
-            status-im.ui.screens.network-settings.db))
+            status-im.ui.screens.network-settings.db
+            status-im.ui.screens.dev.db))
 
 (def transaction-send-default
   {:symbol    :ETH
@@ -31,7 +32,7 @@
              :group/contact-groups       {}
              :group/selected-contacts    #{}
              :chats                      {}
-             :current-chat-id            constants/console-chat-id 
+             :current-chat-id            constants/console-chat-id
              :selected-participants      #{}
              :discoveries                {}
              :discover-search-tags       '()
@@ -44,7 +45,9 @@
              :prices                     {}
              :notifications              {}
              :network                    constants/default-network
-             :networks/networks          constants/default-networks})
+             :networks/networks          constants/default-networks
+             ;; TODO-FLAG include only in dev env?
+             :dev/settings               {}})
 
 ;;;;GLOBAL
 
@@ -123,7 +126,10 @@
                   :networks/selected-network
                   :networks/networks
                   :node/after-start
-                  :node/after-stop]
+                  :node/after-stop
+                  ;; TODO-FLAG
+                  ;; include dev-settings spec only in dev env
+                  :dev/settings]
                  :opt-un
                  [::current-public-key
                   ::modal
@@ -158,11 +164,11 @@
                   :chat/chat-ui-props
                   :chat/chat-list-ui-props
                   :chat/layout-height
-                  :chat/expandable-view-height-to-value 
+                  :chat/expandable-view-height-to-value
                   :chat/message-data
-                  :chat/message-status 
+                  :chat/message-status
                   :chat/selected-participants
-                  :chat/chat-loaded-callbacks 
+                  :chat/chat-loaded-callbacks
                   :chat/public-group-topic
                   :chat/confirmation-code-sms-listener
                   :chat/messages

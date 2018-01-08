@@ -57,14 +57,21 @@
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
-            [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]))
+            [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]
+
+            [status-im.ui.screens.dev.views :refer [dev-settings]]))
+
+;; TODO-FLAG allow :dev-settings for dev env
+; (defn validate-current-view
+;   [current-view signed-up?]
+;   (if (or (contains? #{:login :chat :recover :accounts} current-view)
+;           true)
+;     current-view
+;     :chat))
 
 (defn validate-current-view
   [current-view signed-up?]
-  (if (or (contains? #{:login :chat :recover :accounts} current-view)
-          signed-up?)
-    current-view
-    :chat))
+  :dev-settings)
 
 (defview main []
   (letsubs [signed-up? [:signed-up?]
@@ -103,8 +110,8 @@
                           :discover-all-recent discover-recent/discover-all-recent
                           :discover-all-hashtags discover-popular/discover-all-hashtags
                           :discover-search-results discover-search/discover-search-results
-                          :discover-dapp-details discover-dapp-details/dapp-details
                           :discover-all-dapps discover-all-dapps/main
+                          :discover-dapp-details discover-dapp-details/dapp-details
                           :profile-photo-capture profile-photo-capture
                           :accounts accounts
                           :login login
@@ -114,6 +121,9 @@
                           :paste-json-text paste-json-text
                           :add-rpc-url add-rpc-url
                           :network-details network-details
+
+                          ;;TODO-FLAG include only in dev env
+                          :dev-settings dev-settings
                           (throw (str "Unknown view: " current-view)))]
           [(if android? menu-context view) common-styles/flex
            [view common-styles/flex
