@@ -245,13 +245,13 @@
 (register-handler-db
   :initialize-account-db
   (fn [{:keys [accounts/accounts contacts/contacts networks/networks
-               network view-id navigation-stack chats
+               network network-status view-id navigation-stack chats
                access-scope->commands-responses layout-height
                status-module-initialized? status-node-started?]
         :or [network (get app-db :network)]
         :as db} [_ address]]
     (let [console-contact (get contacts console-chat-id)]
-      (cond-> (assoc app-db 
+      (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address
                      :layout-height layout-height
@@ -266,6 +266,7 @@
                      :accounts/accounts accounts
                      :accounts/creating-account? false
                      :networks/networks networks
+                     :network-status network-status
                      :network network)
         console-contact
         (assoc :contacts/contacts {console-chat-id console-contact})))))
@@ -279,7 +280,7 @@
                           [:initialize-sync-listener]
                           [:initialize-chats]
                           [:load-contacts]
-                          [:load-contact-groups] 
+                          [:load-contact-groups]
                           [:init-discoveries]
                           [:initialize-debugging {:address address}]
                           [:send-account-update-if-needed]
