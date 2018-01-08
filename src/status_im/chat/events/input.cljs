@@ -245,7 +245,7 @@
             metadata
             args]
      :as   content} :content
-    :keys  [chat-id jail-id data-type event-after-creator message-id current-time]}]
+    :keys  [chat-id group-id jail-id data-type event-after-creator message-id current-time]}]
   (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
         metadata        (merge metadata
                                (when dapp?
@@ -267,6 +267,7 @@
 
         request-data    {:message-id   message-id
                          :chat-id      chat-id
+                         :group-id     group-id
                          :jail-id      (or owner-id jail-id)
                          :content      {:command       (:name command)
                                         :scope-bitmask (:scope-bitmask command)
@@ -290,25 +291,27 @@
   If it's normal command instead (determined by nil response to `:on-send` jail request),
   processing continues by requesting command preview before actually sending the command
   message."
-  [{:keys [current-chat-id] :as db} {{:keys [bot]} :command :as content} message-id current-time]
-  (let [params-template          {:content      content
-                                  :chat-id      current-chat-id
-                                  :jail-id      (or bot current-chat-id)
-                                  :message-id   message-id
-                                  :current-time current-time}
-        on-send-params           (merge params-template
-                                        {:data-type           :on-send
-                                         :event-after-creator (fn [_ jail-response]
-                                                                [::check-command-type
-                                                                 jail-response
-                                                                 params-template])})
-        after-validation-events  [[::request-command-data on-send-params]]
-        validation-params        (merge params-template
-                                        {:data-type           :validator
-                                         :event-after-creator (fn [_ jail-response]
-                                                                [::proceed-validation
-                                                                 jail-response
-                                                                 after-validation-events])})]
+  [{:keys [current-chat-id chats] :as db} {{:keys [bot]} :command :as content} message-id current-time]
+  (let [params-template         {:content      content
+                                 :chat-id      current-chat-id
+                                 :group-id     (when (get-in chats [current-chat-id :group-chat])
+                                                 current-chat-id)
+                                 :jail-id      (or bot current-chat-id)
+                                 :message-id   message-id
+                                 :current-time current-time}
+        on-send-params          (merge params-template
+                                       {:data-type           :on-send
+                                        :event-after-creator (fn [_ jail-response]
+                                                               [::check-command-type
+                                                                jail-response
+                                                                params-template])})
+        after-validation-events [[::request-command-data on-send-params]]
+        validation-params       (merge params-template
+                                       {:data-type           :validator
+                                        :event-after-creator (fn [_ jail-response]
+                                                               [::proceed-validation
+                                                                jail-response
+                                                                after-validation-events])})]
     (request-command-data db validation-params)))
 
 ;;;; Handlers
