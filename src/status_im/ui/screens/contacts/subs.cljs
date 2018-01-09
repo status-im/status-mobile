@@ -2,7 +2,8 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.identicon :refer [identicon]]
             [clojure.string :as str]
-            [status-im.bots.constants :as bots-constants]))
+            [status-im.bots.constants :as bots-constants]
+            [status-im.utils.platform :as platform]))
 
 (reg-sub :current-contact
   (fn [db [_ k]]
@@ -198,8 +199,7 @@
     (when (and chat (not (:group-chat chat)))
       (cond
         (:photo-path chat)
-        (:photo-path chat)
-
+        (if platform/desktop? {:uri (str "./images/" (:photo-path chat) ".png")} (:photo-path chat))
         (pos? (count contacts))
         (:photo-path (first contacts))
 

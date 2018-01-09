@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [status-im.ui.components.styles :as st]
             [status-im.utils.utils :as u]
-            [status-im.utils.platform :refer [platform-specific ios?]]
+            [status-im.utils.platform :refer [platform-specific ios? desktop?]]
             [status-im.i18n :as i18n]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
@@ -110,7 +110,7 @@
 (defn icon
   ([n] (icon n st/icon-default))
   ([n style]
-   [image {:source     {:uri (keyword (str "icon_" (name n)))}
+   [image {:source     {:uri (if desktop? (str "./images/icon_" (name n) ".png") (str "icon_" (name n)))}
            :resizeMode "contain"
            :style      style}]))
 

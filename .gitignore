@@ -96,7 +96,8 @@ package-lock.json
 run-ios.sh
 
 #desktop
-/desktop/
+/desktop/*
+!/desktop/images
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
 # screenshots whenever they are needed.
 # For more information about the recommended setup visit:
