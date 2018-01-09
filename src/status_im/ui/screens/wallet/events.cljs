@@ -87,7 +87,7 @@
 (handlers/register-handler-fx
   :update-wallet
   (fn [{{:keys [web3 accounts/current-account-id network network-status] :as db} :db} [_ symbols]]
-    (when-not (= network-status :offline)
+    (when (not= network-status :offline)
       {:get-balance {:web3          web3
                      :account-id    current-account-id
                      :success-event :update-balance-success
@@ -111,7 +111,7 @@
 (handlers/register-handler-fx
   :update-transactions
   (fn [{{:keys [accounts/current-account-id network network-status] :as db} :db} _]
-    (when-not (= network-status :offline)
+    (when (not= network-status :offline)
       {:get-transactions {:account-id    current-account-id
                           :network       network
                           :success-event :update-transactions-success
