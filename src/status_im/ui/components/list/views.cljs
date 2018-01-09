@@ -96,7 +96,7 @@
   (let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
     (merge {:keyExtractor (fn [_ i] i)}
            (when render-fn               {:renderItem (wrap-render-fn render-fn)})
-           (when separator               {:ItemSeparatorComponent (fn [] (reagent/as-element [separator]))})
+           (when separator               {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
            (when empty-component         {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
            (when header                  {:ListHeaderComponent (fn [] (reagent/as-element header))}))))
 
