@@ -102,8 +102,11 @@
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             transactions-loading?     [:wallet.transactions/transactions-loading?]
+            error-message?            [:wallet.transactions/error-message?]
             filter-data               [:wallet.transactions/filters]]
     [react/view components.styles/flex
+     (when error-message?
+       (re-frame/dispatch [:wallet/show-error]))
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :render-fn       render-transaction
                          :empty-component [react/text {:style styles/empty-text}

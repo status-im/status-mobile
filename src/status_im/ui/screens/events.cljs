@@ -109,21 +109,18 @@
 
 (re-frame/reg-fx
   :http-post
-  (fn [{:keys [action data success-event-creator failure-event-creator]}]
-    (utils/http-post action
-                     data
-                     #(re-frame/dispatch (success-event-creator %))
-                     #(re-frame/dispatch (failure-event-creator %)))))
+  (fn [{:keys [action data success-event-creator failure-event-creator timeout-ms]}]
+    (let [on-success #(re-frame/dispatch (success-event-creator %))
+          on-error   #(re-frame/dispatch (failure-event-creator %))
+          opts       {:timeout-ms timeout-ms}]
+      (utils/http-post action data on-success on-error opts))))
 
-(defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator]}]
-  (if response-validator
-    (utils/http-get url
-                    response-validator
-                    #(re-frame/dispatch (success-event-creator %))
-                    #(re-frame/dispatch (failure-event-creator %)))
-    (utils/http-get url
-                    #(re-frame/dispatch (success-event-creator %))
-                    #(re-frame/dispatch (failure-event-creator %)))))
+(defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
+  (let [on-success #(re-frame/dispatch (success-event-creator %))
+        on-error   #(re-frame/dispatch (failure-event-creator %))
+        opts       {:valid-response? response-validator
+                    :timeout-ms      timeout-ms}]
+    (utils/http-get url on-success on-error opts)))
 
 (re-frame/reg-fx
   :http-get

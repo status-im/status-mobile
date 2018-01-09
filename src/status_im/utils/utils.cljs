@@ -1,7 +1,11 @@
 (ns status-im.utils.utils
   (:require [status-im.constants :as const]
             [status-im.i18n :as i18n]
+            [clojure.string :as str]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
+
+;; Default HTTP request timeout ms
+(def http-request-default-timeout-ms 3000)
 
 (defn show-popup [title content]
   (.alert (.-Alert rn-dependencies/react-native)
@@ -38,31 +42,37 @@
                     {:text (i18n/label :t/yes) :onPress on-accept})))))
 
 (defn http-post
+  "Performs an HTTP POST request"
   ([action data on-success]
    (http-post action data on-success nil))
   ([action data on-success on-error]
-   (-> (.fetch js/window
-               (str const/server-address action)
-               (clj->js {:method "POST"
-                         :headers {:accept "application/json"
-                                   :content-type "application/json"}
-                         :body (.stringify js/JSON (clj->js data))}))
+   (http-post action data on-success on-error nil))
+  ([action data on-success on-error {:keys [timeout-ms] :as opts}]
+   (-> (rn-dependencies/fetch (str const/server-address action)
+                              (clj->js {:method  "POST"
+                                        :headers {:accept       "application/json"
+                                                  :content-type "application/json"}
+                                        :body    (.stringify js/JSON (clj->js data))
+                                        :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [response]
                 (.text response)))
        (.then (fn [text]
                 (let [json (.parse js/JSON text)
-                      obj (js->clj json :keywordize-keys true)]
+                      obj  (js->clj json :keywordize-keys true)]
                   (on-success obj))))
        (.catch (or on-error
                    (fn [error]
                      (show-popup "Error" (str error))))))))
 
 (defn http-get
+  "Performs an HTTP GET request"
   ([url on-success on-error]
-   (http-get url nil on-success on-error))
-  ([url valid-response? on-success on-error]
-   (-> (.fetch js/window url (clj->js {:method  "GET"
-                                       :headers {"Cache-Control" "no-cache"}}))
+   (http-get url on-success on-error nil))
+  ([url on-success on-error {:keys [valid-response? timeout-ms] :as opts}]
+   (-> (rn-dependencies/fetch url
+                              (clj->js {:method  "GET"
+                                        :headers {"Cache-Control" "no-cache"}
+                                        :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [response]
                 (let [ok?  (.-ok response)
                       ok?' (if valid-response?

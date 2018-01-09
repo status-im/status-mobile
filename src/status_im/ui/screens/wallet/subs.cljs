@@ -38,3 +38,9 @@
   :<- [:wallet]
   (fn [wallet]
     (:balance-loading? wallet)))
+
+(reg-sub :wallet/error-message?
+  :<- [:wallet]
+  (fn [wallet]
+    (or (get-in wallet [:errors :balance-update])
+        (get-in wallet [:errors :prices-update]))))

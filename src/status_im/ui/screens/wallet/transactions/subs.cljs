@@ -159,3 +159,8 @@
 (reg-sub :wallet.transactions/filters
   (fn [db]
     (get-in db [:wallet.transactions :filters])))
+
+(reg-sub :wallet.transactions/error-message?
+  :<- [:wallet]
+  (fn [wallet]
+    (get-in wallet [:errors :transactions-update])))

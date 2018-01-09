@@ -58,7 +58,7 @@
 (defn current-tokens [visible-tokens network]
   (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network))))
 
-(defn- asset-section [network balance visible-tokens prices-loading? balance-loading?]
+(defn- asset-section [network balance visible-tokens refreshing?]
   (let [tokens (current-tokens visible-tokens network)
         assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] tokens))]
     [react/view styles/asset-section
@@ -68,7 +68,7 @@
        :data               assets
        :render-fn          render-asset
        :on-refresh         #(re-frame/dispatch [:update-wallet (map :symbol tokens)])
-       :refreshing         (boolean (or prices-loading? balance-loading?))}]]))
+       :refreshing         refreshing?}]]))
 
 (defview wallet []
   (letsubs [network          [:network]
@@ -76,11 +76,16 @@
             visible-tokens   [:wallet.settings/visible-tokens]
             portfolio-value  [:portfolio-value]
             prices-loading?  [:prices-loading?]
-            balance-loading? [:wallet/balance-loading?]]
+            balance-loading? [:wallet/balance-loading?]
+            error-message?   [:wallet/error-message?]]
     [react/view {:style components.styles/flex}
+     (when error-message?
+       (re-frame/dispatch [:wallet/show-error]))
      [toolbar-view]
      [react/view components.styles/flex
       [total-section portfolio-value]
       [list/action-list actions
        {:container-style styles/action-section}]
-      [asset-section network balance visible-tokens prices-loading? balance-loading?]]]))
+      [asset-section network balance visible-tokens
+       (and (or prices-loading? balance-loading?)
+            (not error-message?))]]]))

@@ -119,7 +119,7 @@
                           :success-event :update-transactions-success
                           :error-event   :update-transactions-fail}
        :db               (-> db
-                             (clear-error-message :transaction-update)
+                             (clear-error-message :transactions-update)
                              (assoc-in [:wallet :transactions-loading?] true))})))
 
 (handlers/register-handler-db
@@ -219,3 +219,8 @@
   :wallet/update-gas-price-success
   (fn [db [_ price edit?]]
     (assoc-in db [:wallet (if edit? :edit :send-transaction) :gas-price] price)))
+
+(handlers/register-handler-fx
+  :wallet/show-error
+  (fn []
+    {:show-error (i18n/label :t/wallet-error)}))
