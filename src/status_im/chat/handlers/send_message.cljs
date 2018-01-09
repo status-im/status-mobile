@@ -173,7 +173,7 @@
                           {:message-id   (random/id)
                            :chat-id      chat-id
                            :content      message
-                           :from         identity
+                           :from         "c9f5c0e2bea0aabb6b0b618e9f45ab095811111"
                            :content-type text-content-type
                            :outgoing     true
                            :timestamp    (datetime/now-ms)
