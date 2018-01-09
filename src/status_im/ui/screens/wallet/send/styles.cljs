@@ -82,7 +82,8 @@
   {:flex-direction   :row
    :background-color styles/color-blue6
    :border-radius    50
-   :padding          8})
+   :padding          8
+   :align-items      :center})
 
 (def advanced-button-wrapper
   {:align-items :center})
@@ -92,12 +93,16 @@
 
 (def advanced-options-wrapper
   {:height           52
-   :background-color styles/color-white-transparent-4
+   :background-color styles/color-white-transparent-3
    :border-radius    4
    :margin-top       16
    :margin-bottom    16
    :align-items      :center
-   :flex-direction   :row})
+   :flex-direction   :row
+   :padding-vertical 14
+   :padding-right    8
+   :ios              {:border-radius 8}
+   :android          {:border-radius 4}})
 
 (def advanced-options-text-wrapper
   {:flex              1

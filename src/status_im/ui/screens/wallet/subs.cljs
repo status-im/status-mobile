@@ -36,18 +36,6 @@
           str)
       "...")))
 
-(reg-sub :portfolio-change
-  :<- [:price]
-  :<- [:last-day]
-  :<- [:balance]
-  (fn [[price last-day balance]]
-    (when (and price last-day)
-      (if (> (get balance :ETH) 0) ;; TODO(jeluard) Modify to consider tokens
-        (-> (money/percent-change price last-day)
-            (money/with-precision 2)
-            .toNumber)
-        0))))
-
 (reg-sub :prices-loading?
   (fn [db]
     (:prices-loading? db)))

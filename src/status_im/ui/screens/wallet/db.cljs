@@ -14,7 +14,7 @@
 (spec/def :wallet/send (spec/keys :req-un [:wallet.send/recipient]))
 
 (spec/def :wallet/wallet (spec/keys :opt    [:wallet/error]
-                                    :opt-un [ :wallet/send-transaction]))
+                                    :opt-un [:wallet/send-transaction :wallet/request-transaction]))
 
 ;; Placeholder namespace for wallet specs, which are a WIP depending on data
 ;; model we decide on for balances, prices, etc.

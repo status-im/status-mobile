@@ -6,9 +6,10 @@
 (def item
   {:flex-direction :row})
 
-(def item-text-view
-  {:flex           1
-   :flex-direction :column})
+(def item-content-view
+  {:flex            1
+   :flex-direction  :column
+   :justify-content :center})
 
 (def item-checkbox
   {:flex            1

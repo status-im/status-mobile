@@ -119,7 +119,6 @@
                   :my-profile/drawer
                   :my-profile/profile
                   :my-profile/default-name
-                  :wallet/request-transaction
                   :networks/selected-network
                   :networks/networks
                   :node/after-start

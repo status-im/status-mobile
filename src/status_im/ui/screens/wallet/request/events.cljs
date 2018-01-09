@@ -18,11 +18,11 @@
 (handlers/register-handler-fx
   :wallet-send-request
   [re-frame/trim-v]
-  (fn [{{:wallet/keys [request-transaction]} :db} [{:keys [whisper-identity]}]]
+  (fn [{{:keys [wallet]} :db} [{:keys [whisper-identity]}]]
     {:dispatch-n [[:navigate-back]
                   [:navigate-to-clean :chat-list]
                   [:add-chat-loaded-event whisper-identity
-                   [::wallet-send-chat-request (some-> request-transaction :amount money/wei->ether str)]]
+                   [::wallet-send-chat-request (some-> wallet :request-transaction :amount money/wei->ether str)]]
                   [:start-chat whisper-identity]]}))
 
 (handlers/register-handler-fx
@@ -30,10 +30,10 @@
   (fn [{:keys [db]} [_ amount]]
     (let [{:keys [value error]} (wallet-db/parse-amount amount)]
       {:db (-> db
-               (assoc-in [:wallet/request-transaction :amount] (money/ether->wei value))
-               (assoc-in [:wallet/request-transaction :amount-error] error))})))
+               (assoc-in [:wallet :request-transaction :amount] (money/ether->wei value))
+               (assoc-in [:wallet :request-transaction :amount-error] error))})))
 
 (handlers/register-handler-fx
   :wallet.request/set-symbol
   (fn [{:keys [db]} [_ s]]
-    {:db (assoc-in db [:wallet/request-transaction :symbol] s)}))
+    {:db (assoc-in db [:wallet :request-transaction :symbol] s)}))

@@ -2,15 +2,27 @@
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.styles :as styles]))
 
+(def text-content
+  {:color :white})
+
+(def text-secondary-content
+  {:color styles/color-white-transparent})
+
+(def text
+  {:margin-right 10})
+
+(def text-list-primary-content
+  (merge text {:color styles/color-black}))
+
 (def text-input
-  {:color          :white
-   :padding-left   14
-   :padding-right  14
-   :font-size      15
-   :padding-bottom 0
-   :padding-top    0
-   :height         52
-   :letter-spacing -0.2})
+  (merge text-content
+    {:padding-left   14
+     :padding-right  14
+     :font-size      15
+     :padding-bottom 0
+     :padding-top    0
+     :height         52
+     :letter-spacing -0.2}))
 
 (defstyle label
   {:color   :white
@@ -48,17 +60,37 @@
    :align-items        :center
    :justify-content    :center})
 
-(defstyle currency-container
-  {:margin-top      8
-   :height          52
-   ;;TODO disabled
-   :border-width    1
-   :border-color    styles/color-white-transparent-4
-   ;:background-color styles/color-white-transparent-3
-   :justify-content :center
-   :padding         14
-   :ios             {:border-radius 8}
-   :android         {:border-radius 4}})
+(defstyle asset-container
+  {:margin-top       8
+   :height           52
+   :background-color styles/color-white-transparent-3
+   :justify-content  :center
+   :padding-left     14
+   :padding-vertical 14
+   :padding-right    8
+   :ios              {:border-radius 8}
+   :android          {:border-radius 4}})
+
+(def asset-content-container
+  {:flex-direction :row
+   :align-items    :center})
+
+(def asset-icon
+  {:background-color styles/color-gray9
+   :border-radius    50})
+
+(def asset-text-content
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
+
+(def asset-label-content
+  {:flex-direction    :row
+   :margin-horizontal 10})
+
+(def asset-label
+  {:margin-right 10})
 
 (defstyle container-disabled
   {:border-width     1

@@ -13,11 +13,9 @@
             [status-im.ui.screens.wallet.request.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
             [status-im.i18n :as i18n]
-            [status-im.utils.platform :as platform]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]))
+            [status-im.utils.ethereum.tokens :as tokens]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style wallet.styles/toolbar :hide-border? true}
@@ -31,7 +29,7 @@
                        :action  :request
                        :params  {:hide-actions? true}}]))
 
-(defn- generate-value [address {:keys [symbol chain-id] :as m}]
+(defn- generate-value [address {:keys [symbol] :as m}]
   (if (tokens/ethereum? symbol)
     (eip681/generate-uri address (dissoc m :symbol))
     (eip681/generate-erc20-uri address m)))
@@ -47,9 +45,9 @@
 
 (views/defview request-transaction []
   ;;Because input field is in the end of view we will scroll to the end on input focus event
-  (views/letsubs [amount           [:get-in [:wallet/request-transaction :amount]]
-                  amount-error     [:get-in [:wallet/request-transaction :amount-error]]
-                  symbol           [:get-in [:wallet/request-transaction :symbol]]
+  (views/letsubs [amount           [:get-in [:wallet :request-transaction :amount]]
+                  amount-error     [:get-in [:wallet :request-transaction :amount-error]]
+                  symbol           [:wallet.request/symbol]
                   request-enabled? [:wallet.request/request-enabled?]
                   scroll           (atom nil)]
     [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
@@ -61,17 +59,14 @@
         [react/view styles/network-container
          [react/view styles/qr-container
           [qr-code amount symbol]]]
-        [react/view wallet.styles/choose-wallet-container
-         [components/choose-wallet]]
         [react/view wallet.styles/amount-container
          [components/amount-input
           {:error         amount-error
            :input-options {:on-focus (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
-                           :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]
-         [react/view wallet.styles/choose-currency-container
-          [components/choose-currency {:style     wallet.styles/choose-currency
-                                       :on-change #(re-frame/dispatch [:wallet.request/set-symbol (keyword %)])
-                                       :value     (name (or symbol :ETH))}]]]]]
+                           :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]
+        [react/view wallet.styles/choose-asset-container
+         [components/choose-asset {:type   :request
+                                   :symbol symbol}]]]]
      [components/separator]
      [react/view wallet.styles/buttons-container
       [react/touchable-highlight {:style wallet.styles/button :disabled true}
