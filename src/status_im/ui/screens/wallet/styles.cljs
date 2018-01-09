@@ -73,18 +73,12 @@
   {:margin-top        16
    :margin-horizontal 15})
 
-(def choose-wallet-container
-  {:margin-top        16
-   :margin-horizontal 15})
-
 (def amount-container
   {:margin-top        16
    :margin-bottom     16
    :margin-horizontal 15
    :flex-direction    :row})
 
-(def choose-currency-container
-  {:margin-left 8})
-
-(def choose-currency
-  {:width 116})
+(def choose-asset-container
+  {:margin-top        16
+   :margin-horizontal 15})

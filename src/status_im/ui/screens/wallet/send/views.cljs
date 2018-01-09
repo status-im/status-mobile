@@ -203,8 +203,11 @@
                                               :name    to-name}
                                              (when-not modal?
                                                {:on-press request-camera-permissions}))]]
-        [react/view wallet.styles/choose-wallet-container
-         [components/choose-wallet]]
+        [react/view wallet.styles/choose-asset-container
+         (if modal?
+           [components/view-asset symbol]
+           [components/choose-asset {:type   :send
+                                     :symbol symbol}])]
         [react/view wallet.styles/amount-container
          [components/amount-input
           (merge
@@ -214,14 +217,7 @@
                              :on-focus       (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
                              :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])}}
             (when modal?
-              {:disabled? true}))]
-         (if modal?
-           [react/view wallet.styles/choose-currency-container
-            [components/view-currency wallet.styles/choose-currency]]
-           [react/view wallet.styles/choose-currency-container
-            [components/choose-currency {:style     wallet.styles/choose-currency
-                                         :on-change #(re-frame/dispatch [:wallet.send/set-symbol (keyword %)])
-                                         :value     (name symbol)}]])]
+              {:disabled? true}))]]
         [react/view {:style send.styles/advanced-wrapper}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])}
           [react/view {:style send.styles/advanced-button-wrapper}

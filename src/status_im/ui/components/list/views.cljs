@@ -53,10 +53,10 @@
    [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
 
 (defn item-image
-  [{:keys[source style]}]
+  [{:keys[source style image-style]}]
   [react/view {:style style}
    [react/image {:source source
-                 :style  styles/item-image}]])
+                 :style  (merge styles/item-image image-style)}]])
 
 (defn item-primary
   [primary]
@@ -72,7 +72,7 @@
 
 (defn item-content
   [& children]
-  (into [react/view {:style styles/item-text-view}] (keep identity children)))
+  (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
 (defn item-checkbox
   [{:keys [style] :as props}]

@@ -39,6 +39,7 @@
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
@@ -82,6 +83,8 @@
                           (:transactions-history :unsigned-transactions) wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
                           (:wallet-my-token :wallet-market-value) wallet-assets/my-token-main
+                          :wallet-send-assets wallet.components/send-assets
+                          :wallet-request-assets wallet.components/request-assets
                           :new-chat new-chat
                           :new-group new-group
                           :edit-contact-group edit-contact-group

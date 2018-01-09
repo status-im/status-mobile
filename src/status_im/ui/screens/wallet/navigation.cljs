@@ -16,8 +16,10 @@
   db)
 
 (defmethod navigation/preload-data! :wallet-request-transaction
-  [db _]
-  (dissoc db :wallet/request-transaction))
+  [db [event]]
+  (if (= event :navigate-back)
+    db
+    (update db :wallet dissoc :request-transaction)))
 
 (defn- dissoc-transaction-details [m]
   (apply dissoc m (apply disj (set (keys m)) (keys db/transaction-send-default))))

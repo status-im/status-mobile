@@ -5,20 +5,16 @@
             [status-im.ui.components.drawer.view :as drawer]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.components.button.styles :as button.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]))
 
@@ -45,7 +41,7 @@
        :icon-opts {:color :white})
      transaction-history-action]]])
 
-(defn main-section [usd-value change syncing? error-message]
+(defn main-section [usd-value syncing? error-message]
   [react/view {:style styles/main-section}
    (if syncing?
      wallet.views/wallet-syncing
@@ -67,7 +63,7 @@
      [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
       (i18n/label :t/wallet-exchange)]]]])
 
-(defn- render-asset [{:keys [name symbol icon decimals amount] :as asset}]
+(defn- render-asset [{:keys [symbol icon decimals amount]}]
   [react/view
    [list/item
     [list/item-image icon]
@@ -81,8 +77,11 @@
                   :number-of-lines 1}
       (clojure.core/name symbol)]]]])
 
+(defn current-tokens [visible-tokens network]
+  (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network))))
+
 (defn asset-section [network balance visible-tokens prices-loading? balance-loading?]
-  (let [tokens (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network)))
+  (let [tokens (current-tokens visible-tokens network)
         assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] (when config/erc20-enabled? tokens)))]
     [react/view {:style styles/asset-section}
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
@@ -97,7 +96,6 @@
             balance          [:balance]
             visible-tokens   [:wallet.settings/visible-tokens]
             portfolio-value  [:portfolio-value]
-            portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
             syncing?         [:syncing?]
             balance-loading? [:wallet/balance-loading?]
@@ -105,5 +103,5 @@
     [react/view {:style wallet.styles/wallet-container}
      [toolbar-view]
      [react/view components.styles/flex
-      [main-section portfolio-value portfolio-change syncing? error-message]
+      [main-section portfolio-value syncing? error-message]
       [asset-section network balance visible-tokens prices-loading? balance-loading?]]]))
