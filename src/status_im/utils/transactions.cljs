@@ -25,7 +25,7 @@
     {:value value
      ;; timestamp is in seconds, we convert it in ms
      :timestamp (str timeStamp "000")
-     :symbol "ETH"
+     :symbol :ETH
      :type (if inbound? :inbound :outbound)
      :block blockNumber
      :hash  hash

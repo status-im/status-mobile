@@ -208,7 +208,8 @@
 (defn- pretty-print-asset [symbol amount]
   (case symbol
     ;; TODO (jeluard) Format tokens amount once tokens history is supported
-    :ETH (if amount (money/wei->str :eth amount) "...")))
+    :ETH (if amount (money/wei->str :eth amount) "...")
+    (throw (str "Unknown asset symbol: " symbol))))
 
 
 (defn details-header [{:keys [value date type symbol]}]
