@@ -90,7 +90,7 @@
                                      (set-layout-height-fn h)))
         :on-selection-change    #(let [s   (-> (.-nativeEvent %)
                                                (.-selection)) 
-                                       end (.-end s)] 
+                                       end (.-end s)]
                                    (dispatch [:update-text-selection end]))
         :style                  (style/input-view height single-line-input?)
         :placeholder-text-color style/color-input-helper-placeholder
@@ -236,6 +236,7 @@
                                                     (dispatch [:send-current-message]))}
             [react/view {:style               style/send-message-container
                          :accessibility-label :send-message-button}
+             [react/text "Send"]
              [react/icon :arrow_top style/send-message-icon]]]))])))
 
 (defn container []
