@@ -46,11 +46,10 @@
        [command-view (= index 0) command])]]])
 
 (defn- basic-text-input [_]
-  (let [input-text           (subscribe [:chat :input-text])
-        command              (subscribe [:selected-chat-command])
-        sending-in-progress? (subscribe [:get-current-chat-ui-prop :sending-in-progress?])
-        input-focused?       (subscribe [:get-current-chat-ui-prop :input-focused?])
-        input-ref            (atom nil)]
+  (let [input-text     (subscribe [:chat :input-text])
+        command        (subscribe [:selected-chat-command])
+        input-focused? (subscribe [:get-current-chat-ui-prop :input-focused?])
+        input-ref      (atom nil)]
     (fn [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
       [react/text-input
        {:ref                    #(when %
@@ -59,7 +58,7 @@
         :accessibility-label    :chat-message-input
         :multiline              (not single-line-input?)
         :default-value          (or @input-text "")
-        :editable               (not @sending-in-progress?)
+        :editable               true
         :blur-on-submit         false
         :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
                                                                 :show-emoji?    false}])
@@ -142,10 +141,9 @@
     nil))
 
 (defn- seq-input [_]
-  (let [command              (subscribe [:selected-chat-command])
-        arg-pos              (subscribe [:current-chat-argument-position])
-        seq-arg-input-text   (subscribe [:chat :seq-argument-input-text])
-        sending-in-progress? (subscribe [:get-current-chat-ui-prop :sending-in-progress?])]
+  (let [command            (subscribe [:selected-chat-command])
+        arg-pos            (subscribe [:current-chat-argument-position])
+        seq-arg-input-text (subscribe [:chat :seq-argument-input-text])]
     (fn [{:keys [command-width container-width]}]
       (when (get-in @command [:command :sequential-params])
         (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
@@ -158,7 +156,7 @@
                                     :placeholder         placeholder
                                     :accessibility-label :chat-request-input
                                     :blur-on-submit      false
-                                    :editable            (not @sending-in-progress?)
+                                    :editable            true
                                     :on-focus            #(dispatch [:set-chat-ui-props {:show-emoji? false}])
                                     :on-submit-editing   (fn []
                                                            (when-not (or (str/blank? @seq-arg-input-text)

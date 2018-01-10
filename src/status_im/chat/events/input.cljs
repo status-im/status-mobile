@@ -384,8 +384,7 @@
 
                    validationHandler
                    [[::execute-validation-handler
-                     validationHandler parameters error-events-creator proceed-events]
-                    [:set-chat-ui-props {:sending-in-progress? false}]]
+                     validationHandler parameters error-events-creator proceed-events]]
 
                    :default
                    proceed-events)]
