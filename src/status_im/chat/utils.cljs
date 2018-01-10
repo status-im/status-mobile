@@ -1,5 +1,6 @@
 (ns status-im.chat.utils
-  (:require [status-im.chat.constants :as chat.constants]))
+  (:require [status-im.chat.constants :as chat.constants]
+            [taoensso.timbre :as log]))
 
 (defn add-message-to-db
   ([db add-to-chat-id chat-id message] (add-message-to-db db add-to-chat-id chat-id message true))

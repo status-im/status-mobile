@@ -1,16 +1,15 @@
 (ns status-im.commands.handlers.jail
-  (:require [re-frame.core :refer [after dispatch subscribe trim-v debug]]
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :refer [show-popup]]
-            [status-im.utils.types :refer [json->clj]]
+            [status-im.utils.types :as types]
             [status-im.commands.utils :refer [reg-handler]]
-            [clojure.string :as s]
             [status-im.ui.components.react :as r]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log]
-            [status-im.data-store.local-storage :as local-storage]
-            [clojure.string :as str]))
+            [status-im.data-store.local-storage :as local-storage]))
 
 (defn command-handler!
   [_ [chat-id
@@ -26,10 +25,10 @@
       result
       (let [command' (assoc command :handler-data returned)
             params'  (assoc params :command command')] 
-        (dispatch [:prepare-command! chat-id params']))
+        (dispatch [:chat-send-message/send-command chat-id params']))
 
       (not (or error handler-error))
-      (dispatch [:prepare-command! chat-id params])
+      (dispatch [:chat-send-message/send-command chat-id params])
 
       :else nil)))
 
@@ -41,7 +40,7 @@
         current-input (get-in chats [chat-id :input-text])
         path (if command
                [:chats chat-id :parameter-boxes (:name command) parameter-index]
-               (when-not (str/blank? current-input)
+               (when-not (string/blank? current-input)
                  [:chats chat-id :parameter-boxes :message]))]
     (dispatch [:choose-predefined-expandable-height :parameter-box (or (keyword height) :default)])
     (when (and contains-markup? path (not= (get-in db path) markup))
@@ -80,9 +79,10 @@
 (defn print-error-message! [message]
   (fn [_ params]
     (when (:error (last params))
-      (show-popup "Error" (s/join "\n" [message params]))
+      (show-popup "Error" (string/join "\n" [message params]))
       (log/debug message params))))
 
+;; TODO(alwx): rewrite
 (reg-handler :command-handler!
   (after (print-error-message! "Error on command handling"))
   (handlers/side-effect! command-handler!))
@@ -95,6 +95,16 @@
 (reg-handler
   :suggestions-event!
   (handlers/side-effect! suggestions-events-handler!))
+
+(reg-handler
+  :show-suggestions-from-jail
+  (handlers/side-effect!
+    (fn [_ [_ {:keys [chat-id markup]}]]
+      (let [markup' (types/json->clj markup)
+            result  (assoc-in {} [:result :returned :markup] markup')]
+        (dispatch [:suggestions-handler
+                   {:result  result
+                    :chat-id chat-id}])))))
 
 (reg-handler :set-local-storage
   (handlers/side-effect!
