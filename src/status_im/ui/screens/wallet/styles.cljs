@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]))
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as styles]))
 
 ;; errors
 
@@ -11,7 +12,7 @@
                       :margin-top    6}
    :android          {:border-radius 4
                       :margin-top    18}
-   :background-color styles/color-blue5})
+   :background-color colors/blue})
 
 (defstyle error-message-container
   {:flex-direction     :row
@@ -21,7 +22,7 @@
    :android            {:padding-vertical 10}})
 
 
-(defnstyle exclamation [color]
+(defn exclamation [color]
   {:background-color color
    :border-radius    100
    :width            16
@@ -29,7 +30,7 @@
    :margin-right     6})
 
 (def error-message
-  {:color         styles/color-white
+  {:color         colors/white
    :font-size     13})
 
 (def error-exclamation
@@ -44,9 +45,8 @@
   {:flex 1})
 
 (defstyle toolbar
-  {:ios     {:background-color styles/color-blue4}
-   :android {:background-color styles/color-blue5
-             :elevation        0}})
+  {:background-color colors/blue
+   :android          {:elevation 0}})
 
 (def buttons-container
   {:flex-direction :row
@@ -67,7 +67,7 @@
 
 (def wallet-modal-container
   {:flex             1
-   :background-color styles/color-blue4})
+   :background-color colors/blue})
 
 (def choose-participant-container
   {:margin-top        16

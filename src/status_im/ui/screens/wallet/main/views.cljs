@@ -1,46 +1,32 @@
 (ns status-im.ui.screens.wallet.main.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.button.view :as btn]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
-            [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.button.styles :as button.styles]
-            [status-im.ui.screens.wallet.views :as wallet.views]))
-
-(defn toolbar-title []
-  [react/view {:style styles/toolbar-title-container}
-   [react/text {:style           styles/toolbar-title-text
-                :font            :toolbar-title
-                :number-of-lines 1}
-    (i18n/label :t/main-wallet)]])
-
-(def transaction-history-action
-  {:icon      :icons/transaction-history
-   :icon-opts (merge {:color :white :style {:viewBox "-108 65.9 24 24"}} styles/toolbar-icon)
-   :handler   #(re-frame/dispatch [:navigate-to :transactions-history])})
+            [status-im.ui.screens.wallet.views :as wallet.views]
+            [status-im.utils.config :as config]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.platform :as platform]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style wallet.styles/toolbar}
    nil
-   [toolbar/content-wrapper
-    [toolbar-title]]
+   [toolbar/content-wrapper]
    [toolbar/actions
     [(assoc (act/opts [{:text  (i18n/label :t/wallet-manage-assets)
                         :value #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}])
-       :icon-opts {:color :white})
-     transaction-history-action]]])
+       :icon-opts {:color :white})]]])
 
-(defn main-section [usd-value syncing? error-message]
+(defn- total-section [usd-value syncing? error-message]
   [react/view {:style styles/main-section}
    (if syncing?
      wallet.views/wallet-syncing
@@ -50,17 +36,34 @@
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]
      [react/text {:style styles/total-balance-currency} (i18n/label :t/usd-currency)]]
-    [react/view {:style (merge button.styles/buttons-container styles/buttons)}
-     [btn/button {:disabled? syncing?
-                  :on-press #(re-frame/dispatch [:navigate-to :wallet-send-transaction])
-                  :style    (button.styles/button-bar :first) :text-style styles/main-button-text}
-      (i18n/label :t/wallet-send)]
-     [btn/button {:disabled? syncing?
-                  :on-press #(re-frame/dispatch [:navigate-to :wallet-request-transaction])
-                  :style (button.styles/button-bar :other) :text-style styles/main-button-text}
-      (i18n/label :t/wallet-request)]
-     [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
-      (i18n/label :t/wallet-exchange)]]]])
+    [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
+
+(defn- render-action [{:keys [name icon action]}]
+  [react/touchable-highlight {:on-press action}
+   [react/view
+    [list/item
+     [list/item-icon {:icon icon :style styles/action :icon-opts {:color :white}}]
+     [list/item-primary-only {:style styles/action-label}
+      name]
+     list/item-icon-forward]]])
+
+(def actions
+  [{:name   (i18n/label :t/send-transaction)
+    :icon   :icons/arrow-right
+    :action #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
+   {:name   (i18n/label :t/receive-transaction)
+    :icon   :icons/arrow-left
+    :action #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
+   {:name   (i18n/label :t/transaction-history)
+    :icon   :icons/transaction-history
+    :action #(re-frame/dispatch [:navigate-to :transactions-history])}])
+
+(defn- action-section []
+  [react/view styles/action-section
+   [list/flat-list
+    {:separator (when platform/ios? [react/view styles/action-separator])
+     :data      actions
+     :render-fn render-action}]])
 
 (defn- render-asset [{:keys [symbol icon decimals amount]}]
   [react/view
@@ -76,19 +79,20 @@
                   :number-of-lines 1}
       (clojure.core/name symbol)]]]])
 
-(defn current-tokens [visible-tokens network]
+(defn- current-tokens [visible-tokens network]
   (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network))))
 
-(defn asset-section [network balance visible-tokens prices-loading? balance-loading?]
+(defn- asset-section [network balance visible-tokens prices-loading? balance-loading?]
   (let [tokens (current-tokens visible-tokens network)
         assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] (when config/erc20-enabled? tokens)))]
-    [react/view {:style styles/asset-section}
+    [react/view styles/asset-section
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
-      {:data       assets
-       :render-fn  render-asset
-       :on-refresh #(re-frame/dispatch [:update-wallet (when config/erc20-enabled? (map :symbol tokens))])
-       :refreshing (boolean (or prices-loading? balance-loading?))}]]))
+      {:default-separator? true
+       :data               assets
+       :render-fn          render-asset
+       :on-refresh         #(re-frame/dispatch [:update-wallet (when config/erc20-enabled? (map :symbol tokens))])
+       :refreshing         (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
   (letsubs [network          [:network]
@@ -102,5 +106,6 @@
     [react/view {:style wallet.styles/wallet-container}
      [toolbar-view]
      [react/view components.styles/flex
-      [main-section portfolio-value syncing? error-message]
+      [total-section portfolio-value syncing? error-message]
+      [action-section]
       [asset-section network balance visible-tokens prices-loading? balance-loading?]]]))

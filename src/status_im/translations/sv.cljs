@@ -305,8 +305,6 @@
    :wallet-manage-assets                  "Hantera tillgångar"
    :signing-phrase-description            "Skriv under transaktionen genom att ange ditt lösenord. Kontrollera att orden ovan motsvarar din hemliga underskriftsfras"
    :wallet-insufficient-funds             "Otillräckligt kapital"
-   :wallet-my-token                       "Mina {{symbol}}"
-   :wallet-market-value                   "Marknadsvärde"
    :request-transaction                   "Begär transaktion"
    :send-request                          "Skicka begäran"
    :share                                 "Dela"

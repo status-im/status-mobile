@@ -37,22 +37,17 @@
             [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
-            [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
-            [status-im.ui.screens.wallet.assets.views :as wallet-assets]
-
             [status-im.ui.components.status-bar.view :as status-bar]
-
             [status-im.ui.screens.discover.search-results.views :as discover-search]
             [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]
             [status-im.ui.screens.discover.all-dapps.views :as discover-all-dapps]
             [status-im.ui.screens.discover.popular-hashtags.views :as discover-popular]
             [status-im.ui.screens.discover.dapp-details.views :as discover-dapp-details]
-
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
@@ -74,14 +69,12 @@
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
                           (:home :wallet :my-profile) main-tabs
-                          :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent
                           :choose-recipient choose-recipient
                           :wallet-request-transaction request-transaction
                           (:transactions-history :unsigned-transactions) wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
-                          (:wallet-my-token :wallet-market-value) wallet-assets/my-token-main
                           :wallet-send-assets wallet.components/send-assets
                           :wallet-request-assets wallet.components/request-assets
                           :new-chat new-chat

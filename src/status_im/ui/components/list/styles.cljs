@@ -4,7 +4,9 @@
             [status-im.utils.platform :as platform]))
 
 (def item
-  {:flex-direction :row})
+  {:flex-direction :row
+   :justify-content :center
+   :height          64})
 
 (def item-content-view
   {:flex            1
@@ -27,7 +29,7 @@
 
 (def primary-text-only
   (merge primary-text-base
-         {:padding-vertical 22}))
+         {:padding-vertical 16}))
 
 (def secondary-text
   {:font-size   16
@@ -38,20 +40,35 @@
   {:width  40
    :height 40})
 
+(def icon-size 24)
+(def icon-wrapper-size (+ icon-size (* 2 8)))
+
+(def item-icon-wrapper
+  {:width           icon-wrapper-size
+   :height          icon-wrapper-size
+   :align-items     :center
+   :justify-content :center})
+
 (def item-icon
-  {:width  24
-   :height 24})
+  {:width  icon-size
+   :height icon-size})
+
+(def horizontal-margin 16)
+(def vertical-margin 12)
 
 (def left-item-wrapper
-  {:margin 14})
+  {:justify-content :center
+   :margin-left     horizontal-margin
+   :margin-vertical vertical-margin})
 
 (def content-item-wrapper
-  {:flex         1
-   :margin-right 16})
+  {:flex            1
+   :justify-content :center
+   :margin-left     horizontal-margin})
 
 (def right-item-wrapper
-  {:margin-right    16
-   :justify-content :center})
+  {:justify-content :center
+   :margin-right    horizontal-margin})
 
 (def base-separator
   {:height           1

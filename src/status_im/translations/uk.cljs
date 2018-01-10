@@ -305,8 +305,6 @@
    :wallet-manage-assets                  "Управління Активами"
    :signing-phrase-description            "Підпишіть транзакцію, ввівши свій пароль. Переконайтеся, що слова вище відповідають вашій секретній фразі підпису"
    :wallet-insufficient-funds             "Недостатньо коштів"
-   :wallet-my-token                       "Мій {{symbol}}"
-   :wallet-market-value                   "Ринкова вартість"
    :request-transaction                   "Запит транзакції"
    :send-request                          "Надіслати запит"
    :share                                 "Поділитися"

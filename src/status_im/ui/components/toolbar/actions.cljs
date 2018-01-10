@@ -47,7 +47,7 @@
 
 (defn list-white [handler]
   {:icon      :icons/transaction-history
-   :icon-opts {:color :white :style {:viewBox "-108 65.9 24 24"}}
+   :icon-opts {:color :white}
    :handler   handler})
 
 (defn add-wallet [handler]

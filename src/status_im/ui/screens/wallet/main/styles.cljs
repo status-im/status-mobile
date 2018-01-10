@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.main.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.styles :as styles]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui.components.colors :as colors]))
 
 ;; Toolbar
 
@@ -10,7 +10,7 @@
 
 (def toolbar-title-text
   {:flex      -1
-   :color     styles/color-white
+   :color     colors/white
    :font-size 17})
 
 (def toolbar-icon
@@ -23,12 +23,10 @@
 ;; Main section
 
 (def main-section
-  {:background-color styles/color-blue4})
+  {:background-color colors/blue})
 
 (def total-balance-container
-  {:padding-top     20
-   :padding-bottom  24
-   :align-items     :center
+  {:align-items     :center
    :justify-content :center})
 
 (def total-balance
@@ -36,7 +34,11 @@
 
 (def total-balance-value
   {:font-size 37
-   :color     styles/color-white})
+   :color     colors/white})
+
+(def total-value
+  {:font-size 14
+   :color     styles/color-white-transparent})
 
 (defstyle total-balance-currency
   {:font-size   37
@@ -44,16 +46,6 @@
    :color       styles/color-white-transparent-5
    :android     {:letter-spacing 1.5}
    :ios         {:letter-spacing 1.16}})
-
-(def value-variation
-  {:flex-direction :row
-   :align-items    :center})
-
-(defstyle value-variation-title
-  {:font-size 14
-   :color     styles/color-white-transparent-6
-   :android   {:letter-spacing -0.18}
-   :ios       {:letter-spacing -0.2}})
 
 (defstyle buttons
   {:margin-top 34
@@ -68,11 +60,27 @@
    :ios                {:font-size      15
                         :letter-spacing -0.2}})
 
+;; Actions section
+
+(def action-section
+  {:background-color colors/blue})
+
+(def action
+  {:background-color colors/white-light-transparent
+   :border-radius    50})
+
+(def action-label
+  {:color :white})
+
+(def action-separator
+  {:height           1
+   :background-color colors/white-transparent
+   :margin-left      70})
+
 ;; Assets section
 
 (def asset-section
   {:flex             1
-   :background-color styles/color-white
    :padding-vertical 16})
 
 (def asset-section-title
@@ -101,22 +109,13 @@
 
 (defstyle add-asset-text
   {:font-size 16
-   :ios       {:color styles/color-blue4}
+   :ios       {:color colors/blue}
    :android   {:color styles/color-black}})
 
 (def asset-item-currency
   {:font-size   16
    :color       styles/color-gray4
    :margin-left 6})
-
-(def corner-dot
-  {:position         :absolute
-   :top              12
-   :right            6
-   :width            4
-   :height           4
-   :border-radius    2
-   :background-color styles/color-cyan})
 
 (defn asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})

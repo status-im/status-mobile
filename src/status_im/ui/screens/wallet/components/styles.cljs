@@ -190,8 +190,7 @@
 
 (def tooltip-triangle
   {:width   16
-   :height  8
-   :viewBox "0 0 16 8"})
+   :height  8})
 
 (def recipient-name-container
   {:padding-right 6})

@@ -124,7 +124,7 @@
    :move-to-internal-failure-message      "いくつかの重要なファイルを外部メディアに保存します。続行するには、許可が必要です。（将来的には外部メディアを使用しないようにします。）"
    :debug-enabled                         "デバッグサーバーを起動しました！ *status-dev-cli scan*を実行すると、同じネットワーク上のコンピュータからサーバーを見つけることができます。"
 
-　 ;;phone types
+   ;;phone types
    :phone-e164                            "国際 1"
    :phone-international                   "国際 2"
    :phone-national                        "国内"
@@ -304,8 +304,6 @@
    :wallet-manage-assets                  "資産の管理"
    :signing-phrase-description            "パスワードを入力して取引に署名します。 上記の単語があなたの秘密の署名句に一致することを確認してください"
    :wallet-insufficient-funds             "残高不足"
-   :wallet-my-token                       "わたしの {{symbol}}"
-   :wallet-market-value                   "市場価値"
    :request-transaction                   "取引をリクエストする"
    :send-request                          "リクエストを送信する"
    :share                                 "シェア"

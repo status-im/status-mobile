@@ -80,9 +80,8 @@
   {:ios     (create-status-bar-style {:background-color styles/color-blue4})
    :android (create-status-bar-style {:translucent?     true})})
 
-(defstyle view-wallet
-  {:ios     (create-view-style {:background-color styles/color-blue4})
-   :android (create-view-style {:background-color styles/color-blue5})})
+(def view-wallet
+  (create-view-style {:background-color styles/color-blue4}))
 
 ;; :default
 (defstyle status-bar-default

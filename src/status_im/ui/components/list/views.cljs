@@ -19,9 +19,9 @@
   [section-list {:sections [{:title \"\" :key :unik :render-fn render :data {:title  \"\" :subtitle \"\"}}]}]
   "
   (:require [reagent.core :as reagent]
-            [reagent.impl.template :as temp]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]))
@@ -49,7 +49,7 @@
 (defn item-icon
   [{:keys [icon style icon-opts]}]
   {:pre [(not (nil? icon))]}
-  [react/view {:style style}
+  [react/view {:style (merge styles/item-icon-wrapper style)}
    [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
 
 (defn item-image
@@ -63,8 +63,10 @@
   [react/text {:style styles/primary-text} primary])
 
 (defn item-primary-only
-  [primary]
-  [react/text {:style styles/primary-text-only} primary])
+  ([s] (item-primary-only nil s))
+  ([{:keys [style]} s]
+   [react/text {:style (merge styles/primary-text-only style)}
+    s]))
 
 (defn item-secondary
   [secondary]
@@ -78,6 +80,11 @@
   [{:keys [style] :as props}]
   [react/view {:style (merge style styles/item-checkbox)}
    [checkbox/checkbox props]])
+
+(def item-icon-forward
+  [item-icon {:style     styles/item-icon
+              :icon      :icons/forward
+              :icon-opts {:color colors/white-transparent}}])
 
 (defn- wrap-render-fn [f]
   (fn [data]
@@ -109,7 +116,7 @@
   (-clj->js [x] (.-value x))
   (-key->js [x] (.-value x))
   IEncodeClojure
-  (-js->clj [x options] (.-value x)))
+  (-js->clj [x _] (.-value x)))
 
 (defn- to-js-array
   "Converts a collection to a JS array (but leave content as is)"

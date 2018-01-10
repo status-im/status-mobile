@@ -94,7 +94,6 @@
    :in-contacts                           "In contacts"
    :remove-from-contacts                  "Remove from contacts"
    :start-conversation                    "Start conversation"
-   :send-transaction                      "Send transaction"
    :testnet-text                          "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
    :mainnet-text                          "You’re on the Mainnet. Real ETH will be sent"
 
@@ -310,8 +309,6 @@
    :wallet-manage-assets                  "Manage Assets"
    :signing-phrase-description            "Sign the transaction by entering your password. Make sure that the words above match your secret signing phrase"
    :wallet-insufficient-funds             "Insufficient funds"
-   :wallet-my-token                       "My {{symbol}}"
-   :wallet-market-value                   "Market value"
    :request-transaction                   "Request transaction"
    :send-request                          "Send request"
    :share                                 "Share"
@@ -344,6 +341,9 @@
    :sign-later-title                      "Sign transaction later?"
    :sign-later-text                       "Check the transaction history to sign this transaction"
    :not-applicable                        "Not applicable for unsigned transactions"
+   :send-transaction                      "Send transaction"
+   :receive-transaction                   "Receive transaction"
+   :transaction-history                   "Transaction History"
 
    ;; Wallet Send
    :wallet-choose-recipient               "Choose Recipient"

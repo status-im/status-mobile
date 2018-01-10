@@ -15,7 +15,7 @@
                 (catch Exception _ ""))))
        (apply str)))
 
-(def svg-tags #{:g :rect :path :use :defs})
+(def svg-tags #{:svg :g :rect :path :use :defs})
 
 (defmacro slurp-svg [file]
   "Reads svg file, and return function (fn [color] ..), which returns hiccup structure for react-native-svg lib
@@ -35,20 +35,19 @@
   "
   (let [svg (-> (clojure.core/slurp file)
                 (string/replace #"[\n]\s*" ""))
-        svg-hiccup (first (map hickory/as-hiccup (hickory/parse-fragment svg)))
+        svg-hiccup (hickory/as-hiccup (first (hickory/parse-fragment svg)))
         color (gensym "args")]
     `(fn [~color]
        ~(into []
-          (clojure.walk/prewalk
-            (fn [node]
-              (if (svg-tags node)
-                (if (= :use node)
-                  (symbol "use-def")
-                  (symbol (name node)))
-                (if (vector? node)
-                  (let [[k v] node]
-                    (if (and (= :fill k) v)
-                      [k color]
-                      node))
-                  node)))
-            (rest (rest svg-hiccup)))))))
+          (clojure.walk/postwalk-replace {:viewbox :viewBox} ;; See https://github.com/jhy/jsoup/issues/272
+            (clojure.walk/prewalk
+              (fn [node]
+                (if (svg-tags node)
+                  (symbol (name node))
+                  (if (vector? node)
+                    (let [[k v] node]
+                      (if (and (= :fill k) v)
+                        [k color]
+                        node))
+                    node)))
+              svg-hiccup))))))

@@ -1,5 +1,5 @@
 (ns status-im.ui.components.status-bar.view
-  (:require [status-im.ui.components.react :as ui]
+  (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.styles :as styles]))
 
 (defn status-bar [{type :type}]
@@ -13,6 +13,6 @@
           :transaction  [styles/status-bar-transaction styles/view-transaction]
           :wallet       [styles/status-bar-wallet styles/view-wallet]
           [styles/status-bar-default styles/view-default])]
-    [ui/view
-     [ui/status-bar status-bar-style]
-     [ui/view {:style view-style}]]))
+    [react/view
+     [react/status-bar status-bar-style]
+     [react/view {:style view-style}]]))

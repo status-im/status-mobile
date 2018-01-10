@@ -19,12 +19,6 @@
   [{:keys [id]}]
   (re-frame/dispatch [:wallet/discard-unsigned-transaction-with-confirmation id]))
 
-;; TODO (andrey) implement
-(defn unsigned-action [unsigned-transactions-count]
-  [toolbar/text-action {:disabled? (zero? unsigned-transactions-count)
-                        :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
-   (i18n/label :t/transactions-sign-all)])
-
 (defn history-action [filter?]
   (merge
     {:icon    :icons/filter
@@ -35,7 +29,7 @@
   (and (every? :checked? (:type filter-data))
        (every? :checked? (:tokens filter-data))))
 
-(defn- toolbar-view [current-tab unsigned-transactions-count filter-data]
+(defn- toolbar-view [current-tab filter-data]
   [toolbar/toolbar {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
@@ -44,7 +38,7 @@
      :unsigned-transactions nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
 
 
-(defn action-buttons [{:keys [id to value] :as transaction}]
+(defn action-buttons [{:keys [id] :as transaction}]
   [react/view {:style transactions.styles/action-buttons}
    [button/primary-button {:style    {:margin-right 12}
                            :on-press #(re-frame/dispatch [:wallet/show-sign-transaction id])}
@@ -104,7 +98,6 @@
 (defn- empty-text [s] [react/text {:style transactions.styles/empty-text} s])
 
 (defn filtered-transaction? [transaction filter-data]
-  ;; TODO(jeluard) extend to token when available
   (:checked? (some #(when (= (:type transaction) (:id %)) %) (:type filter-data))))
 
 (defn update-transactions [m filter-data]
@@ -139,23 +132,15 @@
    content
    [list/item-checkbox {:checked? checked? :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}]])
 
-#_ ;; TODO(jeluard) Will be used for ERC20 tokens
-(defn- item-filter-tokens [{:keys [symbol label checked?]}]
-  [item-filter {:icon (transaction-type->icon :pending) :checked? checked?} ;; TODO(jeluard) add proper token icon
-   [list/item-content
-    [list/item-primary label]
-    [list/item-secondary symbol]]])
-
 (defn- render-item-filter [{:keys [id label checked?]}]
   [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
    [list/item-content
     [list/item-primary-only label]]])
 
 (defn- wrap-filter-data [m]
-  ;; TODO(jeluard) Restore tokens filtering once token support is added
   [{:title      (i18n/label :t/transactions-filter-type)
     :key        :type
-    :render-fn  render-item-filter ;(list/wrap-render-fn item-filter-type)
+    :render-fn  render-item-filter
     :data       (:type m)}])
 
 (defview filter-history []
@@ -204,12 +189,11 @@
      ^{:key view-id} [tab view-id content (= view-id current-view-id)])])
 
 (defview transactions []
-  (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]
-            current-tab                 [:get :view-id]
+  (letsubs [current-tab                 [:get :view-id]
             filter-data                 [:wallet.transactions/filters]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
-     [toolbar-view current-tab unsigned-transactions-count filter-data]
+     [toolbar-view current-tab filter-data]
      [tabs current-tab]
      [(case current-tab
         :transactions-history history-list
