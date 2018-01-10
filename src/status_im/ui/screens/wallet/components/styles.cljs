@@ -92,6 +92,9 @@
 (def asset-label
   {:margin-right 10})
 
+(def asset-text
+  {:color styles/color-white})
+
 (defstyle container-disabled
   {:border-width     1
    :border-color     styles/color-white-transparent-4
