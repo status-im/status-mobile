@@ -4,8 +4,8 @@
             [clojure.string :as str]
             [cljs-time.core :as t]
             [status-im.ui.components.react :refer [view
-                                                text
-                                                icon]]
+                                                   text
+                                                   icon]]
             [status-im.i18n :refer [get-contact-translated
                                     label
                                     label-pluralize]]

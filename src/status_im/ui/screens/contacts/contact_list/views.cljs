@@ -7,11 +7,9 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
-            [status-im.ui.components.drawer.view :as drawer-view]
             [status-im.ui.screens.contacts.styles :as styles]
             [status-im.ui.screens.contacts.views :as contact-options]
             [status-im.i18n :as i18n]))
-
 
 (defn render-row [group edit?]
   (fn [row _ _]
@@ -55,11 +53,10 @@
 (defview contact-list []
   (letsubs [edit? [:get-in [:contacts/list-ui-props :edit?]]
             group [:get-contact-group]]
-    [drawer-view/drawer-view
-     [react/view {:flex 1}
-      [react/view
-       [status-bar/status-bar]
-       (if edit?
-         [contact-list-toolbar-edit group]
-         [contact-list-toolbar group])]
-      [contacts-list-view group edit?]]]))
+    [react/view {:flex 1}
+     [react/view
+      [status-bar/status-bar]
+      (if edit?
+        [contact-list-toolbar-edit group]
+        [contact-list-toolbar group])]
+     [contacts-list-view group edit?]]))

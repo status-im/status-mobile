@@ -6,7 +6,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.drawer.view :as drawer]
             [status-im.ui.components.carousel.carousel :as carousel]
             [status-im.ui.screens.discover.components.views :as components]
             [status-im.ui.screens.discover.all-dapps.views :as all-dapps]
@@ -38,7 +37,6 @@
     :search-key         :discover
     :title              (i18n/label :t/discover)
     :search-placeholder (i18n/label :t/search-tags)
-    :nav-action         (actions/hamburger drawer/open-drawer!)
     :on-search-submit   (fn [text]
                           (when-not (string/blank? text)
                             (let [tags (get-hashtags text)]

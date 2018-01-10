@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.tabs.styles :as tabs.styles]
+            [status-im.ui.screens.main-tabs.styles :as tabs.styles]
             [status-im.utils.platform :as platform]))
 
 (def error-container
@@ -29,7 +29,8 @@
                           styles/color-gray10-transparent)})
 
 (def tabs-container
-  {:flexDirection :row})
+  {:flexDirection :row
+   :height        tabs.styles/tab-height})
 
 (defnstyle tab-title [active?]
   {:ios        {:font-size 15}

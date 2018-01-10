@@ -25,7 +25,6 @@
 (def dismiss-keyboard! rn-dependencies/dismiss-keyboard)
 (def orientation rn-dependencies/orientation)
 (def back-handler (get-react-property "BackHandler"))
-(def drawer rn-dependencies/drawer)
 
 (def splash-screen (.-SplashScreen native-modules))
 
@@ -39,7 +38,6 @@
 (def view (get-class "View"))
 
 (def status-bar (get-class "StatusBar"))
-(def drawer-layout (adapt-class (.-default drawer)))
 
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
@@ -148,8 +146,6 @@
         (.openPicker (clj->js {:multiple false}))
         (.then images-fn)
         (.catch show-access-error))))
-
-(def swiper (adapt-class rn-dependencies/swiper))
 
 ;; Clipboard
 

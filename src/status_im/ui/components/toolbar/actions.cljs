@@ -2,16 +2,6 @@
   (:require [re-frame.core :refer [dispatch]]
             [status-im.ui.components.toolbar.styles :as st]))
 
-(defn hamburger [handler]
-  {:icon                :icons/hamburger
-   :handler             handler
-   :accessibility-label :toolbar-hamburger-menu})
-
-(defn hamburger-white [handler]
-  (merge (hamburger handler)
-         {:icon-opts {:color :white}
-          :handler handler}))
-
 (defn add [handler]
   {:icon    :icons/add
    :handler handler})

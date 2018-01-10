@@ -8,7 +8,6 @@
                                                                   native-action-button-item]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
-            [status-im.ui.components.drawer.view :as drawer]
             [status-im.ui.components.icons.custom-icons :refer [ion-icon]]
             [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.utils.platform :refer [platform-specific ios? android?]]
@@ -32,7 +31,6 @@
 
 (defn toolbar-view []
   [toolbar/toolbar {}
-   [toolbar/nav-button (act/hamburger drawer/open-drawer!)]
    [toolbar/content-title (label :t/contacts)]
    [toolbar/actions
     (toolbar-actions)]])

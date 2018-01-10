@@ -24,7 +24,7 @@
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {}
-   toolbar/default-nav-back
+   nil
    [toolbar/content-title ""]
    [toolbar/actions
     [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
@@ -219,7 +219,6 @@
 (defview my-profile []
   (letsubs [{:keys [status public-key] :as current-account} [:get-current-account]]
     [react/view styles/profile
-     [status-bar]
      [my-profile-toolbar]
      [network-info]
      [react/scroll-view

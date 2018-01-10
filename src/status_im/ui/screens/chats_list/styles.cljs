@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.chats-list.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as component.styles]
-            [status-im.ui.components.tabs.styles :as tabs-st]))
+  (:require [status-im.ui.components.styles :as component.styles]))
 
 (defn toolbar []
   {:background-color component.styles/color-white})
