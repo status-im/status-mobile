@@ -236,7 +236,6 @@
                                                     (dispatch [:send-current-message]))}
             [react/view {:style               style/send-message-container
                          :accessibility-label :send-message-button}
-             [react/text "Send"]
              [react/icon :arrow_top style/send-message-icon]]]))])))
 
 (defn container []

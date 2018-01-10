@@ -35,7 +35,6 @@
 (def geolocation (when (exists? js/window)
                    js/navigator.geolocation.))
 (def view (get-class "View"))
-(print "!!!! View:" view)
 
 (def status-bar (get-class "View"))
 (def drawer-layout (adapt-class (.-default drawer)))
@@ -48,8 +47,6 @@
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image (get-class "Image"))
-(print "!!!! text-input-class:" text-input-class)
-(print "!!!! Image:" image)
 
 (def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
 (def touchable-highlight-class (get-class "TouchableHighlight"))
@@ -59,14 +56,10 @@
 (def modal (get-class "Modal"))
 (def picker (get-class "Picker"))
 
-(print "----react.cljs 1")
-
 (def pan-responder (.-PanResponder rn-dependencies/react-native))
 (def animated (.-Animated rn-dependencies/react-native))
 (def animated-view (r/adapt-react-class (.-View animated)))
 (def animated-text (r/adapt-react-class (.-Text animated)))
-
-(print "----react.cljs 2")
 
 (def dimensions (.-Dimensions rn-dependencies/react-native))
 (def keyboard (.-Keyboard rn-dependencies/react-native))
@@ -74,8 +67,6 @@
 
 (def slider (get-class "Slider"))
 ;; Accessor methods for React Components
-
-(print "----react.cljs 3")
 
 (defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
   (let [font (get-in platform-specific [:fonts (keyword font)])
@@ -139,8 +130,6 @@
 (defn list-item [component]
   (r/as-element component))
 
-(print "----react.cljs 4")
-
 ;; Image picker
 
 (def image-picker-class rn-dependencies/image-crop-picker)
@@ -159,8 +148,6 @@
 
 (def swiper (adapt-class rn-dependencies/swiper))
 
-(print "----react.cljs 5")
-
 ;; Clipboard
 
 (def sharing
@@ -173,8 +160,6 @@
   (let [clipboard-contents (.getString (.-Clipboard rn-dependencies/react-native))]
     (.then clipboard-contents #(clbk %))))
 
-(print "----react.cljs 6")
-
 
 ;; Emoji
 ;; (def emoji-picker-class rn-dependencies/emoji-picker)
@@ -184,8 +169,6 @@
 ;;  (let [emoji-picker (.-default emoji-picker-class)]
 ;;    (r/adapt-react-class emoji-picker)))
 
-(print "----react.cljs 7")
-
 ;; Autolink
 
 (def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
@@ -194,14 +177,10 @@
   (r/as-element
     [autolink-class (add-font-style :style opts)]))
 
-(print "----react.cljs 8")
-
 ;; HTTP Bridge
 
 (def http-bridge (get-class "View"))
 ;;(def http-bridge rn-dependencies/http-bridge)
-
-(print "----react.cljs 9")
 
 (def splash-screen (get-class "View"))
 

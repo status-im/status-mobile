@@ -167,7 +167,7 @@
                                                            :row                 row
                                                            :index               index
                                                            :last-outgoing?      (= (:message-id last-outgoing-message) (:message-id row))}))
-                ;:renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                 :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
                 :enableEmptySections       true
                 :keyboardShouldPersistTaps (if platform/android? :always :handled)

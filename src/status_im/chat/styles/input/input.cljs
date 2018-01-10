@@ -30,7 +30,8 @@
    :padding-bottom   bottom-anim-margin})
 
 (defstyle input-container-view
-  {:ios {:z-index 1}})
+  {:ios     {:z-index 1}
+   :desktop {:z-index 1}})
 
 (def input-container
   {:flex-direction :row

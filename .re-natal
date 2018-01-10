@@ -17,7 +17,9 @@
     "react-native-linear-gradient",
     "react-native-qrcode",
     "react-native-status",
-    "react-native-autolink"
+    "react-native-autolink",
+    "react-native-invertible-scroll-view",
+    "react-native-drawer-layout"
   ],
   "imageDirs": [
     "resources/images",
