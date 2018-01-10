@@ -26,9 +26,8 @@
    :photos-access-error                   "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
 
    ;;drawer
-   ;;not used in beta
-   ;:switch-users                          "Switch users"
-   ;:current-network                       "Current network"
+   :switch-users                          "Switch users"
+   :current-network                       "Current network"
 
    ;;home
    :home                                  "Home"
