@@ -6,13 +6,13 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.tabs.views :as tabs]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.transactions.styles :as transactions.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]
-            [status-im.utils.money :as money])
+            [status-im.utils.money :as money]
+            [status-im.ui.components.styles :as common.styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn on-delete-transaction
@@ -187,11 +187,21 @@
 
 (def tabs-list
   [{:view-id :transactions-history
-    :content history-tab
-    :screen history-list}
+    :content history-tab}
    {:view-id :unsigned-transactions
-    :content unsigned-tab
-    :screen unsigned-list}])
+    :content unsigned-tab}])
+
+(defn tab [view-id content active?]
+  [react/touchable-highlight {:style    common.styles/flex
+                              :disabled active?
+                              :on-press #(re-frame/dispatch [:navigation-replace view-id])}
+   [react/view {:style (transactions.styles/tab active?)}
+    [content active?]]])
+
+(defn tabs [current-view-id]
+  [react/view {:style transactions.styles/tabs-container}
+   (for [{:keys [content view-id]} tabs-list]
+     ^{:key view-id} [tab view-id content (= view-id current-view-id)])])
 
 (defview transactions []
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]
@@ -200,10 +210,10 @@
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar-view current-tab unsigned-transactions-count filter-data]
-     [tabs/swipable-tabs tabs-list current-tab true
-      {:navigation-event     :navigation-replace
-       :tab-style            transactions.styles/tab
-       :tabs-container-style transactions.styles/tabs-container}]]))
+     [tabs current-tab]
+     (case current-tab
+       :transactions-history [history-list]
+       :unsigned-transactions [unsigned-list])]))
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol

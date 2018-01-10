@@ -1,4 +1,4 @@
-(ns status-im.ui.components.tabs.styles
+(ns status-im.ui.screens.main-tabs.styles
   (:require [status-im.ui.components.styles :as styles]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.styles :refer [defnstyle]]))
@@ -14,14 +14,7 @@
    :border-top-color styles/color-light-gray3})
 
 (def tab-container
-  {:flex            1
-   :height          tab-height
-   :justify-content :center
-   :align-items     :center})
-
-(defnstyle tab [active?]
-  {:flex            1
-   :height          tab-height
+  {:height          tabs-height
    :justify-content :center
    :align-items     :center})
 

@@ -10,7 +10,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
-            [status-im.ui.components.drawer.view :as drawer]
             [status-im.chat.new-chat.styles :as styles]
             [status-im.i18n :as i18n]))
 
@@ -58,16 +57,15 @@
 (defview new-chat []
   (letsubs [contacts [:all-added-group-contacts-filtered]
             params [:get :contacts/click-params]]
-    [drawer/drawer-view
-     [react/view styles/contacts-list-container
-      [new-chat-toolbar]
-      (when contacts
-        [list/flat-list {:style                     styles/contacts-list
-                         :data                      contacts
-                         :render-fn                 contact-list-row
-                         :bounces                   false
-                         :keyboardShouldPersistTaps :always
-                         :header                    (header contacts)
-                         :footer                    [react/view
-                                                     [common/list-footer]
-                                                     [common/bottom-shadow]]}])]]))
+    [react/view styles/contacts-list-container
+     [new-chat-toolbar]
+     (when contacts
+       [list/flat-list {:style                     styles/contacts-list
+                        :data                      contacts
+                        :render-fn                 contact-list-row
+                        :bounces                   false
+                        :keyboardShouldPersistTaps :always
+                        :header                    (header contacts)
+                        :footer                    [react/view
+                                                    [common/list-footer]
+                                                    [common/bottom-shadow]]}])]))

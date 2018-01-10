@@ -10,7 +10,6 @@
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.screens.wallet.assets.styles :as assets.styles]
             [status-im.ui.screens.wallet.main.styles :as main.styles]
-            [status-im.ui.components.tabs.views :as tabs]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.screens.wallet.transactions.views :as transactions]
             [status-im.utils.utils :as utils]
@@ -89,7 +88,8 @@
      [toolbar/toolbar {:style assets.styles/token-toolbar-container}
       toolbar/default-nav-back
       [token-toolbar name symbol icon]]
-     [tabs/swipable-tabs tabs-list current-tab true
-      {:navigation-event     :navigation-replace
-       :tab-style            assets.styles/tab
-       :tabs-container-style assets.styles/tabs-container}]]))
+     ;;(andrey julien) cleanup
+     #_[tabs/swipable-tabs tabs-list current-tab true
+        {:navigation-event     :navigation-replace
+         :tab-style            assets.styles/tab
+         :tabs-container-style assets.styles/tabs-container}]]))

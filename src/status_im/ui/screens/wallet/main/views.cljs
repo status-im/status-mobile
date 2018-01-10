@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.button.view :as btn]
-            [status-im.ui.components.drawer.view :as drawer]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -32,7 +31,7 @@
 
 (defn toolbar-view []
   [toolbar/toolbar {:style wallet.styles/toolbar}
-   [toolbar/nav-button (act/hamburger-white drawer/open-drawer!)]
+   nil
    [toolbar/content-wrapper
     [toolbar-title]]
    [toolbar/actions

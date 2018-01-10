@@ -10,7 +10,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
-            [status-im.ui.components.drawer.view :refer [drawer-view]]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.i18n :as i18n]))
 
@@ -58,23 +57,22 @@
             click-handler [:get :contacts/click-handler]
             action [:get :contacts/click-action]
             params [:get :contacts/click-params]]
-    [drawer-view
-     [react/view {:flex 1}
-      [status-bar {:type :modal-white}]
-      [contact-list-modal-toolbar]
-      [list/flat-list {:style                     st/contacts-list-modal
-                       :data                      contacts
-                       :render-fn                 (render-row click-handler action params)
-                       :header                    (when-not (:hide-actions? params)
-                                                    [react/view
-                                                     [actions-view action click-handler]
-                                                     [common/bottom-shadow]
-                                                     [common/form-title (i18n/label :t/choose-from-contacts)
-                                                      {:count-value (count contacts)}]
-                                                     [common/list-header]])
-                       :footer                    [react/view
-                                                   [common/list-footer]
-                                                   [common/bottom-shadow]]
-                       :enableEmptySections       true
-                       :bounces                   false
-                       :keyboardShouldPersistTaps :always}]]]))
+    [react/view {:flex 1}
+     [status-bar {:type :modal-white}]
+     [contact-list-modal-toolbar]
+     [list/flat-list {:style                     st/contacts-list-modal
+                      :data                      contacts
+                      :render-fn                 (render-row click-handler action params)
+                      :header                    (when-not (:hide-actions? params)
+                                                   [react/view
+                                                    [actions-view action click-handler]
+                                                    [common/bottom-shadow]
+                                                    [common/form-title (i18n/label :t/choose-from-contacts)
+                                                     {:count-value (count contacts)}]
+                                                    [common/list-header]])
+                      :footer                    [react/view
+                                                  [common/list-footer]
+                                                  [common/bottom-shadow]]
+                      :enableEmptySections       true
+                      :bounces                   false
+                      :keyboardShouldPersistTaps :always}]]))

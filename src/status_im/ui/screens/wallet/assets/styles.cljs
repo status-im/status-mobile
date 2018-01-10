@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.assets.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.tabs.styles :as tabs.styles]
+            [status-im.ui.screens.main-tabs.styles :as tabs.styles]
             [status-im.utils.platform :as platform]))
 
 ;; TODO(goranjovic) - the following styles will be removed once reusable components

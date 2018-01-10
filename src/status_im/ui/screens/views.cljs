@@ -15,7 +15,6 @@
             [status-im.chat.new-chat.view :refer [new-chat]]
             [status-im.chat.new-public-chat.view :refer [new-public-chat]]
 
-            [status-im.ui.screens.contacts.contact-list.views :refer [contact-list]]
             [status-im.ui.screens.contacts.contact-list-modal.views :refer [contact-list-modal]]
             [status-im.ui.screens.contacts.new-contact.views :refer [new-contact]]
 
@@ -74,7 +73,7 @@
     (when view-id
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
-                          (:wallet :chat-list :discover :contact-list) main-tabs
+                          (:wallet :chat-list :my-profile) main-tabs
                           :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent
@@ -95,13 +94,11 @@
                           :edit-chat-group-contact-list edit-chat-group-contact-list
                           :new-public-chat new-public-chat
                           :contact-toggle-list contact-toggle-list
-                          :group-contacts contact-list
                           :reorder-groups reorder-groups
                           :new-contact new-contact
                           :qr-scanner qr-scanner
                           :chat chat
                           :profile profile
-                          :my-profile my-profile
                           :edit-my-profile edit-my-profile
                           :discover-all-recent discover-recent/discover-all-recent
                           :discover-all-hashtags discover-popular/discover-all-hashtags

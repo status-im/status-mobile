@@ -1,66 +1,29 @@
 (ns status-im.ui.screens.chats-list.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
+  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.native-action-button :refer [native-action-button]]
-            [status-im.ui.components.drawer.view :as drawer]
-            [status-im.ui.components.styles :refer [color-blue]]
-            [status-im.ui.components.status-bar.view :refer [status-bar]]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as act]
-            [status-im.ui.components.toolbar.styles :as tst]
-            [status-im.ui.components.icons.custom-icons :refer [ion-icon]]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.sync-state.offline :refer [offline-view]]
-            [status-im.ui.components.context-menu :refer [context-menu]]
-            [status-im.ui.components.tabs.styles :refer [tabs-height]]
             [status-im.ui.screens.chats-list.views.inner-item :as inner-item]
-            [status-im.ui.screens.chats-list.styles :as st]
+            [status-im.ui.screens.chats-list.styles :as styles]
             [status-im.i18n :as i18n]
-            [status-im.utils.platform :refer [platform-specific ios?]]
-            [status-im.utils.notifications :as notifications]))
-
-(def android-toolbar-popup-options
-  [{:text (i18n/label :t/edit) :value #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] true])}])
-
-(defn android-toolbar-actions []
-  [(act/search #(re-frame/dispatch [:set-in [:toolbar-search :show] :chat-list]))
-   (act/opts android-toolbar-popup-options)])
-
-(def ios-toolbar-popup-options
-  [{:text (i18n/label :t/edit-chats) :value #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] true])}
-   {:text (i18n/label :t/search-chats) :value #(re-frame/dispatch [:set-in [:toolbar-search :show] :chat-list])}])
-
-(defn ios-toolbar-actions []
-  [(act/opts ios-toolbar-popup-options)
-   (act/add #(re-frame/dispatch [:navigate-to :new-chat]))])
+            [status-im.utils.platform :as platform]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:show-sync-bar? true}
-   [toolbar/nav-button (act/hamburger drawer/open-drawer!)]
-   [toolbar/content-title (i18n/label :t/chats)]
+   nil
+   [toolbar/content-title (i18n/label :t/status)]
    [toolbar/actions
-    (if ios?
-      (ios-toolbar-actions)
-      (android-toolbar-actions))]])
-
-(defn toolbar-edit []
-  [toolbar/toolbar {:show-sync-bar? true}
-   [toolbar/nav-button (act/back #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] false]))]
-   [toolbar/content-title (i18n/label :t/edit-chats)]])
-
-(defview toolbar-search []
-  (letsubs [search-text [:get-in [:toolbar-search :text]]]
-    [toolbar/toolbar-with-search
-     {:show-search?       true
-      :search-text        search-text
-      :search-key         :chat-list
-      :title              (i18n/label :t/chats)
-      :search-placeholder (i18n/label :t/search-for)}]))
+    (when platform/ios?
+      [(toolbar.actions/add #(re-frame/dispatch [:navigate-to :new-chat]))])]])
 
 (defn chats-action-button []
-  [native-action-button {:button-color        color-blue
+  [native-action-button {:button-color        components.styles/color-blue
                          :offset-x            16
                          :offset-y            40
                          :spacing             13
@@ -73,27 +36,22 @@
    [react/view
     [inner-item/chat-list-item-inner-view (assoc chat :chat-id chat-id) edit?]]])
 
-(defview chats-list []
-  (letsubs [chats        [:filtered-chats]
-            edit?        [:get-in [:chat-list-ui-props :edit?]]
-            show-search  [:get-in [:toolbar-search :show]]
-            tabs-hidden? [:tabs-hidden?]]
-    [react/view st/chats-container
-     (cond
-       edit?                      [toolbar-edit]
-       (= show-search :chat-list) [toolbar-search]
-       :else                      [toolbar-view])
-     [list/flat-list {:style           st/list-container
+(views/defview chats-list []
+  (views/letsubs [chats        [:filtered-chats]
+                  edit?        [:get-in [:chat-list-ui-props :edit?]]
+                  show-search  [:get-in [:toolbar-search :show]]
+                  tabs-hidden? [:tabs-hidden?]]
+    [react/view styles/chats-container
+     [toolbar-view]
+     [list/flat-list {:style           styles/list-container
                       :data            chats
                       :render-fn       (fn [chat] [chat-list-item chat edit?])
                       :header          (when-not (empty? chats) list/default-header)
                       :footer          (when-not (empty? chats)
                                          [react/view
-                                          [common/list-footer]
-                                          [common/bottom-shadow]])}]
+                                          [components.common/list-footer]
+                                          [components.common/bottom-shadow]])}]
 
-     (when (and (not edit?)
-                (not= show-search :chat-list)
-                (get-in platform-specific [:chats :action-button?]))
+     (when platform/android?
        [chats-action-button])
      [offline-view]]))
