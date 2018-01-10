@@ -427,7 +427,7 @@
   :open-chat-with-contact
   (fn [_ [_ {:keys [whisper-identity dapp?] :as contact}]]
     {:dispatch-n (concat
-                  [[:navigate-to-clean :chat-list]
+                  [[:navigate-to-clean :home]
                    [:start-chat whisper-identity]]
                   (when-not dapp?
                     [[::send-contact-request contact]]))}))

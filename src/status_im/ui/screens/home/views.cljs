@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.chats-list.views
+(ns status-im.ui.screens.home.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.common.common :as components.common]
@@ -9,8 +9,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.sync-state.offline :refer [offline-view]]
-            [status-im.ui.screens.chats-list.views.inner-item :as inner-item]
-            [status-im.ui.screens.chats-list.styles :as styles]
+            [status-im.ui.screens.home.views.inner-item :as inner-item]
+            [status-im.ui.screens.home.styles :as styles]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 
@@ -22,7 +22,7 @@
     (when platform/ios?
       [(toolbar.actions/add #(re-frame/dispatch [:navigate-to :new-chat]))])]])
 
-(defn chats-action-button []
+(defn home-action-button []
   [native-action-button {:button-color        components.styles/color-blue
                          :offset-x            16
                          :offset-y            40
@@ -36,7 +36,7 @@
    [react/view
     [inner-item/chat-list-item-inner-view (assoc chat :chat-id chat-id) edit?]]])
 
-(views/defview chats-list []
+(views/defview home []
   (views/letsubs [chats        [:filtered-chats]
                   edit?        [:get-in [:chat-list-ui-props :edit?]]
                   show-search  [:get-in [:toolbar-search :show]]
@@ -53,5 +53,5 @@
                                           [components.common/bottom-shadow]])}]
 
      (when platform/android?
-       [chats-action-button])
+       [home-action-button])
      [offline-view]]))

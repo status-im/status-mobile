@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.chats-list.styles
+(ns status-im.ui.screens.home.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.styles :as component.styles]))
 

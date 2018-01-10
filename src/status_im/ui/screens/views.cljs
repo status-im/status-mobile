@@ -73,7 +73,7 @@
     (when view-id
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
-                          (:wallet :chat-list :my-profile) main-tabs
+                          (:home :wallet :my-profile) main-tabs
                           :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent

@@ -48,7 +48,7 @@
 (register-handler
   :leave-group-chat
   ;; todo order of operations tbd
-  (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
+  (after (fn [_ _] (dispatch [:navigation-replace :home])))
   (u/side-effect!
    (fn [{:keys [web3 current-chat-id chats current-public-key]} _]
      (let [{:keys [public-key private-key public?]} (chats current-chat-id)]
@@ -136,7 +136,7 @@
           ::save-public-chat chat
           ::start-watching-group (merge {:group-id topic}
                                         (select-keys db [:web3 :current-public-key]))})
-       {:dispatch-n [[:navigate-to-clean :chat-list]
+       {:dispatch-n [[:navigate-to-clean :home]
                      [:navigate-to-chat topic]]}))))
 
 (reg-fx
@@ -207,7 +207,7 @@
        ::save-chat new-chat
        ::start-listen-group (merge {:new-chat new-chat}
                                    (select-keys db [:web3 :current-public-key]))
-       :dispatch-n [[:navigate-to-clean :chat-list]
+       :dispatch-n [[:navigate-to-clean :home]
                     [:navigate-to-chat (:chat-id new-chat)]]})))
 
 (register-handler-fx

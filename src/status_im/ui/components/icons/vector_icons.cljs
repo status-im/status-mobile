@@ -23,14 +23,7 @@
 (def use-def (get-class "Use"))
 (def defs (get-class "Defs"))
 
-(def icons {;;NOT USED IN MVP
-            ;;:icons/chats               (slurp-svg "./resources/icons/bottom/chats_gray.svg")
-            ;;:icons/chats-active        (slurp-svg "./resources/icons/bottom/chats_active.svg")
-            ;;:icons/contacts            (slurp-svg "./resources/icons/bottom/contacts_gray.svg")
-            ;;:icons/contacts-active     (slurp-svg "./resources/icons/bottom/contacts_active.svg")
-            ;;:icons/discover            (slurp-svg "./resources/icons/bottom/discover_gray.svg")
-            ;;:icons/discover-active     (slurp-svg "./resources/icons/bottom/discover_active.svg")
-            :icons/home                (slurp-svg "./resources/icons/bottom/home_gray.svg")
+(def icons {:icons/home                (slurp-svg "./resources/icons/bottom/home_gray.svg")
             :icons/home-active         (slurp-svg "./resources/icons/bottom/home_blue.svg")
             :icons/profile             (slurp-svg "./resources/icons/bottom/profile_gray.svg")
             :icons/profile-active      (slurp-svg "./resources/icons/bottom/profile_blue.svg")

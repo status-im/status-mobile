@@ -14,7 +14,7 @@
             [status-im.utils.utils :as u]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.contacts.styles :as st]
-            [status-im.ui.screens.chats-list.styles :as chats-list.styles]
+            [status-im.ui.screens.home.styles :as home.styles]
             [status-im.ui.components.styles :refer [color-blue]]))
 
 (def ^:const contacts-limit 5)
@@ -112,7 +112,7 @@
      :buttonColor         :#9b59b6
      :onPress             #(dispatch [:navigate-to :new-contact])}
     [ion-icon {:name  :md-create
-               :style chats-list.styles/create-icon}]]])
+               :style home.styles/create-icon}]]])
 
 (defview contact-groups-list [_]
   (letsubs [contacts       [:get-added-contacts-with-limit contacts-limit]

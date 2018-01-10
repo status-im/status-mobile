@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.chats-list.subs
+(ns status-im.ui.screens.home.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [clojure.string :as str]))
 
@@ -13,7 +13,7 @@
   :<- [:get-in [:toolbar-search :text]]
   :<- [:get-in [:toolbar-search :show]]
   (fn [[chats search-text show-search]]
-    (let [unordered-chats (if (and (= show-search :chat-list) search-text)
+    (let [unordered-chats (if (and (= show-search :home) search-text)
                             (filter #(search-filter search-text (second %))
                                     chats)
                             chats)]

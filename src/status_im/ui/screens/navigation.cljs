@@ -12,7 +12,7 @@
 
 (defn- replace-top-element [stack view-id]
   (let [stack' (if (> 2 (count stack))
-                 (list :chat-list)
+                 (list :home)
                  (pop stack))]
     (conj stack' view-id)))
 
