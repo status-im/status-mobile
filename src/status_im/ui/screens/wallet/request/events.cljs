@@ -20,7 +20,7 @@
   [re-frame/trim-v]
   (fn [{{:wallet/keys [request-transaction]} :db} [{:keys [whisper-identity]}]]
     {:dispatch-n [[:navigate-back]
-                  [:navigate-to-clean :chat-list]
+                  [:navigate-to-clean :home]
                   [:add-chat-loaded-event whisper-identity
                    [::wallet-send-chat-request (some-> request-transaction :amount money/wei->ether str)]]
                   [:start-chat whisper-identity]]}))

@@ -5,31 +5,25 @@
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.components.styles :as common.styles]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.chats-list.views :as chats-list.views]
+            [status-im.ui.screens.home.views :as home.views]
             [status-im.ui.screens.profile.views :as profile.views]
             [status-im.ui.screens.wallet.main.views :as wallet.views]
             [status-im.ui.screens.main-tabs.styles :as styles]
             [re-frame.core :as re-frame]))
 
 (def tabs-list-data
-  {:chat-list
-   {:view-id :chat-list
+  [{:view-id :home
     :content {:title         (i18n/label :t/home)
               :icon-inactive :icons/home
-              :icon-active   :icons/home-active}
-    :screen  chats-list.views/chats-list}
-   :wallet
+              :icon-active   :icons/home-active}}
    {:view-id :wallet
     :content {:title         (i18n/label :t/wallet)
               :icon-inactive :icons/wallet
-              :icon-active   :icons/wallet-active}
-    :screen  wallet.views/wallet}
-   :my-profile
+              :icon-active   :icons/wallet-active}}
    {:view-id :my-profile
     :content {:title         (i18n/label :t/profile)
               :icon-inactive :icons/profile
-              :icon-active   :icons/profile-active}
-    :screen  profile.views/my-profile}})
+              :icon-active   :icons/profile-active}}])
 
 (defn- tab-content [{:keys [title icon-active icon-inactive]}]
   (fn [active?]
@@ -41,7 +35,7 @@
       [react/text {:style (styles/tab-title active?)}
        title]]]))
 
-(def tabs-list (map #(update % :content tab-content) (vals tabs-list-data)))
+(def tabs-list (map #(update % :content tab-content) tabs-list-data))
 
 (defn tab [view-id content active?]
   [react/touchable-highlight {:style    common.styles/flex
@@ -57,9 +51,11 @@
 
 (views/defview main-tabs []
   (views/letsubs [view-id [:get :view-id]]
-    (let [screen (get-in tabs-list-data [view-id :screen])]
-      [react/view common.styles/flex
-       [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet :main)}]
-       [react/view common.styles/main-container
-        [screen]
-        [tabs view-id]]])))
+    [react/view common.styles/flex
+     [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet :main)}]
+     [react/view common.styles/main-container
+      [(case view-id
+         :home home.views/home
+         :wallet wallet.views/wallet
+         :my-profile profile.views/my-profile)]
+      [tabs view-id]]]))

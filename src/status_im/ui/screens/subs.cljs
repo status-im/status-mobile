@@ -3,7 +3,7 @@
             status-im.chat.subs
             status-im.commands.subs
             status-im.ui.screens.accounts.subs
-            status-im.ui.screens.chats-list.subs
+            status-im.ui.screens.home.subs
             status-im.ui.screens.group.chat-settings.subs
             status-im.ui.screens.discover.subs
             status-im.ui.screens.contacts.subs
@@ -39,7 +39,7 @@
   :<- [:get :view-id]
   (fn [[search-mode? chats-edit-mode? contacts-edit-mode? view-id]]
     (or search-mode?
-        (and (= view-id :chat-list) chats-edit-mode?)
+        (and (= view-id :home) chats-edit-mode?)
         (and (= view-id :contact-list) contacts-edit-mode?))))
 
 (reg-sub :network

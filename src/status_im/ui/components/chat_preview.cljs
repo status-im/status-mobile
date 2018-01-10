@@ -1,10 +1,10 @@
 (ns status-im.ui.components.chat-preview
   (:require [status-im.ui.components.react :as components]
-            [status-im.ui.screens.chats-list.styles :as st]
+            [status-im.ui.screens.home.styles :as home.styles]
             [status-im.utils.utils :as utils]))
 
 (def default-attributes
-  {:style           st/last-message-text
+  {:style           home.styles/last-message-text
    :number-of-lines 1})
 
 (defn text [attributes s]

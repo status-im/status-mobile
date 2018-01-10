@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.chats-list.views.inner-item
+(ns status-im.ui.screens.home.views.inner-item
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
@@ -7,7 +7,7 @@
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
             [status-im.ui.components.context-menu :as context-menu]
-            [status-im.ui.screens.chats-list.styles :as st]
+            [status-im.ui.screens.home.styles :as st]
             [status-im.utils.utils :as utils]
             [status-im.commands.utils :as commands-utils]
             [status-im.i18n :as i18n]

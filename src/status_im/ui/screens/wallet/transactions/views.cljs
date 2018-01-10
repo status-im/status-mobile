@@ -211,9 +211,9 @@
      [status-bar/status-bar]
      [toolbar-view current-tab unsigned-transactions-count filter-data]
      [tabs current-tab]
-     (case current-tab
-       :transactions-history [history-list]
-       :unsigned-transactions [unsigned-list])]))
+     [(case current-tab
+        :transactions-history history-list
+        :unsigned-transactions unsigned-list)]]))
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol
