@@ -119,7 +119,7 @@
         (if sending-from-chat?
           ;;SENDING FROM CHAT
           {:db       (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
-           :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}
+           :dispatch-n [[:update-wallet (map :symbol (tokens/tokens-for (ethereum/network->chain-keyword (:network db))))] [:navigate-to-modal :wallet-send-transaction-modal]]}
           ;;SEND SCREEN WAITING SIGNAL
           (let [{:keys [later? password]} (get-in db [:wallet :send-transaction])
                 new-db' (update-in new-db [:wallet :send-transaction] merge sending-db)] ; just update sending state as we are in wallet flow
