@@ -20,7 +20,8 @@
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [clojure.string :as string]
-            [status-im.chat.events.console :as console]))
+            [status-im.chat.events.console :as console]
+            [taoensso.timbre :as log]))
 
 (def window-width (:width (react/get-dimensions "window")))
 
@@ -237,7 +238,7 @@
     (photo from photo-path)))
 
 (defn message-body
-  [{:keys [last-outgoing? message-type same-author? from outgoing] :as message} content]
+  [{:keys [last-outgoing? message-type same-author? from outgoing group-chat] :as message} content]
   [react/view style/group-message-wrapper
    [react/view (style/message-body message)
     [react/view style/message-author
@@ -248,7 +249,8 @@
     [react/view (style/group-message-view message)
      content
      (when last-outgoing?
-       (if (= (keyword message-type) :group-user-message)
+       (if (or (= (keyword message-type) :group-user-message)
+               group-chat)
          [group-message-delivery-status message]
          [message-delivery-status message]))]]])
 
@@ -289,22 +291,24 @@
 
 (defn chat-message [{:keys [outgoing message-id chat-id from current-public-key] :as message}]
   (reagent/create-class
-    {:display-name "chat-message"
+    {:display-name
+     "chat-message"
      :component-did-mount
      ;; send `:seen` signal when we have signed-in user, message not from us and we didn't sent it already
-     #(when (and current-public-key message-id chat-id (not outgoing)
-                 (not (chat.utils/message-seen-by? message current-public-key)))
-        (events-buffer/dispatch [:send-seen! {:chat-id    chat-id
-                                              :from       from
-                                              :me         current-public-key
-                                              :message-id message-id}]))
+     (fn []
+       (when (and current-public-key message-id chat-id (not outgoing)
+                  (not (chat.utils/message-seen-by? message current-public-key)))
+         (events-buffer/dispatch [:send-seen! {:chat-id    chat-id
+                                               :from       from
+                                               :me         current-public-key
+                                               :message-id message-id}])))
      :reagent-render
      (fn [{:keys [outgoing group-chat content-type content] :as message}]
        [message-container message
-        [react/touchable-highlight {:on-press #(when platform/ios?
-                                                 (re-frame/dispatch [:set-chat-ui-props
-                                                                     {:show-emoji? false}])
-                                                 (react/dismiss-keyboard!))
+        [react/touchable-highlight {:on-press      #(when platform/ios?
+                                                      (re-frame/dispatch [:set-chat-ui-props
+                                                                          {:show-emoji? false}])
+                                                      (react/dismiss-keyboard!))
                                     :on-long-press #(cond (= content-type constants/text-content-type)
                                                           (list-selection/share content (i18n/label :t/message))
                                                           (and (= content-type constants/content-type-command)

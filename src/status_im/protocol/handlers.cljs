@@ -17,7 +17,7 @@
             [status-im.protocol.web3.keys :as web3.keys]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.events-buffer :as events-buffer]
-            [taoensso.timbre :as log :refer-macros [debug]]
+            [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
             [status-im.utils.web3-provider :as web3-provider]
@@ -477,7 +477,7 @@
                          :update-keys            {:dispatch [:update-keys-received message]}
                          :online                 {:dispatch [:contact-online-received message]} 
                          nil)]
-          (when (nil? route-fx) (debug "Unknown message type" type))
+          (when (nil? route-fx) (log/debug "Unknown message type" type))
           (cache/add! processed-message)
           (merge
             {::save-processed-messages processed-message}

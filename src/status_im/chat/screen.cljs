@@ -96,9 +96,10 @@
             current-public-key [:get-current-public-key]]
     [list/flat-list {:data                      messages
                      :render-fn                 (fn [{:keys [message-id] :as message}]
-                                                  ^{:key message-id} [message-row {:group-chat         group-chat
-                                                                                   :current-public-key current-public-key
-                                                                                   :row                message}])
+                                                  ^{:key message-id}
+                                                  [message-row {:group-chat         group-chat
+                                                                :current-public-key current-public-key
+                                                                :row                message}])
                      :inverted                  true
                      :onEndReached              #(re-frame/dispatch [:load-more-messages])
                      :enableEmptySections       true

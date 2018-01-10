@@ -57,7 +57,7 @@
       :callback (fn [jail-response]
                   (doseq [event (if callback-events-creator
                                   (callback-events-creator jail-response)
-                                  [[:received-bot-response
+                                  [[:chat-received-message/bot-response
                                     {:chat-id chat-id}
                                     jail-response]])
                           :when event]
@@ -92,8 +92,9 @@
          (dissoc :callback-events-creator)
          (assoc :callback
                 (fn [jail-response]
-                  (doseq [event (callback-events-creator jail-response)]
-                    (re-frame/dispatch event))))))))
+                  (when callback-events-creator
+                    (doseq [event (callback-events-creator jail-response)]
+                      (re-frame/dispatch event)))))))))
 
 (re-frame/reg-fx
   :call-jail-function
@@ -348,9 +349,9 @@
       "local-storage" (re-frame/dispatch [:set-local-storage {:chat-id chat_id
                                                               :data    data}])
       "show-suggestions" (re-frame/dispatch [:show-suggestions-from-jail {:chat-id chat_id
-                                                                          :markup  data}])
-      "send-message" (re-frame/dispatch [:send-message-from-jail {:chat-id chat_id
-                                                                  :message data}])
+                                                                 :markup  data}])
+      "send-message" (re-frame/dispatch [:chat-send-message/from-jail {:chat-id chat_id
+                                                                       :message data}])
       "handler-result" (let [orig-params (:origParams data)]
                          ;; TODO(janherich): figure out and fix chat_id from event
                          (re-frame/dispatch [:command-handler! (:chat-id orig-params)
