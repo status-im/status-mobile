@@ -59,7 +59,7 @@
    [react/text {:style styles/label}
     (i18n/label :t/wallet-asset)]
    [react/view styles/asset-container
-    [react/text
+    [react/text {:style styles/asset-text}
      (name symbol)]]])
 
 (defn- type->handler [k]
