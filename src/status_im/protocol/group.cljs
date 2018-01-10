@@ -137,7 +137,8 @@
     (fn [key-id]
       (f/add-filter!
         web3
-        (if config/offline-inbox-enabled?
+        (if (and config/offline-inbox-enabled?
+                 config/offline-inbox-many-enabled?)
           {:topics   [f/status-topic]
            :key      key-id
            :allowP2P true
