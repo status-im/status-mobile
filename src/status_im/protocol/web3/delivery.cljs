@@ -1,6 +1,6 @@
 (ns status-im.protocol.web3.delivery
-  (:require-macros [cljs.core.async.macros :refer [go-loop go]])
-  (:require [cljs.core.async :refer [<! timeout]]
+  (:require-macros [cljs.core.async.macros :as async])
+  (:require [cljs.core.async :as async]
             [status-im.protocol.web3.transport :as t]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
@@ -53,16 +53,11 @@
 (defonce pending-message-callback (atom nil))
 (defonce recipient->pending-message (atom {}))
 
-(defn set-pending-mesage-callback!
-  [callback]
-  (reset! pending-message-callback callback))
+(def ^:private pending-message-queue (async/chan 100))
 
-(defn add-pending-message!
-  [web3 {:keys [type message-id requires-ack? to ack?] :as message}]
-  {:pre [(valid? :protocol/message message)]}
-  (go
-    (debug :add-pending-message! message)
-    ;; encryption can take some time, better to run asynchronously
+(async/go-loop [[web3 {:keys [type message-id requires-ack? to ack?] :as message}]
+                (async/<! pending-message-queue)]
+  (when message
     (prepare-message
       web3 message
       (fn [message']
@@ -82,7 +77,19 @@
             (swap! messages assoc-in [web3 message-id to] pending-message)
             (when to
               (swap! recipient->pending-message
-                     update to set/union #{[web3 message-id to]}))))))))
+                     update to set/union #{[web3 message-id to]}))))))
+    (recur (async/<! pending-message-queue))))
+
+(defn set-pending-mesage-callback!
+  [callback]
+  (reset! pending-message-callback callback))
+
+(defn add-pending-message!
+  [web3 message]
+  {:pre [(valid? :protocol/message message)]} 
+  (debug :add-pending-message! message)
+    ;; encryption can take some time, better to run asynchronously
+    (async/put! pending-message-queue [web3 message]))
 
 (s/def :delivery/pending-message
   (s/keys :req-un [:message/sig :message/to :shh/payload :payload/ack? ::id
@@ -228,26 +235,25 @@
     (reset! loop-state stop?)
     ;; go go!!!
     (debug :init-loop)
-    (go-loop [_ nil]
+    (async/go-loop [_ nil]
       (doseq [[_ messages] (@messages web3)]
         (doseq [[_ {:keys [id message to type] :as data}] messages]
-          ;; check each message asynchronously
-          (go
-            (when (should-be-retransmitted? options data)
-              (try
-                (let [message' (check-ttl message type ttl-config default-ttl)
-                      callback (delivery-callback web3 post-error-callback data message')]
-                  (t/post-message! web3 message' callback))
-                (catch :default err
-                  (log/error :post-message-error err))
-                (finally
-                  (attempt-was-made! web3 id to)))))))
+          ;; check each message asynchronously 
+          (when (should-be-retransmitted? options data)
+            (try
+              (let [message' (check-ttl message type ttl-config default-ttl)
+                    callback (delivery-callback web3 post-error-callback data message')]
+                (t/post-message! web3 message' callback))
+              (catch :default err
+                (log/error :post-message-error err))
+              (finally
+                (attempt-was-made! web3 id to))))))
       (when-not @stop?
-        (recur (<! (timeout delivery-loop-ms-interval)))))
-    (go-loop [_ nil]
+        (recur (async/<! (async/timeout delivery-loop-ms-interval)))))
+    (async/go-loop [_ nil]
       (when-not @stop?
         (online-message)
-        (recur (<! (timeout (* 1000 send-online-s-interval))))))))
+        (recur (async/<! (async/timeout (* 1000 send-online-s-interval))))))))
 
 (defn reset-pending-messages! [to]
   (doseq [key (@recipient->pending-message to)]
