@@ -108,8 +108,8 @@
                          :symbol     symbol
                          :value      (money/bignumber (or value 0))
                          :data       data
-                         :gas        (money/to-decimal gas)
-                         :gas-price  (money/to-decimal gasPrice)
+                         :gas        (money/bignumber (money/to-decimal gas))
+                         :gas-price  (money/bignumber (money/to-decimal gasPrice))
                          :timestamp  now
                          :message-id message_id}
             sending-from-chat? (not (get-in db [:wallet :send-transaction :waiting-signal?]))

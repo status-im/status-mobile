@@ -21,11 +21,8 @@
     db
     (update db :wallet dissoc :request-transaction)))
 
-(defn- dissoc-transaction-details [m]
-  (apply dissoc m (apply disj (set (keys m)) (keys db/transaction-send-default))))
-
 (defmethod navigation/preload-data! :wallet-send-transaction
   [db [event]]
   (if (= event :navigate-back)
     db
-    (update-in db [:wallet :send-transaction] dissoc-transaction-details)))
+    (assoc-in db [:wallet :send-transaction] db/transaction-send-default)))
