@@ -34,7 +34,8 @@
                                            (.objects "message")
                                            (.filtered (str "message-id = \"intro-status\""))
                                            (aget 0))]
-    (log/debug "v19 Removing console intro message " (pr-str console-intro-message))))
+    (log/debug "v19 Removing console intro message " (pr-str console-intro-message))
+    (.delete new-realm console-intro-message)))
 
 (defn remove-contact! [new-realm whisper-identity]
   (when-let [contact (some-> new-realm
@@ -102,24 +103,46 @@
                     (aset object "content" (pr-str new-content)))))))
 
 (defn update-message-statuses [new-realm]
-  (some-> new-realm
-          (.objects "message")
-          (.map (fn [msg _ _]
-                  (let [message-id (aget msg "message-id")
-                        chat-id    (aget msg "chat-id")
-                        from       (aget msg "from")
-                        msg-status (aget msg "message-status")
-                        statuses   (aget msg "user-statuses")]
-                    (when statuses
-                      (.map statuses (fn [status _ _]
-                                       (aset status "status-id" (str message-id "-" from))
-                                       (aset status "message-id" message-id)
-                                       (aset status "chat-id"    chat-id)))
-                      (.push statuses (clj->js {"status-id"        (str message-id "-anonymous")
-                                                "message-id"       message-id
-                                                "chat-id"          chat-id
-                                                "status"           (or msg-status "received")
-                                                "whisper-identity" (or from "anonymous")}))))))))
+  (let [status-ids (atom #{})]
+    (some-> new-realm
+            (.objects "message")
+            (.map (fn [msg _ _]
+                    (let [message-id (aget msg "message-id")
+                          chat-id    (aget msg "chat-id")
+                          from       (aget msg "from")
+                          msg-status (aget msg "message-status")
+                          statuses   (aget msg "user-statuses")]
+                      (when statuses
+                        (.map statuses (fn [status _ _]
+                                         (let [status-id (str message-id "-" from)]
+                                           (if (@status-ids status-id)
+                                             (.delete new-realm status)
+                                             (do
+                                               (swap! status-ids conj status-id)
+                                               (aset status "status-id"  status-id)
+                                               (aset status "message-id" message-id)
+                                               (aset status "chat-id"    chat-id))))))
+                        (let [sender        (or from "anonymous")
+                              sender-status (str message-id "-" sender)
+                              new-status    (or msg-status (if (= "console" chat-id)
+                                                             "seen"
+                                                             "received"))]
+                          (when-not (@status-ids sender-status)
+                            (.push statuses (clj->js {"status-id"        sender-status
+                                                      "message-id"       message-id
+                                                      "chat-id"          chat-id
+                                                      "status"           new-status
+                                                      "whisper-identity" sender})))))))))))
+
+(defn delete-orphaned-statuses [new-realm]
+  (let [id-seq (atom 0)]
+    (some-> new-realm
+            (.objects "user-status")
+            (.map (fn [status _ _]
+                    ;; orphaned statues, status-id must be set to some unique value, as realm complains when they are deleted
+                    (when (clojure.string/blank? (aget status "status-id"))
+                      (log/debug "Setting unique id for orphaned status")
+                      (aset status "status-id" (str (swap! id-seq inc) "-deleted"))))))))
 
 (defn migration [old-realm new-realm]
   (log/debug "migrating v19 account database: " old-realm new-realm)
@@ -129,4 +152,5 @@
   (update-commands (juxt :bot :command) owner-command->new-props new-realm "command")
   (update-commands (juxt :command) console-requests->new-props new-realm "command-request")
   (update-commands (juxt :command (comp count :prefill)) transactor-requests->new-props new-realm "command-request")
-  (update-message-statuses new-realm))
+  (update-message-statuses new-realm)
+  (delete-orphaned-statuses new-realm))

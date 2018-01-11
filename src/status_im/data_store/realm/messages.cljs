@@ -64,4 +64,6 @@
   [chat-id]
   (let [current-realm @realm/account-realm]
     (realm/delete current-realm
-                  (realm/get-by-field current-realm :message :chat-id chat-id))))
+                  (realm/get-by-field current-realm :message :chat-id chat-id))
+    (realm/delete current-realm
+                  (realm/get-by-field current-realm :user-status :chat-id chat-id))))
