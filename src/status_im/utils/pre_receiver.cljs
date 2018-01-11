@@ -8,10 +8,6 @@
 (defn- add-message-mock [{:keys [id clock-value] :as msg}]
   (log/debug "add-message-mock:" id clock-value))
 
-(defn- delay-message [msg out ms]
-  (async/go (async/<! (async/timeout ms))
-            (async/put! out msg)))
-
 (defn- earliest-clock-value-seen? [seen id clock-value]
   (->> seen
        (filter (fn [[_ x]] (= x id)))
@@ -30,7 +26,8 @@
     (async/go-loop []
       (let [{:keys [id clock-value] :as msg} (async/<! in-ch)]
         (swap! seen conj [clock-value id])
-        (delay-message msg mature-ch delay-ms))
+        (async/<! (async/timeout ms))
+        (async/put! mature-ch msg))
       (recur))
     (async/go-loop []
       (let [{:keys [id clock-value] :as msg} (async/<! mature-ch)]
