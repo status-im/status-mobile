@@ -407,7 +407,8 @@ function handleSend(groupChat, params, context) {
     var gasPrice = calculateGasPrice(params["bot-db"]["sliderValue"]);
     var data = {
         from: context.from, 
-        value: val
+        value: val,
+        gas: web3.toBigNumber(21000)
     };
 
     if (groupChat) {
