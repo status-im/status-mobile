@@ -16,54 +16,26 @@
    :address          nil
    :name             "Browse"
 
-   :global-command
-                     {
-                      :description         "Launch the browser"
-                      :sequential-params   false
-                      :color               "#ffa500"
-                      :name                "global"
-                      :params
-                                           {
-                                            :0
-                                            {
-                                             :name        "url"
-                                             :type        "text"
-                                             :placeholder "URL"}}
-                      :icon                nil
-                      :title               "Browser"
-                      :has-handler         false
-                      :fullscreen          true
-                      :suggestions-trigger "on-change"}
+   :command          { 247 { "browse" {:description         "Launch the browser"
+                                       :bot                 "browse"
+                                       :color               "#ffa500"
+                                       :name                "global"
+                                       :params
+                                       {:0 {:name        "url"
+                                            :type        "text"
+                                            :placeholder "URL"}}
+                                       :icon                nil
+                                       :title               "Browser"
+                                       :has-handler         false
+                                       :fullscreen          true
+                                       :suggestions-trigger "on-change"}}}
    :dapp-url         nil
    :dapp-hash        nil
-
-   :commands
-                     {
-                      :location
-                      {
-                       :description         "Share your location"
-                       :sequential-params   true
-                       :color               nil
-                       :name                "location"
-
-                       :params
-                                            {
-                                             :0
-                                             {
-                                              :name        "address"
-                                              :type        "text"
-                                              :placeholder "address"}}
-                       :icon                nil
-                       :title               "Location"
-                       :has-handler         false
-                       :fullscreen          true
-                       :owner-id            "browse"
-                       :suggestions-trigger "on-change"}}
    :photo-path       nil
+   :description      "browser contact"
    :debug?           false
    :status           nil
    :bot-url          "local://browse-bot"
-   :responses        {}
    :pending?         false
    :whisper-identity "browse"
    :last-online      0
@@ -71,27 +43,6 @@
    :unremovable?     true
    :private-key      nil
    :public-key       nil})
-
-(def browse-global-commands
-  {:browse
-   {
-    :description         "Launch the browser"
-    :bot                 "browse"
-    :color               "#ffa500"
-    :name                "global"
-    :params
-                         [
-                          {
-                           :name        "url"
-                           :placeholder "URL"
-                           :type        "text"}]
-    :type                :command
-    :title               "Browser"
-    :sequential-params   false
-    :icon                nil
-    :has-handler         false
-    :fullscreen          true
-    :suggestions-trigger "on-change"}})
 
 (def test-contact-group
   {:group-id "1501682106404-685e041e-38e7-593e-b42c-fb4cabd7faa4"
@@ -118,24 +69,45 @@
               {:identity "Commiteth"}]
    :pending? false})
 
-(def wallet-contact
+(def demo-bot-contact
   {:address nil
-   :name "Wallet"
-   :global-command nil
+   :name "Demo bot"
+   :description nil
+   :hide-contact? false
    :dapp-hash nil
-   :photo-path "icon_wallet_avatar"
+   :photo-path nil
    :dapp-url nil
-   :bot-url nil
-   :whisper-identity "wallet"
+   :bot-url "local://demo-bot"
+   :whisper-identity "demo-bot"
    :dapp? true
-   :pending? true
+   :pending? false
+   :unremovable? false
+   :public-key nil})
+
+(def browse-default-contact
+  {:address nil
+   :name "Browse"
+   :description nil
+   :hide-contact? true
+   :dapp-hash nil
+   :photo-path nil
+   :dapp-url nil
+   :bot-url "local://browse-bot"
+   :whisper-identity "browse"
+   :pending? false
+   :dapp? true
    :unremovable? true
    :public-key nil})
 
-(def contacts-browse-wallet
-  {"browse" browse-contact-from-realm-db
-   "wallet" wallet-contact})
-
+(def console-contact
+  {:whisper-identity "console"
+   :name             "Console"
+   :photo-path       "console"
+   :dapp?            true
+   :unremovable?     true
+   :bot-url          "local://console-bot"
+   :status           "intro-status"
+   :pending?         false})
 
 (defn test-fixtures []
   (rf/reg-fx ::events/init-store #())
@@ -158,6 +130,11 @@
       (assoc coeffects :all-contacts [browse-contact-from-realm-db])))
 
   (rf/reg-cofx
+    :get-local-storage-data
+    (fn [cofx]
+      (assoc cofx :get-local-storage-data (constantly nil))))
+
+  (rf/reg-cofx
     ::group-events/get-all-contact-groups
     (fn [coeffects _]
       (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
@@ -166,10 +143,9 @@
   (rf/reg-cofx
     ::contacts-events/get-default-contacts-and-groups
     (fn [coeffects _]
-      (assoc coeffects :default-contacts (update (select-keys js-res/default-contacts [:wallet])
-                                                 :wallet
-                                                 dissoc :add-chat? :bot-url)
-                       :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
+      (assoc coeffects
+             :default-contacts (select-keys js-res/default-contacts [:browse :demo-bot])
+             :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
 
 (deftest contacts-events
   "load-contacts
@@ -182,7 +158,6 @@
    hide-contact (update-contact ;TODO :account-update-keys)
    add-contact-handler (add-pending-contact, status-im.contacts.events/add-new-contact
                         status-im.contacts.events/send-contact-request ;TODO :discoveries-send-portions)
-
 
    create-new-contact-group
    set-contact-group-name
@@ -199,19 +174,16 @@
     (rf/dispatch [:initialize-db])
 
     (let [contacts        (rf/subscribe [:get-contacts])
-          global-commands (rf/subscribe [:get :global-commands])
           contact-groups  (rf/subscribe [:get-contact-groups])]
 
       (testing ":load-contacts event"
 
         ;;Assert the initial state
         (is (and (map? @contacts) (empty? @contacts)))
-        (is (nil? @global-commands))
 
         (rf/dispatch [:load-contacts])
 
-        (is (= {"browse" browse-contact-from-realm-db} @contacts))
-        (is (= browse-global-commands @global-commands)))
+        (is (= {"browse" browse-contact-from-realm-db} @contacts)))
 
       (testing ":load-contact-groups event"
 
@@ -240,10 +212,17 @@
                 (:group-id test-contact-group) test-contact-group}
                @contact-groups))
 
-        (is (= contacts-browse-wallet
-               @contacts)))
+        (testing "it adds a default contact"
+          (is (= demo-bot-contact (get @contacts "demo-bot"))))
 
+        (testing "it replaces existing contacts"
+          (is (= browse-default-contact (get @contacts "browse"))))
 
+        (testing "it adds the console bot"
+          (is (= console-contact (get @contacts "console"))))
+
+        (testing "it does not add any other contact"
+          (is (= 3 (count (keys @contacts))))))
 
       (let [new-contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74"
             new-contact-address "5392ccb49f2e9fef8b8068b3e3b5ba6c020a9aca"
@@ -265,10 +244,14 @@
 
           (rf/dispatch [:add-contact-handler new-contact-public-key])
 
-          (is (= new-contact (assoc @contact :photo-path "" :name "")))
+          (testing "it returns the new contact from the contact-by-identity sub"
+            (is (= new-contact (assoc @contact :photo-path "" :name ""))))
 
-          (is (= (assoc contacts-browse-wallet new-contact-public-key new-contact)
-                 (update @contacts new-contact-public-key assoc :photo-path "" :name ""))))
+          (testing "it adds the new contact to the list of contacts"
+            (is (= new-contact
+                   (-> @contacts
+                       (get new-contact-public-key)
+                       (assoc :photo-path "" :name ""))))))
 
         (testing ":contact-request-received event"
 
@@ -279,23 +262,24 @@
           ;;TODO :update-chat!
           (rf/reg-event-db :update-chat! (fn [db _] db))
 
-          (let [recieved-contact {:name "test"
+          (let [received-contact {:name "test"
                                   :profile-image ""
                                   :address new-contact-address
                                   :status "test status"
                                   :fcm-token "0xwhatever"}
-                recieved-contact' (merge new-contact
-                                         (dissoc recieved-contact :profile-image)
+                received-contact' (merge new-contact
+                                         (dissoc received-contact :profile-image)
                                          {:public-key new-contact-public-key
                                           :private-key ""})]
 
             (rf/dispatch [:contact-request-received {:from new-contact-public-key
-                                                     :payload {:contact recieved-contact
+                                                     :payload {:contact received-contact
                                                                :keypair {:public new-contact-public-key
                                                                          :private ""}}}])
 
-            (is (= (assoc contacts-browse-wallet new-contact-public-key recieved-contact')
-                   @contacts))
+            (testing "it adds the new contact to the list of contacts"
+              (is (= received-contact'
+                     (get @contacts new-contact-public-key))))
 
             (testing ":contact-update-received event"
 
@@ -304,9 +288,10 @@
               ;; :update-contact!
               ;;TODO :update-chat!
               (let [timestamp (datetime/now-ms)
-                    recieved-contact'' (assoc recieved-contact' :last-updated timestamp
-                                                                :status "new status"
-                                                                :name "new name")]
+                    received-contact'' (assoc received-contact'
+                                              :last-updated timestamp
+                                              :status "new status"
+                                              :name "new name")]
 
                 (rf/dispatch [:contact-update-received {:from new-contact-public-key
                                                         :payload {:content {:profile {:profile-image ""
@@ -314,8 +299,9 @@
                                                                                       :name "new name"}}
                                                                   :timestamp timestamp}}])
 
-                (is (= (assoc contacts-browse-wallet new-contact-public-key recieved-contact'')
-                       @contacts))
+                (testing "it updates the contact and set the :last-updated key"
+                  (is (= received-contact''
+                         (get @contacts new-contact-public-key))))
 
                 (testing ":hide-contact event"
 
@@ -327,9 +313,9 @@
 
                   (rf/dispatch [:hide-contact @contact])
 
-                  (is (= (assoc contacts-browse-wallet new-contact-public-key (assoc recieved-contact''
-                                                                                :pending? true))
-                         @contacts)))
+                  (testing "it sets the pending? flag to true"
+                    (is (= (assoc received-contact'' :pending? true)
+                           (get @contacts new-contact-public-key)))))
 
                 (testing ":add-contact-handler event - :add-pending-contact"
 
@@ -343,22 +329,22 @@
 
                   (rf/dispatch [:add-contact-handler new-contact-public-key])
 
-                  (is (= (assoc contacts-browse-wallet new-contact-public-key (assoc recieved-contact''
-                                                                                :pending? false))
-                         @contacts)))
+                  (testing "it sets the pending? flag to false"
+                    (is (= (assoc received-contact'' :pending? false)
+                           (get @contacts new-contact-public-key)))))
 
                 (testing ":create-new-contact-group event"
 
                   (let [new-group-name "new group"]
 
                     (rf/dispatch [:select-contact new-contact-public-key])
-                    (rf/dispatch [:select-contact "wallet"])
+                    (rf/dispatch [:select-contact "demo-bot"])
                     (rf/dispatch [:select-contact "browse"])
                     (rf/dispatch [:deselect-contact "browse"])
 
                     (rf/dispatch [:create-new-contact-group new-group-name])
 
-                    (rf/dispatch [:deselect-contact "wallet"])
+                    (rf/dispatch [:deselect-contact "demo-bot"])
                     (rf/dispatch [:deselect-contact new-contact-public-key])
 
                     (let [new-group-id (->> @contact-groups
@@ -371,7 +357,7 @@
                                      :order       2
                                      :timestamp   0
                                      :contacts   [{:identity new-contact-public-key}
-                                                  {:identity "wallet"}]}
+                                                  {:identity "demo-bot"}]}
                           groups-with-new-group {new-group-id new-group
                                                  "dapps" dapps-contact-group
                                                  (:group-id test-contact-group) test-contact-group}]
@@ -385,8 +371,9 @@
                         (testing ":set-contact-group-name event"
 
                           (rf/reg-event-db ::prepare-group-name
-                                           (fn [db _] (assoc db :new-chat-name "new group name"
-                                                                :group/contact-group-id new-group-id)))
+                                           (fn [db _] (assoc db
+                                                             :new-chat-name "new group name"
+                                                             :group/contact-group-id new-group-id)))
 
                           (rf/dispatch [::prepare-group-name])
                           (rf/dispatch [:set-contact-group-name])
@@ -402,10 +389,10 @@
                             (rf/reg-event-db ::prepare-groups-order
                                              (fn [db _]
                                                (assoc db :group/groups-order
-                                                         (->> (vals (:group/contact-groups db))
-                                                              (remove :pending?)
-                                                              (sort-by :order >)
-                                                              (map :group-id)))))
+                                                      (->> (vals (:group/contact-groups db))
+                                                           (remove :pending?)
+                                                           (sort-by :order >)
+                                                           (map :group-id)))))
 
                             (rf/dispatch [::prepare-groups-order])
                             (rf/dispatch [:change-contact-group-order 1 0])
@@ -420,7 +407,7 @@
                             (rf/dispatch [:deselect-contact "browse"])
 
                             (is (= (update groups-with-new-group'' new-group-id assoc :contacts [{:identity new-contact-public-key}
-                                                                                                 {:identity "wallet"}
+                                                                                                 {:identity "demo-bot"}
                                                                                                  {:identity "browse"}])
                                    @contact-groups)))
 
@@ -436,7 +423,7 @@
                             (rf/dispatch [:add-contacts-to-group new-group-id ["browse"]])
 
                             (is (= (update groups-with-new-group'' new-group-id assoc :contacts [{:identity new-contact-public-key}
-                                                                                                 {:identity "wallet"}
+                                                                                                 {:identity "demo-bot"}
                                                                                                  {:identity "browse"}])
                                    @contact-groups))
 
