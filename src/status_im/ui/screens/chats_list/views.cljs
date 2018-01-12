@@ -85,7 +85,8 @@
        :else                      [toolbar-view])
      [list/flat-list {:style           st/list-container
                       :data            chats
-                      :render-fn       (fn [chat] [chat-list-item chat edit?])
+                      :render-fn       (fn [[chat-id :as chat]]
+                                         ^{:key chat-id} [chat-list-item chat edit?])
                       :header          (when-not (empty? chats) list/default-header)
                       :footer          (when-not (empty? chats)
                                          [react/view
