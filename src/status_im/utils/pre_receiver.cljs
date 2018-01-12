@@ -24,16 +24,16 @@
         mature-ch (async/chan)
         seen      (atom #{})]
     (async/go-loop []
-      (let [{:keys [id clock-value] :as msg} (async/<! in-ch)]
-        (swap! seen conj [clock-value id])
+      (let [{:keys [message-id clock-value] :as msg} (async/<! in-ch)]
+        (swap! seen conj [clock-value message-id])
         (async/<! (async/timeout delay-ms))
         (async/put! mature-ch msg))
       (recur))
     (async/go-loop []
-      (let [{:keys [id clock-value] :as msg} (async/<! mature-ch)]
+      (let [{:keys [message-id clock-value] :as msg} (async/<! mature-ch)]
         (if reorder?
-          (if (earliest-clock-value-seen? @seen id clock-value)
-            (do (swap! seen disj [clock-value id])
+          (if (earliest-clock-value-seen? @seen message-id clock-value)
+            (do (swap! seen disj [clock-value message-id])
                 (add-fn msg))
             (async/put! mature-ch msg))
           (add-fn msg)))
