@@ -36,6 +36,6 @@
             (do (swap! seen disj [clock-value id])
                 (add-fn msg))
             (async/put! mature-ch msg))
-          (add-fn msg))
-        (recur)))
+          (add-fn msg)))
+      (recur))
     in-ch))
