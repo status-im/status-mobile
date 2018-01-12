@@ -1,5 +1,7 @@
-(ns status-im.chat.handlers 
-  (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]] 
+(ns status-im.chat.handlers
+  (:require-macros [cljs.core.async.macros :as am])
+  (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]]
+            [cljs.core.async :as a]
             [clojure.string :as string]
             [status-im.ui.components.styles :refer [default-chat-color]]
             [status-im.chat.constants :as chat-consts]
