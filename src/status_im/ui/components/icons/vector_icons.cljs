@@ -50,6 +50,7 @@
             :icons/fullscreen          (slurp-svg "./resources/icons/fullscreen.svg")
             :icons/group-big           (slurp-svg "./resources/icons/group_big.svg")
             :icons/group-chat          (slurp-svg "./resources/icons/group_chat.svg")
+            :icons/chats               (slurp-svg "./resources/icons/chats.svg")
             :icons/hamburger           (slurp-svg "./resources/icons/hamburger.svg")
             :icons/hidden              (slurp-svg "./resources/icons/hidden.svg")
             :icons/mic                 (slurp-svg "./resources/icons/mic.svg")
