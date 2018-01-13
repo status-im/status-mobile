@@ -63,7 +63,7 @@ node ('macos1'){
     }
 
     stage('Deploy (Android)') {
-      def artifact_dir = pwd() + '/android/app/build/outputs/apk/'
+      def artifact_dir = pwd() + '/android/app/build/outputs/apk/release/'
       println (artifact_dir + 'app-release.apk')
       sh ('ls -la ' + artifact_dir)
       def artifact = (artifact_dir + 'app-release.apk')
