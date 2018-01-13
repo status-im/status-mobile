@@ -27,6 +27,7 @@
 
    ;;drawer
    :switch-users                          "Switch users"
+   :logout                                "Logout"
    :current-network                       "Current network"
 
    ;;home
