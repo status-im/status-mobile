@@ -124,6 +124,8 @@
   (rf/reg-fx ::group-events/save-contact-group-property #())
   (rf/reg-fx ::group-events/add-contacts-to-contact-group #())
 
+  (rf/reg-fx :save-chat #())
+
   (rf/reg-cofx
     ::contacts-events/get-all-contacts
     (fn [coeffects _]
@@ -152,7 +154,7 @@
    load-contact-groups
    load-default-contacts (add-contact-groups, add-contacts, add-contacts-to-group ;TODO add-chat, load-commands!)
    add-contact-handler (add-new-contact-and-open-chat, status-im.contacts.events/add-new-contact,
-                        status-im.contacts.events/send-contact-request ;TODO start-chat)
+                        status-im.contacts.events/send-contact-request, status-im.chat.events.start-chat)
    contact-request-received (update-contact, watch-contact ;TODO :update-chat!)
    contact-update-received (update-contact ;TODO :update-chat!)
    hide-contact (update-contact ;TODO :account-update-keys)
@@ -174,7 +176,8 @@
     (rf/dispatch [:initialize-db])
 
     (let [contacts        (rf/subscribe [:get-contacts])
-          contact-groups  (rf/subscribe [:get-contact-groups])]
+          contact-groups  (rf/subscribe [:get-contact-groups])
+          view-id         (rf/subscribe [:get :view-id])]
 
       (testing ":load-contacts event"
 
@@ -230,17 +233,20 @@
                          :photo-path ""
                          :whisper-identity new-contact-public-key
                          :address new-contact-address}
-            contact (rf/subscribe [:contact-by-identity new-contact-public-key])]
+            contact (rf/subscribe [:contact-by-identity new-contact-public-key])
+            current-chat-id (rf/subscribe [:get-current-chat-id])]
 
         (testing ":add-contact-handler event - new contact"
+
+          (rf/dispatch [:set :view-id nil])
+          (rf/dispatch [:set :current-chat-id nil])
 
           ;; :add-contact-handler event dispatches next 4 events for new contact
           ;;
           ;; :add-new-contact-and-open-chat
           ;; :status-im.contacts.events/add-new-contact
           ;; :status-im.contacts.events/send-contact-request
-          ;;TODO :start-chat
-          (rf/reg-event-db :start-chat (fn [db _] db))
+          ;; :status-im.chat.events/start-chat
 
           (rf/dispatch [:add-contact-handler new-contact-public-key])
 
@@ -251,7 +257,13 @@
             (is (= new-contact
                    (-> @contacts
                        (get new-contact-public-key)
-                       (assoc :photo-path "" :name ""))))))
+                       (assoc :photo-path "" :name "")))))
+
+          (testing "it loads the 1-1 chat"
+            (is (= :chat @view-id)))
+
+          (testing "it adds the new contact to the chat"
+            (is (= new-contact-public-key @current-chat-id))))
 
         (testing ":contact-request-received event"
 
@@ -324,14 +336,25 @@
                   ;; :add-pending-contact
                   ;; :status-im.contacts.events/add-new-contact
                   ;; :status-im.contacts.events/send-contact-request
+                  ;; :status-im.chat.events/start-chat
+
                   ;;TODO :discoveries-send-portions
                   (rf/reg-event-db :discoveries-send-portions (fn [db _] db))
+
+                  (rf/dispatch [:set :view-id nil])
+                  (rf/dispatch [:set :current-chat-id nil])
 
                   (rf/dispatch [:add-contact-handler new-contact-public-key])
 
                   (testing "it sets the pending? flag to false"
                     (is (= (assoc received-contact'' :pending? false)
-                           (get @contacts new-contact-public-key)))))
+                           (get @contacts new-contact-public-key))))
+
+                  (testing "it loads the 1-1 chat"
+                    (is (= :chat @view-id)))
+
+                  (testing "it adds the new contact to the chat"
+                    (is (= new-contact-public-key @current-chat-id))))
 
                 (testing ":create-new-contact-group event"
 

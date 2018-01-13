@@ -439,8 +439,9 @@
   (fn [{:keys [db]} [_ id]]
     (if (spec/valid? :global/address id)
       {::request-contact-by-address id}
-      {:dispatch (if (get-in db [:contacts/contacts id])
-                   [:add-pending-contact id]
-                   [:add-new-contact-and-open-chat {:name             (generate-gfy id)
-                                                    :photo-path       (identicon id)
-                                                    :whisper-identity id}])})))
+      {:dispatch-n (if (get-in db [:contacts/contacts id])
+                     [[:add-pending-contact id]
+                      [:start-chat id {:navigation-replace? true}]]
+                     [[:add-new-contact-and-open-chat {:name             (generate-gfy id)
+                                                       :photo-path       (identicon id)
+                                                       :whisper-identity id}]])})))
