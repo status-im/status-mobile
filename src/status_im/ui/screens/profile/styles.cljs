@@ -119,6 +119,13 @@
    :android {:font-size 16
              :color     color-black}})
 
+(defstyle logout-text
+  {:padding-left 16
+   :color        styles/color-red
+   :ios          {:font-size      17
+                  :letter-spacing -0.2}
+   :android      {:font-size 16}})
+
 (defstyle profile-setting-spacing
   {:ios     {:height 10}
    :android {:height 7}})

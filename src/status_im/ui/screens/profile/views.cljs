@@ -19,7 +19,10 @@
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
-            [status-im.utils.config :as config])
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform]
+            [status-im.protocol.core :as protocol]
+            [re-frame.core :as re-frame])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
@@ -181,6 +184,25 @@
    [info-item-separator]
    [profile-info-phone-item phone]])
 
+(defn save-profile! []
+  (when-let [save-event @(re-frame/subscribe [:my-profile.drawer/save-event])]
+    (re-frame/dispatch [save-event])))
+
+(defn navigate-to-accounts []
+  (save-profile!)
+  ;; TODO(rasom): probably not the best place for this call
+  (protocol/stop-whisper!)
+  (re-frame/dispatch [:navigate-to :accounts]))
+
+(defn logout []
+  [react/view {}
+   [react/touchable-highlight
+    {:on-press navigate-to-accounts}
+    [react/view
+     [react/text {:style      styles/logout-text
+                  :font       (if platform/android? :medium :default)}
+      (label :t/logout)]]]])
+
 (defn my-profile-info [{:keys [public-key status phone] :as contact}]
   [react/view
    [profile-info-address-item contact]
@@ -196,7 +218,8 @@
    (when config/offline-inbox-enabled?
      [info-item-separator])
    (when config/offline-inbox-enabled?
-     [offline-messaging-settings])])
+     [offline-messaging-settings])
+   [logout]])
 
 (defn profile-status [status & [edit?]]
   [react/view styles/profile-status-container
