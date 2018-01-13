@@ -42,7 +42,6 @@ node ('macos1') {
       sh 'echo STUB_STATUS_GO='            + STUB_STATUS_GO            + '>>' + '.env'
       sh 'echo ETHEREUM_DEV_CLUSTER='      + ETHEREUM_DEV_CLUSTER      + '>>' + '.env'
       sh 'echo MAINNET_NETWORKS_ENABLED='  + MAINNET_NETWORKS_ENABLED  + '>>' + '.env'
-      sh 'echo ERC20_ENABLED='             + ERC20_ENABLED             + '>>' + '.env'
       sh 'echo LOG_LEVEL='                 + LOG_LEVEL                 + '>>' + '.env'
       sh 'echo LOG_LEVEL_STATUS_GO='       + LOG_LEVEL_STATUS_GO       + '>>' + '.env'
       sh 'echo JSC_ENABLED='               + JSC_ENABLED               + '>>' + '.env'

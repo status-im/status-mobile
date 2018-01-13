@@ -84,14 +84,14 @@
 
 (defn- asset-section [network balance visible-tokens prices-loading? balance-loading?]
   (let [tokens (current-tokens visible-tokens network)
-        assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] (when config/erc20-enabled? tokens)))]
+        assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] tokens))]
     [react/view styles/asset-section
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
       {:default-separator? true
        :data               assets
        :render-fn          render-asset
-       :on-refresh         #(re-frame/dispatch [:update-wallet (when config/erc20-enabled? (map :symbol tokens))])
+       :on-refresh         #(re-frame/dispatch [:update-wallet (map :symbol tokens)])
        :refreshing         (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
