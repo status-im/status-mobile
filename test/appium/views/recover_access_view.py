@@ -1,6 +1,5 @@
-from views.base_view import BaseView
+from views.base_element import BaseEditBox, BaseButton
 from views.sign_in_view import SignInView
-from views.base_element import *
 
 
 class PassphraseInput(BaseEditBox):

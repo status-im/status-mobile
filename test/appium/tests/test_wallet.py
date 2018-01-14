@@ -1,5 +1,4 @@
 import pytest
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from tests import api_requests, user_flow, transaction_users_wallet
 from tests.base_test_case import SingleDeviceTestCase
 from views.console_view import ConsoleView
@@ -12,11 +11,9 @@ class TestWallet(SingleDeviceTestCase):
     def test_wallet_error_messages(self):
         console = ConsoleView(self.driver)
         user_flow.create_user(console)
-        chats = console.get_chat_view()
-        chats.back_button.click()
-        wallet_view = chats.wallet_button.click()
-        wallet_view.send_button.click()
-        send_transaction = wallet_view.get_send_transaction_view()
+        console.back_button.click()
+        wallet_view = console.wallet_button.click()
+        send_transaction = wallet_view.send_button.click()
         send_transaction.amount_edit_box.send_keys('asd')
         send_transaction.find_full_text('Amount is not a valid number')
         send_transaction.amount_edit_box.send_keys('0,1')
@@ -29,47 +26,35 @@ class TestWallet(SingleDeviceTestCase):
                                  transaction_users_wallet['A_USER']['passphrase'],
                                  transaction_users_wallet['A_USER']['password'],
                                  transaction_users_wallet['A_USER']['username'])
-        chats_view = console_view.get_chat_view()
+        home_view = console_view.get_home_view()
         recipient_key = transaction_users_wallet['B_USER']['public_key']
-        user_flow.add_contact(chats_view, recipient_key)
-        for _ in range(3):
-            try:
-                chats_view.back_button.click()
-            except(TimeoutException, NoSuchElementException):
-                pass
-        wallet_view = chats_view.wallet_button.click()
-        wallet_view.request_button.click()
-        send_transaction_view = wallet_view.get_send_transaction_view()
+        user_flow.add_contact(home_view, recipient_key)
+        home_view.back_button.click(times_to_click=3)
+        wallet_view = home_view.wallet_button.click()
+        send_transaction_view = wallet_view.request_button.click()
         send_transaction_view.amount_edit_box.scroll_to_element()
         send_transaction_view.amount_edit_box.send_keys('0.1')
         wallet_view.send_request_button.click()
-        user_contact = chats_view.element_by_text(transaction_users_wallet['B_USER']['username'], 'button')
-        user_contact.click()
-        chats_view.find_text_part('Requesting  0.1 ETH')
+        user_chat = home_view.get_chat_with_user(transaction_users_wallet['B_USER']['username']).click()
+        user_chat.find_text_part('Requesting  0.1 ETH')
 
     @pytest.mark.parametrize("test, recipient, sender", [('sign_now', 'A_USER', 'B_USER'),
                                                          ('sign_later', 'B_USER', 'A_USER')],
-                             ids=['sign_now',
-                                  'sign_later'])
+                             ids=['sign_now','sign_later'])
     def test_send_transaction_from_wallet(self, test, recipient, sender):
         console_view = ConsoleView(self.driver)
         user_flow.recover_access(console_view,
                                  transaction_users_wallet[sender]['passphrase'],
                                  transaction_users_wallet[sender]['password'],
                                  transaction_users_wallet[sender]['username'])
-        chats_view = console_view.get_chat_view()
+        home_view = console_view.get_home_view()
         recipient_key = transaction_users_wallet[recipient]['public_key']
         recipient_address = transaction_users_wallet[recipient]['address']
         initial_balance_recipient = api_requests.get_balance(recipient_address)
-        user_flow.add_contact(chats_view, recipient_key)
-        for _ in range(3):
-            try:
-                chats_view.back_button.click()
-            except(TimeoutException, NoSuchElementException):
-                pass
-        wallet_view = chats_view.wallet_button.click()
-        wallet_view.send_button.click()
-        send_transaction = wallet_view.get_send_transaction_view()
+        user_flow.add_contact(home_view, recipient_key)
+        home_view.back_button.click(times_to_click=3)
+        wallet_view = home_view.wallet_button.click()
+        send_transaction = wallet_view.send_button.click()
         send_transaction.amount_edit_box.click()
         amount = send_transaction.get_unique_amount()
         send_transaction.send_as_keyevent(amount)
@@ -94,7 +79,7 @@ class TestWallet(SingleDeviceTestCase):
         if test == 'sign_later':
             transactions_view.history_tab.click()
         else:
-            chats_view.wallet_button.click()
+            home_view.wallet_button.click()
             transactions_view = wallet_view.transactions_button.click()
         transaction = transactions_view.transactions_table.find_transaction(amount=amount)
         details_view = transaction.click()
@@ -110,8 +95,8 @@ class TestWallet(SingleDeviceTestCase):
                                  passphrase=transaction_users_wallet['A_USER']['passphrase'],
                                  password=transaction_users_wallet['A_USER']['password'],
                                  username=transaction_users_wallet['A_USER']['username'])
-        chats_view = console.get_chat_view()
-        wallet = chats_view.wallet_button.click()
+        home_view = console.get_home_view()
+        wallet = home_view.wallet_button.click()
         address = transaction_users_wallet['A_USER']['address']
         balance = api_requests.get_balance(address) / 1000000000000000000
         eth_rate = api_requests.get_ethereum_price_in_usd()

@@ -1,5 +1,4 @@
-from views.base_element import *
-from views.base_view import BaseView
+from views.base_element import BaseButton, BaseEditBox
 from views.contacts_view import ContactsView
 
 

@@ -1,9 +1,10 @@
 import logging
 import time
-import pytest
-from views.base_element import *
-from tests import api_requests
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
 from datetime import datetime
+
+from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 
 
 class BackButton(BaseButton):
@@ -11,10 +12,13 @@ class BackButton(BaseButton):
         super(BackButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@content-desc='toolbar-back-button']")
 
-    def click(self):
-        self.wait_for_element(30)
-        self.find_element().click()
-        logging.info('Tap on %s' % self.name)
+    def click(self, times_to_click: int = 1):
+        for _ in range(times_to_click):
+            try:
+                self.find_element().click()
+            except (NoSuchElementException, TimeoutException):
+                pass
+            logging.info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -62,14 +66,14 @@ class ContinueButtonAPK(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
 
 
-class ContactsButton(BaseButton):
+class HomeButton(BaseButton):
     def __init__(self, driver):
-        super(ContactsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Contacts']/..")
+        super(HomeButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Home']/..")
 
     def navigate(self):
-        from views.contacts_view import ContactsView
-        return ContactsView(self.driver)
+        from views.home_view import HomeView
+        return HomeView(self.driver)
 
 
 class WalletButton(BaseButton):
@@ -82,20 +86,14 @@ class WalletButton(BaseButton):
         return WalletView(self.driver)
 
 
-class DiscoverButton(BaseButton):
+class ProfileButton(BaseButton):
     def __init__(self, driver):
-        super(DiscoverButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Discover']/..")
+        super(ProfileButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Profile']/..")
 
     def navigate(self):
-        from views.discover_view import DiscoverView
-        return DiscoverView(self.driver)
-
-
-class ChatsButton(BaseButton):
-    def __init__(self, driver):
-        super(ChatsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Chats']/..")
+        from views.profile_view import ProfileView
+        return ProfileView(self.driver)
 
 
 class SaveButton(BaseButton):
@@ -110,14 +108,6 @@ class NextButton(BaseButton):
         super(NextButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             "//android.widget.TextView[@text='NEXT']")
-
-
-class ChatRequestInput(BaseEditBox):
-
-    def __init__(self, driver):
-        super(ChatRequestInput, self).__init__(driver)
-        self.locator = \
-            self.Locator.xpath_selector("//android.widget.EditText[@content-desc!='chat-message-input']")
 
 
 class AppsButton(BaseButton):
@@ -137,6 +127,11 @@ class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
 
+        self.home_button = HomeButton(self.driver)
+        self.button = WalletButton(self.driver)
+        self.wallet_button = self.button
+        self.profile_button = ProfileButton(self.driver)
+
         self.yes_button = YesButton(self.driver)
         self.no_button = NoButton(self.driver)
         self.back_button = BackButton(self.driver)
@@ -145,17 +140,10 @@ class BaseView(object):
         self.continue_button_apk = ContinueButtonAPK(self.driver)
         self.ok_button_apk = OkButton(self.driver)
         self.next_button = NextButton(self.driver)
-        self.apps_button = AppsButton(self.driver)
-        self.status_app_icon = StatusAppIcon(self.driver)
-
-        self.contacts_button = ContactsButton(self.driver)
-        self.wallet_button = WalletButton(self.driver)
-        self.discover_button = DiscoverButton(self.driver)
-        self.chats_button = ChatsButton(self.driver)
-
         self.save_button = SaveButton(self.driver)
 
-        self.chat_request_input = ChatRequestInput(self.driver)
+        self.apps_button = AppsButton(self.driver)
+        self.status_app_icon = StatusAppIcon(self.driver)
 
         self.element_types = {
             'base': BaseElement,
@@ -209,6 +197,10 @@ class BaseView(object):
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element
+
+    def get_home_view(self):
+        from views.home_view import HomeView
+        return HomeView(self.driver)
 
     def get_chat_view(self):
         from views.chat_view import ChatView

@@ -1,7 +1,7 @@
 aiohttp==2.2.3
 allpairspy==2.3.0
 apipkg==1.4
-Appium-Python-Client==0.24
+Appium-Python-Client==0.26
 async-timeout==1.2.1
 asyncio==3.4.3
 certifi==2017.7.27.1
@@ -17,7 +17,7 @@ pytest-forked==0.2
 pytest-xdist==1.20.0
 requests==2.18.3
 sauceclient==1.0.0
-selenium==2.53.6
+selenium==3.8.1
 six==1.10.0
 urllib3==1.22
 yarl==0.12.0

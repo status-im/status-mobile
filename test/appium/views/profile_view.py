@@ -1,5 +1,7 @@
+import logging
+
+from views.base_element import BaseText, BaseButton, BaseEditBox
 from views.base_view import BaseView
-from views.base_element import *
 
 
 class PublicKeyText(BaseText):
@@ -46,7 +48,7 @@ class OptionsButton(BaseButton):
 
         def __init__(self, driver):
             super(OptionsButton.UserStatusInput, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector('//android.widget.ScrollView//android.widget.EditText')
+            self.locator = self.Locator.xpath_selector('//android.view.ViewGroup[count(*)=1]/android.widget.EditText')
 
 
 class NetworkSettingsButton(BaseButton):
@@ -67,6 +69,20 @@ class NetworkSettingsButton(BaseButton):
             self.locator = self.Locator.xpath_selector('//*[@text="CONNECT"]')
 
 
+class LogoutButton(BaseButton):
+
+    def __init__(self, driver):
+        super(LogoutButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Logout"]')
+
+    def click(self):
+        self.scroll_to_element()
+        self.find_element().click()
+        self.info('Tap on %s' % self.name)
+        from views.sign_in_view import SignInView
+        return SignInView(self.driver)
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
@@ -82,6 +98,7 @@ class ProfileView(BaseView):
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
         self.connect_button = NetworkSettingsButton.ConnectButton(self.driver)
+        self.logout_button = LogoutButton(self.driver)
 
     def switch_network(self, network):
         self.network_settings_button.scroll_to_element()

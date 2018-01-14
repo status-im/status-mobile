@@ -1,4 +1,4 @@
-from appium.webdriver.common.mobileby import By, MobileBy
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
@@ -80,15 +80,19 @@ class BaseEditBox(BaseElement):
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
-        self.info('Type %s to %s' % (value, self.name))
+        self.info("Type '%s' to %s" % (value, self.name))
 
     def set_value(self, value):
         self.find_element().set_value(value)
-        self.info('Type %s to %s' % (value, self.name))
+        self.info("Type '%s' to %s" % (value, self.name))
 
     def clear(self):
         self.find_element().clear()
         self.info('Clear text in %s' % self.name)
+
+    def click(self):
+        self.find_element().click()
+        self.info('Tap on %s' % self.name)
 
 
 class BaseText(BaseElement):

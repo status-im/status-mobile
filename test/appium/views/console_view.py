@@ -1,5 +1,9 @@
+import logging
+
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
+from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
-from views.base_element import *
 
 
 class RequestPasswordIcon(BaseButton):
@@ -26,6 +30,14 @@ class RecoverButton(BaseButton):
         return RecoverAccessView(self.driver)
 
 
+class ChatRequestInput(BaseEditBox):
+
+    def __init__(self, driver):
+        super(ChatRequestInput, self).__init__(driver)
+        self.locator = \
+            self.Locator.xpath_selector("//android.widget.EditText[@content-desc!='chat-message-input']")
+
+
 class ConsoleView(BaseView):
 
     def __init__(self, driver):
@@ -33,6 +45,7 @@ class ConsoleView(BaseView):
 
         self.request_password_icon = RequestPasswordIcon(self.driver)
         self.recover_button = RecoverButton(self.driver)
+        self.chat_request_input = ChatRequestInput(self.driver)
 
         self.accept_agreements()
 

@@ -1,6 +1,5 @@
+from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
-import pytest
-from views.base_element import *
 
 
 class FirstAccountButton(BaseButton):
@@ -22,6 +21,10 @@ class SignInButton(BaseButton):
     def __init__(self, driver):
         super(SignInButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Sign in']")
+
+    def navigate(self):
+        from views.home_view import HomeView
+        return HomeView(self.driver)
 
 
 class RecoverAccessButton(BaseButton):

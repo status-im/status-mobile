@@ -9,72 +9,64 @@ from views.console_view import ConsoleView
 @pytest.mark.all
 class TestMultipleDevices(MultipleDeviceTestCase):
 
+    @pytest.mark.skip('Discover functionality is not available')
     @pytest.mark.discover
     def test_new_profile_name_and_status_on_discover(self):
         device_1, device_2 = ConsoleView(self.driver_1), ConsoleView(self.driver_2)
-        for device in device_1, device_2:
-            user_flow.create_user(device)
-        device_1.back_button.click()
-        device_2.back_button.click()
-        device_1_chat, device_2_chat = device_1.get_chat_view(), device_2.get_chat_view()
-        device_2_public_key = user_flow.get_public_key(device_2_chat)
-        user_flow.add_contact(device_1_chat, device_2_public_key)
+        for profile in device_1, device_2:
+            user_flow.create_user(profile)
+            profile.back_button.click()
+        device_1_home, device_2_home = device_1.get_home_view(), device_2.get_home_view()
+
+        device_2_public_key = user_flow.get_public_key(device_2_home)
+        user_flow.add_contact(device_1_home, device_2_public_key)
+        device_1_chat = device_1_home.get_chat_view()
         device_1_chat.chat_message_input.send_keys('test123')
         device_1_chat.send_message_button.click()
         device_1_chat.back_button.click()
-        device_2_chat.back_button.click()
-        new_chat_d2 = device_2_chat.element_by_text('test123', 'button')
-        new_chat_d2.click()
+
+        device_2_home.element_by_text('test123', 'button').click()
+        device_2_chat = device_2_home.get_chat_view()
         device_2_chat.add_to_contacts.click()
-        for _ in range(2):
-            device_1_chat.back_button.click()
         device_2_chat.back_button.click()
-        device_1_profile_drawer = device_1_chat.profile_button.click()
-        device_2_profile_drawer = device_2_chat.profile_button.click()
-        device_1_profile, device_2_profile = \
-            device_1_profile_drawer.profile_icon.click(), device_2_profile_drawer.profile_icon.click()
-        users_details = user_flow.get_new_username_and_status(device_1_profile,
-                                                              device_2_profile)
-        device_1_profile.back_button.click()
-        device_2_profile.back_button.click()
-        device_1_discover = device_1_profile.discover_button.click()
-        device_2_discover = device_2_profile.discover_button.click()
-        for device in device_1_discover, device_2_discover:
-            device.all_popular.click()
-            for k in users_details:
-                device.find_full_text(users_details[k]['name'])
-                device.find_full_text(' ' + users_details[k]['status'])
-            device.back_button.click()
-            device.all_recent.click()
-            for k in users_details:
-                device.find_full_text(users_details[k]['name'])
-                device.find_full_text(users_details[k]['status'] + ' ')
+
+        device_1_profile, device_2_profile = device_1_chat.profile_button.click(), device_2_chat.profile_button.click()
+
+        for profile in device_1_profile, device_2_profile:
+            user_details = user_flow.get_new_username_and_status(profile)
+            profile.back_button.click()
+            discover = profile.discover_button.click()
+            discover.all_popular.click()
+            discover.find_full_text(user_details['name'])
+            discover.find_full_text(' %s' % user_details['status'])
+            discover.back_button.click()
+            discover.all_recent.click()
+            discover.find_full_text(user_details['name'])
+            discover.find_full_text('%s ' % user_details['status'])
 
     @pytest.mark.chat
     def test_one_to_one_chat(self):
         device_1, device_2 = ConsoleView(self.driver_1), ConsoleView(self.driver_2)
         for device in device_1, device_2:
             user_flow.create_user(device)
-        device_1.back_button.click()
-        device_2.back_button.click()
-        device_1_chat = device_1.get_chat_view()
-        device_2_chat = device_2.get_chat_view()
-        device_1_public_key = user_flow.get_public_key(device_1_chat)
-        user_flow.add_contact(device_2_chat, device_1_public_key)
+            device.back_button.click()
+        device_1_home, device_2_home = device_1.get_home_view(), device_2.get_home_view()
+
+        device_1_public_key = user_flow.get_public_key(device_1_home)
+        user_flow.add_contact(device_2_home, device_1_public_key)
+        device_2_chat = device_2_home.get_chat_view()
         message_1 = 'SOMETHING'
-        message_2 = 'another SOMETHING'
-        user_d1_name = device_2_chat.user_name_text.text
         device_2_chat.chat_message_input.send_keys(message_1)
         device_2_chat.send_message_button.click()
-        device_1_chat.back_button.click()
-        device_1_chat.find_full_text(message_1)
-        one_to_one_chat_d1 = device_1_chat.element_by_text(message_1, 'button')
-        one_to_one_chat_d1.click()
-        one_to_one_chat_d2 = device_2_chat.element_by_text(user_d1_name, 'button')
-        one_to_one_chat_d2.click()
-        device_2_chat.chat_message_input.send_keys(message_2)
-        device_2_chat.send_message_button.click()
-        device_1_chat.find_full_text(message_2)
+
+        message_2 = 'another SOMETHING'
+        device_1_home.home_button.click()
+        device_1_home.find_full_text(message_1)
+        device_1_home.element_by_text(message_1, 'button').click()
+        device_1_chat = device_1_home.get_chat_view()
+        device_1_chat.chat_message_input.send_keys(message_2)
+        device_1_chat.send_message_button.click()
+        device_2_chat.find_full_text(message_2)
 
     @pytest.mark.chat
     def test_group_chat_send_receive_messages_and_remove_user(self):
@@ -82,32 +74,30 @@ class TestMultipleDevices(MultipleDeviceTestCase):
                              ConsoleView(self.driver_2)
         for device in device_1, device_2:
             user_flow.create_user(device)
-        device_1.back_button.click()
-        device_2.back_button.click()
-        device_1_chat = device_1.get_chat_view()
-        device_2_chat = device_2.get_chat_view()
-        device_1_public_key = user_flow.get_public_key(device_1_chat)
-        user_flow.add_contact(device_2_chat, device_1_public_key)
+            device.back_button.click()
+        device_1_home = device_1.get_home_view()
+        device_2_home = device_2.get_home_view()
+        device_1_public_key = user_flow.get_public_key(device_1_home)
+        user_flow.add_contact(device_2_home, device_1_public_key)
+        device_2_chat = device_2_home.get_chat_view()
         device_1_user_name = device_2_chat.user_name_text.text
-        for _ in range(3):
-            device_2.back_button.click()
+        device_2_home.back_button.click(times_to_click=3)
         chat_name = 'new_chat'
         message_1 = 'first SOMETHING'
         message_2 = 'second SOMETHING'
         message_3 = 'third SOMETHING'
-        user_flow.create_group_chat(device_2_chat, device_1_user_name, chat_name)
+        user_flow.create_group_chat(device_2_home, device_1_user_name, chat_name)
 
         # send_and_receive_messages
         device_2_chat.chat_message_input.send_keys(message_1)
         device_2_chat.send_message_button.click()
-        device_1.back_button.click()
-        device_1_chat = device_1.get_chat_view()
-        device_1_chat.find_full_text(message_1)
-        group_chat_d1 = device_1_chat.element_by_text(chat_name, 'button')
-        group_chat_d1.click()
-        device_2_chat.chat_message_input.send_keys(message_2)
-        device_2_chat.send_message_button.click()
-        device_1_chat.find_full_text(message_2)
+        device_1.home_button.click()
+        device_1_home.find_full_text(message_1)
+        device_1_home.element_by_text(chat_name, 'button').click()
+        group_chat_d1 = device_1_home.get_chat_view()
+        group_chat_d1.chat_message_input.send_keys(message_2)
+        group_chat_d1.send_message_button.click()
+        device_2_chat.find_full_text(message_2)
 
         # remove user
         device_2_chat.group_chat_options.click()
@@ -124,9 +114,8 @@ class TestMultipleDevices(MultipleDeviceTestCase):
         # verify removed user receives no messages
         device_2_chat.chat_message_input.send_keys(message_3)
         device_2_chat.send_message_button.click()
-        device_1_chat.find_text_part("removed you from group chat")
-        message_text = device_1_chat.element_by_text(message_3, 'text')
-        if message_text.is_element_present(20):
+        group_chat_d1.find_text_part("removed you from group chat")
+        if group_chat_d1.element_by_text(message_3, 'text').is_element_present(20):
             pytest.fail('Message is shown for the user which has been removed from the GroupChat', False)
 
     @pytest.mark.transaction
@@ -146,18 +135,20 @@ class TestMultipleDevices(MultipleDeviceTestCase):
                                  passphrase=sender['passphrase'],
                                  password=sender['password'],
                                  username=sender['username'])
-        device_2_chat = device_2.get_chat_view()
-        device_1_chat = device_1.get_chat_view()
+        device_2_home = device_2.get_home_view()
+        device_1_home = device_1.get_home_view()
+        user_flow.add_contact(device_1_home, sender['public_key'])
+        device_1_home.back_button.click(times_to_click=3)
         if test == 'group_chat':
-            user_flow.add_contact(device_1_chat, sender['public_key'])
-            for _ in range(2):
-                device_1_chat.back_button.click()
             group_chat_name = 'gtr_%s' % get_current_time()
-            user_flow.create_group_chat(device_1_chat, sender['username'], group_chat_name)
-            group_chat_d2 = device_2_chat.element_by_text(group_chat_name, 'button')
-            group_chat_d2.click()
+            user_flow.create_group_chat(device_1_home, sender['username'], group_chat_name)
+            device_2_home.element_by_text(group_chat_name, 'button').click()
         else:
-            device_1_chat.element_by_text_part(sender['username'][:25], 'button').click()
+            one_to_one_chat_device_1 = device_1_home.element_by_text_part(sender['username'][:25], 'button')
+            one_to_one_chat_device_1.scroll_to_element()
+            one_to_one_chat_device_1.click()
+        device_1_chat = device_1_home.get_chat_view()
+        device_2_chat = device_2_home.get_chat_view()
         device_1_chat.request_command.click()
         amount = device_1_chat.get_unique_amount()
         if test == 'group_chat':
@@ -165,12 +156,13 @@ class TestMultipleDevices(MultipleDeviceTestCase):
             device_1_chat.send_as_keyevent(amount)
         else:
             device_1_chat.chat_message_input.set_value(amount)
+            one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
+            one_to_one_chat_device_2.click()
         device_1_chat.send_message_button.click()
         initial_balance_recipient = api_requests.get_balance(recipient['address'])
         if test == 'group_chat':
             device_1_chat.find_full_text('from  ' + sender['username'], 20)
             device_2_chat.find_full_text('from  ' + sender['username'], 20)
-        device_2_chat.element_by_text_part(recipient['username'][:25], 'button').click()
         device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button').click()
         device_2_chat.send_message_button.click()
         device_2_send_transaction = device_2_chat.get_send_transaction_view()
@@ -180,7 +172,7 @@ class TestMultipleDevices(MultipleDeviceTestCase):
         device_2_send_transaction.got_it_button.click()
         api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
         device_2_chat.back_button.click()
-        device_2_wallet = device_2_chat.wallet_button.click()
+        device_2_wallet = device_2_home.wallet_button.click()
         transactions_view = device_2_wallet.transactions_button.click()
         transaction_element = transactions_view.transactions_table.find_transaction(amount=amount)
         transaction_details_view = transaction_element.click()

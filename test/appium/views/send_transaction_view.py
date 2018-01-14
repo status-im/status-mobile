@@ -1,9 +1,4 @@
-import time
-
-import pytest
-from selenium.common.exceptions import NoSuchElementException
-
-from views.base_element import *
+from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
 

@@ -1,24 +1,29 @@
 import logging
 
 from views.base_view import BaseView
-from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_element import BaseButton, BaseText
 
 
 class SendButton(BaseButton):
 
     def __init__(self, driver):
         super(SendButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='SEND']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Send transaction']")
+
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
 
 
 class RequestButton(BaseButton):
 
     def __init__(self, driver):
         super(RequestButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='REQUEST']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Receive transaction']")
 
     def navigate(self):
-        pass
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
 
 
 class SendRequestButton(BaseButton):
@@ -39,7 +44,7 @@ class TransactionsButton(BaseButton):
 
     def __init__(self, driver):
         super(TransactionsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[4]')
+        self.locator = self.Locator.xpath_selector("//*[@text='Transaction History']")
 
     def navigate(self):
         from views.transactions_view import TransactionsView
@@ -90,4 +95,5 @@ class WalletView(BaseView):
         percentage_diff = abs((usd - expected_usd) / ((usd + expected_usd) / 2)) * 100
         if percentage_diff > 2:
             errors.append('Difference between current (%s) and expected (%s) USD balance > 2%%!!' % (usd, expected_usd))
-        logging.info('Current USD balance %s is ok' % usd)
+        else:
+            logging.info('Current USD balance %s is ok' % usd)

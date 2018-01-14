@@ -1,33 +1,9 @@
+import logging
+
+from selenium.common.exceptions import TimeoutException
+
+from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
-from views.base_element import *
-
-
-class ProfileButton(BaseButton):
-    def __init__(self, driver):
-        super(ProfileButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('toolbar-hamburger-menu')
-
-    def navigate(self):
-        from views.profile_drawer_view import ProfileDrawer
-        return ProfileDrawer(self.driver)
-
-
-class PlusButton(BaseButton):
-    def __init__(self, driver):
-        super(PlusButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='+']")
-
-    def navigate(self):
-        from views.start_new_chat_view import StarNewChatView
-        return StarNewChatView(self.driver)
-
-
-class ConsoleButton(BaseButton):
-    def __init__(self, driver):
-        super(ConsoleButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Console']")
 
 
 class ChatMessageInput(BaseEditBox):
@@ -56,7 +32,8 @@ class UserNameText(BaseText):
     def __init__(self, driver):
         super(UserNameText, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector("//android.widget.ScrollView//android.widget.TextView")
+            self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="toolbar-back-button"]'
+                                        '//..//android.widget.TextView)[1]')
 
 
 class SendCommand(BaseButton):
@@ -107,10 +84,6 @@ class FirstRecipient(BaseButton):
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
-
-        self.profile_button = ProfileButton(self.driver)
-        self.plus_button = PlusButton(self.driver)
-        self.console_button = ConsoleButton(self.driver)
 
         self.chat_message_input = ChatMessageInput(self.driver)
         self.send_message_button = SendMessageButton(self.driver)
