@@ -7,7 +7,7 @@
             [status-im.protocol.core :as protocol]
             [status-im.utils.utils :refer [http-post]]
             [status-im.utils.phone-number :refer [format-phone-number]]
-            [status-im.utils.random :as random] 
+            [status-im.utils.random :as random]
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]
             [status-im.utils.js-resources :as js-res]
@@ -156,7 +156,7 @@
                                   :photo-path       (identicon whisper-identity)
                                   :whisper-identity whisper-identity}]
                      (if (contacts/exists? whisper-identity)
-                       (dispatch [:add-pending-contact whisper-identity])
+                       (dispatch [:add-pending-contact-and-open-chat whisper-identity])
                        (dispatch [:add-new-contact-and-open-chat contact])))
                    (dispatch [:set :contacts/new-public-key-error (label :t/unknown-address)]))))))
 
@@ -236,7 +236,7 @@
            :bot-url          bot-url
            :description      description
            :dapp-hash        dapp-hash})
-        all-default-contacts (conj default-contacts console-chat/contact)] 
+        all-default-contacts (conj default-contacts console-chat/contact)]
     [[:add-contacts all-default-contacts]]))
 
 (defn- prepare-add-chat-events [contacts default-contacts]
@@ -290,7 +290,7 @@
                              ;; NOTE(oskarth): Overwriting default contacts here
                              ;;(remove #(identities (:whisper-identity %)))
                              (map #(vector (:whisper-identity %) %))
-                             (into {})) 
+                             (into {}))
           fx            {:db              (update db :contacts/contacts merge new-contacts')
                          ::save-contacts! (vals new-contacts')}]
       (transduce (map second)
@@ -347,6 +347,12 @@
       {:dispatch-n [[::add-new-contact contact']
                     [:watch-contact contact']
                     [:discoveries-send-portions chat-or-whisper-id]]})))
+
+(register-handler-fx
+  :add-pending-contact-and-open-chat
+  (fn [_ [_ whisper-id]]
+    {:dispatch-n [[:add-pending-contact whisper-id]
+                  [:start-chat whisper-id {:navigation-replace? true}]]}))
 
 (register-handler-db
   :set-contact-identity-from-qr
@@ -439,9 +445,8 @@
   (fn [{:keys [db]} [_ id]]
     (if (spec/valid? :global/address id)
       {::request-contact-by-address id}
-      {:dispatch-n (if (get-in db [:contacts/contacts id])
-                     [[:add-pending-contact id]
-                      [:start-chat id {:navigation-replace? true}]]
-                     [[:add-new-contact-and-open-chat {:name             (generate-gfy id)
-                                                       :photo-path       (identicon id)
-                                                       :whisper-identity id}]])})))
+      {:dispatch (if (get-in db [:contacts/contacts id])
+                   [:add-pending-contact-and-open-chat id]
+                   [:add-new-contact-and-open-chat {:name             (generate-gfy id)
+                                                    :photo-path       (identicon id)
+                                                    :whisper-identity id}])})))
