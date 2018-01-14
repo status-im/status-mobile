@@ -72,7 +72,7 @@ node ('macos1'){
       def filename = 'im.status.ethereum-' + shortCommit + '.apk'
       def newArtifact = (artifact_dir + filename)
       sh ('mv ' + artifact + ' '  + newArtifact)
-      def uploadSpec = '{ "files": [ { "pattern": "*apk/' + filename + '", "target": "nightlies-local" }]}'
+      def uploadSpec = '{ "files": [ { "pattern": "*apk/release/' + filename + '", "target": "nightlies-local" }]}'
       def buildInfo = server.upload(uploadSpec)
       apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
 
