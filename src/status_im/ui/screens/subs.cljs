@@ -17,6 +17,7 @@
             status-im.ui.screens.wallet.wallet-list.subs
             status-im.ui.screens.wallet.assets.subs
             status-im.ui.screens.network-settings.subs
+            status-im.ui.screens.dev.subs
             status-im.bots.subs))
 
 (reg-sub :get
@@ -27,7 +28,7 @@
   (fn [db [_ path]]
     (get-in db path)))
 
-(reg-sub :signed-up? 
+(reg-sub :signed-up?
   :<- [:get-current-account]
   (fn [current-account]
     (:signed-up? current-account)))
