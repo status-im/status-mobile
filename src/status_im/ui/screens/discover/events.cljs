@@ -41,15 +41,17 @@
 ;; HELPER-FN
 
 (defn send-portions-when-contact-exists
-  [{:keys [current-public-key web3 discoveries]
-    :contacts/keys [contacts]}
+  "Takes fx map and adds send-portions if contact exists"
+  [{{:keys [current-public-key web3 discoveries]
+     :contacts/keys [contacts]} :db :as fx}
    to]
-  (when (get contacts to)
-    {::send-portions {:current-public-key current-public-key
-                      :web3               web3
-                      :contacts           contacts
-                      :to                 to
-                      :discoveries        (mapv #(dissoc % :tags) (vals discoveries))}}))
+  (cond-> fx
+    (get contacts to)
+    (assoc ::send-portions {:current-public-key current-public-key
+                            :web3               web3
+                            :contacts           contacts
+                            :to                 to
+                            :discoveries        (mapv #(dissoc % :tags) (vals discoveries))})))
 
 (defn add-discover [db {:keys [message-id] :as discover}]
   (assoc-in db [:discoveries message-id] discover))
@@ -140,12 +142,12 @@
 (handlers/register-handler-fx
   :discoveries-send-portions
   (fn [{:keys [db]} [_ to]]
-    (send-portions-when-contact-exists db to)))
+    (send-portions-when-contact-exists {:db db} to)))
 
 (handlers/register-handler-fx
   :discoveries-request-received
   (fn [{:keys [db]} [_ {:keys [from]}]]
-    (send-portions-when-contact-exists db from)))
+    (send-portions-when-contact-exists {:db db} from)))
 
 (handlers/register-handler-fx
   :discoveries-response-received

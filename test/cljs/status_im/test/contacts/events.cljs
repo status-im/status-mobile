@@ -154,7 +154,7 @@
    load-contact-groups
    load-default-contacts (add-contact-groups, add-contacts, add-contacts-to-group ;TODO add-chat, load-commands!)
    add-contact-handler (add-new-contact-and-open-chat, status-im.contacts.events/add-new-contact,
-                        status-im.contacts.events/send-contact-request, status-im.chat.events.start-chat)
+                        status-im.contacts.events/send-contact-request ;TODO start-chat)
    contact-request-received (update-contact, watch-contact ;TODO :update-chat!)
    contact-update-received (update-contact ;TODO :update-chat!)
    hide-contact (update-contact ;TODO :account-update-keys)
@@ -168,6 +168,71 @@
    remove-contact-from-group
    add-contacts-to-group
    delete-contact-group"
+
+  (testing "watch-contact"
+    (let [contact   {:public-key "public-key"
+                     :private-key "private-key"
+                     :whisper-identity "whisper-identity"}
+          actual-fx (-> {:db {:web3 "web3"}}
+                        (contacts-events/watch-contact contact)
+                        ::contacts-events/watch-contact)]
+
+      (testing "it adds a ::watch-contact effect"
+        (is (not (nil? actual-fx))))
+
+      (testing "it adds web3"
+        (is (= "web3" (:web3 actual-fx))))
+
+      (testing "it adds the watched-contact whisper-identity"
+        (is (= "whisper-identity" (:whisper-identity actual-fx))))
+
+      (testing "it adds the public key"
+        (is (= "public-key" (:public-key actual-fx))))
+
+      (testing "it adds the private key"
+        (is (= "private-key" (:private-key actual-fx))))))
+
+  (testing "send-contact-request"
+    (let [contact    {:whisper-identity "contact-whisper-identity"}
+          account    {:name "name"
+                      :photo-path "photo-path"
+                      :status "status"
+                      :updates-public-key "updates-public-key"
+                      :updates-private-key "updates-private-key"}
+          accounts   {"current-account-id" account}
+          db         {:accounts/accounts accounts
+                      :accounts/current-account-id "current-account-id"
+                      :web3 "web3"
+                      :current-public-key "current-public-key"
+                      :notifications {:fcm-token "fcm-token"}}
+          actual-fx (-> {:db db}
+                        (contacts-events/send-contact-request contact)
+                        ::contacts-events/send-contact-request-fx)]
+
+      (testing "it adds a ::send-contact-request-fx effect"
+        (is (not (nil? actual-fx))))
+
+      (testing "it adds the current-public-key"
+        (is (= "current-public-key" (:current-public-key actual-fx))))
+
+      (testing "it adds web3"
+        (is (= "web3" (:web3 actual-fx))))
+
+      (testing "it adds the current-account-id"
+        (is (= "current-account-id" (:current-account-id actual-fx))))
+
+      (testing "it adds the fcm-token"
+        (is (= "fcm-token" (:fcm-token actual-fx))))
+
+      (testing "it adds the whisper-identity of the contact"
+        (is (= "contact-whisper-identity" (:whisper-identity actual-fx))))
+
+      (testing "it adds the current-account information"
+        (is (= account (select-keys actual-fx [:name
+                                               :photo-path
+                                               :status
+                                               :updates-public-key
+                                               :updates-private-key]))))))
 
   (run-test-sync
 
@@ -246,7 +311,7 @@
           ;; :add-new-contact-and-open-chat
           ;; :status-im.contacts.events/add-new-contact
           ;; :status-im.contacts.events/send-contact-request
-          ;; :status-im.chat.events/start-chat
+          ;;TODO :start-chat
 
           (rf/dispatch [:add-contact-handler new-contact-public-key])
 
@@ -336,8 +401,6 @@
                   ;; :add-pending-contact
                   ;; :status-im.contacts.events/add-new-contact
                   ;; :status-im.contacts.events/send-contact-request
-                  ;; :status-im.chat.events/start-chat
-
                   ;;TODO :discoveries-send-portions
                   (rf/reg-event-db :discoveries-send-portions (fn [db _] db))
 

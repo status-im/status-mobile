@@ -6,7 +6,6 @@
             [status-im.utils.phone-number :as phone-number-util]
             [status-im.utils.sms-listener :as sms-listener]
             [status-im.ui.screens.accounts.events :as accounts-events]
-            [status-im.ui.screens.contacts.events :as contacts-events]
             [taoensso.timbre :as log]))
 
 ;;;; Helpers fns
