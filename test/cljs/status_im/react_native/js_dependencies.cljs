@@ -36,4 +36,10 @@
 (def svg                    #js {:default #js {}})
 (def react-native-fcm       #js {:default #js {}})
 
+(def snoopy                  #js {:default #js {}})
+(def snoopy-filter           #js {:default #js {}})
+(def snoopy-bars             #js {:default #js {}})
+(def snoopy-buffer           #js {:default #js {}})
+(def EventEmmiter            #js {})
+
 

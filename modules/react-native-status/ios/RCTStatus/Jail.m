@@ -110,6 +110,7 @@
     
     Cell * cell = [Cell new];
     JSContext *context = [JSContext new];
+    [context setName:chatId];
     cell.context = context;
     
     HandlersJs *handlers = [HandlersJs new];

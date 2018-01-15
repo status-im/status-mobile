@@ -13,7 +13,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
-            [status-im.core :as core]))
+            [status-im.core :as core]
+            [status-im.utils.snoopy :as snoopy]))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
@@ -53,4 +54,5 @@
        :reagent-render views/main})))
 
 (defn init []
-  (core/init app-root))
+  (core/init app-root)
+  (snoopy/subscribe!))

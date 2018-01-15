@@ -50,7 +50,12 @@
     "emojilib",
     "react-native-mapbox-gl",
     "react-native-config",
-    "react-native-svg"
+    "react-native-svg",
+    "rn-snoopy",
+    "rn-snoopy/stream/bars",
+    "rn-snoopy/stream/filter",
+    "rn-snoopy/stream/buffer",
+    "react-native/Libraries/vendor/emitter/EventEmitter"
   ],
   "imageDirs": [
     "resources/images"

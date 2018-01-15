@@ -13,7 +13,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
-            [status-im.core :as core]))
+            [status-im.core :as core]
+            [status-im.utils.snoopy :as snoopy]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -81,4 +82,5 @@
 (defn init []
   (status/set-soft-input-mode status/adjust-resize)
   (init-back-button-handler!)
-  (core/init app-root))
+  (core/init app-root)
+  (snoopy/subscribe!))
