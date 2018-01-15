@@ -8,6 +8,13 @@ if [[ $# -eq 0 ]] ; then
     exit 0
 fi
 
+confirm() {
+  read -p "$1 (type 'yes' to continue) " r
+  if [[ $r != yes ]]; then
+     exit 3
+  fi
+}
+
 echo "[Merge PR from ${BRANCH}]"
 
 echo "[Update remote and checkout branch]"
@@ -16,6 +23,9 @@ git checkout -B $BRANCH origin/$BRANCH && git pull
 
 echo "[Rebase and squash to one commit (manual)]"
 git rebase -i origin/develop
+if [[ $(git rev-list $BRANCH..$PR_LOCAL_BRACNCH | wc -l) -ne 1 ]] ;then
+    confirm "There are multiple commits in this PR. Are you sure you wish to continue without squashing?"
+fi
 
 echo "[Verify signature and commit (manual), update PR]"
 git show --show-signature
