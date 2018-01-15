@@ -7,3 +7,4 @@
 (def black "#000000") ;; Used as the default text color
 (def gray "#939ba1")  ;; Used as a background for a light foreground
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
+(def light-gray "#eef2f5")  ;; Used as a background or shadow

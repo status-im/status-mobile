@@ -82,8 +82,7 @@
                      (assoc-in [:my-profile/profile :edit-status?] edit-status?)
                      (update-in [:my-profile/profile]
                                 #(merge (select-keys (get-current-account db) db/account-profile-keys) %)))]
-      {:db        new-db
-       :dispatch [:navigate-to :edit-my-profile]})))
+      {:db new-db})))
 
 (defn valid-name? [name]
   (spec/valid? :profile/name name))
@@ -139,7 +138,7 @@
       (get-in db [:accounts/accounts current-account-id :name]))))
 
 (defn clear-profile [fx]
-  (update fx :db dissoc :my-profile/profile :my-profile/drawer :my-profile/default-name))
+  (update fx :db dissoc :my-profile/profile :my-profile/drawer :my-profile/default-name :my-profile/editing?))
 
 (handlers/register-handler-fx
   :my-profile.drawer/save-name
@@ -173,16 +172,22 @@
                             :status     status}))))))
 
 (handlers/register-handler-fx
+  :my-profile/start-editing-profile
+  (fn [{:keys [db]} []]
+    {:db (assoc db :my-profile/editing? true)}))
+
+(handlers/register-handler-fx
   :my-profile/save-profile
   (fn [{:keys [db now]} _]
     (let [{:accounts/keys [accounts current-account-id]} db
           {old-status :status} (get accounts current-account-id)
           {:keys [status photo-path]} (:my-profile/profile db)
           cleaned-name (clean-name db :my-profile/profile)
-          cleaned-edit {:name         cleaned-name
-                        :status       status
-                        :photo-path   photo-path
-                        :last-updated now}]
+          cleaned-edit (merge {:name         cleaned-name
+                               :status       status
+                               :last-updated now}
+                              (if photo-path
+                                {:photo-path photo-path}))]
       (-> (clear-profile {:db db})
           (accounts-events/account-update cleaned-edit)
           (status-change {:old-status old-status

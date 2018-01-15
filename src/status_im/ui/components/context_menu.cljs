@@ -39,8 +39,9 @@
 
 (def list-selection-fn (:list-selection-fn platform-specific))
 
-(defn open-ios-menu [options]
+(defn open-ios-menu [title options]
   (list-selection-fn {:options  options
+                      :title    title
                       :callback (fn [index]
                                   (when (< index (count options))
                                     (when-let [handler (:value (nth options index))]
@@ -50,7 +51,7 @@
 (defn context-menu [trigger options & custom-styles trigger-style]
   (if ios?
     [rn/touchable-highlight {:style    trigger-style
-                             :on-press #(open-ios-menu options)}
+                             :on-press #(open-ios-menu nil options)}
      [rn/view
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}
@@ -61,3 +62,9 @@
         [menu-option {:value value}
          [rn/text {:style (merge (context-menu-text destructive?) style)}
           (:text option)]])]]))
+
+(defn modal-menu [trigger style title options]
+  [rn/touchable-highlight {:style    style
+                           :on-press #(open-ios-menu title options)}
+   [rn/view
+    trigger]])

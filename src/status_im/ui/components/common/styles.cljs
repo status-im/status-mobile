@@ -1,6 +1,7 @@
 (ns status-im.ui.components.common.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.ui.components.colors :as colors]))
 
 (def gradient-top
   {:flexDirection   :row
@@ -102,3 +103,16 @@
    :background-color styles/color-green-4
    :align-items      :center
    :justify-content  :center})
+
+(defstyle label-action-text
+  {:padding-right 16
+   :color         colors/blue
+   :ios           {:font-size 15}
+   :android       {:font-size 14}})
+
+(def icon-action
+  {:width           40
+   :height          40
+   :margin-right    4
+   :align-items     :center
+   :justify-content :center})
