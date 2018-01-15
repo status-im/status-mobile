@@ -103,7 +103,7 @@
    :mainnet-text                          "You’re on the Mainnet. Real ETH will be sent"
 
    ;;make_photo
-   :image-source-title                    "Profile image"
+   :image-source-title                    "Edit picture"
    :image-source-make-photo               "Capture"
    :image-source-gallery                  "Select from gallery"
 
@@ -183,6 +183,7 @@
    :choose-from-contacts                  "Choose from contacts"
    :no-contacts                           "No contacts yet"
    :show-qr                               "Show QR code"
+   :qr-code-public-key-hint               "Share this code to \nstart chatting"
    :enter-address                         "Enter address"
    :more                                  "more"
 

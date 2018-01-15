@@ -48,7 +48,8 @@
              :networks/networks          constants/default-networks
              :inbox/wnode                constants/default-wnode
              :inbox/topic                constants/inbox-topic
-             :inbox/password             constants/inbox-password})
+             :inbox/password             constants/inbox-password
+             :my-profile/editing?        false})
 
 ;;;;GLOBAL
 
@@ -123,6 +124,7 @@
                   :my-profile/drawer
                   :my-profile/profile
                   :my-profile/default-name
+                  :my-profile/editing?
                   :networks/selected-network
                   :networks/networks
                   :node/after-start

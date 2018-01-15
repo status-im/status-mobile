@@ -5,6 +5,7 @@
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -22,7 +23,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
             [status-im.protocol.core :as protocol]
-            [re-frame.core :as re-frame])
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.camera :as camera])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
@@ -30,10 +32,17 @@
    nil
    [toolbar/content-title ""]
    [react/touchable-highlight
-    {:on-press #(re-frame/dispatch [:my-profile/edit-profile])}
+    {:on-press #(re-frame/dispatch [:my-profile/start-editing-profile])}
     [react/view
-     [react/text {:style      styles/toolbar-edit-text
+     [react/text {:style      common.styles/label-action-text
                   :uppercase? component.styles/uppercase?} (i18n/label :t/edit)]]]])
+
+(defn my-profile-edit-toolbar []
+  [toolbar/toolbar {}
+   nil
+   [toolbar/content-title ""]
+     [common/icon-or-label {:on-press #(re-frame/dispatch [:my-profile/save-profile])}
+      :t/done {} :icons/ok {:color colors/blue}]])
 
 (defn profile-toolbar [contact]
   [toolbar/toolbar {}
@@ -61,6 +70,45 @@
     [react/text {:style           styles/profile-name-text
                  :number-of-lines 1}
      name]
+    (when-not (nil? last-online)
+      [react/view styles/profile-activity-status-container
+       [react/text {:style styles/profile-activity-status-text}
+        (online-text last-online)]])]])
+
+
+(defn profile-name-input [name]
+  [react/view
+   [react/text-input
+    {:style          styles/profile-name-input-text
+     :placeholder    ""
+     :default-value  name
+     :auto-focus     true
+     :on-focus       #(re-frame/dispatch [:my-profile/edit-profile])
+     :on-change-text #(re-frame/dispatch [:my-profile/update-name %])}]])
+
+(def profile-icon-options
+  [{:text  (i18n/label :t/image-source-gallery)
+    :value #(re-frame/dispatch [:my-profile/update-picture])}
+   {:text  (i18n/label :t/image-source-make-photo)
+    :value (fn []
+             (re-frame/dispatch [:request-permissions
+                        [:camera :write-external-storage]
+                        (fn []
+                          (camera/request-access
+                            #(if %
+                               (re-frame/dispatch [:navigate-to :profile-photo-capture])
+                               (utils/show-popup (i18n/label :t/error)
+                                                 (i18n/label :t/camera-access-error)))))]))}])
+
+(defn profile-badge-edit [{:keys [name last-online] :as account}]
+  [react/view styles/profile-badge
+   [context-menu/modal-menu
+    [chat-icon.screen/my-profile-icon {:account account
+                                       :edit?   true}]
+    {} (i18n/label :t/image-source-title)
+    profile-icon-options]
+   [react/view styles/profile-badge-name-container
+    [profile-name-input name]
     (when-not (nil? last-online)
       [react/view styles/profile-activity-status-container
        [react/text {:style styles/profile-activity-status-text}
@@ -108,9 +156,9 @@
       styles/profile-info-item-button])])
 
 (defn show-qr [contact qr-source qr-value]
-  #(re-frame/dispatch [:navigate-to-modal :qr-code-view {:contact   contact
-                                                         :qr-source qr-source
-                                                         :qr-value  qr-value}]))
+  #(re-frame/dispatch [:navigate-to :qr-viewer {:contact   contact
+                                                :qr-source qr-source
+                                                :qr-value  qr-value}]))
 
 (defn profile-options [contact k text]
   (into []
@@ -249,12 +297,18 @@
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
 (defview my-profile []
-  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]]
+  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
+            editing?                                 [:get :my-profile/editing?]
+            changed-account                          [:get :my-profile/profile]]
     [react/view styles/profile
-     [my-profile-toolbar]
+     (if editing?
+       [my-profile-edit-toolbar]
+       [my-profile-toolbar])
      [react/scroll-view
       [react/view styles/profile-form
-       [profile-badge current-account]]
+       (if editing?
+         [profile-badge-edit (merge current-account changed-account)]
+         [profile-badge current-account])]
       [react/view action-button.styles/actions-list
        [share-contact-code current-account public-key]]
       [react/view styles/profile-info-container

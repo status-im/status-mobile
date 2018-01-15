@@ -4,12 +4,6 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
-(defstyle toolbar-edit-text
-  {:padding-right 16
-   :color         colors/blue
-   :ios           {:font-size 15}
-   :android       {:font-size 14}})
-
 (def profile
   {:flex             1
    :background-color colors/white
@@ -18,10 +12,6 @@
 (def profile-form
   {:background-color colors/white
    :padding          16})
-
-(def edit-my-profile-form
-  {:background-color colors/white
-   :flex             1})
 
 (defstyle profile-info-container
   {:background-color colors/white})
@@ -54,19 +44,8 @@
    :justify-content :center
    :align-items     :center})
 
-(def edit-profile-badge
-  {:flex-direction :row
-   :padding-left   24})
-
 (def context-menu-custom-styles
   {:optionsContainer {:margin-top 78}})
-
-(def edit-profile-name-container
-  {:flex        1
-   :padding-top 30})
-
-(def edit-profile-icon-container
-  {:padding-top 25})
 
 (def edit-name-title
   {:color   colors/gray
@@ -75,10 +54,18 @@
    :android {:font-size 12}})
 
 (defstyle profile-name-text
-  {:margin-top 8
-   :font-size  15
+  {:padding-vertical 14
+   :font-size        15
+   :text-align       :center
+   :ios              {:letter-spacing -0.2}
+   :android          {:color colors/black}})
+
+(defstyle profile-name-input-text
+  {:font-size  15
    :text-align :center
-   :ios        {:letter-spacing -0.2}
+   :ios        {:letter-spacing -0.2
+                :height         46
+                :width          800}
    :android    {:color colors/black}})
 
 (def profile-badge-name-container

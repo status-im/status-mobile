@@ -6,7 +6,8 @@
             [status-im.ui.components.common.styles :as styles]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [re-frame.core :as re-frame]))
 
 (defn top-shadow []
   (when platform/android?
@@ -72,3 +73,15 @@
        (if (ethereum/testnet? network-id)
          (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
          (i18n/label :t/mainnet-text))]]]))
+
+(defn icon-or-label
+  "Renders a touchable icon on Android or a label or iOS."
+  [action-opts label-kw label-style icon-id icon-opts]
+  [react/touchable-highlight action-opts
+   (if platform/ios?
+     [react/view
+      [react/text {:style (merge styles/label-action-text label-style)}
+       (i18n/label label-kw)]]
+     [react/view styles/icon-action
+      [vector-icons/icon icon-id icon-opts]])])
+
