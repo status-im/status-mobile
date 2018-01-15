@@ -1,32 +1,30 @@
 (ns status-im.ui.screens.profile.styles
-  (:require [status-im.ui.components.styles
-             :as styles
-             :refer
-             [color-black
-              color-gray4
-              color-gray5
-              color-light-blue
-              color-light-gray
-              color-white
-              text1-color]]
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
+(defstyle toolbar-edit-text
+  {:padding-right 16
+   :color         colors/blue
+   :ios           {:font-size 15}
+   :android       {:font-size 14}})
+
 (def profile
   {:flex             1
-   :background-color color-light-gray
+   :background-color colors/white
    :flex-direction   :column})
 
 (def profile-form
-  {:background-color color-white
+  {:background-color colors/white
    :padding          16})
 
 (def edit-my-profile-form
-  {:background-color color-white
+  {:background-color colors/white
    :flex             1})
 
 (defstyle profile-info-container
-  {:background-color color-white})
+  {:background-color colors/white})
 
 (def profile-info-item-button
   {:padding 16})
@@ -37,7 +35,7 @@
    :padding-top   6})
 
 (defstyle status-prompt-text
-  {:color   color-gray4
+  {:color   colors/gray
    :ios     {:font-size      14
              :line-height    25
              :letter-spacing -0.2}
@@ -45,14 +43,16 @@
              :font-size   12}})
 
 (def profile-status-container
-  {:background-color color-light-gray
+  {:background-color colors/gray
    :margin-top       16
    :border-radius    4
    :padding          16
    :max-height       114})
 
 (def profile-badge
-  {:flex-direction :row})
+  {:flex-direction  :column
+   :justify-content :center
+   :align-items     :center})
 
 (def edit-profile-badge
   {:flex-direction :row
@@ -69,27 +69,27 @@
   {:padding-top 25})
 
 (def edit-name-title
-  {:color   color-gray4
+  {:color   colors/gray
    :ios     {:font-size      13
              :letter-spacing -0.1}
    :android {:font-size 12}})
 
 (defstyle profile-name-text
-  {:ios     {:font-size      17
-             :letter-spacing -0.2}
-   :android {:color     color-black
-             :font-size 16}})
+  {:margin-top 8
+   :font-size  15
+   :text-align :center
+   :ios        {:letter-spacing -0.2}
+   :android    {:color colors/black}})
 
 (def profile-badge-name-container
   {:flex            1
-   :justify-content :center
-   :padding-left    16})
+   :justify-content :center})
 
 (def profile-activity-status-container
   {:margin-top 4})
 
 (defstyle profile-activity-status-text
-  {:color   color-gray4
+  {:color   colors/gray
    :ios     {:font-size      14
              :line-height    20
              :letter-spacing -0.2}
@@ -107,24 +107,19 @@
   {:flex          1
    :padding-right (if options 16 40)})
 
-(defstyle profile-setting-title
-  {:color   color-gray4
-   :ios     {:font-size      14
-             :letter-spacing -0.2}
-   :android {:font-size 12}})
+(defstyle profile-settings-title
+  {:color         colors/gray
+   :margin-left   16
+   :margin-top    18
+   :margin-bottom 20
+   :font-size     14
+   :ios           {:letter-spacing -0.2}})
 
 (defstyle profile-setting-text
   {:ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 16
-             :color     color-black}})
-
-(defstyle logout-text
-  {:padding-left 16
-   :color        styles/color-red
-   :ios          {:font-size      17
-                  :letter-spacing -0.2}
-   :android      {:font-size 16}})
+             :color     colors/black}})
 
 (defstyle profile-setting-spacing
   {:ios     {:height 10}
@@ -132,45 +127,48 @@
 
 (def profile-setting-text-empty
   (merge profile-setting-text
-         {:color color-gray4}))
+         {:color colors/gray}))
 
-(def info-item-separator
+(def settings-item-separator
   {:margin-left 16})
 
-(defstyle network-settings
+(defstyle settings-item
   {:padding-horizontal 16
    :flex-direction     :row
    :align-items        :center
-   :background-color   color-white
-   :android            {:height 72}
-   :ios                {:height 64}})
+   :background-color   colors/white
+   :height             52})
 
 (defstyle offline-messaging-settings
   {:padding-horizontal 16
    :flex-direction     :row
    :align-items        :center
-   :background-color   color-white
+   :background-color   colors/white
    :android            {:height 72}
    :ios                {:height 64}})
 
-(def network-settings-text
-  (merge {:flex 1}
-         profile-setting-text))
+(defstyle settings-item-text
+  {:flex      1
+   :font-size 15
+   :ios       {:letter-spacing -0.2}
+   :android   {:color colors/black}})
 
-(def offline-messaging-settings-text
-  (merge {:flex 1}
-         profile-setting-text))
+(def settings-item-value
+  {:padding-right 10
+   :font-size     15
+   :color         colors/gray})
+
+(defstyle logout-text
+  (merge settings-item-text
+         {:color        colors/red}))
 
 (def edit-line-color
   (if platform/ios?
-    (str color-gray5 "80")
-    color-gray5))
-
-(def profile-focus-line-color
-  color-light-blue)
+    (str styles/color-gray5 "80")
+    styles/color-gray5))
 
 (defstyle profile-name-input
-  {:color   text1-color
+  {:color   styles/text1-color
    :ios     {:font-size      17
              :padding-bottom 0
              :line-height    17
@@ -183,7 +181,7 @@
 
 (defstyle profile-status-input
   {:line-height  24                                         ;;TODO doesnt' work for multiline because a bug in the RN
-   :color        text1-color
+   :color        colors/black
    :padding-left 0
    :ios          {:font-size      17
                   :padding-bottom 0
@@ -197,14 +195,14 @@
                   :padding-bottom      0}})
 
 (defstyle profile-status-text
-  {:color       text1-color
+  {:color       colors/black
    :line-height 24
    :ios         {:font-size      17
                  :letter-spacing -0.2}
    :android     {:font-size 16}})
 
 (defstyle edit-profile-status
-  {:background-color   color-light-gray
+  {:background-color   styles/color-light-gray
    :border-radius      4
    :height             90
    :padding-horizontal 16
@@ -218,6 +216,34 @@
 
 (def add-a-status
   (merge profile-status-text
-         {:color color-gray4}))
+         {:color colors/gray}))
 
 (def network-info {:background-color :white})
+
+(def share-contact-code
+  {:margin-horizontal 16
+   :flex-direction    :row
+   :justify-content   :space-between
+   :align-items       :center
+   :height            42
+   :border-radius     8
+   :background-color  styles/color-blue4-transparent})
+
+(def share-contact-code-text-container
+  {:padding-left    16
+   :padding-bottom  1
+   :flex            0.9
+   :flex-direction  :row
+   :justify-content :center
+   :align-items     :center})
+
+(def share-contact-code-text
+  {:color     colors/blue
+   :font-size 15})
+
+(def share-contact-icon-container
+  {:border-radius   50
+   :flex            0.1
+   :padding-right   5
+   :align-items     :center
+   :justify-content :center})

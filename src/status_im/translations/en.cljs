@@ -27,7 +27,9 @@
 
    ;;drawer
    :switch-users                          "Switch users"
-   :logout                                "Logout"
+   :logout-title                          "Log out?"
+   :logout-are-you-sure                   "Are you sure you want\nto log out?"
+   :logout                                "Log out"
    :current-network                       "Current network"
 
    ;;home
@@ -83,10 +85,13 @@
    ;;profile
    :profile                               "Profile"
    :edit-profile                          "Edit profile"
+   :main-currency                         "Main currency"
    :message                               "Message"
+   :notifications                         "Notifications"
    :not-specified                         "Not specified"
    :public-key                            "Public key"
    :phone-number                          "Phone number"
+   :share-contact-code                    "Share my contact code"
    :update-status                         "Update your status..."
    :add-a-status                          "Add a status..."
    :status-prompt                         "Set your status. Using #hastags will help others discover you and talk about what's on your mind"
@@ -378,6 +383,7 @@
    :process-json                          "Process JSON"
    :error-processing-json                 "Error processing JSON"
    :rpc-url                               "RPC URL"
+   :network                               "Network"
    :remove-network                        "Remove network"
    :network-settings                      "Network settings"
    :offline-messaging-settings            "Offline messages settings"

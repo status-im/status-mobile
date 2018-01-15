@@ -1,4 +1,5 @@
-(ns status-im.ui.components.styles)
+(ns status-im.ui.components.styles
+  (:require [status-im.utils.platform :as platform]))
 
 ;; TODO(oskarth): Make a palette of all these colors
 
@@ -157,3 +158,10 @@
 (def main-container
   {:background-color color-white
    :flex             1})
+
+;; TODO(goranjovic): replace all platform conditional uppercase styling with a reference to this var
+(def uppercase?
+  (condp = platform/platform
+    "android" true
+    "ios"     false
+    false))

@@ -1,5 +1,4 @@
 (ns status-im.utils.ethereum.tokens
-  (:require [status-im.ui.components.styles :as styles])
   (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons]]))
 
 (defn- asset-border [color]
@@ -9,7 +8,10 @@
                :symbol   :ETH
                :decimals 18
                :icon     {:source (js/require "./resources/images/assets/ethereum.png")
-                          :style  (asset-border styles/color-light-blue-transparent)}})
+                          ;; TODO(goranjovic) find a better place to set UI info
+                          ;; like colors. Removed the reference to component.styles to
+                          ;; avoid circular dependency between namespaces.
+                          :style  (asset-border "#628fe333")}})
 
 (defn ethereum? [k]
   (= k (:symbol ethereum)))
