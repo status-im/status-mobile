@@ -1,14 +1,9 @@
 (ns status-im.ui.screens.qr-scanner.events
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.camera :as camera]
-            [status-im.ui.screens.navigation :as nav]
             [status-im.utils.handlers :as u :refer [register-handler]]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]))
-
-(defmethod nav/preload-data! :qr-scanner
-  [db [_ _ identifier]]
-  (assoc db :current-qr-context identifier))
 
 (defn set-current-identifier [db [_ identifier handler]]
   (assoc-in db [:qr-codes identifier] handler))
@@ -17,7 +12,7 @@
   [_ [_ identifier]]
   (re-frame/dispatch [:request-permissions
                       [:camera]
-                      #(re-frame/dispatch [:navigate-to :qr-scanner identifier])
+                      #(re-frame/dispatch [:navigate-to :qr-scanner {:current-qr-context identifier}])
                       #(utils/show-popup (i18n/label :t/error)
                                          (i18n/label :t/camera-access-error))]))
 

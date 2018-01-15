@@ -118,13 +118,12 @@
        [more-btn contacts-limit contacts-count #(dispatch [:navigate-to :edit-group-contact-list])])]))
 
 (defview edit-contact-group []
-  (letsubs [group-name [:get :new-chat-name]
-            group [:get-contact-group]
-            type [:get-group-type]]
-    (let [save-btn-enabled? (and (spec/valid? ::v/name group-name)
+  (letsubs [{:keys [group group-type]} [:get-screen-params]]
+    (let [group-name        (:name group)
+          save-btn-enabled? (and (spec/valid? ::v/name group-name)
                                  (not= group-name (:name group)))]
       [keyboard-avoiding-view {:style styles/group-container}
-       [group-toolbar type true]
+       [group-toolbar group-type true]
        [group-name-view]
        [view styles/list-view-container
         [add-btn #(dispatch [:navigate-to :add-contacts-toggle-list])]

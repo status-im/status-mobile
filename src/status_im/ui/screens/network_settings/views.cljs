@@ -45,7 +45,7 @@
   (fn [{:keys [id name config] :as network}]
     (let [connected? (= id current-network)]
       [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:navigate-to :network-details network])}
+       {:on-press #(re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}])}
        [react/view styles/network-item
         [network-icon connected? 40]
         [react/view {:padding-horizontal 16}

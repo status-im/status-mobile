@@ -27,7 +27,7 @@
   (fn [db [_ path]]
     (get-in db path)))
 
-(reg-sub :signed-up? 
+(reg-sub :signed-up?
   :<- [:get-current-account]
   (fn [current-account]
     (:signed-up? current-account)))
@@ -54,3 +54,7 @@
   :<- [:sync-state]
   (fn [sync-state]
     (#{:pending :in-progress} sync-state)))
+
+(reg-sub :get-screen-params
+  (fn [db [_ view-id]]
+    (get-in db [:navigation/screen-params (or view-id (:view-id db))])))

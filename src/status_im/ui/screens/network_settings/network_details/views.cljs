@@ -22,9 +22,10 @@
     :value #(rf/dispatch [:network-remove])}])
 
 (views/defview network-details []
-  (views/letsubs [{:keys [id name config]} [:get :networks/selected-network]
+  (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]
                   {:keys [network]} [:get-current-account]]
-    (let [connected? (= id network)]
+    (let [{:keys [id name config]} selected-network
+          connected? (= id network)]
       [react/view {:flex 1}
        [status-bar/status-bar]
        [toolbar/simple-toolbar]

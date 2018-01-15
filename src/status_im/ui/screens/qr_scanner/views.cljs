@@ -15,7 +15,7 @@
      [toolbar/simple-toolbar title]]))
 
 (defview qr-scanner []
-  (letsubs [identifier [:get :current-qr-context]
+  (letsubs [{identifier :current-qr-context} [:get-screen-params]
             camera-initialized? (reagent/atom false)]
 
     [react/view styles/barcode-scanner-container

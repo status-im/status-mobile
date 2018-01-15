@@ -2,7 +2,6 @@
   (:require [re-frame.core :refer [dispatch dispatch-sync after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
             [status-im.data-store.networks :as networks]
-            [status-im.ui.screens.network-settings.navigation]
             [status-im.ui.screens.accounts.events :as accounts-events]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as utils]))

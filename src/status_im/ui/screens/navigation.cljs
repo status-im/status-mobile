@@ -43,10 +43,15 @@
 
 (defn navigate-to
   "Navigates to particular view"
-  [{:keys [view-id] :as db} go-to-view-id]
-  (if (= view-id go-to-view-id)
-    db
-    (push-view db go-to-view-id)))
+  ([db go-to-view-id]
+   (navigate-to db go-to-view-id nil))
+  ([{:keys [view-id] :as db} go-to-view-id screen-params]
+   (let [db (cond-> db
+              (seq screen-params)
+              (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
+     (if (= view-id go-to-view-id)
+       db
+       (push-view db go-to-view-id)))))
 
 ;; event handlers
 
@@ -59,8 +64,8 @@
 (register-handler-db
   :navigate-to
   (re-frame/enrich preload-data!)
-  (fn [db [_ new-view-id]]
-    (navigate-to db new-view-id)))
+  (fn [db [_ & params]]
+    (apply navigate-to db params)))
 
 (register-handler-db
   :navigate-to-modal

@@ -54,7 +54,7 @@
                    :url        dapp-url
                    :contact    (:whisper-identity contact)}]
       (merge (add-browser-fx cofx browser)
-             {:dispatch [:navigate-to :browser (:browser-id browser)]}))))
+             {:dispatch [:navigate-to :browser {:browser/browser-id (:browser-id browser)}]}))))
 
 (handlers/register-handler-fx
   :open-browser
@@ -62,7 +62,7 @@
   (fn [{:keys [now] :as cofx} [browser]]
     (let [new-browser (get-new-browser browser now)]
       (merge (add-browser-fx cofx new-browser)
-             {:dispatch [:navigate-to :browser (:browser-id new-browser)]}))))
+             {:dispatch [:navigate-to :browser {:browser/browser-id (:browser-id new-browser)}]}))))
 
 (handlers/register-handler-fx
   :update-browser

@@ -26,7 +26,8 @@
    {:text (label :t/reorder-groups) :value #(dispatch [:navigate-to :reorder-groups])}])
 
 (defn toolbar-actions []
-  [(act/search #(dispatch [:navigate-to :group-contacts nil :show-search]))
+  [(act/search #(dispatch [:navigate-to :group-contacts {:group/contact-group-id nil
+                                                         :show-search?           :show-search}]))
    (act/opts (if ios? toolbar-options (rest toolbar-options)))])
 
 (defn toolbar-view []
@@ -63,7 +64,8 @@
        [common/form-title subtitle
         {:count-value contacts-count
          :extended?   edit?
-         :options     [{:action #(dispatch [:navigate-to :edit-contact-group group :contact-group])
+         :options     [{:action #(dispatch [:navigate-to :edit-contact-group {:group      group
+                                                                              :group-type :contact-group}])
                         :label  (label :t/edit-group)}]}])
      [view st/contacts-list
       [common/list-footer]
@@ -86,7 +88,7 @@
          [touchable-highlight {:on-press #(do
                                             (when edit?
                                               (dispatch [:set-in [:contacts/list-ui-props :edit?] true]))
-                                            (dispatch [:navigate-to :group-contacts (:group-id group)]))}
+                                            (dispatch [:navigate-to :group-contacts {:group/contact-group-id (:group-id group)}]))}
           [view
            [text {:style      st/show-all-text
                   :uppercase? (get-in platform-specific [:uppercase?])
