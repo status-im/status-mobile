@@ -44,19 +44,14 @@
                                                   (swap! peers conj enode)
                                                   (success-fn result))))))
 
-;; TODO(oskarth): Use web3 binding to do (.markTrustedPeer web3 enode cb)
-(defn mark-trusted-peer [enode success-fn error-fn]
+(defn mark-trusted-peer [web3 enode success-fn error-fn]
   (if (@trusted-peers enode)
     (success-fn true)
-    (let [args {:jsonrpc "2.0"
-                :id      1
-                :method  "shh_markTrustedPeer"
-                :params  [enode]}
-          payload (.stringify js/JSON (clj->js args))]
-      (status/call-web3 payload
-                        (response-handler error-fn (fn [result]
-                                                     (swap! trusted-peers conj enode)
-                                                     (success-fn result)))))))
+    (.markTrustedPeer (utils/shh web3)
+                      enode
+                      (response-handler error-fn (fn [result]
+                                                   (swap! trusted-peers conj enode)
+                                                   (success-fn result))))))
 
 (defn request-messages [web3 wnode topic sym-key-id success-fn error-fn]
   (log/info "offline inbox: sym-key-id" sym-key-id)

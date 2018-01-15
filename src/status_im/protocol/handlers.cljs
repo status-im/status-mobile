@@ -226,7 +226,8 @@
 (re-frame/reg-fx
  ::mark-trusted-peer
  (fn [{:keys [wnode web3]}]
-   (inbox/mark-trusted-peer wnode
+   (inbox/mark-trusted-peer web3
+                            wnode
                             #(re-frame/dispatch [::mark-trusted-peer-success web3 %])
                             #(re-frame/dispatch [::mark-trusted-peer-error %]))))
 
