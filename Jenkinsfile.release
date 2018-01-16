@@ -30,7 +30,7 @@ node ('macos1'){
 
       checkout scm
       sh 'git checkout -- .'
-      sh 'git checkout develop'
+      sh 'git checkout -t -b develop origin/develop'
       sh 'git checkout remotes/origin/' + BRANCH_NAME
       sh 'git fetch --tags'
 
