@@ -11,8 +11,10 @@
             [status-im.i18n :as i18n]
             [status-im.utils.random :as random]
             [status-im.protocol.message-cache :as cache]
+            [status-im.protocol.listeners :as listeners]
             [status-im.chat.utils :as chat.utils]
             [status-im.utils.datetime :as datetime]
+            [status-im.utils.events-buffer :as events-buffer]
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
@@ -81,7 +83,7 @@
       {:web3                        web3
        :identity                    public-key
        :groups                      groups
-       :callback                    #(re-frame/dispatch [:incoming-message %1 %2])
+       :callback                    #(events-buffer/dispatch [:incoming-message %1 %2])
        :ack-not-received-s-interval 125
        :default-ttl                 120
        :send-online-s-interval      180
@@ -215,8 +217,18 @@
       (processed-messages/delete (str "ttl <=" now)))))
 
 
+(re-frame/reg-fx
+ ::handle-whisper-message
+ listeners/handle-whisper-message)
+
 ;;;; Handlers
 
+(handlers/register-handler-fx
+ :handle-whisper-message
+ (fn [_ [_ error msg options]]
+   {::handle-whisper-message {:error error
+                              :msg msg
+                              :options options}}))
 
 ;;; INITIALIZE PROTOCOL
 (handlers/register-handler-fx

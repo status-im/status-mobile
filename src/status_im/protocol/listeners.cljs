@@ -4,7 +4,8 @@
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
             [taoensso.timbre :as log]
-            [status-im.utils.hex :as i]))
+            [status-im.utils.hex :as i]
+            [status-im.utils.events-buffer :as events-buffer]))
 
 (defn empty-public-key? [public-key]
   (or (= "0x0" public-key)
@@ -84,13 +85,16 @@
       (callback (if ack? :ack (:type payload)) message)
       (ack/check-ack! web3 sig payload identity))))
 
+(defn- handle-whisper-message [{:keys [error msg options]}]
+  (-> (init-scope error msg options)
+      parse-payload
+      filter-messages-from-same-user
+      parse-content
+      handle-message))
+
 (defn message-listener
   "Valid options are: web3, identity, callback, keypair"
   [options]
   (fn [js-error js-message]
-    (-> (init-scope js-error js-message options)
-        parse-payload
-        filter-messages-from-same-user
-        parse-content
-        handle-message)))
+    (events-buffer/dispatch [:handle-whisper-message js-error js-message options])))
 

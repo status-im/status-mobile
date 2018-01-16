@@ -14,6 +14,7 @@
             [status-im.chat.views.message.request-message :as request-message]
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.utils.events-buffer :as events-buffer]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
@@ -266,7 +267,7 @@
   (if (:new? message)
     (let [layout-height (reagent/atom 0)
           anim-value    (animation/create-value 1)
-          anim-callback #(re-frame/dispatch [:set-message-shown message])
+          anim-callback #(events-buffer/dispatch [:set-message-shown message])
           context       {:to-value layout-height
                          :val      anim-value
                          :callback anim-callback}
@@ -293,10 +294,10 @@
      ;; send `:seen` signal when we have signed-in user, message not from us and we didn't sent it already
      #(when (and current-public-key message-id chat-id (not outgoing)
                  (not (chat.utils/message-seen-by? message current-public-key)))
-        (re-frame/dispatch [:send-seen! {:chat-id    chat-id
-                                         :from       from
-                                         :me         current-public-key
-                                         :message-id message-id}]))
+        (events-buffer/dispatch [:send-seen! {:chat-id    chat-id
+                                              :from       from
+                                              :me         current-public-key
+                                              :message-id message-id}]))
      :reagent-render
      (fn [{:keys [outgoing group-chat content-type content] :as message}]
        [message-container message
