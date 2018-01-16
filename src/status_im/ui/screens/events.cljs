@@ -24,6 +24,7 @@
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.browser.events
             status-im.ui.screens.add-new.open-dapp.events
+            status-im.ui.screens.offline-messaging-settings.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
@@ -250,8 +251,10 @@
   (fn [{:keys [accounts/accounts contacts/contacts networks/networks
                network network-status view-id navigation-stack chats
                access-scope->commands-responses layout-height
-               status-module-initialized? status-node-started?]
-        :or [network (get app-db :network)]
+               status-module-initialized? status-node-started?
+               inbox/wnode]
+        :or [network (get app-db :network)
+             wnode   (get app-db :inbox/wnode)]
         :as db} [_ address]]
     (let [console-contact (get contacts console-chat-id)]
       (cond-> (assoc app-db
@@ -270,7 +273,8 @@
                      :accounts/creating-account? false
                      :networks/networks networks
                      :network-status network-status
-                     :network network)
+                     :network network
+                     :inbox/wnode wnode)
         console-contact
         (assoc :contacts/contacts {console-chat-id console-contact})))))
 

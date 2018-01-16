@@ -49,6 +49,7 @@
              :network                    constants/default-network
              :networks/networks          constants/default-networks
              :inbox/wnode                constants/default-wnode
+             :inbox/wnodes               constants/default-wnodes
              :inbox/topic                constants/inbox-topic
              :inbox/password             constants/inbox-password
              :my-profile/editing?        false})
@@ -132,6 +133,7 @@
                   :node/after-start
                   :node/after-stop
                   :inbox/wnode
+                  :inbox/wnodes
                   :inbox/topic
                   :inbox/password
                   :browser/browsers
@@ -176,7 +178,7 @@
                   :chat/message-data
                   :chat/message-status
                   :chat/selected-participants
-                  :chat/chat-loaded-callbacks 
+                  :chat/chat-loaded-callbacks
                   :chat/public-group-topic
                   :chat/confirmation-code-sms-listener
                   :chat/messages

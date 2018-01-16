@@ -17,7 +17,7 @@
             [status-im.chat.models.message :as models.message]
             [status-im.protocol.web3.inbox :as inbox]
             [status-im.protocol.web3.keys :as web3.keys]
-            [status-im.utils.datetime :as datetime] 
+            [status-im.utils.datetime :as datetime]
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
@@ -274,14 +274,16 @@
  :initialize-offline-inbox
  (fn [{:keys [db]} [_ web3]]
    (log/info "offline inbox: initialize")
-   (let [wnode (get-in db [:inbox/wnode :address])]
+   (let [wnode-id (get db :inbox/wnode)
+         wnode    (get-in db [:inbox/wnodes wnode-id :address])]
      {::add-peer {:wnode wnode
                   :web3  web3}})))
 
 (handlers/register-handler-fx
  ::add-peer-success
  (fn [{:keys [db]} [_ web3 response]]
-   (let [wnode (get-in db [:inbox/wnode :address])]
+   (let [wnode-id (get db :inbox/wnode)
+         wnode    (get-in db [:inbox/wnodes wnode-id :address])]
      (log/info "offline inbox: add-peer response" wnode response)
      {::fetch-peers {:wnode wnode
                      :web3  web3
@@ -290,7 +292,8 @@
 (handlers/register-handler-fx
  ::fetch-peers-success
  (fn [{:keys [db]} [_ web3 peers retries]]
-   (let [wnode (get-in db [:inbox/wnode :address])]
+   (let [wnode-id (get db :inbox/wnode)
+         wnode    (get-in db [:inbox/wnodes wnode-id :address])]
      (log/info "offline inbox: fetch-peers response" peers)
      (if (inbox/registered-peer? peers wnode)
        {::mark-trusted-peer {:wnode wnode
@@ -298,14 +301,15 @@
                              :peers peers}}
        (do
          (log/info "Peer" wnode "is not registered. Retrying fetch peers.")
-         {::fetch-peers {:wnode wnode
-                         :web3  web3
+         {::fetch-peers {:wnode   wnode
+                         :web3    web3
                          :retries (inc retries)}})))))
 
 (handlers/register-handler-fx
  ::mark-trusted-peer-success
  (fn [{:keys [db]} [_ web3 response]]
-   (let [wnode    (get-in db [:inbox/wnode :address])
+   (let [wnode-id (get db :inbox/wnode)
+         wnode    (get-in db [:inbox/wnodes wnode-id :address])
          password (:inbox/password db)]
      (log/info "offline inbox: mark-trusted-peer response" wnode response)
      {::get-sym-key {:password password
@@ -317,8 +321,9 @@
  ::get-sym-key-success
  (fn [{:keys [db]} [_ web3 sym-key-id]]
    (log/info "offline inbox: get-sym-key response" sym-key-id)
-   (let [wnode (get-in db [:inbox/wnode :address])
-         topic (:inbox/topic db)]
+   (let [wnode-id (get db :inbox/wnode)
+         wnode    (get-in db [:inbox/wnodes wnode-id :address])
+         topic    (:inbox/topic db)]
      {::request-messages {:wnode      wnode
                           :topic      topic
                           :sym-key-id sym-key-id
@@ -424,7 +429,7 @@
 
 ;;; MESSAGES
 
-(defn- transform-protocol-message [{:keys [from to payload]}] 
+(defn- transform-protocol-message [{:keys [from to payload]}]
   (merge payload {:from    from
                   :to      to
                   :chat-id (or (:group-id payload) from)}))
@@ -439,7 +444,7 @@
   (or ack-of-message message-id))
 
 (handlers/register-handler-fx
-  :incoming-message 
+  :incoming-message
   (fn [{:keys [db]} [_ type {:keys [payload ttl id] :as message}]]
     (let [message-id (or id (:message-id payload))]
       (when-not (cache/exists? message-id type)
@@ -473,7 +478,7 @@
                          :discoveries-response   {:dispatch [:discoveries-response-received message]}
                          :profile                {:dispatch [:contact-update-received message]}
                          :update-keys            {:dispatch [:update-keys-received message]}
-                         :online                 {:dispatch [:contact-online-received message]} 
+                         :online                 {:dispatch [:contact-online-received message]}
                          nil)]
           (when (nil? route-fx) (log/debug "Unknown message type" type))
           (cache/add! processed-message)
@@ -487,19 +492,19 @@
   (fn [{:keys [db get-stored-message]} [{:keys [from sent-from payload]} status]]
     (let [message-identifier (get-message-id payload)
           chat-identifier    (or (:group-id payload) from)
-          message-db-path    [:chats chat-identifier :messages message-identifier] 
-          from-id            (or sent-from from) 
+          message-db-path    [:chats chat-identifier :messages message-identifier]
+          from-id            (or sent-from from)
           message            (or (get-in db message-db-path)
                                  (and (get (:not-loaded-message-ids db) message-identifier)
                                       (get-stored-message message-identifier)))]
-      ;; proceed with updating status if chat is in db, status is not the same and message was not already seen 
+      ;; proceed with updating status if chat is in db, status is not the same and message was not already seen
       (when (and message
                  (get-in db [:chats chat-identifier])
                  (not= status (get-in message [:user-statuses from-id]))
                  (not (models.message/message-seen-by? message from-id)))
         (let [statuses (assoc (:user-statuses message) from-id status)]
           (cond-> {:update-message {:message-id    message-identifier
-                                    :user-statuses statuses}} 
+                                    :user-statuses statuses}}
             (get-in db message-db-path)
             (assoc :db (assoc-in db (conj message-db-path :user-statuses) statuses))))))))
 
@@ -527,7 +532,7 @@
             ;; Get timestamp from message root level.
             ;; Root level "timestamp" is a unix ts in seconds.
             timestamp'        (or (:payload timestamp)
-                                  (* 1000 timestamp))] 
+                                  (* 1000 timestamp))]
         (if-not existing-contact
           (let [contact (assoc contact :pending? true)]
             {:dispatch-n [[:add-contacts [contact]]

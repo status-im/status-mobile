@@ -92,11 +92,12 @@
 
 (defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
+  [{:keys [network inbox/wnode] :networks/keys [networks] :as db} {:keys [address] :as account}]
   (let [enriched-account (assoc account
-                                :network network
+                                :network  network
                                 :networks networks
-                                :address address)]
+                                :wnode    wnode
+                                :address  address)]
     {:db            (assoc-in db [:accounts/accounts address] enriched-account)
      ::save-account enriched-account}))
 

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.offline-messaging-settings.views
-  (:require [status-im.constants :as constants]
+  (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -11,23 +12,19 @@
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
             [reagent.core :as reagent])
-  (:require-macros [status-im.utils.views :as views]))
-
-(defn- add-wnode []
-  ;; TODO:(dmitryn) to be added in #2751
-  (log/info "add wnode not implemented"))
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- wnode-icon [connected?]
   [react/view (styles/wnode-icon connected?)
    [vector-icons/icon :icons/wnode {:color (if connected? :white :gray)}]])
 
 (defn- render-row [current-wnode]
-  (fn [{:keys [address name] :as row} _ _]
-    (let [connected? (= address (:address current-wnode))]
+  (fn [{:keys [address name id] :as row} _ _]
+    (let [connected? (= id current-wnode)]
       [react/list-item
        ^{:key row}
        [react/touchable-highlight
-        {:on-press add-wnode}
+        {:on-press #(re-frame/dispatch [:connect-wnode id])}
         [react/view styles/wnode-item
          [wnode-icon connected?]
          [react/view styles/wnode-item-inner
@@ -53,10 +50,9 @@
                     [common/list-footer]
                     [common/bottom-shadow]]])
 
-(views/defview offline-messaging-settings []
-  ;; TODO:(dmitryn) store wnodes in user account, but now use defaults for MVP
-  (let [current-wnode  constants/default-wnode
-        wnodes         constants/default-wnodes]
+(defview offline-messaging-settings []
+  (letsubs [current-wnode  [:get :inbox/wnode]
+            wnodes         [:get :inbox/wnodes]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/offline-messaging-settings)]
@@ -66,7 +62,7 @@
       ;; TODO(dmitryn) migrate to :header/:footer properties of flat-list
       ;; after merge of https://github.com/status-im/status-react/pull/2297/
       [render-header wnodes]
-      [list/flat-list {:data wnodes
+      [list/flat-list {:data (vals wnodes)
                        :separator? false
                        :render-fn (render-row current-wnode)
                        :ListFooterComponent (reagent/as-element (render-footer))

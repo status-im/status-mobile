@@ -9,7 +9,8 @@
             [status-im.native-module.core :as status]
             [status-im.constants :refer [console-chat-id]]
             [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.constants :as constants]))
 
 ;;;; FX
 
@@ -70,6 +71,9 @@
     {:network network
      :config  config}))
 
+(defn get-wnode-by-address [db address]
+  (get-in db [:accounts/accounts address :wnode] constants/default-wnode))
+
 (defn wrap-with-initialize-geth-fx [db address password]
   (let [{:keys [network config]} (get-network-by-address db address)]
     {:initialize-geth-fx config
@@ -92,8 +96,10 @@
   (fn [{{:keys [network status-node-started?] :as db} :db}
        [_ address password account-creation?]]
     (let [{account-network :network} (get-network-by-address db address)
+          wnode (get-wnode-by-address db address)
           db' (-> db
                   (assoc :accounts/account-creation? account-creation?)
+                  (assoc :inbox/wnode wnode)
                   (assoc-in [:accounts/login :processing] true))
           wrap-fn (cond (not status-node-started?)
                         wrap-with-initialize-geth-fx

@@ -13,7 +13,7 @@
 (def text-content-type "text/plain")
 (def content-type-log-message "log-message")
 (def content-type-command "command")
-(def content-type-command-request "command-request") 
+(def content-type-command-request "command-request")
 (def content-type-status "status")
 
 (def min-password-length 6)
@@ -82,10 +82,15 @@
           (when config/mainnet-networks-enabled? mainnet-networks))))
 
 ;; adamb's status-cluster enode
-(def default-wnode {:name "Status mailserver"
-                    :address "enode://08d8eb6177b187049f6c97ed3f6c74fbbefb94c7ad10bafcaf4b65ce89c314dcfee0a8bc4e7a5b824dfa08b45b360cc78f34f0aff981f8386caa07652d2e601b@163.172.177.138:40404"})
+(def default-wnode "main")
 
-(def default-wnodes [default-wnode])
+(def default-wnodes
+  {"main" {:id      "main"
+           :name    "Status mailserver"
+           :address "enode://08d8eb6177b187049f6c97ed3f6c74fbbefb94c7ad10bafcaf4b65ce89c314dcfee0a8bc4e7a5b824dfa08b45b360cc78f34f0aff981f8386caa07652d2e601b@163.172.177.138:40404"}
+   "test" {:id      "test"
+           :name    "Status mailserver (test)"
+           :address "enode://e2fdcf8a55d9d1ab75b492c3b9a99c206cf5ceede3db716033d0605205218c9d9a406d04b3460f4e8a64f16907ab78ba88e0e46324568bf58b3329e2c5483faa@163.172.177.138:30353"}})
 
 ;; TODO(oskarth): Determine if this is the correct topic or not
 (def inbox-topic "0xaabb11ee")

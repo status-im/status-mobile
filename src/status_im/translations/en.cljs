@@ -399,6 +399,7 @@
    :close-app-title                       "Warning!"
    :close-app-content                     "The app will stop and close. When you reopen it, the selected network will be used"
    :close-app-button                      "Confirm"
+   :connect-wnode-content                 "Connect to {{name}}?"
 
    ;; browser
    :browser                               "Browser"
