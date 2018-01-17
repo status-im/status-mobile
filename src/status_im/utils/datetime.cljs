@@ -4,7 +4,8 @@
             [cljs-time.format :refer [formatters
                                       formatter
                                       unparse]]
-            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.i18n :refer [label label-pluralize locale]]
+            [status-im.js-dependencies :refer [moment]]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -21,6 +22,36 @@
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset (js/Date.)) 60))))
 
+(defn ->moment-locale [locale-str]
+  (let [locale-str (or locale-str "")
+        locales    (-> locale-str
+                       (.split "-")
+                       seq)
+        locales    (cond-> locales
+                     ;; add original locale str
+                     (= (.indexOf locales locale-str) -1)
+                     (conj locale-str)
+                     ;; combine the first one and the last one
+                     (> (count locales) 2)
+                     (conj (str (first locales) "-" (last locales))))]
+    (loop [[locale & locales] locales]
+      (.locale moment locale)
+      (if (= (.locale moment) (.toLowerCase locale))
+        locale
+        (if (seq locales)
+          (recur locales)
+          "en")))))
+
+(defn get-locale-datetime-formatter [locale]
+  (->moment-locale locale)
+  (fn [fmt ts]
+    (-> (js/Number ts)
+        moment
+        (.format fmt))))
+
+(def format-locale-datetime
+  (get-locale-datetime-formatter locale))
+
 (defn to-short-str
   ([ms]
    (to-short-str ms #(unparse (formatters :hour-minute) %)))
@@ -30,14 +61,12 @@
          today     (t/today-at-midnight)
          yesterday (plus today (days -1))]
      (cond
-       (before? date yesterday) (unparse (formatter "dd MMM hh:mm") local)
+       (before? date yesterday) (format-locale-datetime "ll HH:mm" ms)
        (before? date today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 
 (defn timestamp->mini-date [ms]
-  (unparse (formatter "dd MMM") (-> ms
-                                    from-long
-                                    (plus time-zone-offset))))
+  (format-locale-datetime "DD MMM" ms))
 
 (defn timestamp->time [ms]
   (unparse (formatter "HH:mm") (-> ms
@@ -50,10 +79,7 @@
                                                (plus time-zone-offset)))))
 
 (defn timestamp->long-date [ms]
-  (keyword (unparse (formatter "MMM DD YYYY HH:mm:ss")
-                    (-> ms
-                        from-long
-                        (plus time-zone-offset)))))
+  (keyword (format-locale-datetime "ll HH:mm:ss" ms)))
 
 (defn day-relative [ms]
   (when (pos? ms)
