@@ -29,7 +29,8 @@
       (if (and @loop? (not @answered?))
         request-message-icon-scale-delay
         0))
-     (anim/spring val {:toValue to-value})]))
+     (anim/spring val {:toValue         to-value
+                       :useNativeDriver true})]))
 
 (defn request-button-animation-logic
   [{:keys [to-value val loop? answered?] :as context}]
