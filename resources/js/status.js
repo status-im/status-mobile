@@ -6,16 +6,24 @@ var _status_catalog = {
     },
     status = {};
 
+// This is default 'common sense' scope for commands/response which don't
+// define any.
+// We want the command/response to apply for 1-1 chats with registered user,
+// as most of the bot developers will expect the sole registered user (for
+// things like sending, etc.) and it will be non global, available only
+// for that particular bot (that's what "dapps" in scope)
+var defaultScope = ["personal-chats", "registered", "dapps"];
+
 function scopeToBitMask(scope) {
     // this function transforms scopes array to a single integer by generating a bit mask 
-    return ((scope != null && scope.indexOf("global") > -1) ? 1 : 0) |
-        ((scope != null && scope.indexOf("personal-chats") > -1) ? 2 : 0) |
-        ((scope != null && scope.indexOf("group-chats") > -1) ? 4 : 0) |
-        ((scope != null && scope.indexOf("anonymous") > -1) ? 8 : 0) |
-        ((scope != null && scope.indexOf("registered") > -1) ? 16 : 0) |
-        ((scope != null && scope.indexOf("dapps") > -1) ? 32 : 0) |
-        ((scope != null && scope.indexOf("humans") > -1) ? 64 : 0) |
-        ((scope != null && scope.indexOf("public-chats") > -1) ? 128 : 0);
+    return ((scope.indexOf("global") > -1) ? 1 : 0) |
+        ((scope.indexOf("personal-chats") > -1) ? 2 : 0) |
+        ((scope.indexOf("group-chats") > -1) ? 4 : 0) |
+        ((scope.indexOf("anonymous") > -1) ? 8 : 0) |
+        ((scope.indexOf("registered") > -1) ? 16 : 0) |
+        ((scope.indexOf("dapps") > -1) ? 32 : 0) |
+        ((scope.indexOf("humans") > -1) ? 64 : 0) |
+        ((scope.indexOf("public-chats") > -1) ? 128 : 0);
 }
 
 function Command() {
@@ -55,7 +63,7 @@ Command.prototype.create = function (com) {
     this["hide-send-button"] = com.hideSendButton;
 
     // scopes
-    this.scope = com.scope; 
+    this.scope = com.scope || defaultScope; 
     this["scope-bitmask"] = scopeToBitMask(this["scope"]);
 
     this.addToCatalog();
