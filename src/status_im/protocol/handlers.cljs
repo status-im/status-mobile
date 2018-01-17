@@ -181,19 +181,19 @@
 
 (re-frame/reg-fx
   ::participant-invited-to-group-message
-  (fn [{:keys [chat-id current-identity identity from message-id timestamp]}]
+  (fn [{:keys [group-id current-identity identity from message-id timestamp]}]
     (let [inviter-name (:name (contacts/get-by-id from))
           invitee-name (if (= identity current-identity)
                          (i18n/label :t/You)
                          (:name (contacts/get-by-id identity)))]
       (re-frame/dispatch
-        [:chat-received-message/add
-         {:from "system"
-          :group-id chat-id
-          :timestamp timestamp
-          :message-id message-id
-          :content (str (or inviter-name from) " " (i18n/label :t/invited) " " (or invitee-name identity))
-          :content-type constants/text-content-type}]))))
+       [:chat-received-message/add
+        {:from "system"
+         :group-id group-id
+         :timestamp timestamp
+         :message-id message-id
+         :content (str (or inviter-name from) " " (i18n/label :t/invited) " " (or invitee-name identity))
+         :content-type constants/text-content-type}]))))
 
 (re-frame/reg-fx
   ::pending-messages-delete
@@ -507,13 +507,12 @@
          {:keys [group-id identity message-id timestamp]} :payload}]]
     (let [admin (get-in chats [group-id :group-admin])]
       (when (= from admin)
-        (merge
-          {::participant-invited-to-group-message {:group-id group-id :current-public-key current-public-key
-                                                   :identity identity :from from :message-id message-id
-                                                   :timestamp timestamp}}
-          (when-not (and (= current-public-key identity) has-contact?)
-            {:db (update-in db [:chats group-id :contacts] conj {:identity identity})
-             ::chats-add-contact [group-id [identity]]}))))))
+        (merge {::participant-invited-to-group-message {:group-id group-id :current-public-key current-public-key
+                                                        :identity identity :from from :message-id message-id
+                                                        :timestamp timestamp}}
+               (when-not (and (= current-public-key identity) has-contact?)
+                 {:db (update-in db [:chats group-id :contacts] conj {:identity identity})
+                  ::chats-add-contact [group-id identity]}))))))
 
 (handlers/register-handler-fx
   ::you-removed-from-group
