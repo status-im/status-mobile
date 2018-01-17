@@ -1,5 +1,4 @@
 (ns status-im.utils.pre-receiver
-  (:require-macros [cljs.core.async.macros :as async])
   (:require [cljs.core.async :as async]
             [taoensso.timbre :as log]))
 

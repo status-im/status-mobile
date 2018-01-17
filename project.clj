@@ -2,17 +2,16 @@
   :url "https://github.com/status-im/status-react/"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-RC1"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.946"]
-                 [org.clojure/core.async "0.3.443"]
+                 [org.clojure/core.async "0.4.474"]
                  [reagent "0.7.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]]
                  [re-frame "0.10.2"]
-                 [com.andrewmcveigh/cljs-time "0.5.0"]
+                 [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
                  [com.cognitect/transit-cljs "0.8.243"]]
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-figwheel "0.5.14"]
             [lein-re-frisk "0.5.5"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"       ^{:doc "Recompile code with prod profile."}

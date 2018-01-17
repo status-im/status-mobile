@@ -1,6 +1,6 @@
 (ns status-im.native-module.impl.module
   (:require-macros
-   [cljs.core.async.macros :as async :refer [go-loop go]])
+   [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.ui.components.react :as r]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]

@@ -1,5 +1,4 @@
 (ns status-im.chat.events.queue-message
-  (:require-macros [cljs.core.async.macros :as async-macros])
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [status-im.utils.config :as config]

@@ -1,4 +1,4 @@
-(ns ^:figwheel-no-load dev-run
+(ns ^:figwheel-no-load run
   (:use [figwheel-api]))
 
 (start)

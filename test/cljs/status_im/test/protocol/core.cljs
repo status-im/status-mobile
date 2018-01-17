@@ -1,5 +1,4 @@
 (ns status-im.test.protocol.core
-  (:require-macros [cljs.core.async.macros :as async])
   (:require [cljs.test :refer-macros [deftest is testing run-tests
                                       async use-fixtures]]
             [cljs.nodejs :as nodejs]

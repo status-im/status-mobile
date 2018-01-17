@@ -1,5 +1,4 @@
 (ns status-im.protocol.web3.delivery
-  (:require-macros [cljs.core.async.macros :as async])
   (:require [cljs.core.async :as async]
             [status-im.protocol.web3.transport :as t]
             [status-im.protocol.web3.utils :as u]
@@ -88,8 +87,8 @@
   [web3 message]
   {:pre [(valid? :protocol/message message)]} 
   (debug :add-pending-message! message)
-    ;; encryption can take some time, better to run asynchronously
-    (async/put! pending-message-queue [web3 message]))
+  ;; encryption can take some time, better to run asynchronously
+  (async/put! pending-message-queue [web3 message]))
 
 (s/def :delivery/pending-message
   (s/keys :req-un [:message/sig :message/to :shh/payload :payload/ack? ::id

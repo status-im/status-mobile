@@ -1,6 +1,5 @@
 (ns status-im.utils.async
   "Utility namespace containing `core.async` helper constructs"
-  (:require-macros [cljs.core.async.macros :as async])
   (:require [cljs.core.async :as async]))
 
 (defn chunked-pipe!

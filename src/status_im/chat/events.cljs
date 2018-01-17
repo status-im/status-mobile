@@ -1,5 +1,4 @@
 (ns status-im.chat.events
-  (:require-macros [cljs.core.async.macros :as async])
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]

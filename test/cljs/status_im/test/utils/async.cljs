@@ -1,5 +1,4 @@
 (ns status-im.test.utils.async
-  (:require-macros [cljs.core.async.macros :as async])
   (:require [cljs.test :refer-macros [deftest is testing async]]
             [cljs.core.async :as async]
             [status-im.utils.async :as async-util]))
