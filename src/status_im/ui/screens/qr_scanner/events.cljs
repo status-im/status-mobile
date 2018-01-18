@@ -17,11 +17,9 @@
   [_ [_ identifier]]
   (re-frame/dispatch [:request-permissions
                       [:camera]
-                      (fn []
-                        (camera/request-access
-                          #(if % (re-frame/dispatch [:navigate-to :qr-scanner identifier])
-                                 (utils/show-popup (i18n/label :t/error)
-                                                   (i18n/label :t/camera-access-error)))))]))
+                      #(re-frame/dispatch [:navigate-to :qr-scanner identifier])
+                      #(utils/show-popup (i18n/label :t/error)
+                                         (i18n/label :t/camera-access-error))]))
 
 (register-handler :scan-qr-code
   (re-frame/after navigate-to-scanner)

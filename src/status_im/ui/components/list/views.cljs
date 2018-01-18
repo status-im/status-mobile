@@ -31,20 +31,21 @@
 
 (defn item
   ([content] (item nil content))
-  ([left-action content] (item left-action content nil))
-  ([left-action content right-action]
+  ([left content] (item left content nil))
+  ([left content right]
    [react/view {:style styles/item}
     [react/view {:style styles/left-item-wrapper}
-     left-action]
+     left]
     [react/view {:style styles/content-item-wrapper}
      content]
-    (when right-action
+    (when right
       [react/view {:style styles/right-item-wrapper}
-       right-action])]))
+       right])]))
 
 (defn touchable-item [handler item]
   [react/touchable-highlight {:on-press handler}
-   item])
+   [react/view
+    item]])
 
 (defn item-icon
   [{:keys [icon style icon-opts]}]
@@ -84,7 +85,7 @@
 (def item-icon-forward
   [item-icon {:style     styles/item-icon
               :icon      :icons/forward
-              :icon-opts {:color colors/white-transparent}}])
+              :icon-opts {:color colors/white-light-transparent}}])
 
 (defn- wrap-render-fn [f]
   (fn [data]

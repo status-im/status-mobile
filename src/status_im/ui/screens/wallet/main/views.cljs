@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -18,12 +17,12 @@
             [status-im.utils.platform :as platform]))
 
 (defn toolbar-view []
-  [toolbar/toolbar {:style wallet.styles/toolbar}
+  [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
    nil
    [toolbar/content-wrapper]
    [toolbar/actions
-    [(assoc (act/opts [{:text  (i18n/label :t/wallet-manage-assets)
-                        :value #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}])
+    [(assoc (act/opts [{:label  (i18n/label :t/wallet-manage-assets)
+                        :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}])
        :icon-opts {:color :white})]]])
 
 (defn- total-section [usd-value syncing? error-message]
@@ -38,23 +37,23 @@
      [react/text {:style styles/total-balance-currency} (i18n/label :t/usd-currency)]]
     [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
 
-(defn- render-action [{:keys [name icon action]}]
+(defn- render-action [{:keys [label icon action]}]
   [react/touchable-highlight {:on-press action}
    [react/view
     [list/item
      [list/item-icon {:icon icon :style styles/action :icon-opts {:color :white}}]
      [list/item-primary-only {:style styles/action-label}
-      name]
+      label]
      list/item-icon-forward]]])
 
 (def actions
-  [{:name   (i18n/label :t/send-transaction)
+  [{:label  (i18n/label :t/send-transaction)
     :icon   :icons/arrow-right
     :action #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
-   {:name   (i18n/label :t/receive-transaction)
+   {:label  (i18n/label :t/receive-transaction)
     :icon   :icons/arrow-left
     :action #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
-   {:name   (i18n/label :t/transaction-history)
+   {:label  (i18n/label :t/transaction-history)
     :icon   :icons/transaction-history
     :action #(re-frame/dispatch [:navigate-to :transactions-history])}])
 

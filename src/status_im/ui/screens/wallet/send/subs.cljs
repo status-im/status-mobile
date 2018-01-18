@@ -31,20 +31,10 @@
   (fn [send-transaction]
     (:advanced? send-transaction)))
 
-(re-frame/reg-sub :wallet.send/camera-dimensions
-  :<- [::send-transaction]
-  (fn [send-transaction]
-    (:camera-dimensions send-transaction)))
-
 (re-frame/reg-sub :wallet.send/camera-flashlight
   :<- [::send-transaction]
   (fn [send-transaction]
     (:camera-flashlight send-transaction)))
-
-(re-frame/reg-sub :wallet.send/camera-permitted?
-  :<- [::send-transaction]
-  (fn [send-transaction]
-    (:camera-permitted? send-transaction)))
 
 (re-frame/reg-sub :wallet.send/wrong-password?
   :<- [::send-transaction]
@@ -79,7 +69,7 @@
 (re-frame/reg-sub :wallet.send/transaction
   :<- [::send-transaction]
   :<- [:balance]
-  (fn [[{:keys [amount to symbol] :as transaction} balance]]
+  (fn [[{:keys [amount symbol] :as transaction} balance]]
     (assoc transaction :sufficient-funds? (or (nil? amount)
                                               (money/sufficient-funds? amount (get balance symbol))))))
 

@@ -1,11 +1,11 @@
 (ns status-im.ui.components.chat-icon.screen
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
+  (:require [clojure.string :as string]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.react-native.resources :as resources]
-            [clojure.string :as string]
-            [status-im.i18n :as i18n]))
+            [status-im.react-native.resources :as resources]))
 
 (defn default-chat-icon [name styles]
   [react/view (:default-chat-icon styles)
@@ -64,7 +64,7 @@
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
-(defn chat-icon-view-action [chat-id group-chat name _color online]
+(defn chat-icon-view-action [chat-id group-chat name online]
   ^{:key chat-id}
   [chat-icon-view chat-id group-chat name online
    {:container              styles/container-chat-list

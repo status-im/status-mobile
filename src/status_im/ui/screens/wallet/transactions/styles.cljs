@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.screens.main-tabs.styles :as tabs.styles]
-            [status-im.utils.platform :as platform]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as styles]
+            [status-im.ui.screens.main-tabs.styles :as tabs.styles]))
 
 (def error-container
   {:align-self       :center
    :justify-content  :center
-   :border-radius    4
+   :border-radius    8
    :padding-vertical 4
    :flex-direction   :row
    :background-color styles/color-gray9})
@@ -235,3 +235,7 @@
    :height           4
    :border-radius    2
    :background-color styles/color-cyan})
+
+(def filter-container
+  {:flex             1})
+   ;:background-color colors/white})

@@ -33,16 +33,16 @@
                     :header                    list/default-header}]])
 
 (defn chat-extended-options [item]
-  [{:value #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity item)}])
-    :text  (i18n/label :t/remove)}])
+  [{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity item)}])
+    :label  (i18n/label :t/remove)}])
 
 (defn contact-extended-options [group-id]
   (fn [item]
-    [{:value               #(re-frame/dispatch [:remove-contact-from-group
-                                                (:whisper-identity item)
-                                                group-id])
+    [{:action               #(re-frame/dispatch [:remove-contact-from-group
+                                                 (:whisper-identity item)
+                                                 group-id])
       :accessibility-label :remove-button
-      :text                (i18n/label :t/remove-from-group)}]))
+      :label               (i18n/label :t/remove-from-group)}]))
 
 (defview edit-chat-group-contact-list []
   (letsubs [chat-name [:chat :name]

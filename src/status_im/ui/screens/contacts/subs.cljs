@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.contacts.subs
-  (:require [re-frame.core :refer [reg-sub subscribe]]
-            [status-im.utils.identicon :refer [identicon]]
-            [clojure.string :as str]))
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [reg-sub subscribe]]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.identicon :as identicon]))
 
 (reg-sub :current-contact
   (fn [db [_ k]]
@@ -94,9 +95,9 @@
 
 (defn search-filter [text item]
   (let [name (-> (or (:name item) "")
-                 (str/lower-case))
-        text (str/lower-case text)]
-    (not= (str/index-of name text) nil)))
+                 (string/lower-case))
+        text (string/lower-case text)]
+    (not= (string/index-of name text) nil)))
 
 (defn search-filter-reaction [contacts text]
   (if text
@@ -177,7 +178,7 @@
     contacts))
 
 (reg-sub :contacts-by-chat
-  (fn [[_ fn chat-id] _]
+  (fn [[_ _ chat-id] _]
     [(subscribe [:get-chat chat-id])
      (subscribe [:get-contacts])])
   chat-contacts)
@@ -196,7 +197,21 @@
         (:photo-path (first contacts))
 
         :else
-        (identicon chat-id)))))
+        (identicon/identicon chat-id)))))
+
+(defn- address= [{:keys [address] :as contact} s]
+  (when (and address (= (ethereum/normalized-address s)
+                        (ethereum/normalized-address address)))
+    contact))
+
+(defn- contact-by-address [[_ contact] s]
+  (when (address= contact s)
+    contact))
+
+(reg-sub :contact/by-address
+  :<- [:get-contacts]
+  (fn [contacts [_ address]]
+    (some #(contact-by-address % address) contacts)))
 
 (reg-sub :contacts/by-address
   :<- [:get-contacts]

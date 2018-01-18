@@ -256,11 +256,6 @@
                     :wrong-password? false)}))
 
 (handlers/register-handler-fx
-  :wallet.send/set-camera-dimensions
-  (fn [{:keys [db]} [_ camera-dimensions]]
-    {:db (assoc-in db [:wallet :send-transaction :camera-dimensions] camera-dimensions)}))
-
-(handlers/register-handler-fx
   :wallet.send/set-password
   (fn [{:keys [db]} [_ password]]
     {:db (assoc-in db [:wallet :send-transaction :password] password)}))

@@ -80,3 +80,10 @@
        (.catch (or on-error
                    (fn [error]
                      (show-popup "Error" (str error))))))))
+
+(defn deep-merge
+  "Recursively merge maps"
+  [& maps]
+  (if (every? map? maps)
+    (apply merge-with deep-merge maps)
+    (last maps)))

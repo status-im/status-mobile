@@ -1,24 +1,23 @@
 (ns status-im.ui.screens.wallet.components.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.styles :as styles]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as styles]))
 
 (def text-content
-  {:color :white})
+  {:color colors/white})
 
 (def text-secondary-content
-  {:color styles/color-white-transparent})
+  {:color colors/white-lighter-transparent})
 
 (def text
   {:margin-right 10})
 
 (def text-list-primary-content
-  (merge text {:color styles/color-black}))
+  (merge text {:color colors/black}))
 
 (def text-input
   (merge text-content
-    {:padding-left   14
-     :padding-right  14
-     :font-size      15
+    {:font-size      15
      :padding-bottom 0
      :padding-top    0
      :height         52
@@ -36,15 +35,14 @@
 
 (def label-transparent
   (merge label
-         {:color styles/color-white-transparent}))
+         {:color colors/white-lighter-transparent}))
 
-(defnstyle amount-container [active?]
+(defn amount-container [active?]
   {:height           52
    :background-color (if active?
-                       styles/color-white-transparent-4
+                       colors/white-light-transparent
                        styles/color-white-transparent-3)
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius      8})
 
 (def network
   {:color          :white
@@ -56,11 +54,11 @@
    :height             27
    :border-radius      100
    :border-width       1
-   :border-color       styles/color-white-transparent-4
+   :border-color       colors/white-light-transparent
    :align-items        :center
    :justify-content    :center})
 
-(defstyle asset-container
+(def asset-container
   {:margin-top       8
    :height           52
    :background-color styles/color-white-transparent-3
@@ -68,12 +66,23 @@
    :padding-left     14
    :padding-vertical 14
    :padding-right    8
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius    8})
+
+(def asset-container-read-only
+  {:margin-top       8
+   :height           52
+   :border-color     styles/color-white-transparent-3
+   :border-width     1
+   :justify-content  :center
+   :padding-left     14
+   :padding-vertical 14
+   :padding-right    8
+   :border-radius    8})
 
 (def asset-content-container
-  {:flex-direction :row
-   :align-items    :center})
+  {:flex-direction  :row
+   :align-items     :center
+   :margin-vertical 11})
 
 (def asset-icon
   {:background-color styles/color-gray9
@@ -97,37 +106,19 @@
 
 (defstyle container-disabled
   {:border-width     1
-   :border-color     styles/color-white-transparent-4
+   :border-color     colors/white-light-transparent
    :background-color nil
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius    8})
 
-
-(defstyle recipient-container
-  {:flex-direction   :row
-   :flex             1
-   :margin-top       8
-   :height           52
-   :align-items      :center
-   :background-color styles/color-white-transparent-3
-   :padding-vertical 14
-   :padding-left     14
-   :padding-right    8
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
-
-(defstyle wallet-container
+(def wallet-container
   {:flex-direction :row
    :margin-top     8
    :height         52
-   ;;TODO disabled
    :border-width   1
-   :border-color   styles/color-white-transparent-4
-   ;:background-color styles/color-white-transparent-3
+   :border-color   colors/white-light-transparent
    :align-items    :center
    :padding        14
-   :ios            {:border-radius 8}
-   :android        {:border-radius 4}})
+   :border-radius  8})
 
 (def wallet-name
   {:color          :white
@@ -135,10 +126,33 @@
    :letter-spacing -0.2})
 
 (defn participant [address?]
-  {:color          (if address? :white styles/color-white-transparent)
+  {:color          (if address? :white colors/white-lighter-transparent)
    :flex-shrink    1
    :font-size      15
    :letter-spacing -0.2})
+
+(def recipient-container
+  {:flex-direction :row})
+
+(def recipient-icon
+  {:margin-top 11})
+
+(def recipient-name
+  {:flex              1
+   :flex-direction    :column
+   :margin-horizontal 12
+   :margin-vertical   16})
+
+(def recipient-address
+  {:margin-vertical 17
+   :color           colors/white})
+
+(def recipient-no-address
+  {:color colors/white-lighter-transparent})
+
+(def recent-recipients
+  {:flex             1
+   :background-color colors/white})
 
 (def wallet-value-container
   {:flex           1
@@ -191,31 +205,3 @@
 (def tooltip-triangle
   {:width   16
    :height  8})
-
-(def recipient-name-container
-  {:padding-right 6})
-
-(def today-variation-container
-  {:border-radius      100
-   :margin-left        8
-   :padding-horizontal 8
-   :padding-vertical   4})
-
-(def today-variation-container-positive
-  (merge today-variation-container
-         {:background-color styles/color-green-1}))
-
-(def today-variation-container-negative
-  (merge today-variation-container
-         {:background-color styles/color-red-3}))
-
-(def today-variation
-  {:font-size 12})
-
-(def today-variation-positive
-  (merge today-variation
-         {:color styles/color-green-2}))
-
-(def today-variation-negative
-  (merge today-variation
-         {:color styles/color-red-4}))

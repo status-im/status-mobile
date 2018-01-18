@@ -1,29 +1,11 @@
 (ns status-im.ui.screens.wallet.send.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.styles :as styles]
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]))
 
-(def toolbar
-  {:background-color styles/color-blue5
-   :elevation        0
-   :padding-bottom   10})
-
-(def toolbar-title-container
+(def send-transaction-form
   {:flex           1
-   :flex-direction :row
-   :margin-left    6})
-
-(def toolbar-title-text
-  {:color        styles/color-white
-   :font-size    17
-   :margin-right 4})
-
-(def toolbar-icon
-  {:width  24
-   :height 24})
-
-(def toolbar-title-icon
-  (merge toolbar-icon {:opacity 0.4}))
+   :padding-bottom 60})
 
 (defn animated-sign-panel [bottom-value]
   {:position           :absolute
@@ -34,7 +16,7 @@
 (defn sign-panel [opacity-value]
   {:opacity            opacity-value
    :border-radius      8
-   :background-color   :white
+   :background-color   colors/white
    :padding-top        12
    :padding-horizontal 12})
 
@@ -43,12 +25,12 @@
    :height           36
    :align-items      :center
    :justify-content  :center
-   :background-color styles/color-light-gray})
+   :background-color colors/gray-lighter})
 
 (def signing-phrase
   {:font-size      15
    :letter-spacing -0.2
-   :color          :black})
+   :color          colors/black})
 
 (def signing-phrase-description
   {:padding-top 8})
@@ -71,12 +53,15 @@
    :left             0
    :align-items      :center
    :justify-content  :center
-   :background-color (str styles/color-black "1A")})
+   :background-color (str colors/black "1A")})
 
 (def empty-text
   {:text-align        :center
    :margin-top        22
    :margin-horizontal 92})
+
+(def advanced-cartouche
+  {:padding-bottom 50})
 
 (def advanced-button
   {:flex-direction   :row
@@ -89,63 +74,43 @@
   {:align-items :center})
 
 (def advanced-wrapper
-  {:margin-horizontal 15})
+  {:margin-top    24
+   :margin-bottom 16})
 
 (def advanced-options-wrapper
-  {:height           52
-   :background-color styles/color-white-transparent-3
-   :border-radius    4
-   :margin-top       16
-   :margin-bottom    16
-   :align-items      :center
-   :flex-direction   :row
-   :padding-vertical 14
-   :padding-right    8
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+  {:align-items    :center
+   :flex-direction :row})
 
 (def advanced-options-text-wrapper
-  {:flex              1
-   :flex-direction    :row
-   :justify-content   :space-between
-   :margin-horizontal 15})
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between
+   :margin-vertical 15})
 
 (def advanced-label
   {:text-align-vertical :center
    :margin-left         4})
 
 (def advanced-fees-text
-  {:color styles/color-white})
+  {:color colors/white})
 
 (def advanced-fees-details-text
-  {:color styles/color-white-transparent})
+  {:color colors/white-lighter-transparent})
 
 (def transaction-fee-block-wrapper
-  {:flex-direction :row
-   :margin-top     15})
-
-(def transaction-fee-column-wrapper
-  {:flex              0.5
-   :margin-horizontal 15})
-
-(def transaction-fee-bubble
-  (merge advanced-options-wrapper
-         {:flex-direction     :row
-          :justify-content    :space-between
-          :padding-horizontal 15}))
-
-(def transaction-fee-bubble-read-only
-  (merge transaction-fee-bubble
-         {:background-color styles/color-blue6}))
+  {:flex-direction :row})
 
 (def transaction-fee-info
   {:margin 15})
 
 (def transaction-fee-input
-  {:flex 1
-   :keyboard-type          :numeric
+  {:keyboard-type          :numeric
    :auto-capitalize        "none"
    :placeholder            "0.000"
-   :placeholder-text-color styles/color-white-transparent
-   :selection-color        :white
+   :placeholder-text-color colors/white-lighter-transparent
+   :selection-color        colors/white
    :style                  wallet.components.styles/text-input})
+
+(def sign-buttons
+  {:background-color colors/blue
+   :padding-vertical 8})

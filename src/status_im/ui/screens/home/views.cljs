@@ -15,7 +15,7 @@
             [status-im.utils.platform :as platform]))
 
 (defn toolbar-view []
-  [toolbar/toolbar {:show-sync-bar? true}
+  [toolbar/toolbar {}
    nil
    [toolbar/content-title (i18n/label :t/status)]
    [toolbar/actions

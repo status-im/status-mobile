@@ -41,6 +41,7 @@
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
+            [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.discover.search-results.views :as discover-search]
             [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]
@@ -96,6 +97,7 @@
 
    {:view      :wallet-send-transaction
     :parent    :wallet
+    :hide?     (not android?)
     :component send-transaction}
 
    {:view      :wallet-request-transaction
@@ -108,6 +110,7 @@
 
    {:view      :choose-recipient
     :parent    :wallet-send-transaction
+    :hide?     true
     :component choose-recipient}
 
    {:view      :wallet-transaction-sent
@@ -134,7 +137,6 @@
                           :browser browser
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent
-                          :choose-recipient choose-recipient
                           :wallet-request-transaction request-transaction
                           (:transactions-history :unsigned-transactions) wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
@@ -169,11 +171,15 @@
                           :paste-json-text paste-json-text
                           :add-rpc-url add-rpc-url
                           :network-details network-details
+                          :recent-recipients recent-recipients
+                          :recipient-qr-code recipient-qr-code
+                          :contact-code contact-code
                           :qr-viewer qr-code-viewer/qr-viewer
                           (throw (str "Unknown view: " current-view)))]
           [(if android? menu-context view) common-styles/flex
            [view common-styles/flex
-            (if (and signed-up?
+            (if (and android?
+                     signed-up?
                      (#{:home :wallet :my-profile :chat :wallet-send-transaction
                         :choose-recipient :wallet-transaction-sent :transactions-history
                         :unsigned-transactions :wallet-request-transaction :edit-my-profile
@@ -184,7 +190,7 @@
             (when modal-view
               [view common-styles/modal
                [modal {:animation-type   :slide
-                       :transparent      false
+                       :transparent      true
                        :on-request-close #(dispatch [:navigate-back])}
                 (let [component (case modal-view
                                   :qr-scanner qr-scanner

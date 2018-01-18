@@ -1,7 +1,4 @@
-(ns status-im.ios.platform
-  (:require [status-im.i18n :refer [label]]
-            [status-im.utils.core :as utils]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+(ns status-im.ios.platform)
 
 (def fonts
   {:light         {:font-family "SFUIText-Light"}
@@ -12,26 +9,10 @@
    :toolbar-title {:font-family "SFUIText-Semibold"}
    :roboto-mono   {:font-family "RobotoMono-Medium"}})
 
-;; Dialogs
-
-(defn action-sheet-options [options]
-  (let [destructive-opt-index (utils/first-index :destructive? options)
-        cancel-option         {:text (label :t/cancel)}
-        options               (conj options cancel-option)]
-    (clj->js (merge {:options           (mapv :text options)
-                     :cancelButtonIndex (dec (count options))}
-                    (when destructive-opt-index {:destructiveButtonIndex destructive-opt-index})))))
-
-(defn show-action-sheet [{:keys [options callback]}]
-  (.showActionSheetWithOptions (.-ActionSheetIOS rn-dependencies/react-native)
-                               (action-sheet-options options)
-                               callback))
-
 ;; Structure to be exported
 
 (def platform-specific
   {:fonts                        fonts
-   :list-selection-fn            show-action-sheet
    :tabs                         {:tab-shadows? false}
    :chats                        {:action-button?       false
                                   :new-chat-in-toolbar? true

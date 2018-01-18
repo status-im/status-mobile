@@ -95,12 +95,11 @@
   (merge style-message-text
          {:marginTop (if incoming-group 4 0)}))
 
-(defnstyle message-view
+(defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
   (merge {:padding         12
           :backgroundColor styles/color-white
-          :android         {:border-radius 4}
-          :ios             {:border-radius 8}}
+          :border-radius   8}
          (when (= content-type constants/content-type-command)
            {:paddingTop    10
             :paddingBottom 14})))

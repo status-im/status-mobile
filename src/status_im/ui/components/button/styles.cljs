@@ -10,13 +10,12 @@
 
 (def button-container styles/flex)
 
-(defnstyle button [disabled?]
-  {:flex-direction  :row
-   :justify-content :center
-   :align-items     :center
-   :android         {:background-color border-color}
-   :ios             (when-not disabled?
-                      {:background-color border-color})})
+(def button
+  {:flex-direction     :row
+   :justify-content    :center
+   :align-items        :center
+   :padding-horizontal 12})
+
 
 (defn- border [position]
   (let [radius (if platform/ios? 8 4)]
@@ -39,27 +38,27 @@
   (merge {:border-color border-color}
          (border position)))
 
-(defnstyle button-text [disabled?]
+(defstyle button-text
   {:font-weight        :normal
    :color              styles/color-white
    :padding-horizontal 16
-   :android            (merge
-                         {:font-size        14
-                          :padding-vertical 10
-                          :letter-spacing   0.5}
-                         (when disabled? {:opacity 0.4}))
-   :ios                (merge
-                         {:font-size        15
-                          :padding-vertical 9
-                          :letter-spacing   -0.2}
-                         (when disabled? {:opacity 0.6}))})
+   :android            {:font-size        14
+                        :padding-vertical 10
+                        :letter-spacing   0.5}
+   :ios                {:font-size        15
+                        :padding-vertical 9
+                        :letter-spacing   -0.2}})
+
+(defstyle button-text-disabled
+  {:android {:opacity 0.4}
+   :ios     {:opacity 0.6}})
+
 
 (defstyle button-borders
-  {:android {:border-radius 4}
-   :ios     {:border-radius 8
-             ;; Border radius is ignored with transparent background unless overflow "hidden" is used
-             ;; See https://github.com/facebook/react-native/issues/13760
-             :overflow      :hidden}})
+  {:border-radius 8
+   :ios           {;; Border radius is ignored with transparent background unless overflow "hidden" is used
+                   ;; See https://github.com/facebook/react-native/issues/13760
+                   :overflow      :hidden}})
 
 (def primary-button
   (merge

@@ -28,8 +28,8 @@
                  [view
                   [contact-view
                    {:contact        row
-                    :extend-options [{:value #(dispatch [:remove-group-chat-participants #{(:whisper-identity row)}])
-                                      :text  (label :t/remove)}]
+                    :extend-options [{:action #(dispatch [:remove-group-chat-participants #{(:whisper-identity row)}])
+                                      :label  (label :t/remove)}]
                     :extended?      admin?}]
                   (when-not (= row (last limited-contacts))
                     [common/list-separator])])

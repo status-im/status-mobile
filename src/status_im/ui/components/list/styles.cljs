@@ -1,7 +1,6 @@
 (ns status-im.ui.components.list.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.utils.platform :as platform]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def item
   {:flex-direction :row
@@ -19,25 +18,27 @@
    :justify-content :center})
 
 (def primary-text-base
-  {:font-size   17
-   :color       styles/color-black})
+  {:font-size   16
+   :color       colors/black})
 
 (def primary-text
   (merge primary-text-base
-         {:padding-top (if platform/ios? 13 14)}))
+         {:padding-top 12}))
 
 (def primary-text-only
   (merge primary-text-base
          {:padding-vertical 16}))
 
 (def secondary-text
-  {:font-size   16
-   :color       styles/color-gray4
+  {:font-size   14
+   :color       colors/gray
    :padding-top 4})
 
+(def image-size 40)
+
 (def item-image
-  {:width  40
-   :height 40})
+  {:width  image-size
+   :height image-size})
 
 (def icon-size 24)
 (def icon-wrapper-size (+ icon-size (* 2 8)))
@@ -61,9 +62,9 @@
    :margin-vertical vertical-margin})
 
 (def content-item-wrapper
-  {:flex            1
-   :justify-content :center
-   :margin-left     horizontal-margin})
+  {:flex              1
+   :justify-content   :center
+   :margin-horizontal horizontal-margin})
 
 (def right-item-wrapper
   {:justify-content :center
@@ -71,16 +72,15 @@
 
 (def base-separator
   {:height           1
-   :background-color styles/color-gray5
-   :opacity          0.5})
+   :background-color colors/gray-light})
 
 (def separator
   (merge
     base-separator
-    {:margin-left   70}))
+    {:margin-left 70}))
 
 (defstyle list-header-footer-spacing
-  {:android {:background-color styles/color-white
+  {:android {:background-color colors/white
              :height           8}})
 
 (defstyle section-separator
@@ -90,7 +90,7 @@
 
 (defstyle section-header
   {:font-size       14
-   :color           styles/color-gray4
+   :color           colors/gray
    :margin-left     16
    :android         {:margin-top    11
                      :margin-bottom 3}

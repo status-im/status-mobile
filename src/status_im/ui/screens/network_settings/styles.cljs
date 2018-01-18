@@ -33,9 +33,8 @@
    :align-items      :center
    :justify-content  :center
    :background-color common/color-light-blue
-   :ios              {:border-radius 8
-                      :opacity       0.9}
-   :android          {:border-radius 4}})
+   :border-radius    8
+   :ios              {:opacity 0.9}})
 
 (defstyle connect-button-label
   {:color   common/color-white
@@ -84,10 +83,10 @@
    :align-items      :center
    :justify-content  :center
    :background-color common/color-light-blue-transparent
-   :ios              {:width         343
-                      :border-radius 8}
-   :android          {:width         328
-                      :border-radius 4}})
+   :border-radius    8
+   :ios              {:width 343}
+
+   :android          {:width 328}})
 
 (defstyle edit-button-label
   {:color   common/color-light-blue

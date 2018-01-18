@@ -143,12 +143,11 @@
                       :margin-bottom 4
                       :margin-right  2}})
 
-(defstyle chat-button-container
+(def chat-button-container
   {:justify-content  :center
    :align-items      :center
    :background-color styles/color-blue4-transparent
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius    8})
 
 (defstyle chat-button-inner
   {:flex-direction :row
@@ -257,7 +256,7 @@
    :justify-content   :center
    :align-items       :center
    :flex-direction    :column
-   :ios               {:border-radius 8
+   :ios               {
                        :border-color  styles/color-light-blue6}
    :android           {:border-radius 4}})
 

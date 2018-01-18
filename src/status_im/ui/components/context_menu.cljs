@@ -1,16 +1,17 @@
 (ns status-im.ui.components.context-menu
-  (:require [goog.object :as object]
+  (:require [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.ui.components.action-sheet :as action-sheet]
+            [status-im.ui.components.react :as react]
+            [goog.object :as object]
             [reagent.core :as r]
             [status-im.ui.components.styles :as st]
-            [status-im.utils.platform :refer [platform-specific ios?]]
-            [status-im.ui.components.react :as rn]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.utils.platform :as platform]))
 
 (defn- get-property [name]
   (object/get rn-dependencies/popup-menu name))
 
 (defn- get-class [name]
-  (rn/adapt-class (get-property name)))
+  (react/adapt-class (get-property name)))
 
 (def menu (get-class "Menu"))
 (def menu-context (get-class "MenuContext"))
@@ -18,7 +19,7 @@
 (def menu-options (get-class "MenuOptions"))
 (def menu-option (get-class "MenuOption"))
 
-(defn context-menu-options [custom-styles]
+(defn- context-menu-options [custom-styles]
   {:customStyles {:optionsContainer
                   (merge {:elevation      2
                           :margin-top     0
@@ -33,39 +34,22 @@
                           :height          48}
                          (:optionWrapper custom-styles))}})
 
-(defn context-menu-text [destructive?]
+(defn- context-menu-text [destructive?]
   {:font-size   15
    :line-height 20
    :color       (if destructive? st/color-light-red st/text1-color)})
 
-(def list-selection-fn (:list-selection-fn platform-specific))
-
-(defn open-ios-menu [title options]
-  (list-selection-fn {:options  options
-                      :title    title
-                      :callback (fn [index]
-                                  (when (< index (count options))
-                                    (when-let [handler (:value (nth options index))]
-                                      (handler))))})
-  nil)
-
 (defn context-menu [trigger options & custom-styles trigger-style]
-  (if ios?
-    [rn/touchable-highlight {:style    trigger-style
-                             :on-press #(open-ios-menu nil options)}
-     [rn/view
+  (if platform/ios?
+    [react/touchable-highlight {:style    trigger-style
+                                :on-press #(action-sheet/show options)}
+     [react/view
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}
      [menu-trigger {:style trigger-style} trigger]
      [menu-options (context-menu-options custom-styles)
-      (for [{:keys [style value destructive?] :as option} options]
+      (for [{:keys [style action destructive?] :as option} options]
         ^{:key option}
-        [menu-option {:value value}
-         [rn/text {:style (merge (context-menu-text destructive?) style)}
-          (:text option)]])]]))
-
-(defn modal-menu [trigger style title options]
-  [rn/touchable-highlight {:style    style
-                           :on-press #(open-ios-menu title options)}
-   [rn/view
-    trigger]])
+        [menu-option {:value action}
+         [react/text {:style (merge (context-menu-text destructive?) style)}
+          (:label option)]])]]))

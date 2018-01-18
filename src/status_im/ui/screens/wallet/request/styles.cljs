@@ -6,12 +6,11 @@
   {:flex        1
    :align-items :center})
 
-(defstyle qr-container
+(def qr-container
   {:margin-top       8
    :padding          16
    :background-color styles/color-white
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius    8})
 
 (def share-icon-container
   {:margin-right 8})

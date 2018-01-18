@@ -17,14 +17,13 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
-            [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.animation :as anim]
             [status-im.ui.components.sync-state.offline :as offline]
-            [status-im.ui.components.toolbar.view :as toolbar]))
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.animation :as animation]))
 
 (defview chat-icon []
-  (letsubs [{:keys [chat-id group-chat name color]} [:get-current-chat]]
-    [chat-icon-screen/chat-icon-view-action chat-id group-chat name color true]))
+  (letsubs [{:keys [chat-id group-chat name]} [:get-current-chat]]
+    [chat-icon-screen/chat-icon-view-action chat-id group-chat name true]))
 
 (defn- toolbar-action [show-actions?]
   [react/touchable-highlight
@@ -51,7 +50,7 @@
             creating?     [:get :accounts/creating-account?]]
     [react/view
      [status-bar/status-bar]
-     [toolbar/toolbar {:show-sync-bar? true}
+     [toolbar/toolbar {}
       (when-not (or show-actions? creating?)
         (if (empty? accounts)
           [toolbar/nav-clear-text (i18n/label :t/recover)
@@ -76,15 +75,15 @@
 
 (defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
-  (letsubs [opacity       (anim/create-value 0)
+  (letsubs [opacity       (animation/create-value 0)
             duration      (if platform/android? 100 200)
             timeout       (if platform/android? 50 0)]
     {:component-did-mount (fn [component]
-                            (anim/start
-                             (anim/anim-sequence
-                              [(anim/anim-delay timeout)
-                               (anim/spring opacity {:toValue  1
-                                                     :duration duration})])))}
+                            (animation/start
+                             (animation/anim-sequence
+                              [(animation/anim-delay timeout)
+                               (animation/spring opacity {:toValue  1
+                                                          :duration duration})])))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}

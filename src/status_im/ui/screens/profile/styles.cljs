@@ -35,7 +35,7 @@
 (def profile-status-container
   {:background-color colors/gray
    :margin-top       16
-   :border-radius    4
+   :border-radius    8
    :padding          16
    :max-height       114})
 
@@ -201,7 +201,7 @@
 
 (defstyle edit-profile-status
   {:background-color   styles/color-light-gray
-   :border-radius      4
+   :border-radius      8
    :height             90
    :padding-horizontal 16
    :padding-bottom     16

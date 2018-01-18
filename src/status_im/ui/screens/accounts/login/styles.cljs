@@ -12,8 +12,7 @@
 
 (defstyle login-badge-container
   {:background-color :white
-   :ios              {:border-radius 8
-                      :padding-top   16
+   :ios              {:padding-top   16
                       :height        150}
    :android          {:border-radius 4
                       :padding-top   12
@@ -29,13 +28,12 @@
   (merge sign-it-text
          {:color st/color-gray2}))
 
-(defstyle sign-in-button
+(def sign-in-button
   {:background-color st/color-blue3
    :align-items      :center
    :justify-content  :center
    :height           52
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius    8})
 
 (def processing-view
   {:position         :absolute

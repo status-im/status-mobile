@@ -33,7 +33,8 @@
          [react/view styles/wnode-item-inner
           [react/text {:style styles/wnode-item-name-text}
            name]
-          #_(when connected?
+          #_
+          (when connected?
             [react/text {:style styles/wnode-item-connected-text}
              (i18n/label :t/connected)])]]]])))
 

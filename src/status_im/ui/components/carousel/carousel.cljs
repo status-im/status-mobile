@@ -1,12 +1,8 @@
 (ns status-im.ui.components.carousel.carousel
   (:require [reagent.impl.component :as rc]
-            [status-im.ui.components.react :refer [view
-                                                scroll-view
-                                                touchable-without-feedback
-                                                text]]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.carousel.styles :as st]
             [taoensso.timbre :as log]
-            [status-im.ui.components.react :as r]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 
@@ -160,15 +156,15 @@
         gap (get-gap data)
         count (get-count data)]
     (doall (map-indexed (fn [index child]
-                   (let [page-index index
-                         touchable-data {:key index
-                                         :onPress #(go-to-page component page-index)}]
-                     [touchable-without-feedback touchable-data
-                      [view {:style [(st/page index count page-width gap)
-                                     page-style]
-                             :onLayout #(log/debug "view onLayout" %)}
+                         (let [page-index index
+                               touchable-data {:key index
+                                               :onPress #(go-to-page component page-index)}]
+                           [react/touchable-without-feedback touchable-data
+                            [react/view {:style [(st/page index count page-width gap)
+                                                 page-style]
+                                         :onLayout #(log/debug "view onLayout" %)}
 
-                       child]])) children))))
+                             child]])) children))))
 
 (defn reagent-render [data children]
   (let [starting-position (atom 0)
@@ -176,18 +172,18 @@
         state (reagent.core/state component)
         gap (get-gap state)]
     (log/debug "reagent-render: " data state)
-    [view {:style st/scroll-view-container}
-     [scroll-view {:contentContainerStyle (st/content-container gap)
-                   :automaticallyAdjustContentInsets false
-                   :bounces false
-                   :decelerationRate 0.9
-                   :horizontal true
-                   :onLayout #(on-layout-change % component)
-                   :scrollEnabled (not (get state :scrolling?))
-                   :onScrollBeginDrag #(reset! starting-position (get-current-position %))
-                   :onScrollEndDrag #(on-scroll-end % component @starting-position)
-                   :showsHorizontalScrollIndicator false
-                   :ref #(set! (.-scrollView component) %)}
+    [react/view {:style st/scroll-view-container}
+     [react/scroll-view {:contentContainerStyle (st/content-container gap)
+                         :automaticallyAdjustContentInsets false
+                         :bounces false
+                         :decelerationRate 0.9
+                         :horizontal true
+                         :onLayout #(on-layout-change % component)
+                         :scrollEnabled (not (get state :scrolling?))
+                         :onScrollBeginDrag #(reset! starting-position (get-current-position %))
+                         :onScrollEndDrag #(on-scroll-end % component @starting-position)
+                         :showsHorizontalScrollIndicator false
+                         :ref #(set! (.-scrollView component) %)}
       (get-pages component state children)]]))
 
 (defn carousel [_ _]

@@ -49,8 +49,7 @@
   {:background-color :white
    :justify-content  :center
    :height           64
-   :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :border-radius    8})
 
 (def account-badge
   {:flex-direction     :row

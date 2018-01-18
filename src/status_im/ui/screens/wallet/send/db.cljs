@@ -15,9 +15,7 @@
 (spec/def ::later? (spec/nilable boolean?))
 (spec/def ::height double?)
 (spec/def ::width double?)
-(spec/def ::camera-dimensions (spec/keys :req-un [::height ::width]))
 (spec/def ::camera-flashlight #{:on :off})
-(spec/def ::camera-permitted? boolean?)
 (spec/def ::in-progress? boolean?)
 (spec/def ::from-chat? (spec/nilable boolean?))
 (spec/def ::symbol (spec/nilable keyword?))
@@ -28,6 +26,6 @@
 (spec/def :wallet/send-transaction (allowed-keys
                                      :opt-un [::amount ::to ::to-name ::amount-error ::password
                                               ::waiting-signal? ::signing? ::id ::later?
-                                              ::camera-dimensions ::camera-flashlight ::in-progress?
-                                              ::wrong-password? ::camera-permitted? ::from-chat? ::symbol ::advanced?
+                                              ::camera-flashlight ::in-progress?
+                                              ::wrong-password? ::from-chat? ::symbol ::advanced?
                                               ::gas ::gas-price]))

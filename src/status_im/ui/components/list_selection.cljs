@@ -1,41 +1,36 @@
 (ns status-im.ui.components.list-selection
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.react :refer [copy-to-clipboard
-                                                   sharing
-                                                   linking]]
-            [status-im.utils.platform :refer [platform-specific ios?]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.action-sheet :as action-sheet]
+            [status-im.ui.components.dialog :as dialog]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.platform :as platform]))
 
-(defn open-share [content]
+(defn- open-share [content]
   (when (or (:message content)
             (:url content))
-    (.share sharing (clj->js content))))
+    (.share react/sharing (clj->js content))))
 
 (defn share-options [text]
-  [{:text  (label :t/sharing-copy-to-clipboard)
-    :value #(copy-to-clipboard text)}
-   {:text  (label :t/sharing-share)
-    :value #(open-share {:message text})}])
+  [{:label  (i18n/label :t/sharing-copy-to-clipboard)
+    :action #(react/copy-to-clipboard text)}
+   {:label  (i18n/label :t/sharing-share)
+    :action #(open-share {:message text})}])
+
+(defn show [options]
+  (if platform/ios?
+    (action-sheet/show options)
+    (dialog/show options)))
 
 (defn share [text dialog-title]
-  (let [list-selection-fn (:list-selection-fn platform-specific)]
-    (list-selection-fn {:title       dialog-title
-                        :options     (share-options text)
-                        :callback    (fn [index]
-                                       (case index
-                                         0 (copy-to-clipboard text)
-                                         1 (open-share {:message text})
-                                         :default))
-                        :cancel-text (label :t/sharing-cancel)})))
+  (show {:title       dialog-title
+         :options     (share-options text)
+         :cancel-text (i18n/label :t/sharing-cancel)}))
 
 (defn browse [link]
-  (let [list-selection-fn (:list-selection-fn platform-specific)]
-    (list-selection-fn {:title       (label :t/browsing-title)
-                        :options     [{:text (label :t/browsing-open-in-browser)}
-                                      {:text (label :t/browsing-open-in-web-browser)}]
-                        :callback    (fn [index]
-                                       (case index
-                                         0 (re-frame/dispatch [:open-browser {:url link}])
-                                         1 (.openURL linking link)
-                                         :default))
-                        :cancel-text (label :t/browsing-cancel)})))
+  (show {:title       (i18n/label :t/browsing-title)
+         :options     [{:text   (i18n/label :t/browsing-open-in-browser)
+                        :action (re-frame/dispatch [:open-browser {:url link}])}
+                       {:text   (i18n/label :t/browsing-open-in-web-browser)
+                        :action (.openURL react/linking link)}]
+         :cancel-text (i18n/label :t/browsing-cancel)}))

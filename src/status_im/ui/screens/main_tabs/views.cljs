@@ -52,7 +52,7 @@
 (views/defview main-tabs []
   (views/letsubs [view-id [:get :view-id]]
     [react/view common.styles/flex
-     [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet :main)}]
+     [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
      [react/view common.styles/main-container
 
       [react/with-activity-indicator

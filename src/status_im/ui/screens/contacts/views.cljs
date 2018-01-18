@@ -41,19 +41,19 @@
    [toolbar/content-title (label :t/edit-contacts)]])
 
 (defn contact-options [{:keys [unremovable?] :as contact} group]
-  (let [delete-contact-opt {:value        #(u/show-confirmation
+  (let [delete-contact-opt {:action       #(u/show-confirmation
                                             (str (label :t/delete-contact) "?") (label :t/delete-contact-confirmation)
                                             (label :t/delete)
                                             (fn [] (dispatch [:hide-contact contact])))
-                            :text         (label :t/delete-contact)
+                            :label        (label :t/delete-contact)
                             :destructive? true}
         options (if unremovable? [] [delete-contact-opt])]
     (if group
       (conj options
-            {:value #(dispatch [:remove-contact-from-group
-                                (:whisper-identity contact)
-                                (:group-id group)])
-             :text  (label :t/remove-from-group)})
+            {:action #(dispatch [:remove-contact-from-group
+                                 (:whisper-identity contact)
+                                 (:group-id group)])
+             :label  (label :t/remove-from-group)})
       options)))
 
 (defn contact-group-form [{:keys [contacts contacts-count group edit? click-handler]}]
@@ -63,8 +63,8 @@
        [common/form-title subtitle
         {:count-value contacts-count
          :extended?   edit?
-         :options     [{:value #(dispatch [:navigate-to :edit-contact-group group :contact-group])
-                        :text  (label :t/edit-group)}]}])
+         :options     [{:action #(dispatch [:navigate-to :edit-contact-group group :contact-group])
+                        :label  (label :t/edit-group)}]}])
      [view st/contacts-list
       [common/list-footer]
       (doall

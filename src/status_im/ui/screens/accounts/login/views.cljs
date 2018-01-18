@@ -14,9 +14,7 @@
             [status-im.ui.components.react :as components]))
 
 (defn login-toolbar []
-  [toolbar/toolbar
-   {:background-color :transparent
-    :hide-border?     true}
+  [toolbar/toolbar {:background-color :transparent}
    [toolbar/nav-button (act/back-white #(dispatch [:navigate-back]))]
    [toolbar/content-title {:color :white} (i18n/label :t/sign-in-to-status)]])
 

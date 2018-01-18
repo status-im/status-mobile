@@ -66,7 +66,7 @@
   {:background-color colors/blue})
 
 (def action
-  {:background-color colors/white-light-transparent
+  {:background-color colors/white-transparent
    :border-radius    50})
 
 (def action-label
@@ -74,7 +74,7 @@
 
 (def action-separator
   {:height           1
-   :background-color colors/white-transparent
+   :background-color colors/white-light-transparent
    :margin-left      70})
 
 ;; Assets section
@@ -116,6 +116,3 @@
   {:font-size   16
    :color       styles/color-gray4
    :margin-left 6})
-
-(defn asset-border [color]
-  {:border-color color :border-width 1 :border-radius 32})

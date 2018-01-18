@@ -36,7 +36,7 @@
   {:flex-direction :row
    :align-items    :flex-end})
 
-(defnstyle input-root [content-height anim-margin]
+(defn input-root [content-height anim-margin]
   {:align-items      :flex-start
    :background-color color-input
    :flex-direction   :row
@@ -45,8 +45,7 @@
    :margin-top       anim-margin
    :padding-left     10
    :padding-right    10
-   :android          {:border-radius 4}
-   :ios              {:border-radius 8}})
+   :border-radius    8})
 
 (defnstyle input-touch-handler-view [container-width]
   {:position :absolute

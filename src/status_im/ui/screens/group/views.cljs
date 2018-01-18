@@ -106,10 +106,10 @@
                [view
                 [contact-view
                  {:contact        row
-                  :extend-options [{:value #(dispatch [:remove-contact-from-group
-                                                       (:whisper-identity row)
-                                                       (:group-id group)])
-                                    :text (label :t/remove-from-group)}]
+                  :extend-options [{:action #(dispatch [:remove-contact-from-group
+                                                        (:whisper-identity row)
+                                                        (:group-id group)])
+                                    :label (label :t/remove-from-group)}]
                   :extended?      true}]
                 (when-not (= row (last contacts))
                   [common/list-separator])])

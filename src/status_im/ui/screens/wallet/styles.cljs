@@ -10,7 +10,7 @@
    :justify-content  :center
    :ios              {:border-radius 20
                       :margin-top    6}
-   :android          {:border-radius 4
+   :android          {
                       :margin-top    18}
    :background-color colors/blue})
 
@@ -44,9 +44,12 @@
 (def wallet-container
   {:flex 1})
 
-(defstyle toolbar
+(def toolbar
+  {:background-color colors/blue})
+
+(defstyle toolbar-modal
   {:background-color colors/blue
-   :android          {:elevation 0}})
+   :android          {:elevation 2}})
 
 (def buttons-container
   {:flex-direction :row
@@ -69,19 +72,43 @@
   {:flex             1
    :background-color colors/blue})
 
-(def choose-participant-container
-  {:margin-top        16
-   :margin-horizontal 15})
-
 (def amount-container
   {:margin-top        16
    :margin-bottom     16
    :margin-horizontal 15
    :flex-direction    :row})
 
-(def choose-asset-container
-  {:margin-top        16
-   :margin-horizontal 15})
+(def cartouche-container
+  {:flex              1
+   :margin-top        16
+   :margin-horizontal 16})
+
+(def cartouche-header
+  {:color colors/white})
+
+(defn cartouche-content-wrapper [disabled?]
+  (merge
+    {:flex-direction     :row
+     :margin-top         8
+     :border-radius      styles/border-radius
+     :padding-left       14
+     :padding-right      8}
+    (if disabled?
+      {:border-color colors/white-light-transparent
+       :border-width 1}
+      {:background-color colors/white-transparent})))
+
+(def cartouche-icon-wrapper
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
+
+(def cartouche-primary-text
+  {:color styles/color-white})
+
+(def cartouche-secondary-text
+  {:color styles/color-white-transparent})
 
 (def qr-code-preview
   {:width           256

@@ -1,31 +1,5 @@
 (ns status-im.ui.components.sync-state.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]]))
-
-(def sync-style-gradient
-  {:position :relative
-   :height   0
-   :top      -2})
-
-(defn loading-wrapper [opacity]
-  {:background-color "#89b1fe"
-   :opacity          opacity
-   :height           2})
-
-(defn gradient-wrapper [in-progress-opacity position]
-  {:position :absolute
-   :left     position
-   :opacity  in-progress-opacity})
-
-(defn gradient [width]
-  {:width  width
-   :height 2})
-
-(defn synced-wrapper [opacity window-width]
-  {:opacity          opacity
-   :position         :absolute
-   :width            window-width
-   :background-color "#5fc48d"
-   :height           2})
+  (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 
 (defnstyle offline-wrapper [top opacity window-width pending?]
   {:ios              {:z-index 0}

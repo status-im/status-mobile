@@ -66,13 +66,13 @@
    :justify-content :center})
 
 (def qr-code
-  {:background-color colors/light-gray
+  {:background-color colors/gray-lighter
    :flex-grow        1
    :align-items      :center
    :justify-content  :center})
 
 (def footer
-  {:background-color colors/light-gray
+  {:background-color colors/gray-lighter
    :flex-direction   :row
    :justify-content  :center
    :padding-bottom   50})
