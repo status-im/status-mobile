@@ -1,7 +1,7 @@
 (ns status-im.ui.components.chat-preview
   (:require [status-im.ui.components.react :as components]
             [status-im.ui.screens.home.styles :as home.styles]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.core :as utils]))
 
 (def default-attributes
   {:style           home.styles/last-message-text

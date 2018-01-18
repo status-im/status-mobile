@@ -5,7 +5,7 @@
             [status-im.ui.components.react :refer [view text]]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.ui.components.styles :refer [color-blue color-black color-blue4-faded]]
-            [status-im.utils.utils :refer [hash-tag?]]))
+            [status-im.utils.core :refer [hash-tag?]]))
 
 (defn tag-view [tag]
   [text {:style {:color color-blue4-faded}

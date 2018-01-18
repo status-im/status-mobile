@@ -2,7 +2,8 @@
   (:use [figwheel-sidecar.repl-api :as ra])
   (:require [hawk.core :as hawk]
             [re-frisk-sidecar.core :as rfs]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [status-im.utils.core :as utils]))
 
 (defn get-test-build [build]
   (update build :source-paths
@@ -59,14 +60,16 @@
                                (spit path js-resourced))
                              ctx)}])
    ;; read project.clj to get build configs
-   (let [profiles (->> "project.clj"
-                       slurp
-                       read-string
-                       (drop-while #(not= % :profiles))
-                       (apply hash-map)
-                       :profiles)
-         cljs-builds (get-in profiles [:dev :cljsbuild :builds])
-         builds (get-builds build-ids cljs-builds)]
+   (let [profiles        (->> "project.clj"
+                              slurp
+                              read-string
+                              (drop-while #(not= % :profiles))
+                              (apply hash-map)
+                              :profiles)
+         dev-cljs-builds (get-in profiles [:dev :cljsbuild :builds])
+         fig-cljs-builds (get-in profiles [:figwheel 1 :cljsbuild :builds])
+         cljs-builds     (utils/deep-merge dev-cljs-builds fig-cljs-builds)
+         builds          (get-builds build-ids cljs-builds)]
      (start-figwheel build-ids builds)
      (rfs/-main))))
 

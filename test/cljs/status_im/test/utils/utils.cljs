@@ -1,6 +1,6 @@
 (ns status-im.test.utils.utils
   (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.utils.utils :as u]))
+            [status-im.utils.core :as u]))
 
 (deftest wrap-as-call-once-test
   (let [count (atom 0)]

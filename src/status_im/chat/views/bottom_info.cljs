@@ -8,7 +8,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.list.views :as list]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.core :as utils]
             [status-im.utils.identicon :as identicon]))
 
 (defn- container-animation-logic [{:keys [to-value val]}]

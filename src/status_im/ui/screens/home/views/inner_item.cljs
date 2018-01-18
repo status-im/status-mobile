@@ -8,7 +8,7 @@
             [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.styles :as component.styles]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.core :as utils]
             [status-im.commands.utils :as commands-utils]
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]

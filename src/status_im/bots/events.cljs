@@ -1,6 +1,6 @@
 (ns status-im.bots.events
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.core :as utils]
             [status-im.utils.handlers :as handlers]
             [status-im.chat.models.input :as input-model]
             [taoensso.timbre :as log]))

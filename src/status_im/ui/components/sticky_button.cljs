@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.styles :as common]
             [status-im.utils.platform :refer [platform-specific]]
-            [status-im.utils.utils :as u]
+            [status-im.utils.core :as u]
             [status-im.ui.components.react :as react]))
 
 (def sticky-button-style

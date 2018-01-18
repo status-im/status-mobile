@@ -4,7 +4,7 @@
             [status-im.constants :as constants]
             [status-im.data-store.realm.messages :as data-store]
             [status-im.utils.random :as random]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.core :as utils]))
 
 (defn- command-type?
   [type]
@@ -75,7 +75,7 @@
       prepare-statuses
       (utils/update-if-present :content prepare-content)))
 
-(defn save 
+(defn save
   [{:keys [message-id content from] :as message}]
   (when-not (data-store/exists? message-id)
     (data-store/save (prepare-message (merge default-values

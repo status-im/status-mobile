@@ -19,6 +19,7 @@
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.utils :as utils]
+            [status-im.utils.core :refer [hash-tag?]]
             [status-im.utils.datetime :as time]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
@@ -194,7 +195,7 @@
 
 (defn colorize-status-hashtags [status]
   (for [[i status] (map-indexed vector (string/split status #" "))]
-    (if (utils/hash-tag? status)
+    (if (hash-tag? status)
       ^{:key (str "item-" i)}
       [tag-view status]
       ^{:key (str "item-" i)}

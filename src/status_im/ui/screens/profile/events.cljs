@@ -13,7 +13,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.image-processing :refer [img->base64]]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.core :as utils]
             [taoensso.timbre :as log]))
 
 (re-frame/reg-fx

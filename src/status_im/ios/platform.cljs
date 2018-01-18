@@ -1,6 +1,6 @@
 (ns status-im.ios.platform
   (:require [status-im.i18n :refer [label]]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.core :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def fonts

@@ -1,6 +1,6 @@
 (ns status-im.ui.components.action-sheet
   (:require [status-im.i18n :as i18n]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.core :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn- callback [options]
