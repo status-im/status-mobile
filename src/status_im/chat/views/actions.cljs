@@ -38,6 +38,15 @@
                  :height 19}
    :handler     #(re-frame/dispatch [:show-profile chat-id])})
 
+(defn item-delete [chat-id]
+  {:title      (i18n/label :t/delete-chat)
+   :icon       :search_gray_copy
+   :icon-style {:width  17
+                :height 17}
+   ;; TODO(jeluard) Refactor this or Jan will have an heart attack
+   :handler    #(do (re-frame/dispatch [:remove-chat chat-id])
+                    (re-frame/dispatch [:navigation-replace :home]))})
+
 (def item-search
   {:title      (i18n/label :t/search-chat)
    :subtitle   (i18n/label :t/not-implemented)
@@ -73,6 +82,7 @@
 
 (defn user-chat-items [chat-id]
   [(item-user chat-id)
+   (item-delete chat-id)
    item-search
    item-notifications])
 
