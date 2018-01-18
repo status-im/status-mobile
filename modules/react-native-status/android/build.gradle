@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 18
@@ -13,10 +12,10 @@ android {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
-    compile 'com.instabug.library:instabug:3+'
-    compile 'com.github.ericwlange:AndroidJSCore:3.0.1'
-    compile 'status-im:function:0.0.1'
+    implementation 'com.facebook.react:react-native:+'
+    implementation 'com.instabug.library:instabug:3+'
+    implementation 'com.github.ericwlange:AndroidJSCore:3.0.1'
+    implementation 'status-im:function:0.0.1'
 
     String statusGoVersion = 'develop-gd71c66a2'
     final String statusGoGroup = 'status-im', statusGoName = 'status-go'
@@ -28,5 +27,5 @@ dependencies {
         statusGoVersion = localVersion
     }
 
-    compile(group: statusGoGroup, name: statusGoName, version: statusGoVersion, ext: 'aar')
+    implementation(group: statusGoGroup, name: statusGoName, version: statusGoVersion, ext: 'aar')
 }

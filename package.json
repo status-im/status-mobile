@@ -74,7 +74,7 @@
     "react-native-randombytes": "3.0.0",
     "react-native-sortable-listview": "0.2.6",
     "react-native-splash-screen": "3.0.6",
-    "react-native-svg": "6.0.0",
+    "react-native-svg": "6.0.1-rc.3",
     "react-native-tcp": "3.3.0",
     "react-native-udp": "2.2.1",
     "react-native-vector-icons": "4.4.2",

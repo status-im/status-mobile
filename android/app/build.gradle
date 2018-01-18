@@ -116,8 +116,7 @@ def getVersionName = { ->
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "im.status.ethereum"
@@ -187,38 +186,38 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-svg')
-    compile project(':react-native-mapbox-gl')
-    compile 'com.android.support:multidex:1.0.2'
-    compile project(':react-native-http-bridge')
-    compile project(':nfc-react-native')
-    compile project(':instabug-reactnative')
-    compile project(':react-native-splash-screen')
-    compile project(':react-native-image-resizer')
-    compile project(':react-native-dialogs')
-    compile project(':react-native-randombytes')
-    compile project(':react-native-android-sms-listener')
-    compile project(':realm')
-    compile project(':react-native-vector-icons')
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
-    compile project(':react-native-contacts')
-    compile project(':react-native-i18n')
-    compile project(':react-native-linear-gradient')
-    compile project(':react-native-camera')
-    compile project(':react-native-status')
-    compile project(':react-native-orientation')
-    compile project(':react-native-fs')
-    compile project(':react-native-image-crop-picker')
-    compile project(':react-native-webview-bridge')
-    compile 'testfairy:testfairy-android-sdk:1.+@aar'
-    compile project(':react-native-config')
-    compile project(':react-native-fcm')
-    compile 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
+    implementation project(':react-native-svg')
+    implementation project(':react-native-mapbox-gl')
+    implementation 'com.android.support:multidex:1.0.2'
+    implementation project(':react-native-http-bridge')
+    implementation project(':nfc-react-native')
+    implementation project(':instabug-reactnative')
+    implementation project(':react-native-splash-screen')
+    implementation project(':react-native-image-resizer')
+    implementation project(':react-native-dialogs')
+    implementation project(':react-native-randombytes')
+    implementation project(':react-native-android-sms-listener')
+    implementation project(':realm')
+    implementation project(':react-native-vector-icons')
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.android.support:appcompat-v7:23.0.1"
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-contacts')
+    implementation project(':react-native-i18n')
+    implementation project(':react-native-linear-gradient')
+    implementation project(':react-native-camera')
+    implementation project(':react-native-status')
+    implementation project(':react-native-orientation')
+    implementation project(':react-native-fs')
+    implementation project(':react-native-image-crop-picker')
+    implementation project(':react-native-webview-bridge')
+    implementation 'testfairy:testfairy-android-sdk:1.+@aar'
+    implementation project(':react-native-config')
+    implementation project(':react-native-fcm')
+    implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
 
-    compile 'status-im:function:0.0.1'
-    compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
+    implementation 'status-im:function:0.0.1'
+    implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
 // Run this once to be able to run the application with BUCK
 // puts all compile dependencies into folder libs for BUCK to use

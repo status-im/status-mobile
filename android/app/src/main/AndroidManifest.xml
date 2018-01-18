@@ -21,13 +21,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- these permissions should be removed -->
-    <!-- react-native-orientation adds an unnecessary permission; here we remove it -->
-    <uses-permission android:name="android.permission.BLUETOOTH" tools:node="remove"/>
-    <!-- react-native-contacts -->
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" tools:node="remove"/>
-    <!-- react-native-camera -->
+    <!-- RECORD_AUDIO is pulled in by instabug-reactnative, not needed for status-react -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
-    <uses-permission android:name="android.permission.RECORD_VIDEO" tools:node="remove"/>
     <!-- React Native unnecessary permissions (https://github.com/facebook/react-native/issues/5886) -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove"/>
 
