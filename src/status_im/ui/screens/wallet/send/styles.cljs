@@ -144,7 +144,6 @@
 (def transaction-fee-input
   {:flex 1
    :keyboard-type          :numeric
-   :auto-capitalize        "none"
    :placeholder            "0.000"
    :placeholder-text-color styles/color-white-transparent
    :selection-color        :white
