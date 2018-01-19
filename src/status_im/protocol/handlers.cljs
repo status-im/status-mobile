@@ -226,10 +226,23 @@
                    #(re-frame/dispatch [::add-peer-error %]))))
 
 (re-frame/reg-fx
+ ::fetch-peers
+ (fn [{:keys [wnode web3 retries]}]
+   ;; Run immediately on first run, add delay before retry
+   (let [delay (if (zero? retries) 0 300)]
+     (if (> retries 3)
+       (log/error "Number of retries for fetching peers exceed" wnode)
+       (js/setTimeout
+        (fn [] (inbox/fetch-peers #(re-frame/dispatch [::fetch-peers-success web3 % retries])
+                                 #(re-frame/dispatch [::fetch-peers-error %])))
+        delay)))))
+
+(re-frame/reg-fx
  ::mark-trusted-peer
- (fn [{:keys [wnode web3]}]
+ (fn [{:keys [wnode web3 peers]}]
    (inbox/mark-trusted-peer web3
                             wnode
+                            peers
                             #(re-frame/dispatch [::mark-trusted-peer-success web3 %])
                             #(re-frame/dispatch [::mark-trusted-peer-error %]))))
 
@@ -258,7 +271,7 @@
 ;;;; Handlers
 
 ;; NOTE(dmitryn): events chain
-;; add-peeer -> mark-trusted-peer -> get-sym-key -> request-messages
+;; add-peer -> fetch-peers -> mark-trusted-peer -> get-sym-key -> request-messages
 (handlers/register-handler-fx
  :initialize-offline-inbox
  (fn [{:keys [db]} [_ web3]]
@@ -272,8 +285,24 @@
  (fn [{:keys [db]} [_ web3 response]]
    (let [wnode (get-in db [:inbox/wnode :address])]
      (log/info "offline inbox: add-peer response" wnode response)
-     {::mark-trusted-peer {:wnode wnode
-                           :web3  web3}})))
+     {::fetch-peers {:wnode wnode
+                     :web3  web3
+                     :retries 0}})))
+
+(handlers/register-handler-fx
+ ::fetch-peers-success
+ (fn [{:keys [db]} [_ web3 peers retries]]
+   (let [wnode (get-in db [:inbox/wnode :address])]
+     (log/info "offline inbox: fetch-peers response" peers)
+     (if (inbox/registered-peer? peers wnode)
+       {::mark-trusted-peer {:wnode wnode
+                             :web3  web3
+                             :peers peers}}
+       (do
+         (log/info "Peer" wnode "is not registered. Retrying fetch peers.")
+         {::fetch-peers {:wnode wnode
+                         :web3  web3
+                         :retries (inc retries)}})))))
 
 (handlers/register-handler-fx
  ::mark-trusted-peer-success
@@ -306,6 +335,11 @@
  ::add-peer-error
  (fn [_ [_ error]]
    (log/error "offline inbox: add-peer error" error)))
+
+(handlers/register-handler-fx
+ ::fetch-peers-error
+ (fn [_ [_ error]]
+   (log/error "offline inbox: fetch-peers error" error)))
 
 (handlers/register-handler-fx
  ::mark-trusted-peer-error

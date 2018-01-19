@@ -1,10 +1,8 @@
 (ns status-im.protocol.web3.inbox
-  (:require [status-im.native-module.core :as status]
-            [taoensso.timbre :as log]
-            [re-frame.core :as re-frame]
-            [clojure.string :as string]
-            [status-im.protocol.web3.keys :as keys]
-            [status-im.protocol.web3.utils :as utils]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.native-module.core :as status]
+            [status-im.protocol.web3.utils :as web3.utils]
+            [taoensso.timbre :as log]))
 
 (def peers (atom #{}))
 (def trusted-peers (atom #{}))
@@ -44,14 +42,29 @@
                                                   (swap! peers conj enode)
                                                   (success-fn result))))))
 
-(defn mark-trusted-peer [web3 enode success-fn error-fn]
+(defn registered-peer? [peers enode]
+  (let [peer-ids (set (map :id peers))
+        enode-id (web3.utils/extract-enode-id enode)]
+    (contains? peer-ids enode-id)))
+
+(defn mark-trusted-peer [web3 enode peers success-fn error-fn]
   (if (@trusted-peers enode)
     (success-fn true)
-    (.markTrustedPeer (utils/shh web3)
-                      enode
-                      (response-handler error-fn (fn [result]
-                                                   (swap! trusted-peers conj enode)
-                                                   (success-fn result))))))
+    (.markTrustedPeer (web3.utils/shh web3)
+                       enode
+                       (response-handler error-fn (fn [result]
+                                                    (swap! trusted-peers conj enode)
+                                                    (success-fn result))))))
+
+;; TODO(dmitryn): use web3 instead of rpc call
+(defn fetch-peers [success-fn error-fn]
+  (let [args {:jsonrpc "2.0"
+              :id 2
+              :method "admin_peers"
+              :params []}
+        payload (.stringify js/JSON (clj->js args))]
+    (status/call-web3 payload
+                      (response-handler error-fn success-fn))))
 
 (defn request-messages [web3 wnode topic sym-key-id success-fn error-fn]
   (log/info "offline inbox: sym-key-id" sym-key-id)
@@ -60,7 +73,7 @@
               :symKeyID       sym-key-id}]
     (log/info "offline inbox: request-messages request")
     (log/info "offline inbox: request-messages args" (pr-str opts))
-    (.requestMessages (utils/shh web3)
+    (.requestMessages (web3.utils/shh web3)
                       (clj->js opts)
                       (response-handler error-fn success-fn))))
 
