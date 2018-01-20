@@ -9,6 +9,7 @@
     [status-im.translations.da :as da]
     [status-im.translations.de :as de]
     [status-im.translations.de-ch :as de-ch]
+    [status-im.translations.el :as el]
     [status-im.translations.en :as en]
     [status-im.translations.es :as es]
     [status-im.translations.es-ar :as es-ar]
@@ -71,6 +72,7 @@
                              :da          da/translations
                              :de          de/translations
                              :de-ch       de-ch/translations
+                             :el          el/translations
                              :en          en/translations
                              :es          es/translations
                              :es-ar       es-ar/translations
@@ -276,6 +278,7 @@
                                                 :zh-hant-mo
                                                 :zh-hant-cn
                                                 :sr-RS_#Cyrl
+                                                :el
                                                 :en
                                                 :de
                                                 :lt
