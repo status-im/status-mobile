@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;
@@ -80,6 +81,10 @@ public class MainActivity extends ReactActivity {
 
         if(BuildConfig.TESTFAIRY_ENABLED == "1") {
             TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
+        }
+
+        if (BuildConfig.DEBUG) {
+            Toast.makeText(this, "Welcome to the Status Debug build", Toast.LENGTH_LONG).show();
         }
 
         if (!shouldShowRootedNotification()) {
