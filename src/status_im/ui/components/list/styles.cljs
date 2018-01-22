@@ -5,8 +5,7 @@
 
 (def item
   {:flex-direction :row
-   :justify-content :center
-   :height          64})
+   :justify-content :center})
 
 (def item-content-view
   {:flex            1
