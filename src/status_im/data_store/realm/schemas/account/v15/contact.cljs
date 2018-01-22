@@ -1,5 +1,6 @@
 (ns status-im.data-store.realm.schemas.account.v15.contact
-  (:require [taoensso.timbre :as log]))
+  (:require [goog.object :as object]
+            [taoensso.timbre :as log]))
 
 (def schema {:name       :contact
              :primaryKey :whisper-identity
@@ -39,7 +40,7 @@
   (let [new-contacts (.objects new-realm "contact")]
     (dotimes [i (.-length new-contacts)]
       (let [contact (aget new-contacts i)
-            id      (aget contact "whisper-identity")]
+            id      (object/get contact "whisper-identity")]
         (when (or (= id "mailman")
                   (= id "transactor-group")
                   (= id "transactor-personal"))

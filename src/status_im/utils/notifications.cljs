@@ -20,7 +20,7 @@
   (.requestPermissions (.-default rn/react-native-fcm)))
 
 (defn get-fcm-token []
-    (-> (.getFCMToken (aget rn/react-native-fcm "default"))
+    (-> (.getFCMToken (.-default rn/react-native-fcm))
         (.then (fn [x]
                  (log/debug "get-fcm-token: " x)
                  (dispatch [:update-fcm-token x])))))

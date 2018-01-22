@@ -16,6 +16,7 @@
             [status-im.data-store.realm.schemas.account.v5.group-contact :as group-contact]
             [status-im.data-store.realm.schemas.account.v8.local-storage :as local-storage]
             [status-im.data-store.realm.schemas.account.v13.handler-data :as handler-data]
+            [goog.object :as object]
             [taoensso.timbre :as log]
             [cljs.reader :as reader]))
 
@@ -48,12 +49,12 @@
           (.objects "message")
           (.filtered (str "content-type = \"" content-type "\""))
           (.map (fn [object _ _]
-                  (let [group-id (aget object "group-id")
-                        {:keys [bot] :as content} (reader/read-string (aget object "content"))]
+                  (let [group-id (object/get object "group-id")
+                        {:keys [bot] :as content} (reader/read-string (object/get object "content"))]
                     (when-not bot
-                      (let [chat-id  (aget object "chat-id")
+                      (let [chat-id  (object/get object "chat-id")
                             chat     (chat-by-id realm chat-id)
-                            group?   (aget chat "group-chat")
+                            group?   (object/get chat "group-chat")
                             bot-name (if group?
                                        "transactor-group"
                                        "transactor-personal")

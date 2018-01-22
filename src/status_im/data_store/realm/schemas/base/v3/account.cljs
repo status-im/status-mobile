@@ -1,5 +1,6 @@
 (ns status-im.data-store.realm.schemas.base.v3.account
-  (:require [taoensso.timbre :as log]
+  (:require [goog.object :as object]
+            [taoensso.timbre :as log]
             [status-im.utils.signing-phrase.core :as signing-phrase]))
 
 (def schema {:name       :account
@@ -27,7 +28,7 @@
   (let [accounts (.objects new-realm "account")]
     (dotimes [i (.-length accounts)]
       (let [account (aget accounts i)
-            phrase  (aget account "signing-phrase")]
+            phrase  (object/get account "signing-phrase")]
         (when (empty? phrase)
           (log/debug (js->clj account))
           (aset account "signing-phrase" (signing-phrase/generate)))))))

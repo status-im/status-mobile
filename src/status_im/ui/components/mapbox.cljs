@@ -1,5 +1,6 @@
 (ns status-im.ui.components.mapbox
-  (:require [reagent.core :as r]
+  (:require [goog.object :as object]
+            [reagent.core :as r]
             [status-im.ui.components.styles :as common]
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific ios?]]
@@ -8,7 +9,7 @@
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn get-property [name]
-  (aget rn-dependencies/mapbox-gl name))
+  (object/get rn-dependencies/mapbox-gl name))
 
 (defn adapt-class [class]
   (when class
