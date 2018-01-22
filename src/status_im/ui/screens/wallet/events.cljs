@@ -124,7 +124,7 @@
   :update-transactions-success
   (fn [db [_ transactions]]
     (-> db
-        (assoc-in [:wallet :transactions] transactions)
+        (update-in [:wallet :transactions] merge transactions)
         (assoc-in [:wallet :transactions-loading?] false))))
 
 (handlers/register-handler-db

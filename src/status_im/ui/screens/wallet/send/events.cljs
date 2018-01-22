@@ -98,8 +98,8 @@
   [(re-frame/inject-cofx :now)]
   (fn [{:keys [db now]} [_ {:keys [id message_id args] :as transaction}]]
     (if (transaction-valid? transaction)
-      ;NOTE(goranjovic): the transactions started from chat using /send command
-      ; are only in ether, so this parameter defaults to ETH
+      ;;NOTE(goranjovic): the transactions started from chat using /send command
+      ;; are only in ether, so this parameter defaults to ETH
       (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args
             ;;TODO (andrey) revisit this map later (this map from old transactions, idk if we need all these fields)
             transaction {:id         id
@@ -160,21 +160,34 @@
            ::show-transaction-error error_message}
           {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))
 
+(defn prepare-unconfirmed-transaction [db now hash id]
+  (let [transaction (get-in db [:wallet :transactions-unsigned id])]
+    (-> transaction
+        (assoc :confirmations "0"
+               :timestamp (str now)
+               :type :outbound
+               :hash hash)
+        (update :gas-price str)
+        (update :value str)
+        (update :gas str)
+        (dissoc :message-id :id))))
+
 (handlers/register-handler-fx
   ::transaction-completed
-  (fn [{db :db} [_ {:keys [id response]} modal?]]
+  (fn [{db :db now :now} [_ {:keys [id response]} modal?]]
     (let [{:keys [hash error]} response
           db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
       (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
         {:db db'}
         (merge
-          {:db (-> db'
-                   (update-in [:wallet :transactions-unsigned] dissoc id)
-                   (update-in [:wallet :send-transaction] merge clear-send-properties))}
-          (if modal?
-            {:dispatch-n [[:navigate-back]
-                          [:navigate-to-modal :wallet-transaction-sent-modal]]}
-            {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
+         {:db (-> db'
+                  (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
+                  (update-in [:wallet :transactions-unsigned] dissoc id)
+                  (update-in [:wallet :send-transaction] merge clear-send-properties))}
+         (if modal?
+           {:dispatch-n [[:navigate-back]
+                         [:navigate-to-modal :wallet-transaction-sent-modal]]}
+           {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]

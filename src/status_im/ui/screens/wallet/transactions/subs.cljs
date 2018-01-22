@@ -144,7 +144,8 @@
                   :gas-used  (i18n/label :not-applicable)
                   :nonce     (i18n/label :not-applicable)
                   :hash      (i18n/label :not-applicable)}
-                 {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
+                 {:cost (when gas-used
+                          (money/wei->str :eth (money/fee-value gas-used gas-price)))
                   :url  (transactions/get-transaction-details-url network hash)}))))))
 
 (reg-sub :wallet.transactions.details/confirmations
