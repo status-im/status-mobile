@@ -37,26 +37,27 @@
 (handlers/register-handler-fx
   :chat-received-message/add
   message-model/receive-interceptors
-  (fn [{:keys [db] :as cofx} [{:keys [content] :as message}]]
-    (if (:command content)
-      ;; we are dealing with received command message, we can't add it right away,
-      ;; we first need to fetch short-preview + preview and add it only after we already have those.
-      ;; note that `request-command-message-data` implicitly wait till jail is ready and
-      ;; calls are made only after that
-      (commands-events/request-command-message-data
-       db message
-       {:data-type             :short-preview
-        :proceed-event-creator (fn [short-preview]
-                                 [:request-command-message-data
-                                  message
-                                  {:data-type             :preview
-                                   :proceed-event-creator (fn [preview]
-                                                            [::received-message
-                                                             (update message :content merge
-                                                                     {:short-preview short-preview
-                                                                      :preview       preview})])}])})
-      ;; regular non command message, we can add it right away
-      (message-model/receive cofx message))))
+  (fn [{:keys [db message-exists?] :as cofx} [{:keys [message-id content] :as message}]]
+    (when-not (message-exists? message-id) ;; if message is already in db, don't process
+      (if (:command content)
+        ;; we are dealing with received command message, we can't add it right away,
+        ;; we first need to fetch short-preview + preview and add it only after we already have those.
+        ;; note that `request-command-message-data` implicitly wait till jail is ready and
+        ;; calls are made only after that
+        (commands-events/request-command-message-data
+         db message
+         {:data-type             :short-preview
+          :proceed-event-creator (fn [short-preview]
+                                   [:request-command-message-data
+                                    message
+                                    {:data-type             :preview
+                                     :proceed-event-creator (fn [preview]
+                                                              [::received-message
+                                                               (update message :content merge
+                                                                       {:short-preview short-preview
+                                                                        :preview       preview})])}])})
+        ;; regular non command message, we can add it right away
+        (message-model/receive cofx message)))))
 
 ;; TODO janherich: get rid of this special case once they hacky app start-up sequence is refactored
 (handlers/register-handler-fx

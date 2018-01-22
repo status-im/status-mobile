@@ -31,23 +31,25 @@
          :contacts/keys [contacts]} db
         jail-id               (or bot jail-id chat-id)
         jail-command-name     (or content-command-name command-name)]
-    (if (get-in contacts [jail-id :jail-loaded?])
-      (let [path        [(if (= :response (keyword type)) :responses :commands)
-                         [jail-command-name
-                          (or content-command-scope-bitmask scope-bitmask)]
-                         data-type]
-            to          (get-in contacts [chat-id :address])
-            jail-params {:parameters params
-                         :context    (generate-context current-account-id chat-id to group-id)}]
-        {:db        db
-         :call-jail {:jail-id                 jail-id
-                     :path                    path
-                     :params                  jail-params
-                     :callback-events-creator (fn [jail-response]
-                                                [[::jail-command-data-response
-                                                  jail-response message opts]])}})
-      {:db (update-in db [:contacts/contacts jail-id :jail-loaded-events]
-                      conj [:request-command-message-data message opts])})))
+    (if-not (get contacts jail-id) ;; if contact is not in app-db, don't process
+      {:db db}
+      (if (get-in contacts [jail-id :jail-loaded?])
+        (let [path        [(if (= :response (keyword type)) :responses :commands)
+                           [jail-command-name
+                            (or content-command-scope-bitmask scope-bitmask)]
+                           data-type]
+              to          (get-in contacts [chat-id :address])
+              jail-params {:parameters params
+                           :context    (generate-context current-account-id chat-id to group-id)}]
+          {:db        db
+           :call-jail {:jail-id                 jail-id
+                       :path                    path
+                       :params                  jail-params
+                       :callback-events-creator (fn [jail-response]
+                                                  [[::jail-command-data-response
+                                                    jail-response message opts]])}})
+        {:db (update-in db [:contacts/contacts jail-id :jail-loaded-events]
+                        conj [:request-command-message-data message opts])}))))
 
 ;;;; Handlers
 

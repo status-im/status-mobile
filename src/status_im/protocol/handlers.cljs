@@ -311,7 +311,7 @@
   :incoming-message 
   (fn [{:keys [db]} [_ type {:keys [payload ttl id] :as message}]]
     (let [message-id (or id (:message-id payload))]
-      (when-not (cache/exists? message-id type)
+      (when-not (cache/exists? message-id type) 
         (let [ttl-s             (* 1000 (or ttl 120))
               processed-message {:id         (random/id)
                                  :message-id message-id
@@ -321,7 +321,10 @@
               route-fx (case type
                          (:message
                           :group-message
-                          :public-group-message) {:dispatch [:pre-received-message (transform-protocol-message message)]}
+                          :public-group-message) (let [chat-message (transform-protocol-message message)]
+                                                   (cond-> {}
+                                                     (:content chat-message)
+                                                     (assoc :dispatch [:pre-received-message chat-message])))
                          :pending                (cond-> {::pending-messages-save message}
                                                    chat-message
                                                    (assoc :dispatch
@@ -359,8 +362,9 @@
           message-db-path    [:chats chat-identifier :messages message-identifier] 
           from-id            (or sent-from from) 
           message            (get-stored-message message-identifier)]
-      ;; proceed with updating status if chat is in db, status is not the same and message was not already seen 
-      (when (and (get-in db [:chats chat-identifier])
+      ;; proceed with updating status if message is system, chat is in db, status is not the same and message was not already seen 
+      (when (and message
+                 (get-in db [:chats chat-identifier])
                  (not= status (get-in message [:user-statuses from-id]))
                  (not (chat.utils/message-seen-by? message from-id)))
         (let [statuses (assoc (:user-statuses message) from-id status)]

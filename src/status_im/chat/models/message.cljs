@@ -36,7 +36,7 @@
     (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id)))
 
 (defn receive
-  [{:keys [db message-exists? pop-up-chat? get-last-clock-value now] :as cofx}
+  [{:keys [db pop-up-chat? get-last-clock-value now] :as cofx}
    {:keys [from group-id chat-id content-type content message-id timestamp clock-value]
     :as   message
     :or   {clock-value 0}}]
@@ -45,11 +45,9 @@
         {:keys [public-key] :as current-account} (get-current-account db)
         chat-identifier (or group-id chat-id from)
         direct-message? (nil? group-id)]
-    ;; proceed with adding message if message is not already stored in realm,
-    ;; it's not from current user (outgoing message) and it's for relevant chat
+    ;; proceed with adding message if it's not from current user (outgoing message) and it's for relevant chat
     ;; (either current active chat or new chat not existing yet or it's a direct message)
-    (when (and (not (message-exists? message-id))
-               (not= from public-key)
+    (when (and (not= from public-key)
                (or (pop-up-chat? chat-identifier)
                    direct-message?))
       (let [current-chat?    (and (= :chat view-id)
