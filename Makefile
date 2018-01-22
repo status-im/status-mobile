@@ -47,6 +47,9 @@ release-android: prod-build ##@build build release for Android
 release-ios: prod-build ##@build build release for iOS release
 	@echo "Build in XCode, see https://wiki.status.im/TBD for instructions"
 
+prod-build:
+	lein prod-build
+
 #----------------
 # Dev builds
 #----------------
@@ -62,16 +65,13 @@ dev-android-genymotion: ##@dev build for Android Genymotion simulator
 	./re-natal use-android-device genymotion
 	./re-natal use-figwheel
 
-dev-ios-real: prod-build ##@dev build for iOS real device
+dev-ios-real: ##@dev build for iOS real device
 	./re-natal use-ios-device real
 	./re-natal use-figwheel
 
-dev-ios-simulator: prod-build ##@dev build for iOS simulator
+dev-ios-simulator: ##@dev build for iOS simulator
 	./re-natal use-ios-device simulator
 	./re-natal use-figwheel
-
-prod-build:
-	lein prod-build
 
 #--------------
 # REPL
