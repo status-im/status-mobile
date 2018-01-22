@@ -21,6 +21,7 @@
    (re-frame/inject-cofx :get-last-clock-value)
    (re-frame/inject-cofx :random-id)
    (re-frame/inject-cofx :get-stored-chat)
+   (re-frame/inject-cofx :get-stored-message)
    re-frame/trim-v])
 
 (defn- lookup-response-ref

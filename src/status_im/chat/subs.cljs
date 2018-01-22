@@ -1,11 +1,11 @@
 (ns status-im.chat.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.constants :as constants]
+            [status-im.commands.utils :as commands-utils]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.commands :as commands-model]
             [status-im.chat.utils :as chat-utils]
             [status-im.chat.views.input.utils :as input-utils]
-            [status-im.commands.utils :as commands-utils]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]

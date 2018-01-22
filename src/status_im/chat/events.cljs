@@ -235,21 +235,6 @@
                                    (mapv #(vector :chat-received-message/add %)))]
       {:dispatch-n messages-events})))
 
-;; TODO(alwx): can be simplified
-(handlers/register-handler-fx
-  :account-generation-message
-  [(re-frame/inject-cofx :get-stored-message)]
-  (fn [{:keys [get-stored-message]} _]
-    (when-not (get-stored-message chat-const/passphrase-message-id)
-      {:dispatch [:chat-received-message/add console-chat/account-generation-message]})))
-
-(handlers/register-handler-fx
-  :move-to-internal-failure-message
-  [(re-frame/inject-cofx :get-stored-message)]
-  (fn [{:keys [get-stored-message]} _]
-    (when-not (get-stored-message chat-const/move-to-internal-failure-message-id)
-      {:dispatch [:chat-received-message/add console-chat/move-to-internal-failure-message]})))
-
 (handlers/register-handler-fx
   :browse-link-from-message
   (fn [{{:contacts/keys [contacts]} :db} [_ link]]

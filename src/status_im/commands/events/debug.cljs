@@ -1,4 +1,4 @@
-(ns status-im.commands.handlers.debug
+(ns status-im.commands.events.debug
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.commands.events.loading :as loading-events]
