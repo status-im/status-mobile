@@ -23,11 +23,10 @@
   [react/view {:flex 1}
    [list/flat-list {:data                      contacts
                     :enableEmptySections       true
-                    :renderRow                 (fn [contact]
+                    :render-fn                 (fn [contact]
                                                  [contact-view {:contact        contact
                                                                 :extended?      extended?
                                                                 :extend-options (extend-options contact)}])
-
                     :bounces                   false
                     :keyboardShouldPersistTaps :always
                     :footer                    list/default-footer
