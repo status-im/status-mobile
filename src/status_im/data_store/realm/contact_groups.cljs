@@ -1,6 +1,7 @@
 (ns status-im.data-store.realm.contact-groups
-  (:require [status-im.data-store.realm.core :as realm]
-    [status-im.utils.random :refer [timestamp]])
+  (:require [goog.object :as object]
+            [status-im.data-store.realm.core :as realm]
+            [status-im.utils.random :refer [timestamp]])
   (:refer-clojure :exclude [exists?]))
 
 (defn get-all
@@ -37,13 +38,13 @@
   [group-id]
   (-> @realm/account-realm
       (realm/get-one-by-field :contact-group :group-id group-id)
-      (aget "contacts")))
+      (object/get "contacts")))
 
 (defn- save-contacts
   [identities contacts]
   (doseq [contact-identity identities]
     (when-not (.find contacts (fn [object _ _]
-                                (= contact-identity (aget object "identity"))))
+                                (= contact-identity (object/get object "identity"))))
       (.push contacts (clj->js {:identity contact-identity})))))
 
 (defn add-contacts

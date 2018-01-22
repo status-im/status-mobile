@@ -1,12 +1,13 @@
 (ns status-im.ui.components.context-menu
-  (:require [reagent.core :as r]
+  (:require [goog.object :as object]
+            [reagent.core :as r]
             [status-im.ui.components.styles :as st]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.ui.components.react :as rn]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn- get-property [name]
-  (aget rn-dependencies/popup-menu name))
+  (object/get rn-dependencies/popup-menu name))
 
 (defn- get-class [name]
   (rn/adapt-class (get-property name)))

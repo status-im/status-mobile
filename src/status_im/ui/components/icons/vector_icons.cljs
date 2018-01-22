@@ -1,6 +1,7 @@
 (ns status-im.ui.components.icons.vector-icons
   (:require-macros [status-im.utils.slurp :refer [slurp-svg]])
-  (:require [reagent.core :as reagent]
+  (:require [goog.object :as object]
+            [reagent.core :as reagent]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.components.react :as react]
@@ -8,7 +9,7 @@
   (:refer-clojure :exclude [use]))
 
 (defn get-property [name]
-  (aget rn-dependencies/svg name))
+  (object/get rn-dependencies/svg name))
 
 (defn adapt-class [class]
   (when class

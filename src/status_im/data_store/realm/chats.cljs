@@ -1,5 +1,6 @@
 (ns status-im.data-store.realm.chats
-  (:require [status-im.data-store.realm.core :as realm]
+  (:require [goog.object :as object]
+            [status-im.data-store.realm.core :as realm]
             [status-im.utils.random :refer [timestamp]]
             [taoensso.timbre :as log])
   (:refer-clojure :exclude [exists?]))
@@ -73,20 +74,20 @@
   [chat-id]
   (-> @realm/account-realm
       (realm/get-one-by-field :chat :chat-id chat-id)
-      (aget "contacts")))
+      (object/get "contacts")))
 
 (defn has-contact?
   [chat-id identity]
   (let [contacts (get-contacts chat-id)
         contact  (.find contacts (fn [object _ _]
-                                   (= identity (aget object "identity"))))]
+                                   (= identity (object/get object "identity"))))]
     (if contact true false)))
 
 (defn- save-contacts
   [identities contacts added-at]
   (doseq [contact-identity identities]
     (if-let [contact (.find contacts (fn [object _ _]
-                                       (= contact-identity (aget object "identity"))))]
+                                       (= contact-identity (object/get object "identity"))))]
       (doto contact
         (aset "is-in-chat" true)
         (aset "added-at" added-at))
@@ -104,7 +105,7 @@
   [identities contacts]
   (doseq [contact-identity identities]
     (when-let [contact (.find contacts (fn [object _ _]
-                                         (= contact-identity (aget object "identity"))))]
+                                         (= contact-identity (object/get object "identity"))))]
       (realm/delete @realm/account-realm contact))))
 
 (defn remove-contacts
@@ -123,4 +124,4 @@
 (defn get-property
   [chat-id property]
   (when-let [chat (realm/get-one-by-field @realm/account-realm :chat :chat-id chat-id)]
-    (aget chat (name property))))
+    (object/get chat (name property))))

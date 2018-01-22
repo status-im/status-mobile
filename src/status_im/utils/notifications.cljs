@@ -1,5 +1,6 @@
 (ns status-im.utils.notifications
-  (:require [re-frame.core :as re-frame :refer [dispatch reg-fx]]
+  (:require [goog.object :as object]
+            [re-frame.core :as re-frame :refer [dispatch reg-fx]]
             [status-im.utils.handlers :as handlers]
             [status-im.react-native.js-dependencies :as rn]
             [status-im.utils.config :as config]
@@ -20,7 +21,7 @@
   (.requestPermissions (.-default rn/react-native-fcm)))
 
 (defn get-fcm-token []
-    (-> (.getFCMToken (aget rn/react-native-fcm "default"))
+    (-> (.getFCMToken (object/get rn/react-native-fcm "default"))
         (.then (fn [x]
                  (log/debug "get-fcm-token: " x)
                  (dispatch [:update-fcm-token x])))))

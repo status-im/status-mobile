@@ -12,6 +12,7 @@
             [status-im.data-store.realm.schemas.account.v5.contact-group :as contact-group]
             [status-im.data-store.realm.schemas.account.v5.group-contact :as group-contact]
             [status-im.data-store.realm.schemas.account.v8.local-storage :as local-storage]
+            [goog.object :as object] 
             [taoensso.timbre :as log]
             [cljs.reader :as reader]))
 
@@ -96,7 +97,7 @@
           (.objects "message")
           (.filtered (str "content-type = \"" content-type "\""))
           (.map (fn [object _ _]
-                  (let [content (reader/read-string (aget object "content"))
+                  (let [content (reader/read-string (object/get object "content"))
                         new-props (get mapping (selector content))
                         new-content (merge content new-props)]
                     (log/debug "migrating v19 command/request database, updating: " content " with: " new-props)
@@ -107,11 +108,11 @@
     (some-> new-realm
             (.objects "message")
             (.map (fn [msg _ _]
-                    (let [message-id (aget msg "message-id")
-                          chat-id    (aget msg "chat-id")
-                          from       (aget msg "from")
-                          msg-status (aget msg "message-status")
-                          statuses   (aget msg "user-statuses")]
+                    (let [message-id (object/get msg "message-id")
+                          chat-id    (object/get msg "chat-id")
+                          from       (object/get msg "from")
+                          msg-status (object/get msg "message-status")
+                          statuses   (object/get msg "user-statuses")]
                       (when statuses
                         (.map statuses (fn [status _ _]
                                          (let [status-id (str message-id "-" from)]
@@ -140,7 +141,7 @@
             (.objects "user-status")
             (.map (fn [status _ _]
                     ;; orphaned statues, status-id must be set to some unique value, as realm complains when they are deleted
-                    (when (clojure.string/blank? (aget status "status-id"))
+                    (when (clojure.string/blank? (object/get status "status-id"))
                       (log/debug "Setting unique id for orphaned status")
                       (aset status "status-id" (str (swap! id-seq inc) "-deleted"))))))))
 

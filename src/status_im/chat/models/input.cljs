@@ -1,5 +1,6 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as str]
+            [goog.object :as object]
             [status-im.ui.components.react :as rc]
             [status-im.native-module.core :as status]
             [status-im.chat.constants :as const]
@@ -18,8 +19,8 @@
     (str/replace text
                  #":([a-z_\-+0-9]*):"
                  (fn [[original emoji-id]]
-                   (if-let [emoji-map (aget dependencies/emojis "lib" emoji-id)]
-                     (aget emoji-map "char")
+                   (if-let [emoji-map (object/get (object/get dependencies/emojis "lib") emoji-id)]
+                     (object/get emoji-map "char")
                      original)))))
 
 (defn text-ends-with-space? [text]
