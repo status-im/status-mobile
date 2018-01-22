@@ -471,7 +471,7 @@
 (handlers/register-handler-fx
   :contact-request-received
   (fn [{{:contacts/keys [contacts]} :db}
-       [_ {:keys [from payload]}]]
+       [_ {:keys [from payload timestamp]}]]
     (when from
       (let [{{:keys [name profile-image address status fcm-token]} :contact
              {:keys [public private]}                              :keypair} payload
@@ -486,15 +486,22 @@
                               :fcm-token        fcm-token}
             chat             {:name         name
                               :chat-id      from
-                              :contact-info (prn-str contact)}]
+                              :contact-info (prn-str contact)}
+            prev-last-updated (get-in contacts [from :last-updated] 0)
+            ;; NOTE(dmitryn) Workaround for old messages not having "payload.timestamp" attribute.
+            ;; Get timestamp from message root level.
+            ;; Root level "timestamp" is a unix ts in seconds.
+            timestamp'        (or (:payload timestamp)
+                                  (* 1000 timestamp))]
+
         (if-not existing-contact
           (let [contact (assoc contact :pending? true)]
             {:dispatch-n [[:add-contacts [contact]]
                           [:add-chat from chat]]})
           (when-not (:pending? existing-contact)
-            {:dispatch-n [[:update-contact! contact]
-                          [:update-chat! chat]
-                          [:watch-contact contact]]}))))))
+            (cond-> {:dispatch-n [[:update-chat! chat]
+                                  [:watch-contact contact]]}
+                (<= prev-last-updated timestamp') (update :dispatch-n concat [[:update-contact! contact]]))))))))
 
 ;;GROUP
 

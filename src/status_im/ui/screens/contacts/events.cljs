@@ -19,7 +19,8 @@
             [status-im.ui.screens.contacts.navigation]
             [status-im.chat.console :as console-chat]
             [status-im.commands.events.loading :as loading-events]
-            [cljs.spec.alpha :as spec]))
+            [cljs.spec.alpha :as spec]
+            [status-im.protocol.web3.utils :as web3.utils]))
 
 ;;;; COFX
 
@@ -68,7 +69,8 @@
                                         :status        status
                                         :fcm-token     fcm-token}
                               :keypair {:public  updates-public-key
-                                        :private updates-private-key}}}})))
+                                        :private updates-private-key}
+                              :timestamp (web3.utils/timestamp)}}})))
 
 (reg-fx
   ::reset-pending-messages
