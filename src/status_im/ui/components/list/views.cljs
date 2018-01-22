@@ -142,7 +142,9 @@
 
 (defn- wrap-render-section-header-fn [f]
   (fn [data]
-    (reagent/as-element (f (.-section data)))))
+    (let [section (.-section data)]
+      (reagent/as-element (f {:title (.-title section)
+                              :data  (.-data section)})))))
 
 (defn- default-render-section-header [{:keys [title data]}]
   (when (seq data)
