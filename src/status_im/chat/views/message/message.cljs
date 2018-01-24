@@ -24,12 +24,12 @@
 
 (def window-width (:width (react/get-dimensions "window")))
 
-(defview message-author-name [{:keys [outgoing from] :as message}]
+(defview message-author-name [{:keys [outgoing from username] :as message}]
   (letsubs [current-account [:get-current-account]
             incoming-name   [:contact-name-by-identity from]]
     (when-let [name (if outgoing
                       (:name current-account)
-                      (or incoming-name (gfycat/generate-gfy from)))]
+                      (or incoming-name username (gfycat/generate-gfy from)))]
       [react/text {:style style/author} name])))
 
 (defview message-content-status []

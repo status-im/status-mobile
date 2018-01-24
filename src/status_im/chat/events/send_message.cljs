@@ -34,11 +34,12 @@
 (defn- send-message
   [{:keys          [web3 network-status local-storage chats]
     :contacts/keys [contacts]
+    :accounts/keys [accounts current-account-id]
     :as db}
    {:keys [message-type content from chat-id to] :as message}]
   (let [{:keys [dapp? fcm-token]}        (get contacts chat-id)
         {:keys [public-key private-key]} (get chats chat-id)
-        sender-name                      (get-in contacts [from :name])]
+        sender-name                      (get-in accounts [current-account-id :name])]
     ;; whenever we are sending message to DApp, we are assuming it's a status bot,
     ;; so we are just calling jail `on-message-send` function
     (when message
