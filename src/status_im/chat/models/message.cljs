@@ -183,12 +183,11 @@
    re-frame/trim-v])
 
 (defn- prepare-message [clock-value params chat]
-
-  (let [{:keys [chat-id identity message]} params
+  (let [{:keys [chat-id identity message-text]} params
         {:keys [group-chat public?]} chat
         message {:message-id   (random/id)
                  :chat-id      chat-id
-                 :content      message
+                 :content      message-text
                  :from         identity
                  :content-type constants/text-content-type
                  :outgoing     true
@@ -337,8 +336,8 @@
                  :path                    [handler-type [name scope-bitmask] :handler]
                  :params                  jail-params
                  :callback-events-creator (fn [jail-response]
-                                            [(when-not (:async-handler command)
-                                               [:command-handler! chat-id orig-params jail-response])])}}))
+                                            (when-not (:async-handler command)
+                                              [[:command-handler! chat-id orig-params jail-response]]))}}))
 
 (defn process-command
   [{:keys [db] :as cofx} {:keys [command message chat-id] :as params}]
@@ -352,7 +351,7 @@
             (invoke-console-command-handler (merge cofx fx') params)
 
             (:has-handler command)
-            (merge fx' (invoke-command-handlers (:db fx') params))
+            (merge fx' (invoke-command-handlers fx' params))
 
             :else
             (merge fx' (send-command cofx fx' chat-id params)))))))

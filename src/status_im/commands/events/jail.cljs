@@ -4,6 +4,7 @@
             [status-im.commands.utils :as commands-utils]
             [status-im.bots.events :as bots-events]
             [status-im.chat.events.animation :as animation-events]
+            [status-im.chat.events.input :as input-events]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.message :as message-model]
             [status-im.data-store.local-storage :as local-storage]
@@ -20,6 +21,32 @@
     (utils/show-popup "Error" (string/join "\n" [message params]))
     (log/debug message params)))
 
+;;;; Helper functions
+
+(defn- handle-suggestions
+  [{:keys [chats] :as db}
+   {:keys [chat-id bot-id default-db command parameter-index result error] :as params}]
+  (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
+        contains-markup? (contains? returned :markup)
+        current-input    (get-in chats [chat-id :input-text])
+        path             (if command
+                           [:chats chat-id :parameter-boxes (:name command) parameter-index]
+                           (when-not (string/blank? current-input)
+                             [:chats chat-id :parameter-boxes :message]))
+        new-height       (or (keyword height) :default)]
+    (cond-> {:db (animation-events/choose-predefined-expandable-height db :parameter-box new-height)}
+
+      (and contains-markup? path (not= (get-in db path) markup))
+      (as-> fx'
+        (cond-> (assoc-in fx' (into [:db] path) returned)
+
+          default-db
+          (update :db bots-events/update-bot-db {:bot bot-id
+                                                 :db  default-db})))
+
+      error
+      (assoc ::print-jail-error-message ["Error on command handling" params]))))
+
 ;;;; Handlers
 
 (handlers/register-handler-fx
@@ -29,90 +56,74 @@
        [chat-id
         {:keys [command] :as params}
         {:keys [result error] :as res}]]
-    ;; TODO(alwx): restructure
-    (log/debug "ALWX result >" res)
-    (let [fx (cond
-               (get-in result [:returned :error])
-               (when-let [markup (get-in result [:returned :error :markup])]
-                 {:db (chat-model/set-chat-ui-props db {:validation-messages markup})})
-
-               result
-               (let [command' (assoc command :handler-data (:returned result))
-                     params'  (assoc params :command command')]
-                 (message-model/send-command cofx nil chat-id params'))
-
-               (not (or error (get-in result [:returned :error])))
-               (message-model/send-command cofx nil chat-id params)
-
-               :default
-               nil)]
-      (cond-> fx
+    (let [result-error (get-in result [:returned :error])]
+      (cond-> {:db db}
         error
-        (assoc ::print-jail-error-message ["Error on command handling" params])))))
+        (assoc ::print-jail-error-message ["Error on command handling" params])
+
+        result-error
+        (as-> fx'
+          (if-let [markup (get result-error :markup)]
+            (assoc fx' :db (chat-model/set-chat-ui-props db {:validation-messages markup}))
+            fx'))
+
+        (and result (not result-error))
+        (as-> fx'
+          (let [command' (assoc command :handler-data (:returned result))
+                params'  (assoc params :command command')]
+            (message-model/send-command fx' nil chat-id params')))))))
 
 (handlers/register-handler-fx
   :suggestions-handler
-  (fn [{{:keys [chats] :as db} :db} [{:keys [chat-id bot-id default-db command parameter-index result error] :as params}]]
-    (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
-          contains-markup? (contains? returned :markup)
-          current-input    (get-in chats [chat-id :input-text])
-          path             (if command
-                             [:chats chat-id :parameter-boxes (:name command) parameter-index]
-                             (when-not (string/blank? current-input)
-                               [:chats chat-id :parameter-boxes :message]))
-          new-height       (or (keyword height) :default)]
-      (cond-> {:db (animation-events/choose-predefined-expandable-height db :parameter-box new-height)}
+  [re-frame/trim-v]
+  (fn [{:keys [db]} [params]]
+    (handle-suggestions db params)))
 
-        (and contains-markup? path (not= (get-in db path) markup))
-        (as-> fx'
-          (log/debug "ALWX path" path returned)
-          (cond-> (assoc-in fx' (into [:db] path) returned)
-
-            default-db
-            (update :db bots-events/update-bot-db {:bot bot-id
-                                                   :db  default-db})))
-
-        error
-        (assoc ::print-jail-error-message ["Error on command handling" params])))))
-
-;; TODO(alwx): rewrite
 (handlers/register-handler-fx
   :suggestions-event!
+  [re-frame/trim-v]
   (fn [{:keys [bot-db] :as db} [bot-id [n & data :as ev] val]]
     (log/debug "Suggestion event: " n (first data) val)
     (case (keyword n)
+
       :set-command-argument
       (let [[index value move-to-next?] (first data)]
-        (re-frame/dispatch [:set-command-argument [index value move-to-next?]]))
+        {:db (input-events/set-command-argument db index value move-to-next?)})
+
       :set-value
-      (re-frame/dispatch [:set-chat-input-text (first data)])
+      (-> (input-events/set-chat-input-text db (first data))
+          (input-events/call-on-message-input-change))
+
       :set
-      (let [opts {:bot   bot-id
-                  :path  (mapv keyword data)
-                  :value val}]
-        (re-frame/dispatch [:set-in-bot-db opts]))
+      (bots-events/set-in-bot-db db {:bot   bot-id
+                                     :path  (mapv keyword data)
+                                     :value val})
+
       :set-command-argument-from-db
       (let [[index arg move-to-next?] (first data)
             path  (keyword arg)
             value (str (get-in bot-db [bot-id path]))]
-        (re-frame/dispatch [:set-command-argument [index value move-to-next?]]))
+        (input-events/set-command-argument db index value move-to-next?))
+
       :set-value-from-db
       (let [path  (keyword (first data))
             value (str (get-in bot-db [bot-id path]))]
-        (re-frame/dispatch [:set-chat-input-text value]))
+        (-> (input-events/set-chat-input-text db value)
+            (input-events/call-on-message-input-change)))
+
       :focus-input
-      (re-frame/dispatch [:chat-input-focus :input-ref])
+      (input-events/chat-input-focus db :input-ref)
+
       nil)))
 
 (handlers/register-handler-fx
   :show-suggestions-from-jail
   [re-frame/trim-v]
-  (fn [_ [{:keys [chat-id markup]}]]
+  (fn [{:keys [db]} [{:keys [chat-id markup]}]]
     (let [markup' (types/json->clj markup)
           result  (assoc-in {} [:result :returned :markup] markup')]
-      (re-frame/dispatch [:suggestions-handler
-                          {:result  result
-                           :chat-id chat-id}]))))
+      (handle-suggestions db {:result  result
+                              :chat-id chat-id}))))
 
 (handlers/register-handler-fx
   :set-local-storage
