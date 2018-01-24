@@ -21,6 +21,7 @@
             status-im.chat.events.commands
             status-im.chat.events.requests
             status-im.chat.events.animation
+            status-im.chat.events.send-message
             status-im.chat.events.queue-message
             status-im.chat.events.receive-message
             status-im.chat.events.sign-up
@@ -54,6 +55,16 @@
   :get-stored-chat
   (fn [cofx _]
     (assoc cofx :get-stored-chat chats-store/get-by-id)))
+
+(re-frame/reg-cofx
+  :message-exists?
+  (fn [cofx]
+    (assoc cofx :message-exists? messages-store/exists?)))
+
+(re-frame/reg-cofx
+  :get-last-clock-value
+  (fn [cofx]
+    (assoc cofx :get-last-clock-value messages-store/get-last-clock-value)))
 
 ;;;; Effects
 
@@ -223,20 +234,6 @@
           messages-events     (->> (console-chat/passphrase-messages mnemonic signing-phrase crazy-math-message?)
                                    (mapv #(vector :chat-received-message/add %)))]
       {:dispatch-n messages-events})))
-
-(handlers/register-handler-fx
-  :account-generation-message
-  [(re-frame/inject-cofx :get-stored-message)]
-  (fn [{:keys [get-stored-message]} _]
-    (when-not (get-stored-message chat-const/passphrase-message-id)
-      {:dispatch [:chat-received-message/add console-chat/account-generation-message]})))
-
-(handlers/register-handler-fx
-  :move-to-internal-failure-message
-  [(re-frame/inject-cofx :get-stored-message)]
-  (fn [{:keys [get-stored-message]} _]
-    (when-not (get-stored-message chat-const/move-to-internal-failure-message-id)
-      {:dispatch [:chat-received-message/add console-chat/move-to-internal-failure-message]})))
 
 (handlers/register-handler-fx
   :browse-link-from-message

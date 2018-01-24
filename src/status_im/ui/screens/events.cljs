@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.events
   (:require status-im.bots.events
             status-im.chat.handlers
-            status-im.commands.handlers.jail
+            status-im.commands.events.jail
             status-im.commands.events.loading
-            status-im.commands.handlers.debug
+            status-im.commands.events.debug
             status-im.network.handlers
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
@@ -27,6 +27,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
+            [status-im.chat.console :as console-chat]
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
@@ -56,7 +57,7 @@
       :callback (fn [jail-response]
                   (doseq [event (if callback-events-creator
                                   (callback-events-creator jail-response)
-                                  [[:received-bot-response
+                                  [[:chat-received-message/bot-response
                                     {:chat-id chat-id}
                                     jail-response]])
                           :when event]
@@ -91,8 +92,9 @@
          (dissoc :callback-events-creator)
          (assoc :callback
                 (fn [jail-response]
-                  (doseq [event (callback-events-creator jail-response)]
-                    (re-frame/dispatch event))))))))
+                  (when callback-events-creator
+                    (doseq [event (callback-events-creator jail-response)]
+                      (re-frame/dispatch event)))))))))
 
 (re-frame/reg-fx
   :call-jail-function
@@ -162,7 +164,9 @@
           (re-frame/dispatch [:request-permissions
                               [:read-external-storage]
                               #(move-to-internal-storage config)
-                              #(re-frame/dispatch [:move-to-internal-failure-message])])
+                              #(re-frame/dispatch [:chat-received-message/add
+                                                   console-chat/move-to-internal-failure-message
+                                                   {:unique? true}])])
           (status/start-node config))))))
 
 (re-frame/reg-fx
@@ -346,9 +350,9 @@
       "local-storage" (re-frame/dispatch [:set-local-storage {:chat-id chat_id
                                                      :data    data}])
       "show-suggestions" (re-frame/dispatch [:show-suggestions-from-jail {:chat-id chat_id
-                                                                 :markup  data}])
-      "send-message" (re-frame/dispatch [:send-message-from-jail {:chat-id chat_id
-                                                         :message data}])
+                                                                          :markup  data}])
+      "send-message" (re-frame/dispatch [:chat-send-message/from-jail {:chat-id chat_id
+                                                                       :message data}])
       "handler-result" (let [orig-params (:origParams data)]
                          ;; TODO(janherich): figure out and fix chat_id from event
                          (re-frame/dispatch [:command-handler! (:chat-id orig-params)
@@ -397,9 +401,10 @@
 ;; pausing node on entering background on android
 
 
+;; TODO(alwx):
 (handlers/register-handler-fx
   :request-permissions
-  (fn [_ [_ permissions then else]]
+  (fn [{:keys [db]} [_ permissions then else]]
     {::request-permissions-fx [permissions then else]}))
 
 (handlers/register-handler-fx

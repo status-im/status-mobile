@@ -1,19 +1,20 @@
 (ns status-im.ui.screens.accounts.events
-  (:require [status-im.data-store.accounts :as accounts-store]
+  (:require [clojure.string :as string]
+            [status-im.data-store.accounts :as accounts-store]
             [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
-            [status-im.protocol.core :as protocol]
+            [status-im.chat.console :as console-chat]
             [status-im.native-module.core :as status]
+            [status-im.ui.screens.accounts.statuses :as statuses]
             [status-im.utils.types :refer [json->clj]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.random :as random]
-            [clojure.string :as str]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
-            [status-im.ui.screens.accounts.statuses :as statuses]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.utils.hex :as utils.hex]))
+            [status-im.utils.hex :as utils.hex]
+            [status-im.protocol.core :as protocol]
+            [taoensso.timbre :as log]))
 
 ;;;; Helper fns
 
@@ -22,8 +23,7 @@
   [db password]
   {:db              (assoc db :accounts/creating-account? true)
    ::create-account password
-   ;; TODO(janherich): get rid of this shitty delayed dispatch once sending commands/msgs is refactored
-   :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
+   :dispatch        [:chat-received-message/add console-chat/account-generation-message {:unique? true}]})
 
 ;;;; COFX
 
@@ -123,7 +123,7 @@
                               :signing-phrase      signing-phrase
                               :settings            {:wallet {:visible-tokens {:testnet #{:STT} :mainnet #{:SNT}}}}}]
       (log/debug "account-created")
-      (when-not (str/blank? pubkey)
+      (when-not (string/blank? pubkey)
         (-> (add-account db account)
             (assoc :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
                                 [:login-account normalized-address password true]]))))))

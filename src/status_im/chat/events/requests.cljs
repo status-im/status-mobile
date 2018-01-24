@@ -12,9 +12,9 @@
 
 ;; Effects
 (re-frame/reg-fx
-  ::request-answered
-  (fn [{:keys [chat-id message-id]}]
-    (requests-store/mark-as-answered chat-id message-id)))
+ :chat-requests/mark-as-answered
+ (fn [{:keys [chat-id message-id]}]
+   (requests-store/mark-as-answered chat-id message-id)))
 
 (re-frame/reg-fx
   ::save-request
@@ -24,12 +24,12 @@
 ;; Handlers
 
 (handlers/register-handler-fx
-  :request-answered
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [chat-id message-id]]
-    {:db (update-in db [:chats chat-id :requests] dissoc message-id)
-     ::request-answered {:chat-id    chat-id
-                         :message-id message-id}}))
+ :request-answered
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [chat-id message-id]]
+   {:db (update-in db [:chats chat-id :requests] dissoc message-id)
+    :chat-requests/mark-as-answered {:chat-id  chat-id
+                                     :message-id message-id}}))
 
 (defn add-request
   "Takes fx, chat-id and message, updates fx with necessary data for adding new request"

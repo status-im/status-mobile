@@ -13,8 +13,7 @@
                                          console-chat-id]]
             [status-im.utils.random :as random]
             [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
-            status-im.chat.events 
-            status-im.chat.handlers.send-message))
+            status-im.chat.events))
 
 (defn remove-chat
   [db [_ chat-id]]
@@ -93,14 +92,6 @@
                :identity current-public-key
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])}))))))))
-
-(register-handler
-  :update-message-overhead!
-  (u/side-effect!
-   (fn [_ [_ chat-id network-status]]
-     (if (= network-status :offline)
-       (chats/inc-message-overhead chat-id)
-       (chats/reset-message-overhead chat-id)))))
 
 (reg-fx
   ::save-public-chat
