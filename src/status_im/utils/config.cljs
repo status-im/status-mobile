@@ -21,8 +21,8 @@
 (def testfairy-enabled? (enabled? (get-config :TESTFAIRY_ENABLED)))
 (def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
 (def mainnet-networks-enabled? (enabled? (get-config :MAINNET_NETWORKS_ENABLED 0)))
-(def offline-inbox-enabled? (enabled? (get-config :OFFLINE_INBOX_ENABLED 0)))
-(def offline-inbox-many-enabled? (enabled? (get-config :OFFLINE_INBOX_MANY_ENABLED 0)))
+(def offline-inbox-enabled? false #_(enabled? (get-config :OFFLINE_INBOX_ENABLED 0)))
+(def offline-inbox-many-enabled? false #_(enabled? (get-config :OFFLINE_INBOX_MANY_ENABLED 0)))
 (def log-level
   (-> (get-config :LOG_LEVEL "error")
       string/lower-case
@@ -30,5 +30,5 @@
 
 (def jsc-enabled? (enabled? (get-config :JSC_ENABLED 0)))
 (def queue-message-enabled? (enabled? (get-config :QUEUE_MESSAGE_ENABLED 0)))
-(def many-whisper-topics-enabled? (enabled? (get-config :MANY_WHISPER_TOPICS_ENABLED 0)))
+(def many-whisper-topics-enabled? true #_(enabled? (get-config :MANY_WHISPER_TOPICS_ENABLED 0)))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))

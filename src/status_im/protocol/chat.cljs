@@ -33,11 +33,11 @@
   {:pre [(valid? ::seen-message message)]}
   (debug :send-seen message)
   (d/add-pending-message!
-    web3
-    (merge message-defaults
-           (-> message
-               (assoc
-                 :type :seen
-                 :requires-ack? false)
-               (assoc-in [:payload :group-id] (:group-id message))
-               (dissoc :group-id)))))
+   web3
+   (merge message-defaults
+          (-> message
+              (assoc
+                :type :seen
+                :topics     [f/status-topic]   :requires-ack? false)
+              (assoc-in [:payload :group-id] (:group-id message))
+              (dissoc :group-id)))))

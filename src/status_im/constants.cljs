@@ -93,7 +93,7 @@
            :address "enode://e2fdcf8a55d9d1ab75b492c3b9a99c206cf5ceede3db716033d0605205218c9d9a406d04b3460f4e8a64f16907ab78ba88e0e46324568bf58b3329e2c5483faa@163.172.177.138:30353"}})
 
 ;; TODO(oskarth): Determine if this is the correct topic or not
-(def inbox-topic "0xaabb11ee")
+(def inbox-topic "0xaabb11ff")
 (def inbox-password "status-offline-inbox")
 
 (def ^:const send-transaction-no-error-code        "0")
