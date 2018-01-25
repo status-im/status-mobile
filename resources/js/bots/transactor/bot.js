@@ -77,7 +77,7 @@ function amountParameterBox(groupChat, params, context) {
     var amountIndex = groupChat ? 1 : 0;
     
     try {
-        amount = params.args[amountIndex];
+        amount = params.args[amountIndex].replace(",", ".");
         txData = {
             to: contactAddress,
             value: web3.toWei(amount) || 0
@@ -102,7 +102,6 @@ function amountParameterBox(groupChat, params, context) {
         });
 
     } catch (err) {
-
         status.setDefaultDb({
             transaction: txData,
             calculatedFee: "0",
