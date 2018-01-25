@@ -400,8 +400,6 @@
 ;; TODO(rasom): let's not remove this handler, it will be used for
 ;; pausing node on entering background on android
 
-
-;; TODO(alwx):
 (handlers/register-handler-fx
   :request-permissions
   (fn [{:keys [db]} [_ permissions then else]]

@@ -71,7 +71,7 @@
         (as-> fx'
           (let [command' (assoc command :handler-data (:returned result))
                 params'  (assoc params :command command')]
-            (message-model/send-command fx' nil chat-id params')))))))
+            (message-model/send-command (merge cofx fx') nil chat-id params')))))))
 
 (handlers/register-handler-fx
   :suggestions-handler
