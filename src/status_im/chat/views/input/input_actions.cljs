@@ -6,44 +6,6 @@
 
 (defmulti action-view (fn [{:keys [type]}] (keyword type)))
 
-(defmethod action-view :fullscreen
-  [_]
-  (let [fullscreen? (re-frame/subscribe [:get-current-chat-ui-prop :fullscreen?])]
-    (fn []
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:set-chat-ui-props {:fullscreen? (not @fullscreen?)}])}
-       (if @fullscreen?
-         [react/view (style/action-view true)
-          [react/icon :action_fullscreen_collapse style/action-view-icon]]
-         [react/view (style/action-view true)
-          [react/icon :action_fullscreen_expand style/action-view-fullscreen-expand-icon]])])))
-
-(defmethod action-view :web-view-back
-  [_]
-  (let [result-box (re-frame/subscribe [:get-current-chat-ui-prop :result-box])
-        webview    (re-frame/subscribe [:get :webview-bridge])]
-    (fn []
-      [react/touchable-highlight
-       {:on-press #(.goBack @webview)}
-       [react/view (style/action-view true)
-        [react/icon :action_back style/action-view-icon-tinted]]]
-      #_(if (:can-go-back? @result-box)
-          [react/view (style/action-view false)
-           [react/icon :action_back style/action-view-icon]]))))
-
-(defmethod action-view :web-view-forward
-  [_]
-  (let [result-box (re-frame/subscribe [:get-current-chat-ui-prop :result-box])
-        webview    (re-frame/subscribe [:get :webview-bridge])]
-    (fn []
-      [react/touchable-highlight
-       {:on-press #(.goForward @webview)}
-       [react/view (style/action-view true)
-        [react/icon :action_forward style/action-view-icon-tinted]]]
-      #_(if (:can-go-forward? @result-box)
-          [react/view (style/action-view false)
-           [react/icon :action_forward style/action-view-icon]]))))
-
 (defmethod action-view :default
   [{:keys [image executeJs]}]
   [react/touchable-highlight

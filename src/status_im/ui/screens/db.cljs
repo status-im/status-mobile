@@ -14,7 +14,8 @@
             status-im.ui.screens.profile.db
             status-im.ui.screens.discover.db
             status-im.ui.screens.network-settings.db
-            status-im.ui.screens.offline-messaging-settings.db))
+            status-im.ui.screens.offline-messaging-settings.db
+            status-im.ui.screens.browser.db))
 
 (def transaction-send-default
   {:symbol    :ETH
@@ -131,7 +132,9 @@
                   :node/after-stop
                   :inbox/wnode
                   :inbox/topic
-                  :inbox/password]
+                  :inbox/password
+                  :browser/browsers
+                  :browser/options]
                  :opt-un
                  [::current-public-key
                   ::modal

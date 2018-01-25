@@ -3,7 +3,6 @@
             [clojure.walk :as w]
             [re-frame.core :refer [dispatch trim-v]]
             [status-im.ui.components.react :as components]
-            [status-im.chat.views.input.web-view :as chat-web-view]
             [status-im.chat.views.input.validation-messages :as chat-validation-messages]
             [status-im.chat.views.api.choose-contact :as choose-contact]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
@@ -32,7 +31,6 @@
    :web-view             components/web-view
    :touchable            components/touchable-highlight
    :activity-indicator   components/activity-indicator
-   :bridged-web-view     chat-web-view/bridged-web-view
    :validation-message   chat-validation-messages/validation-message
    :choose-contact       choose-contact/choose-contact-view
    :separator            parameter-box-separator

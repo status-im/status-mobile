@@ -91,8 +91,8 @@
 
 (re-frame/reg-fx
   :browse
-  (fn [[command link]]
-    (list-selection/browse command link)))
+  (fn [link]
+    (list-selection/browse link)))
 
 ;;;; Handlers
 
@@ -241,7 +241,7 @@
 (handlers/register-handler-fx
   :browse-link-from-message
   (fn [{{:contacts/keys [contacts]} :db} [_ link]]
-    {:browse [(get-in contacts chat-const/browse-command-ref) link]}))
+    {:browse link}))
 
 (defn preload-chat-data
   "Takes coeffects map and chat-id, returns effects necessary when navigating to chat"
@@ -317,13 +317,3 @@
   [(re-frame/inject-cofx :get-stored-chat) re-frame/trim-v]
   (fn [cofx [chat]]
     (model/upsert-chat cofx chat)))
-
-(handlers/register-handler-fx
-  :check-and-open-dapp!
-  (fn [{{:keys [current-chat-id]
-         :contacts/keys [contacts] :as db} :db} _]
-    (when-let [dapp-url (get-in contacts [current-chat-id :dapp-url])]
-      (-> db
-          (input-events/select-chat-input-command
-           (assoc (get-in contacts chat-const/browse-command-ref) :prefill [dapp-url]) nil true)
-          (assoc :dispatch [:send-current-message])))))

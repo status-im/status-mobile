@@ -28,11 +28,22 @@
    [action-button {:label     (i18n/label :t/add-new-contact)
                    :icon      :icons/add
                    :icon-opts {:color :blue}
-                   :on-press  #(dispatch [:navigate-to :new-contact])}]])
+                   :on-press  #(dispatch [:navigate-to :new-contact])}]
+   [action-separator]
+   [action-button {:label     (i18n/label :t/open-url)
+                   :icon      :icons/address
+                   :icon-opts {:color :blue}
+                   :on-press  #(do
+                                 (dispatch [:navigate-to-clean :home])
+                                 (dispatch [:navigate-to :browser]))}]])
 
-(defn contact-list-row [contact]
+(defn contact-list-row [{:keys [dapp-url] :as contact}]
   [contact-view {:contact  contact
-                 :on-press #(dispatch [:open-chat-with-contact %])}])
+                 :on-press #(if dapp-url
+                              (do
+                                (dispatch [:navigate-to-clean :home])
+                                (dispatch [:open-dapp-in-browser contact]))
+                              (dispatch [:open-chat-with-contact %]))}])
 
 (defview new-chat-toolbar []
   (letsubs [show-search [:get-in [:toolbar-search :show]]

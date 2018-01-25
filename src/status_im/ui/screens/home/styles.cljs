@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.home.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as component.styles]))
+  (:require [status-im.ui.components.styles :as component.styles]
+            [status-im.ui.components.colors :as colors]))
 
 (defn toolbar []
-  {:background-color component.styles/color-white})
+  {:background-color colors/white})
 
 (def chat-separator-item
   {:border-bottom-width 1
@@ -11,7 +12,7 @@
 
 (defstyle chat-container
   {:flex-direction   :row
-   :background-color component.styles/color-white
+   :background-color colors/white
    :android          {:height 76}
    :ios              {:height 74}
    :overflow         "hidden"})
@@ -24,6 +25,14 @@
    :width          72
    :android        {:height 76}
    :ios            {:height 74}})
+
+(def browser-icon-container
+  {:width            40
+   :height           40
+   :border-radius    20
+   :background-color colors/light-gray
+   :align-items      :center
+   :justify-content  :center})
 
 (defstyle chat-info-container
   {:margin-bottom   13
@@ -121,7 +130,7 @@
 (defstyle new-messages-text
   {:left       0
    :fontSize   12
-   :color      component.styles/color-blue
+   :color      colors/blue
    :text-align :center
    :android    {:top 2}
    :ios        {:top 3}})
@@ -130,9 +139,8 @@
   {:flex 1})
 
 (defstyle list-container
-  {:android {:background-color component.styles/color-light-gray}
-
-   :ios     {:background-color component.styles/color-white}})
+  {:android {:background-color colors/light-gray}
+   :ios     {:background-color colors/white}})
 
 (def toolbar-actions
   {:flex-direction :row
@@ -148,7 +156,7 @@
 (def create-icon
   {:fontSize 20
    :height   22
-   :color    component.styles/color-white})
+   :color    colors/white})
 
 (def group-icon
   {:margin-top   8

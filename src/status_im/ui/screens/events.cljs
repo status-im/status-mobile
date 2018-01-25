@@ -22,6 +22,7 @@
             status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
+            status-im.ui.screens.browser.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
@@ -279,6 +280,7 @@
                           [:initialize-protocol address]
                           [:initialize-sync-listener]
                           [:initialize-chats]
+                          [:initialize-browsers]
                           [:load-contacts]
                           [:load-contact-groups]
                           [:initialize-debugging {:address address}]
@@ -344,16 +346,16 @@
   (let [{:keys [event data]} (types/json->clj data)]
     (case event
       "local-storage" (re-frame/dispatch [:set-local-storage {:chat-id chat_id
-                                                     :data    data}])
+                                                              :data    data}])
       "show-suggestions" (re-frame/dispatch [:show-suggestions-from-jail {:chat-id chat_id
-                                                                 :markup  data}])
+                                                                          :markup  data}])
       "send-message" (re-frame/dispatch [:send-message-from-jail {:chat-id chat_id
-                                                         :message data}])
+                                                                  :message data}])
       "handler-result" (let [orig-params (:origParams data)]
                          ;; TODO(janherich): figure out and fix chat_id from event
                          (re-frame/dispatch [:command-handler! (:chat-id orig-params)
-                                    (restore-command-ref-keyword orig-params)
-                                    {:result {:returned (dissoc data :origParams)}}]))
+                                             (restore-command-ref-keyword orig-params)
+                                             {:result {:returned (dissoc data :origParams)}}]))
       (log/debug "Unknown jail signal " event))))
 
 (handlers/register-handler-fx

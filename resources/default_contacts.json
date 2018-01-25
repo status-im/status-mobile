@@ -1,16 +1,4 @@
 {
-    "browse":
-    {
-        "name":
-        {
-            "en": "Browse"
-        },
-        "dapp?": true,
-        "hide-contact?": true,
-        "bot-url": "local://browse-bot", 
-        "unremovable?": true
-    },
-
     "mailman":
     {
         "name":

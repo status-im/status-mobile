@@ -51,7 +51,8 @@
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
-            [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]))
+            [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]
+            [status-im.ui.screens.browser.views :refer [browser]]))
 
 (defn validate-current-view
   [current-view signed-up?]
@@ -130,6 +131,7 @@
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
                           (:home :wallet :my-profile) main-tabs
+                          :browser browser
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent
                           :choose-recipient choose-recipient

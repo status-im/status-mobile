@@ -58,6 +58,7 @@
 (def color-light-gray3 "#e8ebec")
 (def color-light-gray4 "#eff2f3")
 (def color-light-gray5 "#D7D7D7")
+(def color-light-gray6 "#BAC1C6")
 (def color-red "red")
 (def color-red-2 "#d84b4b")
 (def color-red-3 "#FFC1BD")

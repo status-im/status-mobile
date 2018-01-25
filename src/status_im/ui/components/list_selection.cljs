@@ -1,5 +1,5 @@
 (ns status-im.ui.components.list-selection
-  (:require [re-frame.core :refer [dispatch]]
+  (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :refer [copy-to-clipboard
                                                    sharing
                                                    linking]]
@@ -28,19 +28,14 @@
                                          :default))
                         :cancel-text (label :t/sharing-cancel)})))
 
-(defn browse [browse-command link]
+(defn browse [link]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       (label :t/browsing-title)
-                        :options     [{:text "@browse"}
+                        :options     [{:text (label :t/browsing-open-in-browser)}
                                       {:text (label :t/browsing-open-in-web-browser)}]
                         :callback    (fn [index]
                                        (case index
-                                         0 (do
-                                             (dispatch [:select-chat-input-command
-                                                        (assoc browse-command :prefill [link])
-                                                        nil
-                                                        true])
-                                             (js/setTimeout #(dispatch [:send-current-message]) 100))
+                                         0 (re-frame/dispatch [:open-browser {:url link}])
                                          1 (.openURL linking link)
                                          :default))
                         :cancel-text (label :t/browsing-cancel)})))

@@ -2,11 +2,11 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.utils.platform :as p]
             [status-im.ui.components.styles :refer [color-white
-                                                 color-light-blue-transparent
-                                                 color-light-blue
-                                                 color-light-gray
-                                                 color-black
-                                                 color-gray4]]))
+                                                    color-light-blue-transparent
+                                                    color-light-blue
+                                                    color-light-gray
+                                                    color-black
+                                                    color-gray4]]))
 
 (defstyle action-button
   {:padding-left   16

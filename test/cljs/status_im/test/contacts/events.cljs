@@ -11,39 +11,6 @@
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.datetime :as datetime]))
 
-(def browse-contact-from-realm-db
-  {:last-updated     0
-   :address          nil
-   :name             "Browse"
-
-   :command          { 247 { "browse" {:description         "Launch the browser"
-                                       :bot                 "browse"
-                                       :color               "#ffa500"
-                                       :name                "global"
-                                       :params
-                                       {:0 {:name        "url"
-                                            :type        "text"
-                                            :placeholder "URL"}}
-                                       :icon                nil
-                                       :title               "Browser"
-                                       :has-handler         false
-                                       :fullscreen          true
-                                       :suggestions-trigger "on-change"}}}
-   :dapp-url         nil
-   :dapp-hash        nil
-   :photo-path       nil
-   :description      "browser contact"
-   :debug?           false
-   :status           nil
-   :bot-url          "local://browse-bot"
-   :pending?         false
-   :whisper-identity "browse"
-   :last-online      0
-   :dapp?            true
-   :unremovable?     true
-   :private-key      nil
-   :public-key       nil})
-
 (def test-contact-group
   {:group-id "1501682106404-685e041e-38e7-593e-b42c-fb4cabd7faa4"
    :name "Test"
@@ -84,21 +51,6 @@
    :unremovable? false
    :public-key nil})
 
-(def browse-default-contact
-  {:address nil
-   :name "Browse"
-   :description nil
-   :hide-contact? true
-   :dapp-hash nil
-   :photo-path nil
-   :dapp-url nil
-   :bot-url "local://browse-bot"
-   :whisper-identity "browse"
-   :pending? false
-   :dapp? true
-   :unremovable? true
-   :public-key nil})
-
 (def console-contact
   {:whisper-identity "console"
    :name             "Console"
@@ -129,7 +81,7 @@
   (rf/reg-cofx
     ::contacts-events/get-all-contacts
     (fn [coeffects _]
-      (assoc coeffects :all-contacts [browse-contact-from-realm-db])))
+      (assoc coeffects :all-contacts [])))
 
   (rf/reg-cofx
     :get-local-storage-data
@@ -146,7 +98,7 @@
     ::contacts-events/get-default-contacts-and-groups
     (fn [coeffects _]
       (assoc coeffects
-             :default-contacts (select-keys js-res/default-contacts [:browse :demo-bot])
+             :default-contacts (select-keys js-res/default-contacts [:demo-bot])
              :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
 
 (deftest contacts-events
@@ -249,9 +201,7 @@
         ;;Assert the initial state
         (is (and (map? @contacts) (empty? @contacts)))
 
-        (rf/dispatch [:load-contacts])
-
-        (is (= {"browse" browse-contact-from-realm-db} @contacts)))
+        (rf/dispatch [:load-contacts]))
 
       (testing ":load-contact-groups event"
 
@@ -283,14 +233,11 @@
         (testing "it adds a default contact"
           (is (= demo-bot-contact (get @contacts "demo-bot"))))
 
-        (testing "it replaces existing contacts"
-          (is (= browse-default-contact (get @contacts "browse"))))
-
         (testing "it adds the console bot"
           (is (= console-contact (get @contacts "console"))))
 
         (testing "it does not add any other contact"
-          (is (= 3 (count (keys @contacts))))))
+          (is (= 2 (count (keys @contacts))))))
 
       (let [new-contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74"
             new-contact-address "5392ccb49f2e9fef8b8068b3e3b5ba6c020a9aca"

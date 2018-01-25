@@ -31,28 +31,28 @@
                          :accessibility-label :plus-button
                          :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}])
 
-(defn chat-list-item [[chat-id chat] edit?]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
-   [react/view
-    [inner-item/chat-list-item-inner-view (assoc chat :chat-id chat-id) edit?]]])
+(defn home-list-item [[home-item-id home-item]]
+  (if (:chat-id home-item)
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat home-item-id])}
+     [react/view
+      [inner-item/home-list-chat-item-inner-view home-item]]]
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser home-item])}
+     [react/view
+      [inner-item/home-list-browser-item-inner-view home-item]]]))
 
 (views/defview home []
-  (views/letsubs [chats        [:filtered-chats]
-                  edit?        [:get-in [:chat-list-ui-props :edit?]]
-                  show-search  [:get-in [:toolbar-search :show]]
-                  tabs-hidden? [:tabs-hidden?]]
+  (views/letsubs [home-items [:home-items]]
     [react/view styles/chats-container
      [toolbar-view]
      [list/flat-list {:style           styles/list-container
-                      :data            chats
-                      :render-fn       (fn [[chat-id :as chat]]
-                                         ^{:key chat-id} [chat-list-item chat edit?])
-                      :header          (when-not (empty? chats) list/default-header)
-                      :footer          (when-not (empty? chats)
+                      :data            home-items
+                      :render-fn       (fn [[home-item-id :as home-item]]
+                                         ^{:key home-item-id} [home-list-item home-item])
+                      :header          (when-not (empty? home-items) list/default-header)
+                      :footer          (when-not (empty? home-items)
                                          [react/view
                                           [components.common/list-footer]
                                           [components.common/bottom-shadow]])}]
-
      (when platform/android?
        [home-action-button])
      [offline-view]]))

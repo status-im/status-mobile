@@ -4,17 +4,18 @@
             [reagent.core :as reagent]
             [clojure.string :as str]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vi]
-            [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.context-menu :as context-menu]
-            [status-im.ui.screens.home.styles :as st]
+            [status-im.ui.screens.home.styles :as styles]
+            [status-im.ui.components.styles :as component.styles]
             [status-im.utils.utils :as utils]
             [status-im.commands.utils :as commands-utils]
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as const]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
 
 (defn message-content-text [{:keys [content] :as message}]
   (reagent/create-class
@@ -28,19 +29,19 @@
                              :cache-data? true}]))
      :reagent-render
      (fn [{:keys [content] :as message}]
-       [react/view st/last-message-container
+       [react/view styles/last-message-container
         (cond
 
           (not message)
-          [react/text {:style st/last-message-text}
+          [react/text {:style styles/last-message-text}
            (i18n/label :t/no-messages)]
 
           (str/blank? content)
-          [react/text {:style st/last-message-text}
+          [react/text {:style styles/last-message-text}
            ""]
 
           (:content content)
-          [react/text {:style           st/last-message-text
+          [react/text {:style           styles/last-message-text
                        :number-of-lines 1}
            (:content content)]
 
@@ -49,7 +50,7 @@
           (commands-utils/generate-hiccup (-> content :short-preview :markup))
 
           :else
-          [react/text {:style           st/last-message-text
+          [react/text {:style           styles/last-message-text
                        :number-of-lines 1}
            content])])}))
 
@@ -62,31 +63,20 @@
                                             delivery-statuses)))]
       (when (and outgoing (or (= chat-id const/console-chat-id)
                               seen-by-everyone))
-        [vi/icon :icons/ok {:style st/status-image}]))))
+        [vector-icons/icon :icons/ok {:style styles/status-image}]))))
 
 (defn message-timestamp [{:keys [timestamp]}]
   (when timestamp
-    [react/text {:style st/datetime-text}
+    [react/text {:style styles/datetime-text}
      (time/to-short-str timestamp)]))
 
 (defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
     (when (pos? unviewed-messages-count)
-      [react/view st/new-messages-container
-       [react/text {:style st/new-messages-text
+      [react/view styles/new-messages-container
+       [react/text {:style styles/new-messages-text
                     :font  :medium}
         unviewed-messages-count]])))
-
-(defn options-btn [chat-id]
-  (let [options [{:value        #(re-frame/dispatch [:remove-chat chat-id])
-                  :text         (i18n/label :t/delete-chat)
-                  :destructive? true}]]
-    [react/view st/opts-btn-container
-     [context-menu/context-menu
-      [vi/icon :icons/options]
-      options
-      nil
-      st/opts-btn]]))
 
 (defn chat-list-item-name [name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
@@ -94,39 +84,57 @@
         chat-name      (if (str/blank? name)
                          (gfycat/generate-gfy public-key)
                          (utils/truncate-str name 30))]
-    [react/view st/name-view
+    [react/view styles/name-view
      (when public-group?
-       [react/view st/public-group-icon-container
-        [vi/icon :icons/public-chat {:style st/public-group-icon}]])
+       [react/view styles/public-group-icon-container
+        [vector-icons/icon :icons/public-chat {:style styles/public-group-icon}]])
      (when private-group?
-       [react/view st/private-group-icon-container
-        [vi/icon :icons/group-chat {:style st/private-group-icon}]])
+       [react/view styles/private-group-icon-container
+        [vector-icons/icon :icons/group-chat {:style styles/private-group-icon}]])
      [react/view {:flex-shrink 1}
-      [react/text {:style st/name-text
+      [react/text {:style styles/name-text
                    :number-of-lines 1}
        (if public-group?
          (str "#" chat-name)
          chat-name)]]]))
 
-(defview chat-list-item-inner-view [{:keys [chat-id name color online
-                                            group-chat contacts public?
-                                            public-key unremovable?] :as chat}
-                                    edit?]
+(defview home-list-chat-item-inner-view [{:keys [chat-id name color online
+                                                 group-chat contacts public?
+                                                 public-key unremovable? :as chat]}]
   (letsubs [last-message [:get-last-message chat-id]]
     (let [name (or (i18n/get-contact-translated chat-id :name name)
                    (gfycat/generate-gfy public-key))]
-      [react/view st/chat-container
-       [react/view st/chat-icon-container
-        [chat-icon-screen/chat-icon-view-chat-list chat-id group-chat name color online]]
-       [react/view st/chat-info-container
-        [react/view st/item-upper-container
+      [react/view styles/chat-container
+       [react/view styles/chat-icon-container
+        [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online]]
+       [react/view styles/chat-info-container
+        [react/view styles/item-upper-container
          [chat-list-item-name name group-chat public? public-key]
-         (when (and (not edit?) last-message)
-           [react/view st/message-status-container
+         (when last-message
+           [react/view styles/message-status-container
             [message-status chat last-message]
             [message-timestamp last-message]])]
-        [react/view st/item-lower-container
+        [react/view styles/item-lower-container
          [message-content-text last-message]
-         (when-not edit? [unviewed-indicator chat-id])]]
-       [react/view st/chat-options-container
-        (when (and edit? (not unremovable?)) [options-btn chat-id])]])))
+         [unviewed-indicator chat-id]]]])))
+
+(defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
+  (letsubs [contact' [:contact-by-identity contact]]
+    [react/view styles/chat-container
+     [react/view styles/chat-icon-container
+      (if contact'
+        [chat-icon.screen/dapp-icon-browser contact']
+        [react/view styles/browser-icon-container
+         [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
+     [react/view styles/chat-info-container
+      [react/view styles/item-upper-container
+       [react/view styles/name-view
+        [react/view {:flex-shrink 1}
+         [react/text {:style styles/name-text
+                      :number-of-lines 1}
+          name]]]]
+      [react/view styles/item-lower-container
+       [react/view styles/last-message-container
+        [react/text {:style styles/last-message-text
+                     :number-of-lines 1}
+         (or url (i18n/label :t/dapp))]]]]]))

@@ -13,6 +13,8 @@
    :next                                  "Next"
    :open                                  "Open"
    :description                           "Description"
+   :enter-url                             "Enter URL"
+   :open-url                              "Open URL"
    :url                                   "URL"
    :type-a-message                        "Type a message..."
    :type-a-command                        "Start typing a command..."
@@ -114,6 +116,7 @@
 
    :browsing-title                        "Browse"
    :browsing-open-in-web-browser          "Open in web browser"
+   :browsing-open-in-browser              "Open in browser"
    :browsing-cancel                       "Cancel"
 
    ;;sign-up
@@ -392,4 +395,9 @@
    :connecting-requires-login             "Connecting to another network requires login"
    :close-app-title                       "Warning!"
    :close-app-content                     "The app will stop and close. When you reopen it, the selected network will be used"
-   :close-app-button                      "Confirm"})
+   :close-app-button                      "Confirm"
+
+   ;; browser
+   :browser                               "Browser"
+   :enter-dapp-url                        "Enter a ÐApp URL"
+   :dapp                                  "ÐApp"})
