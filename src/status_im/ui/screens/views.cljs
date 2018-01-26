@@ -31,11 +31,9 @@
 
             [status-im.ui.screens.profile.views :as profile]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
-            [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
-
             [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
-            [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
+            [status-im.ui.screens.wallet.request.views :refer [request-transaction send-transaction-request]]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
@@ -141,6 +139,7 @@
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent
                           :wallet-request-transaction request-transaction
+                          :wallet-send-transaction-request send-transaction-request
                           (:transactions-history :unsigned-transactions) wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
                           :wallet-send-assets wallet.components/send-assets
@@ -177,7 +176,7 @@
                           :recent-recipients recent-recipients
                           :recipient-qr-code recipient-qr-code
                           :contact-code contact-code
-                          :qr-viewer qr-code-viewer/qr-viewer
+                          :profile-qr-viewer profile/qr-viewer
                           (throw (str "Unknown view: " current-view)))]
           [(if android? menu-context view) common-styles/flex
            [view common-styles/flex

@@ -24,18 +24,30 @@
                                       props)
    text])
 
-(defn- toolbar [action title]
-  [toolbar/toolbar {:style styles/toolbar}
-   [toolbar/nav-button action]
-   [toolbar/content-title {:color :white}
-    title]])
+(def default-action (actions/back-white actions/default-handler))
 
-(defn simple-screen [title content]
-  [react/view {:flex 1 :background-color colors/blue}
-   [status-bar/status-bar {:type :wallet}]
-   [toolbar (actions/back-white actions/default-handler)
-    title]
-   content])
+(defn- toolbar
+  ([title] (toolbar default-action title))
+  ([action title] (toolbar action title nil))
+  ([action title options]
+   [toolbar/toolbar {:style styles/toolbar}
+    [toolbar/nav-button action]
+    [toolbar/content-title {:color :white}
+     title]
+    options]))
+
+(defn- top-view [avoid-keyboard?]
+  (if avoid-keyboard?
+    react/keyboard-avoiding-view
+    react/view))
+
+(defn simple-screen
+  ([toolbar content] (simple-screen nil toolbar content))
+  ([{:keys [avoid-keyboard? status-bar-type]} toolbar content]
+   [(top-view avoid-keyboard?) {:flex 1 :background-color colors/blue}
+    [status-bar/status-bar {:type (or status-bar-type :wallet)}]
+    toolbar
+    content]))
 
 (defn- cartouche-content [{:keys [disabled?]} content]
   [react/view {:style (styles/cartouche-content-wrapper disabled?)}
@@ -67,9 +79,6 @@
    s])
 
 (defn cartouche-text-content [primary secondary]
-  [react/view {:flex-direction     :row
-               :justify-content    :space-between
-               :padding-horizontal 15
-               :padding-vertical   15}
+  [react/view styles/cartouche-text-wrapper
    [cartouche-primary-text primary]
    [cartouche-secondary-text secondary]])

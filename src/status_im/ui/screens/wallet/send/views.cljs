@@ -64,7 +64,7 @@
      [button/button {:style    (wallet.styles/button-container sign-enabled?)
                      :on-press sign-handler}
       (i18n/label :t/transactions-sign-transaction)
-      [vector-icons/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]))
+      [vector-icons/icon :icons/forward {:color :white}]]]))
 
 (defn- sign-enabled? [amount-error to amount]
   (and
@@ -87,7 +87,7 @@
                      :on-press   #(re-frame/dispatch [:wallet.send/set-signing? true])
                      :text-style {:color :white}}
       (i18n/label :t/transactions-sign-transaction)
-      [vector-icons/icon :icons/forward {:color (if immediate-sign-enabled? :white :gray) :container-style wallet.styles/forward-icon-container}]]]))
+      [vector-icons/icon :icons/forward {:color (if immediate-sign-enabled? :white :gray)}]]]))
 
 (defn handler [discard?]
   (if discard?
@@ -163,11 +163,11 @@
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? symbol]}]
   (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
-    [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
+    [wallet.components/simple-screen {:avoid-keyboard? true
+                                      :status-bar-type (if modal? :modal-wallet :wallet)}
+     [toolbar from-chat? (if modal? act/close-white act/back-white)
+      (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
-      [status-bar/status-bar {:type (if modal? :modal-wallet :wallet)}]
-      [toolbar from-chat? (if modal? act/close-white act/back-white)
-       (i18n/label :t/send-transaction)]
       [common/network-info {:text-color :white}]
       [react/scroll-view (merge {:keyboardShouldPersistTaps :always} (when-not modal? {:ref #(reset! scroll %)}))
        [react/view send.styles/send-transaction-form

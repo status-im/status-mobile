@@ -6,7 +6,7 @@
 (def gradient-top
   {:flexDirection   :row
    :height          3
-   :backgroundColor styles/color-light-gray})
+   :backgroundColor colors/gray-lighter})
 
 (def gradient-top-colors
   ["rgba(25, 53, 76, 0.01)"
@@ -15,19 +15,19 @@
 (def gradient-bottom
   {:flexDirection   :row
    :height          2
-   :backgroundColor styles/color-light-gray})
+   :backgroundColor colors/gray-lighter})
 
 (def gradient-bottom-colors
   ["rgba(25, 53, 76, 0.1)"
    "rgba(25, 53, 76, 0.01)"])
 
 (def separator-wrapper
-  {:background-color styles/color-white})
+  {:background-color colors/white})
 
 (defstyle separator
   {:android {:height 0}
    :ios     {:height           1
-             :background-color styles/color-gray5
+             :background-color colors/gray-light
              :opacity          0.5}})
 
 (def list-separator
@@ -41,20 +41,20 @@
    :padding-right  16
    :flex           1
    :flex-direction :row
-   :ios            {:background-color styles/color-white
+   :ios            {:background-color colors/white
                     :padding-top      19
                     :padding-bottom   15
                     :margin-top       16}
-   :android        {:background-color styles/color-light-gray
+   :android        {:background-color colors/gray-lighter
                     :padding-top      20
                     :padding-bottom   17
                     :margin-top       8}})
 
 (defstyle form-title-extend-container
   {:ios     {:margin-top       16
-             :background-color styles/color-white}
+             :background-color colors/white}
    :android {:margin-top       8
-             :background-color styles/color-light-gray}})
+             :background-color colors/gray-lighter}})
 
 (def form-title-extend-button
   {:padding 16})
@@ -80,7 +80,7 @@
    :android {:height 11}})
 
 (defstyle list-header-footer-spacing
-  {:android {:background-color styles/color-white
+  {:android {:background-color colors/white
              :height           8}})
 
 (def network-container
@@ -91,7 +91,7 @@
 
 (defn network-text [text-color]
   {:flex           1
-   :color          (or text-color styles/color-black)
+   :color          (or text-color colors/black)
    :letter-spacing -0.2
    :font-size      14
    :margin-left    16})
@@ -109,10 +109,3 @@
    :color         colors/blue
    :ios           {:font-size 15}
    :android       {:font-size 14}})
-
-(def icon-action
-  {:width           40
-   :height          40
-   :margin-right    4
-   :align-items     :center
-   :justify-content :center})

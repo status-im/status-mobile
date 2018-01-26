@@ -4,24 +4,20 @@
 
 (def qr-code-hint
   {:color          colors/gray
-   :padding-bottom 24
+   :padding-top    24
+   :padding-bottom 22
    :text-align     :center})
 
 (def qr-code-padding
   15)
 
-(defn qr-code-container [dimensions]
+(defn qr-code-container [width]
   {:background-color colors/white
-   :width            (:width dimensions)
+   :width            width
    :align-items      :center
    :justify-content  :center
    :padding          qr-code-padding
    :border-radius    8})
-
-(def toolbar-done-text-ios
-  {:color          colors/blue
-   :letter-spacing -0.2
-   :font-size      17})
 
 (defstyle name-container
   {:flex           0.6
@@ -47,7 +43,6 @@
 (def toolbar-action-icon-container
   {:width           40
    :height          40
-   :margin-right    16
    :align-items     :center
    :justify-content :center})
 
@@ -66,16 +61,14 @@
    :justify-content :center})
 
 (def qr-code
-  {:background-color colors/gray-lighter
-   :flex-grow        1
+  {:flex-grow        1
    :align-items      :center
    :justify-content  :center})
 
 (def footer
-  {:background-color colors/gray-lighter
-   :flex-direction   :row
+  {:flex-direction   :row
    :justify-content  :center
-   :padding-bottom   50})
+   :padding-top      22})
 
 (def wallet-info
   {:align-items    :center

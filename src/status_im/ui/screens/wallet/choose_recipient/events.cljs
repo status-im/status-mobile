@@ -13,11 +13,11 @@
           toggled-state (if (= :on flashlight-state) :off :on)]
       (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
 
-(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice]}]
+(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity]}]
   {:pre [(not (nil? address))]}
   (update-in
     db [:wallet :send-transaction]
-    #(cond-> (assoc % :to address :to-name name)
+    #(cond-> (assoc % :to address :to-name name :whisper-identity whisper-identity)
              value       (assoc :amount value)
              symbol      (assoc :symbol symbol)
              gas         (assoc :gas (money/bignumber gas))
@@ -50,6 +50,6 @@
 
 (handlers/register-handler-fx
   :wallet/fill-request-from-contact
-  (fn [{db :db} [_ {:keys [address name]}]]
-    {:db         (fill-request-details db {:address address :name name})
+  (fn [{db :db} [_ {:keys [address name whisper-identity]}]]
+    {:db         (fill-request-details db {:address address :name name :whisper-identity whisper-identity})
      :dispatch   [:navigate-back]}))

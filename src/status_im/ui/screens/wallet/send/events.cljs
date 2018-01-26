@@ -143,7 +143,7 @@
 ;;TRANSACTION FAILED signal from status-go
 (handlers/register-handler-fx
   :transaction-failed
-  (fn [{{:keys [view-id modal] :as db} :db} [_ {:keys [id error_code error_message] :as event}]]
+  (fn [{{:keys [view-id modal] :as db} :db} [_ {:keys [id error_code error_message]}]]
     (let [send-transaction (get-in db [:wallet :send-transaction])]
       (case error_code
 
@@ -200,7 +200,7 @@
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
     (let [db'     (assoc-in db [:wallet :send-transaction :wrong-password?] false)
           network (:network db)
-          {:keys [amount id password to symbol gas gas-price] :as m} (get-in db [:wallet :send-transaction])]
+          {:keys [amount id password to symbol gas gas-price]} (get-in db [:wallet :send-transaction])]
       (if id
         {::accept-transaction {:id           id
                                :password     password

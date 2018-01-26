@@ -22,10 +22,11 @@
 (spec/def ::gas (spec/nilable money/valid?))
 (spec/def ::gas-price (spec/nilable money/valid?))
 (spec/def ::advanced? boolean?)
+(spec/def ::whisper-identity (spec/nilable string?))
 
 (spec/def :wallet/send-transaction (allowed-keys
                                      :opt-un [::amount ::to ::to-name ::amount-error ::password
                                               ::waiting-signal? ::signing? ::id ::later?
                                               ::camera-flashlight ::in-progress?
                                               ::wrong-password? ::from-chat? ::symbol ::advanced?
-                                              ::gas ::gas-price]))
+                                              ::gas ::gas-price ::whisper-identity]))

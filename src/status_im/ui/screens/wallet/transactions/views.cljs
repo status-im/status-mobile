@@ -10,7 +10,6 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.ui.screens.wallet.views :as wallet.views]
             [status-im.utils.money :as money]))
 
 (defn on-delete-transaction
@@ -102,11 +101,8 @@
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             transactions-loading?     [:wallet.transactions/transactions-loading?]
-            error-message             [:wallet.transactions/error-message?]
             filter-data               [:wallet.transactions/filters]]
     [react/view components.styles/flex
-     (when error-message
-       [wallet.views/error-message-view styles/error-container styles/error-message])
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :render-fn       render-transaction
                          :empty-component [react/text {:style styles/empty-text}

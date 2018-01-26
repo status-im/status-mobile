@@ -1,6 +1,8 @@
 (ns status-im.ui.screens.profile.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -8,6 +10,7 @@
             [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -15,7 +18,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.utils :as utils]
@@ -23,10 +25,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
-            [status-im.protocol.core :as protocol]
-            [re-frame.core :as re-frame]
-            [status-im.ui.components.camera :as camera])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+            [status-im.protocol.core :as protocol]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {}
@@ -42,8 +41,9 @@
   [toolbar/toolbar {}
    nil
    [toolbar/content-title ""]
-   [common/icon-or-label {:on-press #(re-frame/dispatch [:my-profile/save-profile])}
-    :t/done {} :icons/ok {:color colors/blue}]])
+   [toolbar/default-done {:handler   #(re-frame/dispatch [:my-profile/save-profile])
+                          :icon      :icons/ok
+                          :icon-opts {:color colors/blue}}]])
 
 (defn profile-toolbar [contact]
   [toolbar/toolbar {}
@@ -154,10 +154,27 @@
       nil
       styles/profile-info-item-button])])
 
-(defn show-qr [contact qr-source qr-value]
-  #(re-frame/dispatch [:navigate-to :qr-viewer {:contact   contact
-                                                :qr-source qr-source
-                                                :qr-value  qr-value}]))
+(defn- toolbar [label value]
+  [toolbar/toolbar {}
+   [toolbar/default-done {:icon-opts {:color colors/black}}]
+   [toolbar/content-title label]
+   [toolbar/actions [{:icon      :icons/share
+                      :icon-opts {:color :black}
+                      :handler   #(list-selection/open-share {:message value})}]]])
+
+(defview qr-viewer []
+  (letsubs [{:keys [value contact]} [:get :qr-modal]]
+    [react/view {:flex-grow      1
+                 :flex-direction :column}
+     [status-bar/status-bar {:type :modal}]
+     [toolbar (:name contact) value]
+     [qr-code-viewer/qr-code-viewer {}
+      value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
+
+(defn- show-qr [contact source value]
+  #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
+                                                        :source  source
+                                                        :value   value}]))
 
 (defn profile-options [contact k text]
   (into []
