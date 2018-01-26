@@ -1,15 +1,12 @@
 (ns status-im.ui.components.status-view.view
-  (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
-            [clojure.string :as str]
-            [status-im.ui.components.react :refer [view text]]
-            [status-im.utils.platform :refer [platform-specific]]
-            [status-im.ui.components.styles :refer [color-blue color-black color-blue4-faded]]
-            [status-im.utils.core :refer [hash-tag?]]))
+  (:require [clojure.string :as string]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.utils.core :as utils.core]))
 
 (defn tag-view [tag]
-  [text {:style {:color color-blue4-faded}
-         :font :medium}
+  [react/text {:style {:color components.styles/color-blue4-faded}
+               :font  :medium}
    (str tag " ")])
 
 (defn status-view [{:keys [style
@@ -19,15 +16,15 @@
                            on-press
                            number-of-lines]
                     :or {message-id "msg"
-                         non-tag-color color-black}}]
-  [text {:style           style
-         :on-press        on-press
-         :number-of-lines number-of-lines
-         :font            :default}
-   (for [[i status] (map-indexed vector (str/split status #" "))]
-     (if (hash-tag? status)
+                         non-tag-color components.styles/color-black}}]
+  [react/text {:style           style
+               :on-press        on-press
+               :number-of-lines number-of-lines
+               :font            :default}
+   (for [[i status] (map-indexed vector (string/split status #" "))]
+     (if (utils.core/hash-tag? status)
        ^{:key (str "item-" message-id "-" i)}
        [tag-view status]
        ^{:key (str "item-" message-id "-" i)}
-       [text {:style {:color non-tag-color}}
+       [react/text {:style {:color non-tag-color}}
         (str status " ")]))])

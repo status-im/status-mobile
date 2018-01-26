@@ -1,6 +1,5 @@
 (ns status-im.ui.components.checkbox.view
-  (:require [reagent.core :as reagent]
-            [status-im.ui.components.checkbox.styles :as styles]
+  (:require [status-im.ui.components.checkbox.styles :as styles]
             [status-im.ui.components.react :as react]))
 
 ;; TODO(jeluard) Migrate to native checkbox provided by RN 0.49

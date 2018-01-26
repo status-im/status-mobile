@@ -1,10 +1,10 @@
 (ns status-im.ui.components.native-action-button
-  (:require [reagent.core :as r]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+  (:require [reagent.core :as reagent]
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (def native-action-button
-  (r/adapt-react-class (.-default rn-dependencies/action-button)))
+  (reagent/adapt-react-class (.-default js-dependencies/action-button)))
 
 
 (def native-action-button-item
-  (r/adapt-react-class (.. rn-dependencies/action-button -default -Item)))
+  (reagent/adapt-react-class (.. js-dependencies/action-button -default -Item)))

@@ -1,6 +1,5 @@
 (ns status-im.ui.components.toolbar.actions
-  (:require [re-frame.core :refer [dispatch]]
-            [status-im.ui.components.toolbar.styles :as st]))
+  (:require [re-frame.core :as re-frame]))
 
 (defn add [handler]
   {:icon    :icons/add
@@ -23,7 +22,7 @@
    :handler             handler
    :accessibility-label :toolbar-back-button})
 
-(def default-handler #(dispatch [:navigate-back]))
+(def default-handler #(re-frame/dispatch [:navigate-back]))
 
 (def default-back
   (back default-handler))

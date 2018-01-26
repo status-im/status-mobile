@@ -1,6 +1,6 @@
 (ns status-im.ui.components.text-input-with-label.animation
   (:require [status-im.ui.components.animation :as animation]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (def anim-duration 200)
 
@@ -19,8 +19,8 @@
 
 (defn animate-label [text {:keys [value* label-top label-font-size
                                   label-top-top label-top-bottom label-font-size-top label-font-size-bottom]}]
-  (when (or (str/blank? text) (str/blank? @value*))
-    (let [was-blank? (str/blank? @value*)
+  (when (or (string/blank? text) (string/blank? @value*))
+    (let [was-blank? (string/blank? @value*)
           anim (animation/parallel [(animation/timing label-top {:toValue  (if was-blank?
                                                                               label-top-top
                                                                               label-top-bottom)

@@ -1,14 +1,14 @@
 (ns status-im.ui.components.carousel.carousel
-  (:require [reagent.impl.component :as rc]
+  (:require [reagent.impl.component :as component]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.carousel.styles :as st]
+            [status-im.ui.components.carousel.styles :as styles]
             [taoensso.timbre :as log]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.utils :as utils]))
 
 
 (defn window-page-width []
-  (.-width (.get (.. rn-dependencies/react-native -Dimensions) "window")))
+  (.-width (.get (.. js-dependencies/react-native -Dimensions) "window")))
 
 (def defaults {:gap 8
                :sneak 8
@@ -128,7 +128,7 @@
       (go-to-page component initial-page))))
 
 (defn component-will-receive-props [component new-argv]
-  (let [props (rc/extract-props new-argv)]
+  (let [props (component/extract-props new-argv)]
     (log/debug "component-will-receive-props: props=" props)
     (apply-props component props)))
 
@@ -161,7 +161,7 @@
                                touchable-data {:key index
                                                :onPress #(go-to-page component page-index)}]
                            [react/touchable-without-feedback touchable-data
-                            [react/view {:style [(st/page index count page-width gap)
+                            [react/view {:style [(styles/page index count page-width gap)
                                                  page-style]
                                          :onLayout #(log/debug "view onLayout" %)}
 
@@ -173,8 +173,8 @@
         state (reagent.core/state component)
         gap (get-gap state)]
     (log/debug "reagent-render: " data state)
-    [react/view {:style st/scroll-view-container}
-     [react/scroll-view {:contentContainerStyle (st/content-container gap)
+    [react/view {:style styles/scroll-view-container}
+     [react/scroll-view {:contentContainerStyle (styles/content-container gap)
                          :automaticallyAdjustContentInsets false
                          :bounces false
                          :decelerationRate 0.9

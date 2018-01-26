@@ -1,9 +1,9 @@
 (ns status-im.ui.components.webview-bridge
-  (:require [reagent.core :as r]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+  (:require [reagent.core :as reagent]
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (def webview-bridge-class
-  (r/adapt-react-class (.-default rn-dependencies/webview-bridge)))
+  (reagent/adapt-react-class (.-default js-dependencies/webview-bridge)))
 
 (defn webview-bridge [opts]
   [webview-bridge-class opts])

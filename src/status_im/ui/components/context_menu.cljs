@@ -1,14 +1,13 @@
 (ns status-im.ui.components.context-menu
-  (:require [status-im.react-native.js-dependencies :as rn-dependencies]
+  (:require [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.react :as react]
             [goog.object :as object]
-            [reagent.core :as r]
-            [status-im.ui.components.styles :as st]
+            [status-im.ui.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
 (defn- get-property [name]
-  (object/get rn-dependencies/popup-menu name))
+  (object/get js-dependencies/popup-menu name))
 
 (defn- get-class [name]
   (react/adapt-class (get-property name)))
@@ -37,7 +36,7 @@
 (defn- context-menu-text [destructive?]
   {:font-size   15
    :line-height 20
-   :color       (if destructive? st/color-light-red st/text1-color)})
+   :color       (if destructive? styles/color-light-red styles/text1-color)})
 
 (defn context-menu [trigger options & custom-styles trigger-style]
   (if platform/ios?

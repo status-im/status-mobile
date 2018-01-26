@@ -1,32 +1,29 @@
 (ns status-im.ui.components.sync-state.offline
-  (:require [re-frame.core :refer [subscribe dispatch]]
-            [reagent.core :as r]
-            [status-im.ui.components.react :refer [view
-                                                   text
-                                                   animated-view
-                                                   get-dimensions]]
-            [status-im.ui.components.sync-state.styles :as st]
-            [status-im.ui.components.animation :as anim]
-            [status-im.i18n :refer [label]]))
+  (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.sync-state.styles :as styles]
+            [status-im.ui.components.animation :as animation]
+            [status-im.i18n :as i18n]))
 
-(def window-width (:width (get-dimensions "window")))
+(def window-width (:width (react/get-dimensions "window")))
 
 (defn start-offline-animation [offline-opacity]
-  (anim/start
-    (anim/timing offline-opacity {:toValue  1.0
-                                  :duration 250})))
+  (animation/start
+    (animation/timing offline-opacity {:toValue 1.0
+                                  :duration     250})))
 
 (defn offline-view [_]
-  (let [sync-state       (subscribe [:sync-state])
-        network-status   (subscribe [:get :network-status])
-        offline-opacity  (anim/create-value 0.0)
+  (let [sync-state       (re-frame/subscribe [:sync-state])
+        network-status   (re-frame/subscribe [:get :network-status])
+        offline-opacity  (animation/create-value 0.0)
         on-update        (fn [_ _]
-                           (anim/set-value offline-opacity 0)
+                           (animation/set-value offline-opacity 0)
                            (when (or (= @network-status :offline) (= @sync-state :offline))
                              (start-offline-animation offline-opacity)))
-        pending-contact? (subscribe [:current-contact :pending?])
-        view-id          (subscribe [:get :view-id])]
-    (r/create-class
+        pending-contact? (re-frame/subscribe [:current-contact :pending?])
+        view-id          (re-frame/subscribe [:get :view-id])]
+    (reagent/create-class
       {:component-did-mount
        on-update
        :component-did-update
@@ -36,7 +33,7 @@
        (fn [{:keys [top]}]
          (when (or (= @network-status :offline) (= @sync-state :offline))
            (let [pending? (and @pending-contact? (= :chat @view-id))]
-             [animated-view {:style (st/offline-wrapper top offline-opacity window-width pending?)}
-              [view
-               [text {:style st/offline-text}
-                (label :t/offline)]]])))})))
+             [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending?)}
+              [react/view
+               [react/text {:style styles/offline-text}
+                (i18n/label :t/offline)]]])))})))

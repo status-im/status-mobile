@@ -1,7 +1,7 @@
 (ns status-im.ui.components.sticky-button
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.utils.platform :refer [platform-specific]]
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.utils.platform :as platform]
             [status-im.utils.core :as u]
             [status-im.ui.components.react :as react]))
 
@@ -10,10 +10,10 @@
    :height           52
    :justify-content  :center
    :align-items      :center
-   :background-color common/color-light-blue})
+   :background-color styles/color-light-blue})
 
 (defstyle sticky-button-label-style
-  {:color   common/color-white
+  {:color   styles/color-white
    :ios     {:font-size      17
              :line-height    20
              :letter-spacing -0.2}
@@ -26,5 +26,5 @@
    [react/touchable-highlight {:on-press (if once? (u/wrap-call-once! on-press) on-press)}
     [react/view sticky-button-style
      [react/text {:style sticky-button-label-style
-                  :uppercase? (get-in platform-specific [:uppercase?])}
+                  :uppercase? (get-in platform/platform-specific [:uppercase?])}
            label]]]))

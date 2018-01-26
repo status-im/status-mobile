@@ -1,10 +1,10 @@
 (ns status-im.ui.components.sortable-list-view
-  (:require [reagent.core :as r]
+  (:require [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (def sortable-listview-class
-  (r/adapt-react-class rn-dependencies/sortable-listview))
+  (reagent/adapt-react-class js-dependencies/sortable-listview))
 
 (defn sortable-list-view [{:keys [on-row-moved render-row] :as props}]
   [sortable-listview-class
@@ -12,7 +12,7 @@
                 :render-row #(render-row (js->clj % :keywordize-keys true)))])
 
 (defn- touchable [inner]
-  [react/touchable-highlight (js->clj (.-props (r/current-component)))
+  [react/touchable-highlight (js->clj (.-props (reagent/current-component)))
    [react/view
     inner]])
 

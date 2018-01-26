@@ -1,12 +1,12 @@
 (ns status-im.ui.components.checkbox.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
-  (:require [status-im.ui.components.styles :as st]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def wrapper
   {:padding 16})
 
 (defnstyle icon-check-container [checked?]
-  {:background-color (if checked? st/color-light-blue st/color-gray5)
+  {:background-color (if checked? styles/color-light-blue styles/color-gray5)
    :alignItems     :center
    :justifyContent :center
    :android        {:border-radius 2

@@ -2,9 +2,9 @@
   (:require [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
             [status-im.ui.components.camera :as camera]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
-(def permissions-class (.-PermissionsAndroid rn-dependencies/react-native))
+(def permissions-class (.-PermissionsAndroid js-dependencies/react-native))
 
 (def permissions-map
   {:read-external-storage  "android.permission.READ_EXTERNAL_STORAGE"

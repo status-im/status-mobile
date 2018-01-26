@@ -1,30 +1,30 @@
 (ns status-im.ui.components.animation
-  (:require [status-im.ui.components.react :refer [animated]]))
+  (:require [status-im.ui.components.react :as react]))
 
 (defn start
   ([anim] (.start anim))
   ([anim callback] (.start anim callback)))
 
 (defn timing [anim-value config]
-  (.timing animated anim-value (clj->js config)))
+  (.timing react/animated anim-value (clj->js config)))
 
 (defn spring [anim-value config]
-  (.spring animated anim-value (clj->js config)))
+  (.spring react/animated anim-value (clj->js config)))
 
 (defn decay [anim-value config]
-  (.decay animated anim-value (clj->js config)))
+  (.decay react/animated anim-value (clj->js config)))
 
 (defn anim-sequence [animations]
-  (.sequence animated (clj->js animations)))
+  (.sequence react/animated (clj->js animations)))
 
 (defn parallel [animations]
-  (.parallel animated (clj->js animations)))
+  (.parallel react/animated (clj->js animations)))
 
 (defn anim-delay [duration]
-  (.delay animated duration))
+  (.delay react/animated duration))
 
 (defn event [config]
-  (.event animated (clj->js [nil, config])))
+  (.event react/animated (clj->js [nil, config])))
 
 (defn add-listener [anim-value listener]
   (.addListener anim-value listener))

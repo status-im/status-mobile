@@ -1,6 +1,6 @@
 (ns status-im.ui.components.text-input-with-label.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.utils.platform :refer [ios?]]
+  (:require [status-im.utils.platform :as platform]
             [status-im.ui.components.styles :as common]))
 
 (defstyle text-input
@@ -57,12 +57,12 @@
    :width            underline-width
    :background-color (if error common/color-red-2 common/color-light-blue)})
 
-(def label-top-top (if ios? 6 6))
+(def label-top-top (if platform/ios? 6 6))
 
-(def label-top-bottom (if ios? 26 26))
+(def label-top-bottom (if platform/ios? 26 26))
 
-(def label-font-size-top (if ios? 14 12))
+(def label-font-size-top (if platform/ios? 14 12))
 
-(def label-font-size-bottom (if ios? 17 16))
+(def label-font-size-bottom (if platform/ios? 17 16))
 
-(def underline-max-height (if ios? 1 2))
+(def underline-max-height (if platform/ios? 1 2))

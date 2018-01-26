@@ -1,7 +1,7 @@
 (ns status-im.ui.components.action-sheet
   (:require [status-im.i18n :as i18n]
             [status-im.utils.core :as utils]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (defn- callback [options]
   (fn [index]
@@ -19,6 +19,6 @@
                     (when message {:message message})))))
 
 (defn show [{:keys [title message options]}]
-  (.showActionSheetWithOptions (.-ActionSheetIOS rn-dependencies/react-native)
+  (.showActionSheetWithOptions (.-ActionSheetIOS js-dependencies/react-native)
                                (prepare-options title message options)
                                (callback options)))

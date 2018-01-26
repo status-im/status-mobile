@@ -2,12 +2,11 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.context-menu :refer [context-menu]]
+            [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.components.common.styles :as styles]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]
-            [re-frame.core :as re-frame]))
+            [status-im.i18n :as i18n]))
 
 (defn top-shadow []
   (when platform/android?
@@ -56,7 +55,7 @@
        [react/view {:flex 1}]])
     (when extended?
       [react/view styles/form-title-extend-container
-       [context-menu
+       [context-menu/context-menu
         [vector-icons/icon :icons/options]
         options
         nil
