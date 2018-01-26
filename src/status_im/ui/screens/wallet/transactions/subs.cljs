@@ -2,19 +2,14 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
+            [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
-            [status-im.utils.transactions :as transactions]
-            [status-im.utils.hex :as utils.hex]))
+            [status-im.utils.transactions :as transactions]))
 
 (reg-sub :wallet.transactions/transactions-loading?
   :<- [:wallet]
   (fn [wallet]
     (:transactions-loading? wallet)))
-
-(reg-sub :wallet.transactions/error-message?
-  :<- [:wallet]
-  (fn [wallet]
-    (get-in wallet [:errors :transactions-update])))
 
 (reg-sub :wallet.transactions/current-tab
   :<- [:wallet]
@@ -22,7 +17,6 @@
     (get wallet :current-tab 0)))
 
 (defn enrich-transaction [{:keys [type to from timestamp] :as transaction} contacts]
-  ;; TODO (yenda) proper wallet logic when wallet switching is implemented
   (let [[contact-address key-contact key-wallet] (if (= type :inbound)
                                                    [from :from-contact :to-wallet]
                                                    [to :to-contact :from-wallet])

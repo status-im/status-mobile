@@ -5,6 +5,7 @@
 (def white-transparent "rgba(255, 255, 255, 0.2)") ;; Used as icon color on dark background
 (def white-lighter-transparent "rgba(255, 255, 255, 0.6)") ;; Used for input placeholder color
 (def black "#000000") ;; Used as the default text color
+(def black-transparent "#00000020") ;; Used as background color for rounded button on dark background
 (def gray "#939ba1") ;; Used as a background for a light foreground and as section header and secondary text color
 (def gray-light "#d9dae1") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow

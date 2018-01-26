@@ -19,7 +19,9 @@
   [db [event]]
   (if (= event :navigate-back)
     db
-    (update db :wallet dissoc :request-transaction)))
+    (-> db
+        (update :wallet dissoc :request-transaction)
+        (assoc-in [:wallet :send-transaction] db/transaction-send-default))))
 
 (defmethod navigation/preload-data! :wallet-send-transaction
   [db [event]]

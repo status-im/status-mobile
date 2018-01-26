@@ -4,7 +4,7 @@
 (defn- mark-all-checked [filters]
   (update filters :type #(map (fn [m] (assoc m :checked? true)) %)))
 
-(defn- mark-checked [filters {:keys [type] :as m} checked?]
+(defn- mark-checked [filters {:keys [type]} checked?]
   (update filters :type #(map (fn [{:keys [id] :as m}] (if (= type id) (assoc m :checked? checked?) m)) %)))
 
 (defn- update-filters [db f]

@@ -1,15 +1,15 @@
 (ns status-im.ui.screens.main-tabs.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.icons.vector-icons :as vector-icons]
+  (:require [status-im.i18n :as i18n]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.components.styles :as common.styles]
-            [status-im.i18n :as i18n]
-            [status-im.ui.screens.home.views :as home.views]
-            [status-im.ui.screens.profile.views :as profile.views]
-            [status-im.ui.screens.wallet.main.views :as wallet.views]
-            [status-im.ui.screens.main-tabs.styles :as styles]
-            [re-frame.core :as re-frame]))
+            [status-im.ui.screens.home.views :as home]
+            [status-im.ui.screens.profile.views :as profile]
+            [status-im.ui.screens.wallet.views :as wallet]
+            [status-im.ui.screens.main-tabs.styles :as styles]))
 
 (def tabs-list-data
   [{:view-id :home
@@ -37,7 +37,7 @@
 
 (def tabs-list (map #(update % :content tab-content) tabs-list-data))
 
-(defn tab [view-id content active?]
+(defn- tab [view-id content active?]
   [react/touchable-highlight {:style    common.styles/flex
                               :disabled active?
                               :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
@@ -59,7 +59,7 @@
        {:enabled? (= :home view-id)
         :preview  [react/view {}]}
        [react/navigation-wrapper
-        {:component    home.views/home
+        {:component    home/home
          :views        :home
          :current-view view-id}]]
 
@@ -67,7 +67,7 @@
        {:enabled? (= :wallet view-id)
         :preview  [react/view {}]}
        [react/navigation-wrapper
-        {:component    wallet.views/wallet
+        {:component    wallet/wallet
          :views        :wallet
          :current-view view-id}]]
 
@@ -75,7 +75,7 @@
        {:enabled? (= :my-profile view-id)
         :preview  [react/view {}]}
        [react/navigation-wrapper
-        {:component    profile.views/my-profile
+        {:component    profile/my-profile
          :views        :my-profile
          :current-view view-id}]]
       [tabs view-id]]]))

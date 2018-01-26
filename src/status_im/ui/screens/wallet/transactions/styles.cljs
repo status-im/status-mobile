@@ -4,20 +4,6 @@
             [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.main-tabs.styles :as tabs.styles]))
 
-(def error-container
-  {:align-self       :center
-   :justify-content  :center
-   :border-radius    8
-   :padding-vertical 4
-   :flex-direction   :row
-   :background-color styles/color-gray9})
-
-(def error-message
-  {:color         styles/color-black
-   :padding-top   3
-   :padding-right 10
-   :font-size     13})
-
 (defnstyle tab [active?]
   {:flex                1
    :height              tabs.styles/tab-height
@@ -111,14 +97,6 @@
    :background-color  styles/color-white
    :margin-horizontal 12
    :border-radius     8})
-
-(def sign-all-popup-sign-phrase
-  {:border-radius     8
-   :margin-top        12
-   :margin-horizontal 12
-   :text-align        :center
-   :padding-vertical  9
-   :background-color  styles/color-light-gray})
 
 (def sign-all-popup-text
   {:margin-top        8

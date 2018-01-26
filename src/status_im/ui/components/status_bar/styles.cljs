@@ -39,23 +39,23 @@
 ;; :modal
 (defstyle status-bar-modal
   {:ios     (create-status-bar-style {:background-color "#2f3031"})
-   :android (create-status-bar-style {:background-color styles/color-black})})
+   :android (create-status-bar-style {:background-color colors/black})})
 
 (defstyle view-modal
   {:ios     (create-view-style {:background-color "#2f3031"})
-   :android (create-view-style {:background-color styles/color-black
+   :android (create-view-style {:background-color colors/black
                                 :height           0})})
 
 ;; :modal-white
 (defstyle status-bar-modal-white
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
-   :android (create-status-bar-style {:background-color styles/color-black
+   :android (create-status-bar-style {:background-color colors/black
                                       :bar-style        "light-content"})})
 
 (defstyle view-modal-white
   {:ios     (create-view-style {:background-color colors/white})
-   :android (create-view-style {:background-color styles/color-black
+   :android (create-view-style {:background-color colors/black
                                 :height           0})})
 
 ;; :modal-wallet
@@ -90,8 +90,8 @@
 
 ;; :wallet
 (defstyle status-bar-wallet
-          {:ios     (create-status-bar-style {:background-color colors/blue})
-           :android (create-status-bar-style {:translucent?     true})})
+  {:ios     (create-status-bar-style {:background-color colors/blue})
+   :android (create-status-bar-style {:translucent?     true})})
 
 (def view-wallet
   (create-view-style {:background-color styles/color-blue4

@@ -18,7 +18,7 @@
             [status-im.ui.screens.wallet.components.animations :as animations]
             [status-im.ui.screens.wallet.components.styles :as styles]
             [status-im.ui.screens.wallet.choose-recipient.views :as choose-recipient]
-            [status-im.ui.screens.wallet.main.views :as main]
+            [status-im.ui.screens.wallet.views :as wallet]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -66,10 +66,11 @@
   (views/letsubs [network        [:network]
                   visible-tokens [:wallet.settings/visible-tokens]
                   balance        [:balance]]
-    [components/simple-screen (i18n/label :t/wallet-assets)
+    [components/simple-screen
+     [components/toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
       [list/flat-list {:default-separator? true
-                       :data               (concat [tokens/ethereum] (main/current-tokens visible-tokens network))
+                       :data               (concat [tokens/ethereum] (wallet/current-tokens visible-tokens network))
                        :render-fn          #(render-token % balance type)}]]]))
 
 (defn send-assets []
@@ -130,7 +131,7 @@
 (views/defview recent-recipients []
   (views/letsubs [contacts [:contacts-filtered :all-added-people-contacts]]
     [components/simple-screen
-     (i18n/label :t/recipient)
+     [components/toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      contacts
                        :render-fn render-contact}]]]))
@@ -138,19 +139,18 @@
 (defn contact-code []
   (let [content (reagent/atom nil)]
     (fn []
-      [react/view components.styles/flex
-       [components/simple-screen
-        (i18n/label :t/recipient)
-        [react/view components.styles/flex
-         [components/cartouche {}
-          (i18n/label :t/recipient)
-          [components/text-input {:multiline      true
-                                  :placeholder    (i18n/label :t/recipient-code)
-                                  :on-change-text #(reset! content %)}]]
-         [bottom-buttons/bottom-button
-          [button/button {:disabled? (string/blank? @content)
-                          :on-press  #(re-frame/dispatch [:wallet/fill-request-from-url @content])}
-           (i18n/label :t/done)]]]]])))
+      [components/simple-screen {:avoid-keyboard? true}
+       [components/toolbar (i18n/label :t/recipient)]
+       [react/view components.styles/flex
+        [components/cartouche {}
+         (i18n/label :t/recipient)
+         [components/text-input {:multiline      true
+                                 :placeholder    (i18n/label :t/recipient-code)
+                                 :on-change-text #(reset! content %)}]]
+        [bottom-buttons/bottom-button
+         [button/button {:disabled? (string/blank? @content)
+                         :on-press  #(re-frame/dispatch [:wallet/fill-request-from-url @content])}
+          (i18n/label :t/done)]]]])))
 
 (defn recipient-qr-code []
   [choose-recipient/choose-recipient])
@@ -159,17 +159,19 @@
   (re-frame/dispatch [:request-permissions [:camera]
                       #(re-frame/dispatch [:navigate-to :recipient-qr-code])]))
 
-(defn- on-choose-recipient []
+(defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
-                        :options [{:label  (i18n/label :t/recent-recipients)
-                                   :action #(re-frame/dispatch [:navigate-to :recent-recipients])}
-                                  {:label  (i18n/label :t/scan-qr)
-                                   :action request-camera-permissions}
-                                  {:label  (i18n/label :t/enter-contact-code)
-                                   :action #(re-frame/dispatch [:navigate-to :contact-code])}]}))
+                        :options (concat
+                                   [{:label  (i18n/label :t/recent-recipients)
+                                     :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                                   (when-not contact-only?
+                                     [{:label  (i18n/label :t/scan-qr)
+                                       :action request-camera-permissions}
+                                      {:label  (i18n/label :t/enter-contact-code)
+                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
-(defn recipient-selector [{:keys [name address disabled?]}]
-  [components/cartouche {:on-press on-choose-recipient :disabled? disabled? :icon :icons/dots-horizontal}
+(defn recipient-selector [{:keys [name address disabled? contact-only?]}]
+  [components/cartouche {:on-press #(on-choose-recipient contact-only?) :disabled? disabled? :icon :icons/dots-horizontal}
    (i18n/label :t/wallet-choose-recipient)
    (if name
      [recipient-contact address name]

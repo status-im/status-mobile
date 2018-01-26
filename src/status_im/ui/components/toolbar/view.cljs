@@ -1,6 +1,7 @@
 (ns status-im.ui.components.toolbar.view
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list-selection :as list-selection]
@@ -28,19 +29,29 @@
    [vector-icons/icon icon icon-opts]])
 
 (defn nav-text
-  ([text] (nav-text text nil))
-  ([props text] (nav-text props text nil))
-  ([props text handler]
-   [react/text (utils/deep-merge {:style (merge styles/item styles/item-text) :on-press (or handler #(re-frame/dispatch [:navigate-back]))}
+  ([text] (nav-text nil text))
+  ([{:keys [handler] :as props} text]
+   [react/text (utils/deep-merge {:style    (merge styles/item styles/item-text)
+                                  :on-press (or handler #(re-frame/dispatch [:navigate-back]))}
                                  props)
     text]))
 
 (defn nav-clear-text
-  ([text] (nav-clear-text text nil))
-  ([text handler]
-   (nav-text styles/item-text-white-background text handler)))
+  ([text] (nav-clear-text nil text))
+  ([props text]
+   (nav-text (merge props styles/item-text-white-background) text)))
 
 (def default-nav-back [nav-button actions/default-back])
+
+(defn default-done
+  "Renders a touchable icon on Android or a label or iOS."
+  [{:keys [icon] :as props}]
+  (if platform/ios?
+    [react/view
+     [nav-text props
+      (i18n/label :t/done)]]
+    [react/view
+     [nav-button (merge props {:icon (or icon :icons/close)})]]))
 
 ;; Content
 

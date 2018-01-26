@@ -19,12 +19,6 @@
   (fn [db]
     (get-in db [:prices :last-day])))
 
-(reg-sub :wallet/error-message?
-  :<- [:wallet]
-  (fn [wallet]
-    (or (get-in wallet [:errors :balance-update])
-        (get-in wallet [:errors :prices-update]))))
-
 (reg-sub :portfolio-value
   :<- [:balance]
   :<- [:price]
