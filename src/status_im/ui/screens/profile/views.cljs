@@ -101,11 +101,12 @@
                                                  (i18n/label :t/camera-access-error)))))]))}])
 
 (defn profile-badge-edit [{:keys [name last-online] :as account}]
-  [react/view styles/profile-badge
+  [react/view styles/profile-badge-edit
    [context-menu/modal-menu
     [chat-icon.screen/my-profile-icon {:account account
                                        :edit?   true}]
-    {} (i18n/label :t/image-source-title)
+    styles/modal-menu
+    (i18n/label :t/image-source-title)
     profile-icon-options]
    [react/view styles/profile-badge-name-container
     [profile-name-input name]

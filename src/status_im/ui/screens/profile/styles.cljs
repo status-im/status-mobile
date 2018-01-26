@@ -44,6 +44,13 @@
    :justify-content :center
    :align-items     :center})
 
+(def profile-badge-edit
+  {:flex-direction  :column
+   :justify-content :center})
+
+(def modal-menu
+  {:align-items :center})
+
 (def context-menu-custom-styles
   {:optionsContainer {:margin-top 78}})
 
@@ -63,10 +70,14 @@
 (defstyle profile-name-input-text
   {:font-size  15
    :text-align :center
-   :ios        {:letter-spacing -0.2
-                :height         46
-                :width          800}
-   :android    {:color colors/black}})
+   :flex       1
+   :ios        {:letter-spacing      -0.2
+                :height              46
+                :border-bottom-width 1
+                :border-bottom-color styles/color-light-gray3}
+   :android    {:color               colors/black
+                :border-bottom-width 2
+                :border-bottom-color styles/color-blue4}})
 
 (def profile-badge-name-container
   {:flex            1
