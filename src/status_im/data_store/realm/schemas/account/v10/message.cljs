@@ -1,5 +1,6 @@
 (ns status-im.data-store.realm.schemas.account.v10.message
   (:require [taoensso.timbre :as log]
+            [goog.object :as object]
             [clojure.string :as str]))
 
 (def schema {:name       :message
@@ -40,8 +41,8 @@
   (let [messages (.objects new-realm "message")]
     (dotimes [i (.-length messages)]
       (let [message (aget messages i)
-            content (aget message "content")
-            type    (aget message "content-type")]
+            content (object/get message "content")
+            type    (object/get message "content-type")]
         (when (and (or (= type "wallet-command")
                        (= type "wallet-request")
                        (= type "command")

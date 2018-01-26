@@ -1,5 +1,6 @@
 (ns status-im.data-store.realm.schemas.account.v12.pending-message
-  (:require [taoensso.timbre :as log]))
+  (:require [goog.object :as object]
+            [taoensso.timbre :as log]))
 
 (def schema {:name       :pending-message
              :primaryKey :id
@@ -29,8 +30,8 @@
     (dotimes [i (.-length messages)]
       (let [message     (aget messages i)
             new-message (aget new-messages i)
-            key-type    (aget message "key-type")
-            key         (aget message "key")]
+            key-type    (object/get message "key-type")
+            key         (object/get message "key")]
         (if (= key-type "sym")
           (aset new-message "sym-key-id" key)
           (aset new-message "pub-key" key))))))

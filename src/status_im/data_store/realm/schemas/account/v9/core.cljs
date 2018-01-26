@@ -15,6 +15,7 @@
             [status-im.data-store.realm.schemas.account.v5.contact-group :as contact-group]
             [status-im.data-store.realm.schemas.account.v5.group-contact :as group-contact]
             [status-im.data-store.realm.schemas.account.v8.local-storage :as local-storage]
+            [goog.object :as object]
             [taoensso.timbre :as log]))
 
 (def schema [chat/schema
@@ -39,8 +40,8 @@
   (let [new-commands (.objects new-realm "command")]
     (dotimes [i (.-length new-commands)]
       (let [command (aget new-commands i)
-            command-name (aget command "name")
-            command-title (aget command "title")]
+            command-name (object/get command "name")
+            command-title (object/get command "title")]
         (cond
           (and (= command-name "global") (= command-title "Browser"))
           (aset command "params" 0 "placeholder" "URL")

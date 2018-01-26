@@ -1,5 +1,6 @@
 (ns status-im.ui.components.camera
-  (:require [reagent.core :as r]
+  (:require [goog.object :as object]
+            [reagent.core :as r]
             [clojure.walk :refer [keywordize-keys]]
             [status-im.utils.platform :as platform]
             [status-im.react-native.js-dependencies :as rn-dependecies]))
@@ -7,7 +8,7 @@
 (def default-camera (.-default rn-dependecies/camera))
 
 (defn constants [t]
-  (-> (aget rn-dependecies/camera "constants" t)
+  (-> (object/get rn-dependecies/camera "constants" t)
       (js->clj)
       (keywordize-keys)))
 
