@@ -103,7 +103,8 @@
                     (aset object "content" (pr-str new-content)))))))
 
 (defn update-message-statuses [new-realm]
-  (let [status-ids (atom #{})]
+  (let [status-ids (atom #{})
+        deleted-seq (atom 0)]
     (some-> new-realm
             (.objects "message")
             (.map (fn [msg _ _]
@@ -116,7 +117,7 @@
                         (.map statuses (fn [status _ _]
                                          (let [status-id (str message-id "-" from)]
                                            (if (@status-ids status-id)
-                                             (.delete new-realm status)
+                                             (aset status "status-id" (str (swap! deleted-seq inc) "-deleted"))
                                              (do
                                                (swap! status-ids conj status-id)
                                                (aset status "status-id"  status-id)
