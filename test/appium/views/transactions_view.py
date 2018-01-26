@@ -42,13 +42,13 @@ class TransactionTable(BaseElement):
         return self.TransactionElement(self.driver, amount=amount)
 
     def find_transaction(self, amount: str) -> TransactionElement:
-        for i in range(18):
+        for i in range(9):
             try:
                 element = self.get_transaction_element(amount=amount.replace(',', '.'))
                 element.find_element()
                 return element
             except NoSuchElementException:
-                time.sleep(10)
+                time.sleep(5)
                 self.driver.swipe(500, 500, 500, 1000)
         pytest.fail('Transaction was not found on Wallet/Transaction screen')
 

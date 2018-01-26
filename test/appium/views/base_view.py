@@ -1,9 +1,12 @@
-import logging
 import time
+import base64
+import zbarlight
+from tests import info
+from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-
+from PIL import Image
 from datetime import datetime
-
+from io import BytesIO
 from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 
 
@@ -16,9 +19,9 @@ class BackButton(BaseButton):
         for _ in range(times_to_click):
             try:
                 self.find_element().click()
+                info('Tap on %s' % self.name)
             except (NoSuchElementException, TimeoutException):
                 pass
-            logging.info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -31,9 +34,9 @@ class AllowButton(BaseButton):
         try:
             for _ in range(3):
                 self.find_element().click()
+                info('Tap on %s' % self.name)
         except NoSuchElementException:
             pass
-        logging.info('Tap on %s' % self.name)
 
 
 class DenyButton(BaseButton):
@@ -110,6 +113,13 @@ class NextButton(BaseButton):
             "//android.widget.TextView[@text='NEXT']")
 
 
+class DoneButton(BaseButton):
+    def __init__(self, driver):
+        super(DoneButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='Done']")
+
+
 class AppsButton(BaseButton):
     def __init__(self, driver):
         super(AppsButton, self).__init__(driver)
@@ -141,6 +151,7 @@ class BaseView(object):
         self.ok_button_apk = OkButton(self.driver)
         self.next_button = NextButton(self.driver)
         self.save_button = SaveButton(self.driver)
+        self.done_button = DoneButton(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
@@ -157,7 +168,7 @@ class BaseView(object):
         return self.driver.get_log("logcat")
 
     def confirm(self):
-        logging.info("Tap 'Confirm' on native keyboard")
+        info("Tap 'Confirm' on native keyboard")
         self.driver.keyevent(66)
 
     def send_as_keyevent(self, string):
@@ -170,30 +181,30 @@ class BaseView(object):
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
         for i in string:
-            logging.info("Tap '%s' on native keyboard" % i)
+            info("Tap '%s' on native keyboard" % i)
             time.sleep(1)
             self.driver.keyevent(keys[i])
 
     def find_full_text(self, text, wait_time=60):
-        logging.info("Looking for full text: '%s'" % text)
+        info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
         return element.wait_for_element(wait_time)
 
     def find_text_part(self, text, wait_time=60):
-        logging.info("Looking for a text part: '%s'" % text)
+        info("Looking for a text part: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element.wait_for_element(wait_time)
 
     def element_by_text(self, text, element_type='base'):
-        logging.info("Looking for an element by text: '%s'" % text)
+        info("Looking for an element by text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
         return element
 
     def element_by_text_part(self, text, element_type='base'):
-        logging.info("Looking for an element by text part: '%s'" % text)
+        info("Looking for an element by text part: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element
@@ -216,3 +227,15 @@ class BaseView(object):
 
     def get_unique_amount(self):
         return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
+
+    def get_text_from_qr(self):
+        image = Image.open(BytesIO(base64.b64decode(self.driver.get_screenshot_as_base64())))
+        image.load()
+        try:
+            return str(zbarlight.scan_codes('qrcode', image)[0])[2:][:132]
+        except IndexError:
+            raise BaseException('No data in QR code')
+
+    def public_key_to_address(self, public_key):
+        raw_public_key = bytearray.fromhex(public_key.replace('0x04', ''))
+        return datatypes.PublicKey(raw_public_key).to_address()[2:]

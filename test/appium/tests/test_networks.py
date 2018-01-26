@@ -1,7 +1,6 @@
 import pytest
 from itertools import combinations_with_replacement
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from tests import user_flow
 from views.console_view import ConsoleView
 from selenium.common.exceptions import TimeoutException
 
@@ -13,7 +12,7 @@ class TestNetwork(SingleDeviceTestCase):
                                          'Mainnet', 'Mainnet with upstream RPC'])
     def test_network_switch(self, network):
         console = ConsoleView(self.driver)
-        user_flow.create_user(console)
+        console.create_user()
         console.back_button.click()
         profile_view = console.profile_button.click()
         sign_in_view = profile_view.switch_network(network)
@@ -32,9 +31,10 @@ class TestNetworkChats(MultipleDeviceTestCase):
     @pytest.mark.parametrize("network", network_combinations,
                              ids=[i[0] + ' & ' + i[1] for i in network_combinations])
     def test_one_to_one_chat_between(self, network):
-        device_1, device_2 = ConsoleView(self.driver_1), ConsoleView(self.driver_2)
-        for device in device_1, device_2:
-            user_flow.create_user(device)
+        self.create_drivers(2)
+        device_1, device_2 = ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1])
+        for console in device_1, device_2:
+            console.create_user()
         device_1.back_button.click()
         device_1_profile_view = device_1.profile_button.click()
         device_1_public_key = device_1_profile_view.public_key_text.text
@@ -46,7 +46,6 @@ class TestNetworkChats(MultipleDeviceTestCase):
             login_d1.find_full_text('Wallet', 60)
         else:
             device_1_profile_view.back_button.click()
-
         device_2.back_button.click()
         device_2_home_view = device_2.get_home_view()
         if network[1] != 'Ropsten with upstream RPC':
@@ -56,7 +55,7 @@ class TestNetworkChats(MultipleDeviceTestCase):
             device_2_sign_in.password_input.send_keys('qwerty1234')
             device_2_home_view = device_2_sign_in.sign_in_button.click()
             device_2_home_view.find_full_text('Wallet', 60)
-        user_flow.add_contact(device_2_home_view, device_1_public_key)
+        device_2_home_view.add_contact(device_1_public_key)
         device_2_chat = device_2.get_chat_view()
         message_1 = network[0]
         message_2 = network[1]

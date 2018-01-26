@@ -21,3 +21,5 @@ selenium==3.8.1
 six==1.10.0
 urllib3==1.22
 yarl==0.12.0
+zbarlight=1.2
+eth-keys==0.1.0b4

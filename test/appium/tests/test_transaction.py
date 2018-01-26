@@ -2,7 +2,7 @@ import pytest
 import time
 from views.console_view import ConsoleView
 from tests.base_test_case import SingleDeviceTestCase
-from tests import user_flow, transaction_users, api_requests, get_current_time
+from tests import transaction_users, api_requests, get_current_time
 from selenium.common.exceptions import TimeoutException
 
 
@@ -18,21 +18,22 @@ class TestTransactions(SingleDeviceTestCase):
                                   'wrong_password'])
     def test_transaction_send_command(self, test, recipient):
         console_view = ConsoleView(self.driver)
-        user_flow.create_user(console_view)
+        console_view.create_user()
         console_view.back_button.click()
         home_view = console_view.get_home_view()
         recipient_address = transaction_users[recipient]['address']
         recipient_key = transaction_users[recipient]['public_key']
         transaction_amount = '0.001'
-        sender_address = user_flow.get_address(home_view)
+        sender_public_key = home_view.get_public_key()
+        sender_address = home_view.public_key_to_address(sender_public_key)
         home_view.home_button.click()
         api_requests.get_donate(sender_address)
         initial_balance_recipient = api_requests.get_balance(recipient_address)
 
-        user_flow.add_contact(home_view, recipient_key)
+        home_view.add_contact(recipient_key)
         if test == 'group_chat':
             home_view.back_button.click(times_to_click=3)
-            user_flow.create_group_chat(home_view, transaction_users[recipient]['username'],
+            home_view.create_group_chat([transaction_users[recipient]['username']],
                                         'trg_%s' % get_current_time())
             chat_view = home_view.get_chat_view()
         else:
@@ -67,10 +68,9 @@ class TestTransactions(SingleDeviceTestCase):
     @pytest.mark.transaction
     def test_send_transaction_from_daap(self):
         console = ConsoleView(self.driver)
-        user_flow.recover_access(console,
-                                 transaction_users['B_USER']['passphrase'],
-                                 transaction_users['B_USER']['password'],
-                                 transaction_users['B_USER']['username'])
+        console.recover_access(transaction_users['B_USER']['passphrase'],
+                               transaction_users['B_USER']['password'],
+                               transaction_users['B_USER']['username'])
         home_view = console.get_home_view()
         address = transaction_users['B_USER']['address']
         initial_balance = api_requests.get_balance(address)

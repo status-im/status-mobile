@@ -1,5 +1,5 @@
 import pytest
-from tests import api_requests, user_flow, transaction_users_wallet
+from tests import api_requests, transaction_users_wallet
 from tests.base_test_case import SingleDeviceTestCase
 from views.console_view import ConsoleView
 
@@ -10,7 +10,7 @@ class TestWallet(SingleDeviceTestCase):
     @pytest.mark.wallet
     def test_wallet_error_messages(self):
         console = ConsoleView(self.driver)
-        user_flow.create_user(console)
+        console.create_user()
         console.back_button.click()
         wallet_view = console.wallet_button.click()
         send_transaction = wallet_view.send_button.click()
@@ -22,13 +22,12 @@ class TestWallet(SingleDeviceTestCase):
     @pytest.mark.wallet
     def test_request_transaction_from_wallet(self):
         console_view = ConsoleView(self.driver)
-        user_flow.recover_access(console_view,
-                                 transaction_users_wallet['A_USER']['passphrase'],
-                                 transaction_users_wallet['A_USER']['password'],
-                                 transaction_users_wallet['A_USER']['username'])
+        console_view.recover_access(transaction_users_wallet['A_USER']['passphrase'],
+                                    transaction_users_wallet['A_USER']['password'],
+                                    transaction_users_wallet['A_USER']['username'])
         home_view = console_view.get_home_view()
         recipient_key = transaction_users_wallet['B_USER']['public_key']
-        user_flow.add_contact(home_view, recipient_key)
+        home_view.add_contact(recipient_key)
         home_view.back_button.click(times_to_click=3)
         wallet_view = home_view.wallet_button.click()
         send_transaction_view = wallet_view.request_button.click()
@@ -43,15 +42,14 @@ class TestWallet(SingleDeviceTestCase):
                              ids=['sign_now','sign_later'])
     def test_send_transaction_from_wallet(self, test, recipient, sender):
         console_view = ConsoleView(self.driver)
-        user_flow.recover_access(console_view,
-                                 transaction_users_wallet[sender]['passphrase'],
-                                 transaction_users_wallet[sender]['password'],
-                                 transaction_users_wallet[sender]['username'])
+        console_view.recover_access(transaction_users_wallet[sender]['passphrase'],
+                                    transaction_users_wallet[sender]['password'],
+                                    transaction_users_wallet[sender]['username'])
         home_view = console_view.get_home_view()
         recipient_key = transaction_users_wallet[recipient]['public_key']
         recipient_address = transaction_users_wallet[recipient]['address']
         initial_balance_recipient = api_requests.get_balance(recipient_address)
-        user_flow.add_contact(home_view, recipient_key)
+        home_view.add_contact(recipient_key)
         home_view.back_button.click(times_to_click=3)
         wallet_view = home_view.wallet_button.click()
         send_transaction = wallet_view.send_button.click()
@@ -83,18 +81,15 @@ class TestWallet(SingleDeviceTestCase):
             transactions_view = wallet_view.transactions_button.click()
         transaction = transactions_view.transactions_table.find_transaction(amount=amount)
         details_view = transaction.click()
-        transaction_hash = details_view.get_transaction_hash()
-        api_requests.find_transaction_on_ropsten(address=transaction_users_wallet[sender]['address'],
-                                                 transaction_hash=transaction_hash)
+        details_view.get_transaction_hash()
 
     @pytest.mark.wallet
     def test_eth_and_currency_balance(self):
         errors = list()
         console = ConsoleView(self.driver)
-        user_flow.recover_access(console,
-                                 passphrase=transaction_users_wallet['A_USER']['passphrase'],
-                                 password=transaction_users_wallet['A_USER']['password'],
-                                 username=transaction_users_wallet['A_USER']['username'])
+        console.recover_access(passphrase=transaction_users_wallet['A_USER']['passphrase'],
+                               password=transaction_users_wallet['A_USER']['password'],
+                               username=transaction_users_wallet['A_USER']['username'])
         home_view = console.get_home_view()
         wallet = home_view.wallet_button.click()
         address = transaction_users_wallet['A_USER']['address']

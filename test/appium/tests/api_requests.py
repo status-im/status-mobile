@@ -1,7 +1,7 @@
-import logging
 import pytest
 import requests
 import time
+from tests import info
 
 
 def get_transactions(address: str) -> dict:
@@ -27,7 +27,7 @@ def find_transaction_on_ropsten(address: str, transaction_hash: str):
     transactions = get_transactions(address=address)
     for transaction in transactions:
         if transaction['hash'] == transaction_hash:
-            logging.info('Transaction is found in Ropsten network')
+            info('Transaction is found in Ropsten network')
             return
     pytest.fail('Transaction is not found in Ropsten network')
 
@@ -40,9 +40,9 @@ def verify_balance_is_updated(initial_balance, recipient_address, wait_time=240)
         elif initial_balance == get_balance(recipient_address):
             counter += 10
             time.sleep(10)
-            logging.info('Waiting %s seconds for funds' % counter)
+            info('Waiting %s seconds for funds' % counter)
         else:
-            logging.info('Transaction is received')
+            info('Transaction is received')
             return
 
 
@@ -57,9 +57,9 @@ def get_donate(address, wait_time=300):
             elif get_balance(address) == initial_balance:
                 counter += 10
                 time.sleep(10)
-                logging.info('Waiting %s seconds for donation' % counter)
+                info('Waiting %s seconds for donation' % counter)
             else:
-                logging.info('Got %s for %s' % (response["amount_eth"], address))
+                info('Got %s for %s' % (response["amount_eth"], address))
                 return
 
 

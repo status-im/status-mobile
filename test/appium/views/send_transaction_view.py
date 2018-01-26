@@ -1,5 +1,6 @@
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 class FirstRecipient(BaseButton):
@@ -80,3 +81,11 @@ class SendTransactionView(BaseView):
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)
         self.got_it_button = GotItButton(self.driver)
+
+    def try_to_sing_transaction(self):
+        for _ in range(4):
+            try:
+                self.sign_transaction_button.click()
+                self.password_input.wait_for_element(5)
+            except (NoSuchElementException, TimeoutException):
+                pass

@@ -1,5 +1,4 @@
-import logging
-
+from tests import info
 from views.base_view import BaseView
 from views.base_element import BaseButton, BaseText
 
@@ -96,4 +95,4 @@ class WalletView(BaseView):
         if percentage_diff > 2:
             errors.append('Difference between current (%s) and expected (%s) USD balance > 2%%!!' % (usd, expected_usd))
         else:
-            logging.info('Current USD balance %s is ok' % usd)
+            info('Current USD balance %s is ok' % usd)

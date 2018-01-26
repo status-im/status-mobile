@@ -1,9 +1,9 @@
 from appium.webdriver.common.mobileby import MobileBy
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from appium.webdriver.common.touch_action import TouchAction
-import logging
+from tests import info
 
 
 class BaseElement(object):
@@ -37,25 +37,33 @@ class BaseElement(object):
         return None
 
     def find_element(self):
-        self.info('Looking for %s' % self.name)
-        return self.driver.find_element(self.locator.by, self.locator.value)
+        info('Looking for %s' % self.name)
+        try:
+            return self.driver.find_element(self.locator.by, self.locator.value)
+        except NoSuchElementException as exception:
+            exception.msg = "'%s' is not found on screen, using: '%s'" % (self.name, self.locator)
+            raise exception
 
     def find_elements(self):
-        self.info('Looking for %s' % self.name)
+        info('Looking for %s' % self.name)
         return self.driver.find_elements(self.locator.by, self.locator.value)
 
     def wait_for_element(self, seconds=10):
-        return WebDriverWait(self.driver, seconds)\
-            .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
+        try:
+            return WebDriverWait(self.driver, seconds)\
+                .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
+        except TimeoutException as exception:
+            exception.msg = "'%s' is not found on screen, using: '%s', during '%s' seconds" % (self.name, self.locator,
+                                                                                               seconds)
+            raise exception
 
     def scroll_to_element(self):
-        action = TouchAction(self.driver)
-        for _ in range(5):
+        for _ in range(9):
             try:
                 return self.find_element()
             except NoSuchElementException:
-                self.info('Scrolling to %s' % self.name)
-                action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
+                info('Scrolling down to %s' % self.name)
+                self.driver.swipe(500, 1000, 500, 500)
 
     def is_element_present(self, sec=5):
         try:
@@ -68,10 +76,6 @@ class BaseElement(object):
     def text(self):
         return self.find_element().text
 
-    def info(self, text):
-        if not "Base" in text:
-            logging.info(text)
-
 
 class BaseEditBox(BaseElement):
 
@@ -80,19 +84,19 @@ class BaseEditBox(BaseElement):
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
-        self.info("Type '%s' to %s" % (value, self.name))
+        info("Type '%s' to %s" % (value, self.name))
 
     def set_value(self, value):
         self.find_element().set_value(value)
-        self.info("Type '%s' to %s" % (value, self.name))
+        info("Type '%s' to %s" % (value, self.name))
 
     def clear(self):
         self.find_element().clear()
-        self.info('Clear text in %s' % self.name)
+        info('Clear text in %s' % self.name)
 
     def click(self):
         self.find_element().click()
-        self.info('Tap on %s' % self.name)
+        info('Tap on %s' % self.name)
 
 
 class BaseText(BaseElement):
@@ -103,7 +107,7 @@ class BaseText(BaseElement):
     @property
     def text(self):
         text = self.find_element().text
-        self.info('%s is %s' % (self.name, text))
+        info('%s is %s' % (self.name, text))
         return text
 
 
@@ -114,5 +118,5 @@ class BaseButton(BaseElement):
 
     def click(self):
         self.find_element().click()
-        self.info('Tap on %s' % self.name)
+        info('Tap on %s' % self.name)
         return self.navigate()

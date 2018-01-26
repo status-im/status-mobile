@@ -1,7 +1,5 @@
-import logging
-
 from selenium.common.exceptions import TimeoutException
-
+from tests import info
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
 
@@ -19,7 +17,7 @@ class SendMessageButton(BaseButton):
 
     def click(self):
         self.find_element().click()
-        logging.info('Tap on %s' % self.name)
+        info('Tap on %s' % self.name)
 
 
 class AddToContacts(BaseButton):
@@ -48,11 +46,17 @@ class RequestCommand(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='/request']")
 
 
-class GroupChatOptions(BaseButton):
+class ChatOptions(BaseButton):
     def __init__(self, driver):
-        super(GroupChatOptions, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.view.ViewGroup[2]//android.widget.TextView[@text='n']")
+        super(ChatOptions, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-menu')
+
+
+class MembersButton(BaseButton):
+
+    def __init__(self, driver):
+        super(MembersButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="action"])[1]')
 
 
 class ChatSettings(BaseButton):
@@ -81,6 +85,19 @@ class FirstRecipient(BaseButton):
                                                    "//android.widget.ImageView[@content-desc='chat-icon']")
 
 
+class MessageByUsername(BaseText):
+    def __init__(self, driver, username):
+        super(MessageByUsername, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="' + username + '"]'
+                                                   '/following-sibling::android.widget.TextView')
+
+
+class MoreUsersButton(BaseButton):
+    def __init__(self, driver):
+        super(MoreUsersButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -93,18 +110,24 @@ class ChatView(BaseView):
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
 
-        self.group_chat_options = GroupChatOptions(self.driver)
+        self.chat_options = ChatOptions(self.driver)
+        self.members_button = MembersButton(self.driver)
+
         self.chat_settings = ChatSettings(self.driver)
+        self.more_users_button = MoreUsersButton(self.driver)
         self.user_options = UserOptions(self.driver)
         self.remove_button = RemoveButton(self.driver)
 
         self.first_recipient_button = FirstRecipient(self.driver)
 
     def wait_for_syncing_complete(self):
-        logging.info('Waiting for syncing complete:')
+        info('Waiting for syncing complete:')
         while True:
             try:
                 sync = self.find_text_part('Syncing', 10)
-                logging.info(sync.text)
+                info(sync.text)
             except TimeoutException:
                 break
+
+    def get_messages_sent_by_user(self, username):
+        return MessageByUsername(self.driver, username).find_elements()

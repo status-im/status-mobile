@@ -91,6 +91,16 @@ node ('macos1') {
         '\niOS: ' + ipaUrl
     }
 
+    stage('Run e2e tests') {
+      if (env.CHANGE_ID != null){
+      withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){
+        def apk_name = env.CHANGE_ID + '.apk'
+        sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
+        build job: 'end-to-end-tests/status-app-end-to-end-tests', parameters: [string(name: 'apk', value: '--apk=' + apk_name), string(name: 'pr_id', value: env.CHANGE_ID)], wait: false
+      }
+     }
+    }
+
   } catch (e) {
     slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
     throw e

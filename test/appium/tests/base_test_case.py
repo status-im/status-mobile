@@ -1,15 +1,13 @@
 import pytest
 import sys
-from tests import *
-from os import environ
-from appium import webdriver
-from abc import ABCMeta, \
-    abstractmethod
-import hmac
 import re
 import subprocess
-from hashlib import md5
+import asyncio
 from selenium.common.exceptions import WebDriverException
+from tests import test_data, start_threads
+from os import environ
+from appium import webdriver
+from abc import ABCMeta, abstractmethod
 
 
 class AbstractTestCase:
@@ -17,12 +15,12 @@ class AbstractTestCase:
     __metaclass__ = ABCMeta
 
     @property
-    def sauce_access_key(self):
-        return environ.get('SAUCE_ACCESS_KEY')
-
-    @property
     def sauce_username(self):
         return environ.get('SAUCE_USERNAME')
+
+    @property
+    def sauce_access_key(self):
+        return environ.get('SAUCE_ACCESS_KEY')
 
     @property
     def executor_sauce_lab(self):
@@ -32,16 +30,10 @@ class AbstractTestCase:
     def executor_local(self):
         return 'http://localhost:4723/wd/hub'
 
-    def get_public_url(self, driver):
-        token = hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
-                         bytes(driver.session_id, 'latin-1'), md5).hexdigest()
-        return "https://saucelabs.com/jobs/%s?auth=%s" % (driver.session_id, token)
-
     def print_sauce_lab_info(self, driver):
         sys.stdout = sys.stderr
         print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id,
                                                          pytest.config.getoption('build')))
-        print(self.get_public_url(driver))
 
     def add_local_devices_to_capabilities(self):
         updated_capabilities = list()
@@ -79,7 +71,7 @@ class AbstractTestCase:
         desired_caps['appiumVersion'] = '1.7.1'
         desired_caps['platformVersion'] = '6.0'
         desired_caps['newCommandTimeout'] = 600
-        desired_caps['fullReset'] = True
+        desired_caps['fullReset'] = False
         return desired_caps
 
     @abstractmethod
@@ -98,20 +90,51 @@ class AbstractTestCase:
     def implicitly_wait(self):
         return 10
 
+    def update_test_info_dict(self):
+        test_data.test_info[test_data.test_name] = dict()
+        test_data.test_info[test_data.test_name]['jobs'] = list()
+        test_data.test_info[test_data.test_name]['steps'] = str()
+
+
+class SingleDeviceTestCase(AbstractTestCase):
+
+    def setup_method(self, method):
+        self.update_test_info_dict()
+
+        capabilities = {'local': {'executor': self.executor_local,
+                                  'capabilities': self.capabilities_local},
+                        'sauce': {'executor': self.executor_sauce_lab,
+                                  'capabilities': self.capabilities_sauce_lab}}
+
+        self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
+                                       capabilities[self.environment]['capabilities'])
+        self.driver.implicitly_wait(self.implicitly_wait)
+        test_data.test_info[test_data.test_name]['jobs'].append(self.driver.session_id)
+
+    def teardown_method(self, method):
+        if self.environment == 'sauce':
+            self.print_sauce_lab_info(self.driver)
+        try:
+            self.driver.quit()
+        except WebDriverException:
+            pass
+
 
 class LocalMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
+        self.drivers = dict()
+
+    def create_drivers(self, quantity):
         capabilities = self.add_local_devices_to_capabilities()
-        self.driver_1 = webdriver.Remote(self.executor_local, capabilities[0])
-        self.driver_2 = webdriver.Remote(self.executor_local, capabilities[1])
-        for driver in self.driver_1, self.driver_2:
-            driver.implicitly_wait(self.implicitly_wait)
+        for driver in range(quantity):
+            self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
+            self.drivers[driver].implicitly_wait(self.implicitly_wait)
 
     def teardown_method(self, method):
-        for driver in self.driver_1, self.driver_2:
+        for driver in self.drivers:
             try:
-                driver.quit()
+                self.drivers[driver].quit()
             except WebDriverException:
                 pass
 
@@ -123,47 +146,29 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         cls.loop = asyncio.get_event_loop()
 
     def setup_method(self, method):
-        self.driver_1, \
-        self.driver_2 = self.loop.run_until_complete(start_threads(2,
-                                                              webdriver.Remote,
-                                                              self.executor_sauce_lab,
-                                                              self.capabilities_sauce_lab))
-        for driver in self.driver_1, self.driver_2:
-            driver.implicitly_wait(self.implicitly_wait)
+        self.update_test_info_dict()
+        self.drivers = dict()
+
+    def create_drivers(self, quantity=2):
+        self.drivers = self.loop.run_until_complete(start_threads(quantity, webdriver.Remote,
+                                                    self.drivers,
+                                                    self.executor_sauce_lab,
+                                                    self.capabilities_sauce_lab))
+        for driver in range(quantity):
+            self.drivers[driver].implicitly_wait(self.implicitly_wait)
+            test_data.test_info[test_data.test_name]['jobs'].append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
-        for driver in self.driver_1, self.driver_2:
-            self.print_sauce_lab_info(driver)
+        for driver in self.drivers:
+            self.print_sauce_lab_info(self.drivers[driver])
             try:
-                driver.quit()
+                self.drivers[driver].quit()
             except WebDriverException:
                 pass
 
     @classmethod
     def teardown_class(cls):
         cls.loop.close()
-
-
-class SingleDeviceTestCase(AbstractTestCase):
-
-    def setup_method(self, method):
-
-        capabilities = {'local': {'executor': self.executor_local,
-                                  'capabilities': self.capabilities_local},
-                        'sauce': {'executor': self.executor_sauce_lab,
-                                  'capabilities': self.capabilities_sauce_lab}}
-
-        self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
-                                       capabilities[self.environment]['capabilities'])
-        self.driver.implicitly_wait(self.implicitly_wait)
-
-    def teardown_method(self, method):
-        if self.environment == 'sauce':
-            self.print_sauce_lab_info(self.driver)
-        try:
-            self.driver.quit()
-        except WebDriverException:
-            pass
 
 
 environments = {'local': LocalMultipleDeviceTestCase,

@@ -19,7 +19,7 @@ class SwitchUsersButton(BaseButton):
 
     def click(self):
         self.find_element().click()
-        logging.info('Tap on %s' % self.name)
+        info('Tap on %s' % self.name)
         return self.navigate()
 
     def navigate(self):
