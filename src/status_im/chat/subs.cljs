@@ -2,8 +2,7 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.constants :as constants]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.models.commands :as commands-model]
-            [status-im.chat.utils :as chat-utils]
+            [status-im.chat.models.commands :as commands-model] 
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.commands.utils :as commands-utils]
             [status-im.utils.datetime :as time]
@@ -11,7 +10,7 @@
             [status-im.i18n :as i18n]
             [clojure.string :as string]))
 
-(reg-sub :chats :chats)
+(reg-sub :get-chats :chats)
 
 (reg-sub :get-current-chat-id :current-chat-id)
 
@@ -49,14 +48,20 @@
     (if platform/ios? kb-height 0)))
 
 (reg-sub
+  :get-active-chats
+  :<- [:get-chats]
+  (fn [chats]
+    (into {} (filter (comp :is-active second)) chats)))
+
+(reg-sub
   :get-chat
-  :<- [:chats]
+  :<- [:get-active-chats]
   (fn [chats [_ chat-id]]
     (get chats chat-id)))
 
 (reg-sub
   :get-current-chat
-  :<- [:chats]
+  :<- [:get-active-chats]
   :<- [:get-current-chat-id]
   (fn [[chats current-chat-id]]
     (get chats current-chat-id)))
@@ -69,7 +74,7 @@
 
 (reg-sub
   :chat
-  :<- [:chats]
+  :<- [:get-active-chats]
   :<- [:get-current-chat-id]
   (fn [[chats id] [_ k chat-id]]
     (get-in chats [(or chat-id id) k])))
@@ -161,7 +166,7 @@
 (defn- available-commands-responses [[commands-responses {:keys [input-text]}]]
   (->> commands-responses
        map->sorted-seq
-       (filter #(string/includes? (chat-utils/command-name %) (or input-text "")))))
+       (filter #(string/includes? (commands-model/command-name %) (or input-text "")))))
 
 (reg-sub
   :get-available-commands

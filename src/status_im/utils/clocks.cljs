@@ -26,7 +26,7 @@
 ;; http://amturing.acm.org/p558-lamport.pdf
 
 (defn send [local-clock]
-  (inc local-clock))
+  (inc (or local-clock 0)))
 
 (defn receive [message-clock local-clock]
-  (inc (max message-clock local-clock)))
+  (inc (max (or message-clock 0) (or local-clock 0))))

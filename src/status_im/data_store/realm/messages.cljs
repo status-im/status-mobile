@@ -32,6 +32,19 @@
                       realm/js-object->clj)]
      (mapv transform-message messages))))
 
+(defn get-stored-message-ids
+  []
+  (let [chat-id->message-id (volatile! {})]
+    (-> @realm/account-realm
+        (.objects "message")
+        (.map (fn [msg _ _]
+                (vswap! chat-id->message-id
+                        #(update %
+                                 (aget msg "chat-id")
+                                 (fnil conj #{})
+                                 (aget msg "message-id"))))))
+    @chat-id->message-id))
+
 (defn get-by-fields
   [fields from number-of-messages]
   (-> (realm/get-by-fields @realm/account-realm :message :and fields)

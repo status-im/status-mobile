@@ -1,5 +1,6 @@
 (ns status-im.protocol.handlers
   (:require [re-frame.core :as re-frame]
+            [cljs.core.async :as async]
             [status-im.utils.handlers :as handlers]
             [status-im.data-store.contacts :as contacts]
             [status-im.data-store.messages :as messages]
@@ -10,13 +11,13 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.utils.random :as random]
+            [status-im.utils.async :as async-utils]
             [status-im.protocol.message-cache :as cache]
             [status-im.protocol.listeners :as listeners]
-            [status-im.chat.utils :as chat.utils]
+            [status-im.chat.models.message :as models.message]
             [status-im.protocol.web3.inbox :as inbox]
             [status-im.protocol.web3.keys :as web3.keys]
-            [status-im.utils.datetime :as datetime]
-            [status-im.utils.events-buffer :as events-buffer]
+            [status-im.utils.datetime :as datetime] 
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
@@ -39,11 +40,6 @@
   ::get-pending-messages
   (fn [coeffects _]
     (assoc coeffects :pending-messages (pending-messages/get-all))))
-
-(re-frame/reg-cofx
-  ::get-all-contacts
-  (fn [coeffects _]
-    (assoc coeffects :contacts (contacts/get-all))))
 
 (re-frame/reg-cofx
   ::message-get-by-id
@@ -74,6 +70,8 @@
 
 ;;;; FX
 
+(def ^:private protocol-realm-queue (async-utils/task-queue 200))
+
 (re-frame/reg-fx
   :stop-whisper
   (fn [] (protocol/stop-whisper!)))
@@ -85,7 +83,7 @@
      {:web3                        web3
       :identity                    public-key
       :groups                      groups
-      :callback                    #(events-buffer/dispatch [:incoming-message %1 %2])
+      :callback                    #(re-frame/dispatch [:incoming-message %1 %2])
       :ack-not-received-s-interval 125
       :default-ttl                 120
       :send-online-s-interval      180
@@ -118,7 +116,7 @@
 (re-frame/reg-fx
   ::save-processed-messages
   (fn [processed-message]
-    (processed-messages/save processed-message)))
+    (async/put! protocol-realm-queue #(processed-messages/save processed-message))))
 
 (defn system-message [message-id timestamp content]
   {:from         "system"
@@ -198,12 +196,12 @@
 (re-frame/reg-fx
   ::pending-messages-delete
   (fn [message-id]
-    (pending-messages/delete message-id)))
+    (async/put! protocol-realm-queue #(pending-messages/delete message-id))))
 
 (re-frame/reg-fx
   ::pending-messages-save
   (fn [pending-message]
-    (pending-messages/save pending-message)))
+    (async/put! protocol-realm-queue #(pending-messages/save pending-message))))
 
 (re-frame/reg-fx
   ::status-init-jail
@@ -370,15 +368,15 @@
    (re-frame/inject-cofx ::get-web3)
    (re-frame/inject-cofx ::get-chat-groups)
    (re-frame/inject-cofx ::get-pending-messages)
-   (re-frame/inject-cofx ::get-all-contacts)]
-  (fn [{:keys [db web3 groups contacts pending-messages]} [current-account-id ethereum-rpc-url]]
+   (re-frame/inject-cofx :get-all-contacts)]
+  (fn [{:keys [db web3 groups all-contacts pending-messages]} [current-account-id ethereum-rpc-url]]
     (let [{:keys [public-key status updates-public-key
                   updates-private-key]}
           (get-in db [:accounts/accounts current-account-id])]
       (when public-key
         {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
                          :updates-public-key updates-public-key :updates-private-key updates-private-key
-                         :status status :contacts contacts}
+                         :status status :contacts all-contacts}
          :db (assoc db :web3 web3
                        :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
 
@@ -426,10 +424,10 @@
 
 ;;; MESSAGES
 
-(defn- transform-protocol-message [{:keys [from to payload]}]
+(defn- transform-protocol-message [{:keys [from to payload]}] 
   (merge payload {:from    from
                   :to      to
-                  :chat-id from}))
+                  :chat-id (or (:group-id payload) from)}))
 
 (defn- message-from-self [{:keys [current-public-key]} {:keys [id to group-id]}]
   {:from      to
@@ -491,11 +489,14 @@
           chat-identifier    (or (:group-id payload) from)
           message-db-path    [:chats chat-identifier :messages message-identifier] 
           from-id            (or sent-from from) 
-          message            (get-stored-message message-identifier)]
+          message            (or (get-in db message-db-path)
+                                 (and (get (:not-loaded-message-ids db) message-identifier)
+                                      (get-stored-message message-identifier)))]
       ;; proceed with updating status if chat is in db, status is not the same and message was not already seen 
-      (when (and (get-in db [:chats chat-identifier])
+      (when (and message
+                 (get-in db [:chats chat-identifier])
                  (not= status (get-in message [:user-statuses from-id]))
-                 (not (chat.utils/message-seen-by? message from-id)))
+                 (not (models.message/message-seen-by? message from-id)))
         (let [statuses (assoc (:user-statuses message) from-id status)]
           (cond-> {:update-message {:message-id    message-identifier
                                     :user-statuses statuses}} 
@@ -526,8 +527,7 @@
             ;; Get timestamp from message root level.
             ;; Root level "timestamp" is a unix ts in seconds.
             timestamp'        (or (:payload timestamp)
-                                  (* 1000 timestamp))]
-
+                                  (* 1000 timestamp))] 
         (if-not existing-contact
           (let [contact (assoc contact :pending? true)]
             {:dispatch-n [[:add-contacts [contact]]
@@ -535,7 +535,7 @@
           (when-not (:pending? existing-contact)
             (cond-> {:dispatch-n [[:update-chat! chat]
                                   [:watch-contact contact]]}
-                (<= prev-last-updated timestamp') (update :dispatch-n concat [[:update-contact! contact]]))))))))
+              (<= prev-last-updated timestamp') (update :dispatch-n concat [[:update-contact! contact]]))))))))
 
 ;;GROUP
 

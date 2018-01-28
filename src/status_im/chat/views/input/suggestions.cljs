@@ -4,7 +4,7 @@
             [status-im.ui.components.react :as react]
             [status-im.chat.styles.input.suggestions :as style]
             [status-im.chat.views.input.animations.expandable :as expandable]
-            [status-im.chat.utils :as chat.utils]
+            [status-im.chat.models.commands :as commands-model] 
             [status-im.i18n :as i18n]))
 
 (defn suggestion-item [{:keys [on-press name description last?]}]
@@ -23,14 +23,14 @@
   [suggestion-item
    {:on-press    #(let [metadata (assoc params :to-message-id message-id)]
                     (re-frame/dispatch [:select-chat-input-command command metadata]))
-    :name        (chat.utils/command-name command)
+    :name        (commands-model/command-name command)
     :description description
     :last?       last?}])
 
 (defn command-item [{:keys [name description bot] :as command} last?]
   [suggestion-item
    {:on-press    #(re-frame/dispatch [:select-chat-input-command command nil])
-    :name        (chat.utils/command-name command)
+    :name        (commands-model/command-name command)
     :description description
     :last?       last?}])
 

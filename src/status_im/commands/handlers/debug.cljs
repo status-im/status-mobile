@@ -48,7 +48,7 @@
             (get-in contacts [whisper-identity :debug?]))
       (let [dapp (merge dapp-data {:dapp?  true
                                    :debug? true})]
-        (re-frame/dispatch [:upsert-chat! {:chat-id whisper-identity
+        (re-frame/dispatch [:update-chat! {:chat-id whisper-identity
                                            :name    name
                                            :debug?  true}])
         (if (get contacts whisper-identity)

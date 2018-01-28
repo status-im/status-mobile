@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub :home-items
-  :<- [:chats]
+  :<- [:get-active-chats]
   :<- [:browsers]
   (fn [[chats browsers]]
     (sort-by #(-> % second :timestamp) > (merge chats browsers))))

@@ -1,12 +1,11 @@
 (ns status-im.chat.handlers 
-  (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]] 
+  (:require [re-frame.core :refer [after dispatch reg-fx]] 
             [clojure.string :as string]
             [status-im.ui.components.styles :refer [default-chat-color]]
             [status-im.chat.constants :as chat-consts]
             [status-im.protocol.core :as protocol]
             [status-im.data-store.chats :as chats]
-            [status-im.data-store.messages :as messages]
-            [status-im.data-store.pending-messages :as pending-messages]
+            [status-im.data-store.messages :as messages] 
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
@@ -14,33 +13,6 @@
             [status-im.utils.random :as random]
             [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             status-im.chat.events))
-
-(defn remove-chat
-  [db [_ chat-id]]
-  (update db :chats dissoc chat-id))
-
-(reg-fx
-  ::delete-messages
-  (fn [id]
-    (messages/delete-by-chat-id id)))
-
-(defn delete-messages!
-  [{:keys [current-chat-id chats]} [_ chat-id]]
-  (let [id                   (or chat-id current-chat-id)
-        {:keys [group-chat]} (chats/get-by-id chat-id)]
-    (when group-chat
-      (messages/delete-by-chat-id id))))
-
-(defn delete-chat!
-  [_ [_ chat-id]]
-  (let [{:keys [debug?]} (chats/get-by-id chat-id)]
-    (if debug?
-      (chats/delete chat-id)
-      (chats/set-inactive chat-id))))
-
-(defn remove-pending-messages!
-  [_ [_ chat-id]]
-  (pending-messages/delete-all-by-chat-id chat-id))
 
 (register-handler
   :leave-group-chat
@@ -61,14 +33,6 @@
            :message  {:from       current-public-key
                       :message-id (random/id)}})))
      (dispatch [:remove-chat current-chat-id]))))
-
-(register-handler
-  :remove-chat
-  (u/handlers->
-   remove-chat
-   delete-messages!
-   remove-pending-messages!
-   delete-chat!))
 
 (register-handler :update-group-message
   (u/side-effect!
@@ -94,11 +58,6 @@
                :callback #(dispatch [:incoming-message %1 %2])}))))))))
 
 (reg-fx
-  ::save-public-chat
-  (fn [chat]
-    (chats/save chat)))
-
-(reg-fx
   ::start-watching-group
   (fn [{:keys [group-id web3 current-public-key keypair]}]
     (protocol/start-watching-group!
@@ -122,16 +81,11 @@
       (merge
        (when-not exists?
          {:db (assoc-in db [:chats (:chat-id chat)] chat)
-          ::save-public-chat chat
+          :save-chat chat
           ::start-watching-group (merge {:group-id topic}
                                         (select-keys db [:web3 :current-public-key]))})
        {:dispatch-n [[:navigate-to-clean :home]
                      [:navigate-to-chat topic]]}))))
-
-(reg-fx
-  ::save-chat
-  (fn [new-chat]
-    (chats/save new-chat)))
 
 (reg-fx
   ::start-listen-group
@@ -193,7 +147,7 @@
       {:db (-> db
                (assoc-in [:chats (:chat-id new-chat)] new-chat)
                (assoc :group/selected-contacts #{}))
-       ::save-chat new-chat
+       :save-chat new-chat
        ::start-listen-group (merge {:new-chat new-chat}
                                    (select-keys db [:web3 :current-public-key]))
        :dispatch-n [[:navigate-to-clean :home]

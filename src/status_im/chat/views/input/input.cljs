@@ -6,8 +6,8 @@
             [taoensso.timbre :as log]
             [status-im.chat.constants :as const]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.styles.input.input :as style]
-            [status-im.chat.utils :as chat-utils]
+            [status-im.chat.models.commands :as commands-model]
+            [status-im.chat.styles.input.input :as style] 
             [status-im.chat.views.input.emoji :as emoji]
             [status-im.chat.views.input.parameter-box :as parameter-box]
             [status-im.chat.views.input.input-actions :as input-actions]
@@ -25,7 +25,7 @@
    [react/view
     [react/text {:style (style/command first?)
                  :font  :roboto-mono}
-     (chat-utils/command-name command)]]])
+     (commands-model/command-name command)]]])
 
 (defview commands-view []
   [all-commands-responses [:get-available-commands-responses]

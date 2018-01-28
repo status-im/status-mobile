@@ -2,13 +2,13 @@
   (:require [status-im.data-store.realm.chats :as data-store])
   (:refer-clojure :exclude [exists?]))
 
-(defn- normalize-contacts
-  [item]
-  (update item :contacts vals))
-
 (defn get-all
   []
-  (map normalize-contacts (data-store/get-all-active)))
+  (data-store/get-all-active))
+
+(defn get-inactive-ids
+  []
+  (data-store/get-inactive-ids))
 
 (defn get-by-id
   [id]
@@ -19,7 +19,7 @@
   (data-store/exists? chat-id))
 
 (defn save
-  [{:keys [last-message-id chat-id] :as chat}] 
+  [{:keys [chat-id] :as chat}]
   (data-store/save chat (data-store/exists? chat-id)))
 
 (defn delete
@@ -85,8 +85,8 @@
 (defn new-update?
   [timestamp chat-id]
   (let
-    [{:keys [added-to-at removed-at removed-from-at added-at]}
-     (get-by-id chat-id)]
+      [{:keys [added-to-at removed-at removed-from-at added-at]}
+       (get-by-id chat-id)]
     (and (> timestamp added-to-at)
          (> timestamp removed-at)
          (> timestamp removed-from-at)

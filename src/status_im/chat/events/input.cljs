@@ -2,8 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.chat.constants :as constants]
-            [status-im.chat.utils :as chat-utils]
+            [status-im.chat.constants :as constants] 
             [status-im.chat.models :as model]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.commands :as commands-model]
@@ -193,7 +192,7 @@
                                           :validation-messages nil
                                           :prev-command        name})
                 (set-chat-input-metadata metadata)
-                (set-chat-input-text (str (chat-utils/command-name command)
+                (set-chat-input-text (str (commands-model/command-name command)
                                           constants/spacing-char
                                           (when-not sequential-params
                                             (input-model/join-command-args prefill)))))
@@ -476,9 +475,7 @@
 
 (handlers/register-handler-fx
   :send-current-message
-  [(re-frame/inject-cofx :random-id)
-   (re-frame/inject-cofx :get-last-clock-value)
-   (re-frame/inject-cofx :get-stored-chat)]
+  message-model/send-interceptors 
   (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now
         :as cofx} _]
     (when-not (get-in db [:chat-ui-props current-chat-id :sending-in-progress?])

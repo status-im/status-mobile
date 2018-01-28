@@ -1,11 +1,11 @@
 (ns status-im.protocol.listeners
   (:require [cljs.reader :as r]
+            [re-frame.core :as re-frame]
             [status-im.protocol.ack :as ack]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
             [taoensso.timbre :as log]
-            [status-im.utils.hex :as i]
-            [status-im.utils.events-buffer :as events-buffer]))
+            [status-im.utils.hex :as i]))
 
 (defn empty-public-key? [public-key]
   (or (= "0x0" public-key)
@@ -96,5 +96,5 @@
   "Valid options are: web3, identity, callback, keypair"
   [options]
   (fn [js-error js-message]
-    (events-buffer/dispatch [:handle-whisper-message js-error js-message options])))
+    (re-frame/dispatch [:handle-whisper-message js-error js-message options])))
 

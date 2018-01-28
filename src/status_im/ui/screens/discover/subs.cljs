@@ -25,7 +25,7 @@
 
 (reg-sub :discover/discoveries-with-priority
   :<- [:discover/discoveries]
-  :<- [:chats]
+  :<- [:get-active-chats]
   :<- [:get-contacts]
   :<- [:get :current-public-key]
   (fn [[discoveries chats contacts current-public-key]]
@@ -88,7 +88,7 @@
 (reg-sub :discover/search-results
   :<- [:discover/discoveries-by-tags]
   :<- [:discover/search-tags]
-  :<- [:chats]
+  :<- [:get-active-chats]
   :<- [:get-contacts]
   :<- [:get :current-public-key]
   (fn [[discoveries search-tags chats contacts current-public-key] [_ limit]]

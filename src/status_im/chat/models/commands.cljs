@@ -13,6 +13,9 @@
 (defn- is-dapp? [all-contacts {:keys [identity]}]
   (get-in all-contacts [identity :dapp?]))
 
+(defn command-name [{:keys [name]}]
+  (str chat-consts/command-char name))
+
 (defn commands-responses
   "Returns map of commands/responses eligible for current chat."
   [type access-scope->commands-responses {:keys [address]} {:keys [contacts group-chat public?]} all-contacts]

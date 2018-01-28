@@ -27,7 +27,7 @@
 ;;;; COFX
 
 (reg-cofx
-  ::get-all-contacts
+  :get-all-contacts
   (fn [coeffects _]
     (assoc coeffects :all-contacts (contacts/get-all))))
 
@@ -278,7 +278,7 @@
 
 (register-handler-fx
   :load-contacts
-  [(inject-cofx ::get-all-contacts)]
+  [(inject-cofx :get-all-contacts)]
   (fn [{:keys [db all-contacts]} _]
     (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
           contacts (into {} contacts-list)]

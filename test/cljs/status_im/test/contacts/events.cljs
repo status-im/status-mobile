@@ -79,7 +79,7 @@
   (rf/reg-fx :save-chat #())
 
   (rf/reg-cofx
-    ::contacts-events/get-all-contacts
+    :get-all-contacts
     (fn [coeffects _]
       (assoc coeffects :all-contacts [])))
 
