@@ -4,6 +4,11 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.chat.styles.screen :as style]
+            [status-im.utils.platform :as platform]
+            [status-im.chat.views.toolbar-content :as toolbar-content]
+            [status-im.chat.views.message.message :as message]
+            [status-im.chat.views.message.datemark :as message-datemark]
+            [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :as actions]
             [status-im.chat.views.bottom-info :as bottom-info]
             [status-im.chat.views.message.datemark :as message-datemark]
@@ -17,7 +22,17 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.colors :as colors]))
+
+(defn toolbar-action [chat-id chat-name group-chat public?]
+  [react/touchable-highlight
+   {:on-press            #(list-selection/show {:title chat-name
+                                                :options (actions/actions chat-id group-chat public?)})
+    :accessibility-label :chat-menu}
+   [react/view style/action
+    [vector-icons/icon :icons/dots-horizontal]]])
 
 (defview add-contact-bar []
   (letsubs [chat-id          [:get-current-chat-id]
@@ -38,7 +53,7 @@
             {:keys [group-chat name chat-id]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
-     [toolbar/toolbar {}
+     [toolbar/platform-agnostic-toolbar {}
       toolbar/default-nav-back
       [toolbar-content/toolbar-content-view]
       [toolbar/actions [{:icon      :icons/options
@@ -78,16 +93,20 @@
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
             current-public-key [:get-current-public-key]]
-    [list/flat-list {:data                      messages
-                     :render-fn                 (fn [{:keys [message-id] :as message}]
-                                                  ^{:key message-id}
-                                                  [message-row {:group-chat         group-chat
-                                                                :current-public-key current-public-key
-                                                                :row                message}])
-                     :inverted                  true
-                     :onEndReached              #(re-frame/dispatch [:load-more-messages])
-                     :enableEmptySections       true
-                     :keyboardShouldPersistTaps (if platform/android? :always :handled)}]))
+    (if (empty? messages)
+      [react/view style/empty-chat-container
+       [react/text {:style style/empty-chat-text}
+        (i18n/label :t/empty-chat-description)]]
+      [list/flat-list {:data                      messages
+                       :render-fn                 (fn [{:keys [message-id] :as message}]
+                                                    ^{:key message-id}
+                                                    [message-row {:group-chat         group-chat
+                                                                  :current-public-key current-public-key
+                                                                  :row                message}])
+                       :inverted                  true
+                       :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                       :enableEmptySections       true
+                       :keyboardShouldPersistTaps (if platform/android? :always :handled)}])))
 
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]

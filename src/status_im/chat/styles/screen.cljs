@@ -1,6 +1,7 @@
 (ns status-im.chat.styles.screen
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as component.styles]))
+  (:require [status-im.ui.components.styles :as component.styles]
+            [status-im.ui.components.colors :as colors]))
 
 (def chat-view
   {:flex             1
@@ -36,6 +37,10 @@
    :margin-left 23
    :width       8
    :height      14})
+
+(def chat-toolbar-contents
+  {:flex-direction :row
+   :flex           1})
 
 (defnstyle chat-name-view [show-actions]
   {:flex            1
@@ -200,3 +205,17 @@
 (defn message-view-animated [opacity]
   {:opacity opacity
    :flex    1})
+
+(def empty-chat-container
+  {:flex             1
+   :flex-direction   :row
+   :justify-content  :center
+   :align-items      :center
+   :padding-vertical 50
+   :margin-right     6})
+
+(def empty-chat-text
+  {:color          colors/gray
+   :font-size      14
+   :line-height    20
+   :letter-spacing -0.2})

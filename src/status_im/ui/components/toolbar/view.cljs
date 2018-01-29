@@ -123,6 +123,19 @@
     [react/view components.styles/flex]
     action-items]))
 
+(defn platform-agnostic-toolbar
+  ([props nav-item content-item] (platform-agnostic-toolbar props nav-item content-item [actions [{:image :blank}]]))
+  ([{:keys [background-color style flat?]}
+    nav-item
+    content-item
+    action-items]
+   [react/view {:style (merge (styles/toolbar background-color flat?) style)}
+    (when nav-item
+      [react/view {:style (styles/toolbar-nav-actions-container 0)}
+       nav-item])
+    content-item
+    action-items]))
+
 (defn simple-toolbar
   "A simple toolbar composed of a nav-back item and a single line title."
   ([] (simple-toolbar nil))

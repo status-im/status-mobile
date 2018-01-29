@@ -114,8 +114,12 @@
 
 (reg-sub :contact-name-by-identity
   :<- [:get-contacts]
-  (fn [contacts [_ identity]]
-    (:name (contacts identity))))
+  :<- [:get-current-account]
+ (fn [[contacts current-account] [_ identity]]
+   (let [me? (= (:public-key current-account) identity)]
+     (if me?
+       (:name current-account)
+       (:name (contacts identity))))))
 
 (defn chat-contacts [[chat contacts] [_ fn]]
   (when chat

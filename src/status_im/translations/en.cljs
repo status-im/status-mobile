@@ -191,6 +191,7 @@
    :topic-format                          "Wrong format [a-z0-9\\-]+"
    :public-group-topic                    "Topic"
    :set-a-topic                           "Set a topic"
+   :empty-chat-description                "There are no messages \nin this chat yet"
 
    ;;discover
    :discover                              "Discover"

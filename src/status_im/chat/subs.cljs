@@ -130,23 +130,25 @@
       (->> message-datemark-groups
            (mapcat (fn [[datemark messages]]
                      (let [prepared-messages (into []
-                                                   (map (fn [{:keys [message-id] :as message} previous-message]
+                                                   (map (fn [previous-message
+                                                             {:keys [message-id] :as message}
+                                                             next-message]
                                                           (assoc message
-                                                                 :same-author?    (= (:from message)
-                                                                                     (:from previous-message))
-                                                                 :same-direction? (= (:outgoing message)
-                                                                                     (:outgoing previous-message))
-                                                                 :last?           (= message-id
-                                                                                     last-message-id)
-                                                                 :last-outgoing?  (= message-id
-                                                                                     last-outgoing-message-id)))
+                                                                 :same-author?            (= (:from message)
+                                                                                             (:from previous-message))
+                                                                 :same-direction?         (= (:outgoing message)
+                                                                                             (:outgoing previous-message))
+                                                                 :last-by-same-author?    (not= (:from message)
+                                                                                                (:from next-message))
+                                                                 :last?                   (= message-id
+                                                                                             last-message-id)
+                                                                 :last-outgoing?          (= message-id
+                                                                                             last-outgoing-message-id)))
+                                                        (concat (rest messages) '(nil))
                                                         messages
-                                                        (concat (rest messages) '(nil))))]
+                                                        (concat '(nil) (butlast messages))))]
                        (conj prepared-messages {:type :datemark
-                                                :value datemark}))))))
-    ;; when no messages are in chat, we need to at least fake-out today's datemark
-    (list {:type  :datemark
-           :value (i18n/label :t/datetime-today)})))
+                                                :value datemark}))))))))
 
 (reg-sub
   :get-current-chat-messages
