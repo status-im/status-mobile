@@ -208,26 +208,6 @@ function chooseContact(titleText, botDbKey, argumentIndex) {
     }];
 }
 
-function droppedPin() {
-    return ['dropped-pin'];
-}
-
-function placesSearch() {
-    return ['places-search'];
-}
-
-function currentLocationMap() {
-    return ['current-location-map'];
-}
-
-function currentLocation() {
-    return ['current-location'];
-}
-
-function placesNearby() {
-    return ['places-nearby'];
-}
-
 function separator() {
     return ['separator'];
 }
@@ -293,11 +273,6 @@ var status = {
         chooseContact: chooseContact,
         subscribe: subscribe,
         dispatch: dispatch,
-        droppedPin: droppedPin,
-        placesSearch: placesSearch,
-        currentLocationMap: currentLocationMap,
-        currentLocation: currentLocation,
-        placesNearby: placesNearby,
         separator: separator
     },
     showSuggestions: function (view) {

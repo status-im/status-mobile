@@ -10,8 +10,7 @@
    :write-external-storage "android.permission.WRITE_EXTERNAL_STORAGE"
    :read-contacts          "android.permission.READ_CONTACTS"
    :camera                 "android.permission.CAMERA"
-   :receive-sms            "android.permission.RECEIVE_SMS"
-   :geolocation            "android.permission.ACCESS_FINE_LOCATION"})
+   :receive-sms            "android.permission.RECEIVE_SMS"})
 
 (defn all-granted? [permissions]
   (let [permission-vals (distinct (vals permissions))]

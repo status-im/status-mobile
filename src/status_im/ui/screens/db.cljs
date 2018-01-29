@@ -179,7 +179,6 @@
                   :chat/messages
                   :chat/loaded-chats
                   :chat/bot-db
-                  :chat/geolocation
                   :commands/access-scope->commands-responses
                   :discoveries/discoveries
                   :discoveries/discover-search-tags

@@ -7,7 +7,6 @@
             [status-im.chat.views.api.choose-contact :as choose-contact]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.chat-preview :as chat-preview]
-            [status-im.chat.views.api.geolocation.views :as geolocation]
             [status-im.utils.handlers :refer [register-handler]]
             [taoensso.timbre :as log]))
 
@@ -33,12 +32,7 @@
    :activity-indicator   components/activity-indicator
    :validation-message   chat-validation-messages/validation-message
    :choose-contact       choose-contact/choose-contact-view
-   :separator            parameter-box-separator
-   :current-location-map geolocation/current-location-map-view
-   :current-location     geolocation/current-location-view
-   :places-nearby        geolocation/places-nearby-view
-   :places-search        geolocation/places-search
-   :dropped-pin          geolocation/dropped-pin})
+   :separator            parameter-box-separator})
 
 (defn get-element [n]
   (elements (keyword (.toLowerCase n))))

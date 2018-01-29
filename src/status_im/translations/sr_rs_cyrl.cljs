@@ -192,16 +192,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "Ваша тренутна локација"
-   :places-nearby                         "Места у близини"
-   :search-results                        "Претражи резултате"
-   :dropped-pin                           "Баци иглу"
-   :location                              "Локација"
-   :open-map                              "Отвори мапу"
-   :sharing-copy-to-clipboard-address     "Копирај адресу"
-   :sharing-copy-to-clipboard-coordinates "Копирај координате"
-
    ;;new-group
    :new-group                             "Нова група"
    :reorder-groups                        "Промени распоред група"

@@ -187,7 +187,6 @@ android {
 
 dependencies {
     implementation project(':react-native-svg')
-    implementation project(':react-native-mapbox-gl')
     implementation 'com.android.support:multidex:1.0.2'
     implementation project(':react-native-http-bridge')
     implementation project(':nfc-react-native')

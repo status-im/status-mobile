@@ -192,16 +192,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "你的當前位置"
-   :places-nearby                         "附近的位置"
-   :search-results                        "查詢結果"
-   :dropped-pin                           "放置的標記"
-   :location                              "位置"
-   :open-map                              "開啟地圖"
-   :sharing-copy-to-clipboard-address     "複製地址"
-   :sharing-copy-to-clipboard-coordinates "複製座標"
-
    ;;new-group
    :new-group                             "新增群組"
    :reorder-groups                        "重新排序群組"

@@ -39,19 +39,3 @@
                                          1 (.openURL linking link)
                                          :default))
                         :cancel-text (label :t/browsing-cancel)})))
-
-(defn share-or-open-map [address lat lng]
-  (let [list-selection-fn (:list-selection-fn platform-specific)]
-    (list-selection-fn {:title       (label :t/location)
-                        :options     [{:text  (label :t/sharing-copy-to-clipboard-address)}
-                                      {:text  (label :t/sharing-copy-to-clipboard-coordinates)}
-                                      {:text  (label :t/open-map)}]
-                        :callback    (fn [index]
-                                       (case index
-                                         0 (copy-to-clipboard address)
-                                         1 (copy-to-clipboard (str lng "," lat))
-                                         2 (.openURL linking (if ios?
-                                                               (str "http://maps.apple.com/?ll=" lng "," lat)
-                                                               (str "geo:" lng "," lat)))
-                                         :default))
-                        :cancel-text (label :t/cancel)})))

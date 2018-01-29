@@ -48,7 +48,6 @@
     "nfc-react-native",
     "react-native-http-bridge",
     "emojilib",
-    "react-native-mapbox-gl",
     "react-native-config",
     "react-native-svg",
     "rn-snoopy",

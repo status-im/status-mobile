@@ -191,16 +191,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "あなたの現在の場所"
-   :places-nearby                         "近くの場所"
-   :search-results                        "検索結果"
-   :dropped-pin                           "ドロップされたピン"
-   :location                              "場所"
-   :open-map                              "地図を開く"
-   :sharing-copy-to-clipboard-address     "住所をコピーする"
-   :sharing-copy-to-clipboard-coordinates "座標をコピーする"
-
    ;;new-group
    :new-group                             "新しいグループ"
    :reorder-groups                        "グループを並び替え"

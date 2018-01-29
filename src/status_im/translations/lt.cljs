@@ -192,16 +192,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "Jūsų dabartinė vieta"
-   :places-nearby                         "Netolimos vietos"
-   :search-results                        "Paieškos rezultatai"
-   :dropped-pin                           "Lokacijos žymeklis"
-   :location                              "Lokacija"
-   :open-map                              "Atverti žemėlapį"
-   :sharing-copy-to-clipboard-address     "Kopijuoti adresą"
-   :sharing-copy-to-clipboard-coordinates "Kopijuoti koordinates"
-
    ;;new-group
    :new-group                             "Nauja grupė"
    :reorder-groups                        "Rūšiuoti grupes"

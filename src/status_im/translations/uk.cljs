@@ -192,16 +192,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "Ваше поточне місцезнаходження"
-   :places-nearby                         "Місця поблизу"
-   :search-results                        "Результати пошуку"
-   :dropped-pin                           "Вибране місцезнаходження"
-   :location                              "Місцезнаходження"
-   :open-map                              "Відкрити Карту"
-   :sharing-copy-to-clipboard-address     "Скопіювати адресу"
-   :sharing-copy-to-clipboard-coordinates "Скопіювати координати"
-
    ;;new-group
    :new-group                             "Нова група"
    :reorder-groups                        "Впорядкувати групи"

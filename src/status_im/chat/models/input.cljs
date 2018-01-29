@@ -1,6 +1,5 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as str]
-            [status-im.bots.constants :as bots-constants]
             [status-im.ui.components.react :as rc]
             [status-im.native-module.core :as status]
             [status-im.chat.constants :as const]
