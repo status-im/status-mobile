@@ -240,8 +240,7 @@
                          :network-status network-status
                          :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                          :status-node-started? status-node-started?
-                         :network network)}
-    (print ":initialize-db call")))
+                         :network network)}))
 
 (register-handler-db
   :initialize-account-db
@@ -252,7 +251,6 @@
         :or [network (get app-db :network)]
         :as db} [_ address]]
     (let [console-contact (get contacts console-chat-id)]
-      (print "call of :initialize-account-db address: "address)
       (cond-> (assoc app-db 
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address
@@ -300,7 +298,6 @@
     (let [view (if (empty? accounts)
                  :chat
                  :accounts)]
-      (print ":check-console-chat call")
       (merge
        {:db (assoc db
                    :view-id view

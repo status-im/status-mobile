@@ -196,5 +196,3 @@
 ;; Emoji
 
 ;;(def emojilib (js/require "emojilib"))
-
-(print "----react.cljs is loaded")

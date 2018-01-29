@@ -47,7 +47,8 @@
    :padding-left     10
    :padding-right    10
    :android          {:border-radius 4}
-   :ios              {:border-radius 8}})
+   :ios              {:border-radius 8}
+   :desktop          {:border-radius 8}})
 
 (defnstyle input-touch-handler-view [container-width]
   {:position :absolute
@@ -93,6 +94,8 @@
    :android             {:left (+ 15 left)
                          :top  -1}
    :ios                 {:line-height min-input-height
+                         :left        (+ 10 left)}
+   :desktop             {:line-height min-input-height
                          :left        (+ 10 left)}})
 
 (defnstyle seq-input-text [left container-width]
@@ -105,6 +108,8 @@
    :android             {:left (+ 10 left)
                          :top  0.5}
    :ios                 {:line-height min-input-height
+                         :left        (+ 9 left)}
+   :desktop             {:line-height min-input-height
                          :left        (+ 9 left)}})
 
 (def input-emoji-icon

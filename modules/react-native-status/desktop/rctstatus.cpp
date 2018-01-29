@@ -17,6 +17,8 @@
 #include <QByteArray>
 #include <QVariantMap>
 
+#include "libstatus.h"
+
 namespace {
 struct RegisterQMLMetaType {
     RegisterQMLMetaType() {
@@ -55,6 +57,8 @@ void RCTStatus::initJail(QString js, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::initJail with param js:" << " and callback id: " << callbackId;
 
+    InitJail(js.toUtf8().data());
+
     d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
 }
 
@@ -62,36 +66,61 @@ void RCTStatus::initJail(QString js, double callbackId) {
 void RCTStatus::parseJail(QString chatId, QString js, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::parseJail with param chatId: " << chatId << " js:" << " and callback id: " << callbackId;
-    if (chatId == "console") {
-        QString response = "{\"result\":\"{\\\"commands\\\":{\\\"phone,50\\\":{\\\"name\\\":\\\"phone\\\",\\\"title\\\":\\\"Send Phone Number\\\",\\\"description\\\":\\\"Find friends using your number\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#5bb2a2\\\",\\\"icon\\\":\\\"phone_white\\\",\\\"params\\\":[{\\\"name\\\":\\\"phone\\\",\\\"type\\\":\\\"phone\\\",\\\"placeholder\\\":\\\"Phone number\\\"}],\\\"sequential-params\\\":true,\\\"scope\\\":[\\\"personal-chats\\\",\\\"registered\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":50},\\\"faucet,50\\\":{\\\"name\\\":\\\"faucet\\\",\\\"title\\\":\\\"Faucet\\\",\\\"description\\\":\\\"Get some ETH\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#7099e6\\\",\\\"params\\\":[{\\\"name\\\":\\\"url\\\",\\\"type\\\":\\\"text\\\",\\\"placeholder\\\":\\\"Faucet URL\\\"}],\\\"scope\\\":[\\\"personal-chats\\\",\\\"registered\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":50},\\\"debug,50\\\":{\\\"name\\\":\\\"debug\\\",\\\"title\\\":\\\"Debug mode\\\",\\\"description\\\":\\\"Starts\\/stops a debug mode\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#7099e6\\\",\\\"params\\\":[{\\\"name\\\":\\\"mode\\\",\\\"type\\\":\\\"text\\\"}],\\\"scope\\\":[\\\"personal-chats\\\",\\\"registered\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":50}},\\\"responses\\\":{\\\"phone,50\\\":{\\\"name\\\":\\\"phone\\\",\\\"title\\\":\\\"Send Phone Number\\\",\\\"description\\\":\\\"Find friends using your number\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#5bb2a2\\\",\\\"icon\\\":\\\"phone_white\\\",\\\"params\\\":[{\\\"name\\\":\\\"phone\\\",\\\"type\\\":\\\"phone\\\",\\\"placeholder\\\":\\\"Phone number\\\"}],\\\"sequential-params\\\":true,\\\"scope\\\":[\\\"personal-chats\\\",\\\"registered\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":50},\\\"confirmation-code,50\\\":{\\\"name\\\":\\\"confirmation-code\\\",\\\"description\\\":\\\"Confirmation code\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#7099e6\\\",\\\"params\\\":[{\\\"name\\\":\\\"code\\\",\\\"type\\\":\\\"number\\\"}],\\\"sequential-params\\\":true,\\\"scope\\\":[\\\"personal-chats\\\",\\\"registered\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":50},\\\"password,42\\\":{\\\"name\\\":\\\"password\\\",\\\"description\\\":\\\"Password\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#7099e6\\\",\\\"icon\\\":\\\"lock_white\\\",\\\"params\\\":[{\\\"name\\\":\\\"password\\\",\\\"type\\\":\\\"password\\\",\\\"placeholder\\\":\\\"Type your password\\\",\\\"hidden\\\":true},{\\\"name\\\":\\\"password-confirmation\\\",\\\"type\\\":\\\"password\\\",\\\"placeholder\\\":\\\"Confirm\\\",\\\"hidden\\\":true}],\\\"sequential-params\\\":true,\\\"scope\\\":[\\\"personal-chats\\\",\\\"anonymous\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":42},\\\"grant-permissions,58\\\":{\\\"name\\\":\\\"grant-permissions\\\",\\\"description\\\":\\\"Grant permissions\\\",\\\"has-handler\\\":true,\\\"async-handler\\\":false,\\\"color\\\":\\\"#7099e6\\\",\\\"icon\\\":\\\"lock_white\\\",\\\"params\\\":[],\\\"execute-immediately?\\\":true,\\\"scope\\\":[\\\"personal-chats\\\",\\\"anonymous\\\",\\\"registered\\\",\\\"dapps\\\"],\\\"scope-bitmask\\\":58}},\\\"functions\\\":{},\\\"subscriptions\\\":{}}\"}";
-        d->bridge->invokePromiseCallback(callbackId, QVariantList{response});
-    } else {
-        d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
-    }
+
+    const char* result = Parse(chatId.toUtf8().data(), js.toUtf8().data());
+    qDebug() << "RCTStatus::parseJail parseJail result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::callJail(QString chatId, QString path, QString params, double callbackId) {
     Q_D(RCTStatus);
-    
     qDebug() << "call of RCTStatus::callJail with param chatId: " << chatId << " path: " << path << " params: " << params <<  " and callback id: " << callbackId;
-    if (path == "[\"commands\",[\"password\",null],\"preview\"]") {
-        qDebug() << "Password preview";
 
-        QString response = "{ \"result\":\
-                              { \"context\":{},\"messages\":[], \"returned\":\
-                                                                  {\"markup\":[\"text\", {\"style\":{\"color\":\"black\", \"fontSize\":8, \"letterSpacing\":1, \"marginTop\":10}}, \"aaaa\"]}\
-                               }}";
-         d->bridge->invokePromiseCallback(callbackId, QVariantList{response});
-    } else {
-        d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
-    }
+    const char* result = Call(chatId.toUtf8().data(), path.toUtf8().data(), params.toUtf8().data());
+    qDebug() << "RCTStatus::callJail callJail result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::startNode(QString configString) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::startNode with param configString:" << configString;
+
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(configString.toUtf8(), &jsonError);
+    if (jsonError.error != QJsonParseError::NoError){
+        qDebug() << jsonError.errorString();
+    }
+
+    qDebug() << " RCTStatus::startNode configString: " << jsonDoc.toVariant().toMap();
+    QVariantMap configJSON = jsonDoc.toVariant().toMap();
+
+    QString newKeystoreUrl = "keystore";
+
+    int networkId = configJSON["NetworkId"].toInt();
+    QString dataDir = configJSON["DataDir"].toString();
+
+    QString networkDir = "./" + dataDir;
+    int dev = 0;
+
+    char *configChars = GenerateConfig(networkDir.toUtf8().data(), networkId, dev);
+    qDebug() << "RCTStatus::startNode GenerateConfig result: " << configChars;
+
+    jsonDoc = QJsonDocument::fromJson(QString(configChars).toUtf8(), &jsonError);
+    if (jsonError.error != QJsonParseError::NoError){
+        qDebug() << jsonError.errorString();
+    }
+
+    qDebug() << " RCTStatus::startNode GenerateConfig configString: " << jsonDoc.toVariant().toMap();
+    QVariantMap generatedConfig = jsonDoc.toVariant().toMap();
+    generatedConfig["KeyStoreDir"] = newKeystoreUrl;
+    generatedConfig["LogEnabled"] = "1";
+    generatedConfig["LogFile"] = networkDir + "/geth.log";
+    //generatedConfig["LogLevel"] = "DEBUG";
+
+    const char* result = StartNode(QString(QJsonDocument::fromVariant(generatedConfig).toJson(QJsonDocument::Compact)).toUtf8().data());
+    qDebug() << "RCTStatus::startNode StartNode result: " << result;
 
     d->bridge->eventDispatcher()->sendDeviceEvent("gethEvent", QVariantMap{{"jsonEvent", "{\"type\":\"node.started\"}"}});
     d->bridge->eventDispatcher()->sendDeviceEvent("gethEvent", QVariantMap{{"jsonEvent", "{\"type\":\"node.ready\"}"}});
@@ -113,55 +142,69 @@ void RCTStatus::moveToInternalStorage(double callbackId) {
 
 
 void RCTStatus::stopNode() {
+    qDebug() << "call of RCTStatus::stopNode";
+    const char* result = StopNode();
+    qDebug() << "RCTStatus::stopNode StopNode result: " << result;
 }
 
 
 void RCTStatus::createAccount(QString password, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::createAccount with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = CreateAccount(password.toUtf8().data());
+    qDebug() << "RCTStatus::createAccount CreateAccount result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::notify(QString token, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::notify with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = Notify(token.toUtf8().data());
+    qDebug() << "RCTStatus::notify Notify result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::addPeer(QString enode, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::addPeer with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = AddPeer(enode.toUtf8().data());
+    qDebug() << "RCTStatus::addPeer AddPeer result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::recoverAccount(QString passphrase, QString password, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::recoverAccount with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = RecoverAccount(password.toUtf8().data(), passphrase.toUtf8().data());
+    qDebug() << "RCTStatus::recoverAccount RecoverAccount result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::login(QString address, QString password, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::login with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = Login(address.toUtf8().data(), password.toUtf8().data());
+    qDebug() << "RCTStatus::login Login result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
 void RCTStatus::completeTransactions(QString hashes, QString password, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::completeTransactions with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = CompleteTransactions(hashes.toUtf8().data(), password.toUtf8().data());
+    qDebug() << "RCTStatus::completeTransactions CompleteTransactions result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
-
 
 void RCTStatus::discardTransaction(QString id) {
+    qDebug() << "call of RCTStatus::discardTransaction with id: " << id;
+    DiscardTransaction(id.toUtf8().data());
 }
-
-
 
 void RCTStatus::setAdjustResize() {
 }
@@ -192,6 +235,23 @@ void RCTStatus::sendWeb3Request(QString payload, double callbackId) {
 
 
 void RCTStatus::closeApplication() {
+}
+
+bool RCTStatus::JSCEnabled()
+{
+    qDebug() << "call of RCTStatus::JSCEnabled";
+    return false;
+}
+
+void RCTStatus::signalEvent(const char* signal)
+{
+    qDebug() << "call of RCTStatus::signalEvent ... signal: " << signal;
+
+}
+
+void RCTStatus::jailEvent(QString chatId, QString data)
+{
+    qDebug() << "call of RCTStatus::jailEvent ... chatId: " << chatId << " data: " << data;
 }
 
 

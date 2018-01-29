@@ -56,6 +56,10 @@ public:
     Q_INVOKABLE void sendWeb3Request(QString payload, double callbackId);
     Q_INVOKABLE void closeApplication();
 
+    Q_INVOKABLE static bool JSCEnabled();
+    Q_INVOKABLE static void signalEvent(const char* signal);
+    Q_INVOKABLE static void jailEvent(QString chatId, QString data);
+
 private:
     QScopedPointer<RCTStatusPrivate> d_ptr;
 };

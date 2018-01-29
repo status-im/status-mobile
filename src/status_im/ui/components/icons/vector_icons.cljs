@@ -64,7 +64,6 @@
   ([name] (icon name nil))
   ([name {:keys [color container-style style accessibility-label]
           :or {accessibility-label :icon}}]
-   (print "Icon")
    [react/view {:style               container-style
                 :accessibility-label accessibility-label}
     [react/image {:source (get icons (normalize-property-name name))

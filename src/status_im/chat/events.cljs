@@ -155,7 +155,6 @@
 
 (defn init-console-chat
   [{:keys [chats] :accounts/keys [current-account-id] :as db}]
-  (print "init-console-chat call. chats:"chats" db:"db)
   (if (and chats (chats const/console-chat-id))
     {:db db}
     (cond-> {:db (-> db
@@ -174,7 +173,6 @@
 (handlers/register-handler-fx
   :init-console-chat
   (fn [{:keys [db]} _]
-    (print "register-handler-fx before call of init-console-chat")
     (init-console-chat db)))
 
 (handlers/register-handler-fx
@@ -190,7 +188,6 @@
                stored-unviewed-messages
                get-last-stored-message
                message-previews]} _]
-    (print "call :initialize-chats db:"db)
     (let [{:accounts/keys [account-creation?] :contacts/keys [contacts]} db
           new-db (unviewed-messages-model/load-unviewed-messages db stored-unviewed-messages)
           event  [:load-default-contacts!]]
@@ -210,7 +207,6 @@
           (-> new-db
               (assoc-in [:message-data :preview] message-previews) 
               (assoc :chats chats)
-              (print "before call of init-console-chat from :initialize-chats")
               init-console-chat
               (update :dispatch-n conj event)))))))
 

@@ -1,6 +1,6 @@
 (ns status-im.react-native.js-dependencies)
 
-(def action-button          "");;(js/require "react-native-action-button"))
+(def action-button          (js/require "react-native-action-button"))
 (def android-sms-listener   "");;(js/require "react-native-android-sms-listener"))
 (def autolink               (js/require "react-native-autolink"))
 (def camera                 "");;(js/require "react-native-camera"))

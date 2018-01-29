@@ -19,7 +19,8 @@
     "react-native-status",
     "react-native-autolink",
     "react-native-invertible-scroll-view",
-    "react-native-drawer-layout"
+    "react-native-drawer-layout",
+    "react-native-action-button"
   ],
   "imageDirs": [
     "resources/images",

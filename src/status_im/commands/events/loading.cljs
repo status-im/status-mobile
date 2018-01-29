@@ -27,10 +27,9 @@
        jail-id jail-resource
        (fn [jail-response]
          (let [converted (types/json->clj jail-response)]
-           (re-frame/dispatch [::proceed-loading jail-id (update converted :result types/json->clj)])))))))
-           ;(re-frame/dispatch [::proceed-loading jail-id (if config/jsc-enabled?
-           ;                                                (update converted :result types/json->clj)
-           ;                                                converted)])))))))
+           (re-frame/dispatch [::proceed-loading jail-id (if config/jsc-enabled?
+                                                           (update converted :result types/json->clj)
+                                                           converted)])))))))
 
 (re-frame/reg-fx
   ::show-popup
