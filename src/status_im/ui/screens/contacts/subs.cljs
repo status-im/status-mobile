@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.contacts.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.identicon :refer [identicon]]
-            [clojure.string :as str]
-            [status-im.bots.constants :as bots-constants]))
+            [clojure.string :as str]))
 
 (reg-sub :current-contact
   (fn [db [_ k]]

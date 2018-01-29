@@ -172,16 +172,6 @@
    ;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;location command
-   :your-current-location                 "Lokasi terkini anda"
-   :places-nearby                         "Tempat berhampiran"
-   :search-results                        "Hasil carian"
-   :dropped-pin                           "Pin dilepaskan"
-   :location                              "Lokasi"
-   :open-map                              "Buka peta"
-   :sharing-copy-to-clipboard-address     "Salin alamat"
-   :sharing-copy-to-clipboard-coordinates "Salin koordinat"
-
    ;new-group
    :new-group                             "Kumpulan baru"
    :reorder-groups                        "Susun kumpulan"

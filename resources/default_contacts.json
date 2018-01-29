@@ -1,16 +1,4 @@
 {
-    "mailman":
-    {
-        "name":
-        {
-            "en": "Mailman",
-            "ru": "Печкин"
-        },
-        "dapp?": true,
-        "hide-contact?": true,
-        "bot-url": "local://mailman-bot"
-    },
-
     "transactor":
     {
         "name":
@@ -21,7 +9,6 @@
         "hide-contact?": true,
         "bot-url": "local://transactor-bot"
     },
-
     "demo-bot":
     {
         "name":

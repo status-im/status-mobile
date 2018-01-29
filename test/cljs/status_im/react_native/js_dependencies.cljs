@@ -16,7 +16,6 @@
 (def image-resizer          #js {})
 (def instabug               #js {})
 (def linear-gradient        #js {})
-(def mapbox-gl              #js {:setAccessToken (fn [])})
 (def nfc                    #js {})
 (def orientation            #js {})
 (def popup-menu             #js {})

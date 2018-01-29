@@ -17,4 +17,3 @@
 (s/def :chat/messages (s/nilable map?))                           ; messages indexed by message-id
 (s/def :chat/loaded-chats (s/nilable seq?))
 (s/def :chat/bot-db (s/nilable map?))
-(s/def :chat/geolocation (s/nilable map?))

@@ -191,16 +191,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "현재 위치"
-   :places-nearby                         "주변 장소"
-   :search-results                        "검색 결과"
-   :dropped-pin                           "핀한 곳"
-   :location                              "위치"
-   :open-map                              "지도 열기"
-   :sharing-copy-to-clipboard-address     "주소 복사"
-   :sharing-copy-to-clipboard-coordinates "좌표 복사"
-
    ;;new-group
    :new-group                             "새 그룹"
    :reorder-groups                        "그룹 재정렬"

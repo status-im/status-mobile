@@ -66,7 +66,6 @@
     "react-native-invertible-scroll-view": "1.1.0",
     "react-native-level-fs": "3.0.0",
     "react-native-linear-gradient": "2.4.0",
-    "react-native-mapbox-gl": "github:status-im/react-native-mapbox-gl",
     "react-native-orientation": "3.1.0",
     "react-native-os": "1.1.0",
     "react-native-popup-menu": "0.8.3",

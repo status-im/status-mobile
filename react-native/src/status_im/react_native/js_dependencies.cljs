@@ -19,7 +19,6 @@
 (def image-resizer          (js/require "react-native-image-resizer"))
 (def instabug               (js/require "instabug-reactnative"))
 (def linear-gradient        (js/require "react-native-linear-gradient"))
-(def mapbox-gl              (js/require "react-native-mapbox-gl"))
 (def nfc                    (js/require "nfc-react-native"))
 (def orientation            (js/require "react-native-orientation"))
 (def popup-menu             (js/require "react-native-popup-menu"))

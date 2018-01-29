@@ -277,7 +277,8 @@
       (reagent/create-class
         {:component-did-update
          on-update
-         :display-name "message-container"
+         :display-name
+         "message-container"
          :reagent-render
          (fn [_ & children]
            @layout-height
@@ -309,13 +310,8 @@
                                                       (re-frame/dispatch [:set-chat-ui-props
                                                                           {:show-emoji? false}])
                                                       (react/dismiss-keyboard!))
-                                    :on-long-press #(cond (= content-type constants/text-content-type)
-                                                          (list-selection/share content (i18n/label :t/message))
-                                                          (and (= content-type constants/content-type-command)
-                                                               (= "location" (:content-command content)))
-                                                          (let [address (get-in content [:params :address])
-                                                                [location lat long] (string/split address #"&amp;")]
-                                                            (list-selection/share-or-open-map location lat long)))}
+                                    :on-long-press #(when (= content-type constants/text-content-type)
+                                                      (list-selection/share content (i18n/label :t/message)))}
          [react/view
           (let [incoming-group (and group-chat (not outgoing))]
             [message-content message-body (merge message

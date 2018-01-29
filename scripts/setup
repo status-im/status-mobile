@@ -39,9 +39,6 @@ echo && setup_header "Installing dependencies..."
 dependency_setup lein deps
 dependency_setup npm install
 
-mapbox_path="$(repo_path)/node_modules/react-native-mapbox-gl/ios/Mapbox.framework"
-dependency_setup "ln -sf '$mapbox_path' '$(repo_path)/ios'"
-
 dependency_setup \
   "ln -sf '$(repo_path)/node_modules/re-natal/index.js' '$(repo_path)/re-natal'"
 

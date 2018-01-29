@@ -163,7 +163,7 @@
     :phone-national :amount :open :close-app-title :members-active :chat-name
     :phew-here-is-your-passphrase :public-group-topic :debug-enabled
     :chat-settings :offline :update-status :invited :chat-send-eth :address
-    :new-public-group-chat :datetime-hour :dropped-pin :wallet-settings
+    :new-public-group-chat :datetime-hour :wallet-settings
     :datetime-ago-format :close-app-button :block :camera-access-error
     :wallet-invalid-address :address-explication :remove
     :transactions-delete-content :transactions-unsigned-empty
@@ -178,10 +178,9 @@
     :not-applicable :move-to-internal-failure-message :active-online
     :password :status-seen-by-everyone :edit-group :not-specified
     :delete-group :send-request :paste-json :browsing-title
-    :wallet-add-asset :reorder-groups :transactions-history-empty
-    :sharing-copy-to-clipboard-coordinates :discover :wallet-error
+    :wallet-add-asset :reorder-groups :transactions-history-empty :discover
     :browsing-cancel :faucet-success :intro-status :name :gas-price
-    :phone-number-required :view-transaction-details
+    :phone-number-required :view-transaction-details :wallet-error
     :validation-amount-is-too-precise :copy-transaction-hash :unknown-address
     :received-invitation :show-qr :edit-network-config :connect
     :choose-from-contacts :edit :wallet-address-from-clipboard
@@ -203,7 +202,7 @@
     :wallet-send :mute-notifications :invalid-phone :scan-qr :contact-s
     :unsigned-transaction-expired :status-sending :gas-used
     :transactions-filter-type :next :recent :confirmation-code
-    :open-on-etherscan :share :status :from :your-current-location
+    :open-on-etherscan :share :status :from
     :wrong-password :search-chats :transactions-sign-later :in-contacts
     :transactions-sign :sharing-share :type-a-message :type-a-command
     :usd-currency :existing-networks :node-unavailable :url :shake-your-phone
@@ -214,15 +213,13 @@
     :delete-contact-confirmation :datetime-today :add-a-status
     :web-view-error :notifications-title :error :transactions-sign-transaction
     :edit-contacts :more :cancel :no-statuses-found :can-not-add-yourself
-    :transaction-description :add-to-contacts :available :open-map
+    :transaction-description :add-to-contacts :available
     :paste-json-as-text :You :main-wallet :process-json :testnet-text
     :transactions :transactions-unsigned :members :intro-message1
     :public-chat-user-count :eth :transactions-history :not-implemented
-    :new-contact :datetime-second :search-results :status-failed :is-typing
-    :sharing-copy-to-clipboard-address :recover :wallet-total-value
-    :places-nearby :suggestions-commands :nonce :new-network
-    :contact-already-added :datetime-minute :location
-    :browsing-open-in-web-browser :delete-group-prompt
+    :new-contact :datetime-second :status-failed :is-typing :recover
+    :suggestions-commands :nonce :new-network :contact-already-added :datetime-minute
+    :browsing-open-in-web-browser :delete-group-prompt :wallet-total-value
     :wallet-insufficient-funds :edit-profile :active-unknown :testfairy-message
     :search-tags :transaction-failed :public-key :error-processing-json
     :status-seen :transactions-filter-tokens :status-delivered :profile

@@ -1,6 +1,5 @@
 (ns status-im.chat.models.commands
   (:require [status-im.chat.constants :as chat-consts]
-            [status-im.bots.constants :as bots-constants]
             [clojure.string :as str]
             [taoensso.timbre :as log]))
 

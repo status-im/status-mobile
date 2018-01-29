@@ -8,7 +8,6 @@ import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.facebook.react.ReactApplication;
 import com.horcrux.svg.SvgPackage;
-import com.mapbox.reactnativemapboxgl.ReactNativeMapboxGLPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
@@ -60,7 +59,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
                     new SvgPackage(),
-                    new ReactNativeMapboxGLPackage(),
                     new FIRMessagingPackage(),
                     new HttpServerReactPackage(),
                     new NfcReactNativePackage(),

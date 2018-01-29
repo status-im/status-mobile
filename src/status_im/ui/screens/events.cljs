@@ -371,8 +371,6 @@
         "node.started"            (re-frame/dispatch [:status-node-started])
         "node.stopped"            (re-frame/dispatch [:status-node-stopped])
         "module.initialized"      (re-frame/dispatch [:status-module-initialized])
-        "request_geo_permissions" (re-frame/dispatch [:request-permissions [:geolocation]
-                                                      #(re-frame/dispatch [:webview-geo-permissions-granted])])
         "jail.signal"             (handle-jail-signal event)
         (log/debug "Event " type " not handled")))))
 
@@ -399,34 +397,7 @@
 ;; TODO(rasom): let's not remove this handler, it will be used for
 ;; pausing node on entering background on android
 
-
 (handlers/register-handler-fx
   :request-permissions
   (fn [_ [_ permissions then else]]
     {::request-permissions-fx [permissions then else]}))
-
-(handlers/register-handler-fx
-  :request-geolocation-update
-  (fn [_ _]
-    {:dispatch [:request-permissions [:geolocation]
-                (fn []
-                  (let [watch-id (atom nil)]
-                    (.getCurrentPosition
-                      react/geolocation
-                      #(re-frame/dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                      #(re-frame/dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                      (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
-                    (when platform/android?
-                      (reset! watch-id
-                              (.watchPosition
-                                react/geolocation
-                                #(do
-                                   (.clearWatch
-                                     react/geolocation
-                                     @watch-id)
-                                   (re-frame/dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
-
-(handlers/register-handler-db
-  :update-geolocation
-  (fn [db [_ geolocation]]
-    (assoc db :geolocation geolocation)))

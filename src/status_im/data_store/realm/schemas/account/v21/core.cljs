@@ -13,7 +13,8 @@
             [status-im.data-store.realm.schemas.account.v8.local-storage :as local-storage]
             [status-im.data-store.realm.schemas.account.v21.browser :as browser]
             [taoensso.timbre :as log]
-            [cljs.reader :as reader]))
+            [cljs.reader :as reader]
+            [clojure.string :as str]))
 
 (def schema [chat/schema
              chat-contact/schema
@@ -37,6 +38,17 @@
     (log/debug "v21 Removing contact " (pr-str contact))
     (.delete new-realm contact)))
 
+(defn remove-location-messages! [old-realm new-realm]
+  (let [messages (.objects new-realm "message")]
+    (dotimes [i (.-length messages)]
+      (let [message (aget messages i)
+            content (aget message "content")
+            type    (aget message "content-type")]
+        (when (and (= type "command")
+                   (> (str/index-of content "command=location") -1))
+          (aset message "show?" false))))))
+
 (defn migration [old-realm new-realm]
   (log/debug "migrating v21 account database: " old-realm new-realm)
-  (remove-contact! new-realm "browse"))
+  (remove-contact! new-realm "browse")
+  (remove-location-messages! old-realm new-realm))

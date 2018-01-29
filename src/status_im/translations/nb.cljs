@@ -178,16 +178,6 @@
    ;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;location command
-   :your-current-location                 "Din nåværende posisjon"
-   :places-nearby                         "Steder i nærheten"
-   :search-results                        "Søkeresultat"
-   :dropped-pin                           "Slipp nål"
-   :location                              "Posisjon"
-   :open-map                              "Åpne kart"
-   :sharing-copy-to-clipboard-address     "Kopier adressen"
-   :sharing-copy-to-clipboard-coordinates "Kopier koordinater"
-
    ;new-group
    :new-group                             "Ny gruppe"
    :reorder-groups                        "Organiser grupper"
