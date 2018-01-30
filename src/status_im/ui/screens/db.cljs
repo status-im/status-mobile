@@ -180,7 +180,6 @@
                   :chat/selected-participants
                   :chat/chat-loaded-callbacks
                   :chat/public-group-topic
-                  :chat/confirmation-code-sms-listener
                   :chat/messages
                   :chat/not-loaded-message-ids
                   :chat/last-clock-value

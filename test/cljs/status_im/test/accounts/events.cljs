@@ -16,7 +16,6 @@
    :address             "c348abf29215d3817bec65007be83a0f11d13ad6"
    :email               nil
    :signed-up?          true
-   :phone               nil
    :name                "Sleepy Serene Leopardseal"
    :updates-private-key "3849320857de8efe1e1ec57e08e92ed2bce196cb8763756ae4e6e7e011c1d857de0a115b3dc7eff066afe75a8794ea9905b"
    :updates-public-key  "384975d68aec6426faacf8b4ba2c55d5a84b70a8a26eb616e06e9c9e63f95dfdf1c1c165773e1cdca2d198a0bc5386d8a6f2079414e073b4730c8f4745292a6cdfb3fa28143ad5937128643c6addf356b66962376dc8b12274d9abfb2e1c6447ac3"

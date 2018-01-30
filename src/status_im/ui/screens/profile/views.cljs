@@ -198,17 +198,6 @@
       ^{:key (str "item-" i)}
       (str status " "))))
 
-(defn profile-info-phone-item [phone & [options]]
-  (let [phone-empty? (or (nil? phone) (string/blank? phone))
-        phone-text   (if phone-empty?
-                       (i18n/label :t/not-specified)
-                       phone)]
-    [profile-info-item {:label               (i18n/label :t/phone-number)
-                        :action              phone-text
-                        :options             options
-                        :empty-value?        phone-empty?
-                        :accessibility-label :profile-phone-number}]))
-
 (defn settings-title [title]
   [react/text {:style styles/profile-settings-title}
    title])
@@ -225,13 +214,11 @@
     (when active?
       [vector-icons/icon :icons/forward {:color colors/gray}])]])
 
-(defn profile-info [{:keys [whisper-identity phone] :as contact}]
+(defn profile-info [{:keys [whisper-identity] :as contact}]
   [react/view
    [profile-info-address-item contact]
    [settings-item-separator]
-   [profile-info-public-key-item whisper-identity contact]
-   [settings-item-separator]
-   [profile-info-phone-item phone]])
+   [profile-info-public-key-item whisper-identity contact]])
 
 (defn navigate-to-accounts []
   ;; TODO(rasom): probably not the best place for this call

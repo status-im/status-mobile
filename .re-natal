@@ -12,8 +12,6 @@
     }
   },
   "modules": [
-    "react-native-contacts",
-    "awesome-phonenumber",
     "realm",
     "react-native-i18n",
     "realm/react-native",
@@ -24,7 +22,6 @@
     "dismissKeyboard",
     "react-native-linear-gradient",
     "react-native-splash-screen",
-    "react-native-android-sms-listener",
     "react-native-status",
     "react-native-camera",
     "react-native-qrcode",

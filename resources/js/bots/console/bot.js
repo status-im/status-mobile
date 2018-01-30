@@ -413,87 +413,6 @@ function startsWith(str1, str2) {
     return str1.lastIndexOf(str2, 0) == 0 && str1 != str2;
 }
 
-function phoneSuggestions(params, context) {
-    var ph, suggestions;
-    if (!params.phone || params.phone == "") {
-        ph = context.suggestions;
-    } else {
-        ph = context.suggestions.filter(function (phone) {
-            return startsWith(phone.number, params.phone);
-        });
-    }
-
-    if (ph.length == 0) {
-        return;
-    }
-
-    suggestions = ph.map(function (phone) {
-        return status.components.view(suggestionContainerStyle,
-                [status.components.view(suggestionSubContainerStyle,
-                    [
-                        status.components.text(
-                            {style: valueStyle},
-                            phone.number
-                        ),
-                        status.components.text(
-                            {style: descriptionStyle},
-                            phone.description
-                        )
-                    ])]);
-    });
-
-    var view = status.components.scrollView(
-        suggestionsContainerStyle(ph.length),
-        suggestions
-    );
-
-    return {markup: view};
-}
-
-var phoneConfig = {
-    name: "phone",
-    icon: "phone_white",
-    color: "#5bb2a2",
-    title: I18n.t('phone_title'),
-    scope: ["personal-chats", "registered", "dapps"],
-    description: I18n.t('phone_description'),
-    sequentialParams: true,
-    validator: function (params) {
-        return {
-            validationHandler: "phone",
-            parameters: [params.phone]
-        };
-    },
-    params: [{
-        name: "phone",
-        type: status.types.PHONE,
-        suggestions: phoneSuggestions,
-        placeholder: I18n.t('phone_placeholder')
-    }],
-    preview: function (params) {
-        if (params) {
-            return {
-                markup: status.components.text(
-                    {},
-                    params.phone
-                )
-            };
-        }
-    },
-    shortPreview: function (params) {
-        if (params) {
-            return {
-                markup: status.components.chatPreviewText(
-                    {},
-                    params.phone
-                )
-            };
-        }
-    }
-};
-status.command(phoneConfig);
-status.response(phoneConfig);
-
 var ropstenNetworkId = 3;
 var rinkebyNetworkId = 4;
 
@@ -654,44 +573,6 @@ status.command({
             markup: status.components.chatPreviewText(
                 {},
                 I18n.t('debug_mode_title') + ": " + params.mode
-            )
-        };
-    }
-});
-
-status.response({
-    name: "confirmation-code",
-    color: "#7099e6",
-    scope: ["personal-chats", "registered", "dapps"],
-    description: I18n.t('confirm_description'),
-    sequentialParams: true,
-    params: [{
-        name: "code",
-        type: status.types.NUMBER
-    }],
-    validator: function (params) {
-        if (!/^[\d]{4}$/.test(params.code)) {
-            var error = status.components.validationMessage(
-                I18n.t('confirm_validation_title'),
-                I18n.t('confirm_validation_description')
-            );
-
-            return {markup: error};
-        }
-    },
-    preview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                params.code
-            )
-        };
-    },
-    shortPreview: function (params) {
-        return {
-            markup: status.components.chatPreviewText(
-                {},
-                params.code
             )
         };
     }

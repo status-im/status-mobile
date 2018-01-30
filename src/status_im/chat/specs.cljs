@@ -10,11 +10,10 @@
 (s/def :chat/chat-ui-props (s/nilable map?))                      ; {id (string) props (map)}
 (s/def :chat/chat-list-ui-props (s/nilable map?))
 (s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout
-(s/def :chat/expandable-view-height-to-value (s/nilable number?)) 
+(s/def :chat/expandable-view-height-to-value (s/nilable number?))
 (s/def :chat/selected-participants (s/nilable set?))
-(s/def :chat/chat-loaded-callbacks (s/nilable map?)) 
+(s/def :chat/chat-loaded-callbacks (s/nilable map?))
 (s/def :chat/public-group-topic (s/nilable string?))
-(s/def :chat/confirmation-code-sms-listener (s/nilable any?))     ; .addListener result object
 (s/def :chat/messages (s/nilable map?))                           ; messages indexed by message-id
 (s/def :chat/not-loaded-message-ids (s/nilable set?))             ; set of message-ids not yet fully loaded from persisted state
 (s/def :chat/last-clock-value (s/nilable number?))                ; last logical clock value of messages in chat
