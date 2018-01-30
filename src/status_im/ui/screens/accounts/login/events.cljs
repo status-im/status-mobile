@@ -31,7 +31,7 @@
     ;; if we don't add delay when running app without status-go
     ;; "null is not an object (evaluating 'realm.schema')" error appears
     (if config/stub-status-go?
-      (js/setTimeout 
+      (js/setTimeout
         (fn []
           (data-store/change-account address new-account?
                                      #(dispatch [:change-account-handler % address new-account?])))
@@ -129,8 +129,7 @@
                       [:initialize-account
                        address
                        (when (or new-account? recover-in-progress?)
-                         [[:chat-received-message/add console-chat/phone-number-request-message]
-                          [:chat-received-message/add console-chat/shake-your-phone-message]])]
+                         [[:chat-received-message/add console-chat/shake-your-phone-message]])]
                       [:navigate-to-clean :home]
                       (if new-account?
                         [:navigate-to-chat console-chat-id]

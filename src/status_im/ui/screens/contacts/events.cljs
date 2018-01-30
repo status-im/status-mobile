@@ -2,11 +2,9 @@
   (:require [re-frame.core :refer [dispatch trim-v reg-fx reg-cofx inject-cofx]]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [status-im.data-store.contacts :as contacts]
-            [status-im.utils.crypt :refer [encrypt]]
             [clojure.string :as s]
             [status-im.protocol.core :as protocol]
             [status-im.utils.utils :refer [http-post]]
-            [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.random :as random]
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]
@@ -27,16 +25,16 @@
 ;;;; COFX
 
 (reg-cofx
-  ::get-all-contacts
-  (fn [coeffects _]
-    (assoc coeffects :all-contacts (contacts/get-all))))
+ ::get-all-contacts
+ (fn [coeffects _]
+   (assoc coeffects :all-contacts (contacts/get-all))))
 
 (reg-cofx
-  ::get-default-contacts-and-groups
-  (fn [coeffects _]
-    (assoc coeffects
-           :default-contacts js-res/default-contacts
-           :default-groups js-res/default-contact-groups)))
+ ::get-default-contacts-and-groups
+ (fn [coeffects _]
+   (assoc coeffects
+          :default-contacts js-res/default-contacts
+          :default-groups js-res/default-contact-groups)))
 
 ;;;; FX
 
@@ -61,18 +59,18 @@
                photo-path current-account-id status fcm-token
                updates-public-key updates-private-key] :as params}]
     (protocol/contact-request!
-      {:web3    web3
-       :message {:from       current-public-key
-                 :to         whisper-identity
-                 :message-id (random/id)
-                 :payload    {:contact {:name          name
-                                        :profile-image photo-path
-                                        :address       current-account-id
-                                        :status        status
-                                        :fcm-token     fcm-token}
-                              :keypair {:public  updates-public-key
-                                        :private updates-private-key}
-                              :timestamp (web3.utils/timestamp)}}})))
+     {:web3    web3
+      :message {:from       current-public-key
+                :to         whisper-identity
+                :message-id (random/id)
+                :payload    {:contact {:name          name
+                                       :profile-image photo-path
+                                       :address       current-account-id
+                                       :status        status
+                                       :fcm-token     fcm-token}
+                             :keypair {:public  updates-public-key
+                                       :private updates-private-key}
+                             :timestamp (web3.utils/timestamp)}}})))
 
 (reg-fx
   ::reset-pending-messages
@@ -100,52 +98,6 @@
        (remove s/blank?)
        (s/join " ")))
 
-(defn- normalize-phone-contacts [contacts]
-  (let [contacts' (js->clj contacts :keywordize-keys true)]
-    (map (fn [{:keys [thumbnailPath phoneNumbers] :as contact}]
-           {:name          (contact-name contact)
-            :photo-path    thumbnailPath
-            :phone-numbers phoneNumbers}) contacts')))
-
-(reg-fx
-  ::fetch-contacts-from-phone!
-  (fn [on-contacts-event-creator]
-    (.getAll rn-dependencies/contacts
-             (fn [error contacts]
-               (if error
-                 (log/debug :error-on-fetching-loading error)
-                 (let [contacts' (normalize-phone-contacts contacts)]
-                   (dispatch [::get-contacts-identities contacts' on-contacts-event-creator])))))))
-
-(defn- get-contacts-by-hash [contacts]
-  (->> contacts
-       (mapcat (fn [{:keys [phone-numbers] :as contact}]
-                 (map (fn [{:keys [number]}]
-                        (let [number' (format-phone-number number)]
-                          [(encrypt number')
-                           (-> contact
-                               (assoc :phone-number number')
-                               (dissoc :phone-numbers))]))
-                      phone-numbers)))
-       (into {})))
-
-(defn- add-identity [contacts-by-hash contacts]
-  (map (fn [{:keys [phone-number-hash whisper-identity address]}]
-         (let [contact (contacts-by-hash phone-number-hash)]
-           (assoc contact
-                  :whisper-identity whisper-identity
-                  :address address)))
-       (js->clj contacts)))
-
-(reg-fx
-  ::request-stored-contacts
-  (fn [{:keys [contacts on-contacts-event-creator]}]
-    (let [contacts-by-hash (get-contacts-by-hash contacts)
-          data (or (keys contacts-by-hash) '())]
-      (http-post "get-contacts" {:phone-number-hashes data}
-                 (fn [{:keys [contacts]}]
-                   (dispatch (on-contacts-event-creator (add-identity contacts-by-hash contacts))))))))
-
 (reg-fx
   ::request-contact-by-address
   (fn [id]
@@ -164,27 +116,14 @@
 
 ;;;; Handlers
 
-(register-handler-fx
-  ::get-contacts-identities
-  [trim-v]
-  (fn [_ [contacts on-contacts-event-creator]]
-    {::request-stored-contacts {:contacts                   contacts
-                                :on-contacts-event-creator  on-contacts-event-creator}}))
-
-(register-handler-fx
-  :sync-contacts
-  [trim-v]
-  (fn [_ [on-contacts-event-creator]]
-    {::fetch-contacts-from-phone! on-contacts-event-creator}))
-
 (defn watch-contact
   "Takes effects map, adds effects necessary to start watching contact"
   [{:keys [db] :as fx} {:keys [public-key private-key] :as contact}]
   (cond-> fx
     (and public-key private-key)
     (assoc ::watch-contact (merge
-                             (select-keys db [:web3])
-                             (select-keys contact [:whisper-identity :public-key :private-key])))))
+                            (select-keys db [:web3])
+                            (select-keys contact [:whisper-identity :public-key :private-key])))))
 
 (register-handler-fx
   :watch-contact
