@@ -11,6 +11,8 @@
             [status-im.ui.screens.contacts.views :as contact-options]
             [status-im.i18n :as i18n]))
 
+;; TODO(alwx): this namespace is not used; should it be removed?
+
 (defn render-row [group edit?]
   (fn [row _ _]
     [contact-view/contact-view {:contact        row
@@ -26,22 +28,8 @@
       (i18n/label :t/contacts)
       (or (:name group) (i18n/label :t/contacts-group-new-chat)))]])
 
-(defview contact-list-toolbar [group]
-  (letsubs [show-search [:get-in [:toolbar-search :show]]
-            search-text [:get-in [:toolbar-search :text]]]
-    (toolbar/toolbar-with-search
-      {:show-search?       (= show-search :contact-list)
-       :search-text        search-text
-       :search-key         :contact-list
-       :title              (if-not group
-                             (i18n/label :t/contacts)
-                             (or (:name group) (i18n/label :t/contacts-group-new-chat)))
-       :search-placeholder (i18n/label :t/search-contacts)
-       :actions            [(act/opts [{:text (i18n/label :t/edit)
-                                        :value #(re-frame/dispatch [:set-in [:contacts/list-ui-props :edit?] true])}])]})))
-
 (defview contacts-list-view [group edit?]
-  (letsubs [contacts [:all-added-group-contacts-filtered (:group-id group)]]
+  (letsubs [contacts [:all-added-group-contacts (:group-id group)]]
     [list/flat-list {:style                     styles/contacts-list
                      :data                      contacts
                      :render-fn                 (render-row group edit?)
@@ -58,5 +46,7 @@
       [status-bar/status-bar]
       (if edit?
         [contact-list-toolbar-edit group]
-        [contact-list-toolbar group])]
+        [toolbar/simple-toolbar (if-not group
+                                  (i18n/label :t/contacts)
+                                  (or (:name group) (i18n/label :t/contacts-group-new-chat)))])]
      [contacts-list-view group edit?]]))

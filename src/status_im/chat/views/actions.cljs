@@ -47,15 +47,6 @@
    :handler    #(do (re-frame/dispatch [:remove-chat chat-id])
                     (re-frame/dispatch [:navigation-replace :home]))})
 
-(def item-search
-  {:title      (i18n/label :t/search-chat)
-   :subtitle   (i18n/label :t/not-implemented)
-   :icon       :search_gray_copy
-   :icon-style {:width  17
-                :height 17}
-   ;; TODO not implemented: action Search chat
-   :handler    nil})
-
 (def item-notifications
   {:title      (i18n/label :t/notifications-title)
    :subtitle   (i18n/label :t/not-implemented)
@@ -76,14 +67,12 @@
 
 (defn group-chat-items [members public?]
   (into (if public? [] [(item-members members)])
-        [item-search
-         item-notifications
+        [item-notifications
          item-settings]))
 
 (defn user-chat-items [chat-id]
   [(item-user chat-id)
    (item-delete chat-id)
-   item-search
    item-notifications])
 
 (defn overlay [{:keys [on-click-outside]} items]

@@ -62,7 +62,6 @@
             :icons/public              (slurp/slurp-svg "./resources/icons/public.svg")
             :icons/public-chat         (slurp/slurp-svg "./resources/icons/public_chat.svg")
             :icons/qr                  (slurp/slurp-svg "./resources/icons/QR.svg")
-            :icons/search              (slurp/slurp-svg "./resources/icons/search.svg")
             :icons/smile               (slurp/slurp-svg "./resources/icons/smile.svg")
             :icons/commands-list       (slurp/slurp-svg "./resources/icons/commands_list.svg")
             :icons/back                (slurp/slurp-svg "./resources/icons/back.svg")

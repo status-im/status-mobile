@@ -5,19 +5,9 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
-            [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.i18n :as i18n]))
-
-(defview contact-list-toolbar [title]
-  (letsubs [show-search [:get-in [:toolbar-search :show]]
-            search-text [:get-in [:toolbar-search :text]]]
-    (toolbar-with-search
-      {:show-search?       (= show-search :contact-list)
-       :search-text        search-text
-       :search-key         :contact-list
-       :title              title
-       :search-placeholder (i18n/label :t/search-contacts)})))
 
 (defn contacts-list [contacts extended? extend-options]
   [react/view {:flex 1}
@@ -46,20 +36,20 @@
 
 (defview edit-chat-group-contact-list []
   (letsubs [chat-name [:chat :name]
-            contacts [:contacts-filtered :current-chat-contacts]
+            contacts [:current-chat-contacts]
             current-pk [:get :current-public-key]
             group-admin [:chat :group-admin]]
     (let [admin? (= current-pk group-admin)]
       [react/view styles/group-container
        [status-bar]
-       [contact-list-toolbar chat-name]
+       [toolbar/simple-toolbar chat-name]
        [contacts-list
         contacts
         admin?
         chat-extended-options]])))
 
 (defview contacts-list-view [group-id]
-  (letsubs [contacts [:all-added-group-contacts-filtered group-id]]
+  (letsubs [contacts [:all-added-group-contacts group-id]]
     [contacts-list
      contacts
      true
@@ -69,5 +59,5 @@
   (letsubs [group [:get-contact-group]]
     [react/view styles/group-container
      [status-bar]
-     [contact-list-toolbar (:name group)]
+     [toolbar/simple-toolbar (:name group)]
      [contacts-list-view (:group-id group)]]))

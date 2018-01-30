@@ -9,20 +9,9 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
-            [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.i18n :as i18n]))
-
-(defview contact-list-modal-toolbar []
-  (letsubs [show-search [:get-in [:toolbar-search :show]]
-            search-text [:get-in [:toolbar-search :text]]]
-    (toolbar-with-search
-      {:modal?             true
-       :show-search?       (= show-search :contact-list)
-       :search-text        search-text
-       :search-key         :contact-list
-       :title              (i18n/label :t/contacts)
-       :search-placeholder (i18n/label :t/search-contacts)})))
 
 (defn actions-view [action click-handler]
   [react/view actions-list
@@ -53,13 +42,13 @@
 
 
 (defview contact-list-modal []
-  (letsubs [contacts [:contacts-filtered :all-added-people-contacts]
+  (letsubs [contacts [:all-added-people-contacts]
             click-handler [:get :contacts/click-handler]
             action [:get :contacts/click-action]
             params [:get :contacts/click-params]]
     [react/view {:flex 1}
      [status-bar {:type :modal-white}]
-     [contact-list-modal-toolbar]
+     [toolbar/simple-toolbar (i18n/label :t/contacts)]
      [list/flat-list {:style                     st/contacts-list-modal
                       :data                      contacts
                       :render-fn                 (render-row click-handler action params)

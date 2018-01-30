@@ -98,52 +98,6 @@
     (->> (remove :pending? (vals groups))
          (sort-by :order >))))
 
-(defn search-filter [text item]
-  (let [name (-> (or (:name item) "")
-                 (string/lower-case))
-        text (string/lower-case text)]
-    (not= (string/index-of name text) nil)))
-
-(defn search-filter-reaction [contacts text]
-  (if text
-    (filter #(search-filter text %) contacts)
-    contacts))
-
-(reg-sub :all-added-group-contacts-filtered
-  (fn [[_ group-id] _]
-    [(if group-id
-       (subscribe [:all-added-group-contacts group-id])
-       (subscribe [:all-added-contacts]))
-     (subscribe [:get-in [:toolbar-search :text]])])
-  (fn [[contacts text] _]
-    (search-filter-reaction contacts text)))
-
-(reg-sub :contact-group-contacts
-  :<- [:get-contact-group]
-  (fn [group]
-    (:contacts group)))
-
-(reg-sub :all-not-added-contact-group-contacts
-  (fn [_ _]
-    [(subscribe [:all-added-contacts])
-     (subscribe [:contact-group-contacts])])
-  (fn [[contacts group-contacts]]
-    (filter-not-group-contacts group-contacts contacts)))
-
-(reg-sub :all-group-not-added-contacts-filtered
-  (fn [_ _]
-    [(subscribe [:all-not-added-contact-group-contacts])
-     (subscribe [:get-in [:toolbar-search :text]])])
-  (fn [[contacts text] _]
-    (search-filter-reaction contacts text)))
-
-(reg-sub :contacts-filtered
-  (fn [[_ subscription-id] _]
-    [(subscribe [subscription-id])
-     (subscribe [:get-in [:toolbar-search :text]])])
-  (fn [[contacts text]]
-    (search-filter-reaction contacts text)))
-
 (reg-sub :contact
   (fn [db]
     (let [identity (:contacts/identity db)]

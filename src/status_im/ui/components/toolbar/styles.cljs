@@ -64,27 +64,6 @@
    :align-items     :center
    :justify-content :center})
 
-(def toolbar-with-search
-  {:background-color toolbar-background1})
-
-(defstyle toolbar-with-search-content
-  {:flex    1
-   :android {:padding-left 18}
-   :ios     {:align-items :center}})
-
-(defstyle toolbar-search-input
-  {:line-height         24
-   :height              24
-   :font-size           17
-   :padding-top         0
-   :padding-left        0
-   :padding-bottom      0
-   :text-align-vertical :center
-   :color               styles/color-black
-   :ios                 {:padding-left   8
-                         :padding-top    2
-                         :letter-spacing -0.2}})
-
 (def action-default
   {:width  24
    :height 24})

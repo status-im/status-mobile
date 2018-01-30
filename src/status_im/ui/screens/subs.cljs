@@ -33,14 +33,11 @@
     (:signed-up? current-account)))
 
 (reg-sub :tabs-hidden?
-  :<- [:get-in [:toolbar-search :show]]
   :<- [:get-in [:chat-list-ui-props :edit?]]
   :<- [:get-in [:contacts/ui-props :edit?]]
   :<- [:get :view-id]
-  (fn [[search-mode? chats-edit-mode? contacts-edit-mode? view-id]]
-    (or search-mode?
-        (and (= view-id :home) chats-edit-mode?)
-        (and (= view-id :contact-list) contacts-edit-mode?))))
+  (fn [[chats-edit-mode? contacts-edit-mode? view-id]]
+    (and (= view-id :contact-list) contacts-edit-mode?)))
 
 (reg-sub :network
   (fn [db]

@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.sticky-button :refer [sticky-button]]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
-            [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.ui.screens.contacts.styles :as contacts.styles]
             [status-im.i18n :as i18n]
@@ -28,26 +28,19 @@
 (defn group-toggle-participant [{:keys [whisper-identity] :as contact}]
   [toogle-contact-view contact :is-participant-selected? on-toggle-participant])
 
-(defn title-with-count [title count-value]
-  [react/view styles/toolbar-title-with-count
-   [react/text {:style styles/toolbar-title-with-count-text
-                :font  :toolbar-title}
-    title]
-   (when (pos? count-value)
-     [react/view styles/toolbar-title-with-count-container
-      [react/text {:style styles/toolbar-title-with-count-text-count
-                   :font  :toolbar-title}
-       count-value]])])
-
-(defview toggle-list-toolbar [title contacts-count]
-  (letsubs [show-search [:get-in [:toolbar-search :show]]
-            search-text [:get-in [:toolbar-search :text]]]
-    (toolbar-with-search
-      {:show-search?       (= show-search :contact-group-list)
-       :search-text        search-text
-       :search-key         :contact-group-list
-       :custom-title       (title-with-count title contacts-count)
-       :search-placeholder (i18n/label :t/search-contacts)})))
+(defn toggle-list-toolbar [title contacts-count]
+  [toolbar/toolbar {}
+   toolbar/default-nav-back
+   [react/view styles/toolbar-container
+    [react/view styles/toolbar-title-with-count
+     [react/text {:style styles/toolbar-title-with-count-text
+                  :font  :toolbar-title}
+      title]
+     (when (pos? contacts-count)
+       [react/view styles/toolbar-title-with-count-container
+        [react/text {:style styles/toolbar-title-with-count-text-count
+                     :font  :toolbar-title}
+         contacts-count]])]]])
 
 (defn toggle-list [contacts render-function]
   [react/view {:flex 1}
@@ -59,7 +52,7 @@
                     :keyboardShouldPersistTaps :always}]])
 
 (defview contact-toggle-list []
-  (letsubs [contacts [:all-added-group-contacts-filtered]
+  (letsubs [contacts [:all-added-contacts]
             selected-contacts-count [:selected-contacts-count]
             group-type [:get-group-type]]
     [react/keyboard-avoiding-view {:style styles/group-container}
@@ -74,7 +67,7 @@
        [sticky-button (i18n/label :t/next) #(re-frame/dispatch [:navigate-to :new-group])])]))
 
 (defview add-contacts-toggle-list []
-  (letsubs [contacts [:all-group-not-added-contacts-filtered]
+  (letsubs [contacts [:all-group-not-added-contacts]
             group [:get-contact-group]
             selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
@@ -87,7 +80,7 @@
                                              (re-frame/dispatch [:navigate-back]))])]))
 
 (defview add-participants-toggle-list []
-  (letsubs [contacts [:contacts-filtered :all-new-contacts]
+  (letsubs [contacts [:all-new-contacts]
             chat-name [:chat :name]
             selected-contacts-count [:selected-participants-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}

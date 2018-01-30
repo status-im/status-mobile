@@ -269,20 +269,12 @@
   {:width  8
    :height 14})
 
-(def icon-search
-  {:width  17
-   :height 17})
-
 (def discover-container
   {:flex             1
    :background-color styles/color-light-gray})
 
 (def list-container
   {:flex 1})
-
-(def search-icon
-  {:width  17
-   :height 17})
 
 (defn title-action-text  [active?]
   {:color (if active?

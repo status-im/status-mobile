@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.discover.events
   (:require [re-frame.core :as re-frame]
             [status-im.protocol.core :as protocol]
-            [status-im.ui.screens.discover.navigation]
             [status-im.utils.handlers :as handlers]
             [clojure.string :as string]
             [status-im.utils.utils :as utils]))
@@ -114,19 +113,6 @@
                              :message    message
                              :identities (handlers/identities contacts)}
          :dispatch          [:status-received message]}))))
-
-(handlers/register-handler-fx
-  :init-discoveries
-  [(re-frame/inject-cofx :data-store/discoveries)]
-  (fn [{:keys [data-store/discoveries db] {:keys [request-discoveries-timer]} :db} _]
-    (when request-discoveries-timer
-      (utils/clear-interval request-discoveries-timer))
-    {:db       (assoc db
-                      :discoveries discoveries
-                      :request-discoveries-timer
-                      (utils/set-interval #(re-frame/dispatch [:request-discoveries])
-                                          (* request-discoveries-interval-s 1000)))
-     :dispatch [:request-discoveries]}))
 
 (handlers/register-handler-fx
   :request-discoveries

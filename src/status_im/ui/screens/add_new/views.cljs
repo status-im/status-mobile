@@ -43,7 +43,7 @@
      :on-press  #()}]])
 
 (defview add-new []
-  (letsubs [contacts [:all-added-group-contacts-filtered]
+  (letsubs [contacts [:all-added-group-contacts]
             params [:get :contacts/click-params]]
     [react/view {:flex 1}
      [status-bar/status-bar]

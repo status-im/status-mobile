@@ -60,7 +60,6 @@
    :justify-content  :center
    :ios              {:background-color "#628fe333"
                       :border-radius    50}})
-
 (def add-icon
   {:align-items :center
    :width       24
@@ -162,6 +161,11 @@
    :background-color common/color-gray5
    :ios              {:margin-left 16
                       :opacity     0.5}})
+
+(defstyle toolbar-container
+  {:flex    1
+   :android {:padding-left 18}
+   :ios     {:align-items :center}})
 
 (def toolbar-title-with-count-text
   {:color          common/text1-color

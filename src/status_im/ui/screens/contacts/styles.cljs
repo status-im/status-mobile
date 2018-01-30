@@ -93,13 +93,3 @@
 
 (def qr-input
   {:margin-right 42})
-
-(def search-container
-  {:flex             1
-   :background-color common/color-white})
-
-(def search-empty-view
-  {:flex             1
-   :background-color common/color-white
-   :align-items      :center
-   :justify-content  :center})

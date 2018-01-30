@@ -30,17 +30,6 @@
   (let [hashtags (map #(string/lower-case (string/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
     (or hashtags [])))
 
-(defn toolbar-view [show-search? search-text]
-  [toolbar/toolbar-with-search
-   {:show-search?       show-search?
-    :search-text        search-text
-    :search-key         :discover
-    :title              (i18n/label :t/discover)
-    :search-placeholder (i18n/label :t/search-tags)
-    :on-search-submit   (fn [text]
-                          (when-not (string/blank? text)
-                            (re-frame/dispatch [:discover/search-tags-results-view text])))}])
-
 (defn top-status-for-popular-hashtag [{:keys [popular-hashtag current-account contacts]}]
   (let [{:keys [tag discovery total]} popular-hashtag]
     [react/view styles/popular-list-container
@@ -140,16 +129,13 @@
                     :render-fn render-public-chats-item}]])
 
 (defview discover [current-view?]
-  (letsubs [show-search         [:get-in [:toolbar-search :show]]
-            search-text         [:get-in [:toolbar-search :text]]
-            contacts            [:get-contacts]
+  (letsubs [contacts            [:get-contacts]
             current-account     [:get-current-account]
             discoveries         [:discover/recent-discoveries]
             all-dapps           [:discover/all-dapps]
             popular-hashtags    [:discover/popular-hashtags-preview]]
     [react/view styles/discover-container
-     [toolbar-view (and current-view?
-                        (= show-search :discover)) search-text]
+     [toolbar/simple-toolbar (i18n/label :t/discover)]
      [react/scroll-view styles/list-container
       [recent-statuses-preview {:contacts        contacts
                                 :current-account current-account

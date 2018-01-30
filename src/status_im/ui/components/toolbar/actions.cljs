@@ -9,14 +9,6 @@
   {:icon    :icons/options
    :options options})
 
-(defn search [handler]
-  {:icon    :icons/search
-   :handler handler})
-
-(def search-icon
-  {:icon      :icons/search
-   :icon-opts {:container-style {:opacity 0.4}}})
-
 (defn back [handler]
   {:icon                :icons/back
    :handler             handler

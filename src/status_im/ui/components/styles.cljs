@@ -95,10 +95,6 @@
 (def flex
   {:flex 1})
 
-(def icon-search
-  {:width  24
-   :height 24})
-
 (def create-icon
   {:fontSize 20
    :height   22
