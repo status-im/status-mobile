@@ -196,13 +196,11 @@ dependencies {
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
     implementation project(':react-native-randombytes')
-    implementation project(':react-native-android-sms-listener')
     implementation project(':realm')
     implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:23.0.1"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-contacts')
     implementation project(':react-native-i18n')
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-camera')

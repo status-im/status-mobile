@@ -68,21 +68,21 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
-  :now
-  (fn [coeffects _]
-    (assoc coeffects :now (time/now-ms))))
+ :now
+ (fn [coeffects _]
+   (assoc coeffects :now (time/now-ms))))
 
 (re-frame/reg-cofx
-  :random-id
-  (fn [coeffects _]
-    (assoc coeffects :random-id (random/id))))
+ :random-id
+ (fn [coeffects _]
+   (assoc coeffects :random-id (random/id))))
 
 (re-frame/reg-cofx
-  :random-id-seq
-  (fn [coeffects _]
-    (assoc coeffects :random-id-seq
-           ((fn rand-id-seq []
-              (cons (random/id) (lazy-seq (rand-id-seq))))))))
+ :random-id-seq
+ (fn [coeffects _]
+   (assoc coeffects :random-id-seq
+          ((fn rand-id-seq []
+             (cons (random/id) (lazy-seq (rand-id-seq))))))))
 
 ;;;; FX
 

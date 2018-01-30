@@ -244,7 +244,6 @@ var status = {
     types: {
         TEXT: 'text',
         NUMBER: 'number',
-        PHONE: 'phone',
         PASSWORD: 'password'
     },
     events: {

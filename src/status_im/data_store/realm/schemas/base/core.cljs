@@ -6,7 +6,7 @@
             [status-im.data-store.realm.schemas.base.v5.core :as v5]
             [status-im.data-store.realm.schemas.base.v6.core :as v6]))
 
-; put schemas ordered by version
+;; put schemas ordered by version
 (def schemas [{:schema        v1/schema
                :schemaVersion 1
                :migration     v1/migration}

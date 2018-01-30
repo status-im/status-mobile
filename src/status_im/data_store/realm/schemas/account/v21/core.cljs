@@ -48,7 +48,18 @@
                    (> (str/index-of content "command=location") -1))
           (aset message "show?" false))))))
 
+(defn remove-phone-messages! [old-realm new-realm]
+  (let [messages (.objects new-realm "message")]
+    (dotimes [i (.-length messages)]
+      (let [message (aget messages i)
+            content (aget message "content")
+            type    (aget message "content-type")]
+        (when (and (= type "command")
+                   (> (str/index-of content "command=phone") -1))
+          (aset message "show?" false))))))
+
 (defn migration [old-realm new-realm]
   (log/debug "migrating v21 account database: " old-realm new-realm)
   (remove-contact! new-realm "browse")
-  (remove-location-messages! old-realm new-realm))
+  (remove-location-messages! old-realm new-realm)
+  (remove-phone-messages! old-realm new-realm))

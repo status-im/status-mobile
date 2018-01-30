@@ -20,7 +20,6 @@
 (spec/def :account/networks (spec/nilable :networks/networks))
 (spec/def :account/wnode (spec/nilable string?))
 (spec/def :account/settings (spec/nilable (spec/map-of keyword? any?)))
-(spec/def :account/phone (spec/nilable string?))
 (spec/def :account/signing-phrase :global/not-empty-string)
 
 (spec/def :accounts/account (allowed-keys
@@ -29,8 +28,7 @@
                               :opt-un [:account/debug? :account/status :account/last-updated
                                        :account/updates-private-key :account/updates-public-key
                                        :account/email :account/signed-up? :account/network
-                                       :account/phone :account/networks :account/settings
-                                       :account/wnode]))
+                                       :account/networks :account/settings :account/wnode]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 
