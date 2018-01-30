@@ -279,39 +279,28 @@
                                                                                    command-message)})))
 
 (defn proceed-command
-  "Proceed with command processing by setting up execution chain of events:
-
-   1. Command validation
-   2. Checking if command defined `onSend`
-
-  Second check is important because commands defining `onSend` are actually not
-  'sendable' and can't be treated as normal command messages, instead of actually
-  sending them, returned markup is displayed in the chat result box and command processing
-  ends there.
-  If it's normal command instead (determined by nil response to `:on-send` jail request),
-  processing continues by requesting command preview before actually sending the command
-  message."
+  "Proceed with command processing by setting up and executing chain of events:
+  1. Params validation
+  2. Preview fetching"
   [{:keys [current-chat-id chats] :as db} {{:keys [bot]} :command :as content} message-id current-time]
-  (let [params-template         {:content      content
-                                 :chat-id      current-chat-id
-                                 :group-id     (when (get-in chats [current-chat-id :group-chat])
-                                                 current-chat-id)
-                                 :jail-id      (or bot current-chat-id)
-                                 :message-id   message-id
-                                 :current-time current-time}
-        on-send-params          (merge params-template
-                                       {:data-type           :on-send
-                                        :event-after-creator (fn [_ jail-response]
-                                                               [::check-command-type
-                                                                jail-response
-                                                                params-template])})
-        after-validation-events [[::request-command-data on-send-params]]
-        validation-params       (merge params-template
-                                       {:data-type           :validator
-                                        :event-after-creator (fn [_ jail-response]
-                                                               [::proceed-validation
-                                                                jail-response
-                                                                after-validation-events])})]
+  (let [params-template   {:content      content
+                           :chat-id      current-chat-id
+                           :group-id     (when (get-in chats [current-chat-id :group-chat])
+                                           current-chat-id)
+                           :jail-id      (or bot current-chat-id)
+                           :message-id   message-id
+                           :current-time current-time}
+        preview-params    (merge params-template
+                                 {:data-type           :preview
+                                  :event-after-creator (fn [command-message jail-response]
+                                                         [::send-command
+                                                          (assoc-in command-message [:command :preview] jail-response)])})
+        validation-params (merge params-template
+                                 {:data-type           :validator
+                                  :event-after-creator (fn [_ jail-response]
+                                                         [::proceed-validation
+                                                          jail-response
+                                                          [[::request-command-data preview-params]]])})]
     (request-command-data db validation-params)))
 
 ;;;; Handlers
@@ -420,26 +409,6 @@
                           (clear-seq-arguments)
                           (set-chat-input-metadata nil)
                           (set-chat-input-text nil))))))
-
-(handlers/register-handler-fx
-  ::check-command-type
-  [re-frame/trim-v]
-  (fn [{{:keys [current-chat-id] :as db} :db} [on-send-jail-response params-template]]
-    (if on-send-jail-response
-      ;; `onSend` is defined, we have non-sendable command here, like `@browse`
-      {:db (-> db
-               (model/set-chat-ui-props {:result-box           on-send-jail-response
-                                         :sending-in-progress? false})
-               (animation-events/choose-predefined-expandable-height :result-box :max))
-       ::dismiss-keyboard nil}
-      ;; regular command message, we need to fetch preview before sending the command message
-      (request-command-data
-       db
-       (merge params-template
-              {:data-type           :preview
-               :event-after-creator (fn [command-message returned]
-                                      [::send-command (assoc-in command-message
-                                                                [:command :preview] returned)])})))))
 
 (defn command-complete?
   [chat-command]
