@@ -238,7 +238,7 @@
 (defn navigate-to-accounts []
   ;; TODO(rasom): probably not the best place for this call
   (protocol/stop-whisper!)
-  (re-frame/dispatch [:navigate-to :accounts]))
+  (re-frame/dispatch [:navigate-to-clean :accounts]))
 
 (defn handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
