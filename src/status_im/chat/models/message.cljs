@@ -9,10 +9,6 @@
             [status-im.utils.clocks :as clocks-utils]
             [status-im.utils.random :as random]))
 
-(defn- get-current-account
-  [{:accounts/keys [accounts current-account-id]}]
-  (get accounts current-account-id))
-
 (def receive-interceptors
   [(re-frame/inject-cofx :get-stored-message) (re-frame/inject-cofx :get-stored-chat)
    (re-frame/inject-cofx :random-id) re-frame/trim-v])
@@ -44,8 +40,10 @@
    {:keys [from group-id chat-id content-type content message-id timestamp clock-value]
     :as   message}]
   (let [{:keys [current-chat-id view-id
-                access-scope->commands-responses] :contacts/keys [contacts]} db
-        {:keys [public-key] :as current-account} (get-current-account db)
+                access-scope->commands-responses]
+         :contacts/keys [contacts]
+         :accounts/keys [account]} db
+        {:keys [public-key]} account
         chat-identifier (or group-id chat-id from)
         current-chat?    (and (= :chat view-id)
                               (= current-chat-id chat-identifier))
@@ -68,7 +66,7 @@
                            (and command command-request?)
                            (assoc-in [:content :content-command-ref]
                                      (lookup-response-ref access-scope->commands-responses
-                                                          current-account
+                                                          account
                                                           (get-in fx [:db :chats chat-identifier])
                                                           contacts
                                                           command)))]
@@ -124,7 +122,7 @@
     (receive cofx message)))
 
 (defn- send-dapp-message!
-  [{{:accounts/keys [current-account-id] :as db} :db :as cofx}
+  [{{:accounts/keys [account] :as db} :db :as cofx}
    {{:keys [message-type]
      :as   message} :message
     :keys [chat-id command] :as args}]
@@ -137,7 +135,7 @@
                             :function   :on-message-send
                             :parameters {:message (:content message)}
                             :context    {:data data
-                                         :from current-account-id}}})))
+                                         :from (:address account)}}})))
 
 (defn- generate-message
   [{:keys [web3 current-public-key chats network-status]}
@@ -163,7 +161,7 @@
 
 (defn send
   [{{:keys          [web3 chats]
-     :accounts/keys [accounts current-account-id]
+     :accounts/keys [account]
      :contacts/keys [contacts] :as db} :db :as cofx}
    {:keys [chat-id command] :as args}]
   (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
@@ -182,7 +180,7 @@
 
           (and group-chat public?)
           {:send-public-group-message (assoc options :group-id chat-id
-                                             :username (get-in accounts [current-account-id :name]))}
+                                             :username (:name account))}
 
           :else
           (merge {:send-message (assoc-in options [:message :to] chat-id)}
@@ -318,7 +316,7 @@
 
 (defn invoke-command-handlers
   [{{:keys          [bot-db]
-     :accounts/keys [accounts current-account-id]
+     :accounts/keys [account]
      :contacts/keys [contacts] :as db} :db}
    {{:keys [command params id]} :command
     :keys [chat-id address]
@@ -333,7 +331,7 @@
         jail-params  {:parameters params
                       :context    (cond-> {:from            address
                                            :to              to
-                                           :current-account (get accounts current-account-id)
+                                           :current-account account
                                            :message-id      id}
                                     (:async-handler command)
                                     (assoc :orig-params orig-params))}]

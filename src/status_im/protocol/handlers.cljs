@@ -378,16 +378,14 @@
    (re-frame/inject-cofx ::get-chat-groups)
    (re-frame/inject-cofx ::get-pending-messages)
    (re-frame/inject-cofx :get-all-contacts)]
-  (fn [{:keys [db web3 groups all-contacts pending-messages]} [current-account-id ethereum-rpc-url]]
-    (let [{:keys [public-key status updates-public-key
-                  updates-private-key]}
-          (get-in db [:accounts/accounts current-account-id])]
+  (fn [{:keys [db web3 groups all-contacts pending-messages]} [ethereum-rpc-url]]
+    (let [{:keys [public-key status updates-public-key updates-private-key]} (:accounts/account db)]
       (when public-key
         {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
                          :updates-public-key updates-public-key :updates-private-key updates-private-key
                          :status status :contacts all-contacts}
          :db (assoc db :web3 web3
-                       :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
+                    :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
 
 (handlers/register-handler-fx
   :load-processed-messages
@@ -487,8 +485,8 @@
           (when (nil? route-fx) (log/debug "Unknown message type" type))
           (cache/add! processed-message)
           (merge
-            {::save-processed-messages processed-message}
-            route-fx))))))
+           {::save-processed-messages processed-message}
+           route-fx))))))
 
 (handlers/register-handler-fx
   :update-message-status

@@ -49,8 +49,8 @@
 
    "faucet"
    (fn [{:keys [db random-id]} {:keys [params id]}]
-     (let [{:accounts/keys [accounts current-account-id]} db
-           current-address (get-in accounts [current-account-id :address])
+     (let [{:accounts/keys [account]} db
+           current-address (:address account)
            faucet-url (faucet-base-url->url (:url params))]
        {:http-get {:url (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]
