@@ -11,7 +11,6 @@
             [status-im.protocol.chat :as chat]
             [status-im.protocol.group :as group]
             [status-im.protocol.listeners :as l]
-            [status-im.protocol.encryption :as e]
             [status-im.protocol.discoveries :as discoveries]
             [cljs.spec.alpha :as s]
             [status-im.utils.config :as config]
@@ -35,9 +34,9 @@
 
 ;; encryption
 ;; todo move somewhere, encryption functions shouldn't be there
-(def new-keypair! e/new-keypair!)
+(def new-keypair! (fn [] {:public  "new public"
+                          :private "new private"}))
 
-;; discoveries
 (def watch-user! discoveries/watch-user!)
 (def stop-watching-user! discoveries/stop-watching-user!)
 (def contact-request! discoveries/contact-request!)

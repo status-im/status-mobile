@@ -194,7 +194,6 @@ dependencies {
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
-    implementation project(':react-native-randombytes')
     implementation project(':realm')
     implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])

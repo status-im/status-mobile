@@ -30,22 +30,24 @@
 (re-frame/reg-cofx
  :get-new-keypair!
  (fn [coeffects _]
-   (assoc coeffects :keypair (protocol/new-keypair!))))
+   ;;TODO implement
+   (assoc coeffects :keypair {:public  "new public"
+                              :private "new private"})))
 
 (re-frame/reg-cofx
-  ::get-all-accounts
-  (fn [coeffects _]
-    (assoc coeffects :all-accounts (accounts-store/get-all))))
+ ::get-all-accounts
+ (fn [coeffects _]
+   (assoc coeffects :all-accounts (accounts-store/get-all))))
 
 (re-frame/reg-cofx
-  ::get-signing-phrase
-  (fn [coeffects _]
-    (assoc coeffects :signing-phrase (signing-phrase/generate))))
+ ::get-signing-phrase
+ (fn [coeffects _]
+   (assoc coeffects :signing-phrase (signing-phrase/generate))))
 
 (re-frame/reg-cofx
-  ::get-status
-  (fn [coeffects _]
-    (assoc coeffects :status (rand-nth statuses/data))))
+ ::get-status
+ (fn [coeffects _]
+   (assoc coeffects :status (rand-nth statuses/data))))
 
 ;;;; FX
 

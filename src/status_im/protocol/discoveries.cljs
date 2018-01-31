@@ -1,14 +1,14 @@
 (ns status-im.protocol.discoveries
   (:require
-    [taoensso.timbre :refer-macros [debug]]
-    [status-im.protocol.web3.utils :as u]
-    [status-im.protocol.web3.delivery :as d]
-    [status-im.protocol.web3.filtering :as f]
-    [status-im.protocol.listeners :as l]
-    [cljs.spec.alpha :as s]
-    [status-im.protocol.validation :refer-macros [valid?]]
-    [status-im.utils.random :as random]
-    [status-im.protocol.web3.keys :as shh-keys]))
+   [taoensso.timbre :refer-macros [debug]]
+   [status-im.protocol.web3.utils :as u]
+   [status-im.protocol.web3.delivery :as d]
+   [status-im.protocol.web3.filtering :as f]
+   [status-im.protocol.listeners :as l]
+   [cljs.spec.alpha :as s]
+   [status-im.protocol.validation :refer-macros [valid?]]
+   [status-im.utils.random :as random]
+   [status-im.protocol.web3.keys :as shh-keys]))
 
 (def discover-topic-prefix "status-discover-")
 (def discover-topic "0xbeefdead")
@@ -29,12 +29,12 @@
   {:pre [(valid? :send-online/options options)]}
   (debug :send-online)
   (let [message' (merge
-                   message
-                   {:requires-ack? false
-                    :type          :online
-                    :key-password  discovery-key-password
-                    :payload       {:content {:timestamp (u/timestamp)}}
-                    :topics        [f/status-topic]})]
+                  message
+                  {:requires-ack? false
+                   :type          :online
+                   :key-password  discovery-key-password
+                   :payload       {:content {:timestamp (u/timestamp)}}
+                   :topics        [f/status-topic]})]
     (d/add-pending-message! web3 message')))
 
 (s/def ::identity :message/from)
@@ -45,29 +45,29 @@
   [{:keys [web3 identity] :as options}]
   {:pre [(valid? :watch-user/options options)]}
   (shh-keys/get-sym-key
-    web3
-    discovery-key-password
-    (fn [key-id]
-      (f/add-filter!
-        web3
-        {:sig    identity
-         :topics [f/status-topic]
-         :key    key-id
-         :type   :sym}
-        (l/message-listener (dissoc options :identity))))))
+   web3
+   discovery-key-password
+   (fn [key-id]
+     (f/add-filter!
+      web3
+      {:sig    identity
+       :topics [f/status-topic]
+       :key    key-id
+       :type   :sym}
+      (l/message-listener (dissoc options :identity))))))
 
 (defn stop-watching-user!
   [{:keys [web3 identity]}]
   (shh-keys/get-sym-key
-    web3
-    discovery-key-password
-    (fn [key-id]
-      (f/remove-filter!
-        web3
-        {:sig    identity
-         :topics [f/status-topic]
-         :key    key-id
-         :type   :sym}))))
+   web3
+   discovery-key-password
+   (fn [key-id]
+     (f/remove-filter!
+      web3
+      {:sig    identity
+       :topics [f/status-topic]
+       :key    key-id
+       :type   :sym}))))
 
 (s/def :contact-request/contact map?)
 
@@ -111,15 +111,15 @@
   {:pre [(valid? :broadcast-profile/options options)]}
   (debug :broadcasting-status)
   (d/add-pending-message!
-    web3
-    (-> message
-        (assoc :type :profile
-               :topics [f/status-topic]
-               :key-password discovery-key-password)
-        (assoc-in [:payload :timestamp] (u/timestamp))
-        (assoc-in [:payload :content :profile]
-                  (get-in message [:payload :profile]))
-        (update :payload dissoc :profile))))
+   web3
+   (-> message
+       (assoc :type :profile
+              :topics [f/status-topic]
+              :key-password discovery-key-password)
+       (assoc-in [:payload :timestamp] (u/timestamp))
+       (assoc-in [:payload :content :profile]
+                 (get-in message [:payload :profile]))
+       (update :payload dissoc :profile))))
 
 (s/def ::public string?)
 (s/def ::private string?)
@@ -153,18 +153,18 @@
   [{:keys [web3 message]}]
   (debug :broadcasting-status)
   (let [message (assoc message :type :discover
-                               :key-password discovery-key-password
-                               :topics [f/status-topic])]
+                       :key-password discovery-key-password
+                       :topics [f/status-topic])]
     (d/add-pending-message! web3 message)))
 
 (defn send-discoveries-request!
   [{:keys [web3 message]}]
   (debug :sending-discoveries-request)
   (d/add-pending-message!
-    web3
-    (assoc message :type :discoveries-request
-                   :key-password discovery-key-password
-                   :topics [f/status-topic])))
+   web3
+   (assoc message :type :discoveries-request
+          :key-password discovery-key-password
+          :topics [f/status-topic])))
 
 (defn send-discoveries-response!
   [{:keys [web3 discoveries message]}]
@@ -173,9 +173,9 @@
                        (take 100)
                        (partition 10 10 nil))]
     (d/add-pending-message!
-      web3
-      (assoc message :type :discoveries-response
-                     :key-password discovery-key-password
-                     :topics [f/status-topic]
-                     :message-id (random/id)
-                     :payload {:data (into [] portion)}))))
+     web3
+     (assoc message :type :discoveries-response
+            :key-password discovery-key-password
+            :topics [f/status-topic]
+            :message-id (random/id)
+            :payload {:data (into [] portion)}))))

@@ -1,6 +1,11 @@
 (ns status-im.protocol.web3.keys
   (:require [taoensso.timbre :as log]))
 
+(defn new-key-pair [web3 callback]
+  (.. web3
+      -shh
+      (newKeyPair callback)))
+
 (def status-key-password "status-key-password")
 (def status-group-key-password "status-public-group-key-password")
 

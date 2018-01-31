@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.discover.events
   (:require [re-frame.core :as re-frame]
-            [status-im.protocol.core :as protocol]
             [status-im.ui.screens.discover.navigation]
             [status-im.utils.handlers :as handlers]
             [clojure.string :as string]))
@@ -13,30 +12,17 @@
 (re-frame/reg-fx
   ::send-portions
   (fn [{:keys [current-public-key web3 contacts to discoveries]}]
-    (protocol/send-discoveries-response!
-     {:web3        web3
-      :discoveries discoveries
-      :message     {:from current-public-key
-                    :to   to}})))
+    ))
 
 (re-frame/reg-fx
   ::request-discoveries
   (fn [{:keys [identities web3 current-public-key message-id]}]
-    (doseq [id identities]
-      (when-not (protocol/message-pending? web3 :discoveries-request id)
-        (protocol/send-discoveries-request!
-         {:web3    web3
-          :message {:from       current-public-key
-                    :to         id
-                    :message-id message-id}})))))
+    ))
 
 (re-frame/reg-fx
   ::broadcast-status
   (fn [{:keys [identities web3 message]}]
-    (doseq [id identities]
-      (protocol/send-status!
-       {:web3    web3
-        :message (assoc message :to id)}))))
+    ))
 
 ;; HELPER-FN
 

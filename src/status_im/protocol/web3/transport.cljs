@@ -7,7 +7,7 @@
 (s/def :shh/payload string?)
 (s/def :shh/message
   (s/keys
-    :req-un [:shh/payload :message/ttl :message/sig :message/topic]))
+   :req-un [:shh/payload :message/ttl :message/sig :message/topic]))
 
 (defn post-message!
   [web3 message callback]
@@ -15,6 +15,6 @@
   (debug :post-message message)
   (let [shh      (u/shh web3)
         message' (assoc message
-                   :powTarget 0.001
-                   :powTime 1)]
+                        :powTarget 0.001
+                        :powTime 1)]
     (.post shh (clj->js message') callback)))

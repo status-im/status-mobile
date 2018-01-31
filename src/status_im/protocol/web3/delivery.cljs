@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async]
             [status-im.protocol.web3.transport :as t]
             [status-im.protocol.web3.utils :as u]
-            [status-im.protocol.encryption :as e]
             [cljs.spec.alpha :as s]
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
@@ -16,34 +15,23 @@
   [web3 {:keys [payload keypair to from topics ttl key-password]
          :as   message}
    callback]
-  (let [{:keys [public]} keypair
-
-        content          (:content payload)
-        content'         (if (and (not to) public content)
-                           (e/encrypt public (prn-str content))
-                           content)
-
-        payload'         (-> message
-                             (select-keys [:message-id :requires-ack? :type :clock-value])
-                             (merge payload)
-                             (assoc :content content')
+  (let [payload          (-> payload
+                             (merge (select-keys message [:ttl :message-id :requires-ack? :type :clock-value]))
                              prn-str
                              u/from-utf8)
         sym-key-password (or key-password shh-keys/status-key-password)]
     (shh-keys/get-sym-key
      web3
-     sym-key-password
+     key-password
      (fn [status-key-id]
        (callback
-        (merge
-         (select-keys message [:ttl])
-         (let [type (if to :asym :sym)]
-           (cond-> {:sig     from
-                    :topic   (first topics)
-                    :payload payload'}
-                   to (assoc :pubKey to)
-                   (not to) (assoc :symKeyID status-key-id
-                                   :sym-key-password sym-key-password)))))))))
+        (cond-> {:sig     from
+                 :ttl     ttl
+                 :topic   (first topics)
+                 :payload payload}
+          to       (assoc :pubKey to)
+          (not to) (assoc :symKeyID status-key-id
+                          :sym-key-password sym-key-password)))))))
 
 (s/def :shh/pending-message
   (s/keys :req-un [:message/sig :shh/payload :message/topic]
@@ -58,25 +46,26 @@
                 (async/<! pending-message-queue)]
   (when message
     (prepare-message
-      web3 message
-      (fn [message']
-        (when (valid? :shh/pending-message message')
-          (let [group-id        (get-in message [:payload :group-id])
-                pending-message {:id            message-id
-                                 :ack?          (boolean ack?)
-                                 :message       message'
-                                 :to            to
-                                 :type          type
-                                 :group-id      group-id
-                                 :requires-ack? (boolean requires-ack?)
-                                 :attempts      0
-                                 :was-sent?     false}]
-            (when (and @pending-message-callback requires-ack?)
-              (@pending-message-callback :pending pending-message))
-            (swap! messages assoc-in [web3 message-id to] pending-message)
-            (when to
-              (swap! recipient->pending-message
-                     update to set/union #{[web3 message-id to]}))))))
+     web3
+     message
+     (fn [message']
+       (when (valid? :shh/pending-message message')
+         (let [group-id        (get-in message [:payload :group-id])
+               pending-message {:id            message-id
+                                :ack?          (boolean ack?)
+                                :message       message'
+                                :to            to
+                                :type          type
+                                :group-id      group-id
+                                :requires-ack? (boolean requires-ack?)
+                                :attempts      0
+                                :was-sent?     false}]
+           (when (and @pending-message-callback requires-ack?)
+             (@pending-message-callback :pending pending-message))
+           (swap! messages assoc-in [web3 message-id to] pending-message)
+           (when to
+             (swap! recipient->pending-message
+                    update to set/union #{[web3 message-id to]}))))))
     (recur (async/<! pending-message-queue))))
 
 (defn set-pending-mesage-callback!
@@ -85,7 +74,7 @@
 
 (defn add-pending-message!
   [web3 message]
-  {:pre [(valid? :protocol/message message)]} 
+  {:pre [(valid? :protocol/message message)]}
   (debug :add-pending-message! message)
   ;; encryption can take some time, better to run asynchronously
   (async/put! pending-message-queue [web3 message]))
@@ -237,7 +226,7 @@
     (async/go-loop [_ nil]
       (doseq [[_ messages] (@messages web3)]
         (doseq [[_ {:keys [id message to type] :as data}] messages]
-          ;; check each message asynchronously 
+          ;; check each message asynchronously
           (when (should-be-retransmitted? options data)
             (try
               (let [message' (check-ttl message type ttl-config default-ttl)
