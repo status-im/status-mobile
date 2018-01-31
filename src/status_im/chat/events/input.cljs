@@ -473,7 +473,6 @@
                                  :identity     current-public-key
                                  :address      (get-in db [:accounts/account :address])})))
 
-
 (handlers/register-handler-fx
   :send-current-message
   [(re-frame/inject-cofx :random-id)
