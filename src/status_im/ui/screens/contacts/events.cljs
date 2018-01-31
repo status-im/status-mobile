@@ -26,7 +26,7 @@
 ;;;; COFX
 
 (reg-cofx
-  ::get-all-contacts
+  :get-all-contacts
   (fn [coeffects _]
     (assoc coeffects :all-contacts (contacts/get-all))))
 
