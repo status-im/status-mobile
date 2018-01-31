@@ -5,16 +5,6 @@
   (fn [db]
     (:current-public-key db)))
 
-(reg-sub :get-accounts
-  (fn [db]
-    (:accounts/accounts db)))
+(reg-sub :get-accounts :accounts/accounts)
 
-(reg-sub :get-current-account-id
-  (fn [db]
-    (:accounts/current-account-id db)))
-
-(reg-sub :get-current-account
-  :<- [:get-current-account-id]
-  :<- [:get-accounts]
-  (fn [[account-id accounts]]
-    (some-> accounts (get account-id))))
+(reg-sub :get-current-account :accounts/account)

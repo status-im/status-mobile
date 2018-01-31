@@ -56,7 +56,7 @@
 (reg-fx
   ::send-contact-request-fx
   (fn [{:keys [web3 current-public-key name whisper-identity
-               photo-path current-account-id status fcm-token
+               photo-path account status fcm-token
                updates-public-key updates-private-key] :as params}]
     (protocol/contact-request!
      {:web3    web3
@@ -65,7 +65,7 @@
                 :message-id (random/id)
                 :payload    {:contact {:name          name
                                        :profile-image photo-path
-                                       :address       current-account-id
+                                       :address       (:address account)
                                        :status        status
                                        :fcm-token     fcm-token}
                              :keypair {:public  updates-public-key
@@ -254,17 +254,15 @@
 
 (defn send-contact-request
   "Takes effects map, adds effects necessary to send a contact request"
-  [{{:accounts/keys [accounts current-account-id] :as db} :db :as fx} contact]
-  (let [current-account (get accounts current-account-id)
-        fcm-token (get-in db [:notifications :fcm-token])]
+  [{{:accounts/keys [account] :as db} :db :as fx} contact]
+  (let [fcm-token (get-in db [:notifications :fcm-token])]
     (assoc fx
            ::send-contact-request-fx
-           (merge
-             (select-keys db [:current-public-key :web3])
-             {:current-account-id current-account-id :fcm-token fcm-token}
-             (select-keys contact [:whisper-identity])
-             (select-keys current-account [:name :photo-path :status
-                                           :updates-public-key :updates-private-key])))))
+           (merge {:fcm-token fcm-token}
+                  (select-keys db [:current-public-key :web3])
+                  (select-keys contact [:whisper-identity])
+                  (select-keys account [:name :photo-path :status
+                                        :updates-public-key :updates-private-key])))))
 
 (defn add-new-contact [fx {:keys [whisper-identity] :as contact}]
   (-> fx

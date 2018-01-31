@@ -45,33 +45,31 @@
     (when identity
       {:dispatch [:navigation-replace :chat identity]})))
 
-(defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
-  (get-in db [:accounts/accounts current-account-id]))
-
 (handlers/register-handler-fx
   :my-profile.drawer/edit-name
   (fn [{:keys [db]} _]
-    (let [{:my-profile/keys [default-name edit auto-save]} db
-          {:keys [name public-key]}                        (get-current-account db)]
+    (let [{:my-profile/keys [default-name edit auto-save]
+           :accounts/keys   [account]} db
+          {:keys [name public-key]} account]
       {:db (cond-> db
              (not default-name) (assoc :my-profile/default-name (gfycat/generate-gfy public-key))
              :always            (assoc-in [:my-profile/drawer :name] name))})))
 
 (handlers/register-handler-fx
   :my-profile.drawer/edit-status
-  (fn [{:keys [db]} _]
-    (let [{:keys [status]} (get-current-account db)]
+  (fn [{{:accounts/keys [account] :as db} :db} _]
+    (let [{:keys [status]} account]
       {:db (-> db
                (assoc-in [:my-profile/drawer :status] status)
                (assoc-in [:my-profile/drawer :edit-status?] true))})))
 
 (handlers/register-handler-fx
   :my-profile/edit-profile
-  (fn [{:keys [db]} [_ edit-status?]]
+  (fn [{{:accounts/keys [account] :as db} :db} [_ edit-status?]]
     (let [new-db (-> db
                      (assoc-in [:my-profile/profile :edit-status?] edit-status?)
                      (update-in [:my-profile/profile]
-                                #(merge (select-keys (get-current-account db) db/account-profile-keys) %)))]
+                                #(merge (select-keys account db/account-profile-keys) %)))]
       {:db new-db})))
 
 (defn valid-name? [name]
@@ -121,11 +119,11 @@
       {:db (assoc-in db [:my-profile/profile :photo-path] (str "data:image/jpeg;base64," base64-image))}
       {:open-image-picker this-event})))
 
-(defn clean-name [{:accounts/keys [current-account-id] :as db} edit-view]
+(defn clean-name [db edit-view]
   (let [name (get-in db [edit-view :name])]
     (if (valid-name? name)
       name
-      (get-in db [:accounts/accounts current-account-id :name]))))
+      (get-in db [:accounts/account :name]))))
 
 (defn clear-profile [fx]
   (update fx :db dissoc :my-profile/profile :my-profile/drawer :my-profile/default-name :my-profile/editing?))
@@ -149,10 +147,9 @@
 (handlers/register-handler-fx
   :my-profile.drawer/save-status
   (fn [{:keys [db now]} _]
-    (let [status (get-in db [:my-profile/drawer :status])
-          new-fx (clear-profile {:db db})
-          {:accounts/keys [accounts current-account-id]} db
-          {old-status :status} (get accounts current-account-id)]
+    (let [status     (get-in db [:my-profile/drawer :status])
+          new-fx     (clear-profile {:db db})
+          old-status (get-in db [:accounts/account :status])]
       (if (string/blank? status)
         new-fx
         (-> new-fx
@@ -169,15 +166,14 @@
 (handlers/register-handler-fx
   :my-profile/save-profile
   (fn [{:keys [db now]} _]
-    (let [{:accounts/keys [accounts current-account-id]} db
-          {old-status :status} (get accounts current-account-id)
+    (let [old-status                  (get-in db [:accounts/account :status])
           {:keys [status photo-path]} (:my-profile/profile db)
-          cleaned-name (clean-name db :my-profile/profile)
-          cleaned-edit (merge {:name         cleaned-name
-                               :status       status
-                               :last-updated now}
-                              (if photo-path
-                                {:photo-path photo-path}))]
+          cleaned-name                (clean-name db :my-profile/profile)
+          cleaned-edit                (merge {:name         cleaned-name
+                                              :status       status
+                                              :last-updated now}
+                                             (if photo-path
+                                               {:photo-path photo-path}))]
       (-> (clear-profile {:db db})
           (accounts-events/account-update cleaned-edit)
           (status-change {:old-status old-status

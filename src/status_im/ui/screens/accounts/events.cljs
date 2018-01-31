@@ -28,9 +28,9 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
-  :get-new-keypair!
-  (fn [coeffects _]
-    (assoc coeffects :keypair (protocol/new-keypair!))))
+ :get-new-keypair!
+ (fn [coeffects _]
+   (assoc coeffects :keypair (protocol/new-keypair!))))
 
 (re-frame/reg-cofx
   ::get-all-accounts
@@ -131,9 +131,7 @@
 (handlers/register-handler-fx
   :create-new-account-handler
   (fn [_ _]
-    {:dispatch-n [[:initialize-db]
-                  [:load-accounts]
-                  [:check-console-chat true]]}))
+    {:dispatch [:check-console-chat true]}))
 
 (handlers/register-handler-fx
   :load-accounts
@@ -158,19 +156,16 @@
       {:db            (assoc-in db [:accounts/accounts id] new-account)
        ::save-account new-account})))
 
-(defn update-wallet-settings [{:accounts/keys [current-account-id accounts] :as db} settings]
-  (let [new-account (-> (get accounts current-account-id)
-                        (assoc :settings settings))]
-    {:db            (assoc-in db [:accounts/accounts current-account-id] new-account)
-     ::save-account new-account}))
+(defn update-wallet-settings [{:accounts/keys [account] :as db} settings]
+  {:db            (assoc-in db [:accounts/account :settings] settings)
+   ::save-account (assoc account :settings settings)})
 
 (defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update."
-  [{{:accounts/keys [accounts current-account-id] :as db} :db :as fx} new-account-fields]
-  (let [current-account (get accounts current-account-id)
-        new-account     (merge current-account new-account-fields)]
+  [{{:accounts/keys [account] :as db} :db :as fx} new-account-fields]
+  (let [new-account (merge account new-account-fields)]
     (-> fx
-        (assoc-in [:db :accounts/accounts current-account-id] new-account)
+        (update-in [:db :accounts/account] merge new-account-fields)
         (assoc ::save-account new-account
                ::broadcast-account-update (merge (select-keys db [:current-public-key :web3])
                                                  (select-keys new-account [:name :photo-path :status
@@ -180,13 +175,12 @@
   :account-update-keys
   [(re-frame/inject-cofx :get-new-keypair!)]
   (fn [{:keys [db keypair now]} _]
-    (let [{:accounts/keys [accounts current-account-id]} db
+    (let [{:accounts/keys [account]} db
           {:keys [public private]} keypair
-          current-account (get accounts current-account-id)
-          new-account     (merge current-account {:updates-public-key  public
-                                                  :updates-private-key private
-                                                  :last-updated        now})]
-      {:db                (assoc-in db [:accounts/accounts current-account-id] new-account)
+          new-account     (merge account {:updates-public-key  public
+                                          :updates-private-key private
+                                          :last-updated        now})]
+      {:db                (assoc db :accounts/account new-account)
        ::save-account     new-account
        ::send-keys-update (merge
                            (select-keys db [:web3 :current-public-key :contacts])
@@ -195,9 +189,9 @@
 
 (handlers/register-handler-fx
   :send-account-update-if-needed
-  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db now :now} _]
-    (let [{:keys [last-updated]} (get accounts current-account-id)
-          needs-update? (> (- now last-updated) time/week)]
+  (fn [{{:accounts/keys [account] :as db} :db now :now} _]
+    (let [{:keys [last-updated]} account
+          needs-update?          (> (- now last-updated) time/week)]
       (log/info "Need to send account-update: " needs-update?)
       (when needs-update?
         ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update

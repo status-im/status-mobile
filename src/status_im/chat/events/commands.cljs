@@ -11,9 +11,9 @@
 
 (defn- generate-context
   "Generates context for jail call"
-  [current-account-id chat-id to group-id]
+  [address chat-id to group-id]
   (merge {:platform     platform/platform
-          :from         current-account-id
+          :from         address
           :to           to
           :chat         {:chat-id    chat-id
                          :group-chat (not (nil? group-id))}}
@@ -27,7 +27,7 @@
      :keys [content-command-scope-bitmask bot scope-bitmask params type]} :content
     :keys [chat-id group-id jail-id] :as message}
    {:keys [data-type proceed-event-creator cache-data?] :as opts}]
-  (let [{:accounts/keys [current-account-id]
+  (let [{:accounts/keys [account]
          :contacts/keys [contacts]} db
         jail-id               (or bot jail-id chat-id)
         jail-command-name     (or content-command-name command-name)]
@@ -38,7 +38,7 @@
                          data-type]
             to          (get-in contacts [chat-id :address])
             jail-params {:parameters params
-                         :context    (generate-context current-account-id chat-id to group-id)}]
+                         :context    (generate-context (:address account) chat-id to group-id)}]
         {:db        db
          :call-jail {:jail-id                 jail-id
                      :path                    path

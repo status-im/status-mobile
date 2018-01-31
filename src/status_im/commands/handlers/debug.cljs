@@ -92,8 +92,8 @@
             :text "Command has been executed."}))
 
 (defn switch-node
-  [{:accounts/keys [current-account-id]} {:keys [url]}]
-  (re-frame/dispatch [:initialize-protocol current-account-id url])
+  [{:keys [url]}]
+  (re-frame/dispatch [:initialize-protocol url])
   (respond {:type :ok
             :text "You've successfully switched the node."}))
 
@@ -134,25 +134,25 @@
    (.stop react/http-bridge)))
 
 (re-frame/reg-fx
- ::process-request-fx
- (fn [[{:keys [web3] :as db} url {:keys [encoded] :as post-data}]]
-   (try
-     (let [json (some->> encoded
-                         (.toAscii web3)
-                         (.parse js/JSON))
-           obj  (when json
-                  (js->clj json :keywordize-keys true))]
-       (case url
-         "/add-dapp" (add-contact db obj)
-         "/remove-dapp" (remove-contact db obj)
-         "/dapp-changed" (contact-changed db obj)
-         "/switch-node" (switch-node db obj)
-         "/list" (dapps-list db)
-         "/log" (log db post-data)
-         :default))
-     (catch js/Error e
-       (respond {:type :error :text (str "Error: " e)})
-       (log/debug "Error: " e)))))
+  ::process-request-fx
+  (fn [[{:keys [web3] :as db} url {:keys [encoded] :as post-data}]]
+    (try
+      (let [json (some->> encoded
+                          (.toAscii web3)
+                          (.parse js/JSON))
+            obj  (when json
+                   (js->clj json :keywordize-keys true))]
+        (case url
+          "/add-dapp" (add-contact db obj)
+          "/remove-dapp" (remove-contact db obj)
+          "/dapp-changed" (contact-changed db obj)
+          "/switch-node" (switch-node obj)
+          "/list" (dapps-list db)
+          "/log" (log db post-data)
+          :default))
+      (catch js/Error e
+        (respond {:type :error :text (str "Error: " e)})
+        (log/debug "Error: " e)))))
 
 
 ;;;; Handlers
@@ -180,4 +180,3 @@
   [re-frame/trim-v (re-frame/inject-cofx :get-local-storage-data)]
   (fn [cofx [contact]]
     (loading-events/load-commands cofx {} contact)))
-

@@ -116,10 +116,10 @@
                   :group/group-type
                   :group/selected-contacts
                   :group/groups-order
+                  :accounts/account
                   :accounts/accounts
                   :accounts/account-creation?
                   :accounts/creating-account?
-                  :accounts/current-account-id
                   :accounts/recover
                   :accounts/login
                   :my-profile/drawer

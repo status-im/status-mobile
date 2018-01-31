@@ -223,15 +223,11 @@
    [settings-item-separator]
    [profile-info-public-key-item whisper-identity contact]])
 
-(defn navigate-to-accounts []
-  ;; TODO(rasom): probably not the best place for this call
-  (protocol/stop-whisper!)
-  (re-frame/dispatch [:navigate-to :accounts]))
-
 (defn handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) navigate-to-accounts))
+                           (i18n/label :t/logout)
+                           #(re-frame/dispatch [:logout])))
 
 (defn logout []
   [react/view {}

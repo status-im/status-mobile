@@ -371,16 +371,14 @@
    (re-frame/inject-cofx ::get-chat-groups)
    (re-frame/inject-cofx ::get-pending-messages)
    (re-frame/inject-cofx ::get-all-contacts)]
-  (fn [{:keys [db web3 groups contacts pending-messages]} [current-account-id ethereum-rpc-url]]
-    (let [{:keys [public-key status updates-public-key
-                  updates-private-key]}
-          (get-in db [:accounts/accounts current-account-id])]
+  (fn [{:keys [db web3 groups contacts pending-messages]} [ethereum-rpc-url]]
+    (let [{:keys [public-key status updates-public-key updates-private-key]} (:accounts/account db)]
       (when public-key
         {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
                          :updates-public-key updates-public-key :updates-private-key updates-private-key
                          :status status :contacts contacts}
          :db (assoc db :web3 web3
-                       :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
+                    :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
 
 (handlers/register-handler-fx
   :load-processed-messages
@@ -441,7 +439,7 @@
   (or ack-of-message message-id))
 
 (handlers/register-handler-fx
-  :incoming-message 
+  :incoming-message
   (fn [{:keys [db]} [_ type {:keys [payload ttl id] :as message}]]
     (let [message-id (or id (:message-id payload))]
       (when-not (cache/exists? message-id type)
@@ -475,13 +473,13 @@
                          :discoveries-response   {:dispatch [:discoveries-response-received message]}
                          :profile                {:dispatch [:contact-update-received message]}
                          :update-keys            {:dispatch [:update-keys-received message]}
-                         :online                 {:dispatch [:contact-online-received message]} 
+                         :online                 {:dispatch [:contact-online-received message]}
                          nil)]
           (when (nil? route-fx) (log/debug "Unknown message type" type))
           (cache/add! processed-message)
           (merge
-            {::save-processed-messages processed-message}
-            route-fx))))))
+           {::save-processed-messages processed-message}
+           route-fx))))))
 
 (handlers/register-handler-fx
   :update-message-status
@@ -489,16 +487,16 @@
   (fn [{:keys [db get-stored-message]} [{:keys [from sent-from payload]} status]]
     (let [message-identifier (get-message-id payload)
           chat-identifier    (or (:group-id payload) from)
-          message-db-path    [:chats chat-identifier :messages message-identifier] 
-          from-id            (or sent-from from) 
+          message-db-path    [:chats chat-identifier :messages message-identifier]
+          from-id            (or sent-from from)
           message            (get-stored-message message-identifier)]
-      ;; proceed with updating status if chat is in db, status is not the same and message was not already seen 
+      ;; proceed with updating status if chat is in db, status is not the same and message was not already seen
       (when (and (get-in db [:chats chat-identifier])
                  (not= status (get-in message [:user-statuses from-id]))
                  (not (chat.utils/message-seen-by? message from-id)))
         (let [statuses (assoc (:user-statuses message) from-id status)]
           (cond-> {:update-message {:message-id    message-identifier
-                                    :user-statuses statuses}} 
+                                    :user-statuses statuses}}
             (get-in db message-db-path)
             (assoc :db (assoc-in db (conj message-db-path :user-statuses) statuses))))))))
 

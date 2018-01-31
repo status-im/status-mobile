@@ -47,16 +47,16 @@
 
 (defview chat-toolbar []
   (letsubs [show-actions? [:get-current-chat-ui-prop :show-actions?]
-            accounts      [:get-accounts]
+            account       [:get-current-account]
             creating?     [:get :accounts/creating-account?]]
     [react/view
      [status-bar/status-bar]
      [toolbar/toolbar {:show-sync-bar? true}
       (when-not (or show-actions? creating?)
-        (if (empty? accounts)
+        (if account
+          toolbar/default-nav-back
           [toolbar/nav-clear-text (i18n/label :t/recover)
-           #(re-frame/dispatch [:navigate-to-modal :recover-modal])]
-          toolbar/default-nav-back))
+           #(re-frame/dispatch [:navigate-to-modal :recover-modal])]))
       [toolbar-content/toolbar-content-view]
       [toolbar-action show-actions?]]
      [add-contact-bar]]))
