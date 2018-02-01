@@ -46,7 +46,7 @@ dependency_setup ./re-natal deps
 dependency_setup ./re-natal enable-source-maps
 
 dependency_setup \
-  "mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack"
+  "mvn -f modules/react-native-status/ios/RCTStatus/pom.xml dependency:unpack"
 
 using_cocoapods && dependency_setup "cd ios && pod install && cd .."
 
