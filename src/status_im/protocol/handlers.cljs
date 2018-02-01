@@ -26,9 +26,9 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
-  ::get-web3
-  (fn [coeffects _]
-    (assoc coeffects :web3 (web3-provider/make-web3))))
+ :protocol/get-web3
+ (fn [coeffects _]
+   (assoc coeffects :web3 (web3-provider/make-web3))))
 
 (re-frame/reg-cofx
   ::get-chat-groups
@@ -367,7 +367,7 @@
 (handlers/register-handler-fx
   :initialize-protocol
   [re-frame/trim-v
-   (re-frame/inject-cofx ::get-web3)
+   (re-frame/inject-cofx :protocol/get-web3)
    (re-frame/inject-cofx ::get-chat-groups)
    (re-frame/inject-cofx ::get-pending-messages)
    (re-frame/inject-cofx ::get-all-contacts)]

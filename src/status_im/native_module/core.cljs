@@ -97,9 +97,7 @@
 
 (re-frame/reg-fx
   :status/create-account
-  (fn [{:keys [password on-success]}]
-    (println "THIS IS THE PASSWORD:" password)
-    (println "%%%%%%ONSUCCES&&&:" on-success)
+  (fn [{:keys [password success-event]}]
     (create-account
      password
-     #(re-frame/dispatch [on-success (json->clj %)]))))
+     #(re-frame/dispatch [success-event (json->clj %)]))))

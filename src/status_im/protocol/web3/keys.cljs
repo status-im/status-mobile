@@ -24,10 +24,10 @@
   (if (and web3 key-pair-id)
     (.. web3
         -shh
-        (getPublicKey (fn [err resp]
-                        (if-not err
-                          (on-success resp)
-                          (on-error err)))))
+        (getPublicKey key-pair-id (fn [err resp]
+                                    (if-not err
+                                      (on-success resp)
+                                      (on-error err)))))
     (on-error "web3 or key-pair id not available.")))
 
 (re-frame/reg-fx

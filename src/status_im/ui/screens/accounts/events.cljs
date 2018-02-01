@@ -15,7 +15,7 @@
             [status-im.utils.hex :as utils.hex]))
 
 (handlers/register-handler-fx
-  :error
+  :error-event
   (fn [_ [_ error]]
     (println "There was an error:" error)))
 
@@ -31,19 +31,20 @@
 (handlers/register-handler-fx
   ::create-account
   [(re-frame/inject-cofx ::get-signing-phrase)
-   (re-frame/inject-cofx ::get-status)]
-  (fn [{:keys [db signing-phrase status]} [_ password]]
+   (re-frame/inject-cofx ::get-status)
+   (re-frame/inject-cofx :protocol/get-web3)]
+  (fn [{:keys [db web3 signing-phrase status]} [_ password]]
     {:db (assoc db :accounts/new-account {:signing-phrase signing-phrase
                                           :status status})
      :status/create-account {:password password
-                             :on-success ::account-created-success}
-     :shh/get-new-key-pair {:web3 (:web3 db)
-                            :on-success ::get-new-key-pair-success
-                            :on-error   :error}}))
+                             :success-event ::account-created-success}
+     :shh/get-new-key-pair {:web3 web3
+                            :success-event ::get-new-key-pair-success
+                            :error-event   :error-event}}))
 
 (handlers/register-handler-fx
   ::account-created-success
-  (fn [{{:keys [network] :network/keys [networks] :as db} :db} [_ {:keys [pubkey address mnemonic]}]]
+  (fn [{{:keys [network] :networks/keys [networks] :as db} :db} [_ {:keys [pubkey address mnemonic]}]]
     (let [normalized-address (utils.hex/normalize-hex address)]
       {:db (assoc db :accounts/new-account {:network             network
                                             :networks            networks
@@ -57,11 +58,12 @@
 
 (handlers/register-handler-fx
   ::get-new-key-pair-success
-  (fn [{:keys [db]} [_ key-pair-id]]
+  [(re-frame/inject-cofx :protocol/get-web3)]
+  (fn [{:keys [db web3]} [_ key-pair-id]]
     {:db (assoc-in db [:accounts/new-account :updates-key-pair-id] key-pair-id)
-     :shh/get-public-key {:web3 (:web3 db)
+     :shh/get-public-key {:web3 web3
                           :key-pair-id key-pair-id
-                          :on-success ::get-public-key-success}}))
+                          :success-event ::get-public-key-success}}))
 
 (handlers/register-handler-fx
   ::get-public-key-success
@@ -72,7 +74,9 @@
   ::save-created-account
   (fn [{{:keys [new-account] :as db} :db} [_ password]]
     (let [{:keys [address mnemonic signing-phrase]} new-account]
-      {:db (assoc-in db [:accounts/accounts address] new-account)
+      {:db (-> db
+               (assoc-in [:accounts/accounts address] new-account)
+               (dissoc :accounts/new-account))
        :data-store.accounts/save new-account
        :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
                     [:login-account address password true]]})))
@@ -164,8 +168,8 @@
 
 (handlers/register-handler-fx
   :account-update-keys
-  [(re-frame/inject-cofx :get-new-keypair!)]
   (fn [{:keys [db keypair now]} _]
+    ;; TODO get new keypair
     (let [{:accounts/keys [account]} db
           {:keys [public private]} keypair
           new-account     (merge account {:updates-public-key  public
