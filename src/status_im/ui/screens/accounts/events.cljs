@@ -44,17 +44,19 @@
 
 (handlers/register-handler-fx
   ::account-created-success
-  (fn [{{:keys [network] :networks/keys [networks] :as db} :db} [_ {:keys [pubkey address mnemonic]}]]
+  (fn [{{:keys [network] :networks/keys [networks] :accounts/keys [new-account] :as db} :db}
+       [_ {:keys [pubkey address mnemonic]}]]
     (let [normalized-address (utils.hex/normalize-hex address)]
-      {:db (assoc db :accounts/new-account {:network             network
-                                            :networks            networks
-                                            :public-key          pubkey
-                                            :address             normalized-address
-                                            :name                (generate-gfy pubkey)
-                                            :signed-up?          true
-                                            :photo-path          (identicon pubkey)
-                                            :settings            {:wallet {:visible-tokens {:testnet #{:STT}
-                                                                                            :mainnet #{:SNT}}}}})})))
+      {:db (update db :accounts/new-account merge {:network             network
+                                                   :networks            networks
+                                                   :public-key          pubkey
+                                                   :address             normalized-address
+                                                   :name                (generate-gfy pubkey)
+                                                   :signed-up?          true
+                                                   :photo-path          (identicon pubkey)
+                                                   :settings            {:wallet {:visible-tokens {:testnet #{:STT}
+                                                                                                   :mainnet #{:SNT}}}}})
+       :dispatch [:show-mnemonic mnemonic (:signing-phrase new-account)]})))
 
 (handlers/register-handler-fx
   ::get-new-key-pair-success
@@ -72,14 +74,13 @@
 
 (handlers/register-handler-fx
   ::save-created-account
-  (fn [{{:keys [new-account] :as db} :db} [_ password]]
-    (let [{:keys [address mnemonic signing-phrase]} new-account]
+  (fn [{{:accounts/keys [new-account] :as db} :db} [_ password]]
+    (let [{:keys [address]} new-account]
       {:db (-> db
                (assoc-in [:accounts/accounts address] new-account)
                (dissoc :accounts/new-account))
        :data-store.accounts/save new-account
-       :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
-                    [:login-account address password true]]})))
+       :dispatch [:login-account address password true]})))
 
 ;;;; COFX
 (re-frame/reg-cofx
