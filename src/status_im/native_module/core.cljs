@@ -4,6 +4,7 @@
             [status-im.native-module.impl.non-status-go-module :as non-status-go-module]
             [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
+            [status-im.utils.types :refer [json->clj]]
             [status-im.utils.config :as config]))
 
 (def rns-module
