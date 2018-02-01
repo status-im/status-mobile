@@ -23,6 +23,7 @@
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]
             "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
   :figwheel {:nrepl-port 7888}
+  :jvm-opts ["--add-modules" "java.xml.bind"]
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.14"]
                                    [re-frisk-remote "0.5.3"]
                                    [re-frisk-sidecar "0.5.4"]
