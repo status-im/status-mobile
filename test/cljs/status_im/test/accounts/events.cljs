@@ -43,7 +43,7 @@
 (defn test-fixtures []
   (rf/reg-fx ::events/init-store #())
 
-  (rf/reg-fx ::account-events/save-account #())
+  (rf/reg-fx :data-store.accounts/save #())
   (rf/reg-fx ::account-events/broadcast-account-update #())
   (rf/reg-fx ::account-events/send-keys-update #())
 

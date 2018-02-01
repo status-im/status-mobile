@@ -1,10 +1,42 @@
 (ns status-im.protocol.web3.keys
-  (:require [taoensso.timbre :as log]))
+  (:require [taoensso.timbre :as log]
+            [re-frame.core :as re-frame]
+            [status-im.utils.handlers :as handlers]))
 
-(defn new-key-pair [web3 callback]
-  (.. web3
-      -shh
-      (newKeyPair callback)))
+(defn get-new-key-pair [{:keys [web3 on-success on-error]}]
+  (if web3
+    (.. web3
+        -shh
+        (newKeyPair (fn [err resp]
+                      (if-not err
+                        (on-success resp)
+                        (on-error err)))))
+    (on-error "web3 not available.")))
+
+(re-frame/reg-fx
+  :shh/get-new-key-pair
+  (fn [{:keys [web3 success-event error-event]}]
+    (get-new-key-pair {:web3       web3
+                       :on-success #(re-frame/dispatch [success-event %])
+                       :on-error   #(re-frame/dispatch [error-event %])})))
+
+(defn get-public-key [{:keys [web3 key-pair-id on-success on-error]}]
+  (if (and web3 key-pair-id)
+    (.. web3
+        -shh
+        (getPublicKey (fn [err resp]
+                        (if-not err
+                          (on-success resp)
+                          (on-error err)))))
+    (on-error "web3 or key-pair id not available.")))
+
+(re-frame/reg-fx
+  :shh/get-public-key
+  (fn [{:keys [web3 key-pair-id success-event error-event]}]
+    (get-public-key {:web3       web3
+                     :key-pair-id key-pair-id
+                     :on-success #(re-frame/dispatch [success-event %])
+                     :on-error   #(re-frame/dispatch [error-event %])})))
 
 (def status-key-password "status-key-password")
 (def status-group-key-password "status-public-group-key-password")

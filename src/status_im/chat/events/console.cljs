@@ -45,7 +45,9 @@
 (def console-commands->fx
   {"password"
    (fn [{:keys [db]} {:keys [params]}]
-     (accounts-events/create-account db (:password params)))
+     {:db         (assoc db :accounts/creating-account? true)
+      :async-flow (accounts-events/create-account-flow (:password params))
+      :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
 
    "faucet"
    (fn [{:keys [db random-id]} {:keys [params id]}]

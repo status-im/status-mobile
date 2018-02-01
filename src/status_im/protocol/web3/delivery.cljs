@@ -25,10 +25,10 @@
      key-password
      (fn [status-key-id]
        (callback
-        (cond-> {:sig     from
-                 :ttl     ttl
-                 :topic   (first topics)
-                 :payload payload}
+        (cond-> (merge {:sig     from
+                        :topic   (first topics)
+                        :payload payload}
+                       (select-keys message [:ttl]))
           to       (assoc :pubKey to)
           (not to) (assoc :symKeyID status-key-id
                           :sym-key-password sym-key-password)))))))

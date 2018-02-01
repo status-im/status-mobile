@@ -117,6 +117,7 @@
                   :group/selected-contacts
                   :group/groups-order
                   :accounts/account
+                  :accounts/new-account
                   :accounts/accounts
                   :accounts/account-creation?
                   :accounts/creating-account?

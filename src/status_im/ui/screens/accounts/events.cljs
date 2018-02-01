@@ -7,7 +7,6 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.random :as random]
-            [clojure.string :as str]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
             [status-im.ui.screens.accounts.statuses :as statuses]
@@ -15,30 +14,70 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.hex :as utils.hex]))
 
-;;;; Helper fns
+(handlers/register-handler-fx
+  :error
+  (fn [_ [_ error]]
+    (println "There was an error:" error)))
 
-(defn create-account
-  "Takes db and password, creates map of effects describing account creation"
-  [db password]
-  {:db              (assoc db :accounts/creating-account? true)
-   ::create-account password
-   ;; TODO(janherich): get rid of this shitty delayed dispatch once sending commands/msgs is refactored
-   :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
+;; Account creation
+
+(defn create-account-flow [password]
+  {:first-dispatch [::create-account password]
+   :rules [{:when :seen-both?
+            :events [::account-created-success
+                     ::get-public-key-success]
+            :dispatch [::save-created-account password]}]})
+
+(handlers/register-handler-fx
+  ::create-account
+  [(re-frame/inject-cofx ::get-signing-phrase)
+   (re-frame/inject-cofx ::get-status)]
+  (fn [{:keys [db signing-phrase status]} [_ password]]
+    {:db (assoc db :accounts/new-account {:signing-phrase signing-phrase
+                                          :status status})
+     :status/create-account {:password password
+                             :on-success ::account-created-success}
+     :shh/get-new-key-pair {:web3 (:web3 db)
+                            :on-success ::get-new-key-pair-success
+                            :on-error   :error}}))
+
+(handlers/register-handler-fx
+  ::account-created-success
+  (fn [{{:keys [network] :network/keys [networks] :as db} :db} [_ {:keys [pubkey address mnemonic]}]]
+    (let [normalized-address (utils.hex/normalize-hex address)]
+      {:db (assoc db :accounts/new-account {:network             network
+                                            :networks            networks
+                                            :public-key          pubkey
+                                            :address             normalized-address
+                                            :name                (generate-gfy pubkey)
+                                            :signed-up?          true
+                                            :photo-path          (identicon pubkey)
+                                            :settings            {:wallet {:visible-tokens {:testnet #{:STT}
+                                                                                            :mainnet #{:SNT}}}}})})))
+
+(handlers/register-handler-fx
+  ::get-new-key-pair-success
+  (fn [{:keys [db]} [_ key-pair-id]]
+    {:db (assoc-in db [:accounts/new-account :updates-key-pair-id] key-pair-id)
+     :shh/get-public-key {:web3 (:web3 db)
+                          :key-pair-id key-pair-id
+                          :on-success ::get-public-key-success}}))
+
+(handlers/register-handler-fx
+  ::get-public-key-success
+  (fn [{:keys [db]} [_ public-key]]
+    {:db (assoc-in db [:accounts/new-account :updates-public-key] public-key)}))
+
+(handlers/register-handler-fx
+  ::save-created-account
+  (fn [{{:keys [new-account] :as db} :db} [_ password]]
+    (let [{:keys [address mnemonic signing-phrase]} new-account]
+      {:db (assoc-in db [:accounts/accounts address] new-account)
+       :data-store.accounts/save new-account
+       :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
+                    [:login-account address password true]]})))
 
 ;;;; COFX
-
-(re-frame/reg-cofx
- :get-new-keypair!
- (fn [coeffects _]
-   ;;TODO implement
-   (assoc coeffects :keypair {:public  "new public"
-                              :private "new private"})))
-
-(re-frame/reg-cofx
- ::get-all-accounts
- (fn [coeffects _]
-   (assoc coeffects :all-accounts (accounts-store/get-all))))
-
 (re-frame/reg-cofx
  ::get-signing-phrase
  (fn [coeffects _]
@@ -50,18 +89,6 @@
    (assoc coeffects :status (rand-nth statuses/data))))
 
 ;;;; FX
-
-(re-frame/reg-fx
-  ::save-account
-  (fn [account]
-    (accounts-store/save account true)))
-
-(re-frame/reg-fx
-  ::create-account
-  (fn [password]
-    (status/create-account
-     password
-     #(re-frame/dispatch [::account-created (json->clj %) password]))))
 
 (re-frame/reg-fx
   ::broadcast-account-update
@@ -92,44 +119,6 @@
                                          :private updates-private-key}}}}))))
 ;;;; Handlers
 
-(defn add-account
-  "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
-  (let [enriched-account (assoc account
-                                :network network
-                                :networks networks
-                                :address address)]
-    {:db            (assoc-in db [:accounts/accounts address] enriched-account)
-     ::save-account enriched-account}))
-
-;; TODO(janherich) we have this handler here only because of the tests, refactor/improve tests ASAP
-(handlers/register-handler-fx
-  :add-account
-  (fn [{:keys [db]} [_ new-account]]
-    (add-account db new-account)))
-
-(handlers/register-handler-fx
-  ::account-created
-  [re-frame/trim-v (re-frame/inject-cofx :get-new-keypair!)
-   (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
-  (fn [{:keys [keypair signing-phrase status db] :as cofx} [{:keys [pubkey address mnemonic]} password]]
-    (let [normalized-address (utils.hex/normalize-hex address)
-          account            {:public-key          pubkey
-                              :address             normalized-address
-                              :name                (generate-gfy pubkey)
-                              :status              status
-                              :signed-up?          true
-                              :updates-public-key  (:public keypair)
-                              :updates-private-key (:private keypair)
-                              :photo-path          (identicon pubkey)
-                              :signing-phrase      signing-phrase
-                              :settings            {:wallet {:visible-tokens {:testnet #{:STT} :mainnet #{:SNT}}}}}]
-      (log/debug "account-created")
-      (when-not (str/blank? pubkey)
-        (-> (add-account db account)
-            (assoc :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
-                                [:login-account normalized-address password true]]))))))
-
 (handlers/register-handler-fx
   :create-new-account-handler
   (fn [_ _]
@@ -137,7 +126,7 @@
 
 (handlers/register-handler-fx
   :load-accounts
-  [(re-frame/inject-cofx ::get-all-accounts)]
+  [(re-frame/inject-cofx :data-store/accounts)]
   (fn [{:keys [db all-accounts]} _]
     (let [accounts (->> all-accounts
                         (map (fn [{:keys [address] :as account}]
@@ -156,11 +145,11 @@
     (let [current-account (get accounts id)
           new-account (assoc current-account :networks networks)]
       {:db            (assoc-in db [:accounts/accounts id] new-account)
-       ::save-account new-account})))
+       :data-store.accounts/save new-account})))
 
 (defn update-wallet-settings [{:accounts/keys [account] :as db} settings]
   {:db            (assoc-in db [:accounts/account :settings] settings)
-   ::save-account (assoc account :settings settings)})
+   :data-store.accounts/saveccount (assoc account :settings settings)})
 
 (defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update."
@@ -168,7 +157,7 @@
   (let [new-account (merge account new-account-fields)]
     (-> fx
         (update-in [:db :accounts/account] merge new-account-fields)
-        (assoc ::save-account new-account
+        (assoc :data-store.accounts/save new-account
                ::broadcast-account-update (merge (select-keys db [:current-public-key :web3])
                                                  (select-keys new-account [:name :photo-path :status
                                                                            :updates-public-key :updates-private-key]))))))
@@ -183,7 +172,7 @@
                                           :updates-private-key private
                                           :last-updated        now})]
       {:db                (assoc db :accounts/account new-account)
-       ::save-account     new-account
+       :data-store.accounts/save     new-account
        ::send-keys-update (merge
                            (select-keys db [:web3 :current-public-key :contacts])
                            (select-keys new-account [:updates-public-key

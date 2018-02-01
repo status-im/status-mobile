@@ -11,8 +11,8 @@
 (spec/def :account/email nil?)
 (spec/def :account/signed-up? (spec/nilable boolean?))
 (spec/def :account/last-updated (spec/nilable int?))
-(spec/def :account/updates-private-key :global/not-empty-string)
 (spec/def :account/updates-public-key :global/not-empty-string)
+(spec/def :account/updates-key-pair-id :global/not-empty-string)
 (spec/def :account/photo-path (spec/nilable string?))
 (spec/def :account/debug? (spec/nilable boolean?))
 (spec/def :account/status (spec/nilable string?))
@@ -25,10 +25,11 @@
                               :req-un [:account/name :account/address :account/public-key
                                        :account/photo-path :account/signing-phrase]
                               :opt-un [:account/debug? :account/status :account/last-updated
-                                       :account/updates-private-key :account/updates-public-key
+                                       :account/updates-public-key :account/updates-key-pair-id
                                        :account/email :account/signed-up? :account/network
                                        :account/networks :account/settings]))
 
+(spec/def :accounts/new-account map?)
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 
 ;;true during creating new account

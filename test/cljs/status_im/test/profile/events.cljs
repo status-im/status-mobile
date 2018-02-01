@@ -22,7 +22,7 @@
 
 (defn test-fixtures []
   (rf/reg-fx ::events/init-store #())
-  (rf/reg-fx ::account-events/save-account #()))
+  (rf/reg-fx :data-store.accounts/save #()))
 
 (deftest profile-edit-events
   (run-test-sync

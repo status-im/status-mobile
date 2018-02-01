@@ -28,25 +28,22 @@
 
 (register-handler-fx
   :account-recovered
-  [(inject-cofx :get-new-keypair!)]
-  (fn [{:keys [db keypair]} [_ result]]
+  (fn [{:keys [db]} [_ result]]
     (let [data       (json->clj result)
           public-key (:pubkey data)
           address    (-> data :address utils.hex/normalize-hex)
           phrase     (signing-phrase/generate)
-          {:keys [public private]} keypair
           account {:public-key          public-key
                    :address             address
                    :name                (generate-gfy public-key)
                    :photo-path          (identicon public-key)
-                   :updates-public-key  public
-                   :updates-private-key private
+                   :updates-public-key  "public" ;TODO
                    :signed-up?          true
                    :signing-phrase      phrase}]
       (log/debug "account-recovered")
       (when-not (str/blank? public-key)
-        (-> db 
-            (accounts-events/add-account account)
+        (-> db
+            #_(accounts-events/add-account account) ;;TODO
             (assoc :dispatch [:navigate-to-clean :accounts]))))))
 
 (register-handler-fx
