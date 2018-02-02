@@ -26,6 +26,7 @@
 (def defs (get-class "Defs"))
 
 (def icons {:icons/discover            (slurp-svg "./resources/icons/bottom/discover_gray.svg")
+            :icons/contacts            (slurp-svg "./resources/icons/bottom/contacts_gray.svg")
             :icons/home                (slurp-svg "./resources/icons/bottom/home_gray.svg")
             :icons/home-active         (slurp-svg "./resources/icons/bottom/home_blue.svg")
             :icons/profile             (slurp-svg "./resources/icons/bottom/profile_gray.svg")
@@ -75,7 +76,8 @@
             :icons/open                (slurp-svg "./resources/icons/open.svg")
             :icons/network             (slurp-svg "./resources/icons/network.svg")
             :icons/wnode               (slurp-svg "./resources/icons/wnode.svg")
-            :icons/refresh             (slurp-svg "./resources/icons/refresh.svg")})
+            :icons/refresh             (slurp-svg "./resources/icons/refresh.svg")
+            :icons/newchat             (slurp-svg "./resources/icons/newchat.svg")})
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

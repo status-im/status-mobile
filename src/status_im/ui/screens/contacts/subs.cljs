@@ -33,6 +33,11 @@
   (fn [contacts]
     (remove #(true? (:dapp? %)) contacts)))
 
+(reg-sub :all-dapp-with-url-contacts
+  :<- [:all-added-contacts]
+  (fn [contacts]
+    (filter #(and (true? (:dapp? %)) (:dapp-url %)) contacts)))
+
 (reg-sub :people-in-current-chat
   :<- [:current-chat-contacts]
   (fn [contacts]

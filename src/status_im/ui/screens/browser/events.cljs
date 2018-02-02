@@ -25,6 +25,9 @@
   (fn [browser]
     (browser-store/save browser)))
 
+(defn match-url [url]
+  (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
+
 (defn get-new-browser [browser now]
   (cond-> browser
           true
@@ -32,7 +35,9 @@
           (not (:browser-id browser))
           (assoc :browser-id (random/id))
           (not (:name browser))
-          (assoc :name (i18n/label :t/browser))))
+          (assoc :name (i18n/label :t/browser))
+          (:url browser)
+          (update :url match-url)))
 
 (defn add-browser-fx [{:keys [db now] :as cofx} browser]
   (let [new-browser (get-new-browser browser now)]

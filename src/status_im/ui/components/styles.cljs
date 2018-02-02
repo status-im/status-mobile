@@ -7,7 +7,7 @@
 (def color-blue "#7099e6")
 (def color-blue2 "#5b6dee")
 (def color-blue3 "#424fae")
-(def color-blue4 "#4360df")
+(def color-blue4 "#4360df") ; colors/blue
 (def color-blue4-faded "rgba(67,96,222,0.87)")
 (def color-blue4-transparent "rgba(67, 96, 223, 0.10)")
 (def color-blue5 "#3c56c8")

@@ -12,11 +12,11 @@
             [status-im.ui.screens.accounts.views :refer [accounts]]
 
             [status-im.chat.screen :refer [chat]]
-            [status-im.chat.new-chat.view :refer [new-chat]]
+            [status-im.ui.screens.add-new.views :refer [add-new]]
+            [status-im.ui.screens.add-new.new-chat.views :refer [new-chat]]
             [status-im.chat.new-public-chat.view :refer [new-public-chat]]
 
             [status-im.ui.screens.contacts.contact-list-modal.views :refer [contact-list-modal]]
-            [status-im.ui.screens.contacts.new-contact.views :refer [new-contact]]
 
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
@@ -53,7 +53,8 @@
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]
-            [status-im.ui.screens.browser.views :refer [browser]]))
+            [status-im.ui.screens.browser.views :refer [browser]]
+            [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]))
 
 (defn validate-current-view
   [current-view signed-up?]
@@ -135,6 +136,8 @@
         (let [component (case current-view
                           (:home :wallet :my-profile) main-tabs
                           :browser browser
+                          :open-dapp open-dapp
+                          :dapp-description dapp-description
                           :wallet-send-transaction send-transaction
                           :wallet-transaction-sent transaction-sent
                           :wallet-request-transaction request-transaction
@@ -142,7 +145,7 @@
                           :wallet-transaction-details wallet-transactions/transaction-details
                           :wallet-send-assets wallet.components/send-assets
                           :wallet-request-assets wallet.components/request-assets
-                          :new-chat new-chat
+                          :new add-new
                           :new-group new-group
                           :edit-contact-group edit-contact-group
                           :chat-group-settings chat-group-settings
@@ -153,7 +156,7 @@
                           :new-public-chat new-public-chat
                           :contact-toggle-list contact-toggle-list
                           :reorder-groups reorder-groups
-                          :new-contact new-contact
+                          :new-chat new-chat
                           :qr-scanner qr-scanner
                           :chat chat
                           :profile profile/profile

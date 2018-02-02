@@ -64,6 +64,12 @@
           :height 40
           :margin 0}))
 
+(defn custom-size-icon [size]
+  (merge chat-icon
+         {:width  size
+          :height size
+          :margin 0}))
+
 (def chat-icon-menu-item
   {:width         24
    :height        24

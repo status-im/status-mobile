@@ -1,5 +1,5 @@
 (ns status-im.ui.components.contact.contact
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :refer [view touchable-highlight text]]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.chat-icon.screen :refer [contact-icon-contacts-tab]]
@@ -27,27 +27,28 @@
        [text {:style st/info-text}
         info])]]))
 
-(defn contact-view [{:keys [contact extended? on-press extend-options info]}]
+(defn contact-view [{:keys [contact extended? on-press extend-options info show-forward?]}]
   [touchable-highlight (when-not extended?
                          {:on-press (when on-press #(on-press contact))})
-   [view
     [view st/contact-container
      [contact-inner-view {:contact contact :info info}]
+     (when show-forward?
+       [view st/forward-btn
+        [vi/icon :icons/forward]])
      (when (and extended? (not (empty? extend-options)))
        [view st/more-btn-container
         [context-menu
          [vi/icon :icons/options {:accessibility-label :options}]
          extend-options
          nil
-         st/more-btn]])]]])
+         st/more-btn]])]])
 
 (defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
-  [checked [selected-key whisper-identity]]
-  [touchable-highlight {:on-press #(on-toggle-handler checked whisper-identity)}
-   [view
-    [view (merge st/contact-container (when checked {:style st/selected-contact}))
-     [contact-inner-view (merge {:contact contact}
-                                (when checked {:style st/selected-contact}))]
-     [view (st/icon-check-container checked)
-      (when checked
-        [vi/icon :icons/ok {:style st/check-icon}])]]]])
+  (letsubs [checked [selected-key whisper-identity]]
+    [touchable-highlight {:on-press #(on-toggle-handler checked whisper-identity)}
+      [view (merge st/contact-container (when checked {:style st/selected-contact}))
+       [contact-inner-view (merge {:contact contact}
+                                  (when checked {:style st/selected-contact}))]
+       [view (st/icon-check-container checked)
+        (when checked
+          [vi/icon :icons/ok {:style st/check-icon}])]]]))

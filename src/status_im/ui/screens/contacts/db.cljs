@@ -1,14 +1,8 @@
 (ns status-im.ui.screens.contacts.db
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
-            status-im.utils.db
             [clojure.string :as string]
-            [status-im.data-store.contacts :as contacts]))
-
-(defn contact-can-be-added? [identity]
-  (if (contacts/exists? identity)
-    (:pending? (contacts/get-by-id identity))
-    true))
+            status-im.utils.db))
 
 ;;;; DB
 
@@ -91,6 +85,3 @@
 (spec/def :contacts/click-action (spec/nilable #{:send :request}))
 ;used in modal list (for example for wallet)
 (spec/def :contacts/click-params (spec/nilable map?))
-
-
-

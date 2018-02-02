@@ -20,7 +20,7 @@
    [toolbar/content-title (i18n/label :t/status)]
    [toolbar/actions
     (when platform/ios?
-      [(toolbar.actions/add #(re-frame/dispatch [:navigate-to :new-chat]))])]])
+      [(toolbar.actions/add #(re-frame/dispatch [:navigate-to :new]))])]])
 
 (defn home-action-button []
   [native-action-button {:button-color        components.styles/color-blue
@@ -29,7 +29,7 @@
                          :spacing             13
                          :hide-shadow         true
                          :accessibility-label :plus-button
-                         :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}])
+                         :on-press            #(re-frame/dispatch [:navigate-to :new])}])
 
 (defn home-list-item [[home-item-id home-item]]
   (if (:chat-id home-item)

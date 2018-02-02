@@ -1,6 +1,7 @@
 (ns status-im.ui.components.action-button.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.ui.components.colors :as colors]))
 
 (defstyle action-button
   {:padding-left   16
@@ -20,13 +21,10 @@
 (def action-button-label-container
   {:padding-left 16})
 
-(defstyle action-button-label
-  {:ios     {:color          styles/color-light-blue
-             :letter-spacing -0.2
-             :font-size      17
-             :line-height    20}
-   :android {:color          styles/color-black
-             :font-size      16}})
+(def action-button-label
+  {:color          colors/blue
+   :letter-spacing -0.2
+   :font-size      16})
 
 (defstyle actions-list
   {:background-color styles/color-white

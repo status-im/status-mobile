@@ -14,7 +14,7 @@
    :open                                  "Open"
    :description                           "Description"
    :enter-url                             "Enter URL"
-   :open-url                              "Open URL"
+   :open-dapp                             "Open ÐApp"
    :url                                   "URL"
    :type-a-message                        "Type a message..."
    :type-a-command                        "Start typing a command..."
@@ -142,6 +142,11 @@
    :phone-significant                     "Significant"
 
    ;;chats
+   :new                                   "New"
+   :new-chat                              "New chat"
+   :start-new-chat                        "Start new chat"
+   :start-group-chat                      "Start group chat"
+   :invite-friends                        "Invite friends"
    :chats                                 "Chats"
    :delete-chat                           "Delete chat"
    :new-group-chat                        "New group chat"
@@ -188,6 +193,7 @@
    :show-qr                               "Show QR code"
    :qr-code-public-key-hint               "Share this code to \nstart chatting"
    :enter-address                         "Enter address"
+   :enter-contact-code                    "Enter contact code"
    :more                                  "more"
 
    ;;group-settings
@@ -227,6 +233,7 @@
    :scan-qr                               "Scan QR code"
    :name                                  "Name"
    :address-explication                   "Your public key is used to generate your address on Ethereum and is a series of numbers and letters. You can find it easily in your profile"
+   :use-valid-contact-code                "Please enter a valid contact code"
    :enter-valid-public-key                "Please enter a valid public key or scan a QR code"
    :contact-already-added                 "The contact has already been added"
    :can-not-add-yourself                  "You can't add yourself"
@@ -265,7 +272,6 @@
    :recipient                             "Recipient"
    :specify-recipient                     "Specify recipient..."
    :recipient-code                        "Enter recipient address"
-   :enter-contact-code                    "Enter Contact Code"
    :recent-recipients                     "Recent recipients"
    :to                                    "To"
    :from                                  "From"
@@ -397,4 +403,5 @@
    ;; browser
    :browser                               "Browser"
    :enter-dapp-url                        "Enter a ÐApp URL"
-   :dapp                                  "ÐApp"})
+   :dapp                                  "ÐApp"
+   :selected-dapps                        "Selected ÐApps"})

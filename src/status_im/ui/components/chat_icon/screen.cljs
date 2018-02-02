@@ -131,15 +131,15 @@
     :default-chat-icon      (styles/default-chat-icon-chat-list components.styles/default-chat-color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
-(defn dapp-icon-browser [contact]
+(defn dapp-icon-browser [contact size]
   [contact-icon-view contact
-   {:container              styles/container-chat-list
+   {:container              {:width size :height size}
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
     :online-dot-left        styles/online-dot-left
     :online-dot-right       styles/online-dot-right
-    :size                   36
-    :chat-icon              styles/chat-icon-chat-list
+    :size                   size
+    :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-chat-list components.styles/default-chat-color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 

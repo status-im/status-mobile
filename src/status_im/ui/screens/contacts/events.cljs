@@ -22,8 +22,9 @@
             [status-im.chat.console :as console-chat]
             [status-im.commands.events.loading :as loading-events]
             [cljs.spec.alpha :as spec]
-            [status-im.protocol.web3.utils :as web3.utils]))
-
+            [status-im.protocol.web3.utils :as web3.utils]
+            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [clojure.string :as string]))
 ;;;; COFX
 
 (reg-cofx
@@ -145,22 +146,6 @@
       (http-post "get-contacts" {:phone-number-hashes data}
                  (fn [{:keys [contacts]}]
                    (dispatch (on-contacts-event-creator (add-identity contacts-by-hash contacts))))))))
-
-(reg-fx
-  ::request-contact-by-address
-  (fn [id]
-    (http-post "get-contacts-by-address" {:addresses [id]}
-               (fn [{:keys [contacts]}]
-                 (if-let [contact (first contacts)]
-                   (let [{:keys [whisper-identity]} contact
-                         contact {:name             (generate-gfy whisper-identity)
-                                  :address          id
-                                  :photo-path       (identicon whisper-identity)
-                                  :whisper-identity whisper-identity}]
-                     (if (contacts/exists? whisper-identity)
-                       (dispatch [:add-pending-contact-and-open-chat whisper-identity])
-                       (dispatch [:add-new-contact-and-open-chat contact])))
-                   (dispatch [:set :contacts/new-public-key-error (label :t/unknown-address)]))))))
 
 ;;;; Handlers
 
@@ -370,10 +355,13 @@
         (update :db #(navigation/navigate-to-clean % :home))
         (assoc :dispatch [:start-chat whisper-id {:navigation-replace? true}]))))
 
-(register-handler-db
+(register-handler-fx
   :set-contact-identity-from-qr
-  (fn [db [_ _ contact-identity]]
-    (assoc db :contacts/new-identity contact-identity)))
+  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db} [_ _ contact-identity]]
+    (let [current-account (get accounts current-account-id)]
+      (cond-> {:db (assoc db :contacts/new-identity contact-identity)}
+              (not (new-chat.db/validate-pub-key contact-identity current-account))
+              (assoc :dispatch [:add-contact-handler])))))
 
 (register-handler-fx
   :contact-update-received
@@ -443,9 +431,7 @@
                    (assoc :group/group-type group-type
                           :group/selected-contacts #{}
                           :new-chat-name "")
-                   (assoc-in [:toolbar-search :show] nil)
-                   (assoc-in [:toolbar-search :text] "")
-                   (navigation/navigate-to-clean :contact-toggle-list))}))
+                   (navigation/navigate-to :contact-toggle-list))}))
 
 (register-handler-fx
   :open-chat-with-contact
@@ -457,11 +443,11 @@
 
 (register-handler-fx
   :add-contact-handler
-  (fn [{:keys [db]} [_ id]]
-    (if (spec/valid? :global/address id)
-      {::request-contact-by-address id}
-      {:dispatch (if (get-in db [:contacts/contacts id])
-                   [:add-pending-contact-and-open-chat id]
-                   [:add-new-contact-and-open-chat {:name             (generate-gfy id)
-                                                    :photo-path       (identicon id)
-                                                    :whisper-identity id}])})))
+  (fn [{:keys [db]}]
+    (let [{:contacts/keys [new-identity]} db]
+      (when (and new-identity (not (string/blank? new-identity)))
+        {:dispatch (if (get-in db [:contacts/contacts new-identity])
+                     [:add-pending-contact-and-open-chat new-identity]
+                     [:add-new-contact-and-open-chat {:name             (generate-gfy new-identity)
+                                                      :photo-path       (identicon new-identity)
+                                                      :whisper-identity new-identity}])}))))

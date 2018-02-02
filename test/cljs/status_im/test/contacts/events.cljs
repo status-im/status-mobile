@@ -260,7 +260,8 @@
           ;; :status-im.contacts.events/send-contact-request
           ;;TODO :start-chat
 
-          (rf/dispatch [:add-contact-handler new-contact-public-key])
+          (rf/dispatch [:set :contacts/new-identity new-contact-public-key])
+          (rf/dispatch [:add-contact-handler])
 
           (testing "it returns the new contact from the contact-by-identity sub"
             (is (= new-contact (assoc @contact :photo-path "" :name ""))))
@@ -353,8 +354,8 @@
 
                   (rf/dispatch [:set :view-id nil])
                   (rf/dispatch [:set :current-chat-id nil])
-
-                  (rf/dispatch [:add-contact-handler new-contact-public-key])
+                  (rf/dispatch [:set :contacts/new-identity new-contact-public-key])
+                  (rf/dispatch [:add-contact-handler])
 
                   (testing "it sets the pending? flag to false"
                     (is (= (assoc received-contact'' :pending? false)

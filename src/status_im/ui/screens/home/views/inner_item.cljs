@@ -123,7 +123,7 @@
     [react/view styles/chat-container
      [react/view styles/chat-icon-container
       (if contact'
-        [chat-icon.screen/dapp-icon-browser contact']
+        [chat-icon.screen/dapp-icon-browser contact' 36]
         [react/view styles/browser-icon-container
          [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
      [react/view styles/chat-info-container

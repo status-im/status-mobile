@@ -21,7 +21,7 @@
 
 (defstyle name-text
   {:color   common/text1-color
-   :android {:font-size      16}
+   :android {:font-size 16}
    :ios     {:font-size      17
              :letter-spacing -0.2}})
 
@@ -34,6 +34,12 @@
   {:flex-direction   :row
    :align-items      :center
    :background-color common/color-white})
+
+(def forward-btn
+  {:opacity        0.4
+   :padding        12
+   :alignItems     :center
+   :justifyContent :center})
 
 (def more-btn-container
   {:alignItems     :center
@@ -53,15 +59,15 @@
 
 (defnstyle icon-check-container [checked]
   {:background-color (if checked common/color-light-blue common/color-gray5)
-   :alignItems     :center
-   :justifyContent :center
-   :margin-right   16
-   :android        {:border-radius 2
-                    :width         17
-                    :height        17}
-   :ios            {:border-radius 50
-                    :width         24
-                    :height        24}})
+   :alignItems       :center
+   :justifyContent   :center
+   :margin-right     16
+   :android          {:border-radius 2
+                      :width         17
+                      :height        17}
+   :ios              {:border-radius 50
+                      :width         24
+                      :height        24}})
 
 (def check-icon
   {:width  12

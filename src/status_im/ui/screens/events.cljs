@@ -23,6 +23,7 @@
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.browser.events
+            status-im.ui.screens.add-new.open-dapp.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
@@ -349,7 +350,7 @@
       "local-storage" (re-frame/dispatch [:set-local-storage {:chat-id chat_id
                                                               :data    data}])
       "show-suggestions" (re-frame/dispatch [:show-suggestions-from-jail {:chat-id chat_id
-                                                                 :markup  data}])
+                                                                          :markup  data}])
       "send-message" (re-frame/dispatch [:chat-send-message/from-jail {:chat-id chat_id
                                                                        :message data}])
       "handler-result" (let [orig-params (:origParams data)]

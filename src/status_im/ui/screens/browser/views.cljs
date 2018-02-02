@@ -17,7 +17,7 @@
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:contact-by-identity contact-identity]]
     [react/view styles/toolbar-content-dapp
-     [chat-icon.screen/dapp-icon-browser contact]
+     [chat-icon.screen/dapp-icon-browser contact 36]
      [react/view styles/dapp-name
       [react/text {:style           styles/dapp-name-text
                    :number-of-lines 1
@@ -26,14 +26,11 @@
       [react/text {:style styles/dapp-text}
        (i18n/label :t/dapp)]]]))
 
-(defn match-url [url]
-  (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
-
 (defn toolbar-content [{:keys [url] :as browser}]
   (let [url-text (atom nil)]
     [react/view (styles/toolbar-content false)
      [react/text-input {:on-change-text    #(reset! url-text %)
-                        :on-submit-editing #(re-frame/dispatch [:update-browser (assoc browser :url (match-url @url-text))])
+                        :on-submit-editing #(re-frame/dispatch [:update-browser (assoc browser :url @url-text)])
                         :auto-focus        (not url)
                         :placeholder       (i18n/label :t/enter-url)
                         :default-value     url
