@@ -31,14 +31,14 @@
    (assoc coeffects :web3 (web3-provider/make-web3))))
 
 (re-frame/reg-cofx
-  ::get-chat-groups
-  (fn [coeffects _]
-    (assoc coeffects :groups (chats/get-active-group-chats))))
+ ::get-chat-groups
+ (fn [coeffects _]
+   (assoc coeffects :groups (chats/get-active-group-chats))))
 
 (re-frame/reg-cofx
-  ::get-pending-messages
-  (fn [coeffects _]
-    (assoc coeffects :pending-messages (pending-messages/get-all))))
+ ::get-pending-messages
+ (fn [coeffects _]
+   (assoc coeffects :pending-messages (pending-messages/get-all))))
 
 (re-frame/reg-cofx
   ::get-all-contacts
@@ -80,7 +80,7 @@
 
 (re-frame/reg-fx
   ::init-whisper
-  (fn [{:keys [web3 public-key groups updates-public-key updates-private-key status contacts pending-messages]}]
+  (fn [{:keys [web3 public-key groups updates-key-pair-id status contacts pending-messages]}]
     (protocol/init-whisper!
      {:web3                        web3
       :identity                    public-key
@@ -92,8 +92,7 @@
       :ttl-config                  {:public-group-message 2400}
       :max-attempts-number         3
       :delivery-loop-ms-interval   500
-      :profile-keypair             {:public  updates-public-key
-                                    :private updates-private-key}
+      :updates-key-pair-id         updates-key-pair-id
       :hashtags                    (mapv name (handlers/get-hashtags status))
       :pending-messages            pending-messages
       :contacts                    (keep (fn [{:keys [whisper-identity
@@ -372,10 +371,10 @@
    (re-frame/inject-cofx ::get-pending-messages)
    (re-frame/inject-cofx ::get-all-contacts)]
   (fn [{:keys [db web3 groups contacts pending-messages]} [ethereum-rpc-url]]
-    (let [{:keys [public-key status updates-public-key updates-private-key]} (:accounts/account db)]
+    (let [{:keys [public-key status updates-key-pair-id]} (:accounts/account db)]
       (when public-key
         {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
-                         :updates-public-key updates-public-key :updates-private-key updates-private-key
+                         :updates-key-pair-id updates-key-pair-id
                          :status status :contacts contacts}
          :db (assoc db :web3 web3
                     :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
