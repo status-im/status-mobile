@@ -292,8 +292,8 @@
    (navigate-to-chat cofx chat-id false))
   ([cofx chat-id navigation-replace?]
    (let [nav-fn (if navigation-replace?
-                  #(navigation/navigate-to % :chat)
-                  #(navigation/replace-view % :chat))]
+                  #(navigation/replace-view % :chat)
+                  #(navigation/navigate-to % :chat))]
      (-> (preload-chat-data cofx chat-id)
          (update :db nav-fn)))))
 
