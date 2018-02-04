@@ -50,3 +50,38 @@
   (s/keys :req-un [:payload/content :payload/content-type :payload/timestamp]))
 
 (s/def :options/web3 #(not (nil? %)))
+
+
+
+
+
+(defmulti prepare-message :type)
+
+(s/def :send-online/message
+  (s/merge :protocol/message
+           (s/keys :req-un [:message/keypair])))
+(s/def :send-online/options
+  (s/keys :req-un [:options/web3 :send-online/message]))
+
+(def discover-topic-prefix "status-discover-")
+(def discover-topic "0xbeefdead")
+
+(defn- make-discover-topic [identity]
+  (str discover-topic-prefix identity))
+
+
+(def discovery-key-password "status-discovery")
+
+
+(defmethod prepare-message :online
+  [payload]
+  {:sig      identity
+   :symKeyID sym-key-id
+   :ttl      ttl
+   :payload  {:type :online
+              :message-id (random/id)
+              :content {:timestamp (u/timestamp)}
+              :requires-ack? false}
+   :topic    f/status-topic})
+
+:pubkey

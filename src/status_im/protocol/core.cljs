@@ -7,14 +7,15 @@
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
             [status-im.protocol.web3.utils :as u]
-            [status-im.protocol.web3.keys :as shh-keys]
             [status-im.protocol.chat :as chat]
             [status-im.protocol.group :as group]
             [status-im.protocol.listeners :as l]
             [status-im.protocol.discoveries :as discoveries]
             [cljs.spec.alpha :as s]
             [status-im.utils.config :as config]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [re-frame.core :as re-frame]
+            status-im.protocol.web3.shh))
 
 ;; user
 (def send-message! chat/send!)
@@ -34,8 +35,7 @@
 
 ;; encryption
 ;; todo move somewhere, encryption functions shouldn't be there
-(def new-keypair! (fn [] {:public  "new public"
-                          :private "new private"}))
+(def new-keypair! nil)
 
 (def watch-user! discoveries/watch-user!)
 (def stop-watching-user! discoveries/stop-watching-user!)
@@ -45,8 +45,6 @@
 (def send-discoveries-request! discoveries/send-discoveries-request!)
 (def send-discoveries-response! discoveries/send-discoveries-response!)
 (def update-keys! discoveries/update-keys!)
-
-(def message-pending? d/message-pending?)
 
 ;; initialization
 (s/def ::identity string?)
@@ -63,63 +61,54 @@
 (s/def ::profile-keypair :message/keypair)
 (s/def ::options
   (s/merge
-    (s/keys :req-un [::identity ::groups ::profile-keypair
-                     ::callback :discoveries/hashtags ::contacts])
-    ::d/delivery-options))
+   (s/keys :req-un [::identity ::groups ::profile-keypair
+                    ::callback :discoveries/hashtags ::contacts])
+   ::d/delivery-options))
 
-(def stop-watching-all! f/remove-all-filters!)
-(def reset-all-pending-messages! d/reset-all-pending-messages!)
-(def reset-keys! shh-keys/reset-keys!)
+(re-frame/reg-fx
+  :whisper/stop
+  (fn []
+    (f/remove-all-filters!)))
 
-(defn stop-whisper! []
-  (stop-watching-all!)
-  (reset-all-pending-messages!)
-  (reset-keys!))
-
-(defn init-whisper!
-  [{:keys [identity groups callback web3
-           contacts profile-keypair pending-messages]
-    :as   options}]
-  {:pre [(valid? ::options options)]}
-  (debug :init-whisper)
-  (stop-whisper!)
-  (let [listener-options {:web3     web3
-                          :identity identity
-                          :callback callback}]
-    ;; start listening to groups
+(re-frame/reg-fx
+  :whisper/start-listening-groups
+  (fn []
     (doseq [group groups]
       (let [options (merge listener-options group)]
-        (group/start-watching-group! options)))
-    ;; start listening to user's inbox
+        (group/start-watching-group! options)))))
+
+(re-frame/reg-fx
+  :whisper/start-listening-inbox
+  (fn []
     (if config/offline-inbox-enabled?
       (do (log/info "offline inbox: flag enabled")
           (f/add-filter!
-            web3
-            {:key      identity
-             :allowP2P true
-             :topics  (f/get-topics identity)}
-            (l/message-listener listener-options))
-          (inbox/initialize! web3))
-      (f/add-filter!
-        web3
-        {:key    identity
-         :topics (f/get-topics identity)}
-        (l/message-listener listener-options)))
+           web3
+           {:key      identity
+            :allowP2P true
+            :topics  (f/get-topics identity)}
+           (l/message-listener listener-options))
+          (inbox/initialize! web3)))))
 
-    ;; start listening to profiles
+(re-frame/reg-fx
+  :whisper/start-listening-chats
+  (fn []
+    (f/add-filter!
+     web3
+     {:key    identity
+      :topics (f/get-topics identity)}
+     (l/message-listener listener-options))))
+
+(re-frame/reg-fx
+  :whisper/start-listening-profiles
+  (fn []
     (doseq [{:keys [identity keypair]} contacts]
       (watch-user! {:web3     web3
                     :identity identity
                     :keypair  keypair
-                    :callback callback}))
-    (d/set-pending-mesage-callback! callback)
-    (let [online-message #(discoveries/send-online!
-                            {:web3    web3
-                             :message {:from       identity
-                                       :message-id (random/id)
-                                       :keypair    profile-keypair}})]
-      (d/run-delivery-loop!
-        web3
-        (assoc options :online-message online-message)))
-    (doseq [pending-message pending-messages]
-      (d/add-prepared-pending-message! web3 pending-message))))
+                    :callback callback}))))
+
+(handlers/register-handler-fx
+  :whisper/send-online-message
+  (fn []
+    ))

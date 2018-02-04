@@ -38,8 +38,6 @@
   (fn [& args]
     (is (contains? #{:sent :pending} (first args)))
     (when (= (first args) :sent)
-      (protocol/reset-all-pending-messages!)
-      (protocol/stop-watching-all!)
       (node/stop!)
       (done)
       (utils/exit!))))

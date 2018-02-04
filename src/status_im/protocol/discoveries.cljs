@@ -10,64 +10,29 @@
    [status-im.utils.random :as random]
    [status-im.protocol.web3.keys :as shh-keys]))
 
-(def discover-topic-prefix "status-discover-")
-(def discover-topic "0xbeefdead")
-
-(defn- make-discover-topic [identity]
-  (str discover-topic-prefix identity))
-
-(s/def :send-online/message
-  (s/merge :protocol/message
-           (s/keys :req-un [:message/keypair])))
-(s/def :send-online/options
-  (s/keys :req-un [:options/web3 :send-online/message]))
-
-(def discovery-key-password "status-discovery")
-
-(defn send-online!
-  [{:keys [web3 message] :as options}]
-  {:pre [(valid? :send-online/options options)]}
-  (debug :send-online)
-  (let [message' (merge
-                  message
-                  {:requires-ack? false
-                   :type          :online
-                   :key-password  discovery-key-password
-                   :payload       {:content {:timestamp (u/timestamp)}}
-                   :topics        [f/status-topic]})]
-    (d/add-pending-message! web3 message')))
-
 (s/def ::identity :message/from)
 (s/def :watch-user/options
   (s/keys :req-un [:options/web3 :message/keypair ::identity ::callback]))
 
 (defn watch-user!
-  [{:keys [web3 identity] :as options}]
+  [{:keys [web3 identity key-id] :as options}]
   {:pre [(valid? :watch-user/options options)]}
-  (shh-keys/get-sym-key
+  (f/add-filter!
    web3
-   discovery-key-password
-   (fn [key-id]
-     (f/add-filter!
-      web3
-      {:sig    identity
-       :topics [f/status-topic]
-       :key    key-id
-       :type   :sym}
-      (l/message-listener (dissoc options :identity))))))
+   {:sig    identity
+    :topics [f/status-topic]
+    :key    key-id
+    :type   :sym}
+   (l/message-listener (dissoc options :identity))))
 
 (defn stop-watching-user!
-  [{:keys [web3 identity]}]
-  (shh-keys/get-sym-key
+  [{:keys [web3 identity key-id]}]
+  (f/remove-filter!
    web3
-   discovery-key-password
-   (fn [key-id]
-     (f/remove-filter!
-      web3
-      {:sig    identity
-       :topics [f/status-topic]
-       :key    key-id
-       :type   :sym}))))
+   {:sig    identity
+    :topics [f/status-topic]
+    :key    key-id
+    :type   :sym}))
 
 (s/def :contact-request/contact map?)
 
