@@ -20,73 +20,35 @@
     (println "There was an error:" error)))
 
 ;; Account creation
-
-(defn create-account-flow [password]
-  {:first-dispatch [::create-account password]
-   :rules [{:when :seen-both?
-            :events [::account-created-success
-                     ::get-public-key-success]
-            :dispatch [::save-created-account password]}]})
-
 (handlers/register-handler-fx
-  ::create-account
   [(re-frame/inject-cofx ::get-signing-phrase)
-   (re-frame/inject-cofx ::get-status)
-   (re-frame/inject-cofx :protocol/get-web3)]
-  (fn [{:keys [db web3 signing-phrase status]} [_ password]]
-    {:db (assoc db :accounts/new-account {:signing-phrase signing-phrase
-                                          :status status})
-     :status/create-account {:password password
-                             :success-event ::account-created-success}
-     :shh/get-new-key-pair {:web3 web3
-                            :success-event ::get-new-key-pair-success
-                            :error-event   :error-event}}))
-
-(handlers/register-handler-fx
-  ::account-created-success
-  (fn [{{:keys [network] :networks/keys [networks] :accounts/keys [new-account] :as db} :db}
+   (re-frame/inject-cofx ::get-status)]
+  :account/create-success
+  (fn [{{:keys [network] :networks/keys [networks] :accounts/keys [new-account] :as db} :db
+        signing-phrase :signing-phrase status :status}
        [_ {:keys [pubkey address mnemonic]}]]
-    (let [normalized-address (utils.hex/normalize-hex address)]
-      {:db (update db :accounts/new-account merge {:network             network
-                                                   :networks            networks
-                                                   :public-key          pubkey
-                                                   :address             normalized-address
-                                                   :name                (generate-gfy pubkey)
-                                                   :signed-up?          true
-                                                   :photo-path          (identicon pubkey)
-                                                   :settings            {:wallet {:visible-tokens {:testnet #{:STT}
-                                                                                                   :mainnet #{:SNT}}}}})
-       :dispatch [:show-mnemonic mnemonic (:signing-phrase new-account)]})))
-
-(handlers/register-handler-fx
-  ::get-new-key-pair-success
-  [(re-frame/inject-cofx :protocol/get-web3)]
-  (fn [{:keys [db web3]} [_ key-pair-id]]
-    {:db (assoc-in db [:accounts/new-account :updates-key-pair-id] key-pair-id)
-     :shh/get-public-key {:web3 web3
-                          :key-pair-id key-pair-id
-                          :success-event ::get-public-key-success}}))
-
-(handlers/register-handler-fx
-  ::get-public-key-success
-  (fn [{:keys [db]} [_ public-key]]
-    {:db (assoc-in db [:accounts/new-account :updates-public-key] public-key)}))
-
-(handlers/register-handler-fx
-  ::save-created-account
-  (fn [{{:accounts/keys [new-account] :as db} :db} [_ password]]
-    (let [{:keys [address]} new-account]
-      {:db (-> db
-               (assoc-in [:accounts/accounts address] new-account)
-               (dissoc :accounts/new-account))
+    (let [normalized-address (utils.hex/normalize-hex address)
+          new-account {:signing-phrase   signing-phrase
+                       :status           status
+                       :network          network
+                       :networks         networks
+                       :whisper-identity pubkey
+                       :name             (generate-gfy pubkey)
+                       :photo-path       (identicon pubkey)
+                       :address          normalized-address
+                       :signed-up?       true
+                       :settings         {:wallet {:visible-tokens {:testnet #{:STT}
+                                                                    :mainnet #{:SNT}}}}}]
+      {:db (assoc-in db [:accounts/new-account address] new-account)
        :data-store.accounts/save new-account
-       :dispatch [:login-account address password true]})))
+       :dispatch-n [[:show-mnemonic mnemonic (:signing-phrase new-account)]
+                    [:login-account address password true]]})))
 
 ;;;; COFX
 (re-frame/reg-cofx
- ::get-signing-phrase
- (fn [coeffects _]
-   (assoc coeffects :signing-phrase (signing-phrase/generate))))
+  ::get-signing-phrase
+  (fn [coeffects _]
+    (assoc coeffects :signing-phrase (signing-phrase/generate))))
 
 (re-frame/reg-cofx
  ::get-status

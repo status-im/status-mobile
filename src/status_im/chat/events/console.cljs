@@ -46,7 +46,8 @@
   {"password"
    (fn [{:keys [db]} {:keys [params]}]
      {:db         (assoc db :accounts/creating-account? true)
-      :async-flow (accounts-events/create-account-flow (:password params))
+      :status/create-account {:password (:password params)
+                              :success-event :account/create-success}
       :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
 
    "faucet"
