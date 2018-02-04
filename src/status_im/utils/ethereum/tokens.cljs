@@ -4,7 +4,7 @@
 (defn- asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})
 
-(def ethereum {:name     "Ethereum"
+(def ethereum {:name     "Ether"
                :symbol   :ETH
                :decimals 18
                :icon     {:source (js/require "./resources/images/assets/ethereum.png")
