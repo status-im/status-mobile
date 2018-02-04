@@ -39,12 +39,12 @@
     (swap! filters update web3 dissoc options)))
 
 (defn add-shh-filter!
-  [web3 {:keys [key type] :as options} callback]
+  [web3 {:keys [whisper-identity sym-key-id type] :as options} callback]
   (let [type     (or type :asym)
         options' (cond-> (dissoc options :key)
-                         (= type :asym) (assoc :privateKeyID key)
-                         (= type :sym) (assoc :symKeyID key))
-        filter   (.newMessageFilter (u/shh web3) (clj->js options')
+                   (= type :asym) (assoc :privateKeyID key)
+                   (= type :sym) (assoc :symKeyID key))
+        filter   (.newMessageFilter (u/shh web3) (clj->js options)
                                     callback
                                     #(log/warn :add-filter-error (.stringify js/JSON (clj->js options')) %))]
     (swap! filters assoc-in [web3 options] filter)))

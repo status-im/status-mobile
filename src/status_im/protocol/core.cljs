@@ -72,7 +72,7 @@
 
 (re-frame/reg-fx
   :whisper/start-listening-groups
-  (fn []
+  (fn [{:keys [web3 groups whisper-identity]}]
     (doseq [group groups]
       (let [options (merge listener-options group)]
         (group/start-watching-group! options)))))
@@ -84,29 +84,29 @@
       (do (log/info "offline inbox: flag enabled")
           (f/add-filter!
            web3
-           {:key      identity
+           {:key      whisper-identity
             :allowP2P true
-            :topics  (f/get-topics identity)}
+            :topics  (f/get-topics whisper-identity)}
            (l/message-listener listener-options))
           (inbox/initialize! web3)))))
 
 (re-frame/reg-fx
-  :whisper/start-listening-chats
+  :whisper/start-listening-messages
   (fn []
     (f/add-filter!
      web3
-     {:key    identity
-      :topics (f/get-topics identity)}
+     {:key    whisper-identity
+      :topics (f/get-topics whisper-identity)}
      (l/message-listener listener-options))))
 
 (re-frame/reg-fx
   :whisper/start-listening-profiles
   (fn []
-    (doseq [{:keys [identity keypair]} contacts]
-      (watch-user! {:web3     web3
-                    :identity identity
-                    :keypair  keypair
-                    :callback callback}))))
+    (doseq [contact contacts]
+      (discoveries/watch-user! {:web3     web3
+                                :identity identity
+                                :keypair  keypair
+                                :callback callback}))))
 
 (handlers/register-handler-fx
   :whisper/send-online-message

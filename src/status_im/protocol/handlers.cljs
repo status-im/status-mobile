@@ -323,28 +323,12 @@
 
 ;;; INITIALIZE PROTOCOL
 
-{:web3                        web3
- :identity                    public-key
- :groups                      groups
- :callback                    #(events-buffer/dispatch [:incoming-message %1 %2])
- :ack-not-received-s-interval 125
- :default-ttl                 120
- :send-online-s-interval      180
- :ttl-config                  {:public-group-message 2400}
- :max-attempts-number         3
- :delivery-loop-ms-interval   500
- :updates-key-pair-id         updates-key-pair-id
- :hashtags                    (mapv name (handlers/get-hashtags status))
- :pending-messages            pending-messages
- :contacts                    (keep (fn [{:keys [whisper-identity
-                                                 public-key
-                                                 private-key]}]
-                                      (when (and public-key private-key)
-                                        {:identity whisper-identity
-                                         :keypair  {:public  public-key
-                                                    :private private-key}}))
-                                    contacts)
- :post-error-callback         #(re-frame/dispatch [::post-error %])}
+(def whisper-config {:ack-not-received-s-interval 125
+                     :default-ttl                 120
+                     :send-online-s-interval      180
+                     :ttl-config                  {:public-group-message 2400}
+                     :max-attempts-number         3
+                     :delivery-loop-ms-interval   500})
 
 (handlers/register-handler-fx
   :protocol/init
@@ -354,15 +338,17 @@
    (re-frame/inject-cofx ::get-pending-messages)
    (re-frame/inject-cofx ::get-all-contacts)]
   (fn [{:keys [db web3 groups contacts pending-messages]} [ethereum-rpc-url]]
-    (let [{:keys [public-key status updates-key-pair-id]} (:accounts/account db)]
+    (let [{:keys [status whisper-identity]} (:accounts/account db)
+          hashtags (mapv name (handlers/get-hashtags status))
+          callback #(re-frame/dispatch [:incoming-message %1 %2])
+          post-error-callback #(re-frame/dispatch [::post-error %])]
       (when public-key
         {:whisper/start-listening-groups {:web3 web3
                                           :groups groups}
          :whisper/start-listening-inbox {:web3 web3}
-         :whisper/start-listening-chats {:web3 web3}
-         :whisper/start-listening-profiles {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
-                                            :updates-key-pair-id updates-key-pair-id
-                                            :status status :contacts contacts}
+         :whisper/start-listening-messages {:web3 web3}
+         :whisper/start-listening-profiles {:web3 web3
+                                            :contacts contacts}
          :whisper/send-online-message {:web3 web3}
          :db (assoc db
                     :web3 web3

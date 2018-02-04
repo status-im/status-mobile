@@ -272,7 +272,7 @@
   (fn [_ [_ address events-after]]
     {:dispatch-n (cond-> [[:initialize-account-db address]
                           [:load-processed-messages]
-                          [:initialize-protocol]
+                          [:protocol/init]
                           [:initialize-sync-listener]
                           [:initialize-chats]
                           [:initialize-browsers]

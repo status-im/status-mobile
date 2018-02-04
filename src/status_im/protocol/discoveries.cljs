@@ -19,9 +19,9 @@
   {:pre [(valid? :watch-user/options options)]}
   (f/add-filter!
    web3
-   {:sig    identity
+   {:sig    whisper-identity
     :topics [f/status-topic]
-    :key    key-id
+    :symKeyID    sym-key-id
     :type   :sym}
    (l/message-listener (dissoc options :identity))))
 
