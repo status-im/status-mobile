@@ -220,7 +220,7 @@
 (handlers/register-handler-fx
   :logout
   (fn [_ _]
-    {:whisper/stop! nil
+    {:whisper/stop nil
      :dispatch-n       [[:initialize-db]
                         [:load-accounts]
                         [:listen-to-network-status!]

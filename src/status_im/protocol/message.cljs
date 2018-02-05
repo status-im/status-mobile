@@ -91,7 +91,7 @@
    :topic    web3.fitering/status-topic})
 
 (defmethod post :contact-request
-  [{:keys [account contact fcm-token]}]
+  [{:keys [web3 account contact fcm-token]}]
   (let [{:keys [name photo-path address status]} account]
     {:shh/post {:web3 web3
                 :message {:sig (:whisper-id account)

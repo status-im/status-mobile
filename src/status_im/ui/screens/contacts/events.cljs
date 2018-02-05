@@ -57,7 +57,7 @@
 (reg-fx
   ::reset-pending-messages
   (fn [from]
-    (protocol/reset-pending-messages! from)))
+    #_(protocol/reset-pending-messages! from)))
 
 (reg-fx
   ::save-contact
