@@ -108,9 +108,9 @@
 
 (re-frame/reg-fx
   ::participant-removed-from-group-message
-  (fn [{:keys [identity from message-id timestamp group-id]}]
-    (let [remover-name (:name (contacts/get-by-id from))
-          removed-name (:name (contacts/get-by-id identity))
+  (fn [{:keys [identity from message-id timestamp group-id contacts]}]
+    (let [remover-name (get-in contacts [from :name])
+          removed-name (get-in contacts [identity :name])
           message (->> [(or remover-name from) (i18n/label :t/removed) (or removed-name identity)]
                        (string/join " ")
                        (system-message message-id timestamp))
@@ -127,17 +127,10 @@
   (fn [[group-id identity]]
     (chats/remove-contacts group-id [identity])))
 
-(defn you-removed-from-group-message
-  [from {:keys [message-id timestamp]}]
-  (let [remover-name (:name (contacts/get-by-id from))]
-    (->> [(or remover-name from) (i18n/label :t/removed-from-chat)]
-         (string/join " ")
-         (system-message message-id timestamp))))
-
 (re-frame/reg-fx
   ::you-removed-from-group-message
-  (fn [{:keys [from message-id timestamp group-id]}]
-    (let [remover-name (:name (contacts/get-by-id from))
+  (fn [{:keys [from message-id timestamp group-id contacts]}]
+    (let [remover-name (get-in contacts [from :name])
           message  (->> [(or remover-name from) (i18n/label :t/removed-from-chat)]
                         (string/join " ")
                         (system-message message-id timestamp))
@@ -151,8 +144,8 @@
 
 (re-frame/reg-fx
   ::participant-left-group-message
-  (fn [{:keys [chat-id from message-id timestamp]}]
-    (let [left-name (:name (contacts/get-by-id from))
+  (fn [{:keys [chat-id from message-id timestamp contacts]}]
+    (let [left-name (get-in contacts [from :name])
           message-text (str (or left-name from) " " (i18n/label :t/left))]
       (-> (system-message message-id timestamp message-text)
           (assoc :chat-id chat-id)
@@ -160,11 +153,11 @@
 
 (re-frame/reg-fx
   ::participant-invited-to-group-message
-  (fn [{:keys [group-id current-identity identity from message-id timestamp]}]
-    (let [inviter-name (:name (contacts/get-by-id from))
+  (fn [{:keys [group-id current-identity identity from message-id timestamp contacts]}]
+    (let [inviter-name (get-in contacts [from :name])
           invitee-name (if (= identity current-identity)
                          (i18n/label :t/You)
-                         (:name (contacts/get-by-id identity)))]
+                         (get-in contacts [identity :name]))]
       (re-frame/dispatch
        [:chat-received-message/add
         {:from "system"
@@ -536,7 +529,7 @@
 (handlers/register-handler-fx
   :participant-invited-to-group
   [re-frame/trim-v]
-  (fn [{{:keys [current-public-key chats] :as db} :db}
+  (fn [{{:keys [current-public-key chats contacts/contacts] :as db} :db}
        [{:keys                                            [from]
          {:keys [group-id identity message-id timestamp]} :payload}]]
     (let [chat  (get-in db [:chats group-id])
@@ -544,7 +537,7 @@
       (when (= from admin)
         (merge {::participant-invited-to-group-message {:group-id group-id :current-public-key current-public-key
                                                         :identity identity :from from :message-id message-id
-                                                        :timestamp timestamp}}
+                                                        :timestamp timestamp :contacts contacts}}
                (when-not (and (= current-public-key identity) (has-contact? chat identity))
                  {:db (update-in db [:chats group-id :contacts] conj {:identity identity})
                   ::chats-add-contact [group-id identity]}))))))
@@ -552,7 +545,7 @@
 (handlers/register-handler-fx
   ::you-removed-from-group
   [re-frame/trim-v]
-  (fn [{{:keys [web3] :as db} :db}
+  (fn [{{:keys [web3 contacts/contacts] :as db} :db}
        [{:keys                                               [from]
          {:keys [group-id timestamp message-id] :as payload} :payload}]]
     (let [chat        (get-in db [:chats group-id])
@@ -561,7 +554,8 @@
         {::you-removed-from-group-message {:from       from
                                            :message-id message-id
                                            :timestamp  timestamp
-                                           :group-id   group-id}
+                                           :group-id   group-id
+                                           :contacts   contacts}
          ::stop-watching-group!           {:web3     web3
                                            :group-id group-id}
          :dispatch                        [:update-chat! {:chat-id         group-id
@@ -572,7 +566,7 @@
   :participant-removed-from-group
   [re-frame/trim-v
    (re-frame/inject-cofx ::message-get-by-id)]
-  (fn [{{:keys [current-public-key chats]} :db message-by-id :message-by-id}
+  (fn [{{:keys [current-public-key chats contacts/contacts]} :db message-by-id :message-by-id}
        [{:keys                                              [from]
          {:keys [group-id identity message-id timestamp]}   :payload
          :as                                                message}]]
@@ -582,13 +576,13 @@
           (if (= current-public-key identity)
             {:dispatch [::you-removed-from-group message]}
             {::participant-removed-from-group-message {:identity identity :from from :message-id message-id
-                                                       :timestamp timestamp :group-id group-id}
+                                                       :timestamp timestamp :group-id group-id :contacts contacts}
              ::chats-remove-contact [group-id identity]}))))))
 
 (handlers/register-handler-fx
   :participant-left-group
   [re-frame/trim-v]
-  (fn [{{:keys [current-public-key] :as db} :db}
+  (fn [{{:keys [current-public-key contacts/contacts] :as db} :db}
        [{:keys                                    [from]
          {:keys [group-id timestamp message-id]} :payload}]]
     (let [chat (get-in db [:chats group-id])
@@ -599,7 +593,8 @@
         {::participant-left-group-message {:chat-id    group-id
                                            :from       from
                                            :message-id message-id
-                                           :timestamp  timestamp}
+                                           :timestamp  timestamp
+                                           :contacts   contacts}
          ::chats-remove-contact [group-id from]
          :db (update-in db [:chats group-id :contacts]
                         #(remove (fn [{:keys [identity]}]

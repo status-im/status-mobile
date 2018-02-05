@@ -2,8 +2,8 @@
   (:require [re-frame.core :refer [dispatch reg-fx]]
             [status-im.utils.handlers :refer [register-handler-fx]]
             [status-im.protocol.core :as protocol]
-            [status-im.utils.random :as random] 
-            [status-im.data-store.contacts :as contacts]
+            [status-im.utils.random :as random]
+            [status-im.chat.handlers :as chat-events]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.chats :as chats]
             [status-im.constants :refer [text-content-type]]))
@@ -33,18 +33,18 @@
    :content      content
    :content-type text-content-type})
 
-(defn removed-participant-message [chat-id identity]
-  (let [contact-name (:name (contacts/get-by-id identity))
-        message-text (str "You've removed " (or contact-name identity))]
+(defn removed-participant-message [chat-id identity contact-name]
+  (let [message-text (str "You've removed " (or contact-name identity))]
     (-> (system-message (random/id) message-text)
         (assoc :chat-id chat-id)
         (messages/save))))
 
 (reg-fx
-  ::create-removing-messages
-  (fn [{:keys [current-chat-id participants]}]
-    (doseq [participant participants]
-      (removed-participant-message current-chat-id participant))))
+ ::create-removing-messages
+ (fn [{:keys [current-chat-id participants contacts/contacts]}]
+   (doseq [participant participants]
+     (let [contact-name (get-in contacts [participant :name])]
+       (removed-participant-message current-chat-id participant contact-name)))))
 
 (reg-fx
   ::notify-about-new-members
@@ -160,7 +160,7 @@
      ::notify-about-removing (merge {:participants participants}
                                     (select-keys db [:web3 :current-chat-id :chats :current-public-key]))
      ::create-removing-messages (merge {:participants participants}
-                                       (select-keys db [:current-chat-id]))}))
+                                       (select-keys db [:current-chat-id :contacts/contacts]))}))
 
 (register-handler-fx
   :set-chat-name
