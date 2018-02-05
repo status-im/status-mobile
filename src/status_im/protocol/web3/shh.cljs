@@ -49,7 +49,10 @@
   [{:keys [web3 password on-success on-error]}]
   (.. web3
       -shh
-      (generateSymKeyFromPassword password callback)))
+      (generateSymKeyFromPassword password (fn [err resp]
+                                             (if-not err
+                                               (on-success resp)
+                                               (on-error err))))))
 
 (re-frame/reg-fx
   :shh/generate-sym-key-from-password
@@ -64,7 +67,7 @@
   (s/keys
    :req-un [:shh/payload :message/ttl :message/sig :message/topic]))
 
-(defn post-message!
+(defn post-message
   [{:keys [web3 message on-success on-error]}]
   {:pre [(valid? :shh/message message)]}
   (debug :post-message message)
@@ -74,15 +77,17 @@
                     (update :payload #(-> %
                                           prn-str
                                           u/from-utf8)))]
-    (.post shh (clj->js message) (fn [err resp]
-                                   (if-not err
-                                     (on-success resp)
-                                     (on-error err))))))
+    (.. web3
+        -shh
+        (post (clj->js message) (fn [err resp]
+                                  (if-not err
+                                    (on-success resp)
+                                    (on-error err)))))))
 
 (re-frame/reg-fx
-  :shh/post-message!
+  :shh/post
   (fn [{:keys [web3 message success-event error-event]}]
-    (post-message! {:web3       web3
-                    :message    message
-                    :on-success #(re-frame/dispatch [success-event %])
-                    :on-error   #(re-frame/dispatch [error-event %])}))
+    (post-message {:web3       web3
+                   :message    message
+                   :on-success #(re-frame/dispatch [success-event %])
+                   :on-error   #(re-frame/dispatch [error-event %])})))

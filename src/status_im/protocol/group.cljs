@@ -1,15 +1,14 @@
 (ns status-im.protocol.group
   (:require
-    [status-im.protocol.web3.delivery :as d]
-    [status-im.protocol.web3.utils :as u]
-    [status-im.utils.config :as config]
-    [cljs.spec.alpha :as s]
-    [taoensso.timbre :refer-macros [debug]]
-    [status-im.protocol.validation :refer-macros [valid?]]
-    [status-im.protocol.web3.filtering :as f]
-    [status-im.protocol.listeners :as l]
-    [clojure.string :as str]
-    [status-im.protocol.web3.keys :as shh-keys]))
+   [status-im.protocol.web3.delivery :as d]
+   [status-im.protocol.web3.utils :as u]
+   [status-im.utils.config :as config]
+   [cljs.spec.alpha :as s]
+   [taoensso.timbre :refer-macros [debug]]
+   [status-im.protocol.validation :refer-macros [valid?]]
+   [status-im.protocol.web3.filtering :as f]
+   [status-im.protocol.listeners :as l]
+   [clojure.string :as str]))
 
 (defn prepare-mesage
   [{:keys [message group-id keypair new-keypair type username requires-ack?]}]
@@ -34,7 +33,7 @@
                            :key-password group-id)
                     (prepare-mesage))]
     (debug :send-group-message message)
-    (d/add-pending-message! web3 message)))
+    #_(d/add-pending-message! web3 message)))
 
 (s/def ::message
   (s/merge :protocol/message (s/keys :req-un [:chat-message/payload])))
@@ -105,7 +104,7 @@
                              :contacts contacts
                              :type type))]
     (doseq [identity identities]
-      (d/add-pending-message! web3 (assoc message' :to identity)))))
+      #_(d/add-pending-message! web3 (assoc message' :to identity)))))
 
 (defn invite!
   [options]

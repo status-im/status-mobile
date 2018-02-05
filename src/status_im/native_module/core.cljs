@@ -100,4 +100,4 @@
   (fn [{:keys [password success-event]}]
     (create-account
      password
-     #(re-frame/dispatch [success-event (json->clj %)]))))
+     #(re-frame/dispatch [success-event (json->clj %) password]))))

@@ -21,13 +21,13 @@
 
 ;; Account creation
 (handlers/register-handler-fx
+  :account/create-success
   [(re-frame/inject-cofx ::get-signing-phrase)
    (re-frame/inject-cofx ::get-status)]
-  :account/create-success
-  (fn [{{:keys [network] :networks/keys [networks] :accounts/keys [new-account] :as db} :db
-        signing-phrase :signing-phrase status :status}
-       [_ {:keys [pubkey address mnemonic]}]]
-    (let [normalized-address (utils.hex/normalize-hex address)
+  (fn [{:keys [db signing-phrase status]}
+       [_ {:keys [pubkey address mnemonic]} password]]
+    (let [{:keys [network] :networks/keys [networks]} db
+          normalized-address (utils.hex/normalize-hex address)
           new-account {:signing-phrase   signing-phrase
                        :status           status
                        :network          network
@@ -39,7 +39,7 @@
                        :signed-up?       true
                        :settings         {:wallet {:visible-tokens {:testnet #{:STT}
                                                                     :mainnet #{:SNT}}}}}]
-      {:db (assoc-in db [:accounts/new-account address] new-account)
+      {:db (assoc-in db [:accounts/accounts address] new-account)
        :data-store.accounts/save new-account
        :dispatch-n [[:show-mnemonic mnemonic (:signing-phrase new-account)]
                     [:login-account address password true]]})))

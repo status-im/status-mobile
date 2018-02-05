@@ -1,6 +1,5 @@
 (ns status-im.protocol.listeners
   (:require [cljs.reader :as r]
-            [status-im.protocol.ack :as ack]
             [status-im.protocol.web3.utils :as u]
             [taoensso.timbre :as log]
             [status-im.utils.hex :as i]

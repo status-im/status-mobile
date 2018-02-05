@@ -20,6 +20,7 @@
             [status-im.chat.console :as console-chat]
             [status-im.commands.events.loading :as loading-events]
             [cljs.spec.alpha :as spec]
+            [status-im.protocol.message :as message]
             [status-im.protocol.web3.utils :as web3.utils]))
 
 ;;;; COFX
@@ -52,23 +53,6 @@
   (fn [{:keys [web3 whisper-identity]}]
     (protocol/stop-watching-user! {:web3     web3
                                    :identity whisper-identity})))
-
-(reg-fx
-  ::send-contact-request-fx
-  (fn [{:keys [web3 current-public-key name whisper-identity
-               photo-path account status fcm-token updates-key-pair-id] :as params}]
-    (protocol/contact-request!
-     {:web3    web3
-      :message {:from       current-public-key
-                :to         whisper-identity
-                :message-id (random/id)
-                :payload    {:contact {:name          name
-                                       :profile-image photo-path
-                                       :address       (:address account)
-                                       :status        status
-                                       :fcm-token     fcm-token}
-                             :keypair updates-key-pair-id
-                             :timestamp (web3.utils/timestamp)}}})))
 
 (reg-fx
   ::reset-pending-messages
@@ -252,15 +236,12 @@
 
 (defn send-contact-request
   "Takes effects map, adds effects necessary to send a contact request"
-  [{{:accounts/keys [account] :as db} :db :as fx} contact]
+  [{{:accounts/keys [account] :keys [web3]:as db} :db :as fx} contact]
   (let [fcm-token (get-in db [:notifications :fcm-token])]
-    (assoc fx
-           ::send-contact-request-fx
-           (merge {:fcm-token fcm-token}
-                  (select-keys db [:current-public-key :web3])
-                  (select-keys contact [:whisper-identity])
-                  (select-keys account [:name :photo-path :status
-                                        :updates-public-key :updates-private-key])))))
+    (merge fx (message/post {:web3 web3
+                             :type :contact-request
+                             :account account
+                             :contact contact}))))
 
 (defn add-new-contact [fx {:keys [whisper-identity] :as contact}]
   (-> fx

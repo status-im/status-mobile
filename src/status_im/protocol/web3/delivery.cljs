@@ -5,7 +5,6 @@
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
             [clojure.set :as set]
-            [status-im.protocol.web3.keys :as shh-keys]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as random]))
 
@@ -35,24 +34,24 @@
   (s/keys :req-un [:message/sig :shh/payload :message/topic]
           :opt-un [:message/ttl :message/pubKey :message/symKeyID]))
 
-(when (valid? :shh/pending-message message')
-  (let [group-id        (get-in message [:payload :group-id])
-        pending-message {:id            message-id
-                         :ack?          (boolean ack?)
-                         :message       message'
-                         :to            to
-                         :type          type
-                         :group-id      group-id
-                         :requires-ack? (boolean requires-ack?)
-                         :attempts      0
-                         :was-sent?     false}]))
+;; (when (valid? :shh/pending-message message')
+;;   (let [group-id        (get-in message [:payload :group-id])
+;;         pending-message {:id            message-id
+;;                          :ack?          (boolean ack?)
+;;                          :message       message'
+;;                          :to            to
+;;                          :type          type
+;;                          :group-id      group-id
+;;                          :requires-ack? (boolean requires-ack?)
+;;                          :attempts      0
+;;                          :was-sent?     false}]))
 
-(select-keys message [:message-id :requires-ack? :type :clock-value])
+;; (select-keys message [:message-id :requires-ack? :type :clock-value])
 
-(assoc message :was-sent? true
-       :attempts 1)
-(assoc data :attempts (inc attempts)
-       :last-attempt (u/timestamp))
+;; (assoc message :was-sent? true
+;;        :attempts 1)
+;; (assoc data :attempts (inc attempts)
+;;        :last-attempt (u/timestamp))
 
 (defn should-be-retransmitted?
   "Checks if messages should be transmitted again."
@@ -75,14 +74,11 @@
   (update message :ttl #(or % ((keyword message-type) ttl-config) default-ttl)))
 
 
-(handlers/register-handler-fx
-  :protocol/send-online
-  [{:keys [web3 db]} [this-event]]
-  {:whisper/send-online-message {}
-   ::dispatch-later {:ms (* 1000 send-online-s-interval)
-                     :dispatch [this-event]}})
-
-(handlers/register-handler-fx
-  :protocol/send-message
-  [{:keys [web3 db]} [this-event]]
-  )
+#_(handlers/register-handler-fx
+    :protocol/send-online
+    [{:keys [db]} [this-event]]
+    (let [{:keys [web3]} db
+          send-online-s-interval 10]
+      {:whisper/send-online-message {}
+       ::dispatch-later {:ms (* 1000 send-online-s-interval)
+                         :dispatch [this-event]}}))
