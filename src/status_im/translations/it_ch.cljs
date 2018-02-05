@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Membri"
    :not-implemented                       "!non implementato"
    :chat-name                             "Nome chat"
    :notifications-title                   "Notifiche e suoni"
    :offline                               "Offline"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Cambia utenti"
 
-   ;chat
+   ;;chat
    :is-typing                             "sta scrivendo"
    :and-you                               "e tu"
    :search-chat                           "Cerca chat"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Richieste"
    :suggestions-commands                  "Comandi"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Sincronizzazione in corso..."
    :sync-synced                           "Sincronizzato"
 
-   ;messages
+   ;;messages
    :status-sending                        "Invio in corso"
    :status-pending                        "In attesa di"
    :status-sent                           "Inviato"
@@ -42,7 +42,7 @@
    :status-delivered                      "Consegnato"
    :status-failed                         "Invio fallito"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "secondo"
                                            :other "secondi"}
    :datetime-minute                       {:one   "minuto"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "ieri"
    :datetime-today                        "oggi"
 
-   ;profile
+   ;;profile
    :profile                               "Profilo"
    :message                               "Messaggio"
    :not-specified                         "Non specificato"
@@ -68,7 +68,7 @@
    :image-source-make-photo               "Scatta"
    :image-source-gallery                  "Seleziona dalla galleria immagini"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "I tuoi contatti sono stati sincronizzati"
    :confirmation-code                     (str "Grazie! Ti abbiamo inviato un messaggio con un codice di "
                                                "conferma. Utilizza tale codice per confermare il tuo numero di telefono")
@@ -80,11 +80,11 @@
    :intro-message1                        "Benvenuto su Status\nTocca questo messaggio per impostare la tua password e iniziare!"
    :account-generation-message            "Dammi un secondo, devo eseguire dei calcoli matematici complessi per generare il tuo conto!"
 
-   ;chats
+   ;;chats
    :chats                                 "Conversazioni"
    :new-group-chat                        "Nuova conversazione di gruppo"
 
-   ;discover
+   ;;discover
    :discover                              "Scoperta"
    :none                                  "Nessuna"
    :search-tags                           "Inserisci qui i tag di ricerca"
@@ -92,17 +92,17 @@
    :recent                                "Recente"
    :no-statuses-discovered                "Nessuno stato identificato"
 
-   ;settings
+   ;;settings
    :settings                              "Impostazioni"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Contatti"
    :new-contact                           "Nuovo contatto"
    :contacts-group-new-chat               "Inizia una nuova conversazione"
    :no-contacts                           "Nessun contatto registrato"
    :show-qr                               "Mostra QR"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Rimuovi"
    :save                                  "Salva"
    :clear-history                         "Cancella cronologia"
@@ -110,14 +110,14 @@
    :edit                                  "Modifica"
    :add-members                           "Aggiungi membri"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "ha ricevuto un invito di conversazione"
    :removed-from-chat                     "ti ha rimosso dalla conversazione di gruppo"
    :left                                  "È uscito"
@@ -125,7 +125,7 @@
    :removed                               "È stato rimosso"
    :You                                   "Tu"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Aggiungi nuovo contatto"
    :scan-qr                               "Scansiona QR"
    :name                                  "Nome"
@@ -135,31 +135,31 @@
    :unknown-address                       "Indirizzo sconosciuto"
 
 
-   ;login
+   ;;login
    :connect                               "Effettua connessione"
    :address                               "Indirizzo"
    :password                              "Password"
    :wrong-password                        "Password errata"
 
-   ;recover
+   ;;recover
    :passphrase                            "Passphrase"
    :recover                               "Ripristina"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Ripristina l'accesso"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "OK"
    :main-wallet                           "Wallet principale"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Numero di telefono non valido"
    :amount                                "Saldo"
-   ;transactions
+   ;;transactions
    :status                                "Stato"
    :recipient                             "Beneficiario"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "Ops, si è verificato un errore"
 
    :confirm                               "Conferma"

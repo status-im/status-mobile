@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Dalībnieki"
    :not-implemented                       "!tādas funkcijas pagaidām nav"
    :chat-name                             "Čata nosaukums"
@@ -18,11 +18,11 @@
    :camera-access-error                   "Kļūda, nav atļaujas piekļūt kamerai. Lūdzu, iestatījumos pārliecinies, ka  Status > Camera ir izvēlēts."
    :photos-access-error                   "Kļūda, nav atļaujas piekļūt fotogrāfijām. Lūdzu, iestatījumos pārliecinies, ka Status > Photos ir izvēlēts."
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Mainīt lietotāju"
    :current-network                       "Tīkls"
 
-   ;chat
+   ;;chat
    :is-typing                             "raksta"
    :and-you                               "un tu"
    :search-chat                           "Meklēt čatu"
@@ -42,11 +42,11 @@
    :faucet-success                        "Faucet pieprasījums saņemts"
    :faucet-error                          "Faucet pieprasījuma kļūda"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Sinhronizē..."
    :sync-synced                           "Sinhronizēts"
 
-   ;messages
+   ;;messages
    :status-sending                        "Sūta"
    :status-pending                        "Neizlemts"
    :status-sent                           "Aizsūtīts"
@@ -55,7 +55,7 @@
    :status-delivered                      "Piegādāts"
    :status-failed                         "Neizdevās"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "sekunde"
                                            :other "sekundes"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "vakar"
    :datetime-today                        "šodien"
 
-   ;profile
+   ;;profile
    :profile                               "Profils"
    :edit-profile                          "Rediģēt profilu"
    :message                               "Īsziņa"
@@ -98,7 +98,7 @@
    :browsing-open-in-web-browser          "Atvert pārlūkprogrammā"
    :browsing-cancel                       "Atcelt"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Jūsu kontakti ir sinhronizēti"
    :confirmation-code                     (str "Paldies! Mēs nosūtijām tev īsziņu ar apstiprinājuma kodu"
                                                "code. Lūdzu ievadi apstiprinājuma kodu lai verificētu savu telefona numuru")
@@ -113,13 +113,13 @@
    :move-to-internal-failure-message      "Mums vajag pārvietot dažus failus no eksternās uz interno glabātuvi. Lai mēs to varētu izdarīt mums vajag jūsu atļauju."
    :debug-enabled                         "Debug serveris startēja! Tu vari izlietot *status-dev-cli scan* lai atrastu serveri."
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "International 1"
    :phone-international                   "International 2"
    :phone-national                        "National"
    :phone-significant                     "Significant"
 
-   ;chats
+   ;;chats
    :chats                                 "Čati"
    :delete-chat                           "Dzēst čatu"
    :new-group-chat                        "Jauna grupa"
@@ -130,7 +130,7 @@
    :topic-format                          "Nepareiz formāts [a-z0-9\\-]+"
    :public-group-topic                    "Temats"
 
-   ;discover
+   ;;discover
    :discover                              "Discover"
    :none                                  "None"
    :search-tags                           "Type your search tags here"
@@ -139,10 +139,10 @@
    :no-statuses-discovered                "No statuses discovered"
    :no-statuses-found                     "No statuses found"
 
-   ;settings
+   ;;settings
    :settings                              "Iestatījumi"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kontakti"
    :new-contact                           "Jauns kontakts"
    :delete-contact                        "Dzēst kontaktu"
@@ -157,7 +157,7 @@
    :enter-address                         "Ieraksti adresi"
    :more                                  "vairāk"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Noņemt"
    :save                                  "Saglabāt"
    :delete                                "Dzēst"
@@ -168,10 +168,10 @@
    :edit                                  "Rediģēt"
    :add-members                           "Pievienot biedrus"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "Jauna grupa"
    :reorder-groups                        "Reorder groups"
    :edit-group                            "Rediģēt grupu"
@@ -180,9 +180,9 @@
    :delete-group-prompt                   "Tas neietikmēs kontaktus"
    :contact-s                             {:one   "kontakts"
                                            :other "kontakti"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "čata uzaicinājums"
    :removed-from-chat                     "noņema jūs no grupas čata"
    :left                                  "atstāja grupu"
@@ -190,7 +190,7 @@
    :removed                               "noņemts"
    :You                                   "Tu"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Pievienot jaunu kontaktu"
    :scan-qr                               "Skanēt QR"
    :name                                  "Vārds"
@@ -201,7 +201,7 @@
    :unknown-address                       "Nezināmā adrese"
 
 
-   ;login
+   ;;login
    :connect                               "Savienoties"
    :address                               "Adrese"
    :password                              "Parole"
@@ -209,23 +209,23 @@
    :sign-in                               "Ieiet"
    :wrong-password                        "Parole ievadīta nepareizi"
 
-   ;recover
+   ;;recover
    :passphrase                            "Passphrase"
    :recover                               "Atgūt"
    :twelve-words-in-correct-order         "12 vārdi"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Atgūt pieeju"
    :create-new-account                    "Izveidot jaunu kontu"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Darīts"
    :main-wallet                           "Galvenais maks"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Nepareizs telefona numurs"
    :amount                                "Summa"
-   ;transactions
+   ;;transactions
    :confirm                               "Apstiprināt"
    :transaction                           "Transakcija"
    :status                                "Status"
@@ -235,5 +235,5 @@
    :data                                  "Dati"
    :got-it                                "Got it"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "ups, kļūda"})

@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "會員"
    :not-implemented                       "!未能實現"
    :chat-name                             "用戶名稱"
@@ -18,11 +18,11 @@
    :camera-access-error                   "要授予所需的攝像機許可，請轉到系統設置，並確定選擇了“狀態”>“攝像機”。"
    :photos-access-error                   "要授予所需的照片許可，請轉到系統設置，並確保選擇“狀態“>“照片“。"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "切換用戶"
    :current-network                       "當前網絡"
 
-   ;chat
+   ;;chat
    :is-typing                             "正在輸入"
    :and-you                               "與你"
    :search-chat                           "搜索聊天記錄"
@@ -42,11 +42,11 @@
    :faucet-success                        "水龍頭請求已經收到"
    :faucet-error                          "水龍頭請求錯誤"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "正在同步..."
    :sync-synced                           "已同步"
 
-   ;messages
+   ;;messages
    :status-sending                        "發送中"
    :status-pending                        "待定"
    :status-sent                           "發送成功"
@@ -55,7 +55,7 @@
    :status-delivered                      "已發送"
    :status-failed                         "失敗"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "秒"
                                            :other "秒"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "昨天"
    :datetime-today                        "今天"
 
-   ;profile
+   ;;profile
    :profile                               "用戶簡介"
    :edit-profile                          "編輯個人資料"
    :message                               "短訊"
@@ -99,7 +99,7 @@
    :browsing-open-in-web-browser          "在網絡瀏覽器中打開"
    :browsing-cancel                       "取消"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "你的聯繫人已同步"
    :confirmation-code                     (str "謝謝！我們已以短訊形式將確認信息發送給你"
                                                "代碼。請提供該代碼，以確認你的電話號碼")
@@ -114,13 +114,13 @@
    :move-to-internal-failure-message      "我們需要將一些重要的文件從外部存儲移動到內部存儲。 為此，我們需要你的許可。 我們在將來的版本不會使用外部存儲。"
    :debug-enabled                         "調試服務器已經推出！ 現在你可以執行* status-dev-cli scan *在同一網絡上的電腦上查找服務器。"
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "國際1"
    :phone-international                   "國際2"
    :phone-national                        "國內"
    :phone-significant                     "顯著"
 
-   ;chats
+   ;;chats
    :chats                                 "聊天史"
    :delete-chat                           "刪除對話"
    :new-group-chat                        "新增群聊"
@@ -131,7 +131,7 @@
    :topic-format                          "格式錯誤 [a-z0-9\\-]+"
    :public-group-topic                    "主題"
 
-   ;discover
+   ;;discover
    :discover                             "新發現"
    :none                                  "不存在"
    :search-tags                           "請輸入你的搜索標籤"
@@ -140,10 +140,10 @@
    :no-statuses-discovered                "沒有發現任何狀態"
    :no-statuses-found                     "找不到狀態"
 
-   ;settings
+   ;;settings
    :settings                              "設置"
 
-   ;contacts
+   ;;contacts
    :contacts                              "聯絡人"
    :new-contact                           "新增聯絡"
    :delete-contact                        "刪除聯絡人"
@@ -158,7 +158,7 @@
    :enter-address                         "輸入地址"
    :more                                  "更多"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "刪除"
    :save                                  "儲存"
    :delete                                "刪除"
@@ -169,10 +169,10 @@
    :edit                                  "編輯"
    :add-members                           "增添成員"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "新增群組"
    :reorder-groups                        "重新排序群組"
    :edit-group                            "編輯群組"
@@ -181,9 +181,9 @@
    :delete-group-prompt                   "這不會影響聯絡人"
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "收到聊天邀請"
    :removed-from-chat                     "已將你從群組聊天中刪除"
    :left                                  "離開"
@@ -191,7 +191,7 @@
    :removed                               "刪除"
    :You                                   "你"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "添加新聯繫人"
    :scan-qr                               "掃描 QR"
    :name                                  "名稱"
@@ -202,7 +202,7 @@
    :unknown-address                       "未知地址"
 
 
-   ;login
+   ;;login
    :connect                               "連接"
    :address                               "地址"
    :password                              "密碼"
@@ -210,23 +210,23 @@
    :sign-in                               "登入"
    :wrong-password                        "密碼錯誤"
 
-   ;recover
+   ;;recover
    :passphrase                            "臨時登入碼"
    :recover                               "還原"
    :twelve-words-in-correct-order         "正確排序12個字"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "恢復訪問"
    :create-new-account                    "建立新帳號"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "完成"
    :main-wallet                           "主錢包"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "電話號碼無效"
    :amount                                "金額"
-   ;transactions
+   ;;transactions
    :confirm                               "確認"
    :transaction                           "交易"
    :status                                "狀態"
@@ -236,5 +236,5 @@
    :data                                  "數據"
    :got-it                                "得到了"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "抱歉，錯誤"})

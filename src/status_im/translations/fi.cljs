@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Jäsenet"
    :not-implemented                       "!ei toteutettu"
    :chat-name                             "Keskustelun nimi"
@@ -18,11 +18,11 @@
    :camera-access-error                   "Myöntääksesi vaadittu kameran käyttölupa, siirry järjestelmäasetuksiin ja varmista, että Status > Kamera on valittu."
    :photos-access-error                   "Myöntääksesi vaadittu kuvien käyttölupa, siirry järjestelmäasetuksiin ja varmista, että Status > Kuvat on valittu."
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Vaihda käyttäjää"
    :current-network                       "Nykyinen verkko"
 
-   ;chat
+   ;;chat
    :is-typing                             "kirjoittaa"
    :and-you                               "ja sinä"
    :search-chat                           "Etsi keskustelusta"
@@ -42,11 +42,11 @@
    :faucet-success                        "Faucet pyyntö vastaanotettu"
    :faucet-error                          "Faucet pyyntö virhe"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Synkronoidaan..."
    :sync-synced                           "Synkronoitu"
 
-   ;messages
+   ;;messages
    :status-sending                        "Lähetetään"
    :status-pending                        "Odottaa"
    :status-sent                           "Lähetetty"
@@ -55,7 +55,7 @@
    :status-delivered                      "Toimitettu"
    :status-failed                         "Epäonnistui"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "sekunti"
                                            :other "sekuntia"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "eilen"
    :datetime-today                        "tänään"
 
-   ;profile
+   ;;profile
    :profile                               "Profiili"
    :edit-profile                          "Muokkaa profiilia"
    :message                               "Viesti"
@@ -99,7 +99,7 @@
    :browsing-open-in-web-browser          "Avaa selaimessa"
    :browsing-cancel                       "Peruuta"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Yhteystietosi ovat synkronoitu"
    :confirmation-code                     (str "Kiitos! Olemme lähettäneet sinulle tekstiviestin, jossa on vahvistus "
                                                "koodi. Ole hyvä ja anna koodi vahvistaaksesi puhelinnumerosi")
@@ -114,13 +114,13 @@
    :move-to-internal-failure-message      "Meidän on siirrettävä joitain tärkeitä tiedostoja ulkoisesta sisäiseen tallennustilaan. Tätä varten tarvitsemme luvan. Emme tule käyttämään ulkoista tallennustilaa tulevissa versioissa."
    :debug-enabled                         "Debug-palvelin käynnistetty! Löytääksesi palvelimen suorita samaan verkkoon kuuluvalta tietokoneeltasi *status-dev-cli scan*."
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "Kansainvälinen 1"
    :phone-international                   "Kansainvälinen 2"
    :phone-national                        "Kansallinen"
    :phone-significant                     "Merkittävä"
 
-   ;chats
+   ;;chats
    :chats                                 "Keskustelut"
    :delete-chat                           "Poista keskustelu"
    :new-group-chat                        "Uusi ryhmäkeskustelu"
@@ -131,7 +131,7 @@
    :topic-format                          "Virheellinen muoto [a-z0-9\\-]+"
    :public-group-topic                    "Otsikko"
 
-   ;discover
+   ;;discover
    :discover                              "Löydä"
    :none                                  "Tyhjä"
    :search-tags                           "Kirjoita hakutunnisteesi tähän"
@@ -140,10 +140,10 @@
    :no-statuses-discovered                "Ei hakutuloksia"
    :no-statuses-found                     "Ei hakutuloksia"
 
-   ;settings
+   ;;settings
    :settings                              "Asetukset"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Yhteystiedot"
    :new-contact                           "Uusi yhteystieto"
    :delete-contact                        "Poista yhteystieto"
@@ -158,7 +158,7 @@
    :enter-address                         "Syötä osoite"
    :more                                  "lisää"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Poista"
    :save                                  "Tallenna"
    :delete                                "Poista"
@@ -169,10 +169,10 @@
    :edit                                  "Muokkaa"
    :add-members                           "Lisää käyttäjiä"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "Uusi ryhmä"
    :reorder-groups                        "Järjestele ryhmät uudelleen"
    :edit-group                            "Muokkaa ryhmää"
@@ -181,9 +181,9 @@
    :delete-group-prompt                   "Tämä ei vaikuta yhteystietoihin"
    :contact-s                             {:one   "yhteystieto"
                                            :other "yhteystietoa"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "poista keskustelukutsu"
    :removed-from-chat                     "poista itsesi keskustelusta"
    :left                                  "poistui"
@@ -191,7 +191,7 @@
    :removed                               "poistettu"
    :You                                   "Sinä"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Lisää uusi yhteystieto"
    :scan-qr                               "Skannaa QR"
    :name                                  "Nimi"
@@ -202,7 +202,7 @@
    :unknown-address                       "Tuntematon osoite"
 
 
-   ;login
+   ;;login
    :connect                               "Yhdistä"
    :address                               "Osoite"
    :password                              "Salasana"
@@ -210,23 +210,23 @@
    :sign-in                               "Luo tili"
    :wrong-password                        "Väärä salasana"
 
-   ;recover
+   ;;recover
    :passphrase                            "Tunnuslause"
    :recover                               "Palauta"
    :twelve-words-in-correct-order         "12 sanaa oikeassa järjestyksessä"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Palauta käyttöoikeus"
    :create-new-account                    "Luo uusi tili"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Valmis"
    :main-wallet                           "Ensisijainen Lompakko"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Virheellinen puhelinnumero"
    :amount                                "Määrä"
-   ;transactions
+   ;;transactions
    :confirm                               "Vahvista"
    :transaction                           "Tapahtuma"
    :status                                "Tila"
@@ -236,5 +236,5 @@
    :data                                  "Tieto"
    :got-it                                "Vastaanotettu"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "oops, virhe"})

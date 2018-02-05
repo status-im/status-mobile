@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Ahli"
    :not-implemented                       "!tidak diimplementasikan"
    :chat-name                             "Nama perbualan"
@@ -18,11 +18,11 @@
    :camera-access-error                   "Untuk memberi keizinan akses kamera yang diperlukan, sila pergi ke aturan sistem anda dan pastikan bahawa Status > Kamera telah dipilih."
    :photos-access-error                   "Untuk memberi keizinan akses gambar yang diperlukan, sila pergi ke aturan sistem anda dan pastikan bahawa Status > Gambar telah dipilih."
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Tukar pengguna"
    :current-network                       "Rangkaian sekarang"
 
-   ;chat
+   ;;chat
    :is-typing                             "sedang menaip"
    :and-you                               "dan anda"
    :search-chat                           "Cari perbualan"
@@ -42,11 +42,11 @@
    :faucet-success                        "Permintaan Faucet telah diterima"
    :faucet-error                          "Permintaan Faucet gagal"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "sedang disegerakan..."
    :sync-synced                           "Dalam penyegeraan"
 
-   ;messages
+   ;;messages
    :status-sending                        "Menghantar"
    :status-pending                        "Belum selesai"
    :status-sent                           "Dihantar"
@@ -55,7 +55,7 @@
    :status-delivered                      "Dihantar"
    :status-failed                         "Gagal"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "saat"
                                            :other "saat"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "semalam"
    :datetime-today                        "hari ini"
 
-   ;profile
+   ;;profile
    :profile                               "Profail"
    :edit-profile                          "Ubah profail"
    :message                               "Mesej"
@@ -99,7 +99,7 @@
    :browsing-open-in-web-browser          "Buka dalam pelayar web"
    :browsing-cancel                       "Batal"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Senarai kenalan anda telah disegerakan"
    :confirmation-code                     (str "Terima kasih! Kami telah menghantar kepada anda satu mesej mengandungi kod"
                                                "pengesahan. Sila berikan kod tersebut untuk mengesahkan nombor telefon anda")
@@ -114,13 +114,13 @@
    :move-to-internal-failure-message      "Kita perlu mengubah lokasi sedikit fail penting dari memori dalaman ke memori luaran. Untuk itu, kami perlukan kebenaran anda. Kami tidak akan menggunakan memori luaran pada versi akan datang."
    :debug-enabled                         "Debug server telah dijalankan! Sekarang anda boleh menjalankan *status-dev-cli scan* untuk mecari sambungan server dari komputer anda dalam jaringan yang sama."
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "Internasional 1"
    :phone-international                   "Internasional 2"
    :phone-national                        "Nasional"
    :phone-significant                     "Penting"
 
-   ;chats
+   ;;chats
    :chats                                 "Perbualan"
    :delete-chat                           "Padam perbualan"
    :new-group-chat                        "Perbualan kumpulan baru"
@@ -131,7 +131,7 @@
    :topic-format                          "Format salah [a-z0-9\\-]+"
    :public-group-topic                    "Topik"
 
-   ;discover
+   ;;discover
    :discover                              "Jelajah"
    :none                                  "Tiada"
    :search-tags                           "Taip carian anda disini"
@@ -140,10 +140,10 @@
    :no-statuses-discovered                "Tiada status ditemui"
    :no-statuses-found                     "Tiada status ditemui"
 
-   ;settings
+   ;;settings
    :settings                              "Aturan"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kenalan"
    :new-contact                           "Kenalan baru"
    :delete-contact                        "Padam kenalan"
@@ -158,7 +158,7 @@
    :enter-address                         "Masukkan address"
    :more                                  "seterusnya"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Buang"
    :save                                  "Simpan"
    :delete                                "Padam"
@@ -169,10 +169,10 @@
    :edit                                  "Ubah"
    :add-members                           "Tambah ahli"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "Kumpulan baru"
    :reorder-groups                        "Susun kumpulan"
    :edit-group                            "Ubah kumpulan"
@@ -181,9 +181,9 @@
    :delete-group-prompt                   "Ini tidak akan menjejaskan senarai kenalan anda"
    :contact-s                             {:one   "kenalan"
                                            :other "kenalan"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "menerima permintaan bual"
    :removed-from-chat                     "membuang anda dari perbualan kumpulan"
    :left                                  "pergi"
@@ -191,7 +191,7 @@
    :removed                               "dibuang"
    :You                                   "Anda"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Tambah kenalan baru"
    :scan-qr                               "Imbas kod QR"
    :name                                  "Nama"
@@ -202,7 +202,7 @@
    :unknown-address                       "Address tidak diketahui"
 
 
-   ;login
+   ;;login
    :connect                               "Sambung"
    :address                               "Address"
    :password                              "Kata laluan"
@@ -210,23 +210,23 @@
    :sign-in                               "Daftar masuk"
    :wrong-password                        "Kata laluan salah"
 
-   ;recover
+   ;;recover
    :passphrase                            "Ayat pengesahan"
    :recover                               "Pulihkan"
    :twelve-words-in-correct-order         "12 perkataan dalam susunan yang betul"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Pulihkan akses"
    :create-new-account                    "Cipta akaun baru"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Selesai"
    :main-wallet                           "Dompet utama"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Nombor telefon salah"
    :amount                                "Jumlah"
-   ;transactions
+   ;;transactions
    :confirm                               "Sahkan"
    :transaction                           "Transaksi"
    :status                                "Status"
@@ -236,5 +236,5 @@
    :data                                  "Maklumat"
    :got-it                                "Ya"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "oops, gagal"})

@@ -360,4 +360,3 @@
    :close-app-title                       "Varning!"
    :close-app-content                     "Denna app kommer att avslutas. När du öppnar den på nytt kommer det valda nätverket att användas"
    :close-app-button                      "Bekräfta"})
-

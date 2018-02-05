@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Użytkownicy"
    :not-implemented                       "nie wprowadzono"
    :chat-name                             "Nazwa czatu"
    :notifications-title                   "Powiadomienia i dźwięki"
    :offline                               "Offline"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Przełącz użytkowników"
 
-   ;chat
+   ;;chat
    :is-typing                             "wpisuje tekst"
    :and-you                               "i ty"
    :search-chat                           "Przeszukaj czat"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Żądania"
    :suggestions-commands                  "Polecenia"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Synchronizacja..."
    :sync-synced                           "W synchronizacji"
 
-   ;messages
+   ;;messages
    :status-sending                        "Wysyłanie"
    :status-pending                        "W oczekiwaniu"
    :status-sent                           "Wysłano"
@@ -42,7 +42,7 @@
    :status-delivered                      "Dostarczono"
    :status-failed                         "Niepowodzenie"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "sekunda"
                                            :other "sekund(y)"}
    :datetime-minute                       {:one   "minuta"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "wczoraj"
    :datetime-today                        "dzisiaj"
 
-   ;profile
+   ;;profile
    :profile                               "Profil"
    :message                               "Wiadomość"
    :not-specified                         "Nie określono"
@@ -68,23 +68,23 @@
    :image-source-make-photo               "Przechwyć"
    :image-source-gallery                  "Wybierz z galerii "
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Twoje kontakty zostały zsynchronizowane"
    :confirmation-code                     (str "Dziękujemy! Wysłaliśmy ci SMS-a z kodem"
                                                "potwierdzającym. Prosimy o podanie kodu w celu zweryfikowania swojego numeru telefonu")
    :incorrect-code                        (str "Przepraszamy, kod jest nieprawidłowy. Prosimy wprowadzić kod ponownie")
-   :phew-here-is-your-passphrase          "*Uff*, to nie było łatwe. Oto twoje specjalne hasło, *zapisz je i	 przechowuj w bezpiecznym miejscu!* Będzie ci potrzebne podczas procedury odzyskiwania konta."
+   :phew-here-is-your-passphrase          "*Uff*, to nie było łatwe. Oto twoje specjalne hasło, *zapisz je i   przechowuj w bezpiecznym miejscu!* Będzie ci potrzebne podczas procedury odzyskiwania konta."
    :here-is-your-passphrase               "Oto twoje specjalne hasło, *zapisz je i przechowuj w bezpiecznym miejscu!* Będzie ci potrzebne podczas procedury odzyskiwania konta."
    :phone-number-required                 "Dotknij tutaj, aby wprowadzić swój numer telefonu, a my znajdziemy twoich znajomych "
    :intro-status                          "Porozmawiaj ze mną na czacie, aby skonfigurować swoje konto i zmienić ustawienia!"
    :intro-message1                        "Witamy w sekcji Status\nWybierz tę wiadomość, aby ustawić hasło i rozpocząć!"
    :account-generation-message            "Daj mi chwilkę, muszę wykonać szalone obliczenia, żeby utworzyć dla Ciebie konto!"
 
-   ;chats
+   ;;chats
    :chats                                 "Czaty"
    :new-group-chat                        "Nowy czat grupowy"
 
-   ;discover
+   ;;discover
    :discover                              "Odkryte"
    :none                                  "Brak"
    :search-tags                           "Tutaj wpisz swoje tagi wyszukiwania"
@@ -92,17 +92,17 @@
    :recent                                "Najnowsze"
    :no-statuses-discovered                "Nie odkryto statusów"
 
-   ;settings
+   ;;settings
    :settings                              "Ustawienia"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kontakty"
    :new-contact                           "Nowy kontakt"
    :contacts-group-new-chat               "Rozpocznij nowy czat"
    :no-contacts                           "W tej chwili brak kontaktów"
    :show-qr                               "Pokaż QR"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Usuń"
    :save                                  "Zapisz"
    :clear-history                         "Wyczyść historię"
@@ -110,14 +110,14 @@
    :edit                                  "Edytuj"
    :add-members                           "Dodaj użytkowników"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "otrzymano zaproszenie na czat"
    :removed-from-chat                     "usunięto z czatu grupowego"
    :left                                  "pozostało"
@@ -125,7 +125,7 @@
    :removed                               "usunięci"
    :You                                   "Ty"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Dodaj nowy kontakt"
    :scan-qr                               "Skanuj QR"
    :name                                  "Nazwa"
@@ -135,31 +135,31 @@
    :unknown-address                       "Nieznany adres"
 
 
-   ;login
+   ;;login
    :connect                               "Połącz"
    :address                               "Adres"
    :password                              "Hasło"
    :wrong-password                        "Nieprawidłowe hasło"
 
-   ;recover
+   ;;recover
    :passphrase                            "Hasło specjalne"
    :recover                               "Odzyskaj"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Odzyskaj dostęp"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Zrobione"
    :main-wallet                           "Portfel główny"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Nieprawidłowy numer telefonu"
    :amount                                "Kwota"
-   ;transactions
+   ;;transactions
    :status                                "Status"
    :recipient                             "Odbiorca"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "oj, mamy błąd"
 
    :confirm                               "Potwierdź"

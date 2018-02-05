@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Удзельнікі"
    :not-implemented                       "!не рэалізавана"
    :chat-name                             "Імя чата"
@@ -11,10 +11,10 @@
    :cancel                                "Адмена"
    :next                                  "Працягнуць"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Пераключыць карыстальнікау"
 
-   ;chat
+   ;;chat
    :is-typing                             "друкуе"
    :and-you                               "і вы"
    :search-chat                           "Пошук па чату"
@@ -31,11 +31,11 @@
    :suggestions-requests                  "Запыты"
    :suggestions-commands                  "Каманды"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Сінхранізацыя..."
    :sync-synced                           "Сінхранізуецца"
 
-   ;messages
+   ;;messages
    :status-sending                        "Адпраўляецца"
    :status-pending                        "у чаканні"
    :status-sent                           "Адправіць"
@@ -44,7 +44,7 @@
    :status-delivered                      "Дастаўлена"
    :status-failed                         "Памылка"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "секунда"
                                            :other "секунды"}
    :datetime-minute                       {:one   "хвіліна"
@@ -57,7 +57,7 @@
    :datetime-yesterday                    "учора"
    :datetime-today                        "сёння"
 
-   ;profile
+   ;;profile
    :profile                               "Профіль"
    :message                               "Паведамленне"
    :not-specified                         "Не пазначана"
@@ -75,7 +75,7 @@
    :sharing-share                         "Падзяліцца..."
    :sharing-cancel                        "Адмена"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Вашы кантакты сінхранізаваныя"
    :confirmation-code                     (str "Дзякуй! Мы адправілі вам СМС з кодам пацверджання."
                                                "Калі ласка, увядзіце гэты код для пацвярджэння свайго нумара тэлефона")
@@ -89,11 +89,11 @@
    :intro-message1                        "Сардэчна запрашаем у Статус\nНацісніце на гэтае паведамленне, каб усталяваць пароль і пачаць!"
    :account-generation-message            "Секундачку, мне трэба выканаць вар'яцка складаныя разлікі для стварэння вашага акаўнта!"
 
-   ;chats
+   ;;chats
    :chats                                 "Чаты"
    :new-group-chat                        "Новы групавы чат"
 
-   ;discover
+   ;;discover
    :discover                             "Пошук"
    :none                                  "Няма"
    :search-tags                           "Увядзіце тэгі для пошуку сюды"
@@ -101,10 +101,10 @@
    :recent                                "Апошнія"
    :no-statuses-discovered                "Статусы не выяўлены"
 
-   ;settings
+   ;;settings
    :settings                              "Налады"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Кантакты"
    :new-contact                           "Новы кантакт"
    :edit-contacts                         "Рэдагаванне кантактаў"
@@ -113,7 +113,7 @@
    :show-qr                               "Паказаць QR"
    :enter-address                         "Ўвесці адрас"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Выдаліць"
    :save                                  "Захаваць"
    :clear-history                         "Ачысціць гісторыю"
@@ -121,16 +121,16 @@
    :edit                                  "Змяніць"
    :add-members                           "Дадаць членаў"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "Новая група"
    :reorder-groups                        "Упарадкаваць групы"
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "атрымаў(ла) запрашэнне ў чат"
    :removed-from-chat                     "выдаліў(ла) вас з групавога чата"
    :left                                  "засталося"
@@ -138,7 +138,7 @@
    :removed                               "выдалены(на)"
    :You                                   "Вы"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Дадаць новы кантакт"
    :scan-qr                               "Сканаваць QR"
    :name                                  "Імя"
@@ -149,29 +149,29 @@
    :unknown-address                       "Невядомы адрас"
 
 
-   ;login
+   ;;login
    :connect                               "Падлучыцца"
    :address                               "Адрас"
    :password                              "Пароль"
    :wrong-password                        "Няправільны пароль"
 
-   ;recover
+   ;;recover
    :passphrase                            "Парольная фраза"
    :recover                               "Аднавіць"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Аднавіць доступ"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Гатова"
    :main-wallet                           "Асноўны кашалёк"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Няправільны нумар тэлефона"
    :amount                                "Сума"
-   ;transactions
+   ;;transactions
    :status                                "Статус"
    :recipient                             "Атрымальнік"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "ой, памылка"})

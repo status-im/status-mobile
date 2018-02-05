@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Miembros"
    :not-implemented                       "!no implementado"
    :chat-name                             "Nombre del chat"
    :notifications-title                   "Notificaciones y sonidos"
    :offline                               "Fuera de línea"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Cambiar de usuario"
 
-   ;chat
+   ;;chat
    :is-typing                             "está escribiendo"
    :and-you                               "y tú"
    :search-chat                           "Buscar chat"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Solicitudes"
    :suggestions-commands                  "Comandos"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Sincronizando..."
    :sync-synced                           "Sincronizado"
 
-   ;messages
+   ;;messages
    :status-sending                        "Enviando"
    :status-pending                        "Pendiente"
    :status-sent                           "Enviado"
@@ -42,7 +42,7 @@
    :status-delivered                      "Enviado"
    :status-failed                         "Fallido"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "segundo"
                                            :other "segundos"}
    :datetime-minute                       {:one   "minuto"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "ayer"
    :datetime-today                        "hoy"
 
-   ;profile
+   ;;profile
    :profile                               "Perfil"
    :message                               "Mensaje"
    :not-specified                         "No especificado"
@@ -73,11 +73,11 @@
    :sharing-share                         "Compartir..."
    :sharing-cancel                        "Cancelar"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Tus contactos se han sincronizado"
    :confirmation-code                     (str "¡Gracias! Te hemos enviado un código de confirmación por mensaje de texto. "
                                                "Ingresa este código para confirmar tu número telefónico")
-   :incorrect-code                        (str "Lo siento, el código no era correcto; ingrésalo de nuevo")
+   :incorrect-code                        (str "Lo siento, el código no era correcto;; ingrésalo de nuevo")
    :phew-here-is-your-passphrase          "*Wow* eso estuvo difícil, aquí tienes tu contraseña, *¡anótala y mantenla segura!* La necesitarás para recuperar tu cuenta."
    :here-is-your-passphrase               "Aquí tienes tu frase de contraseña, *¡Anótala y mantenga segura!* La necesitarás para recuperar tu cuenta."
    :phone-number-required                 "Pulsa aquí para ingresar tu número telefónico y yo encontraré a tus amigos"
@@ -85,11 +85,11 @@
    :intro-message1                        "Bienvenido(a) a Status\n¡Pulsa en este mensaje para establecer tu contraseña y comenzar!"
    :account-generation-message            "¡Dame un segundo, necesito realizar un súper cálculo para generar tu cuenta!"
 
-   ;chats
+   ;;chats
    :chats                                 "Chats"
    :new-group-chat                        "Nuevo chat de grupo"
 
-   ;discover
+   ;;discover
    :discover                              "Descubrimiento"
    :none                                  "Ninguno"
    :search-tags                           "Ingresa aquí tus etiquetas de búsqueda"
@@ -97,17 +97,17 @@
    :recent                                "Reciente"
    :no-statuses-discovered                "No se encontró ningún estatus"
 
-   ;settings
+   ;;settings
    :settings                              "Configuración"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Contactos"
    :new-contact                           "Nuevo contacto"
    :contacts-group-new-chat               "Iniciar nuevo chat"
    :no-contacts                           "No hay contactos todavía"
    :show-qr                               "Mostrar QR"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Eliminar"
    :save                                  "Guardar"
    :clear-history                         "Borrar historial"
@@ -115,14 +115,14 @@
    :edit                                  "Editar"
    :add-members                           "Agregar miembros"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "recibió invitación a chat"
    :removed-from-chat                     "te retiró del grupo de chat"
    :left                                  "restantes"
@@ -130,7 +130,7 @@
    :removed                               "retirado"
    :You                                   "Tú"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Agregar nuevo contacto"
    :scan-qr                               "Escanear QR"
    :name                                  "Nombre"
@@ -140,31 +140,31 @@
    :unknown-address                       "Dirección desconocida"
 
 
-   ;login
+   ;;login
    :connect                               "Conectar"
    :address                               "Dirección"
    :password                              "Contraseña"
    :wrong-password                        "Contraseña incorrecta"
 
-   ;recover
+   ;;recover
    :passphrase                            "Frase de contraseña"
    :recover                               "Recuperar"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Recuperar acceso"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Completado"
    :main-wallet                           "Cartera principal"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Número telefónico inválido"
    :amount                                "Monto"
-   ;transactions
+   ;;transactions
    :status                                "Estatus"
    :recipient                             "Destinatario"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "oops, error"
 
    :confirm                               "Confirmar"

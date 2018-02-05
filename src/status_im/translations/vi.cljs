@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Các thành viên"
    :not-implemented                       "!không được thực hiện"
    :chat-name                             "Tên trò chuyện"
    :notifications-title                   "Thông báo và âm thanh"
    :offline                               "Không trực tuyến"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Đổi người dùng"
 
-   ;chat
+   ;;chat
    :is-typing                             "đang gõ"
    :and-you                               "và bạn"
    :search-chat                           "Tìm kiếm trò chuyện"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Các yêu cầu"
    :suggestions-commands                  "Các lệnh"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Đang đồng bộ..."
    :sync-synced                           "Đồng bộ"
 
-   ;messages
+   ;;messages
    :status-sending                        "Đang gửi"
    :status-pending                        "Chưa giải quyết"
    :status-sent                           "Đã gửi"
@@ -42,7 +42,7 @@
    :status-delivered                      "Đã gửi"
    :status-failed                         "Đã thất bại"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "giây"
                                            :other "giây"}
    :datetime-minute                       {:one   "phút"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "hôm qua"
    :datetime-today                        "hôm nay"
 
-   ;profile
+   ;;profile
    :profile                               "Hồ sơ"
    :message                               "Tin nhắn"
    :not-specified                         "Không được xác định"
@@ -68,7 +68,7 @@
    :image-source-make-photo               "Chụp"
    :image-source-gallery                  "Chọn từ gallery"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Các liên hệ của bạn đã được đồng bộ hóa"
    :confirmation-code                     (str "Cảm ơn! Chúng tôi đã gửi cho bạn một tin nhắn văn bản với một xác nhận "
                                                "Vui lòng cung cấp mã đó để xác nhận số điện thoại của bạn")
@@ -80,11 +80,11 @@
    :intro-message1                        "Chào mừng đến với trang Trạng thái\nNhấp vào tin nhắn này để thiết lập mật khẩu của bạn & bắt đầu!"
    :account-generation-message            "Cho tôi một giây, tôi phải làm vài thuật toán điên khùng để khởi tạo tài khoản của bạn!"
 
-   ;chats
+   ;;chats
    :chats                                 "Trò chuyện"
    :new-group-chat                        "Cuộc trò chuyện theo nhóm mới"
 
-   ;discover
+   ;;discover
    :discover                              "Khám phá"
    :none                                  "Không"
    :search-tags                           "Gõ các thẻ tìm kiếm của bạn tại đây"
@@ -92,17 +92,17 @@
    :recent                                "Gần đây"
    :no-statuses-discovered                "Không có trạng thái được tìm thấy"
 
-   ;settings
+   ;;settings
    :settings                              "Các thiết lập"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Các liên hệ"
    :new-contact                           "Liên hệ mới"
    :contacts-group-new-chat               "Bắt đầu cuộc trò chuyện mới"
    :no-contacts                           "Chưa có liên hệ"
    :show-qr                               "Hiển thị QR"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Xóa"
    :save                                  "Lưu"
    :clear-history                         "Xóa lịch sử"
@@ -110,14 +110,14 @@
    :edit                                  "Điều chỉnh"
    :add-members                           "Thêm Thành viên"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "đã nhận lời mời trò chuyện"
    :removed-from-chat                     "đã xóa bạn khỏi cuộc trò chuyện theo nhóm"
    :left                                  "đã rời đi"
@@ -125,7 +125,7 @@
    :removed                               "đã xóa"
    :You                                   "Bạn"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Thêm liên hệ mới"
    :scan-qr                               "Quét QR"
    :name                                  "Tên"
@@ -135,31 +135,31 @@
    :unknown-address                       "Địa chỉ không xác định"
 
 
-   ;login
+   ;;login
    :connect                               "Kết nối"
    :address                               "Địa chỉ"
    :password                              "Mật khẩu"
    :wrong-password                        "Mật khẩu sai"
 
-   ;recover
+   ;;recover
    :passphrase                            "Cụm mật khẩu"
    :recover                               "Khôi phục"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Khôi phục quyền truy cập"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Đã hoàn thành"
    :main-wallet                           "Ví chính"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Số điện thoại không hợp lệ"
    :amount                                "Số tiền"
-   ;transactions
+   ;;transactions
    :status                                "Trạng thái"
    :recipient                             "Người nhận"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "Ối, lỗi"
 
    :confirm                               "Xác nhận"
@@ -206,8 +206,8 @@
    :mute-notifications                    "Tắt tiếng thông báo"
 
    :contact-s
-                                          {:one   "liên hệ"
-                                           :other "Danh bạ"}
+   {:one   "liên hệ"
+    :other "Danh bạ"}
    :next                                  "Tiếp theo"
    :from                                  "Từ"
    :search-chats                          "Tìm kiếm các cuộc trò chuyện"

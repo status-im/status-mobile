@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Miembros"
    :not-implemented                       "!No implementado!"
    :chat-name                             "Nombre del chat"
@@ -18,11 +18,11 @@
    :camera-access-error                   "Para permitir el acceso a la cámara, porfavor, ve a configuración de sistema y asegúrate que la opción 'Status > Cámara' está seleccionada."
    :photos-access-error                   "Para permitir el acceso a fotos, porfavor, ve a configuración de sistema y asegúrate que la opción 'Status > Fotos' está seleccionada."
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Cambiar usuarios"
    :current-network                       "Red actual"
 
-   ;chat
+   ;;chat
    :is-typing                             "está escribiendo"
    :and-you                               "y tú"
    :search-chat                           "Buscar chat"
@@ -42,11 +42,11 @@
    :faucet-success                        "Se recibió la solicitud de Faucet"
    :faucet-error                          "Error de solicitud de Faucet"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Sincronizando..."
    :sync-synced                           "Sincronizado"
 
-   ;messages
+   ;;messages
    :status-sending                        "Enviando"
    :status-pending                        "Pendiente"
    :status-sent                           "Enviado"
@@ -55,7 +55,7 @@
    :status-delivered                      "Entregado"
    :status-failed                         "Fallido"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "segundo"
                                            :other "segundos"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "ayer"
    :datetime-today                        "hoy"
 
-   ;profile
+   ;;profile
    :profile                               "Perfil"
    :edit-profile                          "Editar perfil"
    :message                               "Mensaje"
@@ -99,7 +99,7 @@
    :browsing-open-in-web-browser          "Abrir en navegador"
    :browsing-cancel                       "Cancelar"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Tus contactos se han sincronizado"
    :confirmation-code                     (str "¡Gracias! Te hemos enviado un mensaje de texto con un código de confirmación "
                                                ". Por favor, usa el código para confirmar tu número de teléfono")
@@ -114,13 +114,13 @@
    :move-to-internal-failure-message      "Necesitamos mover algunos datos importantes de almacenamiento externo a interno. Necesitamos tu permiso para hacerlo. No usaremos almacenamiento externo en futuras versiones."
    :debug-enabled                         "¡El servidor de depuración ha sido lanzado! Ahora puedes ejecutar *status-dev-cli scan* para encontrar el servidor desde tu computadora en la misma red."
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "Internacional 1"
    :phone-international                   "Internacional 2"
    :phone-national                        "Nacional"
    :phone-significant                     "Importante"
 
-   ;chats
+   ;;chats
    :chats                                 "Chats"
    :delete-chat                           "Eliminar chat"
    :new-group-chat                        "Nuevo grupo de chat"
@@ -131,7 +131,7 @@
    :topic-format                          "Formato incorrecto [a-z0-9\\-]+"
    :public-group-topic                    "Tema"
 
-   ;discover
+   ;;discover
    :discover                              "Descubrir"
    :none                                  "Ninguno"
    :search-tags                           "Escribe tus etiquetas de búsqueda aquí"
@@ -140,10 +140,10 @@
    :no-statuses-discovered                "No se descubrieron estados"
    :no-statuses-found                     "No se encontraron estados"
 
-   ;settings
+   ;;settings
    :settings                              "Ajustes"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Nuevo contacto"
    :delete-contact                        "Borrar contacto"
    :delete-contact-confirmation           "Este contacto será eliminado de tus contactos"
@@ -157,7 +157,7 @@
    :enter-address                         "Ingresar dirección"
    :more                                  "más"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Remover"
    :save                                  "Guardar"
    :delete                                "Eliminar"
@@ -168,10 +168,10 @@
    :edit                                  "Editar"
    :add-members                           "Agregar miembros"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "Nuevo grupo"
    :reorder-groups                        "Reordenar grupos"
    :edit-group                            "Editar grupo"
@@ -180,9 +180,9 @@
    :delete-group-prompt                   "Esto no afectará tus contactos"
    :contact-s                             {:one   "contacto"
                                            :other "contactos"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "recibió invitación de chat"
    :removed-from-chat                     "te removió del chat"
    :left                                  "salió"
@@ -190,7 +190,7 @@
    :removed                               "eliminado"
    :You                                   "Tú"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Agregar nuevo contacto"
    :scan-qr                               "Escanear QR"
    :name                                  "Nombre"
@@ -201,7 +201,7 @@
    :unknown-address                       "Dirección desconocida"
 
 
-   ;login
+   ;;login
    :connect                               "Conectar"
    :address                               "Dirección"
    :password                              "Contraseña"
@@ -209,24 +209,24 @@
    :sign-in                               "Regístrate"
    :wrong-password                        "Contraseña incorrecta"
 
-   ;recover
+   ;;recover
    :passphrase                            "Frase de contraseña"
    :recover                               "Recuperar"
    :twelve-words-in-correct-order         "12 palabras en orden correcto"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Recuperar acceso"
    :create-new-account                    "Crear nueva cuenta"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Listo"
    :main-wallet                           "Wallet principal"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Número de teléfono incorrecto"
    :amount                                "Cantidad"
 
-   ;transactions
+   ;;transactions
    :confirm                               "Confirmar"
    :transaction                           "Transacción"
    :status                                "Estado"
@@ -236,5 +236,5 @@
    :data                                  "Datos"
    :got-it                                "Entendido"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "oops, error"})

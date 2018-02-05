@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Tagok"
    :not-implemented                       "!nem végrehajtott"
    :chat-name                             "Csevegés neve"
    :notifications-title                   "Értesítések és hangok"
    :offline                               "Offline"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Felhasználók váltása"
 
-   ;chat
+   ;;chat
    :is-typing                             "gépel"
    :and-you                               "és te"
    :search-chat                           "Csevegés keresése"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Kérések"
    :suggestions-commands                  "Parancsok"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Szinkronizálás..."
    :sync-synced                           "Szinkronizálás folyamatban"
 
-   ;messages
+   ;;messages
    :status-sending                        "Küldés"
    :status-pending                        "Függőben levő"
    :status-sent                           "Elküldve"
@@ -42,7 +42,7 @@
    :status-delivered                      "Kézbesítve"
    :status-failed                         "Nem sikerült"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "másodperc"
                                            :other "másodperc"}
    :datetime-minute                       {:one   "perc"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "tegnap"
    :datetime-today                        "ma"
 
-   ;profile
+   ;;profile
    :profile                               "Profil"
    :message                               "Üzenet"
    :not-specified                         "Nincs megadva"
@@ -68,7 +68,7 @@
    :image-source-make-photo               "Rögzítés"
    :image-source-gallery                  "Kiválasztás a galériából"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Kapcsolataid szinkronizálásra kerültek"
    :confirmation-code                     (str "Köszönjük! Küldtünk neked egy szöveges üzenetet megerősítési "
                                                "kóddal. Kérjük, add meg a kódot telefonszámod megerősítése érdekében")
@@ -80,11 +80,11 @@
    :intro-message1                        "Üdv az Állapotnál\nÉrints erre a üzenetre, állítsd be a jelszavad és fogj hozzá!"
    :account-generation-message            "Adj egy percet, varázsolok egy kicsit és létre is hozom a felhasználói fiókodat!"
 
-   ;chats
+   ;;chats
    :chats                                 "Csevegések"
    :new-group-chat                        "Új csoportos csevegés"
 
-   ;discover
+   ;;discover
    :discover                              "Felfedezés"
    :none                                  "Semmi"
    :search-tags                           "Add meg keresési címkéidet itt"
@@ -92,17 +92,17 @@
    :recent                                "Legutóbbi"
    :no-statuses-discovered                "Nincsenek felfedezett állapotok"
 
-   ;settings
+   ;;settings
    :settings                              "Beállítások"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kapcsolatok"
    :new-contact                           "Új kapcsolat"
    :contacts-group-new-chat               "Új csevegés indítása"
    :no-contacts                           "Még nincsenek kapcsolatok"
    :show-qr                               "QR mutatása"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Eltávolítás"
    :save                                  "Mentés"
    :clear-history                         "Előzmények törlése"
@@ -110,14 +110,14 @@
    :edit                                  "Szerkesztés"
    :add-members                           "Tagok hozzáadása"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "csevegési meghívásban részesült"
    :removed-from-chat                     "eltávolítva a csoportos csevegésből"
    :left                                  "maradt"
@@ -125,7 +125,7 @@
    :removed                               "eltávolított"
    :You                                   "Te"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Új kapcsolat hozzáadása"
    :scan-qr                               "QR beolvasása"
    :name                                  "Név"
@@ -135,31 +135,31 @@
    :unknown-address                       "Ismeretlen cím"
 
 
-   ;login
+   ;;login
    :connect                               "Kapcsolódás"
    :address                               "Cím"
    :password                              "Jelszó"
    :wrong-password                        "Hibás jelszó"
 
-   ;recover
+   ;;recover
    :passphrase                            "Jelmondat"
    :recover                               "Visszaállítás"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Hozzáférés helyreállítása"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Kész"
    :main-wallet                           "Fő zseb"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Hibás telefonszám"
    :amount                                "Összeg"
-   ;transactions
+   ;;transactions
    :status                                "Állapot"
    :recipient                             "Címzett"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "hoppá, hiba"
 
    :confirm                               "Megerősít"

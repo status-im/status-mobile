@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "lede"
    :not-implemented                       "!nie geimplimenteer nie"
    :chat-name                             "Bynaam"
    :notifications-title                   "Kennisgewings en klanke"
    :offline                               "Aflyn"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Verander gebruikers"
 
-   ;chat
+   ;;chat
    :is-typing                             "is besig om te tik"
    :and-you                               "en jy"
    :search-chat                           "Deursoek geselsies"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Versoeke"
    :suggestions-commands                  "Opdragte"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Besig om te sinchroniseer..."
    :sync-synced                           "gesinchroniseer"
 
-   ;messages
+   ;;messages
    :status-sending                        "Besig om te stuur"
    :status-pending                        "Hangende"
    :status-sent                           "Gestuur"
@@ -42,7 +42,7 @@
    :status-delivered                      "Afgelewer"
    :status-failed                         "Gefaal"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "sekonde"
                                            :other "sekondes"}
    :datetime-minute                       {:one   "minuut"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "gister"
    :datetime-today                        "vandag"
 
-   ;profile
+   ;;profile
    :profile                               "Profiel"
    :message                               "Boodskap"
    :not-specified                         "Nie gespesifiseer nie"
@@ -68,7 +68,7 @@
    :image-source-make-photo               "Opname"
    :image-source-gallery                  "Kies uit galery"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "U kontakte is gesinchroniseer"
    :confirmation-code                     (str "Dankie! Ons het vir u 'n SMS gestuur met 'n bevestigings "
                                                "kode. Verskaf asseblief daardie kode om u telefoonnommer te bevestig")
@@ -80,11 +80,11 @@
    :intro-message1                        "Welkom by Status\nTik tik hierdie boodskap om jou wagwoord te stel & laat ons begin!"
    :account-generation-message            "Net 'n oomblik, ek moet mal somme doen om jou rekening te skep!"
 
-   ;chats
+   ;;chats
    :chats                                 "Geselsies"
    :new-group-chat                        "Nuwe groepgeselsie"
 
-   ;discover
+   ;;discover
    :discover                              "Ontdekking"
    :none                                  "Geen"
    :search-tags                           "Tik jou soek-oortjies hier in"
@@ -92,17 +92,17 @@
    :recent                                "Onlangs"
    :no-statuses-discovered                "Geen statusse gevind nie"
 
-   ;settings
+   ;;settings
    :settings                              "Stellings"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Nuwe kontak"
    :contacts-group-new-chat               "Begin nuwe geselsie"
    :no-contacts                           "Nog geen kontakte nie"
    :show-qr                               "Wys QR"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Verwyder"
    :save                                  "Stoor"
    :clear-history                         "Maak geskiedenis skoon"
@@ -110,14 +110,14 @@
    :edit                                  "Wysig"
    :add-members                           "Voeg lede by"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "geselsie-uitnodiging ontvang"
    :removed-from-chat                     "het jou van groepsgeselsie verwyder"
    :left                                  "uitgegaan"
@@ -125,7 +125,7 @@
    :removed                               "verwyder"
    :You                                   "Jou"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Voeg nuwe kontak by"
    :scan-qr                               "Skandeer QR"
    :name                                  "Naam"
@@ -135,31 +135,31 @@
    :unknown-address                       "Onbekende adres"
 
 
-   ;login
+   ;;login
    :connect                               "Konnekteer"
    :address                               "Adres"
    :password                              "Wagwoord"
    :wrong-password                        "Verkeerde wagwoord"
 
-   ;recover
+   ;;recover
    :passphrase                            "Tydelike wagwoord"
    :recover                               "Herstel"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Herwin toegang"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Gedoen"
    :main-wallet                           "Hoofbeursie"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Ongeldige telefoonnommer"
    :amount                                "Bedrag"
-   ;transactions
+   ;;transactions
    :status                                "Status"
    :recipient                             "Ontvanger"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "oepsie, fout"
 
    :confirm                               "Bevestig"

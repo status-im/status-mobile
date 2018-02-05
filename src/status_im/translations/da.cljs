@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Medlemmere"
    :not-implemented                       "Ikke implementeret!"
    :chat-name                             "Chatnavn"
@@ -14,15 +14,15 @@
    :type-a-message                        "Skriv en besked..."
    :type-a-command                        "Skriv en kommando..."
    :error                                 "Fejl"
-   
+
    :camera-access-error                   "Gå venligst til dine systemindstillinger og sørg  for at du Status > Kamera er tilladt."
    :photos-access-error                   "Gå venligst til dine systemindstillinger og sørg  for at du Status > Billeder er tilladt."
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Skift bruger"
    :current-network                       "Nuværende netværk"
 
-   ;chat
+   ;;chat
    :is-typing                             "skriver"
    :and-you                               "og du"
    :search-chat                           "Søg i chat"
@@ -42,11 +42,11 @@
    :faucet-success                        "Faucet request er modtaget"
    :faucet-error                          "Faucet request fejl"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Synkroniserer..."
    :sync-synced                           "Synkroniseret"
 
-   ;messages
+   ;;messages
    :status-sending                        "Sender"
    :status-pending                        "Under behandling"
    :status-sent                           "Sendt"
@@ -55,7 +55,7 @@
    :status-delivered                      "Leveret"
    :status-failed                         "Mislykket"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "sekund"
                                            :other "sekunder"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "i går"
    :datetime-today                        "i dag"
 
-   ;profile
+   ;;profile
    :profile                               "Profil"
    :edit-profile                          "Rediger profil"
    :message                               "Meddelelser"
@@ -98,7 +98,7 @@
    :browsing-open-in-web-browser          "Åben i web browser"
    :browsing-cancel                       "Annullér"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Dine kontakter er synkroniseret"
    :confirmation-code                     (str "Tak! Vi har sendt dig en sms med en bekræftelseskode. "
                                                "Vær venlig at indtaste koden for at bekræfte dit telefonnummer")
@@ -113,13 +113,13 @@
    :move-to-internal-failure-message      "Vi skal flyyte nogle vigtige filer fra din eksterne til din interne hukommelse. For at gøre dette har vi brug for din tilladelse. Vi vil ikke bruge din eksterne hukkomelse i kommende versioner."
    :debug-enabled                         "Debug server has been launched! You can now execute *status-dev-cli scan* to find the server from your computer on the same network."
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "International 1"
    :phone-international                   "International 2"
    :phone-national                        "National"
    :phone-significant                     "Significant"
 
-   ;chats
+   ;;chats
    :chats                                 "Samtaler"
    :delete-chat                           "Fjern samtale"
    :new-group-chat                        "Ny gruppsamtale"
@@ -130,7 +130,7 @@
    :topic-format                          "Forkert format [a-z0-9\\-]+"
    :public-group-topic                    "Emne"
 
-   ;discover
+   ;;discover
    :discover                              "Opdag"
    :none                                  "Ingen"
    :search-tags                           "Skrive de tags du vil søge efter her"
@@ -139,10 +139,10 @@
    :no-statuses-discovered                "Ingen statusser opdaget"
    :no-statuses-found                     "Inger statusser fundet"
 
-   ;settings
+   ;;settings
    :settings                              "Indstillinger"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kontakter"
    :new-contact                           "Ny kontakt"
    :delete-contact                        "Fjern kontakt"
@@ -157,7 +157,7 @@
    :enter-address                         "Indtast adresse"
    :more                                  "mere"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Fjern"
    :save                                  "Gem"
    :delete                                "Slet"
@@ -168,10 +168,10 @@
    :edit                                  "Rediger"
    :add-members                           "Tilføj medlemmere"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "Ny gruppe"
    :reorder-groups                        "Arranger grupper"
    :edit-group                            "Rediger gruppe"
@@ -180,9 +180,9 @@
    :delete-group-prompt                   "Dette vil ikke påvirke dine kontakter"
    :contact-s                             {:one   "kontakt"
                                            :other "kontakter"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "Accepterede chatinvitaion"
    :removed-from-chat                     "Fjernede dig fra gruppechatten"
    :left                                  "Forlod"
@@ -190,7 +190,7 @@
    :removed                               "Fjernet"
    :You                                   "Du"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Tilføj ny kontakt"
    :scan-qr                               "Skan QR-kode"
    :name                                  "Navn"
@@ -201,7 +201,7 @@
    :unknown-address                       "Ukendt adresse"
 
 
-   ;login
+   ;;login
    :connect                               "Tilslut"
    :address                               "Adresse"
    :password                              "Kodeord"
@@ -209,23 +209,23 @@
    :sign-in                               "Log på"
    :wrong-password                        "Forkert kodeord"
 
-   ;recover
+   ;;recover
    :passphrase                            "Kodesætning (passphrase)"
    :recover                               "Gendan"
    :twelve-words-in-correct-order         "12 ord i den korrekte rækkefølge"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Gendan adgang"
    :create-new-account                    "Opret en ny konto"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Klar"
    :main-wallet                           "Hovedpung"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Ugyldigt telefonnummer"
    :amount                                "Beløb"
-   ;transactions
+   ;;transactions
    :confirm                               "Bekræft"
    :transaction                           "Transaktion"
    :status                                "Status"
@@ -235,5 +235,5 @@
    :data                                  "Data"
    :got-it                                "Forstået"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "hovsa, fejl"})

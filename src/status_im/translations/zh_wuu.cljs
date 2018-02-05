@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "会员"
    :not-implemented                       "!未实现"
    :chat-name                             "聊天名称"
@@ -18,11 +18,11 @@
    :camera-access-error                   "要授予所需的摄像机许可，请转到系统设置，并确定选择了“状态”>“摄像机”。"
    :photos-access-error                   "要授予所需的照片许可，请转到系统设置，并确保选择“状态“>“照片“。"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "切换用户"
    :current-network                       "当前网络"
 
-   ;chat
+   ;;chat
    :is-typing                             "正在输入"
    :and-you                               "和您"
    :search-chat                           "搜索聊天"
@@ -42,11 +42,11 @@
    :faucet-success                        "水龙头请求已经收到"
    :faucet-error                          "水龙头请求错误"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "同步中..."
    :sync-synced                           "同步"
 
-   ;messages
+   ;;messages
    :status-sending                        "发送中"
    :status-pending                        "待定"
    :status-sent                           "已发送"
@@ -55,7 +55,7 @@
    :status-delivered                      "已发送"
    :status-failed                         "发送失败"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "秒"
                                            :other "秒"}
@@ -69,7 +69,7 @@
    :datetime-yesterday                    "昨天"
    :datetime-today                        "今天"
 
-   ;profile
+   ;;profile
    :profile                               "个人资料"
    :edit-profile                          "编辑个人资料"
    :message                               "消息"
@@ -99,7 +99,7 @@
    :browsing-open-in-web-browser          "在网络浏览器中打开"
    :browsing-cancel                       "取消"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "您的联系人已同步"
    :confirmation-code                     (str "谢谢！我们已经给您发了一个确认短信"
                                                "代码。请提供该代码以确认您的电话号码")
@@ -114,13 +114,13 @@
    :move-to-internal-failure-message      "我们需要将一些重要的文件从外部存储移动到内部存储。 为此，我们需要你的许可。 我们在将来的版本不会使用外部存储。"
    :debug-enabled                         "调试服务器已经推出！ 现在你可以执行* status-dev-cli scan *在同一网络上的电脑上查找服务器。"
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "国际1"
    :phone-international                   "国际2"
    :phone-national                        "国内"
    :phone-significant                     "显着"
 
-   ;chats
+   ;;chats
    :chats                                 "聊天"
    :delete-chat                           "刪除聊天"
    :new-group-chat                        "新的群聊"
@@ -131,7 +131,7 @@
    :topic-format                          "格式错误 [a-z0-9\\-]+"
    :public-group-topic                    "主题"
 
-   ;discover
+   ;;discover
    :discover                             "发现"
    :none                                  "无"
    :search-tags                           "在这里键入您的搜索标签"
@@ -140,10 +140,10 @@
    :no-statuses-discovered                "未发现状态"
    :no-statuses-found                     "找不到状态"
 
-   ;settings
+   ;;settings
    :settings                              "设置"
 
-   ;contacts
+   ;;contacts
    :contacts                              "联系人"
    :new-contact                           "新的联系人"
    :delete-contact                        "删除联络人"
@@ -158,7 +158,7 @@
    :enter-address                         "輸入地址"
    :more                                  "更多"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "移动"
    :save                                  "保存"
    :clear-history                         "清除历史"
@@ -169,10 +169,10 @@
    :edit                                  "编辑"
    :add-members                           "添加会员"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
    :new-group                             "新增群組"
    :reorder-groups                        "重新排序群組"
    :edit-group                            "編輯群組"
@@ -181,9 +181,9 @@
    :delete-group-prompt                   "這不會影響聯絡人"
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "接受聊天邀请"
    :removed-from-chat                     "将您从群聊中移除"
    :left                                  "离开"
@@ -191,7 +191,7 @@
    :removed                               "已移除"
    :You                                   "您"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "增加新的联系人"
    :scan-qr                               "扫描QR"
    :name                                  "名称"
@@ -202,7 +202,7 @@
    :unknown-address                       "未知地址"
 
 
-   ;login
+   ;;login
    :connect                               "连接"
    :address                               "地址"
    :password                              "密码"
@@ -210,23 +210,23 @@
    :sign-in-to-status                     "登录Status"
    :sign-in                               "登录"
 
-   ;recover
+   ;;recover
    :passphrase                            "口令短语"
    :recover                               "恢复"
    :twelve-words-in-correct-order         "正确排序12个字"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "恢复访问"
    :create-new-account                    "建立新帐户"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "完成"
    :main-wallet                           "主要钱包"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "无效的电话号码"
    :amount                                "金额"
-   ;transactions
+   ;;transactions
    :confirm                               "确认"
    :transaction                           "交易"
    :status                                "状态"
@@ -236,5 +236,5 @@
    :data                                  "数据"
    :got-it                                "得到了"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "啊哦，错误"})

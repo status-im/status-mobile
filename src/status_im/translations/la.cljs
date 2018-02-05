@@ -1,18 +1,18 @@
 (ns status-im.translations.la)
- 
+
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "sodalis"
    :not-implemented                       "ne attexit"
    :chat-name                             "nomen colloquii"
    :notifications-title                   "nuntiationes"
    :offline                               "abesse"
- 
-   ;drawer
+
+   ;;drawer
    :switch-users                          "utens ex cambit"
- 
-   ;chat
+
+   ;;chat
    :is-typing                             "conscribit"
    :and-you                               "et tu"
    :search-chat                           "perscruta colloquii"
@@ -28,12 +28,12 @@
    :no-messages                           "ne nuntii"
    :suggestions-requests                  "precatus"
    :suggestions-commands                  "jussum"
- 
-   ;sync
+
+   ;;sync
    :sync-in-progress                      "synchronizari..."
    :sync-synced                           "synchronizatum esse"
- 
-   ;messages
+
+   ;;messages
    :status-sending                        "allegere"
    :status-pending                        "tractare"
    :status-sent                           "deditum iri"
@@ -41,8 +41,8 @@
    :status-seen                           "adspectatum esse"
    :status-delivered                      "deditum esse"
    :status-failed                         "vitiosus"
- 
-   ;datetime
+
+   ;;datetime
    :datetime-ago-format                   "{{ago}} {{number}} {{time-intervals}}"
    :datetime-second                       {:one   "pars minuta secunda horae"
                                            :other "pars minuta secunda horae"}
@@ -55,8 +55,8 @@
    :datetime-ago                          "anto"
    :datetime-yesterday                    "heri"
    :datetime-today                        "hodie"
- 
-   ;profile
+
+   ;;profile
    :profile                               "biographia"
    :message                               "nuntium"
    :not-specified                         "ne adnotans"
@@ -67,7 +67,7 @@
    :image-source-title                    "photographia bigraphiae"
    :image-source-make-photo               "photographere"
    :image-source-gallery                  "eligere ad pinacothecae"
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "contagium sui synchronizatum esse."
    :confirmation-code                     (str "gratias tibi! misimus nuntium conscriptionis cum notae. "
                                                "transcribe notam, ut nummerum telefonicum possimus verificare.")
@@ -78,78 +78,78 @@
    :intro-status                          "habere colloquium cum me, ut syngraphus sui congerit et moderationes sui mutare!"
    :intro-message1                        "salve! hic Status est!.\n attige id nuntium, ut signum arcanum sui congere et incipere!"
    :account-generation-message            "mane! cumputo benificium sui."
- 
-   ;chats
+
+   ;;chats
    :chats                                 "colloquia"
    :new-group-chat                        "novum colloquium circli"
- 
-   ;discover
+
+   ;;discover
    :discover                              "invenite"
    :none                                  "nihil"
    :search-tags                           "perscribe hic verbum querentis"
    :popular-tags                          "favorabilis opiones"
    :recent                                "novae"
    :no-statuses-discovered                "nullus status repertum esse"
- 
-   ;settings
+
+   ;;settings
    :settings                              "moderationes"
- 
-   ;contacts
+
+   ;;contacts
    :contacts                              "contagiis"
    :new-contact                           "novum contagium"
    :contacts-group-new-chat               "novum colloquium circli"
    :no-contacts                           "Nulla contagio"
    :show-qr                               "QR-nota elucere"
- 
-   ;group-settings
+
+   ;;group-settings
    :remove                                "amovere"
    :save                                  "apothecare"
    :clear-history                         "processus amovere"
    :chat-settings                         "moderationes colloquiorum"
    :edit                                  "commutare"
    :add-members                           "sodalis adjungere"
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
-   ;new-group
-   ;participants
-   ;protocol
+   ;;new-group
+   ;;participants
+   ;;protocol
    :received-invitation                   "nancisci colloquium circli"
    :removed-from-chat                     "ex colloquium circli relinquere"
    :left                                  "desse"
    :invited                               "invitavisse"
    :removed                               "reliquisse"
    :You                                   "tu"
- 
-   ;new-contact
+
+   ;;new-contact
    :add-new-contact                       "nova  contagio adjungere"
    :scan-qr                               "QR-nota photographere"
    :name                                  "nomen"
-   :address-explication                   "explain what adresses are" ; TODO
+   :address-explication                   "explain what adresses are" ;; TODO
    :contact-already-added                 "iste contagio jam adjunctum esse"
    :can-not-add-yourself                  "ne potest adjungere ipse!"
    :unknown-address                       "ignotum adloquium"
- 
- 
-   ;login
+
+
+   ;;login
    :connect                               "iungere"
    :address                               "adloquium"
    :password                              "signum arcanum"
    :wrong-password                        "falsum signum acranum"
- 
-   ;recover
+
+   ;;recover
    :passphrase                            "phrasis arcana"
    :recover                               "recreare"
-   ;accounts
+   ;;accounts
    :recover-access                        "restituere possessio"
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "paratus"
    :main-wallet                           "crumera caput"
- 
-   ;validation
+
+   ;;validation
    :invalid-phone                         "nummerus telephonicus"
    :amount                                "summa"
-   ;transactions
+   ;;transactions
    :status                                "status"
    :recipient                             "acceptor"
-   ;:webview
+   ;;:webview
    :web-view-error                        "Erratum ad adspectus"})

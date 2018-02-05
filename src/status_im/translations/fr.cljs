@@ -62,7 +62,7 @@
    :status-delivered                      "Délivré"
    :status-failed                         "Échec"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "seconde"
                                            :other "secondes"}

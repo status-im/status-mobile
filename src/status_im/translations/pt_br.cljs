@@ -2,17 +2,17 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Membros"
    :not-implemented                       "não implementado"
    :chat-name                             "Nome do chat"
    :notifications-title                   "Notificações e sons"
    :offline                               "Offline"
 
-   ;drawer
+   ;;drawer
    :switch-users                          "Trocar usuário"
 
-   ;chat
+   ;;chat
    :is-typing                             "está digitando"
    :and-you                               "e você"
    :search-chat                           "Pesquisar chat"
@@ -29,11 +29,11 @@
    :suggestions-requests                  "Solicitações"
    :suggestions-commands                  "Comandos"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Sincronizando..."
    :sync-synced                           "Sincronizado"
 
-   ;messages
+   ;;messages
    :status-sending                        "Enviando..."
    :status-pending                        "Pendente"
    :status-sent                           "Enviado"
@@ -42,7 +42,7 @@
    :status-delivered                      "Entregue"
    :status-failed                         "Malsucedido"
 
-   ;datetime
+   ;;datetime
    :datetime-second                       {:one   "segundo"
                                            :other "segundos"}
    :datetime-minute                       {:one   "minuto"
@@ -55,7 +55,7 @@
    :datetime-yesterday                    "ontem"
    :datetime-today                        "hoje"
 
-   ;profile
+   ;;profile
    :profile                               "Perfil"
    :message                               "Mensagem"
    :not-specified                         "Não especificado"
@@ -68,7 +68,7 @@
    :image-source-make-photo               "Tirar foto"
    :image-source-gallery                  "Escolher na galeria"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Seus contatos foram sincronizados"
    :confirmation-code                     (str "Obrigado! Nós lhe enviamos uma mensagem de texto com um código de "
                                                "confirmação. Por favor, informe esse código para confirmar seu número de telefone")
@@ -80,11 +80,11 @@
    :intro-message1                        "Bem-vindo ao Status\nToque nesta mensagem para definir sua senha e começar!"
    :account-generation-message            "Mê dê um segundinho. Tenho de fazer uns cálculos malucos para gerar a sua conta!"
 
-   ;chats
+   ;;chats
    :chats                                 "Chats"
    :new-group-chat                        "Novo grupo de chat"
 
-   ;discover
+   ;;discover
    :discover                              "Descobrir"
    :none                                  "Nenhum(a)"
    :search-tags                           "Digite suas tags de pesquisa aqui"
@@ -92,17 +92,17 @@
    :recent                                "Recentes"
    :no-statuses-discovered                "Nenhum status descoberto"
 
-   ;settings
+   ;;settings
    :settings                              "Configurações"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Contatos"
    :new-contact                           "Novo contato"
    :contacts-group-new-chat               "Iniciar novo chat"
    :no-contacts                           "Você ainda não tem contatos"
    :show-qr                               "Mostrar QR"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Remover"
    :save                                  "Salvar"
    :clear-history                         "Apagar histórico"
@@ -110,14 +110,14 @@
    :edit                                  "Editar"
    :add-members                           "Adicionar membros"
 
-   ;commands
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
+   ;;new-group
 
-   ;participants
+   ;;participants
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "recebeu o convite para o chat"
    :removed-from-chat                     "removeu você do grupo"
    :left                                  "saiu"
@@ -125,7 +125,7 @@
    :removed                               "removeu"
    :You                                   "Você"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Adicionar novo contato"
    :scan-qr                               "Escanear QR"
    :name                                  "Nome"
@@ -135,31 +135,31 @@
    :unknown-address                       "E-mail desconhecido"
 
 
-   ;login
+   ;;login
    :connect                               "Conectar"
    :address                               "Endereço"
    :password                              "Senha"
    :wrong-password                        "Senha incorreta"
 
-   ;recover
+   ;;recover
    :passphrase                            "Frase secreta"
    :recover                               "Recuperar"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Recuperar o acesso"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Concluído"
    :main-wallet                           "Carteira principal"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Número de telefone inválido"
    :amount                                "Quantia"
-   ;transactions
+   ;;transactions
    :status                                "Status"
    :recipient                             "Destinatário"
 
-   ;:webview
+   ;;:webview
    :web-view-error                        "Ops, erro"
 
    :confirm                               "Confirmar"
