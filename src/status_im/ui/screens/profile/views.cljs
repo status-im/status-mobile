@@ -271,8 +271,8 @@
    [common/network-info]
    [common/separator]])
 
-(defn share-contact-code [current-account public-key]
-  [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
+(defn share-contact-code [current-account whisper-identity]
+  [react/touchable-highlight {:on-press (show-qr current-account :public-key whisper-identity)}
    [react/view styles/share-contact-code
     [react/view styles/share-contact-code-text-container
      [react/text {:style      styles/share-contact-code-text
@@ -282,9 +282,9 @@
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
 (defview my-profile []
-  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
-            editing?                                 [:get :my-profile/editing?]
-            changed-account                          [:get :my-profile/profile]]
+  (letsubs [{:keys [whisper-identity] :as current-account} [:get-current-account]
+            editing?                                       [:get :my-profile/editing?]
+            changed-account                                [:get :my-profile/profile]]
     [react/view styles/profile
      (if editing?
        [my-profile-edit-toolbar]
@@ -295,7 +295,7 @@
          [profile-badge-edit (merge current-account changed-account)]
          [profile-badge current-account])]
       [react/view action-button.styles/actions-list
-       [share-contact-code current-account public-key]]
+       [share-contact-code current-account whisper-identity]]
       [react/view styles/profile-info-container
        [my-profile-settings current-account]]
       [logout]]]))
