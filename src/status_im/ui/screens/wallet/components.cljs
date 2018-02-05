@@ -2,7 +2,7 @@
   "
   Higher-level components used in the wallet screens.
   "
-  (:require [status-im.utils.utils :as utils]
+  (:require [status-im.utils.core :as utils]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
