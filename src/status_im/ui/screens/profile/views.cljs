@@ -201,17 +201,6 @@
       ^{:key (str "item-" i)}
       (str status " "))))
 
-(defn profile-info-phone-item [phone & [options]]
-  (let [phone-empty? (or (nil? phone) (string/blank? phone))
-        phone-text   (if phone-empty?
-                       (i18n/label :t/not-specified)
-                       phone)]
-    [profile-info-item {:label               (i18n/label :t/phone-number)
-                        :value               phone-text
-                        :options             options
-                        :empty-value?        phone-empty?
-                        :accessibility-label :profile-phone-number}]))
-
 (defn settings-title [title]
   [react/text {:style styles/profile-settings-title}
    title])
@@ -228,23 +217,17 @@
     (when active?
       [vector-icons/icon :icons/forward {:color colors/gray}])]])
 
-(defn profile-info [{:keys [whisper-identity phone] :as contact}]
+(defn profile-info [{:keys [whisper-identity] :as contact}]
   [react/view
    [profile-info-address-item contact]
    [settings-item-separator]
-   [profile-info-public-key-item whisper-identity contact]
-   [settings-item-separator]
-   [profile-info-phone-item phone]])
-
-(defn navigate-to-accounts []
-  ;; TODO(rasom): probably not the best place for this call
-  (protocol/stop-whisper!)
-  (re-frame/dispatch [:navigate-to :accounts]))
+   [profile-info-public-key-item whisper-identity contact]])
 
 (defn handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) navigate-to-accounts))
+                           (i18n/label :t/logout)
+                           #(re-frame/dispatch [:logout])))
 
 (defn logout []
   [react/view {}
@@ -288,8 +271,8 @@
    [common/network-info]
    [common/separator]])
 
-(defn share-contact-code [current-account public-key]
-  [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
+(defn share-contact-code [current-account whisper-identity]
+  [react/touchable-highlight {:on-press (show-qr current-account :public-key whisper-identity)}
    [react/view styles/share-contact-code
     [react/view styles/share-contact-code-text-container
      [react/text {:style      styles/share-contact-code-text
@@ -299,9 +282,9 @@
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
 (defview my-profile []
-  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
-            editing?                                 [:get :my-profile/editing?]
-            changed-account                          [:get :my-profile/profile]]
+  (letsubs [{:keys [whisper-identity] :as current-account} [:get-current-account]
+            editing?                                       [:get :my-profile/editing?]
+            changed-account                                [:get :my-profile/profile]]
     [react/view styles/profile
      (if editing?
        [my-profile-edit-toolbar]
@@ -312,7 +295,7 @@
          [profile-badge-edit (merge current-account changed-account)]
          [profile-badge current-account])]
       [react/view action-button.styles/actions-list
-       [share-contact-code current-account public-key]]
+       [share-contact-code current-account whisper-identity]]
       [react/view styles/profile-info-container
        [my-profile-settings current-account]]
       [logout]]]))

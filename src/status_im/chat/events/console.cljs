@@ -4,7 +4,6 @@
             [status-im.constants :as const]
             [status-im.i18n :as i18n]
             [status-im.chat.console :as console-chat]
-            [status-im.chat.events.sign-up :as sign-up-events]
             [status-im.ui.screens.accounts.events :as accounts-events]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
@@ -46,31 +45,26 @@
 (def console-commands->fx
   {"password"
    (fn [{:keys [db]} {:keys [params]}]
-     (accounts-events/create-account db (:password params)))
-
-   "phone"
-   (fn [{:keys [db]} {:keys [params id]}]
-     (sign-up-events/sign-up db (:phone params) id))
-
-   "confirmation-code"
-   (fn [{:keys [db]} {:keys [params id]}]
-     (sign-up-events/sign-up-confirm db (:code params) id))
+     {:db         (assoc db :accounts/creating-account? true)
+      :status/create-account {:password (:password params)
+                              :success-event :account/create-success}
+      :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
 
    "faucet"
    (fn [{:keys [db random-id]} {:keys [params id]}]
-     (let [{:accounts/keys [accounts current-account-id]} db
-           current-address (get-in accounts [current-account-id :address])
+     (let [{:accounts/keys [account]} db
+           current-address (:address account)
            faucet-url (faucet-base-url->url (:url params))]
        {:http-get {:url (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]
                                             (faucet-response-event
-                                              random-id
-                                              (i18n/label :t/faucet-success)))
+                                             random-id
+                                             (i18n/label :t/faucet-success)))
                    :failure-event-creator (fn [event]
                                             (log/error "Faucet error" event)
                                             (faucet-response-event
-                                              random-id
-                                              (i18n/label :t/faucet-error)))}}))
+                                             random-id
+                                             (i18n/label :t/faucet-error)))}}))
 
    "debug"
    (fn [{:keys [db random-id now] :as cofx} {:keys [params id]}]
@@ -82,9 +76,9 @@
                                 [[:initialize-debugging {:force-start? true}]
                                  [:chat-received-message/add
                                   (console-chat/console-message
-                                    {:message-id random-id
-                                     :content (i18n/label :t/debug-enabled)
-                                     :content-type const/text-content-type})]]
+                                   {:message-id random-id
+                                    :content (i18n/label :t/debug-enabled)
+                                    :content-type const/text-content-type})]]
                                 [[:stop-debugging]])))))})
 
 (def commands-names (set (keys console-commands->fx)))

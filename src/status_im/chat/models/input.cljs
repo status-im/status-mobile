@@ -8,7 +8,6 @@
             [status-im.chat.views.input.validation-messages :refer [validation-message]]
             [status-im.chat.utils :as chat-utils]
             [status-im.i18n :as i18n]
-            [status-im.utils.phone-number :as phone-number]
             [status-im.js-dependencies :as dependencies]
             [taoensso.timbre :as log]))
 
@@ -117,9 +116,8 @@
                              seq-arguments))})))
   ([{:keys [chats current-chat-id access-scope->commands-responses]
      :contacts/keys [contacts]
-     :accounts/keys [accounts current-account-id] :as db}]
-   (let [chat (get chats current-chat-id)
-         account (get accounts current-account-id)]
+     :accounts/keys [account] :as db}]
+   (let [chat (get chats current-chat-id)]
      (selected-chat-command chat
                             (commands-model/commands-responses :command
                                                                access-scope->commands-responses
@@ -206,16 +204,6 @@
          (remove #(nil? (first %)))
          (into {}))))
 
-(defn command-dependent-context-params
-  "Returns additional `:context` data that will be added to specific commands.
-  The following data shouldn't be hardcoded here."
-  [chat-id {:keys [name] :as command}]
-  (case chat-id
-    "console" (case name
-                "phone" {:suggestions (phone-number/get-examples)}
-                {})
-    {}))
-
 (defn modified-db-after-change
   "Returns the new db object that should be used after any input change."
   [{:keys [current-chat-id] :as db}]
@@ -240,11 +228,3 @@
                       :prev-command        (-> command :command :name)})))))
 
 (defmulti validation-handler (fn [name] (keyword name)))
-
-(defmethod validation-handler :phone
-  [_]
-  (fn [[number] error-events-creator]
-    (when-not (phone-number/valid-mobile-number? number)
-      (error-events-creator [validation-message
-                             {:title       (i18n/label :t/phone-number)
-                              :description (i18n/label :t/invalid-phone)}]))))

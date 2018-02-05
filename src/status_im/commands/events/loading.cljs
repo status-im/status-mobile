@@ -26,9 +26,9 @@
       (status/parse-jail
        jail-id jail-resource
        (fn [jail-response]
-         (let [converted (types/json->clj jail-response)] 
+         (let [converted (types/json->clj jail-response)]
            (re-frame/dispatch [::proceed-loading jail-id (if config/jsc-enabled?
-                                                           (update converted :result types/json->clj) 
+                                                           (update converted :result types/json->clj)
                                                            converted)])))))))
 
 (re-frame/reg-fx
@@ -79,7 +79,7 @@
                           (reduce conj
                                   (disj scopes-set scope)
                                   (map (partial conj (s/difference scope exclusive-match))
-                                       exclusive-match)) 
+                                       exclusive-match))
                           scopes-set)))
                     scopes-set
                     scopes-set))
@@ -156,7 +156,7 @@
         (cond-> {:db (add-jail-result db jail-id result)
                  :call-jail-function {:chat-id jail-id
                                       :function :init :context
-                                      {:from (:accounts/current-account-id db)}}}
+                                      {:from (get-in db [:accounts/account :address])}}}
           (seq jail-loaded-events)
           (-> (assoc :dispatch-n jail-loaded-events)
               (update-in [:db :contacts/contacts jail-id] dissoc :jail-loaded-events)))))))

@@ -14,28 +14,28 @@
             [taoensso.timbre :as log]
             status-im.ui.screens.wallet.request.events))
 
-(defn get-balance [{:keys [web3 account-id on-success on-error]}]
-  (if (and web3 account-id)
+(defn get-balance [{:keys [web3 address on-success on-error]}]
+  (if (and web3 address)
     (.getBalance
      (.-eth web3)
-     account-id
+     address
      (fn [err resp]
        (if-not err
          (on-success resp)
          (on-error err))))
-    (on-error "web3 or account-id not available")))
+    (on-error "web3 or address not available")))
 
-(defn get-token-balance [{:keys [web3 contract account-id on-success on-error]}]
-  (if (and web3 contract account-id)
+(defn get-token-balance [{:keys [web3 contract address on-success on-error]}]
+  (if (and web3 contract address)
     (erc20/balance-of
-      web3
-      contract
-      (ethereum/normalized-address account-id)
-      (fn [err resp]
-        (if-not err
-          (on-success resp)
-          (on-error err))))
-    (on-error "web3, contract or account-id not available")))
+     web3
+     contract
+     (ethereum/normalized-address address)
+     (fn [err resp]
+       (if-not err
+         (on-success resp)
+         (on-error err))))
+    (on-error "web3, contract or address not available")))
 
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or (when err (str err))
@@ -48,28 +48,28 @@
 
 (reg-fx
   :get-balance
-  (fn [{:keys [web3 account-id success-event error-event]}]
-    (get-balance {:web3           web3
-                  :account-id     account-id
-                  :on-success     #(dispatch [success-event %])
-                  :on-error       #(dispatch [error-event %])})))
+  (fn [{:keys [web3 address success-event error-event]}]
+    (get-balance {:web3        web3
+                  :address     address
+                  :on-success  #(dispatch [success-event %])
+                  :on-error    #(dispatch [error-event %])})))
 
 (reg-fx
   :get-tokens-balance
-  (fn [{:keys [web3 symbols chain account-id success-event error-event]}]
+  (fn [{:keys [web3 symbols chain address success-event error-event]}]
     (doseq [symbol symbols]
       (let [contract (:address (tokens/symbol->token chain symbol))]
-        (get-token-balance {:web3           web3
-                            :contract       contract
-                            :account-id     account-id
-                            :on-success     #(dispatch [success-event symbol %])
-                            :on-error       #(dispatch [error-event %])})))))
+        (get-token-balance {:web3        web3
+                            :contract    contract
+                            :address     address
+                            :on-success  #(dispatch [success-event symbol %])
+                            :on-error    #(dispatch [error-event %])})))))
 
 (reg-fx
   :get-transactions
-  (fn [{:keys [network account-id success-event error-event]}]
+  (fn [{:keys [network address success-event error-event]}]
     (transactions/get-transactions network
-                                   account-id
+                                   address
                                    #(dispatch [success-event %])
                                    #(dispatch [error-event %]))))
 
@@ -86,33 +86,34 @@
 
 (handlers/register-handler-fx
   :update-wallet
-  (fn [{{:keys [web3 accounts/current-account-id network network-status] :as db} :db} [_ symbols]]
-    (when (not= network-status :offline)
-      {:get-balance {:web3          web3
-                     :account-id    current-account-id
-                     :success-event :update-balance-success
-                     :error-event   :update-balance-fail}
-       :get-tokens-balance {:web3          web3
-                            :account-id    current-account-id
-                            :symbols       symbols
-                            :chain         (ethereum/network->chain-keyword network)
-                            :success-event :update-token-balance-success
-                            :error-event   :update-token-balance-fail}
-       :get-prices  {:from          "ETH"
-                     :to            "USD"
-                     :success-event :update-prices-success
-                     :error-event   :update-prices-fail}
-       :db          (-> db
-                        (clear-error-message :prices-update)
-                        (clear-error-message :balance-update)
-                        (assoc-in [:wallet :balance-loading?] true)
-                        (assoc :prices-loading? true))})))
+  (fn [{{:keys [web3 accounts/account network network-status] :as db} :db} [_ symbols]]
+    (let [address (:address account)]
+      (when (not= network-status :offline)
+        {:get-balance {:web3          web3
+                       :address       address
+                       :success-event :update-balance-success
+                       :error-event   :update-balance-fail}
+         :get-tokens-balance {:web3          web3
+                              :address       address
+                              :symbols       symbols
+                              :chain         (ethereum/network->chain-keyword network)
+                              :success-event :update-token-balance-success
+                              :error-event   :update-token-balance-fail}
+         :get-prices  {:from          "ETH"
+                       :to            "USD"
+                       :success-event :update-prices-success
+                       :error-event   :update-prices-fail}
+         :db          (-> db
+                          (clear-error-message :prices-update)
+                          (clear-error-message :balance-update)
+                          (assoc-in [:wallet :balance-loading?] true)
+                          (assoc :prices-loading? true))}))))
 
 (handlers/register-handler-fx
   :update-transactions
-  (fn [{{:keys [accounts/current-account-id network network-status] :as db} :db} _]
+  (fn [{{:keys [accounts/account network network-status] :as db} :db} _]
     (when (not= network-status :offline)
-      {:get-transactions {:account-id    current-account-id
+      {:get-transactions {:address       (:address account)
                           :network       network
                           :success-event :update-transactions-success
                           :error-event   :update-transactions-fail}

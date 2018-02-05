@@ -79,27 +79,27 @@
   (rf/reg-fx :save-chat #())
 
   (rf/reg-cofx
-    ::contacts-events/get-all-contacts
-    (fn [coeffects _]
-      (assoc coeffects :all-contacts [])))
+   ::contacts-events/get-all-contacts
+   (fn [coeffects _]
+     (assoc coeffects :all-contacts [])))
 
   (rf/reg-cofx
-    :get-local-storage-data
-    (fn [cofx]
-      (assoc cofx :get-local-storage-data (constantly nil))))
+   :get-local-storage-data
+   (fn [cofx]
+     (assoc cofx :get-local-storage-data (constantly nil))))
 
   (rf/reg-cofx
-    ::group-events/get-all-contact-groups
-    (fn [coeffects _]
-      (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
+   ::group-events/get-all-contact-groups
+   (fn [coeffects _]
+     (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
 
   ;;TODO implement tests later for :add-chat? and :bot-url
   (rf/reg-cofx
-    ::contacts-events/get-default-contacts-and-groups
-    (fn [coeffects _]
-      (assoc coeffects
-             :default-contacts (select-keys js-res/default-contacts [:demo-bot])
-             :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
+   ::contacts-events/get-default-contacts-and-groups
+   (fn [coeffects _]
+     (assoc coeffects
+            :default-contacts (select-keys js-res/default-contacts [:demo-bot])
+            :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
 
 (deftest contacts-events
   "load-contacts
@@ -151,9 +151,7 @@
                       :status "status"
                       :updates-public-key "updates-public-key"
                       :updates-private-key "updates-private-key"}
-          accounts   {"current-account-id" account}
-          db         {:accounts/accounts accounts
-                      :accounts/current-account-id "current-account-id"
+          db         {:accounts/account account
                       :web3 "web3"
                       :current-public-key "current-public-key"
                       :notifications {:fcm-token "fcm-token"}}
@@ -169,9 +167,6 @@
 
       (testing "it adds web3"
         (is (= "web3" (:web3 actual-fx))))
-
-      (testing "it adds the current-account-id"
-        (is (= "current-account-id" (:current-account-id actual-fx))))
 
       (testing "it adds the fcm-token"
         (is (= "fcm-token" (:fcm-token actual-fx))))

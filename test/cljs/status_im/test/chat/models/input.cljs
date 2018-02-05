@@ -5,7 +5,7 @@
 (def fake-db
   {:access-scope->commands-responses {#{:global :personal-chats :anonymous :dapps} {:command {"global-command1" ["0x1" :command 0 "global-command1"]}}
                                       #{"0x1" :personal-chats :anonymous :dapps} {:command {"command2" ["0x1" :command 2 "command2"]}}
-                                      #{"0x1" :group-chats :anonymous :dapps} {:command {"command2" ["0x1" :command 4 "command2"]}} 
+                                      #{"0x1" :group-chats :anonymous :dapps} {:command {"command2" ["0x1" :command 4 "command2"]}}
                                       #{"0x2" :personal-chats :anonymous :dapps} {:command {"command3" ["0x2" :command 2 "command3"]}}
                                       #{"0x2" :group-chats :anonymous :dapps} {:response {"response1" ["0x2" :response 4 "response1"]}}}
    :chats                            {"test1" {:contacts      [{:identity "0x1"}]
@@ -165,10 +165,6 @@
   (is (= {:amount "1.0" :recipient "John Doe"}
          (input/args->params {:command {:params [{:name "amount"} {:name "recipient"}]}
                               :args    ["1.0" "John Doe"]}))))
-
-(deftest command-dependent-context-params
-  (is (= {} (input/command-dependent-context-params "any" {:name "any"})))
-  (is (= {} (input/command-dependent-context-params "console" {:name "any"}))))
 
 (deftest modified-db-after-change
   "Just a combination of db modifications. Can be skipped now")

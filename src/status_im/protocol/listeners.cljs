@@ -1,8 +1,6 @@
 (ns status-im.protocol.listeners
   (:require [cljs.reader :as r]
-            [status-im.protocol.ack :as ack]
             [status-im.protocol.web3.utils :as u]
-            [status-im.protocol.encryption :as e]
             [taoensso.timbre :as log]
             [status-im.utils.hex :as i]
             [status-im.utils.events-buffer :as events-buffer]))
@@ -59,14 +57,10 @@
       (let [to             (:recipientPublicKey message)
             from           (:sig message)
             key            (get-in options [:keypair :private])
-            raw-content    (get-in message [:payload :content])
-            encrypted?     (and (empty-public-key? to) key raw-content)
-            content        (if encrypted?
-                             (r/read-string (e/decrypt key raw-content))
-                             raw-content)]
+            content    (get-in message [:payload :content])]
         (log/debug :parse-content
                    "Key exists:" (not (nil? key))
-                   "Content exists:" (not (nil? raw-content)))
+                   "Content exists:" (not (nil? content)))
         {:message (-> message
                       (assoc-in [:payload :content] content)
                       (assoc :to to
@@ -83,7 +77,7 @@
           ack?                            (get-in message [:payload :ack?])]
       (log/debug :handle-message message)
       (callback (if ack? :ack (:type payload)) message)
-      (ack/check-ack! web3 sig payload identity))))
+      #_(ack/check-ack! web3 sig payload identity))))
 
 (defn- handle-whisper-message [{:keys [error msg options]}]
   (-> (init-scope error msg options)
@@ -97,4 +91,3 @@
   [options]
   (fn [js-error js-message]
     (events-buffer/dispatch [:handle-whisper-message js-error js-message options])))
-

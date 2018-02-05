@@ -16,26 +16,6 @@
    :content      content
    :content-type content-type})
 
-
-(def enter-confirmation-code-message
-  (console-message {:content      {:command "confirmation-code"
-                                   :content (i18n/label :t/confirmation-code)}
-                    :content-type const/content-type-command-request}))
-
-(def incorrect-confirmation-code-message
-  (console-message {:content      {:command "confirmation-code"
-                                   :content (i18n/label :t/incorrect-code)}
-                    :content-type const/content-type-command-request}))
-
-(def contacts-synchronised-message
-  (console-message {:content      (i18n/label :t/contacts-syncronized)
-                    :content-type const/text-content-type}))
-
-(def phone-number-request-message
-  (console-message {:content      {:command "phone"
-                                   :content (i18n/label :t/phone-number-required)}
-                    :content-type const/content-type-command-request}))
-
 (def shake-your-phone-message
   (console-message {:content      (i18n/label :t/shake-your-phone)
                     :content-type const/text-content-type}))

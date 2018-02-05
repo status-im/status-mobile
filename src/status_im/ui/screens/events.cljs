@@ -23,6 +23,7 @@
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.browser.events
+            [day8.re-frame.async-flow-fx]
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
@@ -31,11 +32,11 @@
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
+            [status-im.protocol.core :as protocol]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
             [status-im.utils.config :as config]
-            [status-im.utils.crypt :as crypt]
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.instabug :as inst]
@@ -139,18 +140,6 @@
   (fn []
     (data-store/init)))
 
-(re-frame/reg-fx
-  ::initialize-crypt-fx
-  (fn []
-    (crypt/gen-random-bytes
-      1024
-      (fn [{:keys [error buffer]}]
-        (if error
-          (log/error "Failed to generate random bytes to initialize sjcl crypto")
-          (->> (.toString buffer "hex")
-               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
-
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
     #(status/start-node config)))
@@ -226,8 +215,16 @@
                         [:load-accounts]
                         [:check-console-chat]
                         [:listen-to-network-status!]
-                        [:initialize-crypt]
                         [:initialize-geth]]}))
+
+(handlers/register-handler-fx
+  :logout
+  (fn [_ _]
+    {:whisper/stop nil
+     :dispatch-n       [[:initialize-db]
+                        [:load-accounts]
+                        [:listen-to-network-status!]
+                        [:navigate-to :accounts]]}))
 
 (handlers/register-handler-fx
   :initialize-db
@@ -237,7 +234,6 @@
          :or {network (get app-db :network)}} :db} _]
     {::init-store nil
      :db          (assoc app-db
-                         :accounts/current-account-id nil
                          :contacts/contacts {}
                          :network-status network-status
                          :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
@@ -255,17 +251,15 @@
     (let [console-contact (get contacts console-chat-id)]
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
-                     :accounts/current-account-id address
                      :layout-height layout-height
                      ;; TODO (yenda) bad, this is derived data and shouldn't be stored in the db
-                     ;; the cost of retrieving public key from db with a function taking using
-                     ;; current-account-id is negligeable
+                     ;; the cost of retrieving public key from db with a function is negligeable
                      :current-public-key (:public-key (accounts address))
                      :view-id view-id
                      :navigation-stack navigation-stack
                      :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                      :status-node-started? status-node-started?
-                     :accounts/accounts accounts
+                     :accounts/account (accounts address)
                      :accounts/creating-account? false
                      :networks/networks networks
                      :network-status network-status
@@ -278,7 +272,7 @@
   (fn [_ [_ address events-after]]
     {:dispatch-n (cond-> [[:initialize-account-db address]
                           [:load-processed-messages]
-                          [:initialize-protocol address]
+                          [:protocol/init]
                           [:initialize-sync-listener]
                           [:initialize-chats]
                           [:initialize-browsers]
@@ -309,17 +303,12 @@
                                 [[:navigate-to-chat console-chat-id]]))})))))
 
 (handlers/register-handler-fx
-  :initialize-crypt
-  (fn [_ _]
-    {::initialize-crypt-fx nil}))
-
-(handlers/register-handler-fx
   :initialize-geth
   (fn [{db :db} _]
-    (let [{:accounts/keys [current-account-id accounts]} db
+    (let [{:accounts/keys [account]} db
           default-networks (:networks/networks db)
           default-network  (:network db)
-          {:keys [network networks]} (get accounts current-account-id)
+          {:keys [network networks]} account
           network-config   (or (get-in networks [network :config])
                                (get-in default-networks [default-network :config]))]
       {:initialize-geth-fx network-config})))

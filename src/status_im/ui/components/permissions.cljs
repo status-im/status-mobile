@@ -8,9 +8,7 @@
 (def permissions-map
   {:read-external-storage  "android.permission.READ_EXTERNAL_STORAGE"
    :write-external-storage "android.permission.WRITE_EXTERNAL_STORAGE"
-   :read-contacts          "android.permission.READ_CONTACTS"
-   :camera                 "android.permission.CAMERA"
-   :receive-sms            "android.permission.RECEIVE_SMS"})
+   :camera                 "android.permission.CAMERA"})
 
 (defn all-granted? [permissions]
   (let [permission-vals (distinct (vals permissions))]

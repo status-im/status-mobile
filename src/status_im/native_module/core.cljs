@@ -3,6 +3,8 @@
             [status-im.native-module.impl.module :as native-module]
             [status-im.native-module.impl.non-status-go-module :as non-status-go-module]
             [taoensso.timbre :as log]
+            [re-frame.core :as re-frame]
+            [status-im.utils.types :refer [json->clj]]
             [status-im.utils.config :as config]))
 
 (def rns-module
@@ -92,3 +94,10 @@
 
 (defn close-application []
   (module-interface/-close-application rns-module))
+
+(re-frame/reg-fx
+  :status/create-account
+  (fn [{:keys [password success-event]}]
+    (create-account
+     password
+     #(re-frame/dispatch [success-event (json->clj %) password]))))

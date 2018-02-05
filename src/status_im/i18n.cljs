@@ -169,7 +169,7 @@
     :transactions-delete-content :transactions-unsigned-empty
     :transaction-moved-text :add-members :sign-later-title :sharing-cancel
     :yes :dapps :popular-tags :network-settings :twelve-words-in-correct-order
-    :transaction-moved-title :phone-number :photos-access-error :hash
+    :transaction-moved-title :photos-access-error :hash
     :removed-from-chat :done :remove-from-contacts :delete-chat :new-group-chat
     :edit-chats :wallet :wallet-exchange :wallet-request :sign-in
     :datetime-yesterday :create-new-account :sign-in-to-status :dapp-profile
@@ -180,28 +180,28 @@
     :delete-group :send-request :paste-json :browsing-title
     :wallet-add-asset :reorder-groups :transactions-history-empty :discover
     :browsing-cancel :faucet-success :intro-status :name :gas-price
-    :phone-number-required :view-transaction-details :wallet-error
+    :view-transaction-details :wallet-error
     :validation-amount-is-too-precise :copy-transaction-hash :unknown-address
     :received-invitation :show-qr :edit-network-config :connect
     :choose-from-contacts :edit :wallet-address-from-clipboard
     :account-generation-message :remove-network :no-messages :passphrase
-    :recipient :members-title :new-group :phone-e164 :suggestions-requests
+    :recipient :members-title :new-group :suggestions-requests
     :connected :rpc-url :settings :remove-from-group :specify-rpc-url
-    :contacts-syncronized :transactions-sign-all :gas-limit :wallet-browse-photos
+    :transactions-sign-all :gas-limit :wallet-browse-photos
     :add-new-contact :no-statuses-discovered-body :add-json-file :delete
     :search-contacts :chats :transaction-sent :transaction :public-group-status
     :leave-chat :transactions-delete :mainnet-text :image-source-make-photo
     :chat :start-conversation :topic-format :add-new-network :save
-    :enter-valid-public-key :faucet-error :phone-significant :all
+    :enter-valid-public-key :faucet-error :all
     :confirmations-helper-text :search-for :sharing-copy-to-clipboard
-    :your-wallets :phone-international :sync-in-progress :enter-password
+    :your-wallets :sync-in-progress :enter-password
     :enter-address :switch-users :send-transaction :confirmations
-    :recover-access :incorrect-code :image-source-gallery :sync-synced
+    :recover-access :image-source-gallery :sync-synced
     :currency :status-pending :delete-contact :connecting-requires-login
     :no-hashtags-discovered-title :datetime-day :request-transaction
-    :wallet-send :mute-notifications :invalid-phone :scan-qr :contact-s
+    :wallet-send :mute-notifications :scan-qr :contact-s
     :unsigned-transaction-expired :status-sending :gas-used
-    :transactions-filter-type :next :recent :confirmation-code
+    :transactions-filter-type :next :recent
     :open-on-etherscan :share :status :from
     :wrong-password :search-chats :transactions-sign-later :in-contacts
     :transactions-sign :sharing-share :type-a-message :type-a-command

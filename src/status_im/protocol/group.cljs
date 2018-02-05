@@ -1,15 +1,14 @@
 (ns status-im.protocol.group
   (:require
-    [status-im.protocol.web3.delivery :as d]
-    [status-im.protocol.web3.utils :as u]
-    [status-im.utils.config :as config]
-    [cljs.spec.alpha :as s]
-    [taoensso.timbre :refer-macros [debug]]
-    [status-im.protocol.validation :refer-macros [valid?]]
-    [status-im.protocol.web3.filtering :as f]
-    [status-im.protocol.listeners :as l]
-    [clojure.string :as str]
-    [status-im.protocol.web3.keys :as shh-keys]))
+   [status-im.protocol.web3.delivery :as d]
+   [status-im.protocol.web3.utils :as u]
+   [status-im.utils.config :as config]
+   [cljs.spec.alpha :as s]
+   [taoensso.timbre :refer-macros [debug]]
+   [status-im.protocol.validation :refer-macros [valid?]]
+   [status-im.protocol.web3.filtering :as f]
+   [status-im.protocol.listeners :as l]
+   [clojure.string :as str]))
 
 (defn prepare-mesage
   [{:keys [message group-id keypair new-keypair type username requires-ack?]}]
@@ -34,7 +33,7 @@
                            :key-password group-id)
                     (prepare-mesage))]
     (debug :send-group-message message)
-    (d/add-pending-message! web3 message)))
+    #_(d/add-pending-message! web3 message)))
 
 (s/def ::message
   (s/merge :protocol/message (s/keys :req-un [:chat-message/payload])))
@@ -105,7 +104,7 @@
                              :contacts contacts
                              :type type))]
     (doseq [identity identities]
-      (d/add-pending-message! web3 (assoc message' :to identity)))))
+      #_(d/add-pending-message! web3 (assoc message' :to identity)))))
 
 (defn invite!
   [options]
@@ -117,36 +116,29 @@
   (notify-about-group! :update-group options))
 
 (defn stop-watching-group!
-  [{:keys [web3 group-id]}]
+  [{:keys [web3 group-id key-id]}]
   {:pre [(valid? :message/chat-id group-id)]}
-  (shh-keys/get-sym-key
-    web3
-    group-id
-    (fn [key-id]
-      (f/remove-filter!
-        web3
-        {:topics [f/status-topic]
-         :key    key-id
-         :type   :sym}))))
+  ;;TODO
+  (f/remove-filter!
+   web3
+   {:topics [f/status-topic]
+    :key    key-id
+    :type   :sym}))
 
 (defn start-watching-group!
-  [{:keys [web3 group-id keypair callback identity]}]
-  (shh-keys/get-sym-key
-    web3
-    group-id
-    (fn [key-id]
-      (f/add-filter!
-        web3
-        (if (and config/offline-inbox-enabled?
-                 config/offline-inbox-many-enabled?)
-          {:topics   [f/status-topic]
-           :key      key-id
-           :allowP2P true
-           :type     :sym}
-          {:topics   [f/status-topic]
-           :key      key-id
-           :type     :sym})
-        (l/message-listener {:web3     web3
-                             :identity identity
-                             :callback callback
-                             :keypair  keypair})))))
+  [{:keys [web3 group-id key-id keypair callback identity]}]
+  (f/add-filter!
+   web3
+   (if (and config/offline-inbox-enabled?
+            config/offline-inbox-many-enabled?)
+     {:topics   [f/status-topic]
+      :key      key-id
+      :allowP2P true
+      :type     :sym}
+     {:topics   [f/status-topic]
+      :key      key-id
+      :type     :sym})
+   (l/message-listener {:web3     web3
+                        :identity identity
+                        :callback callback
+                        :keypair  keypair})))

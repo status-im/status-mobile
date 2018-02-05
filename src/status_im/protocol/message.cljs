@@ -1,5 +1,9 @@
 (ns status-im.protocol.message
-  (:require [cljs.spec.alpha :as s]))
+  (:require [cljs.spec.alpha :as s]
+            [taoensso.timbre :as log]
+            [status-im.utils.random :as random]
+            [status-im.protocol.web3.filtering :as web3.fitering]
+            [status-im.protocol.web3.utils :as web3.utils]))
 
 (s/def :message/ttl (s/and int? pos?))
 (s/def :message/from string?)
@@ -50,3 +54,58 @@
   (s/keys :req-un [:payload/content :payload/content-type :payload/timestamp]))
 
 (s/def :options/web3 #(not (nil? %)))
+
+
+
+
+
+
+
+(s/def :send-online/message
+  (s/merge :protocol/message
+           (s/keys :req-un [:message/keypair])))
+(s/def :send-online/options
+  (s/keys :req-un [:options/web3 :send-online/message]))
+
+(def discover-topic-prefix "status-discover-")
+(def discover-topic "0xbeefdead")
+
+(defn- make-discover-topic [identity]
+  (str discover-topic-prefix identity))
+
+
+
+(def ttl 10000)
+
+(defmulti post :type)
+
+(defmethod post :online
+  [{:keys [sym-key-id]}]
+  {:sig      identity
+   :symKeyID sym-key-id
+   :ttl      ttl
+   :payload  {:type :online
+              :message-id (random/id)
+              :content {:timestamp (web3.utils/timestamp)}
+              :requires-ack? false}
+   :topic    web3.fitering/status-topic})
+
+(defmethod post :contact-request
+  [{:keys [web3 account contact fcm-token]}]
+  (let [{:keys [name photo-path address status]} account]
+    {:shh/post {:web3 web3
+                :message {:sig (:whisper-id account)
+                          :pubKey (:whisper-id contact)
+                          :ttl ttl
+                          :payload {:type :contact-request
+                                    :message-id (random/id)
+                                    :contact {:name          name
+                                              :profile-image photo-path
+                                              :address       address
+                                              :status        status
+                                              :fcm-token     fcm-token}
+                                    :timestamp (web3.utils/timestamp)
+                                    :require-ack? true}
+                          :topic web3.fitering/status-topic}
+                :on-success #(log/debug :contact-request-sent)
+                :on-error   #(log/error :contact-request-failed %)}}))

@@ -23,7 +23,7 @@
                         :type          :message
                         :requires-ack? true)]
     (debug :send-user-message message')
-    (d/add-pending-message! web3 message')))
+    #_(d/add-pending-message! web3 message')))
 
 (s/def ::seen-message
   (s/merge :protocol/message (s/keys :req-un [:message/to])))
@@ -32,12 +32,12 @@
   [{:keys [web3 message]}]
   {:pre [(valid? ::seen-message message)]}
   (debug :send-seen message)
-  (d/add-pending-message!
-    web3
-    (merge message-defaults
-           (-> message
-               (assoc
-                 :type :seen
-                 :requires-ack? false)
-               (assoc-in [:payload :group-id] (:group-id message))
-               (dissoc :group-id)))))
+  #_(d/add-pending-message!
+     web3
+     (merge message-defaults
+            (-> message
+                (assoc
+                  :type :seen
+                  :requires-ack? false)
+                (assoc-in [:payload :group-id] (:group-id message))
+                (dissoc :group-id)))))
