@@ -77,7 +77,7 @@
           ack?                            (get-in message [:payload :ack?])]
       (log/debug :handle-message message)
       (callback (if ack? :ack (:type payload)) message)
-      (ack/check-ack! web3 sig payload identity))))
+      #_(ack/check-ack! web3 sig payload identity))))
 
 (defn- handle-whisper-message [{:keys [error msg options]}]
   (-> (init-scope error msg options)

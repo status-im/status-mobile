@@ -9,12 +9,14 @@
    [status-im.protocol.validation :refer-macros [valid?]]
    [status-im.utils.random :as random]))
 
+(def discovery-key-password "status-discovery")
+
 (s/def ::identity :message/from)
 (s/def :watch-user/options
   (s/keys :req-un [:options/web3 :message/keypair ::identity ::callback]))
 
 (defn watch-user!
-  [{:keys [web3 identity key-id] :as options}]
+  [{:keys [web3 whisper-identity sym-key-id] :as options}]
   {:pre [(valid? :watch-user/options options)]}
   (f/add-filter!
    web3

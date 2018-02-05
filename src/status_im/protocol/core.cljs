@@ -20,7 +20,6 @@
 ;; user
 (def send-message! chat/send!)
 (def send-seen! chat/send-seen!)
-(def reset-pending-messages! d/reset-pending-messages!)
 
 ;; group
 (def start-watching-group! group/start-watching-group!)
@@ -39,7 +38,6 @@
 
 (def watch-user! discoveries/watch-user!)
 (def stop-watching-user! discoveries/stop-watching-user!)
-(def contact-request! discoveries/contact-request!)
 (def broadcast-profile! discoveries/broadcast-profile!)
 (def send-status! discoveries/send-status!)
 (def send-discoveries-request! discoveries/send-discoveries-request!)
@@ -72,7 +70,7 @@
 
 (re-frame/reg-fx
   :whisper/start-listening-groups
-  (fn [{:keys [web3 groups whisper-identity]}]
+  (fn [{:keys [web3 groups whisper-identity listener-options]}]
     (doseq [group groups]
       (let [options (merge listener-options group)]
         (group/start-watching-group! options)))))
@@ -92,7 +90,7 @@
 
 (re-frame/reg-fx
   :whisper/start-listening-messages
-  (fn [whisper-identity listener-options]
+  (fn [web3 whisper-identity listener-options]
     (f/add-filter!
      web3
      {:key    whisper-identity
@@ -101,7 +99,7 @@
 
 (re-frame/reg-fx
   :whisper/start-listening-profiles
-  (fn [web3 whisper-identity callback]
+  (fn [web3 whisper-identity callback contacts]
     (doseq [contact contacts]
       (discoveries/watch-user! {:web3     web3
                                 :whisper-identity whisper-identity

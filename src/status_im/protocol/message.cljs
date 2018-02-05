@@ -74,12 +74,13 @@
   (str discover-topic-prefix identity))
 
 
-(def discovery-key-password "status-discovery")
+
+(def ttl 10000)
 
 (defmulti post :type)
 
 (defmethod post :online
-  [payload]
+  [{:keys [sym-key-id]}]
   {:sig      identity
    :symKeyID sym-key-id
    :ttl      ttl
@@ -93,8 +94,8 @@
   [{:keys [account contact fcm-token]}]
   (let [{:keys [name photo-path address status]} account]
     {:shh/post {:web3 web3
-                :message {:sig from
-                          :pubKey to
+                :message {:sig (:whisper-id account)
+                          :pubKey (:whisper-id contact)
                           :ttl ttl
                           :payload {:type :contact-request
                                     :message-id (random/id)
