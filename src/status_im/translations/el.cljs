@@ -195,16 +195,6 @@
    ;;commands
    :chat-send-eth                         "{{amount}} ETH"
 
-   ;;location command
-   :your-current-location                 "Η τρέχουσα τοποθεσία σας"
-   :places-nearby                         "Τοποθεσίες κοντά μου"
-   :search-results                        "Αποτελέσματα αναζήτησης"
-   :dropped-pin                           "Καρφίτσωμα"
-   :location                              "Τοποθεσία"
-   :open-map                              "Άνοιγμα χάρτη"
-   :sharing-copy-to-clipboard-address     "Αντιγραφή διεύθυνσης"
-   :sharing-copy-to-clipboard-coordinates "Αντιγραφή συντεταγμένων"
-
    ;;new-group
    :new-group                             "Νέα ομάδα"
    :reorder-groups                        "Επαναδιαρθρώστε τις ομάδες"
