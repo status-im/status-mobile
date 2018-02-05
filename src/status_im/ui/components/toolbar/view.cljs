@@ -9,7 +9,7 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.styles :as styles]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.core :as utils]))
 
 ;; Navigation item
 
