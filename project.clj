@@ -54,9 +54,13 @@
                          :cljsbuild    {:builds
                                         {:ios
                                          {:source-paths ["react-native/src" "src" "env/dev"]
+                                          :compiler     {:output-to     "target/ios/app.js"
+                                                         :output-dir    "target/ios"}
                                           :figwheel     true}
                                          :android
                                          {:source-paths ["react-native/src" "src" "env/dev"]
+                                          :compiler     {:output-to     "target/android/app.js"
+                                                         :output-dir    "target/android"}
                                           :figwheel     true}}}}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.7"]]
