@@ -53,7 +53,8 @@
 (defonce pending-message-callback (atom nil))
 (defonce recipient->pending-message (atom {}))
 
-(def ^:private pending-message-queue (async/chan 100))
+;; Buffer needs to be big enough to not block even with many outbound messages
+(def ^:private pending-message-queue (async/chan 2000))
 
 (async/go-loop [[web3 {:keys [type message-id requires-ack? to ack?] :as message}]
                 (async/<! pending-message-queue)]
@@ -89,7 +90,7 @@
   {:pre [(valid? :protocol/message message)]}
   (debug :add-pending-message! message)
   ;; encryption can take some time, better to run asynchronously
-  (async/put! pending-message-queue [web3 message]))
+  (async/go (async/>! pending-message-queue [web3 message])))
 
 (s/def :delivery/pending-message
   (s/keys :req-un [:message/sig :message/to :shh/payload :payload/ack? ::id

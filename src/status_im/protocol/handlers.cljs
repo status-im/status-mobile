@@ -70,7 +70,7 @@
 
 ;;;; FX
 
-(def ^:private protocol-realm-queue (async-utils/task-queue 200))
+(def ^:private protocol-realm-queue (async-utils/task-queue 2000))
 
 (re-frame/reg-fx
   :stop-whisper
@@ -116,7 +116,7 @@
 (re-frame/reg-fx
   ::save-processed-messages
   (fn [processed-message]
-    (async/put! protocol-realm-queue #(processed-messages/save processed-message))))
+    (async/go (async/>! protocol-realm-queue #(processed-messages/save processed-message)))))
 
 (defn system-message [message-id timestamp content]
   {:from         "system"
@@ -196,12 +196,12 @@
 (re-frame/reg-fx
   ::pending-messages-delete
   (fn [message-id]
-    (async/put! protocol-realm-queue #(pending-messages/delete message-id))))
+    (async/go (async/>! protocol-realm-queue #(pending-messages/delete message-id)))))
 
 (re-frame/reg-fx
   ::pending-messages-save
   (fn [pending-message]
-    (async/put! protocol-realm-queue #(pending-messages/save pending-message))))
+    (async/go (async/>! protocol-realm-queue #(pending-messages/save pending-message)))))
 
 (re-frame/reg-fx
   ::status-init-jail
