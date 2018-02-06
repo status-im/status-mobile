@@ -84,13 +84,6 @@
       (realm/get-one-by-field :chat :chat-id chat-id)
       (object/get "contacts")))
 
-(defn has-contact?
-  [chat-id identity]
-  (let [contacts (get-contacts chat-id)
-        contact  (.find contacts (fn [object _ _]
-                                   (= identity (object/get object "identity"))))]
-    (if contact true false)))
-
 (defn- save-contacts
   [identities contacts added-at]
   (doseq [contact-identity identities]

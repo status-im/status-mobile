@@ -3,8 +3,8 @@
             [clojure.string :as string]
             [status-im.ui.components.styles :refer [default-chat-color]]
             [status-im.chat.constants :as chat-consts]
+            [status-im.chat.models :as chat]
             [status-im.protocol.core :as protocol]
-            [status-im.data-store.chats :as chats]
             [status-im.data-store.messages :as messages] 
             [status-im.constants :refer [text-content-type
                                          content-type-command
@@ -39,23 +39,22 @@
    (fn [{:keys [current-public-key web3 chats]}
         [_ {:keys                                [from]
             {:keys [group-id keypair timestamp]} :payload}]]
-     (let [{:keys [private public]} keypair]
-       (let [is-active (chats/is-active? group-id)
-             chat      {:chat-id     group-id
-                        :public-key  public
-                        :private-key private
-                        :updated-at  timestamp}]
-         (when (and (= from (get-in chats [group-id :group-admin]))
-                    (or (not (chats/exists? group-id))
-                        (chats/new-update? timestamp group-id)))
-           (dispatch [:update-chat! chat])
-           (when is-active
-             (protocol/start-watching-group!
-              {:web3     web3
-               :group-id group-id
-               :identity current-public-key
-               :keypair  keypair
-               :callback #(dispatch [:incoming-message %1 %2])}))))))))
+     (let [{:keys [private public]} keypair
+           {:keys [group-admin is-active] :as chat} (get chats group-id)]
+       (when (and (= from group-admin)
+                   (or (nil? chat)
+                       (chat/new-update? chat timestamp)))
+          (dispatch [:update-chat! {:chat-id     group-id
+                                    :public-key  public
+                                    :private-key private
+                                    :updated-at  timestamp}])
+          (when is-active
+            (protocol/start-watching-group!
+             {:web3     web3
+              :group-id group-id
+              :identity current-public-key
+              :keypair  keypair
+              :callback #(dispatch [:incoming-message %1 %2])})))))))
 
 (reg-fx
   ::start-watching-group
@@ -162,7 +161,8 @@
       (let [contacts' (keep (fn [ident]
                               (when (not= ident current-public-key)
                                 {:identity ident})) contacts)
-            chat      {:chat-id     group-id
+            chat      (get-in db [:chats group-id])
+            new-chat  {:chat-id     group-id
                        :name        group-name
                        :group-chat  true
                        :group-admin from
@@ -171,15 +171,15 @@
                        :contacts    contacts'
                        :added-to-at timestamp
                        :timestamp   timestamp
-                       :is-active   true}
-            exists?   (chats/exists? group-id)]
-        (when (or (not exists?) (chats/new-update? timestamp group-id))
+                       :is-active   true}]
+        (when (or (nil? chat)
+                  (chat/new-update? chat timestamp))
           {::start-watching-group (merge {:group-id group-id
                                           :keypair keypair}
                                          (select-keys db [:web3 :current-public-key]))
-           :dispatch (if exists?
-                       [:update-chat! chat]
-                       [:add-chat group-id chat])})))))
+           :dispatch (if chat
+                       [:update-chat! new-chat]
+                       [:add-chat group-id new-chat])})))))
 
 (register-handler-fx
   :show-profile

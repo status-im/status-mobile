@@ -59,3 +59,8 @@
   "Just like `update-chat` only implicitely updates timestamp"
   [cofx chat]
   (update-chat cofx (assoc chat :timestamp (:now cofx))))
+
+(defn new-update? [{:keys [added-to-at removed-at removed-from-at]} timestamp]
+  (and (> timestamp added-to-at)
+       (> timestamp removed-at)
+       (> timestamp removed-from-at)))

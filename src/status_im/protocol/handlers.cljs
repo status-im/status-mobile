@@ -15,6 +15,7 @@
             [status-im.protocol.message-cache :as cache]
             [status-im.protocol.listeners :as listeners]
             [status-im.chat.models.message :as models.message]
+            [status-im.chat.models :as chat]
             [status-im.protocol.web3.inbox :as inbox]
             [status-im.protocol.web3.keys :as web3.keys]
             [status-im.utils.datetime :as datetime]
@@ -46,26 +47,6 @@
   (fn [coeffects _]
     (let [[{{:keys [message-id]} :payload}] (:event coeffects)]
       (assoc coeffects :message-by-id (messages/get-by-id message-id)))))
-
-(re-frame/reg-cofx
-  ::chats-new-update?
-  (fn [coeffects _]
-    (let [[{{:keys [group-id timestamp]} :payload}] (:event coeffects)]
-      (assoc coeffects :new-update? (chats/new-update? timestamp group-id)))))
-
-(re-frame/reg-cofx
-  ::chats-is-active-and-timestamp
-  (fn [coeffects _]
-    (let [[{{:keys [group-id timestamp]} :payload}] (:event coeffects)]
-      (assoc coeffects :chats-is-active-and-timestamp
-                       (and (chats/is-active? group-id)
-                            (> timestamp (chats/get-property group-id :timestamp)))))))
-
-(re-frame/reg-cofx
-  ::has-contact?
-  (fn [coeffects _]
-    (let [[{{:keys [group-id identity]} :payload}] (:event coeffects)]
-      (assoc coeffects :has-contact? (chats/has-contact? group-id identity)))))
 
 
 ;;;; FX
@@ -548,37 +529,44 @@
 
 ;;GROUP
 
+(defn- has-contact? [{:keys [contacts]} identity]
+  (let [identities (set (map :identity contacts))]
+    (contains? identities identity)))
+
 (handlers/register-handler-fx
   :participant-invited-to-group
-  [re-frame/trim-v
-   (re-frame/inject-cofx ::has-contact?)]
-  (fn [{{:keys [current-public-key chats] :as db} :db has-contact? :has-contact?}
+  [re-frame/trim-v]
+  (fn [{{:keys [current-public-key chats] :as db} :db}
        [{:keys                                            [from]
          {:keys [group-id identity message-id timestamp]} :payload}]]
-    (let [admin (get-in chats [group-id :group-admin])]
+    (let [chat  (get-in db [:chats group-id])
+          admin (:group-admin chats)]
       (when (= from admin)
         (merge {::participant-invited-to-group-message {:group-id group-id :current-public-key current-public-key
                                                         :identity identity :from from :message-id message-id
                                                         :timestamp timestamp}}
-               (when-not (and (= current-public-key identity) has-contact?)
+               (when-not (and (= current-public-key identity) (has-contact? chat identity))
                  {:db (update-in db [:chats group-id :contacts] conj {:identity identity})
                   ::chats-add-contact [group-id identity]}))))))
 
 (handlers/register-handler-fx
   ::you-removed-from-group
-  [re-frame/trim-v
-   (re-frame/inject-cofx ::chats-new-update?)]
-  (fn [{{:keys [web3]} :db new-update? :new-update?}
+  [re-frame/trim-v]
+  (fn [{{:keys [web3] :as db} :db}
        [{:keys                                               [from]
          {:keys [group-id timestamp message-id] :as payload} :payload}]]
-    (when new-update?
-      {::you-removed-from-group-message {:from from :message-id message-id :timestamp timestamp
-                                         :group-id group-id}
-       ::stop-watching-group! {:web3     web3
-                               :group-id group-id}
-       :dispatch [:update-chat! {:chat-id         group-id
-                                 :removed-from-at timestamp
-                                 :is-active       false}]})))
+    (let [chat        (get-in db [:chats group-id])
+          new-update? (chat/new-update? chat timestamp)]
+      (when new-update?
+        {::you-removed-from-group-message {:from       from
+                                           :message-id message-id
+                                           :timestamp  timestamp
+                                           :group-id   group-id}
+         ::stop-watching-group!           {:web3     web3
+                                           :group-id group-id}
+         :dispatch                        [:update-chat! {:chat-id         group-id
+                                                          :removed-from-at timestamp
+                                                          :is-active       false}]}))))
 
 (handlers/register-handler-fx
   :participant-removed-from-group
@@ -599,21 +587,23 @@
 
 (handlers/register-handler-fx
   :participant-left-group
-  [re-frame/trim-v
-   (re-frame/inject-cofx ::chats-is-active-and-timestamp)]
-  (fn [{{:keys [current-public-key] :as db} :db chats-is-active-and-timestamp :chats-is-active-and-timestamp}
+  [re-frame/trim-v]
+  (fn [{{:keys [current-public-key] :as db} :db}
        [{:keys                                    [from]
          {:keys [group-id timestamp message-id]} :payload}]]
-    (when (and (not= current-public-key from)
-               chats-is-active-and-timestamp)
-      {::participant-left-group-message {:chat-id    group-id
-                                         :from       from
-                                         :message-id message-id
-                                         :timestamp  timestamp}
-       ::chats-remove-contact [group-id from]
-       :db (update-in db [:chats group-id :contacts]
-                      #(remove (fn [{:keys [identity]}]
-                                 (= identity from)) %))})))
+    (let [chat (get-in db [:chats group-id])
+          {chat-is-active :is-active chat-timestamp :timestamp} chat]
+      (when (and (not= current-public-key from)
+                 chat-is-active
+                 (> timestamp chat-timestamp))
+        {::participant-left-group-message {:chat-id    group-id
+                                           :from       from
+                                           :message-id message-id
+                                           :timestamp  timestamp}
+         ::chats-remove-contact [group-id from]
+         :db (update-in db [:chats group-id :contacts]
+                        #(remove (fn [{:keys [identity]}]
+                                   (= identity from)) %))}))))
 
 ;;ERROR
 
