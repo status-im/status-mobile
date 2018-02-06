@@ -84,7 +84,7 @@
     (contacts/save contact)))
 
 (reg-fx
-  ::save-contacts!
+  :save-all-contacts
   (fn [new-contacts]
     (contacts/save-all new-contacts)))
 
@@ -223,8 +223,8 @@
                              ;;(remove #(identities (:whisper-identity %)))
                              (map #(vector (:whisper-identity %) %))
                              (into {}))
-          fx            {:db              (update db :contacts/contacts merge new-contacts')
-                         ::save-contacts! (vals new-contacts')}]
+          fx            {:db                (update db :contacts/contacts merge new-contacts')
+                         :save-all-contacts (vals new-contacts')}]
       (transduce (map second)
                  (completing (partial loading-events/load-commands (assoc cofx :db (:db fx))))
                  fx
