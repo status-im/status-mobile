@@ -41,14 +41,20 @@ prepare-ios: prepare ##@prepare Install iOS specific dependencies
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: prod-build ##@build build release for Android
+release-android: prod-build-android ##@build build release for Android
 	react-native run-android --variant=release
 
-release-ios: prod-build ##@build build release for iOS release
+release-ios: prod-build-ios ##@build build release for iOS release
 	@echo "Build in XCode, see https://wiki.status.im/TBD for instructions"
 
 prod-build:
 	lein prod-build
+
+prod-build-android:
+	lein prod-build-android
+
+prod-build-ios:
+	lein prod-build-ios
 
 #----------------
 # Dev builds

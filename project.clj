@@ -18,6 +18,12 @@
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
+            "prod-build-android" ^{:doc "Recompile code for Android with prod profile."}
+            ["do" "clean"
+             ["with-profile" "prod" "cljsbuild" "once" "android"]]
+            "prod-build-ios"     ^{:doc "Recompile code for iOS with prod profile."}
+            ["do" "clean"
+             ["with-profile" "prod" "cljsbuild" "once" "ios"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
