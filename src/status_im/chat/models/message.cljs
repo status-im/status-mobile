@@ -185,8 +185,9 @@
                                              :username (get-in accounts [current-account-id :name]))}
 
           :else
-          (merge {:send-message (assoc-in options [:message :to] chat-id)}
-                 (when-not command) {:send-notification fcm-token}))))))
+          (cond-> {:send-message (assoc-in options [:message :to] chat-id)}
+            (and (not command) fcm-token)
+            (assoc :send-notification fcm-token)))))))
 
 (defn- prepare-message [params chat]
   (let [{:keys [chat-id identity message-text]} params
