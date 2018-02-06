@@ -1,5 +1,5 @@
 (ns status-im.data-store.realm.schemas.account.v21.core
-  (:require [status-im.data-store.realm.schemas.account.v19.chat :as chat]
+  (:require [status-im.data-store.realm.schemas.account.v21.chat :as chat]
             [status-im.data-store.realm.schemas.account.v1.chat-contact :as chat-contact]
             [status-im.data-store.realm.schemas.account.v19.contact :as contact]
             [status-im.data-store.realm.schemas.account.v20.discover :as discover]
