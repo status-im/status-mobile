@@ -94,7 +94,6 @@ node ('macos1'){
   stage('Slack Notification') {
     def c = (testPassed ? 'good' : 'warning' )
     slackSend color: c, message: 'Nightly build (develop) \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl
-    # this will update apk url on public page
     build job: 'status-react/status-nightly-publish-link', parameters: [[$class: 'StringParameterValue', name: 'APK_URL', value: apkUrl], [$class: 'StringParameterValue', name: 'IOS_URL', value: ipaUrl]]
   }
 }
