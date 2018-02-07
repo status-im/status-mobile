@@ -623,3 +623,20 @@
     (let [android-error? (re-find (re-pattern "Failed to connect") (.-message error))]
       (when android-error?
         {::status-init-jail nil}))))
+
+
+;; Experimental `new protocol` code
+
+(handlers/register-handler-fx
+  :protocol/receive-status-message
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [chat-id message-type status-message]]
+    ;; TODO implement logic
+    ))
+
+(handlers/register-handler-fx
+  :protocol/send-status-message
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [chat-id message-type status-message]]
+    ;; TODO implement logic
+    ))
