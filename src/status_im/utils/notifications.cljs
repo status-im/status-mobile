@@ -17,26 +17,26 @@
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
-  (.requestPermissions (.-default rn/react-native-fcm)))
+  (comment (.requestPermissions (.-default rn/react-native-fcm))))
 
 (defn get-fcm-token []
-    (-> (.getFCMToken (aget rn/react-native-fcm "default"))
+  (comment (-> (.getFCMToken (aget rn/react-native-fcm "default"))
         (.then (fn [x]
                  (when config/notifications-wip-enabled?
                    (log/debug "get-fcm-token: " x)
-                   (dispatch [:update-fcm-token x]))))))
+                   (dispatch [:update-fcm-token x])))))))
 
 (defn on-refresh-fcm-token []
-  (.on (.-default rn/react-native-fcm)
+  (comment (.on (.-default rn/react-native-fcm)
        (.-RefreshToken (.-FCMEvent rn/react-native-fcm))
        (fn [x]
          (log/debug "on-refresh-fcm-token: " x)
-         (dispatch [:update-fcm-token x]))))
+         (dispatch [:update-fcm-token x])))))
 
 ;; TODO(oskarth): Only called in background on iOS right now.
 ;; NOTE(oskarth): Hardcoded data keys :sum and :msg in status-go right now.
 (defn on-notification []
-  (.on (.-default rn/react-native-fcm)
+  (comment (.on (.-default rn/react-native-fcm)
        (.-Notification (.-FCMEvent rn/react-native-fcm))
        (fn [event-js]
          (let [event (js->clj event-js :keywordize-keys true)
@@ -44,4 +44,4 @@
                aps   (:aps event)]
            (log/debug "on-notification event: " (pr-str event))
            (log/debug "on-notification aps: "   (pr-str aps))
-           (log/debug "on-notification data: "  (pr-str data))))))
+           (log/debug "on-notification data: "  (pr-str data)))))))

@@ -106,12 +106,15 @@
 (reg-fx
   ::fetch-contacts-from-phone!
   (fn [on-contacts-event-creator]
-    (.getAll rn-dependencies/contacts
-             (fn [error contacts]
-               (if error
-                 (log/debug :error-on-fetching-loading error)
-                 (let [contacts' (normalize-phone-contacts contacts)]
-                   (dispatch [::get-contacts-identities contacts' on-contacts-event-creator])))))))
+    (let [contacts' ""]
+      (dispatch [::get-contacts-identities contacts' on-contacts-event-creator]))))
+
+   ; (comment (.getAll rn-dependencies/contacts
+   ;          (fn [error contacts]
+   ;            (if error
+   ;              (log/debug :error-on-fetching-loading error)
+   ;              (let [contacts' (normalize-phone-contacts contacts)]
+   ;                (dispatch [::get-contacts-identities contacts' on-contacts-event-creator]))))))))
 
 (defn- get-contacts-by-hash [contacts]
   (->> contacts

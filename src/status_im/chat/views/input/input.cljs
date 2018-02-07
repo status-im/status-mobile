@@ -283,8 +283,8 @@
                                      (when (> h 0)
                                        (dispatch [:set-chat-ui-props {:input-height h}])))}
            [react/animated-view {:style (style/container container-anim-margin bottom-anim-margin)}
+            [input-container {:anim-margin anim-margin}]
             (when (str/blank? @input-text)
-              [commands-view])
-            [input-container {:anim-margin anim-margin}]]
+              [commands-view])]
            (when @show-emoji?
              [emoji/emoji-view])]])})))

@@ -78,15 +78,17 @@
 (defn has-contact?
   [chat-id identity]
   (let [contacts (get-contacts chat-id)
-        contact  (.find contacts (fn [object _ _]
-                                   (= identity (aget object "identity"))))]
+        contact  false]
+        ;contact  (.find contacts (fn [object _ _]
+        ;                           (= identity (aget object "identity"))))]
     (if contact true false)))
 
 (defn- save-contacts
   [identities contacts added-at]
   (doseq [contact-identity identities]
-    (if-let [contact (.find contacts (fn [object _ _]
-                                       (= contact-identity (aget object "identity"))))]
+    ;(if-let [contact (.find contacts (fn [object _ _]
+    ;                                   (= contact-identity (aget object "identity"))))]
+    (if-let [contact ""]
       (doto contact
         (aset "is-in-chat" true)
         (aset "added-at" added-at))

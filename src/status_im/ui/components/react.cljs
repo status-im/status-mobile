@@ -179,8 +179,7 @@
 
 ;; HTTP Bridge
 
-(def http-bridge (get-class "View"))
-;;(def http-bridge rn-dependencies/http-bridge)
+(def http-bridge rn-dependencies/http-bridge)
 
 (def splash-screen (get-class "View"))
 

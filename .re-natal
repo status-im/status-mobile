@@ -20,7 +20,12 @@
     "react-native-autolink",
     "react-native-invertible-scroll-view",
     "react-native-drawer-layout",
-    "react-native-action-button"
+    "react-native-action-button",
+    "react-native-fs",
+    "react-native-http-bridge",
+    "react-native-contacts",
+    "react-native-popup-menu",
+    "react-native-swiper"
   ],
   "imageDirs": [
     "resources/images",

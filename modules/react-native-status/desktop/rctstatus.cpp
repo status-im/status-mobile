@@ -230,7 +230,9 @@ void RCTStatus::clearStorageAPIs() {
 void RCTStatus::sendWeb3Request(QString payload, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::sendWeb3Request with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    const char* result = CallRPC(payload.toUtf8().data());
+    qDebug() << "RCTStatus::sendWeb3Request CallRPC result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 
