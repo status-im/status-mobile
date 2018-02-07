@@ -28,7 +28,7 @@
 (spec/def :contact/dapp? boolean?)
 (spec/def :contact/dapp-url (spec/nilable string?))
 (spec/def :contact/dapp-hash (spec/nilable int?))
-(spec/def :contact/bot-url (spec/nilable string?)) 
+(spec/def :contact/bot-url (spec/nilable string?))
 (spec/def :contact/command (spec/nilable (spec/map-of int? map?)))
 (spec/def :contact/response (spec/nilable (spec/map-of int? map?)))
 (spec/def :contact/jail-loaded? (spec/nilable boolean?))
@@ -48,13 +48,13 @@
              :contact/status
              :contact/last-updated
              :contact/last-online
-             :contact/pending? 
-             :contact/hide-contact? 
+             :contact/pending?
+             :contact/hide-contact?
              :contact/unremovable?
              :contact/dapp?
              :contact/dapp-url
              :contact/dapp-hash
-             :contact/bot-url 
+             :contact/bot-url
              :contact/jail-loaded?
              :contact/jail-loaded-events
              :contact/command

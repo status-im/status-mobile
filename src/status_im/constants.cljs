@@ -15,6 +15,7 @@
 (def content-type-command "command")
 (def content-type-command-request "command-request")
 (def content-type-status "status")
+(def content-type-placeholder "placeholder")
 
 (def min-password-length 6)
 (def max-chat-name-length 20)
@@ -76,6 +77,7 @@
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+
 (def default-networks
   (transform-config
    (merge testnet-networks

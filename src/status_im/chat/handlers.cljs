@@ -1,4 +1,4 @@
-(ns status-im.chat.handlers 
+(ns status-im.chat.handlers
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models]
@@ -18,16 +18,12 @@
      (let [{:keys [public-key private-key public?]} (chats current-chat-id)]
        (protocol/stop-watching-group!
         {:web3     web3
-         :group-id current-chat-id})
-       (when-not public?
-         (protocol/leave-group-chat!
-          {:web3     web3
-           :group-id current-chat-id
-           :keypair  {:public  public-key
-                      :private private-key}
-           :message  {:from       current-public-key
-                      :message-id (random/id)}})))
-     (re-frame/dispatch [:remove-chat current-chat-id]))))
+         :group-id current-chat-id
+         :keypair  {:public  public-key
+                    :private private-key}
+         :message  {:from       current-public-key
+                    :message-id (random/id)}})
+       (re-frame/dispatch [:remove-chat current-chat-id])))))
 
 (handlers/register-handler-fx
   :leave-group-chat?
@@ -37,7 +33,8 @@
                          :confirm-button-text (i18n/label :t/leave)
                          :on-accept           #(re-frame/dispatch [:leave-group-chat])}}))
 
-(handlers/register-handler :update-group-message
+(handlers/register-handler
+  :update-group-message
   (handlers/side-effect!
    (fn [{:keys [current-public-key web3 chats]}
         [_ {:keys                                [from]
@@ -45,19 +42,19 @@
      (let [{:keys [private public]} keypair
            {:keys [group-admin is-active] :as chat} (get chats group-id)]
        (when (and (= from group-admin
-                   (or (nil? chat)
-                       (models/new-update? chat timestamp))))
-          (re-frame/dispatch [:update-chat! {:chat-id     group-id
-                                             :public-key  public
-                                             :private-key private
-                                             :updated-at  timestamp}])
-          (when is-active
-            (protocol/start-watching-group!
-             {:web3     web3
-              :group-id group-id
-              :identity current-public-key
-              :keypair  keypair
-              :callback #(re-frame/dispatch [:incoming-message %1 %2])})))))))
+                     (or (nil? chat)
+                         (models/new-update? chat timestamp))))
+         (re-frame/dispatch [:update-chat! {:chat-id     group-id
+                                            :public-key  public
+                                            :private-key private
+                                            :updated-at  timestamp}])
+         (when is-active
+           (protocol/start-watching-group!
+            {:web3     web3
+             :group-id group-id
+             :identity current-public-key
+             :keypair  keypair
+             :callback #(re-frame/dispatch [:incoming-message %1 %2])})))))))
 
 (re-frame/reg-fx
   ::start-watching-group
@@ -131,18 +128,16 @@
                     group-name
                     (group-name-from-contacts contacts selected-contacts username))
         {:keys [public private]} (protocol/new-keypair!)]
-    {:chat-id               (random/id)
-     :public-key            public
-     :private-key           private
-     :name                  chat-name
-     :color                 components.styles/default-chat-color
-     :group-chat            true
-     :group-admin           current-public-key
-     :is-active             true
-     :timestamp             (random/timestamp)
-     :contacts              selected-contacts'
-     :last-to-clock-value   0
-     :last-from-clock-value 0}))
+    {:chat-id     (random/id)
+     :public-key  public
+     :private-key private
+     :name        chat-name
+     :color       components.styles/default-chat-color
+     :group-chat  true
+     :group-admin current-public-key
+     :is-active   true
+     :timestamp   (random/timestamp)
+     :contacts    selected-contacts'}))
 
 (handlers/register-handler-fx
   :create-new-group-chat-and-open

@@ -5,6 +5,7 @@
             status-im.commands.events.loading
             status-im.commands.handlers.debug
             status-im.network.events
+            status-im.transport.handlers
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
             status-im.ui.screens.accounts.login.events
@@ -48,7 +49,7 @@
 ;;;; Helper fns
 
 (defn- call-jail-function
-  [{:keys [chat-id function callback-events-creator] :as opts}]
+  [{:keys [chat-id function callback-event-creator] :as opts}]
   (let [path   [:functions function]
         params (select-keys opts [:parameters :context])]
     (status/call-jail
@@ -56,12 +57,11 @@
       :path    path
       :params  params
       :callback (fn [jail-response]
-                  (doseq [event (if callback-events-creator
-                                  (callback-events-creator jail-response)
-                                  [[:chat-received-message/bot-response
-                                    {:chat-id chat-id}
-                                    jail-response]])
-                          :when event]
+                  (when-let [event (if callback-event-creator
+                                     (callback-event-creator jail-response)
+                                     [:chat-received-message/bot-response
+                                      {:chat-id chat-id}
+                                      jail-response])]
                     (re-frame/dispatch event)))})))
 
 ;;;; COFX
@@ -87,15 +87,14 @@
 
 (re-frame/reg-fx
   :call-jail
-  (fn [{:keys [callback-events-creator] :as opts}]
+  (fn [{:keys [callback-event-creator] :as opts}]
     (status/call-jail
      (-> opts
-         (dissoc :callback-events-creator)
+         (dissoc :callback-event-creator)
          (assoc :callback
                 (fn [jail-response]
-                  (when callback-events-creator
-                    (doseq [event (callback-events-creator jail-response)]
-                      (re-frame/dispatch event)))))))))
+                  (when-let [event (callback-event-creator jail-response)] 
+                    (re-frame/dispatch event))))))))
 
 (re-frame/reg-fx
   :call-jail-function

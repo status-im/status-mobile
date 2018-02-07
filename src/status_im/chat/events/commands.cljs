@@ -21,35 +21,28 @@
 
 (defn request-command-message-data
   "Requests command message data from jail"
-  [db
-   {{command-name :command
-     content-command-name :content-command
-     :keys [content-command-scope-bitmask bot scope-bitmask params type]} :content
-    :keys [chat-id group-id jail-id] :as message}
-   {:keys [data-type] :as opts}]
-  (let [{:accounts/keys [current-account-id]
-         :contacts/keys [contacts]} db
-        jail-id               (or bot jail-id chat-id)
-        jail-command-name     (or content-command-name command-name)]
-    (if-not (get contacts jail-id) ;; bot is not even in contacts, do nothing
-      {:db db}
-      (if (get-in contacts [jail-id :jail-loaded?])
-        (let [path        [(if (= :response (keyword type)) :responses :commands)
-                           [jail-command-name
-                            (or content-command-scope-bitmask scope-bitmask)]
-                           data-type]
-              to          (get-in contacts [chat-id :address])
-              jail-params {:parameters params
-                           :context    (generate-context current-account-id chat-id to group-id)}]
-          {:db        db
-           :call-jail {:jail-id                 jail-id
-                       :path                    path
-                       :params                  jail-params
-                       :callback-events-creator (fn [jail-response]
-                                                  [[::jail-command-data-response
-                                                    jail-response message opts]])}}) 
-        {:db (update-in db [:contacts/contacts jail-id :jail-loaded-events]
-                        conj [:request-command-message-data message opts])}))))
+  [{:accounts/keys [current-account-id] :contacts/keys [contacts] :as db}
+   {{:keys [command command-scope-bitmask bot params type]} :content
+    :keys [chat-id group-id] :as message}
+   {:keys [data-type] :as opts}] 
+  (if-not (get contacts bot) ;; bot is not even in contacts, do nothing
+    {:db db}
+    (if (get-in contacts [bot :jail-loaded?])
+      (let [path        [(if (= :response (keyword type)) :responses :commands)
+                         [command command-scope-bitmask]
+                         data-type]
+            to          (get-in contacts [chat-id :address])
+            jail-params {:parameters params
+                         :context    (generate-context current-account-id chat-id to group-id)}]
+        {:db        db
+         :call-jail {:jail-id                bot
+                     :path                   path
+                     :params                 jail-params
+                     :callback-event-creator (fn [jail-response]
+                                               [::jail-command-data-response
+                                                jail-response message opts])}}) 
+      {:db (update-in db [:contacts/contacts bot :jail-loaded-events]
+                      conj [:request-command-message-data message opts])})))
 
 ;;;; Handlers
 

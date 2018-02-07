@@ -65,7 +65,7 @@
 
 (defview message-content-command
   [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:content-command-ref content)]]
+  (letsubs [command [:get-command (:command-ref content)]] 
     (let [preview (:preview content)
           {:keys [color] icon-path :icon} command]
       [react/view style/content-command-view
@@ -127,7 +127,7 @@
                   (fn [text-seq]
                     (map (fn [text] {:text text :url? false}) text-seq))))
 
-(defn- autolink [string on-press]
+(defn- autolink [string event-on-press]
   (->> (parse-url string)
        (map-indexed (fn [idx {:keys [text url?]}]
                       (if url?
@@ -135,7 +135,7 @@
                           [react/text
                            {:key      idx
                             :style    {:color colors/blue}
-                            :on-press #(on-press url)}
+                            :on-press #(re-frame/dispatch [event-on-press url])}
                            (utils/truncate-str text 32 true)])
                         text)))
        vec))
@@ -150,7 +150,7 @@
        replacements))
 
 ;; todo rewrite this, naive implementation
-(defn- parse-text [string url-on-press]
+(defn- parse-text [string event-on-press] 
   (parse-str-regx string
                   regx-styled
                   (fn [text-seq]
@@ -165,14 +165,21 @@
                     (map-indexed (fn [idx string]
                                    (apply react/text
                                           {:key (str idx "_" string)}
-                                          (autolink string url-on-press)))
+                                          (autolink string event-on-press)))
                                  text-seq))))
+
+(def cached-parse-text (memoize parse-text))
 
 (defn text-message
   [{:keys [content] :as message}]
-  [message-view message
-   (let [parsed-text (parse-text content #(re-frame/dispatch [:browse-link-from-message %]))]
+  [message-view message 
+   (let [parsed-text (cached-parse-text content :browse-link-from-message)]
      [react/text {:style (style/text-message message)} parsed-text])])
+
+(defn placeholder-message
+  [{:keys [content] :as message}]
+  [message-view message
+   [react/text {:style (style/text-message message)} content]])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
@@ -197,6 +204,10 @@
   [wrapper message]
   [wrapper message
    [message-view message [message-content-command message]]])
+
+(defmethod message-content constants/content-type-placeholder
+  [wrapper message]
+  [wrapper message [placeholder-message message]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]
@@ -329,7 +340,7 @@
      ;; send `:seen` signal when we have signed-in user, message not from us and we didn't sent it already
      #(when (and current-public-key message-id chat-id (not outgoing)
                  (not (models.message/message-seen-by? message current-public-key)))
-        (re-frame/dispatch [:send-seen! {:chat-id    chat-id
+        #_(re-frame/dispatch [:send-seen! {:chat-id    chat-id
                                          :from       from
                                          :me         current-public-key
                                          :message-id message-id}]))
