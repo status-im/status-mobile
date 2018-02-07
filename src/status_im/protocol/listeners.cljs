@@ -3,14 +3,8 @@
             [re-frame.core :as re-frame]
             [status-im.protocol.ack :as ack]
             [status-im.protocol.web3.utils :as u]
-            [status-im.protocol.encryption :as e]
             [taoensso.timbre :as log]
             [status-im.utils.hex :as i]))
-
-(defn empty-public-key? [public-key]
-  (or (= "0x0" public-key)
-      (= "" public-key)
-      (nil? public-key)))
 
 (defn create-error [step description]
   (when (not= description :silent)
@@ -59,11 +53,7 @@
       (let [to             (:recipientPublicKey message)
             from           (:sig message)
             key            (get-in options [:keypair :private])
-            raw-content    (get-in message [:payload :content])
-            encrypted?     (and (empty-public-key? to) key raw-content)
-            content        (if encrypted?
-                             (r/read-string (e/decrypt key raw-content))
-                             raw-content)]
+            content    (get-in message [:payload :content])]
         (log/debug :parse-content
                    "Key exists:" (not (nil? key))
                    "Content exists:" (not (nil? raw-content)))
@@ -97,4 +87,3 @@
   [options]
   (fn [js-error js-message]
     (re-frame/dispatch [:handle-whisper-message js-error js-message options])))
-

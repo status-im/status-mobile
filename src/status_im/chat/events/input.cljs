@@ -141,10 +141,9 @@
             params  {:parameters {:args    args
                                   :bot-db  bot-db
                                   :seq-arg seq-arg}
-                     :context    (merge {:data data
-                                         :from current-account-id
-                                         :to   to}
-                                        (input-model/command-dependent-context-params current-chat-id command))}]
+                     :context    {:data data
+                                  :from current-account-id
+                                  :to   to}}]
         {:call-jail {:jail-id owner-id
                      :path    path
                      :params  params

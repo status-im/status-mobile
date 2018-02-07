@@ -1,13 +1,5 @@
 I18n.translations = {
     en: {
-        phone_title: 'Send Phone Number',
-        phone_description: 'Find friends using your number',
-        phone_placeholder: 'Phone number',
-
-        confirm_description: 'Confirmation code',
-        confirm_validation_title: 'Confirmation code',
-        confirm_validation_description: 'Wrong format',
-
         password_description: 'Password',
         password_placeholder: 'Type your password',
         password_placeholder2: 'Confirm',
@@ -26,14 +18,6 @@ I18n.translations = {
         faucet_placeholder: 'Faucet URL'
     },
     ru: {
-        phone_title: 'Отправить номер телефона',
-        phone_description: 'Найти друзей, используя ваш номер',
-        phone_placeholder: 'Номер телефона',
-
-        confirm_description: 'Код подтверждения',
-        confirm_validation_title: 'Код подтверждения',
-        confirm_validation_description: 'Неверный формат',
-
         password_description: 'Пароль',
         password_placeholder: 'Введите свой пароль',
         password_placeholder2: 'Повторно введите пароль для подтверждения',
@@ -43,14 +27,6 @@ I18n.translations = {
 
     },
     af: {
-        phone_title: 'Stuur telefoonnommer',
-        phone_description: 'Vind vriende deur jou nommer te gebruik',
-        phone_placeholder: 'Telefoonnommer',
-
-        confirm_description: 'Bevestigingskode',
-        confirm_validation_title: 'Bevestigingskode',
-        confirm_validation_description: 'Verkeerde formaat',
-
         password_description: 'Wagwoord',
         password_placeholder: 'Tik jou wagwoord in',
         password_placeholder2: 'Tik asseblief weer jou wagwoord in om te bevestig',
@@ -60,14 +36,6 @@ I18n.translations = {
 
     },
     ar: {
-        phone_title: 'أرسل رقم الهاتف',
-        phone_description: 'ابحث عن الأصدقاء باستخدام رقمك',
-        phone_placeholder: 'رقم الهاتف',
-
-        confirm_description: 'رمز التأكيد',
-        confirm_validation_title: 'رمز التأكيد',
-        confirm_validation_description: 'صيغة خاطئة',
-
         password_description: 'كلمة المرور',
         password_placeholder: 'اكتب كلمة المرور الخاصة بك',
         password_placeholder2: 'الرجاء إعادة إدخال كلمة المرور للتأكيد',
@@ -77,14 +45,6 @@ I18n.translations = {
 
     },
     'zh-hant': {
-        phone_title: '發送手機號碼',
-        phone_description: '使用你的號碼發現好友',
-        phone_placeholder: '手機號碼',
-
-        confirm_description: '確認碼',
-        confirm_validation_title: '確認碼',
-        confirm_validation_description: '格式錯誤',
-
         password_description: '密碼',
         password_placeholder: '鍵入你的密碼',
         password_placeholder2: '重新鍵入你的密碼',
@@ -104,14 +64,6 @@ I18n.translations = {
 
     },
     'zh-hant-tw': {
-        phone_title: '傳送電話號碼',
-        phone_description: '用你的號碼來查詢朋友',
-        phone_placeholder: '電話號碼',
-
-        confirm_description: '確認碼',
-        confirm_validation_title: '確認碼',
-        confirm_validation_description: '格式錯誤',
-
         password_description: '密碼',
         password_placeholder: '輸入密碼',
         password_placeholder2: '請重新輸入密碼以確認',
@@ -131,14 +83,6 @@ I18n.translations = {
 
     },
     'zh-hant-sg': {
-        phone_title: '傳送電話號碼',
-        phone_description: '用你的號碼來查詢朋友',
-        phone_placeholder: '電話號碼',
-
-        confirm_description: '確認碼',
-        confirm_validation_title: '確認碼',
-        confirm_validation_description: '格式錯誤',
-
         password_description: '密碼',
         password_placeholder: '輸入密碼',
         password_placeholder2: '請重新輸入密碼以確認',
@@ -158,14 +102,6 @@ I18n.translations = {
 
     },
     'zh-hant-hk': {
-        phone_title: '發送電話號碼',
-        phone_description: '用你的號碼來查找朋友',
-        phone_placeholder: '電話號碼',
-
-        confirm_description: '確認碼',
-        confirm_validation_title: '確認碼',
-        confirm_validation_description: '格式錯誤',
-
         password_description: '密碼',
         password_placeholder: '輸入密碼',
         password_placeholder2: '請重新輸入密碼以確認',
@@ -185,14 +121,6 @@ I18n.translations = {
 
     },
     'zh-hans': {
-        phone_title: '发送电话号码',
-        phone_description: '用你的号码来查找朋友',
-        phone_placeholder: '电话号码',
-
-        confirm_description: '确认码',
-        confirm_validation_title: '确认码',
-        confirm_validation_description: '格式错误',
-
         password_description: '密码',
         password_placeholder: '输入密码',
         password_placeholder2: '请重新输入密码以确认',
@@ -212,14 +140,6 @@ I18n.translations = {
 
     },
     'zh-yue': {
-        phone_title: '發送電話號碼',
-        phone_description: '使用本電話號碼查找好友',
-        phone_placeholder: '電話號碼',
-
-        confirm_description: '驗證碼',
-        confirm_validation_title: '驗證碼',
-        confirm_validation_description: '格式錯誤',
-
         password_description: '密碼',
         password_placeholder: '輸入密碼',
         password_placeholder2: '請重新輸入密碼確認',
@@ -239,14 +159,6 @@ I18n.translations = {
 
     },
     'zh-wuu': {
-        phone_title: '发送电话号码',
-        phone_description: '用你的号码查找朋友',
-        phone_placeholder: '电话号码',
-
-        confirm_description: '确认码',
-        confirm_validation_title: '确认码',
-        confirm_validation_description: '错误格式',
-
         password_description: '密码',
         password_placeholder: '输入密码',
         password_placeholder2: '请重新输入密码确认',
@@ -266,14 +178,6 @@ I18n.translations = {
 
     },
     nl: {
-        phone_title: 'Stuur telefoonnummer',
-        phone_description: 'Zoek vrienden met behulp van je nummer',
-        phone_placeholder: 'Telefoonnummer',
-
-        confirm_description: 'Bevestigingscode',
-        confirm_validation_title: 'Bevestigingscode',
-        confirm_validation_description: 'Verkeerd format',
-
         password_description: 'Wachtwoord',
         password_placeholder: 'Typ je wachtwoord',
         password_placeholder2: 'Voer je wachtwoord opnieuw in om te bevestigen',
@@ -283,14 +187,6 @@ I18n.translations = {
 
     },
     fr: {
-        phone_title: 'Envoyer le numéro de téléphone',
-        phone_description: 'Trouver des amis en utilisant votre numéro',
-        phone_placeholder: 'Numéro de téléphone',
-
-        confirm_description: 'Code de confirmation',
-        confirm_validation_title: 'Code de confirmation',
-        confirm_validation_description: 'Format incorrect',
-
         password_description: 'Mot de passe',
         password_placeholder: 'Tapez votre mot de passe',
         password_placeholder2: 'Veuillez retapez votre mot de passe pour le confirmer',
@@ -300,14 +196,6 @@ I18n.translations = {
 
     },
     de: {
-        phone_title: 'Telefonnummer absenden',
-        phone_description: 'Freunde mit Ihrer Nummer finden',
-        phone_placeholder: 'Telefonnummer',
-
-        confirm_description: 'Bestätigungscode',
-        confirm_validation_title: 'Bestätigungscode',
-        confirm_validation_description: 'Falsches Format',
-
         password_description: 'Passwort',
         password_placeholder: 'Geben Sie Ihr Passwort ein',
         password_placeholder2: 'Bitte geben Sie das Passwort zur Bestätigung erneut ein',
@@ -317,14 +205,6 @@ I18n.translations = {
 
     },
     hi: {
-        phone_title: 'फ़ोन नंबर भेजें',
-        phone_description: 'अपने नंबर का उपयोग करके दोस्त ढूंढें',
-        phone_placeholder: 'फ़ोन नंबर',
-
-        confirm_description: 'पुष्टि कोड',
-        confirm_validation_title: 'पुष्टि कोड',
-        confirm_validation_description: 'गलत प्रारूप',
-
         password_description: 'पासवर्ड',
         password_placeholder: 'अपना पासवर्ड टाइप करें',
         password_placeholder2: 'पुष्टि करने के लिए फिर से पासवर्ड दर्ज करें',
@@ -334,14 +214,6 @@ I18n.translations = {
 
     },
     hu: {
-        phone_title: 'Telefonszám küldése',
-        phone_description: 'Ismerősök megkeresése telefonszám alapján',
-        phone_placeholder: 'Telefonszám',
-
-        confirm_description: 'Megerősítési kód',
-        confirm_validation_title: 'Megerősítési kód',
-        confirm_validation_description: 'Rossz formátum',
-
         password_description: 'Jelszó',
         password_placeholder: 'Add meg a jelszavad',
         password_placeholder2: 'A megerősítéshez kérjük, add meg újra a jelszavad',
@@ -351,14 +223,6 @@ I18n.translations = {
 
     },
     it: {
-        phone_title: 'Invia numero di telefono',
-        phone_description: 'Trova gli amici che usano il tuo numero',
-        phone_placeholder: 'Numero di telefono',
-
-        confirm_description: 'Codice di conferma',
-        confirm_validation_title: 'Codice di conferma',
-        confirm_validation_description: 'Formato errato',
-
         password_description: 'Password',
         password_placeholder: 'Digita la tua password',
         password_placeholder2: 'Reinserisci la password per confermare',
@@ -368,14 +232,6 @@ I18n.translations = {
 
     },
     ja: {
-        phone_title: '電話番号を送信',
-        phone_description: '電話番号から友人を検索',
-        phone_placeholder: '携帯電話番号',
-
-        confirm_description: '確認コード',
-        confirm_validation_title: '確認コード',
-        confirm_validation_description: '誤った形式です',
-
         password_description: 'パスワード',
         password_placeholder: 'パスワードを入力してください',
         password_placeholder2: '確認のためにパスワードを再入力してください',
@@ -394,14 +250,6 @@ I18n.translations = {
         faucet_placeholder: 'フォーセットURL'
     },
     ko: {
-        phone_title: '전화번호 보내기',
-        phone_description: '내 번호를 사용하여 친구 찾기',
-        phone_placeholder: '전화번호',
-
-        confirm_description: '확인 코드',
-        confirm_validation_title: '확인 코드',
-        confirm_validation_description: '잘못된 형식',
-
         password_description: '비밀번호',
         password_placeholder: '비밀번호를 입력하세요',
         password_placeholder2: '확인을 위해 비밀번호를 다시 입력해 주세요',
@@ -411,14 +259,6 @@ I18n.translations = {
 
     },
     pl: {
-        phone_title: 'Wyślij numer telefonu',
-        phone_description: 'Znajdź znajomych, używając swojego numeru',
-        phone_placeholder: 'Numer telefonu',
-
-        confirm_description: 'Kod potwierdzający',
-        confirm_validation_title: 'Kod potwierdzający',
-        confirm_validation_description: 'Nieprawidłowy format',
-
         password_description: 'Hasło',
         password_placeholder: 'Wpisz swoje hasło',
         password_placeholder2: 'Wprowadź ponownie hasło, aby potwierdzić',
@@ -428,14 +268,6 @@ I18n.translations = {
 
     },
     'pt-br': {
-        phone_title: 'Enviar número de telefone',
-        phone_description: 'Encontrar amigos por meio do seu número',
-        phone_placeholder: 'Número de telefone',
-
-        confirm_description: 'Código de confirmação',
-        confirm_validation_title: 'Código de confirmação',
-        confirm_validation_description: 'Formato incorreto',
-
         password_description: 'Senha',
         password_placeholder: 'Digite sua senha',
         password_placeholder2: 'Por favor, digite a senha novamente para confirmar',
@@ -445,14 +277,6 @@ I18n.translations = {
 
     },
     'pt-pt': {
-        phone_title: 'Enviar o Número de Telefone',
-        phone_description: 'Encontrar amigos que utilizem o seu número',
-        phone_placeholder: 'Número de telefone',
-
-        confirm_description: 'Código de confirmação',
-        confirm_validation_title: 'Código de confirmação',
-        confirm_validation_description: 'Formato errado',
-
         password_description: 'Palavra-passe',
         password_placeholder: 'Digite a sua palavra-passe',
         password_placeholder2: 'Por favor, volte a digitar a palavra-passe para confirmar',
@@ -462,14 +286,6 @@ I18n.translations = {
 
     },
     ro: {
-        phone_title: 'Trimite numărul de telefon',
-        phone_description: 'Găsește prieteni folosindu-ți numărul de telefon',
-        phone_placeholder: 'Număr de telefon',
-
-        confirm_description: 'Cod de confirmare',
-        confirm_validation_title: 'Cod de confirmare',
-        confirm_validation_description: 'Format greșit',
-
         password_description: 'Parolă',
         password_placeholder: 'Tastează parola',
         password_placeholder2: 'Te rugăm să re-introduci parola pentru a confirma',
@@ -479,14 +295,6 @@ I18n.translations = {
 
     },
     sl: {
-        phone_title: 'Pošlji telefonsko številko',
-        phone_description: 'Iskanje prijateljev z uporabo tvoje telefonske številke',
-        phone_placeholder: 'Telefonska številka',
-
-        confirm_description: 'Potrditvena koda',
-        confirm_validation_title: 'Potrditvena koda',
-        confirm_validation_description: 'Neveljaven format',
-
         password_description: 'Geslo',
         password_placeholder: 'Vnesi svoje geslo',
         password_placeholder2: 'Prosimo, ponovno vnesi geslo za potrditev',
@@ -496,14 +304,6 @@ I18n.translations = {
 
     },
     es: {
-        phone_title: 'Enviar número de teléfono',
-        phone_description: 'Encontrar amigos que estén utilizando tu número',
-        phone_placeholder: 'Número de teléfono',
-
-        confirm_description: 'Código de confirmación',
-        confirm_validation_title: 'Código de confirmación',
-        confirm_validation_description: 'Formato erróneo',
-
         password_description: 'Contraseña',
         password_placeholder: 'Escribe tu contraseña',
         password_placeholder2: 'Por favor, vuelve a escribir la contraseña para confirmar',
@@ -513,14 +313,6 @@ I18n.translations = {
 
     },
     'es-ar': {
-        phone_title: 'Envia un número telefónico',
-        phone_description: 'Encuentra amigos utilizando tu número',
-        phone_placeholder: 'Número telefónico',
-
-        confirm_description: 'Código de confirmación',
-        confirm_validation_title: 'Código de confirmación',
-        confirm_validation_description: 'Formato incorrecto',
-
         password_description: 'Contraseña',
         password_placeholder: 'Ingresa tu contraseña',
         password_placeholder2: 'Ingresa tu contraseña para confirmar',
@@ -530,14 +322,6 @@ I18n.translations = {
 
     },
     sw: {
-        phone_title: 'Tuma Namba ya Simu',
-        phone_description: 'Pata marafiki kwa kutumia namba yako',
-        phone_placeholder: 'Namba ya simu',
-
-        confirm_description: 'Kificho cha uthibitisho',
-        confirm_validation_title: 'Kificho cha uthibitisho',
-        confirm_validation_description: 'Muundo hafifu',
-
         password_description: 'Nenosiri',
         password_placeholder: 'Andika nenosiri lako',
         password_placeholder2: 'Tafadhali ingiza tena nenosiri kuthibitisha',
@@ -547,14 +331,6 @@ I18n.translations = {
 
     },
     sv: {
-        phone_title: 'Skicka telefonnummer',
-        phone_description: 'Hitta vänner som använder ditt nummer',
-        phone_placeholder: 'Telefonnummer',
-
-        confirm_description: 'Bekräftelsekod',
-        confirm_validation_title: 'Bekräftelsekod',
-        confirm_validation_description: 'Fel format',
-
         password_description: 'Lösenord',
         password_placeholder: 'Skriv ditt lösenord',
         password_placeholder2: 'Var god ange ditt lösenord igen för att bekräfta',
@@ -564,14 +340,6 @@ I18n.translations = {
 
     },
     'fr-ch': {
-        phone_title: 'Envoyer numéro de téléphone',
-        phone_description: 'Trouvez des amis en utilisant votre numéro',
-        phone_placeholder: 'Numéro de téléphone',
-
-        confirm_description: 'Code de confirmation',
-        confirm_validation_title: 'Code de confirmation',
-        confirm_validation_description: 'Mauvais format',
-
         password_description: 'Mot de passe',
         password_placeholder: 'Tapez votre mot de passe',
         password_placeholder2: 'Veuillez saisir à nouveau le mot de passe pour confirmer',
@@ -581,14 +349,6 @@ I18n.translations = {
 
     },
     'de-ch': {
-        phone_title: 'Sende Telefonnummer',
-        phone_description: 'Finde Freunde mittels deiner Telefonnummer',
-        phone_placeholder: 'Telefonnummer',
-
-        confirm_description: 'Konfirmationscode',
-        confirm_validation_title: 'Konfirmationscode',
-        confirm_validation_description: 'Falsches Format',
-
         password_description: 'Passwort',
         password_placeholder: 'Gib dein Passwort ein',
         password_placeholder2: 'Bitte gib das Passwort zur Bestätigung erneut ein',
@@ -598,14 +358,6 @@ I18n.translations = {
 
     },
     'it-ch': {
-        phone_title: 'Invia numero di telefono',
-        phone_description: 'Trova amici che utilizzano il tuo numero',
-        phone_placeholder: 'Numero di telefono',
-
-        confirm_description: 'Codice di conferma',
-        confirm_validation_title: 'Codice di conferma',
-        confirm_validation_description: 'Formato errato',
-
         password_description: 'Password',
         password_placeholder: 'Digita la tua password',
         password_placeholder2: 'Inserisci nuovamente la password per confermare',
@@ -615,14 +367,6 @@ I18n.translations = {
 
     },
     th: {
-        phone_title: 'ส่งหมายเลขโทรศัพท์',
-        phone_description: 'ค้นหาเพื่อนโดยใช้หมายเลขของคุณ ',
-        phone_placeholder: 'หมายเลขโทรศัพท์',
-
-        confirm_description: 'รหัสยืนยัน',
-        confirm_validation_title: 'รหัสยืนยัน',
-        confirm_validation_description: 'รูปแบบผิด',
-
         password_description: 'รหัสผ่าน',
         password_placeholder: 'พิมพ์รหัสผ่านของคุณ',
         password_placeholder2: 'โปรดกรอกรหัสผ่านอีกครั้งเพื่อยืนยัน',
@@ -632,14 +376,6 @@ I18n.translations = {
 
     },
     tr: {
-        phone_title: 'Telefon Numarasını Gönder',
-        phone_description: 'Telefon numaranı kullanarak arkadaşlarınızı bulun',
-        phone_placeholder: 'Telefon numarası',
-
-        confirm_description: 'Onay kodu',
-        confirm_validation_title: 'Onay kodu',
-        confirm_validation_description: 'Hatalı format',
-
         password_description: 'Şifre',
         password_placeholder: 'Şifrenizi girin',
         password_placeholder2: 'Onaylamak için lütfen parolanızı yeniden girin',
@@ -649,14 +385,6 @@ I18n.translations = {
 
     },
     uk: {
-        phone_title: 'Надіслати номер телефону',
-        phone_description: 'Знайдіть друзів, використовуючи свій номер',
-        phone_placeholder: 'Номер телефону',
-
-        confirm_description: 'Код підтвердження',
-        confirm_validation_title: 'Код підтвердження',
-        confirm_validation_description: 'Неправильний формат',
-
         password_description: 'Пароль',
         password_placeholder: 'Введіть свій пароль',
         password_placeholder2: 'Будь ласка, введіть пароль ще раз для підтвердження',
@@ -666,14 +394,6 @@ I18n.translations = {
 
     },
     ur: {
-        phone_title: 'فون نمبر بھیجیں',
-        phone_description: 'فون نمبر استعمال کرتے ہوئے دوستوں کو تلاش کریں',
-        phone_placeholder: 'فون نمبر',
-
-        confirm_description: 'تصدیقی کوڈ',
-        confirm_validation_title: 'تصدیقی کوڈ',
-        confirm_validation_description: 'غلط فارمیٹ',
-
         password_description: 'پاسورڈ',
         password_placeholder: 'اپنا پاسورڈ لکھیں',
         password_placeholder2: 'برائے مہربانی تصدیق کے لیے اپنا پاسورڈ دوبارہ لکھیں',
@@ -683,14 +403,6 @@ I18n.translations = {
 
     },
     vi: {
-        phone_title: 'Gửi số điện thoại',
-        phone_description: 'Tìm bạn bè bằng các sử dụng số điện thoại của bạn',
-        phone_placeholder: 'Số điện thoại',
-
-        confirm_description: 'Mã xác nhận',
-        confirm_validation_title: 'Mã xác nhận',
-        confirm_validation_description: 'Sai định dạng',
-
         password_description: 'Mật khẩu',
         password_placeholder: 'Gõ mật khẩu của bạn',
         password_placeholder2: 'Vui lòng nhập lại mật khẩu để xác nhận',

@@ -37,7 +37,6 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
             [status-im.utils.config :as config]
-            [status-im.utils.crypt :as crypt]
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.instabug :as inst]
@@ -68,21 +67,21 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
-  :now
-  (fn [coeffects _]
-    (assoc coeffects :now (time/now-ms))))
+ :now
+ (fn [coeffects _]
+   (assoc coeffects :now (time/now-ms))))
 
 (re-frame/reg-cofx
-  :random-id
-  (fn [coeffects _]
-    (assoc coeffects :random-id (random/id))))
+ :random-id
+ (fn [coeffects _]
+   (assoc coeffects :random-id (random/id))))
 
 (re-frame/reg-cofx
-  :random-id-seq
-  (fn [coeffects _]
-    (assoc coeffects :random-id-seq
-           ((fn rand-id-seq []
-              (cons (random/id) (lazy-seq (rand-id-seq))))))))
+ :random-id-seq
+ (fn [coeffects _]
+   (assoc coeffects :random-id-seq
+          ((fn rand-id-seq []
+             (cons (random/id) (lazy-seq (rand-id-seq))))))))
 
 ;;;; FX
 
@@ -140,18 +139,6 @@
   ::init-store
   (fn []
     (data-store/init)))
-
-(re-frame/reg-fx
-  ::initialize-crypt-fx
-  (fn []
-    (crypt/gen-random-bytes
-      1024
-      (fn [{:keys [error buffer]}]
-        (if error
-          (log/error "Failed to generate random bytes to initialize sjcl crypto")
-          (->> (.toString buffer "hex")
-               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
 
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
@@ -228,7 +215,6 @@
                         [:load-accounts]
                         [:check-console-chat]
                         [:listen-to-network-status!]
-                        [:initialize-crypt]
                         [:initialize-geth]]}))
 
 (handlers/register-handler-fx
@@ -312,11 +298,6 @@
          {:dispatch-n (concat [[:init-console-chat]]
                               (when open-console?
                                 [[:navigate-to-chat console-chat-id]]))})))))
-
-(handlers/register-handler-fx
-  :initialize-crypt
-  (fn [_ _]
-    {::initialize-crypt-fx nil}))
 
 (handlers/register-handler-fx
   :initialize-geth

@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async]
             [status-im.protocol.web3.transport :as t]
             [status-im.protocol.web3.utils :as u]
-            [status-im.protocol.encryption :as e]
             [cljs.spec.alpha :as s]
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
@@ -20,14 +19,10 @@
   (let [{:keys [public]} keypair
 
         content          (:content payload)
-        content'         (if (and (not to) public content)
-                           (e/encrypt public (prn-str content))
-                           content)
-
         payload'         (-> message
                              (select-keys [:message-id :requires-ack? :type :clock-value])
                              (merge payload)
-                             (assoc :content content')
+                             (assoc :content content)
                              prn-str
                              u/from-utf8)
         sym-key-password (or key-password shh-keys/status-key-password)]

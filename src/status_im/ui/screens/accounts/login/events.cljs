@@ -136,8 +136,7 @@
                       [:initialize-account
                        address
                        (when (or new-account? recover-in-progress?)
-                         [[:chat-received-message/add console-chat/phone-number-request-message]
-                          [:chat-received-message/add console-chat/shake-your-phone-message]])]
+                         [[:chat-received-message/add console-chat/shake-your-phone-message]])]
                       [:navigate-to-clean :home]
                       (if new-account?
                         [:navigate-to-chat console-chat-id]
