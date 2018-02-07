@@ -9,6 +9,12 @@
 ;; XXX(oskarth): Perf issue to have one topic
 ;; See https://github.com/status-im/ideas/issues/55#issuecomment-355511183
 (def status-topic "0xaabb1122")
+(def contact-request-topic "Ox636f6e74")
+
+(defn get-contact-request-topic []
+  (if config/many-whisper-topics-enabled?
+    [contact-request-topic]
+    [status-topic]))
 
 (defonce filters (atom {}))
 

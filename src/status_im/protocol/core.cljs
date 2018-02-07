@@ -55,8 +55,8 @@
 (s/def ::public? (s/and boolean? true?))
 (s/def ::group-id :message/chat-id)
 (s/def ::group (s/or
-                 :group (s/keys :req-un [::group-id :message/keypair])
-                 :public-group (s/keys :req-un [::group-id ::public?])))
+                :group (s/keys :req-un [::group-id :message/keypair])
+                :public-group (s/keys :req-un [::group-id ::public?])))
 (s/def ::groups (s/* ::group))
 (s/def ::callback fn?)
 (s/def ::contact (s/keys :req-un [::identity :message/keypair]))
@@ -64,9 +64,9 @@
 (s/def ::profile-keypair :message/keypair)
 (s/def ::options
   (s/merge
-    (s/keys :req-un [::identity ::groups ::profile-keypair
-                     ::callback :discoveries/hashtags ::contacts])
-    ::d/delivery-options))
+   (s/keys :req-un [::identity ::groups ::profile-keypair
+                    ::callback :discoveries/hashtags ::contacts])
+   ::d/delivery-options))
 
 (def stop-watching-all! f/remove-all-filters!)
 (def reset-all-pending-messages! d/reset-all-pending-messages!)
@@ -92,6 +92,14 @@
         (let [options (merge listener-options group)]
           (group/start-watching-group! options)))
     ;; start listening to user's inbox
+    (when config/many-whisper-topics-enabled?
+      ;; listen to contact requests
+      (f/add-filter!
+       web3
+       {:key    identity
+        :topics [f/contact-request-topic]}
+       (l/message-listener listener-options)))
+
     (if config/offline-inbox-enabled?
       (do (log/info "offline inbox: flag enabled")
           (f/add-filter!
