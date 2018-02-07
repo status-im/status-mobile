@@ -30,7 +30,7 @@ function install_and_setup_package_manager() {
     )
 
     for package in "${buildtools[@]}"; do
-      apt_install "$package"
+      linux_install "$package"
     done
   fi
 }
@@ -138,7 +138,7 @@ function install_android_sdk_linux() {
 
 function install_maven() {
   brew_install maven
-  apt_install maven
+  linux_install maven
 }
 
 function install_react_native_cli() {
@@ -184,9 +184,9 @@ function install_node_via_package_manager() {
       brew_install node
     elif is_linux; then
       curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-      apt_update
+      linux_update
 
-      apt_install nodejs
+      linux_install nodejs
     fi
   else
     cecho \
