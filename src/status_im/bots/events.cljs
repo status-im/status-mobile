@@ -22,11 +22,11 @@
         :function :subscription
         :parameters {:name          sub-name
                      :subscriptions (subscription-values sub-params (get bot-db bot))}
-        :callback-events-creator (fn [jail-response]
-                                   [[::calculated-subscription
-                                     {:bot    bot
-                                      :path   [sub-name]
-                                      :result jail-response}]])})}))
+        :callback-event-creator (fn [jail-response]
+                                  [::calculated-subscription
+                                   {:bot    bot
+                                    :path   [sub-name]
+                                    :result jail-response}])})}))
 
 (defn set-in-bot-db
   "Associates value at specified path in bot-db and checks if there are any subscriptions

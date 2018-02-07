@@ -146,12 +146,12 @@
         {:call-jail {:jail-id owner-id
                      :path    path
                      :params  params
-                     :callback-events-creator (fn [jail-response]
-                                                [[:chat-received-message/bot-response
-                                                  {:chat-id         current-chat-id
-                                                   :command         command
-                                                   :parameter-index parameter-index}
-                                                  jail-response]])}}))))
+                     :callback-event-creator (fn [jail-response]
+                                               [:chat-received-message/bot-response
+                                                {:chat-id         current-chat-id
+                                                 :command         command
+                                                 :parameter-index parameter-index}
+                                                jail-response])}}))))
 
 (defn chat-input-focus
   "Returns fx for focusing on active chat input reference"
@@ -237,14 +237,14 @@
 
 ;; function creating "message shaped" data from command, because that's what `request-command-message-data` expects
 (defn- command->message
-  [{:keys [bot-db current-chat-id chats]} {:keys [command] :as command-params}] 
-  (cond-> {:chat-id current-chat-id
-           :jail-id (:owner-id command)
-           :content {:command       (:name command)
-                     :type          (:type command)
-                     :scope-bitmask (:scope-bitmask command)
-                     :params        (assoc (input-model/args->params command-params)
-                                           :bot-db (get bot-db (:owner-id command)))}}
+  [{:keys [bot-db current-chat-id chats]} {:keys [command] :as command-params}]
+  (cond-> {:chat-id current-chat-id 
+           :content {:bot                   (:owner-id command)
+                     :command               (:name command)
+                     :type                  (:type command)
+                     :command-scope-bitmask (:scope-bitmask command)
+                     :params                (assoc (input-model/args->params command-params)
+                                                   :bot-db (get bot-db (:owner-id command)))}}
     (get-in chats [current-chat-id :group-chat])
     (assoc :group-id current-chat-id)))
 
@@ -260,8 +260,7 @@
                      :to-message (:to-message-id metadata)
                      :created-at current-time
                      :id         message-id
-                     :chat-id    current-chat-id
-                     :jail-id    (:jail-id message)}
+                     :chat-id    current-chat-id}
         event-chain {:data-type             :validator
                      :proceed-event-creator (fn [validation-response]
                                               [::proceed-validation

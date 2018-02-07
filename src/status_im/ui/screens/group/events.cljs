@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.group.events
-  (:require [status-im.protocol.core :as protocol]
-            [re-frame.core :refer [dispatch reg-fx reg-cofx inject-cofx]]
+  (:require [re-frame.core :refer [dispatch reg-fx reg-cofx inject-cofx]]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [status-im.ui.components.styles :refer [default-chat-color]]
             [status-im.data-store.contact-groups :as groups]

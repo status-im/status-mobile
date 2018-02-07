@@ -1,34 +1,39 @@
 (ns status-im.data-store.chats
-  (:require [status-im.data-store.realm.chats :as data-store])
+  (:require [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]
+            [status-im.data-store.realm.chats :as data-store])
   (:refer-clojure :exclude [exists?]))
 
-(defn get-all
-  []
-  (data-store/get-all-active))
+(re-frame/reg-cofx
+  :all-stored-chats
+  (fn [cofx _]
+    (assoc cofx :all-stored-chats (data-store/get-all-active))))
 
-(defn get-inactive-ids
-  []
-  (data-store/get-inactive-ids))
+(re-frame/reg-cofx
+  :inactive-chat-ids
+  (fn [cofx _]
+    (assoc cofx :inactive-chat-ids (data-store/get-inactive-ids))))
 
-(defn get-by-id
-  [id]
-  (data-store/get-by-id id))
+(re-frame/reg-cofx
+  :get-stored-chat
+  (fn [cofx _]
+    (assoc cofx :get-stored-chat data-store/get-by-id)))
 
-(defn exists?
-  [chat-id]
-  (data-store/exists? chat-id))
+(re-frame/reg-fx
+  :save-chat
+  (fn [{:keys [chat-id] :as chat}]
+    (async/go (async/>! core/realm-queue #(data-store/save chat (data-store/exists? chat-id))))))
 
-(defn save
-  [{:keys [chat-id] :as chat}]
-  (data-store/save chat (data-store/exists? chat-id)))
+(re-frame/reg-fx
+  :delete-chat
+  (fn [chat-id]
+    (async/go (async/>! core/realm-queue #(data-store/delete chat-id)))))
 
-(defn delete
-  [chat-id]
-  (data-store/delete chat-id))
-
-(defn set-inactive
-  [chat-id]
-  (data-store/set-inactive chat-id))
+(re-frame/reg-fx
+  :deactivate-chat
+  (fn [chat-id]
+    (async/go (async/>! core/realm-queue #(data-store/set-inactive chat-id)))))
 
 (defn get-contacts
   [chat-id]

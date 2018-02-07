@@ -1,7 +1,9 @@
 (ns status-im.data-store.messages
-  (:refer-clojure :exclude [exists?])
   (:require [cljs.reader :as reader]
+            [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.data-store.realm.core :as core]
             [status-im.data-store.realm.messages :as data-store]
             [status-im.utils.random :as random]
             [status-im.utils.core :as utils]))
@@ -16,9 +18,10 @@
   {:outgoing       false
    :to             nil})
 
-(defn get-by-id
-  [message-id]
-  (data-store/get-by-id message-id))
+(re-frame/reg-cofx
+  :get-stored-message
+  (fn [cofx _]
+    (assoc cofx :get-stored-message data-store/get-by-id)))
 
 (defn get-by-chat-id
   ([chat-id]
@@ -30,9 +33,15 @@
                   (update message :content reader/read-string)
                   message))))))
 
-(defn get-stored-message-ids
-  []
-  (data-store/get-stored-message-ids))
+(re-frame/reg-cofx
+  :get-stored-messages
+  (fn [cofx _]
+    (assoc cofx :get-stored-messages get-by-chat-id)))
+
+(re-frame/reg-cofx
+  :stored-message-ids
+  (fn [cofx _]
+    (assoc cofx :stored-message-ids (data-store/get-stored-message-ids))))
 
 (defn get-log-messages
   [chat-id]
@@ -40,12 +49,15 @@
        (filter #(= (:content-type %) constants/content-type-log-message))
        (map #(select-keys % [:content :timestamp]))))
 
-(defn get-unviewed
-  [current-public-key]
-  (into {}
-        (map (fn [[chat-id user-statuses]]
-               [chat-id (into #{} (map :message-id) user-statuses)]))
-        (group-by :chat-id (data-store/get-unviewed current-public-key))))
+(re-frame/reg-cofx
+  :stored-unviewed-messages
+  (fn [{:keys [db] :as cofx} _]
+    (assoc cofx
+           :stored-unviewed-messages
+           (into {}
+                 (map (fn [[chat-id user-statuses]]
+                        [chat-id (into #{} (map :message-id) user-statuses)]))
+                 (group-by :chat-id (data-store/get-unviewed (:current-public-key db)))))))
 
 (defn- prepare-content [content]
   (if (string? content)
@@ -78,10 +90,22 @@
                                              {:from      (or from "anonymous")
                                               :timestamp (random/timestamp)})))))
 
+(re-frame/reg-fx
+  :save-message
+  (fn [message]
+    (async/go (async/>! core/realm-queue #(save message)))))
+
 (defn update-message
   [{:keys [message-id] :as message}]
   (when-let [{:keys [chat-id]} (data-store/get-by-id message-id)]
     (data-store/save (prepare-message (assoc message :chat-id chat-id)))))
 
-(defn delete-by-chat-id [chat-id]
-  (data-store/delete-by-chat-id chat-id))
+(re-frame/reg-fx
+  :update-message
+  (fn [message]
+    (async/go (async/>! core/realm-queue #(update-message message)))))
+
+(re-frame/reg-fx
+  :delete-messages
+  (fn [chat-id]
+    (async/go (async/>! core/realm-queue #(data-store/delete-by-chat-id chat-id)))))

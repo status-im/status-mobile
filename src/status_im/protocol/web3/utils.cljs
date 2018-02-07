@@ -13,6 +13,9 @@
 (defn to-utf8 [s]
   (.toUtf8 dependencies/Web3.prototype (str s)))
 
+(defn sha3 [s]
+  (.sha3 dependencies/Web3.prototype s))
+
 (defn shh [web3]
   (.-shh web3))
 

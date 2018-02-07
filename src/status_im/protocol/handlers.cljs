@@ -423,7 +423,7 @@
 
 (handlers/register-handler-fx
   :incoming-message
-  (fn [{:keys [db]} [_ type {:keys [payload ttl id] :as message}]]
+  (fn [{:keys [db]} [_ type {:keys [payload ttl id from] :as message}]]
     (let [message-id (or id (:message-id payload))]
       (when-not (cache/exists? message-id type)
         (let [ttl-s             (* 1000 (or ttl 120))
@@ -435,34 +435,35 @@
               route-fx (case type
                          (:message
                           :group-message
-                          :public-group-message) {:dispatch [:pre-received-message (transform-protocol-message message)]}
-                         :pending                (cond-> {::pending-messages-save message}
-                                                   chat-message
-                                                   (assoc :dispatch
-                                                          [:update-message-status (message-from-self db message) :pending]))
-                         :sent                   {:dispatch [:update-message-status (message-from-self db message) :sent]}
-                         :ack                    (cond-> {::pending-messages-delete (get-message-id payload)}
-                                                   chat-message
-                                                   (assoc :dispatch [:update-message-status message :delivered]))
-                         :seen                   {:dispatch [:update-message-status message :seen]}
-                         :group-invitation       {:dispatch [:group-chat-invite-received message]}
-                         :update-group           {:dispatch [:update-group-message message]}
-                         :add-group-identity     {:dispatch [:participant-invited-to-group message]}
-                         :remove-group-identity  {:dispatch [:participant-removed-from-group message]}
-                         :leave-group            {:dispatch [:participant-left-group message]}
-                         :contact-request        {:dispatch [:contact-request-received message]}
-                         :discover               {:dispatch [:status-received message]}
-                         :discoveries-request    {:dispatch [:discoveries-request-received message]}
-                         :discoveries-response   {:dispatch [:discoveries-response-received message]}
-                         :profile                {:dispatch [:contact-update-received message]}
-                         :update-keys            {:dispatch [:update-keys-received message]}
-                         :online                 {:dispatch [:contact-online-received message]}
+                          :public-group-message)       {:dispatch [:pre-received-message (transform-protocol-message message)]}
+                         :pending                      (cond-> {::pending-messages-save message}
+                                                         chat-message
+                                                         (assoc :dispatch
+                                                                [:update-message-status (message-from-self db message) :pending]))
+                         :sent                         {:dispatch [:update-message-status (message-from-self db message) :sent]}
+                         :ack                          (cond-> {::pending-messages-delete (get-message-id payload)}
+                                                         chat-message
+                                                         (assoc :dispatch [:update-message-status message :delivered]))
+                         :seen                         {:dispatch [:update-message-status message :seen]}
+                         :group-invitation             {:dispatch [:group-chat-invite-received message]}
+                         :update-group                 {:dispatch [:update-group-message message]}
+                         :add-group-identity           {:dispatch [:participant-invited-to-group message]}
+                         :remove-group-identity        {:dispatch [:participant-removed-from-group message]}
+                         :leave-group                  {:dispatch [:participant-left-group message]}
+                         :contact-request              {:dispatch [:contact-request-received message]}
+                         :contact-request-confirmation {:dispatch [:contact-request-confirmation-received message]}
+                         :discover                     {:dispatch [:status-received message]}
+                         :discoveries-request          {:dispatch [:discoveries-request-received message]}
+                         :discoveries-response         {:dispatch [:discoveries-response-received message]}
+                         :profile                      {:dispatch [:contact-update-received message]}
+                         :update-keys                  {:dispatch [:update-keys-received message]}
+                         :online                       {:dispatch [:contact-online-received message]}
                          nil)]
           (when (nil? route-fx) (log/debug "Unknown message type" type))
           (cache/add! processed-message)
           (merge
-            {::save-processed-messages processed-message}
-            route-fx))))))
+           {::save-processed-messages processed-message}
+           route-fx))))))
 
 (handlers/register-handler-fx
   :update-message-status
@@ -488,37 +489,44 @@
 
 (handlers/register-handler-fx
   :contact-request-received
-  (fn [{{:contacts/keys [contacts]} :db}
-       [_ {:keys [from payload timestamp]}]]
-    (when from
-      (let [{{:keys [name profile-image address status fcm-token]} :contact
-             {:keys [public private]}                              :keypair} payload
-            existing-contact (get contacts from)
-            contact          {:whisper-identity from
-                              :public-key       public
-                              :private-key      private
-                              :address          address
-                              :status           status
-                              :photo-path       profile-image
-                              :name             name
-                              :fcm-token        fcm-token}
-            chat             {:name         name
-                              :chat-id      from
-                              :contact-info (prn-str contact)}
-            prev-last-updated (get-in contacts [from :last-updated] 0)
-            ;; NOTE(dmitryn) Workaround for old messages not having "payload.timestamp" attribute.
-            ;; Get timestamp from message root level.
-            ;; Root level "timestamp" is a unix ts in seconds.
-            timestamp'        (or (:payload timestamp)
-                                  (* 1000 timestamp))]
-        (if-not existing-contact
-          (let [contact (assoc contact :pending? true)]
-            {:dispatch-n [[:add-contacts [contact]]
-                          [:add-chat from chat]]})
-          (when-not (:pending? existing-contact)
-            (cond-> {:dispatch-n [[:update-chat! chat]
-                                  [:watch-contact contact]]}
-              (<= prev-last-updated timestamp') (update :dispatch-n concat [[:update-contact! contact]]))))))))
+  (fn
+    [{{:contacts/keys [contacts] :as db} :db :as cofx} [_ {:keys [from payload timestamp]}]]
+    (let [{:keys [name profile-image address fcm-token]} payload
+          public-key                                     from]
+      (when-not (get contacts public-key)
+        (let [contact-props {:whisper-identity public-key
+                             :public-key       public-key
+                             :address          address
+                             :photo-path       profile-image
+                             :name             name
+                             :fcm-token        fcm-token
+                             :pending?         true}
+              chat-props    {:name         name
+                             :chat-id      public-key
+                             :contact-info (prn-str contact-props)}]
+          (handlers/merge-fx cofx
+                             {:db           (update-in db [:contacts/contacts public-key] merge contact-props)
+                              :save-contact contact-props}
+                             (models.chat/add-chat public-key chat-props)))))))
+
+(handlers/register-handler-fx
+  :contact-request-confirmation-received
+  (fn
+    [{{:contacts/keys [contacts] :as db} :db :as cofx} [_ {:keys [from payload timestamp]}]]
+    (let [{:keys [name profile-image address fcm-token]} payload
+          public-key                                     from]
+      (when-let [contact (get contacts public-key)]
+        (let [contact-props {:whisper-identity public-key
+                             :address          address
+                             :photo-path       profile-image
+                             :name             name
+                             :fcm-token        fcm-token}
+              chat-props    {:name    name
+                             :chat-id public-key}]
+          (handlers/merge-fx cofx
+                             {:db           (update-in db [:contacts/contacts public-key] merge contact-props)
+                              :save-contact contact-props}
+                             (models.chat/upsert-chat chat-props)))))))
 
 ;;GROUP
 
