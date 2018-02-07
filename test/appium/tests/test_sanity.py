@@ -60,7 +60,7 @@ class TestSanity(SingleDeviceTestCase):
 
         for user in users:
             home_view.add_contact(user['public_key'])
-            console_view.back_button.click(3)
+            console_view.back_button.click(2)
         home_view.create_group_chat(sorted([user['username'] for user in users]))
         group_chat = home_view.get_chat_view()
         group_chat.chat_options.click()
@@ -75,7 +75,8 @@ class TestSanity(SingleDeviceTestCase):
         console_view.create_user()
         console_view.back_button.click()
         home_view = console_view.get_home_view()
-        home_view.plus_button.click()
+        start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.add_new_contact.click()
         contact_jarrad = home_view.element_by_text('Jarrad', 'button')
         contact_jarrad.scroll_to_element()
         contact_jarrad.click()

@@ -47,7 +47,7 @@ class TestMultipleDevices(MultipleDeviceTestCase):
         device_2_home.add_contact(device_1_public_key)
         device_2_chat = device_2_home.get_chat_view()
         device_1_user_name = device_2_chat.user_name_text.text
-        device_2_home.back_button.click(times_to_click=3)
+        device_2_home.back_button.click(times_to_click=2)
         chat_name = 'new_chat'
         message_1 = 'first SOMETHING'
         message_2 = 'second SOMETHING'
@@ -104,7 +104,7 @@ class TestMultipleDevices(MultipleDeviceTestCase):
         device_2_home = device_2.get_home_view()
         device_1_home = device_1.get_home_view()
         device_1_home.add_contact(sender['public_key'])
-        device_1_home.back_button.click(times_to_click=3)
+        device_1_home.back_button.click(times_to_click=2)
         if test == 'group_chat':
             group_chat_name = 'gtr_%s' % get_current_time()
             device_1_home.create_group_chat([sender['username']], group_chat_name)
@@ -115,15 +115,16 @@ class TestMultipleDevices(MultipleDeviceTestCase):
             one_to_one_chat_device_1.click()
         device_1_chat = device_1_home.get_chat_view()
         device_2_chat = device_2_home.get_chat_view()
-        device_1_chat.request_command.click()
         amount = device_1_chat.get_unique_amount()
         if test == 'group_chat':
+            device_1_chat.request_command.click()
             device_1_chat.first_recipient_button.click()
             device_1_chat.send_as_keyevent(amount)
         else:
-            device_1_chat.chat_message_input.set_value(amount)
             one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
             one_to_one_chat_device_2.click()
+            device_1_chat.request_command.click()
+            device_1_chat.send_as_keyevent(amount)
         device_1_chat.send_message_button.click()
         initial_balance_recipient = api_requests.get_balance(recipient['address'])
         if test == 'group_chat':

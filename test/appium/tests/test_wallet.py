@@ -28,7 +28,7 @@ class TestWallet(SingleDeviceTestCase):
         home_view = console_view.get_home_view()
         recipient_key = transaction_users_wallet['B_USER']['public_key']
         home_view.add_contact(recipient_key)
-        home_view.back_button.click(times_to_click=3)
+        home_view.back_button.click(times_to_click=2)
         wallet_view = home_view.wallet_button.click()
         send_transaction_view = wallet_view.request_button.click()
         send_transaction_view.amount_edit_box.scroll_to_element()
@@ -50,7 +50,7 @@ class TestWallet(SingleDeviceTestCase):
         recipient_address = transaction_users_wallet[recipient]['address']
         initial_balance_recipient = api_requests.get_balance(recipient_address)
         home_view.add_contact(recipient_key)
-        home_view.back_button.click(times_to_click=3)
+        home_view.back_button.click(times_to_click=2)
         wallet_view = home_view.wallet_button.click()
         send_transaction = wallet_view.send_button.click()
         send_transaction.amount_edit_box.click()
@@ -58,10 +58,9 @@ class TestWallet(SingleDeviceTestCase):
         send_transaction.send_as_keyevent(amount)
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.deny_button.click()
-        send_transaction.chose_from_contacts_button.click()
-        user_contact = send_transaction.element_by_text(transaction_users_wallet[recipient]['username'], 'button')
-        user_contact.click()
+        send_transaction.enter_contact_code_button.click()
+        send_transaction.enter_recipient_address_input.set_value(recipient_address)
+        send_transaction.done_button.click()
         if test == 'sign_later':
             send_transaction.sign_later_button.click()
             send_transaction.yes_button.click()

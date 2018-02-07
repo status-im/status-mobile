@@ -32,7 +32,7 @@ class TestTransactions(SingleDeviceTestCase):
 
         home_view.add_contact(recipient_key)
         if test == 'group_chat':
-            home_view.back_button.click(times_to_click=3)
+            home_view.back_button.click(times_to_click=2)
             home_view.create_group_chat([transaction_users[recipient]['username']],
                                         'trg_%s' % get_current_time())
             chat_view = home_view.get_chat_view()
@@ -75,7 +75,10 @@ class TestTransactions(SingleDeviceTestCase):
         address = transaction_users['B_USER']['address']
         initial_balance = api_requests.get_balance(address)
         start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.open_d_app_button.click()
         auction_house = start_new_chat_view.auction_house_button.click()
+        start_new_chat_view.open_button.click()
+        auction_house.wait_for_d_aap_to_load()
         auction_house.toggle_navigation_button.click()
         auction_house.new_auction_button.click()
         auction_house.name_to_reserve_input.click()

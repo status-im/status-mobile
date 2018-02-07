@@ -57,13 +57,19 @@ class ChooseRecipientButton(BaseButton):
 
     def __init__(self, driver):
         super(ChooseRecipientButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Choose recipient...']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Specify recipient...']")
 
 
-class ChooseFromContactsButton(BaseButton):
+class EnterContactCodeButton(BaseButton):
     def __init__(self, driver):
-        super(ChooseFromContactsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Choose From Contacts']")
+        super(EnterContactCodeButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Enter contact code']")
+
+
+class EnterRecipientAddressInput(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterRecipientAddressInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
 
 
 class SendTransactionView(BaseView):
@@ -71,7 +77,8 @@ class SendTransactionView(BaseView):
         super(SendTransactionView, self).__init__(driver)
 
         self.chose_recipient_button = ChooseRecipientButton(self.driver)
-        self.chose_from_contacts_button = ChooseFromContactsButton(self.driver)
+        self.enter_contact_code_button = EnterContactCodeButton(self.driver)
+        self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
 
         self.amount_edit_box = AmountEditBox(self.driver)
@@ -86,6 +93,7 @@ class SendTransactionView(BaseView):
         for _ in range(4):
             try:
                 self.sign_transaction_button.click()
-                self.password_input.wait_for_element(5)
+                self.enter_password_input.wait_for_element(5)
+                return
             except (NoSuchElementException, TimeoutException):
                 pass

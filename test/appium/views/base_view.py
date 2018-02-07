@@ -17,11 +17,8 @@ class BackButton(BaseButton):
 
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):
-            try:
-                self.find_element().click()
-                info('Tap on %s' % self.name)
-            except (NoSuchElementException, TimeoutException):
-                pass
+            self.find_element().click()
+            info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -117,7 +114,7 @@ class DoneButton(BaseButton):
     def __init__(self, driver):
         super(DoneButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='Done']")
+            "//android.widget.TextView[@text='DONE']")
 
 
 class AppsButton(BaseButton):

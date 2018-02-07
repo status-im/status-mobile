@@ -25,7 +25,7 @@ class PublicKeyEditBox(BaseEditBox):
     def __init__(self, driver):
         super(PublicKeyEditBox, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector("//android.widget.EditText[@NAF='true']")
+            self.Locator.xpath_selector("//*[@text='Enter contact code']")
 
 
 class ConfirmPublicKeyButton(BaseButton):

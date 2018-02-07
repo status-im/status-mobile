@@ -1,4 +1,5 @@
 from views.base_view import *
+import pytest
 
 
 class ProgressBarIcon(BaseElement):
@@ -16,7 +17,7 @@ class BaseWebView(BaseView):
 
         self.progress_bar_icon = ProgressBarIcon(self.driver)
 
-    def wait_for_page_loaded(self, wait_time=20):
+    def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0
         while self.progress_bar_icon.is_element_present(5):
             time.sleep(1)

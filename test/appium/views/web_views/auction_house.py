@@ -34,7 +34,6 @@ class AuctionHouseWebView(BaseWebView):
     def __init__(self, driver):
         super(AuctionHouseWebView, self).__init__(driver)
         self.driver = driver
-        self.wait_for_page_loaded()
 
         self.toggle_navigation_button = ToggleNavigationButton(self.driver)
         self.new_auction_button = ToggleNavigationButton.NewAuctionButton(self.driver)

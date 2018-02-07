@@ -123,6 +123,7 @@ class SingleDeviceTestCase(AbstractTestCase):
 class LocalMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
+        self.update_test_info_dict()
         self.drivers = dict()
 
     def create_drivers(self, quantity):
@@ -130,6 +131,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
         for driver in range(quantity):
             self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
+            test_data.test_info[test_data.test_name]['jobs'].append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:

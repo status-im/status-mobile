@@ -1,9 +1,12 @@
-node {sauce('b9aded57-5cc1-4f6b-b5ea-42d989987852') {
-        checkout([$class: 'GitSCM', branches: [[name: '*/develop']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/status-im/status-react.git']]])
-            try {sh 'cd test/appium/tests && /usr/local/bin/python3 -m pytest -m all --build ${JOB_NAME}__${BUILD_NUMBER} -v --dist=loadscope -n4'
-            }
+node ('linux1'){sauce('12e007ad-48cf-4c20-92f3-b923bb5641bd'){
+ checkout([$class: 'GitSCM', branches: [[name: 'tests/align-with-start-chat-redesign-#3195']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/status-im/status-react.git']]])
+            currentBuild.displayName = "PR-$pr_id"
+            try {withCredentials([string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GIT_HUB_TOKEN'), string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'), string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME')]){
+            sh 'cd test/appium/tests && python3 -m pytest -m all --pr_number=$pr_id --build=PR-$pr_id -n12 $apk'
+              }
+          }
             finally {
                 saucePublisher()
                 junit testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']], testResults: 'test/appium/tests/*.xml' }
-            }
+        }
 }

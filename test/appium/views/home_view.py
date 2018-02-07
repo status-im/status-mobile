@@ -9,7 +9,7 @@ class PlusButton(BaseButton):
     def __init__(self, driver):
         super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='+']")
+            "//android.view.ViewGroup/android.widget.TextView[@text='+']")
 
     def navigate(self):
         from views.start_new_chat_view import StarNewChatView
@@ -57,7 +57,6 @@ class HomeView(BaseView):
         start_new_chat.add_new_contact.click()
         start_new_chat.public_key_edit_box.send_keys(public_key)
         start_new_chat.confirm()
-        start_new_chat.confirm_public_key_button.click()
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         start_new_chat = self.plus_button.click()
