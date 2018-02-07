@@ -65,7 +65,7 @@
      (f/remove-filter!
       web3
       {:sig    identity
-       :topics (f/get-contact-request-topics)
+       :topics (f/get-contact-request-topic)
        :key    key-id
        :type   :sym}))))
 
