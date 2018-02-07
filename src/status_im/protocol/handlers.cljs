@@ -229,9 +229,9 @@
    ;; Run immediately on first run, add delay before retry
    (let [delay (cond
                  (zero? retries) 0
-                 (< retries 3) 300
-                 (< retries 10) 1000
-                 :else 5000)]
+                 (< retries 3)   300
+                 (< retries 10)  1000
+                 :else           5000)]
      (if (> retries 100)
        (log/error "Number of retries for fetching peers exceed" wnode)
        (js/setTimeout
