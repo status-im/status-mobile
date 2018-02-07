@@ -630,7 +630,7 @@
 (handlers/register-handler-fx
   :protocol/receive-status-message
   [re-frame/trim-v]
-  (fn [{:keys [db] :as cofx} [chat-id message-type status-message]]
+  (fn [{:keys [db] :as cofx} [signature chat-id message-type status-message]]
     ;; TODO implement logic
     ))
 
