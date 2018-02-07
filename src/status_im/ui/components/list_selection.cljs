@@ -29,8 +29,8 @@
 
 (defn browse [link]
   (show {:title       (i18n/label :t/browsing-title)
-         :options     [{:text   (i18n/label :t/browsing-open-in-browser)
-                        :action (re-frame/dispatch [:open-browser {:url link}])}
-                       {:text   (i18n/label :t/browsing-open-in-web-browser)
-                        :action (.openURL react/linking link)}]
+         :options     [{:label  (i18n/label :t/browsing-open-in-browser)
+                        :action #(re-frame/dispatch [:open-browser {:url link}])}
+                       {:label  (i18n/label :t/browsing-open-in-web-browser)
+                        :action #(.openURL react/linking link)}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
