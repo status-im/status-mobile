@@ -227,8 +227,12 @@
  ::fetch-peers
  (fn [{:keys [wnode web3 retries]}]
    ;; Run immediately on first run, add delay before retry
-   (let [delay (if (zero? retries) 0 300)]
-     (if (> retries 3)
+   (let [delay (cond
+                 (zero? retries) 0
+                 (< retries 3) 300
+                 (< retries 10) 1000
+                 :else 5000)]
+     (if (> retries 100)
        (log/error "Number of retries for fetching peers exceed" wnode)
        (js/setTimeout
         (fn [] (inbox/fetch-peers #(re-frame/dispatch [::fetch-peers-success web3 % retries])
