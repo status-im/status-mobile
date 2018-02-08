@@ -2,6 +2,8 @@
 
 (def translations
   {
+   :benchmark                             "Benchmark"
+
    ;;common
    :members-title                         "Members"
    :not-implemented                       "!not implemented"

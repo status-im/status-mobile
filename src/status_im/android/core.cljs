@@ -14,7 +14,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
             [status-im.core :as core]
-            [status-im.utils.snoopy :as snoopy]))
+            [status-im.utils.snoopy :as snoopy]
+            [taoensso.timbre :as log]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -80,7 +81,12 @@
        :reagent-render views/main})))
 
 (defn init []
+  (log/debug "[INIT] android.core/init")
   (status/set-soft-input-mode status/adjust-resize)
+  (log/debug "[INIT] status/set-soft-input-mode")
   (init-back-button-handler!)
+  (log/debug "[INIT] init-back-button-handler!")
   (core/init app-root)
-  (snoopy/subscribe!))
+  (log/debug "[INIT] core/init")
+  (snoopy/subscribe!)
+  (log/debug "[INIT] snoopy/subscribe!"))

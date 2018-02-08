@@ -157,7 +157,8 @@
                   :new/open-dapp
                   :navigation/screen-params]
                  :opt-un
-                 [::current-public-key
+                 [::benchmark
+                  ::current-public-key
                   ::modal
                   ::was-modal?
                   ::rpc-url
