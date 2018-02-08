@@ -8,6 +8,7 @@
 (def max-input-height 66)
 (def input-spacing-top 16)
 
+(def console-chat-id "console")
 (def crazy-math-message-id "crazy-math-message")
 (def move-to-internal-failure-message-id "move-to-internal-failure-message")
 (def passphrase-message-id "passphraze-message")
