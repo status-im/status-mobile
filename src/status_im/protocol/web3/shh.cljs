@@ -70,12 +70,13 @@
                     (update :payload #(-> %
                                           prn-str
                                           web3.utils/from-utf8)))]
-    (.. web3
-        -shh
-        (post (clj->js message) (fn [err resp]
-                                  (if-not err
-                                    (on-success resp)
-                                    (on-error err)))))))
+    #_(.. web3
+          -shh
+          (post (clj->js message) (fn [err resp]
+                                    (if-not err
+                                      (on-success resp)
+                                      (on-error err)))))
+    (re-frame/dispatch [:protocol/receive-whisper-message nil (clj->js message)])))
 
 (re-frame/reg-fx
   :shh/post
