@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.profile.styles
   (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform])
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
 (def profile
@@ -18,26 +17,6 @@
 
 (def profile-info-item-button
   {:padding 16})
-
-(def status-prompt
-  {:padding-left  16
-   :padding-right 16
-   :padding-top   6})
-
-(defstyle status-prompt-text
-  {:color   colors/gray
-   :ios     {:font-size      14
-             :line-height    25
-             :letter-spacing -0.2}
-   :android {:line-height 18
-             :font-size   12}})
-
-(def profile-status-container
-  {:background-color colors/gray
-   :margin-top       16
-   :border-radius    8
-   :padding          16
-   :max-height       114})
 
 (def profile-badge
   {:flex-direction  :column
@@ -110,6 +89,12 @@
    :font-size     14
    :ios           {:letter-spacing -0.2}})
 
+(defstyle profile-info-title
+  {:color         colors/gray
+   :margin-left   16
+   :font-size     14
+   :ios           {:letter-spacing -0.2}})
+
 (defstyle profile-setting-text
   {:ios     {:font-size      17
              :letter-spacing -0.2}
@@ -134,14 +119,6 @@
    :background-color   colors/white
    :height             52})
 
-(defstyle offline-messaging-settings
-  {:padding-horizontal 16
-   :flex-direction     :row
-   :align-items        :center
-   :background-color   colors/white
-   :android            {:height 72}
-   :ios                {:height 64}})
-
 (defstyle settings-item-text
   {:flex      1
    :font-size 15
@@ -157,11 +134,6 @@
   (merge settings-item-text
          {:color        colors/red}))
 
-(def edit-line-color
-  (if platform/ios?
-    (str styles/color-gray5 "80")
-    styles/color-gray5))
-
 (defstyle profile-name-input
   {:color   styles/text1-color
    :ios     {:font-size      17
@@ -173,45 +145,6 @@
              :padding-top    5
              :height         30
              :padding-bottom 0}})
-
-(defstyle profile-status-input
-  {:line-height  24                                         ;;TODO doesnt' work for multiline because a bug in the RN
-   :color        colors/black
-   :padding-left 0
-   :ios          {:font-size      17
-                  :padding-bottom 0
-                  :padding-top    0
-                  :height         60
-                  :letter-spacing -0.2}
-   :android      {:font-size           16
-                  :padding-top         5
-                  :height              74
-                  :text-align-vertical :top
-                  :padding-bottom      0}})
-
-(defstyle profile-status-text
-  {:color       colors/black
-   :line-height 24
-   :ios         {:font-size      17
-                 :letter-spacing -0.2}
-   :android     {:font-size 16}})
-
-(defstyle edit-profile-status
-  {:background-color   styles/color-light-gray
-   :border-radius      8
-   :height             90
-   :padding-horizontal 16
-   :padding-bottom     16
-   :margin-left        16
-   :margin-right       16
-   :ios                {:padding-top 10
-                        :margin-top  10}
-   :android            {:padding-top 13
-                        :margin-top  13}})
-
-(def add-a-status
-  (merge profile-status-text
-         {:color colors/gray}))
 
 (def network-info {:background-color :white})
 
