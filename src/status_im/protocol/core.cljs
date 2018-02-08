@@ -1,5 +1,6 @@
 (ns status-im.protocol.core
-  (:require status-im.protocol.message
+  (:require [re-frame.core :as re-frame]
+            [status-im.protocol.message :as message]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.web3.filtering :as f]
             [status-im.protocol.web3.delivery :as d]
@@ -13,9 +14,11 @@
             [status-im.protocol.listeners :as l]
             [status-im.protocol.encryption :as e]
             [status-im.protocol.discoveries :as discoveries]
+            [status-im.protocol.message :as message]
             [cljs.spec.alpha :as s]
             [status-im.utils.config :as config]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [status-im.protocol.web3.shh]))
 
 ;; user
 (def send-message! chat/send!)
@@ -87,6 +90,13 @@
   (let [listener-options {:web3     web3
                           :identity identity
                           :callback callback}]
+    ;; listen to ping
+    (f/add-filter!
+     web3
+     {:key identity
+      :topics [message/ping-topic]}
+     (fn [js-error js-message]
+       (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message])))
     ;; start listening to groups
     (doseq [group groups]
       (let [options (merge listener-options group)]
@@ -95,17 +105,17 @@
     (if config/offline-inbox-enabled?
       (do (log/info "offline inbox: flag enabled")
           (f/add-filter!
-            web3
-            {:key      identity
-             :allowP2P true
-             :topics  (f/get-topics identity)}
-            (l/message-listener listener-options))
+           web3
+           {:key      identity
+            :allowP2P true
+            :topics  (f/get-topics identity)}
+           (l/message-listener listener-options))
           (inbox/initialize! web3))
       (f/add-filter!
-        web3
-        {:key    identity
-         :topics (f/get-topics identity)}
-        (l/message-listener listener-options)))
+       web3
+       {:key    identity
+        :topics (f/get-topics identity)}
+       (l/message-listener listener-options)))
 
     ;; start listening to profiles
     (doseq [{:keys [identity keypair]} contacts]
@@ -114,13 +124,13 @@
                     :keypair  keypair
                     :callback callback}))
     (d/set-pending-mesage-callback! callback)
-    (let [online-message #(discoveries/send-online!
-                            {:web3    web3
-                             :message {:from       identity
-                                       :message-id (random/id)
-                                       :keypair    profile-keypair}})]
-      (d/run-delivery-loop!
-        web3
-        (assoc options :online-message online-message)))
+    #_(let [online-message #(discoveries/send-online!
+                             {:web3    web3
+                              :message {:from       identity
+                                        :message-id (random/id)
+                                        :keypair    profile-keypair}})]
+        (d/run-delivery-loop!
+         web3
+         (assoc options :online-message online-message)))
     (doseq [pending-message pending-messages]
       (d/add-prepared-pending-message! web3 pending-message))))
