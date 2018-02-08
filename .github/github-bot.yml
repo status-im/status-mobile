@@ -1,1 +1,14 @@
 _extends: probot-settings
+
+project-board:
+  name: 'Pipeline for QA'
+  contributor-column-name: 'CONTRIBUTOR'
+  review-column-name: 'REVIEW'
+  test-column-name: 'TO TEST'
+
+automated-tests:
+  repo-full-name: 'status-im/status-react'
+  job-full-name: 'end-to-end-tests/status-app-end-to-end-tests'
+
+github-team:
+  slug: 'clojure'
