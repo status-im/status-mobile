@@ -97,9 +97,8 @@
 (defview chat []
   (letsubs [{:keys [group-chat input-text]} [:get-current-chat]
             show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
-            show-emoji?                     [:get-current-chat-ui-prop :show-emoji?]
+            layout-height                   [:get :layout-height]
             current-view                    [:get :view-id]]
-    {:component-will-unmount #(re-frame/dispatch [:set-chat-ui-props {:show-emoji? false}])}
     [react/view {:style style/chat-view}
      [chat-toolbar]
      (when (= :chat current-view)

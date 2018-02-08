@@ -1,11 +1,10 @@
 (ns status-im.chat.styles.input.result-box
-  (:require [status-im.ui.components.styles :as common]))
-
-(def color-root-border "rgba(192, 198, 202, 0.5)")
+  (:require [status-im.ui.components.styles :as common]
+            [status-im.ui.components.colors :as colors]))
 
 (defn root [height bottom]
   {:background-color common/color-white
-   :border-top-color color-root-border
+   :border-top-color colors/light-gray
    :border-top-width 1
    :flex-direction   :column
    :height           height

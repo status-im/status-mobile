@@ -1,14 +1,15 @@
 (ns status-im.chat.subs
-  (:require [re-frame.core :refer [reg-sub subscribe]]
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [reg-sub subscribe]]
             [status-im.constants :as constants]
+            [status-im.chat.constants :as chat-constants]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.commands :as commands-model]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.commands.utils :as commands-utils]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]
-            [clojure.string :as string]))
+            [status-im.i18n :as i18n]))
 
 (reg-sub :get-chats :chats)
 
@@ -169,7 +170,9 @@
 (defn- available-commands-responses [[commands-responses {:keys [input-text]}]]
   (->> commands-responses
        map->sorted-seq
-       (filter #(string/includes? (commands-model/command-name %) (or input-text "")))))
+       (filter (fn [item]
+                 (when (input-model/starts-as-command? input-text)
+                   (string/includes? (commands-model/command-name item) input-text))))))
 
 (reg-sub
   :get-available-commands
@@ -197,6 +200,24 @@
   :<- [:get-responses-for-chat]
   (fn [[chat commands responses]]
     (input-model/selected-chat-command chat commands responses)))
+
+(reg-sub
+  :chat-input-placeholder
+  :<- [:chat :input-text]
+  :<- [:selected-chat-command]
+  (fn [[input-text command]]
+    (when (and (string/ends-with? (or input-text "") chat-constants/spacing-char)
+               (not (get-in command [:command :sequential-params])))
+      (let [input     (string/trim (or input-text ""))
+            real-args (remove string/blank? (:args command))]
+        (cond
+          (and command (empty? real-args))
+          (get-in command [:command :params 0 :placeholder])
+
+          (and command
+               (= (count real-args) 1)
+               (input-model/text-ends-with-space? input))
+          (get-in command [:command :params 1 :placeholder]))))))
 
 (reg-sub
   :current-chat-argument-position
@@ -242,15 +263,21 @@
   input-model/command-completion)
 
 (reg-sub
-  :show-suggestions?
+  :show-suggestions-view?
   :<- [:get-current-chat-ui-prop :show-suggestions?]
   :<- [:get-current-chat]
   :<- [:selected-chat-command]
   :<- [:get-available-commands-responses]
   (fn [[show-suggestions? {:keys [input-text]} selected-command commands-responses]]
     (and (or show-suggestions? (input-model/starts-as-command? (string/trim (or input-text ""))))
-         (not (:command selected-command))
          (seq commands-responses))))
+
+(reg-sub
+  :show-suggestions?
+  :<- [:show-suggestions-view?]
+  :<- [:selected-chat-command]
+  (fn [[show-suggestions-box? selected-command]]
+    (and show-suggestions-box? (not (:command selected-command)))))
 
 (reg-sub
   :is-request-answered?

@@ -6,7 +6,6 @@
 (def config                 (js/require "react-native-config"))
 (def dialogs                (js/require "react-native-dialogs"))
 (def dismiss-keyboard       (js/require "dismissKeyboard"))
-(def emoji-picker           (js/require "react-native-emoji-picker"))
 (def fs                     (js/require "react-native-fs"))
 (def http-bridge            (js/require "react-native-http-bridge"))
 ;; i18n is now exported in default object of the module

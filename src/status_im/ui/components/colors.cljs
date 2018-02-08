@@ -11,5 +11,5 @@
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
 (def blue "#4360df") ;; Used as main wallet color
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
-(def light-gray "#eef2f5")  ;; Used as a background or shadow
+(def light-gray "#e8ebec")  ;; Used as a background or shadow
 (def text-light-gray "#212121") ;; Used for labels (home items)

@@ -305,8 +305,6 @@
      (fn [{:keys [outgoing group-chat content-type content] :as message}]
        [message-container message
         [react/touchable-highlight {:on-press      #(when platform/ios?
-                                                      (re-frame/dispatch [:set-chat-ui-props
-                                                                          {:show-emoji? false}])
                                                       (react/dismiss-keyboard!))
                                     :on-long-press #(when (= content-type constants/text-content-type)
                                                       (list-selection/share content (i18n/label :t/message)))}

@@ -186,7 +186,6 @@
                 (bots-events/clear-bot-db owner-id)
                 clear-seq-arguments
                 (model/set-chat-ui-props {:show-suggestions?   false
-                                          :show-emoji?         false
                                           :result-box          nil
                                           :validation-messages nil
                                           :prev-command        name})

@@ -206,7 +206,7 @@
     :transactions-filter-type :next :recent
     :open-on-etherscan :share :status :from
     :wrong-password :search-chats :transactions-sign-later :in-contacts
-    :transactions-sign :sharing-share :type-a-message :type-a-command
+    :transactions-sign :sharing-share :type-a-message
     :usd-currency :existing-networks :node-unavailable :url :shake-your-phone
     :add-network :unknown-status-go-error :contacts-group-new-chat :and-you
     :wallets :clear-history :wallet-choose-from-contacts
