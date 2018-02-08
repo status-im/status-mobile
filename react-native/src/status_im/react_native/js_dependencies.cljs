@@ -18,7 +18,6 @@
 (def linear-gradient        (js/require "react-native-linear-gradient"))
 (def nfc                    (js/require "nfc-react-native"))
 (def orientation            (js/require "react-native-orientation"))
-(def popup-menu             (js/require "react-native-popup-menu"))
 (def qr-code                (js/require "react-native-qrcode"))
 (def random-bytes           (js/require "react-native-randombytes"))
 (def react-native           (js/require "react-native"))

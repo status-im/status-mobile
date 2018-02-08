@@ -8,7 +8,6 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.common.styles :as common.styles]
-            [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
@@ -148,11 +147,9 @@
                  :accessibility-label accessibility-label}
      value]]
    (when options
-     [context-menu/context-menu
-      [vector-icons/icon :icons/options]
-      options
-      nil
-      styles/profile-info-item-button])])
+     [react/touchable-highlight {:on-press #(list-selection/show {:options options})}
+      [react/view styles/modal-menu
+       [vector-icons/icon :icons/options {:container-style styles/profile-info-item-button}]]])])
 
 (defn- toolbar [label value]
   [toolbar/toolbar {}

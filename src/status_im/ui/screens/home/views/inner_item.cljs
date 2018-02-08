@@ -5,7 +5,6 @@
             [clojure.string :as str]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.styles :as component.styles]
             [status-im.utils.core :as utils]

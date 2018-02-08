@@ -51,9 +51,6 @@
 (def modal-menu
   {:align-items :center})
 
-(def context-menu-custom-styles
-  {:optionsContainer {:margin-top 78}})
-
 (def edit-name-title
   {:color   colors/gray
    :ios     {:font-size      13

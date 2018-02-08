@@ -5,7 +5,6 @@
             [status-im.ui.components.react :refer [view modal] :as react]
             [status-im.ui.components.styles :as common-styles]
             [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
-            [status-im.ui.components.context-menu :refer [menu-context]]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
             [status-im.ui.screens.accounts.recover.views :refer [recover recover-modal]]
@@ -178,30 +177,29 @@
                           :contact-code contact-code
                           :profile-qr-viewer profile/qr-viewer
                           (throw (str "Unknown view: " current-view)))]
-          [(if android? menu-context view) common-styles/flex
-           [view common-styles/flex
-            (if (and android?
-                     signed-up?
-                     (#{:home :wallet :my-profile :chat :wallet-send-transaction
-                        :choose-recipient :wallet-transaction-sent :transactions-history
-                        :unsigned-transactions :wallet-request-transaction :edit-my-profile
-                        :profile-photo-capture :wallet-request-assets}
-                      current-view))
-              [root-view]
-              [component])
-            (when modal-view
-              [view common-styles/modal
-               [modal {:animation-type   :slide
-                       :transparent      true
-                       :on-request-close #(dispatch [:navigate-back])}
-                (let [component (case modal-view
-                                  :qr-scanner qr-scanner
-                                  :recover-modal recover-modal
-                                  :contact-list-modal contact-list-modal
-                                  :wallet-transactions-filter wallet-transactions/filter-history
-                                  :wallet-settings-assets wallet-settings/manage-assets
-                                  :wallet-send-transaction-modal send-transaction-modal
-                                  :wallet-transaction-sent-modal transaction-sent-modal
-                                  :wallet-transaction-fee wallet.send/transaction-fee
-                                  (throw (str "Unknown modal view: " modal-view)))]
-                  [component])]])]])))))
+          [view common-styles/flex
+           (if (and android?
+                    signed-up?
+                    (#{:home :wallet :my-profile :chat :wallet-send-transaction
+                       :choose-recipient :wallet-transaction-sent :transactions-history
+                       :unsigned-transactions :wallet-request-transaction :edit-my-profile
+                       :profile-photo-capture :wallet-request-assets}
+                     current-view))
+             [root-view]
+             [component])
+           (when modal-view
+             [view common-styles/modal
+              [modal {:animation-type   :slide
+                      :transparent      true
+                      :on-request-close #(dispatch [:navigate-back])}
+               (let [component (case modal-view
+                                 :qr-scanner qr-scanner
+                                 :recover-modal recover-modal
+                                 :contact-list-modal contact-list-modal
+                                 :wallet-transactions-filter wallet-transactions/filter-history
+                                 :wallet-settings-assets wallet-settings/manage-assets
+                                 :wallet-send-transaction-modal send-transaction-modal
+                                 :wallet-transaction-sent-modal transaction-sent-modal
+                                 :wallet-transaction-fee wallet.send/transaction-fee
+                                 (throw (str "Unknown modal view: " modal-view)))]
+                 [component])]])])))))

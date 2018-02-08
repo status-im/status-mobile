@@ -3,8 +3,9 @@
   (:require [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.components.common.styles :as styles]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.platform :as platform]))
 
@@ -39,7 +40,7 @@
 (defn list-header []
  [react/view styles/list-header-footer-spacing])
 
-(defn form-title [label & [{:keys [count-value extended? options]}]]
+(defn form-title [label & [{:keys [count-value]}]]
   [react/view
    [react/view styles/form-title-container
     [react/view styles/form-title-inner-container
@@ -49,17 +50,7 @@
      (when-not (nil? count-value)
        [react/text {:style styles/form-title-count
                     :font  :medium}
-        count-value])]
-    (when extended?
-      [react/view
-       [react/view {:flex 1}]])
-    (when extended?
-      [react/view styles/form-title-extend-container
-       [context-menu/context-menu
-        [vector-icons/icon :icons/options]
-        options
-        nil
-        styles/form-title-extend-button]])]
+        count-value])]]
    [top-shadow]])
 
 (defview network-info [{:keys [text-color]}]
