@@ -642,6 +642,7 @@
       {:dispatch [:protocol/receive-status-message sig recipientPublicKey message-type status-message]})))
 
 (def timer (atom nil))
+(def timer2 (atom nil))
 
 (defn send-ping
   ([chat-id]
@@ -655,6 +656,21 @@
        (println "timer for 100 pings:" timer)
        (log/info "Tme for 100 pings" timer))
      (re-frame/dispatch [:protocol/send-status-message chat-id :system/ping (inc counter)]))))
+
+(handlers/register-handler-fx
+  :event-ping
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [counter]]
+    (if (> counter 10000)
+      (println "timer: " (- (datetime/now-ms) @timer2))
+      {:db (assoc db :inbox/topic (str counter))
+       :dispatch [:event-pong (inc counter)]})))
+
+(handlers/register-handler-fx
+  :event-pong
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [counter]]
+    {:dispatch [:event-ping counter]}))
 
 (handlers/register-handler-fx
   :protocol/send-status-message
