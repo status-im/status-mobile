@@ -160,6 +160,7 @@ android {
     }
     buildTypes {
         debug {
+            applicationIdSuffix ".debug"
             versionNameSuffix "-SNAPSHOT"
         }
         release {
