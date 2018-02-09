@@ -114,3 +114,6 @@
 (def sign-buttons
   {:background-color colors/blue
    :padding-vertical 8})
+
+(def fee-buttons
+  {:background-color colors/blue})

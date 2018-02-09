@@ -60,6 +60,10 @@
       (merge send-transaction
              unsigned-transaction))))
 
+(re-frame/reg-sub :wallet/edit
+  :<- [:wallet]
+  :edit)
+
 (defn sign-enabled? [amount-error to amount]
   (and
    (nil? amount-error)

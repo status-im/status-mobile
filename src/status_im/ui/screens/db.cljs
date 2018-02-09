@@ -18,10 +18,14 @@
             status-im.ui.screens.browser.db
             status-im.ui.screens.add-new.db))
 
-(def transaction-send-default
-  {:symbol    :ETH
-   :gas       ethereum/default-transaction-gas
+(defn gas-default [symbol]
+  {:gas       (ethereum/estimate-gas symbol)
    :gas-price ethereum/default-gas-price})
+
+(def transaction-send-default
+  (let [symbol :ETH]
+    (merge (gas-default symbol)
+           {:symbol symbol})))
 
 ;; initial state of app-db
 (def app-db {:current-public-key         nil

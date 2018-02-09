@@ -374,6 +374,7 @@
    :validation-amount-invalid-number      "Amount is not a valid number"
    :validation-amount-is-too-precise      "Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)"
    :scan-qr-code                          "Scan a QR code with a wallet address"
+   :reset-default                         "Reset to default"
 
 
 

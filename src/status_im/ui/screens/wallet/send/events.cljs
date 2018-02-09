@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
+            [status-im.ui.screens.db :as db]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
@@ -266,11 +267,30 @@
     {:db (assoc-in db [:wallet :send-transaction :signing?] signing?)}))
 
 (handlers/register-handler-fx
-  :wallet.send/set-gas
+  :wallet.send/edit-gas
   (fn [{:keys [db]} [_ gas]]
-    {:db (assoc-in db [:wallet :send-transaction :gas] (money/bignumber gas))}))
+    {:db (assoc-in db [:wallet :edit :gas] (money/bignumber gas))}))
 
 (handlers/register-handler-fx
-  :wallet.send/set-gas-price
+  :wallet.send/edit-gas-price
   (fn [{:keys [db]} [_ gas-price]]
-    {:db (assoc-in db [:wallet :send-transaction :gas-price] (money/bignumber gas-price))}))
+    {:db (assoc-in db [:wallet :edit :gas-price] (money/bignumber gas-price))}))
+
+(handlers/register-handler-fx
+  :wallet.send/set-gas-details
+  (fn [{:keys [db]} [_ gas gas-price]]
+    {:db (-> db
+             (assoc-in [:wallet :send-transaction :gas] gas)
+             (assoc-in [:wallet :send-transaction :gas-price] gas-price))}))
+
+(handlers/register-handler-fx
+  :wallet.send/clear-gas
+  (fn [{:keys [db]}]
+    {:db (update db :wallet dissoc :edit)}))
+
+(handlers/register-handler-fx
+  :wallet.send/reset-gas-default
+  (fn [{:keys [db]}]
+    {:db (update-in db [:wallet :edit]
+                    merge
+                    (db/gas-default (get-in db [:wallet :send-transaction :symbol])))}))
