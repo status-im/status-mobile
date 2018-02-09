@@ -47,7 +47,7 @@ class TestMultipleDevices(MultipleDeviceTestCase):
         device_2_home.add_contact(device_1_public_key)
         device_2_chat = device_2_home.get_chat_view()
         device_1_user_name = device_2_chat.user_name_text.text
-        device_2_home.back_button.click(times_to_click=2)
+        device_2_home.get_back_to_home_view()
         chat_name = 'new_chat'
         message_1 = 'first SOMETHING'
         message_2 = 'second SOMETHING'
@@ -83,64 +83,3 @@ class TestMultipleDevices(MultipleDeviceTestCase):
         group_chat_d1.find_text_part("removed you from group chat")
         if group_chat_d1.element_by_text(message_3, 'text').is_element_present(20):
             pytest.fail('Message is shown for the user which has been removed from the GroupChat', False)
-
-    @pytest.mark.transaction
-    @pytest.mark.parametrize("test, recipient, sender", [('group_chat',
-                                                          transaction_users['A_USER'], transaction_users['B_USER']),
-                                                         ('one_to_one_chat',
-                                                          transaction_users['B_USER'], transaction_users['A_USER'])
-                                                         ],
-                             ids=['group_chat', 'one_to_one_chat'])
-    def test_send_funds_via_request(self, test, recipient, sender):
-        self.create_drivers(2)
-        device_1, device_2 = \
-            ConsoleView(self.drivers[0]),  ConsoleView(self.drivers[1])
-        device_1.recover_access(passphrase=recipient['passphrase'],
-                                password=recipient['password'],
-                                username=recipient['username'])
-        device_2.recover_access(passphrase=sender['passphrase'],
-                                password=sender['password'],
-                                username=sender['username'])
-        device_2_home = device_2.get_home_view()
-        device_1_home = device_1.get_home_view()
-        device_1_home.add_contact(sender['public_key'])
-        device_1_home.back_button.click(times_to_click=2)
-        if test == 'group_chat':
-            group_chat_name = 'gtr_%s' % get_current_time()
-            device_1_home.create_group_chat([sender['username']], group_chat_name)
-            device_2_home.element_by_text(group_chat_name, 'button').click()
-        else:
-            one_to_one_chat_device_1 = device_1_home.element_by_text_part(sender['username'][:25], 'button')
-            one_to_one_chat_device_1.scroll_to_element()
-            one_to_one_chat_device_1.click()
-        device_1_chat = device_1_home.get_chat_view()
-        device_2_chat = device_2_home.get_chat_view()
-        amount = device_1_chat.get_unique_amount()
-        if test == 'group_chat':
-            device_1_chat.request_command.click()
-            device_1_chat.first_recipient_button.click()
-            device_1_chat.send_as_keyevent(amount)
-        else:
-            one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
-            one_to_one_chat_device_2.click()
-            device_1_chat.request_command.click()
-            device_1_chat.send_as_keyevent(amount)
-        device_1_chat.send_message_button.click()
-        initial_balance_recipient = api_requests.get_balance(recipient['address'])
-        if test == 'group_chat':
-            device_1_chat.find_full_text('from  ' + sender['username'], 20)
-            device_2_chat.find_full_text('from  ' + sender['username'], 20)
-        device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button').click()
-        device_2_chat.send_message_button.click()
-        device_2_send_transaction = device_2_chat.get_send_transaction_view()
-        device_2_send_transaction.try_to_sing_transaction()
-        device_2_send_transaction.enter_password_input.send_keys(sender['password'])
-        device_2_send_transaction.sign_transaction_button.click()
-        device_2_send_transaction.got_it_button.click()
-        api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
-        device_2_chat.back_button.click()
-        device_2_wallet = device_2_home.wallet_button.click()
-        transactions_view = device_2_wallet.transactions_button.click()
-        transaction_element = transactions_view.transactions_table.find_transaction(amount=amount)
-        transaction_details_view = transaction_element.click()
-        transaction_hash = transaction_details_view.get_transaction_hash()

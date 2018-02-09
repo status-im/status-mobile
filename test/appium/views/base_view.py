@@ -81,6 +81,11 @@ class WalletButton(BaseButton):
         super(WalletButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Wallet']/..")
 
+    def click(self):
+        from views.wallet_view import TransactionsButton
+        self.click_until_presence_of_element(desired_element=TransactionsButton(self.driver), attempts=3)
+        return self.navigate()
+
     def navigate(self):
         from views.wallet_view import WalletView
         return WalletView(self.driver)
@@ -135,8 +140,7 @@ class BaseView(object):
         self.driver = driver
 
         self.home_button = HomeButton(self.driver)
-        self.button = WalletButton(self.driver)
-        self.wallet_button = self.button
+        self.wallet_button = WalletButton(self.driver)
         self.profile_button = ProfileButton(self.driver)
 
         self.yes_button = YesButton(self.driver)
@@ -194,7 +198,7 @@ class BaseView(object):
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element.wait_for_element(wait_time)
 
-    def element_by_text(self, text, element_type='base'):
+    def element_by_text(self, text, element_type='button'):
         info("Looking for an element by text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
