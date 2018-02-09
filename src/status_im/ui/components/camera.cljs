@@ -7,7 +7,9 @@
 (def default-camera (.-default js-dependecies/camera))
 
 (defn constants [t]
-  (-> (object/get js-dependecies/camera "constants" t)
+  (-> js-dependecies/camera
+      (object/get "constants")
+      (object/get t)
       (js->clj)
       (walk/keywordize-keys)))
 
