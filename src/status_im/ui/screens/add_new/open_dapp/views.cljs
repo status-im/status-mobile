@@ -14,7 +14,7 @@
 
 (defn render-row [row _ _]
   [contact-view/contact-view {:contact       row
-                              :on-press      #(re-frame/dispatch [:navigate-to :dapp-description row])
+                              :on-press      #(re-frame/dispatch [:navigate-to :dapp-description {:dapp row}])
                               :show-forward? true}])
 
 (views/defview open-dapp []

@@ -87,27 +87,31 @@
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
 (spec/def :navigation.screen-params/browser (allowed-keys :req [:browser/browser-id]))
-(spec/def :navigation.screen-params/contact (spec/nilable map?))
-(spec/def :navigation.screen-params/qr-source (spec/nilable keyword?))
-(spec/def :navigation.screen-params/qr-value (spec/nilable string?))
-(spec/def :navigation.screen-params/qr-viewer (allowed-keys :opt-un [:navigation.screen-params/contact
-                                                                     :navigation.screen-params/qr-source
-                                                                     :navigation.screen-params/qr-value]))
-(spec/def :navigation.screen-params/current-qr-context (spec/nilable any?))
-(spec/def :navigation.screen-params/qr-scanner (allowed-keys :opt-un [:navigation.screen-params/current-qr-context]))
-(spec/def :navigation.screen-params/show-search? (spec/nilable any?))
+(spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
+(spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
+(spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))
+(spec/def :navigation.screen-params/profile-qr-viewer (allowed-keys :opt-un [:navigation.screen-params.profile-qr-viewer/contact
+                                                                             :navigation.screen-params.profile-qr-viewer/source
+                                                                             :navigation.screen-params.profile-qr-viewer/value]))
+(spec/def :navigation.screen-params.qr-scanner/current-qr-context (spec/nilable any?))
+(spec/def :navigation.screen-params/qr-scanner (allowed-keys :opt-un [:navigation.screen-params.qr-scanner/current-qr-context]))
+(spec/def :navigation.screen-params.group-contacts/show-search? (spec/nilable any?))
 (spec/def :navigation.screen-params/group-contacts (allowed-keys :opt [:group/contact-group-id]
-                                                                 :opt-un [:navigation.screen-params/show-search?]))
-(spec/def :navigation.screen-params/group (spec/nilable any?))
-(spec/def :navigation.screen-params/group-type (spec/nilable any?))
-(spec/def :navigation.screen-params/edit-contact-group (allowed-keys :opt-un [:navigation.screen-params/group
-                                                                              :navigation.screen-params/group-type]))
+                                                                 :opt-un [:navigation.screen-params.group-contacts/show-search?]))
+(spec/def :navigation.screen-params.edit-contact-group/group (spec/nilable any?))
+(spec/def :navigation.screen-params.edit-contact-group/group-type (spec/nilable any?))
+(spec/def :navigation.screen-params/edit-contact-group (allowed-keys :opt-un [:navigation.screen-params.edit-contact-group/group
+                                                                              :navigation.screen-params.edit-contact-group/group-type]))
+(spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
+(spec/def :navigation.screen-params/dapp-description (allowed-keys :opt-un [:navigation.screen-params.dapp-description/dapp]))
+
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
-                                                                         :navigation.screen-params/qr-viewer
+                                                                         :navigation.screen-params/profile-qr-viewer
                                                                          :navigation.screen-params/qr-scanner
                                                                          :navigation.screen-params/group-contacts
-                                                                         :navigation.screen-params/edit-contact-group])))
+                                                                         :navigation.screen-params/edit-contact-group
+                                                                         :navigation.screen-params/dapp-description])))
 
 ;;;;NETWORK
 
