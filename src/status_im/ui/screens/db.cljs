@@ -3,7 +3,6 @@
   (:require [cljs.spec.alpha :as spec]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
-            [status-im.utils.ethereum.core :as ethereum]
             status-im.ui.screens.accounts.db
             status-im.ui.screens.contacts.db
             status-im.ui.screens.qr-scanner.db
@@ -17,15 +16,6 @@
             status-im.ui.screens.offline-messaging-settings.db
             status-im.ui.screens.browser.db
             status-im.ui.screens.add-new.db))
-
-(defn gas-default [symbol]
-  {:gas       (ethereum/estimate-gas symbol)
-   :gas-price ethereum/default-gas-price})
-
-(def transaction-send-default
-  (let [symbol :ETH]
-    (merge (gas-default symbol)
-           {:symbol symbol})))
 
 ;; initial state of app-db
 (def app-db {:current-public-key         nil
@@ -46,7 +36,6 @@
              :tags                       []
              :sync-state                 :done
              :wallet.transactions        constants/default-wallet-transactions
-             :wallet                     {:send-transaction transaction-send-default}
              :wallet-selected-asset      {}
              :prices                     {}
              :notifications              {}

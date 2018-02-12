@@ -83,7 +83,9 @@
   (.sendTransaction (.-eth web3) (clj->js params) cb))
 
 (def default-transaction-gas (money/bignumber 21000))
-(def default-gas-price (money/->wei :gwei 21))
+
+(defn gas-price [web3 cb]
+  (.getGasPrice (.-eth web3) cb))
 
 (defn estimate-gas [symbol]
   (if (tokens/ethereum? symbol)
