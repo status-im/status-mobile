@@ -58,8 +58,40 @@
                    (string/includes? content "command=phone"))
           (aset message "show?" false))))))
 
+(defn chat-by-id [chats chat-id]
+  (some-> chats
+          (.filtered (str "chat-id = \"" chat-id "\""))
+          (aget 0)))
+
+(defn contact-by-id [contacts contact-id]
+  (some-> contacts
+          (.filtered (str "whisper-identity = \"" contact-id "\""))
+          (aget 0)))
+
+(defn messages-by-chat-id [messages chat-id]
+  (some-> messages
+          (.filtered (str "chat-id = \"" chat-id "\""))))
+
+(defn remove-dapp! [realm dapp]
+  (let [contacts (.objects realm "contact")
+        chats    (.objects realm "chat")
+        messages (.objects realm "message")]
+    (when-let [contact (contact-by-id contacts dapp)]
+      (.delete realm contact)
+      (when-let [chat (chat-by-id chats dapp)]
+        (.delete realm chat)
+        (when-let [messages (messages-by-chat-id messages dapp)]
+          (.delete realm messages))))))
+
+(defn clean-dapps! [realm]
+  (let [dapps #{"bchat" "Dentacoin" "gnosis" "melonport" "oaken-water-meter"
+                "Ethcro" "Augur" "mkr-market"}]
+    (doseq [dapp dapps]
+      (remove-dapp! realm dapp))))
+
 (defn migration [old-realm new-realm]
   (log/debug "migrating v21 account database: " old-realm new-realm)
   (remove-contact! new-realm "browse")
   (remove-location-messages! old-realm new-realm)
-  (remove-phone-messages! old-realm new-realm))
+  (remove-phone-messages! old-realm new-realm)
+  (clean-dapps! new-realm))

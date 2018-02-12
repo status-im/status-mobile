@@ -60,21 +60,6 @@
         "groups": ["state-of-dapps"]
     },
 
-    "mkr-market":
-    {
-        "name":
-        {
-            "en": "Maker Market"
-        },
-        "photo-path": "contacts://mkr-market",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://mkr.market"
-        },
-        "groups": ["state-of-dapps"]
-    },
-
     "FirstBlood":
     {
         "name":
@@ -88,101 +73,6 @@
             "en": "https://app.firstblood.io"
         },
         "groups": ["state-of-dapps"]
-    },
-    
-   "gnosis":
-    {
-        "name":
-        {
-            "en": "Gnosis"
-        },
-        "photo-path": "contacts://gnosis",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://beta.gnosis.pm"
-        },
-        "groups": ["state-of-dapps"]
-    },
-
-    "melonport":
-    {
-        "name":
-        {
-            "en": "Melonport"
-        },
-        "photo-path": "contacts://melonport",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://portal.melonport.com/"
-        },
-        "groups": ["dapps"],
-        "description": "Melonport is a system of tools you can use to set up, manage and invest in digital assets and create management strategies using customisable, predefined ruleset."
-    },
-    
-    "oaken-water-meter":
-    {
-        "name":
-        {
-            "en": "Oaken Water Meter"
-        },
-        "photo-path": "contacts://oaken-water-meter",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://waterflowdapp.projectoaken.com"
-        },
-        "groups": ["dapps"],
-        "description": "Project Oaken is a secure, autonomous, machine to machine IOT platform built to provide the underlying infrastructure needed to power smart cities."
-    },
-
-    "bchat":
-    {
-        "name":
-        {
-            "en": "bchat"
-        },
-        "photo-path": "contacts://bchat",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
-        },
-        "groups": ["dapps"],
-        "description": "bchat (block chat) is a web forum built using a suite of smart contracts known as the Smart Ethereum Bulletin Board (sebb)."
-    },
-    
-    "Dentacoin":
-    {
-        "name":
-        {
-            "en": "Dentacoin"
-        },
-        "photo-path": "contacts://dentacoin",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://dentacoin.com/testnet/"
-        },
-        "groups": ["dapps"],
-        "description": "The blockchain solution for the global dental industry, aimed at improving dental care worldwide and making it affordable through crowd power."
-    },
-
-    "Augur":
-    {
-        "name":
-        {
-            "en": "Augur"
-        },
-        "photo-path": "contacts://augur",
-        "dapp?": true,
-        "dapp-url":
-        {
-          "en": "https://app.augur.net"
-        },
-        "groups": ["dapps"],
-        "description": "Augur combines the magic of prediction markets with the power of a decentralized network to create a stunningly accurate forecasting tool - and the chance for real money trading profits."
     },
 
     "Ethlance":
@@ -199,22 +89,6 @@
         },
         "groups": ["dapps"],
         "description": "The future of work is now. Hire people or work yourself in return for ETH."
-    },
-
-    "Ethcro":
-    {
-        "name":
-        {
-            "en": "Ethcro"
-        },
-        "photo-path": "contacts://ethcro",
-        "dapp?": true,
-        "dapp-url":
-        {
-          "en": "https://ethcrodapp.0trust.us"
-        },
-        "groups": ["dapps"],
-        "description": "Smart Contracts for everyone"
     }
 
 }
