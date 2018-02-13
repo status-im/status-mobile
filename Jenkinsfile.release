@@ -27,12 +27,13 @@ node ('macos1'){
   try {
 
     stage('Git & Dependencies') {
-      slackSend color: 'good', message: 'Release build started. ' + env.BUILD_URL
-      git([url: 'https://github.com/status-im/status-react.git', branch: 'develop'])
-      // Checkout master because used for iOS Plist version information
-      sh 'git fetch --tags'
+      slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
+
+      checkout scm
       sh 'git checkout -- .'
-      sh 'git checkout develop'
+      sh 'git checkout remotes/origin/' + BRANCH_NAME
+      sh 'git fetch --tags'
+
       sh 'rm -rf node_modules'
       sh 'cp .env.prod .env'
       sh 'lein deps'
