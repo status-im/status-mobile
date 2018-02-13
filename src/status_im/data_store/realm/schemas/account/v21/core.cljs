@@ -14,7 +14,7 @@
             [status-im.data-store.realm.schemas.account.v21.browser :as browser]
             [taoensso.timbre :as log]
             [cljs.reader :as reader]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (def schema [chat/schema
              chat-contact/schema
@@ -45,7 +45,7 @@
             content (aget message "content")
             type    (aget message "content-type")]
         (when (and (= type "command")
-                   (> (str/index-of content "command=location") -1))
+                   (string/includes? content "command=location"))
           (aset message "show?" false))))))
 
 (defn remove-phone-messages! [old-realm new-realm]
@@ -55,7 +55,7 @@
             content (aget message "content")
             type    (aget message "content-type")]
         (when (and (= type "command")
-                   (> (str/index-of content "command=phone") -1))
+                   (string/includes? content "command=phone"))
           (aset message "show?" false))))))
 
 (defn migration [old-realm new-realm]
