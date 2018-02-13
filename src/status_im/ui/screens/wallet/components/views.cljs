@@ -129,7 +129,7 @@
       (ethereum/normalized-address (:address contact))]]]])
 
 (views/defview recent-recipients []
-  (views/letsubs [contacts [:contacts-filtered :all-added-people-contacts]]
+  (views/letsubs [contacts [:all-added-people-contacts]]
     [components/simple-screen
      [components/toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
