@@ -2,9 +2,7 @@
   (:require [clojure.set :as set]
             [cljs.core.async :as async]
             [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.async :as async-utils]
             [status-im.chat.models :as model]
             [status-im.chat.console :as console-chat]
@@ -13,14 +11,12 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im.data-store.requests :as requests-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.pending-messages :as pending-messages-store]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.protocol.core :as protocol]
             [status-im.constants :as const]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.chat.events.input :as input-events]
             status-im.chat.events.commands
             status-im.chat.events.requests
             status-im.chat.events.animation
@@ -118,12 +114,6 @@
     (list-selection/browse link)))
 
 ;;;; Handlers
-
-(handlers/register-handler-db
-  :set-layout-height
-  [re-frame/trim-v]
-  (fn [db [height]]
-    (assoc db :layout-height height)))
 
 (handlers/register-handler-db
   :set-chat-ui-props

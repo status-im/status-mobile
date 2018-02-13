@@ -132,9 +132,9 @@
 ;;;; Handlers
 
 (register-handler-fx
-  :show-group-chat-settings
-  (fn [{{:keys [current-chat-id] :as db} :db} _]
-    {:db (assoc db :new-chat-name (get-in db [:chats current-chat-id :name])
+  :show-group-chat-profile
+  (fn [{db :db} [_ chat-id]]
+    {:db (assoc db :new-chat-name (get-in db [:chats chat-id :name])
                    :group/group-type :chat-group)
      :dispatch [:navigate-to :chat-group-settings]}))
 

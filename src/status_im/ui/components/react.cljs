@@ -198,7 +198,7 @@
                                     (> 100 timeout))
                               (reset! loading false)
                               (utils/set-timeout (fn []
-                                               (reset! loading false))
+                                                  (reset! loading false))
                                              timeout)))}
     (if (and (not enabled?) @loading)
       (or preview

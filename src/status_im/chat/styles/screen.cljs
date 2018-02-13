@@ -111,13 +111,6 @@
    :color      component.styles/text2-color
    :font-size  12})
 
-(def actions-overlay
-  {:position :absolute
-   :top      0
-   :bottom   0
-   :left     0
-   :right    0})
-
 (def typing-all
   {:marginBottom 20})
 
@@ -128,12 +121,6 @@
    :paddingRight 8
    :alignItems   :flex-start
    :alignSelf    :flex-start})
-
-(def typing-background
-  {:borderRadius    14
-   :padding         12
-   :height          38
-   :backgroundColor component.styles/selected-message-color})
 
 (def typing-text
   {:marginTop -2

@@ -86,6 +86,7 @@
 
    ;;profile
    :profile                               "Profile"
+   :view-profile                          "View profile"
    :edit-profile                          "Edit profile"
    :main-currency                         "Main currency"
    :message                               "Message"
@@ -203,6 +204,7 @@
    :clear-history                         "Clear history"
    :mute-notifications                    "Mute notifications"
    :leave-chat                            "Leave chat"
+   :leave-group-chat                      "Leave group chat"
    :chat-settings                         "Chat settings"
    :edit                                  "Edit"
    :add-members                           "Add members"

@@ -2,37 +2,22 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.chat.styles.screen :as style]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.platform :as platform]
-            [status-im.chat.views.toolbar-content :as toolbar-content]
-            [status-im.chat.views.message.message :as message]
-            [status-im.chat.views.message.datemark :as message-datemark]
-            [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :as actions]
             [status-im.chat.views.bottom-info :as bottom-info]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.react :as react]
+            [status-im.chat.views.message.datemark :as message-datemark]
+            [status-im.chat.views.message.message :as message]
+            [status-im.chat.views.input.input :as input]
+            [status-im.chat.views.toolbar-content :as toolbar-content]
+            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
             [status-im.ui.components.sync-state.offline :as offline]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.animation :as animation]))
-
-(defview chat-icon []
-  (letsubs [{:keys [chat-id group-chat name]} [:get-current-chat]]
-    [chat-icon-screen/chat-icon-view-action chat-id group-chat name true]))
-
-(defn- toolbar-action [show-actions?]
-  [react/touchable-highlight
-   {:on-press            #(re-frame/dispatch [:set-chat-ui-props {:show-actions? (not show-actions?)}])
-    :accessibility-label :chat-menu}
-   [react/view style/action
-    (if show-actions?
-      [vector-icons/icon :icons/dropdown-up]
-      [chat-icon])]])
+            [status-im.utils.platform :as platform]))
 
 (defview add-contact-bar []
   (letsubs [chat-id          [:get-current-chat-id]
@@ -44,20 +29,26 @@
         [react/text {:style style/add-contact-text}
          (i18n/label :t/add-to-contacts)]]])))
 
+(defn- on-options [chat-id chat-name group-chat?]
+  (list-selection/show {:title   chat-name
+                        :options (actions/actions group-chat? chat-id)}))
+
 (defview chat-toolbar []
-  (letsubs [show-actions? [:get-current-chat-ui-prop :show-actions?]
-            accounts      [:get-accounts]
-            creating?     [:get :accounts/creating-account?]]
+  (letsubs [accounts  [:get-accounts]
+            creating? [:get :accounts/creating-account?]
+            {:keys [group-chat name chat-id]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
      [toolbar/toolbar {}
-      (when-not (or show-actions? creating?)
+      (when-not creating?
         (if (empty? accounts)
           [toolbar/nav-clear-text {:handler #(re-frame/dispatch [:navigate-to-modal :recover-modal])}
            (i18n/label :t/recover)]
           toolbar/default-nav-back))
       [toolbar-content/toolbar-content-view]
-      [toolbar-action show-actions?]]
+      [toolbar/actions [{:icon      :icons/options
+                         :icon-opts {:color :black}
+                         :handler   #(on-options chat-id name group-chat)}]]]
      [add-contact-bar]]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
@@ -72,13 +63,12 @@
                                :group-chat group-chat
                                :current-public-key current-public-key)])
 
-
 (defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
   (letsubs [opacity       (animation/create-value 0)
             duration      (if platform/android? 100 200)
             timeout       (if platform/android? 50 0)]
-    {:component-did-mount (fn [component]
+    {:component-did-mount (fn [_]
                             (animation/start
                              (animation/anim-sequence
                               [(animation/anim-delay timeout)
@@ -106,24 +96,16 @@
 
 (defview chat []
   (letsubs [{:keys [group-chat input-text]} [:get-current-chat]
-            show-actions?                   [:get-current-chat-ui-prop :show-actions?]
             show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
             show-emoji?                     [:get-current-chat-ui-prop :show-emoji?]
-            layout-height                   [:get :layout-height]
             current-view                    [:get :view-id]]
     {:component-will-unmount #(re-frame/dispatch [:set-chat-ui-props {:show-emoji? false}])}
-    [react/view {:style style/chat-view
-                 :on-layout (fn [event]
-                              (let [height (.. event -nativeEvent -layout -height)]
-                                (when (not= height layout-height)
-                                  (re-frame/dispatch [:set-layout-height height]))))}
+    [react/view {:style style/chat-view}
      [chat-toolbar]
      (when (= :chat current-view)
        [messages-view-animation
         [messages-view group-chat]])
      [input/container {:text-empty? (string/blank? input-text)}]
-     (when show-actions?
-       [actions/actions-view])
      (when show-bottom-info?
        [bottom-info/bottom-info-view])
      [offline/offline-view {:top (get platform/platform-specific :status-bar-default-height)}]]))
