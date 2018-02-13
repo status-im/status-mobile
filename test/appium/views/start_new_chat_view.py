@@ -38,9 +38,15 @@ class OpenButton(BaseButton):
             "//android.widget.TextView[@text='Open']")
 
 
-class StarNewChatView(ContactsView):
+class EnterUrlEditbox(BaseEditBox):
     def __init__(self, driver):
-        super(StarNewChatView, self).__init__(driver)
+        super(EnterUrlEditbox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
+
+
+class StartNewChatView(ContactsView):
+    def __init__(self, driver):
+        super(StartNewChatView, self).__init__(driver)
 
         self.add_new_contact = AddNewContactButton(self.driver)
         self.new_group_chat_button = NewGroupChatButton(self.driver)
@@ -49,3 +55,4 @@ class StarNewChatView(ContactsView):
         self.open_button = OpenButton(self.driver)
 
         self.name_edit_box = NameEditBox(self.driver)
+        self.enter_url_editbox = EnterUrlEditbox(self.driver)

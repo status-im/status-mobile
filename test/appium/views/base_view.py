@@ -222,6 +222,10 @@ class BaseView(object):
         from views.send_transaction_view import SendTransactionView
         return SendTransactionView(self.driver)
 
+    def get_base_web_view(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
     def get_unique_amount(self):
         return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
 

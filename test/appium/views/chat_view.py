@@ -98,6 +98,18 @@ class MoreUsersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
+class UserProfileIconTopRight(BaseButton):
+    def __init__(self, driver):
+        super(UserProfileIconTopRight, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-icon')
+
+
+class UserProfileDetails(BaseButton):
+    def __init__(self, driver):
+        super(UserProfileDetails, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Profile']")
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -119,6 +131,10 @@ class ChatView(BaseView):
         self.remove_button = RemoveButton(self.driver)
 
         self.first_recipient_button = FirstRecipient(self.driver)
+
+        self.user_profile_icon_top_right = UserProfileIconTopRight(self.driver)
+        self.user_profile_details = UserProfileDetails(self.driver)
+
 
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')
