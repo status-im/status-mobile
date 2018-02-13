@@ -160,15 +160,6 @@
   (let [clipboard-contents (.getString (.-Clipboard js-dependencies/react-native))]
     (.then clipboard-contents #(clbk %))))
 
-
-;; Autolink
-
-(def autolink-class (reagent/adapt-react-class (.-default js-dependencies/autolink)))
-
-(defn autolink [opts]
-  (reagent/as-element
-   [autolink-class (add-font-style :style opts)]))
-
 ;; HTTP Bridge
 
 (def http-bridge js-dependencies/http-bridge)

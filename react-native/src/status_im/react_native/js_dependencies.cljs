@@ -1,7 +1,6 @@
 (ns status-im.react-native.js-dependencies)
 
 (def action-button          (js/require "react-native-action-button"))
-(def autolink               (js/require "react-native-autolink"))
 (def camera                 (js/require "react-native-camera"))
 (def config                 (js/require "react-native-config"))
 (def dialogs                (js/require "react-native-dialogs"))

@@ -37,7 +37,6 @@
     "web3",
     "eccjs",
     "chance",
-    "react-native-autolink",
     "instabug-reactnative",
     "nfc-react-native",
     "react-native-http-bridge",

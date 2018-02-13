@@ -1,7 +1,6 @@
 (ns status-im.react-native.js-dependencies)
 
 (def action-button          #js {:default #js {:Item #js {}}})
-(def autolink               #js {:default #js {}})
 (def config                 #js {:default #js {}})
 (def camera                 #js {:constants #js {}})
 (def dialogs                #js {})

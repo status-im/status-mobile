@@ -9,6 +9,7 @@
             [status-im.test.profile.events]
             [status-im.test.bots.events]
             [status-im.test.chat.models.input]
+            [status-im.test.chat.views.message]
             [status-im.test.i18n]
             [status-im.test.protocol.web3.inbox]
             [status-im.test.utils.utils]
@@ -43,6 +44,7 @@
  'status-im.test.wallet.transactions.subs
  'status-im.test.wallet.transactions.views
  'status-im.test.chat.models.input
+ 'status-im.test.chat.views.message
  'status-im.test.i18n
  'status-im.test.protocol.web3.inbox
  'status-im.test.utils.utils

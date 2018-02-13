@@ -14,10 +14,12 @@
             [status-im.chat.views.message.request-message :as request-message]
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.utils.core :as utils]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [clojure.string :as string]
             [status-im.chat.events.console :as console]
             [taoensso.timbre :as log]))
@@ -65,7 +67,7 @@
 
 (defview message-content-command
   [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:content-command-ref content)]] 
+  (letsubs [command [:get-command (:content-command-ref content)]]
     (let [preview (:preview content)
           {:keys [type color] icon-path :icon} command]
       [react/view style/content-command-view
@@ -96,7 +98,49 @@
   {"\\*[^*]+\\*" {:font-weight :bold}
    "~[^~]+~"     {:font-style :italic}})
 
-(def regx (re-pattern (string/join "|" (map first replacements))))
+(def regx-styled (re-pattern (string/join "|" (map first replacements))))
+
+(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+
+(defn- parse-str-regx [string regx matched-fn unmatched-fn]
+  (if (string? string)
+    (let [unmatched-text (as-> (->> (string/split string regx)
+                                    (remove empty?)
+                                    vec) $
+                           (if (zero? (count $))
+                             [nil]
+                             (unmatched-fn $)))
+          matched-text   (as-> (->> string
+                                    (re-seq regx)
+                                    matched-fn
+                                    vec) $
+                           (if (> (count unmatched-text)
+                                  (count $))
+                             (conj $ nil)
+                             $))]
+      (mapcat vector unmatched-text matched-text))
+    (str string)))
+
+(defn parse-url [string]
+  (parse-str-regx string
+                  regx-url
+                  (fn [text-seq]
+                    (map (fn [[text]] {:text text :url? true}) text-seq))
+                  (fn [text-seq]
+                    (map (fn [text] {:text text :url? false}) text-seq))))
+
+(defn- autolink [string on-press]
+  (->> (parse-url string)
+       (map-indexed (fn [idx {:keys [text url?]}]
+                      (if url?
+                        (let [[url _ _ _ text] (re-matches #"(?i)^((\w+://)?(www\d{0,3}[.])?)?(.*)$" text)]
+                          [react/text
+                           {:key      idx
+                            :style    {:color colors/blue}
+                            :on-press #(on-press url)}
+                           (utils/truncate-str text 32 true)])
+                        text)))
+       vec))
 
 (defn get-style [string]
   (->> replacements
@@ -108,37 +152,29 @@
        replacements))
 
 ;; todo rewrite this, naive implementation
-(defn- parse-text [string]
-  (if (string? string)
-    (let [general-text  (string/split string regx)
-          general-text' (if (zero? (count general-text))
-                          [nil]
-                          general-text)
-          styled-text   (vec (map-indexed (fn [idx string]
-                                            (let [style (get-style string)]
-                                              [react/text
-                                               {:key   (str idx "_" string)
-                                                :style style}
-                                               (subs string 1 (dec (count string)))]))
-                                          (re-seq regx string)))
-          styled-text'  (if (> (count general-text)
-                               (count styled-text))
-                          (conj styled-text nil)
-                          styled-text)]
-      (mapcat vector general-text' styled-text'))
-    (str string)))
+(defn- parse-text [string url-on-press]
+  (parse-str-regx string
+                  regx-styled
+                  (fn [text-seq]
+                    (map-indexed (fn [idx string]
+                                   (let [style (get-style string)]
+                                     [react/text
+                                      {:key   (str idx "_" string)
+                                       :style style}
+                                      (subs string 1 (dec (count string)))]))
+                                 text-seq))
+                  (fn [text-seq]
+                    (map-indexed (fn [idx string]
+                                   (apply react/text
+                                          {:key (str idx "_" string)}
+                                          (autolink string url-on-press)))
+                                 text-seq))))
 
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
-   (let [parsed-text  (parse-text content)
-         simple-text? (and (= (count parsed-text) 2)
-                           (nil? (second parsed-text)))]
-     (if simple-text?
-       [react/autolink {:style   (style/text-message message)
-                        :text    (apply str parsed-text)
-                        :onPress #(re-frame/dispatch [:browse-link-from-message %])}]
-       [react/text {:style (style/text-message message)} parsed-text]))])
+   (let [parsed-text (parse-text content #(re-frame/dispatch [:browse-link-from-message %]))]
+     [react/text {:style (style/text-message message)} parsed-text])])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
