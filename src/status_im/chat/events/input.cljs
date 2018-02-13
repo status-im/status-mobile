@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.chat.constants :as constants] 
+            [status-im.chat.constants :as constants]
             [status-im.chat.models :as model]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.commands :as commands-model]
@@ -277,29 +277,36 @@
                                                    :proceed-event-creator (partial event-after-creator
                                                                                    command-message)})))
 
+;; TODO (janherich) request-command-data functions and event need to be refactored, they are needlessly complicated
 (defn proceed-command
   "Proceed with command processing by setting up and executing chain of events:
   1. Params validation
-  2. Preview fetching"
+  2. Short preview fetching
+  3. Preview fetching"
   [{:keys [current-chat-id chats] :as db} {{:keys [bot]} :command :as content} message-id current-time]
-  (let [params-template   {:content      content
-                           :chat-id      current-chat-id
-                           :group-id     (when (get-in chats [current-chat-id :group-chat])
-                                           current-chat-id)
-                           :jail-id      (or bot current-chat-id)
-                           :message-id   message-id
-                           :current-time current-time}
-        preview-params    (merge params-template
-                                 {:data-type           :preview
-                                  :event-after-creator (fn [command-message jail-response]
-                                                         [::send-command
-                                                          (assoc-in command-message [:command :preview] jail-response)])})
-        validation-params (merge params-template
-                                 {:data-type           :validator
-                                  :event-after-creator (fn [_ jail-response]
-                                                         [::proceed-validation
-                                                          jail-response
-                                                          [[::request-command-data preview-params]]])})]
+  (let [params-template      {:content      content
+                              :chat-id      current-chat-id
+                              :group-id     (when (get-in chats [current-chat-id :group-chat])
+                                              current-chat-id)
+                              :jail-id      (or bot current-chat-id)
+                              :message-id   message-id
+                              :current-time current-time} 
+        preview-params       (merge params-template
+                                    {:data-type           :preview
+                                     :event-after-creator (fn [command-message jail-response]
+                                                            [::send-command
+                                                             (assoc-in command-message [:command :preview] jail-response)])})
+        short-preview-params (merge params-template
+                                    {:data-type           :short-preview
+                                     :event-after-creator (fn [_ jail-response]
+                                                            [::request-command-data
+                                                             (assoc-in preview-params [:content :command :short-preview] jail-response)])})
+        validation-params    (merge params-template
+                                    {:data-type           :validator
+                                     :event-after-creator (fn [_ jail-response]
+                                                            [::proceed-validation
+                                                             jail-response
+                                                             [[::request-command-data short-preview-params]]])})]
     (request-command-data db validation-params)))
 
 ;;;; Handlers
@@ -443,7 +450,7 @@
 
 (handlers/register-handler-fx
   :send-current-message
-  message-model/send-interceptors 
+  message-model/send-interceptors
   (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now
         :as cofx} _]
     (when-not (get-in db [:chat-ui-props current-chat-id :sending-in-progress?])
