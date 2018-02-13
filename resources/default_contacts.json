@@ -215,6 +215,22 @@
         },
         "groups": ["dapps"],
         "description": "Smart Contracts for everyone"
+    },
+    
+    "antecasa": 
+    {
+        "name":
+        {
+            "en": "Antecasa"
+        },
+        "photo-path": "contacts://antecasa",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://www.antecasa.com"
+        },
+        "groups": ["dapps"],
+        "description": "Antecasa is an open platform where users come together to create and execute transactions on trades."
     }
 
 }
