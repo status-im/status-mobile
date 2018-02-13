@@ -3,7 +3,7 @@
 (def action-button          #js {:default #js {:Item #js {}}})
 (def autolink               #js {:default #js {}})
 (def config                 #js {:default #js {}})
-(def camera                 #js {:constants #js {}})
+(def camera                 #js {:default #js {:constants #js {}}})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})
 (def emoji-picker           #js {:default #js {}})

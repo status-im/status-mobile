@@ -203,7 +203,17 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-i18n')
     implementation project(':react-native-linear-gradient')
-    implementation project(':react-native-camera')
+    compile (project(':react-native-camera')) {
+        exclude group: "com.google.android.gms"
+        exclude group: "com.android.support"
+    }
+    compile ('com.google.android.gms:play-services-vision:11.6.0') {
+        force = true;
+    }
+
+    compile ('com.android.support:exifinterface:26.0.1') {
+        force = true;
+    }
     implementation project(':react-native-status')
     implementation project(':react-native-orientation')
     implementation project(':react-native-fs')
