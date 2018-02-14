@@ -82,11 +82,13 @@
 
 (defn init []
   (log/debug "[INIT] android.core/init")
-  (status/set-soft-input-mode status/adjust-resize)
+  (log/debug "[INIT] status/init-jail")
+  (status/init-jail)
   (log/debug "[INIT] status/set-soft-input-mode")
-  (init-back-button-handler!)
+  (status/set-soft-input-mode status/adjust-resize)
   (log/debug "[INIT] init-back-button-handler!")
-  (core/init app-root)
+  (init-back-button-handler!)
   (log/debug "[INIT] core/init")
-  (snoopy/subscribe!)
-  (log/debug "[INIT] snoopy/subscribe!"))
+  (core/init app-root)
+  (log/debug "[INIT] snoopy/subscribe!")
+  (snoopy/subscribe!))

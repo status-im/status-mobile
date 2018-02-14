@@ -16,8 +16,6 @@
   (log/set-level! config/log-level)
   (log/debug "[INIT] error-handler/register-exception-handler!")
   (error-handler/register-exception-handler!)
-  (log/debug "[INIT] status/init-jail")
-  (status/init-jail)
   (log/debug "[INIT] .registerComponent")
   (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
   (log/debug "[INIT] re-frame/dispatch-sync :initialize-app")
