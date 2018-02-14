@@ -80,10 +80,16 @@
        :display-name "root"
        :reagent-render views/main})))
 
+
+(defn sleep [msec]
+  (let [deadline (+ msec (.getTime (js/Date.)))]
+    (while (> deadline (.getTime (js/Date.))))))
+
 (defn init []
   (log/debug "[INIT] android.core/init")
   (log/debug "[INIT] status/init-jail")
   (status/init-jail)
+  (sleep 2000)
   (log/debug "[INIT] status/set-soft-input-mode")
   (status/set-soft-input-mode status/adjust-resize)
   (log/debug "[INIT] init-back-button-handler!")
