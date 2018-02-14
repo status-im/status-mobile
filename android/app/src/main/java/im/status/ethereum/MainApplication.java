@@ -18,7 +18,7 @@ import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.github.yamill.orientation.OrientationPackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
-import org.reactnative.camera.RNCameraPackage;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
@@ -69,7 +69,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new RNI18nPackage(),
                     new RandomBytesPackage(),
                     new LinearGradientPackage(),
-                    new RNCameraPackage(),
+                    new RCTCameraPackage(),
                     new OrientationPackage(),
                     new RNFSPackage(),
                     new ReactNativeDialogsPackage(),

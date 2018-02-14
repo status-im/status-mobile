@@ -12,7 +12,7 @@
             [taoensso.timbre :as log]))
 
 (defn image-captured [data]
-  (let [path       (.-uri data)
+  (let [path       (.-path data)
         _          (log/debug "Captured image: " path)
         on-success (fn [base64]
                      (log/debug "Captured success: " base64)
@@ -39,9 +39,9 @@
       [react/touchable-highlight {:style    {:align-self "center"}
                                   :on-press (fn []
                                               (let [camera @camera-ref]
-                                                (-> (.takePictureAsync camera)
+                                                (-> (.capture camera)
                                                     (.then image-captured)
-                                                    (.catch #(log/warn "Error capturing image: " %)))))}
+                                                    (.catch #(log/debug "Error capturing image: " %)))))}
        [react/view
         [custom-icons/ion-icon {:name  :md-camera
                                 :style {:font-size 36}}]]]]]))
