@@ -3,7 +3,7 @@ import base64
 import zbarlight
 from tests import info
 from eth_keys import datatypes
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 from datetime import datetime
 from io import BytesIO
@@ -176,7 +176,7 @@ class BaseView(object):
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
 
                 ',': 55, '-': 69, '+': 81, '.': 56, '/': 76, '\\': 73, ';': 74, ' ': 62,
-                '[': 71, ']': 72, '=': 70,
+                '[': 71, ']': 72, '=': 70, '\n': 66,
 
                 'a': 29, 'b': 30, 'c': 31, 'd': 32, 'e': 33, 'f': 34, 'g': 35, 'h': 36, 'i': 37, 'j': 38,
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
@@ -229,6 +229,10 @@ class BaseView(object):
     def get_base_web_view(self):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
+
+    def get_profile_view(self):
+        from views.profile_view import ProfileView
+        return ProfileView(self.driver)
 
     def get_unique_amount(self):
         return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')

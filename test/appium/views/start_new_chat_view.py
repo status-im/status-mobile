@@ -17,6 +17,14 @@ class NewGroupChatButton(BaseButton):
             "//android.widget.TextView[@text='Start group chat']")
 
 
+class JoinPublicChatButton(BaseButton):
+
+    def __init__(self, driver):
+        super(JoinPublicChatButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='Join public chat']")
+
+
 class NameEditBox(BaseEditBox):
     def __init__(self, driver):
         super(NameEditBox, self).__init__(driver)
@@ -38,6 +46,12 @@ class OpenButton(BaseButton):
             "//android.widget.TextView[@text='Open']")
 
 
+class ConfirmButton(BaseButton):
+    def __init__(self, driver):
+        super(ConfirmButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[2]')
+
+
 class EnterUrlEditbox(BaseEditBox):
     def __init__(self, driver):
         super(EnterUrlEditbox, self).__init__(driver)
@@ -50,9 +64,11 @@ class StartNewChatView(ContactsView):
 
         self.add_new_contact = AddNewContactButton(self.driver)
         self.new_group_chat_button = NewGroupChatButton(self.driver)
+        self.join_public_chat_button = JoinPublicChatButton(self.driver)
 
         self.open_d_app_button = OpenDAapButton(self.driver)
         self.open_button = OpenButton(self.driver)
 
         self.name_edit_box = NameEditBox(self.driver)
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
+        self.confirm_button = ConfirmButton(self.driver)

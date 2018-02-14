@@ -86,6 +86,12 @@ class HomeView(BaseView):
         start_new_chat.name_edit_box.send_keys(group_chat_name)
         start_new_chat.save_button.click()
 
+    def join_public_chat(self, chat_name: str):
+        start_new_chat = self.plus_button.click()
+        start_new_chat.join_public_chat_button.click()
+        start_new_chat.name_edit_box.send_keys(chat_name)
+        start_new_chat.confirm_button.click()
+
     def get_public_key(self):
         profile_view = self.profile_button.click()
         profile_view.share_my_contact_key_button.click()

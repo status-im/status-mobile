@@ -60,6 +60,7 @@ class AbstractTestCase:
         desired_caps['deviceOrientation'] = "portrait"
         desired_caps['commandTimeout'] = 600
         desired_caps['idleTimeout'] = 1000
+        desired_caps['unicodeKeyboard'] = True
         return desired_caps
 
     @property
@@ -71,7 +72,8 @@ class AbstractTestCase:
         desired_caps['appiumVersion'] = '1.7.1'
         desired_caps['platformVersion'] = '6.0'
         desired_caps['newCommandTimeout'] = 600
-        desired_caps['fullReset'] = False
+        desired_caps['fullReset'] = True
+        desired_caps['unicodeKeyboard'] = True
         return desired_caps
 
     @abstractmethod
@@ -94,6 +96,12 @@ class AbstractTestCase:
         test_data.test_info[test_data.test_name] = dict()
         test_data.test_info[test_data.test_name]['jobs'] = list()
         test_data.test_info[test_data.test_name]['steps'] = str()
+
+    errors = []
+
+    def verify_no_errors(self):
+        if self.errors:
+            pytest.fail('. '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
 
 
 class SingleDeviceTestCase(AbstractTestCase):

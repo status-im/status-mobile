@@ -85,6 +85,13 @@ class LogoutButton(BaseButton):
         return SignInView(self.driver)
 
 
+class UserNameText(BaseText):
+    def __init__(self, driver):
+        super(UserNameText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView')
+
+
 class ShareMyContactKeyButton(BaseButton):
 
     def __init__(self, driver):
@@ -134,6 +141,7 @@ class ProfileView(BaseView):
 
         # new design
 
+        self.username_text = UserNameText(self.driver)
         self.share_my_contact_key_button = ShareMyContactKeyButton(self.driver)
         self.edit_button = EditButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)

@@ -1,4 +1,5 @@
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import time
+from selenium.common.exceptions import TimeoutException
 from tests import info
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
@@ -69,6 +70,13 @@ class MembersButton(BaseButton):
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="action"])[1]')
 
 
+class DeleteChatButton(BaseButton):
+
+    def __init__(self, driver):
+        super(DeleteChatButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Delete chat"]')
+
+
 class ChatSettings(BaseButton):
     def __init__(self, driver):
         super(ChatSettings, self).__init__(driver)
@@ -120,6 +128,16 @@ class UserProfileDetails(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Profile']")
 
 
+class OpenInBrowserButton(BaseButton):
+    def __init__(self, driver):
+        super(OpenInBrowserButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Open in browser']")
+
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -134,6 +152,7 @@ class ChatView(BaseView):
 
         self.chat_options = ChatOptions(self.driver)
         self.members_button = MembersButton(self.driver)
+        self.delete_chat_button = DeleteChatButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.more_users_button = MoreUsersButton(self.driver)
@@ -145,6 +164,7 @@ class ChatView(BaseView):
         self.user_profile_icon_top_right = UserProfileIconTopRight(self.driver)
         self.user_profile_details = UserProfileDetails(self.driver)
 
+        self.open_in_browser_button = OpenInBrowserButton(self.driver)
 
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')
@@ -155,8 +175,24 @@ class ChatView(BaseView):
             except TimeoutException:
                 break
 
-    def get_messages_sent_by_user(self, username):
-        return MessageByUsername(self.driver, username).find_elements()
+    def wait_for_message_in_one_to_one_chat(self, expected_message: str, errors: list):
+        try:
+            self.find_full_text(expected_message, wait_time=20)
+        except TimeoutException:
+            errors.append('Message with text "%s" was not received' % expected_message)
+
+    def wait_for_messages_by_user(self, username: str, expected_messages: list, errors: list, wait_time: int = 30):
+        expected_messages = expected_messages if type(expected_messages) == list else [expected_messages]
+        repeat = 0
+        while repeat <= wait_time:
+            received_messages = [element.text for element in MessageByUsername(self.driver, username).find_elements()]
+            if not set(expected_messages) - set(received_messages):
+                break
+            time.sleep(3)
+            repeat += 3
+        if set(expected_messages) - set(received_messages):
+            errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
+                [i for i in list(set(expected_messages) - set(received_messages))])))
 
     def send_eth_to_request(self, request, sender_password):
         gas_popup = self.element_by_text_part('Send transaction')

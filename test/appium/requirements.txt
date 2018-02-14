@@ -1,3 +1,4 @@
+emoji
 aiohttp==2.2.3
 allpairspy==2.3.0
 apipkg==1.4
