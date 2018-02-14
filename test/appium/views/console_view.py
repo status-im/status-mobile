@@ -73,4 +73,4 @@ class ConsoleView(BaseView):
         recovered_user.click()
         recover_access_view.password_input.send_keys(password)
         recover_access_view.sign_in_button.click()
-        recover_access_view.find_full_text('Wallet', 30)
+        recover_access_view.find_full_text('Wallet', 60)

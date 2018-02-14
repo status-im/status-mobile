@@ -1,4 +1,4 @@
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from tests import info
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
@@ -34,10 +34,20 @@ class UserNameText(BaseText):
                                         '//..//android.widget.TextView)[1]')
 
 
+class TransactionPopupText(BaseText):
+    def __init__(self, driver):
+        super(TransactionPopupText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Send transaction']")
+
+
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='/send']")
+
+    def click(self):
+        desired_element = TransactionPopupText(self.driver)
+        self.click_until_presence_of_element(desired_element=desired_element)
 
 
 class RequestCommand(BaseButton):
@@ -98,6 +108,18 @@ class MoreUsersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
+class UserProfileIconTopRight(BaseButton):
+    def __init__(self, driver):
+        super(UserProfileIconTopRight, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-icon')
+
+
+class UserProfileDetails(BaseButton):
+    def __init__(self, driver):
+        super(UserProfileDetails, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Profile']")
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -120,6 +142,10 @@ class ChatView(BaseView):
 
         self.first_recipient_button = FirstRecipient(self.driver)
 
+        self.user_profile_icon_top_right = UserProfileIconTopRight(self.driver)
+        self.user_profile_details = UserProfileDetails(self.driver)
+
+
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')
         while True:
@@ -131,3 +157,10 @@ class ChatView(BaseView):
 
     def get_messages_sent_by_user(self, username):
         return MessageByUsername(self.driver, username).find_elements()
+
+    def send_eth_to_request(self, request, sender_password):
+        gas_popup = self.element_by_text_part('Send transaction')
+        request.click_until_presence_of_element(gas_popup)
+        send_transaction = self.get_send_transaction_view()
+        self.send_message_button.click_until_presence_of_element(send_transaction.sign_transaction_button)
+        send_transaction.sign_transaction(sender_password)

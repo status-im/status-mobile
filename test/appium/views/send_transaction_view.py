@@ -59,6 +59,10 @@ class ChooseRecipientButton(BaseButton):
         super(ChooseRecipientButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Specify recipient...']")
 
+    def click(self):
+        desired_element = EnterContactCodeButton(self.driver)
+        self.click_until_presence_of_element(desired_element=desired_element)
+
 
 class EnterContactCodeButton(BaseButton):
     def __init__(self, driver):
@@ -72,6 +76,24 @@ class EnterRecipientAddressInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
 
 
+class RecentRecipientsButton(BaseButton):
+    def __init__(self, driver):
+        super(RecentRecipientsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Recent recipients']")
+
+
+class SelectAssetButton(BaseButton):
+    def __init__(self, driver):
+        super(SelectAssetButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[4]/..')
+
+
+class STTButton(BaseButton):
+    def __init__(self, driver):
+        super(STTButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Status Test Token']")
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -80,6 +102,7 @@ class SendTransactionView(BaseView):
         self.enter_contact_code_button = EnterContactCodeButton(self.driver)
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
+        self.recent_recipients_button = RecentRecipientsButton(self.driver)
 
         self.amount_edit_box = AmountEditBox(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
@@ -89,11 +112,11 @@ class SendTransactionView(BaseView):
         self.enter_password_input = EnterPasswordInput(self.driver)
         self.got_it_button = GotItButton(self.driver)
 
-    def try_to_sing_transaction(self):
-        for _ in range(4):
-            try:
-                self.sign_transaction_button.click()
-                self.enter_password_input.wait_for_element(5)
-                return
-            except (NoSuchElementException, TimeoutException):
-                pass
+        self.select_asset_button = SelectAssetButton(self.driver)
+        self.stt_button = STTButton(self.driver)
+
+    def sign_transaction(self, sender_password):
+        self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
+        self.enter_password_input.send_keys(sender_password)
+        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
+        self.got_it_button.click()

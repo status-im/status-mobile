@@ -1,4 +1,5 @@
 import time
+import pytest
 from tests import info
 from views.base_element import BaseText, BaseButton, BaseEditBox
 from views.base_view import BaseView
@@ -8,7 +9,7 @@ class PublicKeyText(BaseText):
 
     def __init__(self, driver):
         super(PublicKeyText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('profile-public-key')
+        self.locator = self.Locator.xpath_selector('//*[contains(@text, "0x04")]')
 
     @property
     def text(self):
@@ -54,7 +55,7 @@ class NetworkSettingsButton(BaseButton):
 
     def __init__(self, driver):
         super(NetworkSettingsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Network settings"]')
+        self.locator = self.Locator.xpath_selector('//*[@text="Network"]')
 
     class NetworkButton(BaseButton):
         def __init__(self, driver, network):

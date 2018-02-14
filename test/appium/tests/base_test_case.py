@@ -88,7 +88,7 @@ class AbstractTestCase:
 
     @property
     def implicitly_wait(self):
-        return 10
+        return 8
 
     def update_test_info_dict(self):
         test_data.test_info[test_data.test_name] = dict()
@@ -145,7 +145,8 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
 
     @classmethod
     def setup_class(cls):
-        cls.loop = asyncio.get_event_loop()
+        cls.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(cls.loop)
 
     def setup_method(self, method):
         self.update_test_info_dict()

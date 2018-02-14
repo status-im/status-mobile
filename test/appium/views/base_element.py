@@ -67,6 +67,7 @@ class BaseElement(object):
 
     def is_element_present(self, sec=5):
         try:
+            info('Wait for %s' % self.name)
             self.wait_for_element(sec)
             return True
         except TimeoutException:
@@ -120,3 +121,15 @@ class BaseButton(BaseElement):
         self.find_element().click()
         info('Tap on %s' % self.name)
         return self.navigate()
+
+    def click_until_presence_of_element(self, desired_element, attempts=5):
+        counter = 0
+        while not desired_element.is_element_present() and counter <= attempts:
+            try:
+                info('Tap on %s' % self.name)
+                self.find_element().click()
+                info('Wait for %s' % desired_element.name)
+                desired_element.wait_for_element(5)
+                return self.navigate()
+            except (NoSuchElementException, TimeoutException):
+                counter += 1

@@ -79,6 +79,11 @@
                        #(re-frame/dispatch [success-event %])
                        #(re-frame/dispatch [error-event %]))))
 
+(reg-fx
+  :update-gas-price
+  (fn [{:keys [web3 success-event edit?]}]
+    (ethereum/gas-price web3 #(re-frame/dispatch [success-event %2 edit?]))))
+
 ;; Handlers
 
 (handlers/register-handler-fx
@@ -202,3 +207,15 @@
                          :content             (i18n/label :t/transactions-delete-content)
                          :confirm-button-text (i18n/label :t/confirm)
                          :on-accept           #(re-frame/dispatch [:wallet/discard-unsigned-transaction transaction-id])}}))
+
+(handlers/register-handler-fx
+  :wallet/update-gas-price
+  (fn [{:keys [db]} [_ edit?]]
+    {:update-gas-price {:web3          (:web3 db)
+                        :success-event :wallet/update-gas-price-success
+                        :edit?         edit?}}))
+
+(handlers/register-handler-db
+  :wallet/update-gas-price-success
+  (fn [db [_ price edit?]]
+    (assoc-in db [:wallet (if edit? :edit :send-transaction) :gas-price] price)))

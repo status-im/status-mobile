@@ -64,7 +64,7 @@
 (defn test-fixtures []
   (rf/reg-fx ::events/init-store #())
 
-  (rf/reg-fx ::contacts-events/save-contacts! #())
+  (rf/reg-fx :save-all-contacts #())
   (rf/reg-fx ::contacts-events/save-contact #())
   (rf/reg-fx ::contacts-events/watch-contact #())
   (rf/reg-fx ::contacts-events/stop-watching-contact #())

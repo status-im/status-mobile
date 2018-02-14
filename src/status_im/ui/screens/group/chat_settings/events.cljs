@@ -2,8 +2,7 @@
   (:require [re-frame.core :refer [dispatch reg-fx]]
             [status-im.utils.handlers :refer [register-handler-fx]]
             [status-im.protocol.core :as protocol]
-            [status-im.utils.random :as random]
-            [status-im.chat.handlers :as chat-events]
+            [status-im.utils.random :as random] 
             [status-im.data-store.contacts :as contacts]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.chats :as chats]
@@ -173,4 +172,4 @@
   :clear-history
   (fn [{{:keys [current-chat-id] :as db} :db} _]
     {:db (assoc-in db [:chats current-chat-id :messages] {})
-     ::chat-events/delete-messages current-chat-id}))
+     :delete-messages current-chat-id}))

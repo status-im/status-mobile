@@ -291,6 +291,7 @@
 (handlers/register-handler-fx
   :wallet.send/reset-gas-default
   (fn [{:keys [db]}]
-    {:db (update-in db [:wallet :edit]
-                    merge
-                    (db/gas-default (get-in db [:wallet :send-transaction :symbol])))}))
+    {:dispatch [:wallet/update-gas-price true]
+     :db (update-in db [:wallet :edit]
+                    assoc
+                    :gas (ethereum/estimate-gas (get-in db [:wallet :send-transaction :symbol])))}))

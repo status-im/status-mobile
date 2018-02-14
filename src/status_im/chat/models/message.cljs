@@ -219,9 +219,8 @@
   (let [chat    (get-in db [:chats chat-id])
         message (prepare-message params chat)
         params' (assoc params :message message)
-        fx      {:db                      (add-message-to-db db chat-id message true)
-                 :update-message-overhead [chat-id network-status]
-                 :save-message             message}]
+        fx      {:db                      (add-message-to-db db chat-id message true) 
+                 :save-message            message}]
     (-> (merge fx (chat-model/upsert-chat (assoc fx :now now)
                                           {:chat-id chat-id}))
         (as-> fx'
@@ -283,8 +282,7 @@
         params'          (assoc params :command command')
 
         fx               {:db                      (-> (merge db (:db result))
-                                                       (add-message-to-db chat-id command' true))
-                          :update-message-overhead [chat-id network-status]
+                                                       (add-message-to-db chat-id command' true)) 
                           :save-message            (-> command'
                                                        (assoc :chat-id chat-id)
                                                        (update-in [:content :params]

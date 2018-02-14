@@ -1,7 +1,7 @@
 from tests import info
 import time
-from selenium.common.exceptions import TimeoutException
-from views.base_element import BaseButton
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from views.base_element import BaseButton, BaseText
 from views.base_view import BaseView
 
 
@@ -12,8 +12,8 @@ class PlusButton(BaseButton):
             "//android.view.ViewGroup/android.widget.TextView[@text='+']")
 
     def navigate(self):
-        from views.start_new_chat_view import StarNewChatView
-        return StarNewChatView(self.driver)
+        from views.start_new_chat_view import StartNewChatView
+        return StartNewChatView(self.driver)
 
 
 class ConsoleButton(BaseButton):
@@ -33,12 +33,19 @@ class ChatElement(BaseButton):
         return ChatView(self.driver)
 
 
+class FirstChatElementTitle(BaseText):
+    def __init__(self, driver):
+        super(FirstChatElementTitle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.widget.ScrollView//android.widget.TextView)[1]')
+
+
 class HomeView(BaseView):
     def __init__(self, driver):
         super(HomeView, self).__init__(driver)
 
         self.plus_button = PlusButton(self.driver)
         self.console_button = ConsoleButton(self.driver)
+        self.first_chat_element_title = FirstChatElementTitle(self.driver)
 
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')
@@ -51,6 +58,16 @@ class HomeView(BaseView):
 
     def get_chat_with_user(self, username):
         return ChatElement(self.driver, username)
+
+    def get_back_to_home_view(self):
+        counter = 0
+        while not self.home_button.is_element_present():
+            try:
+                if counter >= 5:
+                    return
+                self.back_button.click()
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
 
     def add_contact(self, public_key):
         start_new_chat = self.plus_button.click()

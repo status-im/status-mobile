@@ -16,42 +16,30 @@
             [taoensso.timbre :as log]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
 
-(defn message-content-text [{:keys [content] :as message}]
-  (reagent/create-class
-    {:display-name "message-content-text"
-     :component-will-mount
-     #(when (and (or (:command content)
-                     (:content-command content))
-                 (not (:short-preview content)))
-        (re-frame/dispatch [:request-command-message-data message
-                            {:data-type   :short-preview
-                             :cache-data? true}]))
-     :reagent-render
-     (fn [{:keys [content] :as message}]
-       [react/view styles/last-message-container
-        (cond
+(defn message-content-text [{:keys [content] :as message}] 
+  [react/view styles/last-message-container
+   (cond
 
-          (not message)
-          [react/text {:style styles/last-message-text}
-           (i18n/label :t/no-messages)]
+     (not message)
+     [react/text {:style styles/last-message-text}
+      (i18n/label :t/no-messages)]
 
-          (str/blank? content)
-          [react/text {:style styles/last-message-text}
-           ""]
+     (str/blank? content)
+     [react/text {:style styles/last-message-text}
+      ""]
 
-          (:content content)
-          [react/text {:style           styles/last-message-text
-                       :number-of-lines 1}
-           (:content content)]
+     (:content content)
+     [react/text {:style           styles/last-message-text
+                  :number-of-lines 1}
+      (:content content)]
 
-          (and (:command content)
-               (-> content :short-preview :markup))
-          (commands-utils/generate-hiccup (-> content :short-preview :markup))
+     (and (:command content) (-> content :short-preview :markup))
+     (commands-utils/generate-hiccup (-> content :short-preview :markup))
 
-          :else
-          [react/text {:style           styles/last-message-text
-                       :number-of-lines 1}
-           content])])}))
+     :else
+     [react/text {:style           styles/last-message-text
+                  :number-of-lines 1}
+      content])])
 
 (defview message-status [{:keys [chat-id contacts]}
                          {:keys [message-id user-statuses outgoing] :as msg}]

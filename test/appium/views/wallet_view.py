@@ -68,6 +68,36 @@ class UsdTotalValueText(BaseText):
         self.locator = self.Locator.xpath_selector("//*[@text='USD']/../android.widget.TextView[1]")
 
 
+class SendTransactionRequestButton(BaseButton):
+    def __init__(self, driver):
+        super(SendTransactionRequestButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='SEND A TRANSACTION REQUEST']")
+
+
+class OptionsButton(BaseButton):
+    def __init__(self, driver):
+        super(OptionsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
+
+
+class ManageAssetsButton(BaseButton):
+    def __init__(self, driver):
+        super(ManageAssetsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Manage Assets']")
+
+
+class STTCheckBox(BaseButton):
+    def __init__(self, driver):
+        super(STTCheckBox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("(//*[@text='STT']//..//android.view.ViewGroup)[1]")
+
+
+class DoneButton(BaseButton):
+    def __init__(self, driver):
+        super(DoneButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Done']")
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -77,9 +107,15 @@ class WalletView(BaseView):
         self.transactions_button = TransactionsButton(self.driver)
         self.eth_asset = EthAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
+
+        self.send_transaction_request = SendTransactionRequestButton(self.driver)
         self.request_button = RequestButton(self.driver)
 
         self.send_request_button = SendRequestButton(self.driver)
+        self.options_button = OptionsButton(self.driver)
+        self.manage_assets_button = ManageAssetsButton(self.driver)
+        self.stt_check_box = STTCheckBox(self.driver)
+        self.done_button = DoneButton(self.driver)
 
     def get_usd_total_value(self):
         return float(self.usd_total_value.text)
