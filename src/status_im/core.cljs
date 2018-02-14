@@ -12,8 +12,8 @@
   (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
 
 (defn init [app-root]
-  (log/debug "[INIT] log/set-level!")
-  (log/set-level! config/log-level)
+  #_(log/debug "[INIT] log/set-level!")
+  #_(log/set-level! config/log-level)
   (log/debug "[INIT] error-handler/register-exception-handler!")
   (error-handler/register-exception-handler!)
   (log/debug "[INIT] .registerComponent")
