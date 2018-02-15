@@ -33,10 +33,10 @@
       (utils/set-timeout
         (fn []
           (data-store/change-account address new-account?
-                                     #(dispatch [:change-account-handler % address new-account?])))
+                                     #(dispatch [:change-account-handler % address])))
         300)
       (data-store/change-account address new-account?
-                                 #(dispatch [:change-account-handler % address new-account?])))))
+                                 #(dispatch [:change-account-handler % address])))))
 
 ;;;; Handlers
 

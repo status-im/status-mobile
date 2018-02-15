@@ -2,7 +2,7 @@
   (:require-macros
    [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.ui.components.react :as r]
-            [re-frame.core :refer [dispatch]]
+            [re-frame.core :refer [dispatch] :as re-frame]
             [taoensso.timbre :as log]
             [cljs.core.async :as async :refer [<!]]
             [status-im.utils.js-resources :as js-res]
@@ -63,7 +63,8 @@
                                  "JavaScriptCore"
                                  "OttoVM")
                                " jail initialized")]
-          (.initJail status init-js' #(log/debug log-message)))))))
+          (.initJail status init-js' #(do (re-frame/dispatch [:initialize-app])
+                                          (log/debug log-message))))))))
 
 (defonce listener-initialized (atom false))
 
