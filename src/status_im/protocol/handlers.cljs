@@ -13,6 +13,7 @@
             [status-im.utils.random :as random]
             [status-im.utils.async :as async-utils]
             [status-im.protocol.message-cache :as cache]
+            [status-im.protocol.message :as message]
             [status-im.protocol.listeners :as listeners]
             [status-im.chat.models.message :as models.message]
             [status-im.protocol.web3.inbox :as inbox]
@@ -22,7 +23,9 @@
             [status-im.native-module.core :as status]
             [clojure.string :as string]
             [status-im.utils.web3-provider :as web3-provider]
-            [status-im.utils.ethereum.core :as utils]))
+            [status-im.utils.ethereum.core :as utils]
+            [status-im.protocol.web3.utils :as web3.utils]
+            [cljs.reader :as reader]))
 
 ;;;; COFX
 
@@ -217,27 +220,27 @@
       (processed-messages/delete (str "ttl <=" now)))))
 
 (re-frame/reg-fx
- ::add-peer
- (fn [{:keys [wnode web3]}]
-   (inbox/add-peer wnode
-                   #(re-frame/dispatch [::add-peer-success web3 %])
-                   #(re-frame/dispatch [::add-peer-error %]))))
+  ::add-peer
+  (fn [{:keys [wnode web3]}]
+    (inbox/add-peer wnode
+                    #(re-frame/dispatch [::add-peer-success web3 %])
+                    #(re-frame/dispatch [::add-peer-error %]))))
 
 (re-frame/reg-fx
- ::fetch-peers
- (fn [{:keys [wnode web3 retries]}]
-   ;; Run immediately on first run, add delay before retry
-   (let [delay (cond
-                 (zero? retries) 0
-                 (< retries 3)   300
-                 (< retries 10)  1000
-                 :else           5000)]
-     (if (> retries 100)
-       (log/error "Number of retries for fetching peers exceed" wnode)
-       (js/setTimeout
-        (fn [] (inbox/fetch-peers #(re-frame/dispatch [::fetch-peers-success web3 % retries])
-                                 #(re-frame/dispatch [::fetch-peers-error %])))
-        delay)))))
+  ::fetch-peers
+  (fn [{:keys [wnode web3 retries]}]
+    ;; Run immediately on first run, add delay before retry
+    (let [delay (cond
+                  (zero? retries) 0
+                  (< retries 3)   300
+                  (< retries 10)  1000
+                  :else           5000)]
+      (if (> retries 100)
+        (log/error "Number of retries for fetching peers exceed" wnode)
+        (js/setTimeout
+          (fn [] (inbox/fetch-peers #(re-frame/dispatch [::fetch-peers-success web3 % retries])
+                                    #(re-frame/dispatch [::fetch-peers-error %])))
+          delay)))))
 
 (re-frame/reg-fx
  ::mark-trusted-peer
@@ -623,3 +626,81 @@
     (let [android-error? (re-find (re-pattern "Failed to connect") (.-message error))]
       (when android-error?
         {::status-init-jail nil}))))
+
+
+;; Experimental `new protocol` code
+
+(handlers/register-handler-fx
+  :protocol/receive-whisper-message
+  [re-frame/trim-v]
+  (fn [{:keys [db]} [js-error js-message]]
+    (let [{:keys [payload sig recipientPublicKey]} (js->clj js-message :keywordize-keys true)
+          [protocol message-type status-message]   (-> payload
+                                                       web3.utils/to-utf8
+                                                       reader/read-string)]
+      ;; TODO (yenda) add logic for message-type options and protocol version handling
+      {:dispatch [:protocol/receive-status-message sig recipientPublicKey message-type status-message]})))
+
+(def timer (atom nil))
+(def timer2 (atom nil))
+
+(defn send-ping
+  ([chat-id]
+   (reset! timer (datetime/now-ms))
+   (send-ping chat-id 0))
+  ([chat-id counter]
+   (log/info "Received ping" counter)
+   (println counter)
+   (if (> counter 100)
+     (let [timer (- (datetime/now-ms) @timer)]
+       (println "timer for 100 pings:" timer)
+       (log/info "Tme for 100 pings" timer))
+     (re-frame/dispatch [:protocol/send-status-message chat-id :system/ping (inc counter)]))))
+
+(handlers/register-handler-fx
+  :event-ping
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [counter]]
+    (if (> counter 10000)
+      (println "timer: " (- (datetime/now-ms) @timer2))
+      {:db (assoc db :inbox/topic (str counter))
+       :dispatch [:event-pong (inc counter)]})))
+
+(handlers/register-handler-fx
+  :event-pong
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [counter]]
+    {:dispatch [:event-ping counter]}))
+
+(handlers/register-handler-fx
+  :protocol/send-status-message
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [chat-id message-type status-message]]
+    {:shh/post (merge {:web3 (:web3 db)
+                       :success-event  :protocol/send-status-message-success
+                       :error-event    :protocol/send-status-message-error}
+                      (message/send-options {:message-type message-type
+                                             :db db
+                                             :chat-id chat-id
+                                             :status-message status-message}))}))
+
+(handlers/register-handler-fx
+  :protocol/receive-status-message
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [signature chat-id message-type status-message]]
+    (case message-type
+      :system/ping (send-ping signature status-message)
+      (log/error :unknown-message-type message-type))))
+
+(handlers/register-handler-fx
+  :protocol/send-status-message-success
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [_ resp]]
+    (log/debug :send-status-message-success resp)))
+
+
+(handlers/register-handler-fx
+  :protocol/send-status-message-error
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [err]]
+    (log/error :send-status-message-error err)))
