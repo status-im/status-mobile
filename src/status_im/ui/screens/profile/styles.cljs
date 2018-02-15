@@ -121,12 +121,16 @@
 
 (defstyle settings-item-text
   {:flex      1
+   :flex-wrap :nowrap
    :font-size 15
    :ios       {:letter-spacing -0.2}
    :android   {:color colors/black}})
 
 (def settings-item-value
-  {:padding-right 10
+  {:flex          2
+   :flex-wrap     :nowrap
+   :text-align    :right
+   :padding-right 10
    :font-size     15
    :color         colors/gray})
 

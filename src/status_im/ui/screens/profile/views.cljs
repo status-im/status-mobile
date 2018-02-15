@@ -215,8 +215,11 @@
    [react/view styles/settings-item
     [react/text {:style styles/settings-item-text}
      (i18n/label label-kw)]
-    [react/text {:style      styles/settings-item-value
-                 :uppercase? component.styles/uppercase?} value]
+    (when-not (string/blank? value)
+      [react/text {:style           styles/settings-item-value
+                   :number-of-lines 1
+                   :uppercase?      component.styles/uppercase?}
+       value])
     (when active?
       [vector-icons/icon :icons/forward {:color colors/gray}])]])
 
