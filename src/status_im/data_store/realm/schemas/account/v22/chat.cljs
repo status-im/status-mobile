@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.schemas.account.v19.chat
+(ns status-im.data-store.realm.schemas.account.v22.chat
   (:require [status-im.ui.components.styles :refer [default-chat-color]]))
 
 (def schema {:name       :chat
@@ -25,8 +25,6 @@
                                              :optional true}
                           :updated-at       {:type     :int
                                              :optional true}
-                          :message-overhead {:type    :int
-                                             :default 0}
                           :public-key       {:type     :string
                                              :optional true}
                           :private-key      {:type     :string
