@@ -296,7 +296,7 @@
      ;; send `:seen` signal when we have signed-in user, message not from us and we didn't sent it already
      ;; + it's not public group message
      #(when (and current-public-key message-id chat-id (not outgoing)
-                 (not= :public-group-message message-type)
+                 (#{:user-message :group-user-message} message-type)
                  (not (models.message/message-seen-by? message current-public-key)))
         (re-frame/dispatch [:send-seen! {:chat-id    chat-id
                                          :from       from
