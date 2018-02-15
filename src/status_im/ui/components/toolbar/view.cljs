@@ -109,19 +109,19 @@
 
 (defn toolbar
   ([props nav-item content-item] (toolbar props nav-item content-item [actions [{:image :blank}]]))
-  ([{:keys [background-color style flat?]}
+  ([{:keys [background-color style flat? title-centered?]}
     nav-item
     content-item
     action-items]
    [react/view {:style (merge (styles/toolbar background-color flat?) style)}
     ;; On iOS title must be centered. Current solution is a workaround and eventually this will be sorted out using flex
-    (when platform/ios?
+    (when (or title-centered? platform/ios?)
       [react/view styles/ios-content-item
        content-item])
     (when nav-item
       [react/view {:style (styles/toolbar-nav-actions-container 0)}
        nav-item])
-    (if platform/ios?
+    (if (or title-centered? platform/ios?)
       [react/view components.styles/flex]
       content-item)
     action-items]))

@@ -1,24 +1,9 @@
 (ns status-im.ui.screens.add-new.open-dapp.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
-(def main-container {:flex 1})
-
-(def enter-url
-  {:flex-direction    :row
-   :align-items       :center
-   :border-radius     8
-   :height            52
-   :background-color  colors/light-gray
-   :margin-horizontal 14
-   :margin-top        24})
-
-(defstyle url-input
-  {:flex               1
-   :font-size          15
-   :letter-spacing     -0.2
-   :padding-horizontal 14
-   :android            {:padding 0}})
+(def main-container
+  {:flex             1
+   :background-color colors/white})
 
 (def gray-label
   {:font-size      14

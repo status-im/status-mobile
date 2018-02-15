@@ -7,9 +7,8 @@
 (def black "#000000") ;; Used as the default text color
 (def black-transparent "#00000020") ;; Used as background color for rounded button on dark background
 (def gray "#939ba1") ;; Used as a background for a light foreground and as section header and secondary text color
-(def gray-light "#d9dae1") ;; Used as divider color
+(def gray-light "#e8ebec") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
 (def blue "#4360df") ;; Used as main wallet color
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
-(def light-gray "#e8ebec")  ;; Used as a background or shadow
 (def text-light-gray "#212121") ;; Used for labels (home items)

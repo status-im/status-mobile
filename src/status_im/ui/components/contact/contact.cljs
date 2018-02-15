@@ -4,6 +4,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.contact.styles :as styles]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.gfycat.core :as gfycat]))
@@ -24,11 +25,11 @@
        [react/text {:style styles/info-text}
         info])]]))
 
-(defn contact-view [{:keys [contact extended? on-press extend-options info show-forward?]}]
+(defn contact-view [{:keys [style contact extended? on-press extend-options info show-forward?]}]
   [react/touchable-highlight (when-not extended?
                                {:on-press (when on-press #(on-press contact))})
     [react/view styles/contact-container
-     [contact-inner-view {:contact contact :info info}]
+     [contact-inner-view {:contact contact :info info :style style}]
      (when show-forward?
        [react/view styles/forward-btn
         [vector-icons/icon :icons/forward]])
@@ -40,10 +41,7 @@
 
 (views/defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key whisper-identity]]
-    [react/touchable-highlight {:on-press #(on-toggle-handler checked whisper-identity)}
-      [react/view (merge styles/contact-container (when checked {:style styles/selected-contact}))
-       [contact-inner-view (merge {:contact contact}
-                                  (when checked {:style styles/selected-contact}))]
-       [react/view (styles/icon-check-container checked)
-        (when checked
-          [vector-icons/icon :icons/ok {:style styles/check-icon}])]]]))
+    [react/view styles/contact-container
+     [contact-inner-view {:contact contact}]
+     [checkbox/checkbox {:checked?         checked
+                         :on-value-change  #(on-toggle-handler checked whisper-identity)}]]))

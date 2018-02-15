@@ -26,7 +26,6 @@
             [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list
                                                                    add-contacts-toggle-list
                                                                    add-participants-toggle-list]]
-            [status-im.ui.screens.group.reorder.views :refer [reorder-groups]]
 
             [status-im.ui.screens.profile.views :as profile]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
@@ -153,7 +152,6 @@
                           :edit-chat-group-contact-list edit-chat-group-contact-list
                           :new-public-chat new-public-chat
                           :contact-toggle-list contact-toggle-list
-                          :reorder-groups reorder-groups
                           :new-chat new-chat
                           :qr-scanner qr-scanner
                           :chat chat

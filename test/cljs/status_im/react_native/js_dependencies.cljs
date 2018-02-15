@@ -27,7 +27,6 @@
        :Dimensions         #js {:get  (fn [])}})
 (def realm                  #js {:schemaVersion (fn [])
                                  :close         (fn [])})
-(def sortable-listview      #js {})
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})
 (def svg                    #js {:default #js {}})

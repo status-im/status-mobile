@@ -1,6 +1,7 @@
 (ns status-im.ui.components.contact.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as common]
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as common]
             [status-im.utils.platform]))
 
 (defstyle contact-inner-container
@@ -8,7 +9,7 @@
    :flex-direction   :row
    :align-items      :center
    :padding-left     16
-   :background-color common/color-white
+   :background-color colors/white
    :android          {:height 56}
    :ios              {:height 63}})
 
@@ -33,7 +34,7 @@
 (def contact-container
   {:flex-direction   :row
    :align-items      :center
-   :background-color common/color-white})
+   :background-color colors/white})
 
 (def forward-btn
   {:opacity        0.4
@@ -47,28 +48,3 @@
 
 (def more-btn
   {:padding 16})
-
-(def selected-contact
-  {:background-color common/selected-contact-color})
-
-(def toggle-container
-  {:width          56
-   :height         56
-   :alignItems     :center
-   :justifyContent :center})
-
-(defnstyle icon-check-container [checked]
-  {:background-color (if checked common/color-light-blue common/color-gray5)
-   :alignItems       :center
-   :justifyContent   :center
-   :margin-right     16
-   :android          {:border-radius 2
-                      :width         17
-                      :height        17}
-   :ios              {:border-radius 50
-                      :width         24
-                      :height        24}})
-
-(def check-icon
-  {:width  12
-   :height 12})

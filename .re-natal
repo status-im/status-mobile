@@ -29,7 +29,6 @@
     "identicon.js",
     "react-native-fs",
     "react-native-dialogs",
-    "react-native-sortable-listview",
     "react-native-image-resizer",
     "react-native-image-crop-picker",
     "react-native-webview-bridge",

@@ -96,3 +96,10 @@
                      :margin-bottom 3}
    :ios             {:margin-top    10
                      :margin-bottom 2}})
+
+(def list-with-label-wrapper
+  {:margin-top        26
+   :margin-horizontal 16})
+
+(def label
+  {:color colors/gray})

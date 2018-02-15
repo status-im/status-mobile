@@ -170,3 +170,9 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)}
           (when platform/ios? {:SectionSeparatorComponent (fn [] (reagent/as-element section-separator))}))])
+
+(defn list-with-label [{:keys [style]} label list]
+  [react/view (merge styles/list-with-label-wrapper style)
+   [react/text {:style styles/label}
+    label]
+   list])

@@ -15,7 +15,7 @@
    :background-color colors/white
    :android          {:height 76}
    :ios              {:height 74}
-   :overflow         "hidden"})
+   :overflow         :hidden})
 
 (defstyle chat-icon-container
   {:padding-top    18
@@ -30,7 +30,7 @@
   {:width            40
    :height           40
    :border-radius    20
-   :background-color colors/light-gray
+   :background-color colors/gray-lighter
    :align-items      :center
    :justify-content  :center})
 
@@ -135,23 +135,14 @@
    :android    {:top 2}
    :ios        {:top 3}})
 
-(def chats-container
+(def container
   {:flex 1})
 
-(defstyle list-container
-  {:android {:background-color colors/light-gray}
-   :ios     {:background-color colors/white}})
+(def native-button-offset 16)
 
 (def toolbar-actions
   {:flex-direction :row
    :padding-right  14})
-
-(def opts-btn-container
-  {:align-items     :center
-   :justify-content :center})
-
-(def opts-btn
-  {:padding 16})
 
 (def create-icon
   {:fontSize 20

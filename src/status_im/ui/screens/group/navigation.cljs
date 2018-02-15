@@ -12,10 +12,3 @@
 (defmethod nav/preload-data! :new-public-chat
   [db]
   (dissoc db :public-group-topic))
-
-(defmethod nav/preload-data! :reorder-groups
-  [db [_ _]]
-  (assoc db :group/groups-order (->> (vals (:group/contact-groups db))
-                                     (remove :pending?)
-                                     (sort-by :order >)
-                                     (map :group-id))))

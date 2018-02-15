@@ -23,7 +23,6 @@
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.browser.events
-            status-im.ui.screens.add-new.open-dapp.events
             status-im.ui.screens.offline-messaging-settings.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]

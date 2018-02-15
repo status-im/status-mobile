@@ -83,8 +83,8 @@
 
         (when-not me?
           (chat-button whisper-id))]]
-       (when show-separator?
-         [react/view styles/separator])]]))
+      (when show-separator?
+        [react/view styles/separator])]]))
 
 ;; NOTE(oskarth): Should possibly be merged with discover-list-item-full, but
 ;; there are too many differences between preview item (main screen) and full

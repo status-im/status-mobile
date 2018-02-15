@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.home.views.inner-item
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.home.styles :as styles]
@@ -13,7 +11,6 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as const]
-            [taoensso.timbre :as log]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
 
 (defn message-content-text [{:keys [content] :as message}] 

@@ -14,7 +14,7 @@
    :margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
-   :border-top-color colors/light-gray
+   :border-top-color colors/gray-light
    :elevation        2})
 
 (def input-container

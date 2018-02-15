@@ -189,9 +189,8 @@
                             (if (or (nil? timeout)
                                     (> 100 timeout))
                               (reset! loading false)
-                              (utils/set-timeout (fn []
-                                                  (reset! loading false))
-                                             timeout)))}
+                              (utils/set-timeout #(reset! loading false)
+                                                 timeout)))}
     (if (and (not enabled?) @loading)
       (or preview
           [view {:style (or style {:justify-content :center

@@ -103,7 +103,7 @@
 (spec/def :navigation.screen-params/edit-contact-group (allowed-keys :opt-un [:navigation.screen-params.edit-contact-group/group
                                                                               :navigation.screen-params.edit-contact-group/group-type]))
 (spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
-(spec/def :navigation.screen-params/dapp-description (allowed-keys :opt-un [:navigation.screen-params.dapp-description/dapp]))
+(spec/def :navigation.screen-params/dapp-description map?)
 
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser

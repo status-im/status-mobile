@@ -32,7 +32,7 @@
 
 (def background
   {:flex             1
-   :background-color colors/light-gray
+   :background-color colors/gray-lighter
    :align-items      :center
    :justify-content  :center})
 
@@ -51,7 +51,7 @@
    :flex               1
    :border-radius      4
    :height             36
-   :background-color   colors/light-gray
+   :background-color   colors/gray-lighter
    :padding-horizontal 12
    :android            {:align-items    :flex-start
                         :margin-left    (if show-actions 66 18)

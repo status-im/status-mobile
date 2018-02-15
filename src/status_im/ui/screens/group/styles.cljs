@@ -12,17 +12,9 @@
    :flex-direction   :column
    :background-color common/color-white})
 
-(def reorder-groups-container
-  {:flex             1
-   :flex-direction   :column
-   :background-color common/color-light-gray})
-
 (defstyle reorder-list-container
   {:flex    1
    :android {:padding-top 16}})
-
-(def group-name-container
-  {:margin-top 10})
 
 (def add-button-container
   {:margin-left 16})
@@ -98,6 +90,9 @@
    :ios             {:height 63}
    :android         {:height 56}})
 
+(def contact
+  {:padding-left 0})
+
 (defstyle settings-group-container
   {:ios     {:margin-top 25}
    :android {:margin-top 23}})
@@ -167,21 +162,6 @@
    :android {:padding-left 18}
    :ios     {:align-items :center}})
 
-(def toolbar-title-with-count-text
-  {:color          common/text1-color
-   :letter-spacing -0.2
-   :font-size      17})
-
-(def toolbar-title-with-count-text-count
-  (merge toolbar-title-with-count-text
-         {:color common/color-light-blue}))
-
-(def toolbar-title-with-count
-  {:flex-direction :row})
-
-(def toolbar-title-with-count-container
-  {:padding-left 6})
-
 (def separator
   {:background-color common/color-gray5
    :height           1
@@ -190,7 +170,3 @@
 (def list-view-container
   {:flex       1
    :margin-top 10})
-
-
-
-

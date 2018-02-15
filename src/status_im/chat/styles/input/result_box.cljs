@@ -4,7 +4,7 @@
 
 (defn root [height bottom]
   {:background-color common/color-white
-   :border-top-color colors/light-gray
+   :border-top-color colors/gray-light
    :border-top-width 1
    :flex-direction   :column
    :height           height

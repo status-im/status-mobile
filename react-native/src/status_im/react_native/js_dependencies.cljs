@@ -21,7 +21,6 @@
 (def random-bytes           (js/require "react-native-randombytes"))
 (def react-native           (js/require "react-native"))
 (def realm                  (js/require "realm"))
-(def sortable-listview      (js/require "react-native-sortable-listview"))
 (def vector-icons           (js/require "react-native-vector-icons/Ionicons"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    (js/require "react-native-svg"))

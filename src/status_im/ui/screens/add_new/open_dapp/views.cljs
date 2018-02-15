@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.add-new.open-dapp.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.react :as react]
-            [status-im.ui.screens.add-new.open-dapp.styles :as styles]
-            [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar.view]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [re-frame.core :as re-frame]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.common.common :as components]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.contact.contact :as contact-view]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.screens.add-new.styles :as add-new.styles]
+            [status-im.ui.screens.add-new.open-dapp.styles :as styles]))
 
 (defn render-row [row _ _]
   [contact-view/contact-view {:contact       row
-                              :on-press      #(re-frame/dispatch [:navigate-to :dapp-description {:dapp row}])
+                              :on-press      #(re-frame/dispatch [:navigate-to :dapp-description row])
                               :show-forward? true}])
 
 (views/defview open-dapp []
@@ -24,7 +25,7 @@
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/open-dapp)]
      [components/separator]
-     [react/view styles/enter-url
+     [react/view add-new.styles/input-container
       [react/text-input {:on-change-text    #(reset! url-text %)
                          :on-submit-editing #(do
                                                (re-frame/dispatch [:navigate-to-clean :home])
@@ -32,7 +33,7 @@
                          :placeholder       (i18n/label :t/enter-url)
                          :auto-capitalize   :none
                          :auto-correct      false
-                         :style             styles/url-input}]]
+                         :style             add-new.styles/input}]]
      [react/text {:style styles/list-title}
       (i18n/label :t/selected-dapps)]
      [list/flat-list {:data                      dapps
@@ -42,7 +43,7 @@
                       :keyboardShouldPersistTaps :always}]]))
 
 (views/defview dapp-description []
-  (views/letsubs [{:keys [name dapp-url] :as dapp} [:get :new/open-dapp]]
+  (views/letsubs [{:keys [name dapp-url] :as dapp} [:get-screen-params]]
     [react/keyboard-avoiding-view styles/main-container
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar]

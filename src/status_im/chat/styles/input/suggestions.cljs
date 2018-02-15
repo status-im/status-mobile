@@ -9,7 +9,7 @@
 
 (def root
   {:background-color common/color-white
-   :border-top-color colors/light-gray
+   :border-top-color colors/gray-light
    :border-top-width 1})
 
 (defn item-suggestion-container [last?]
@@ -18,7 +18,7 @@
    :height              item-height
    :margin-left         14
    :padding-right       14
-   :border-bottom-color colors/light-gray
+   :border-bottom-color colors/gray-light
    :border-bottom-width (if last? 0 border-height)})
 
 (def item-suggestion-name
