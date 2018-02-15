@@ -66,7 +66,8 @@
   (views/letsubs [{:keys [address]} [:get-current-account]
                   chain-id          [:get-network-id]]
     [comp/simple-screen
-     [comp/toolbar comp/default-action
+     [comp/toolbar {}
+      comp/default-action
       (i18n/label :t/receive)
       [toolbar/actions [{:icon      :icons/share
                          :icon-opts {:color :white}

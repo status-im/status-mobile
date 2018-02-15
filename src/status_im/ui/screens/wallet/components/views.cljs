@@ -19,6 +19,7 @@
             [status-im.ui.screens.wallet.components.styles :as styles]
             [status-im.ui.screens.wallet.choose-recipient.views :as choose-recipient]
             [status-im.ui.screens.wallet.views :as wallet]
+            [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -140,11 +141,14 @@
   (let [content (reagent/atom nil)]
     (fn []
       [components/simple-screen {:avoid-keyboard? true}
-       [components/toolbar (i18n/label :t/recipient)]
+       [components/toolbar {:style wallet.styles/toolbar-bottom-line}
+        components/default-action
+        (i18n/label :t/recipient)]
        [react/view components.styles/flex
         [components/cartouche {}
          (i18n/label :t/recipient)
          [components/text-input {:multiline      true
+                                 :style          styles/contact-code-text-input
                                  :placeholder    (i18n/label :t/recipient-code)
                                  :on-change-text #(reset! content %)}]]
         [bottom-buttons/bottom-button

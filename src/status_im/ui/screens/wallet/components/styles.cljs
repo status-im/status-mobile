@@ -23,6 +23,13 @@
      :height         52
      :letter-spacing -0.2}))
 
+(def contact-code-text-input
+  {:text-align-vertical :top
+   :padding-top         16
+   :padding-left        2
+   :padding-right       8
+   :height              72})
+
 (defstyle label
   {:color   :white
    :ios     {:font-size      14

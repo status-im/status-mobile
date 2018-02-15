@@ -27,10 +27,12 @@
 (def default-action (actions/back-white actions/default-handler))
 
 (defn- toolbar
-  ([title] (toolbar default-action title))
-  ([action title] (toolbar action title nil))
-  ([action title options]
-   [toolbar/toolbar {:style styles/toolbar}
+  ([title] (toolbar {} title))
+  ([props title] (toolbar props default-action title))
+  ([props action title] (toolbar props action title nil))
+  ([props action title options]
+   [toolbar/toolbar (utils/deep-merge {:style styles/toolbar}
+                                      props)
     [toolbar/nav-button action]
     [toolbar/content-title {:color :white}
      title]
