@@ -5,17 +5,17 @@ from tests import info
 
 
 def get_transactions(address: str) -> dict:
-    url = 'http://ropsten.etherscan.io/api?module=account&action=txlist&address=0x%s&sort=desc' % address
+    url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=0x%s&sort=desc' % address
     return requests.request('GET', url=url).json()['result']
 
 
 def is_transaction_successful(transaction_hash: str) -> int:
-    url = "https://ropsten.etherscan.io/api?module=transaction&action=getstatus&txhash=%s" % transaction_hash
+    url = "https://api-ropsten.etherscan.io/api?module=transaction&action=getstatus&txhash=%s" % transaction_hash
     return not int(requests.request('GET', url=url).json()['result']['isError'])
 
 
 def get_balance(address):
-    url = 'http://ropsten.etherscan.io/api?module=account&action=balance&address=0x%s&tag=latest' % address
+    url = 'http://api-ropsten.etherscan.io/api?module=account&action=balance&address=0x%s&tag=latest' % address
     for i in range(5):
         try:
             return int(requests.request('GET', url).json()["result"])
