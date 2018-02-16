@@ -92,6 +92,8 @@
 
 (def action
   {:background-color colors/white-transparent
+   :width            40
+   :height           40
    :border-radius    50})
 
 (def action-label

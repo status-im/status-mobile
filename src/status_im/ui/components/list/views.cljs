@@ -83,8 +83,7 @@
    [checkbox/checkbox props]])
 
 (def item-icon-forward
-  [item-icon {:style     styles/item-icon
-              :icon      :icons/forward
+  [item-icon {:icon      :icons/forward
               :icon-opts {:color colors/white-light-transparent}}])
 
 (defn- wrap-render-fn [f]

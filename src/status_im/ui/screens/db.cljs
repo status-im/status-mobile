@@ -8,14 +8,14 @@
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs
-            status-im.chat.new-public-chat.db
             status-im.commands.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.discover.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
             status-im.ui.screens.browser.db
-            status-im.ui.screens.add-new.db))
+            status-im.ui.screens.add-new.db
+            status-im.ui.screens.add-new.new-public-chat.db))
 
 ;; initial state of app-db
 (def app-db {:current-public-key         nil

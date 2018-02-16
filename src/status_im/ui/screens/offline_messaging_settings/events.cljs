@@ -10,7 +10,7 @@
     (-> (accounts-events/account-update {:db db}
                                         {:wnode wnode :last-updated now})
      (merge {:dispatch    [:navigate-to-clean :accounts]
-            :stop-whisper nil}))))
+             :stop-whisper nil}))))
 
 (handlers/register-handler-fx
   :connect-wnode

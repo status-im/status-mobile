@@ -12,3 +12,5 @@
 (def blue "#4360df") ;; Used as main wallet color
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
 (def text-light-gray "#212121") ;; Used for labels (home items)
+
+(def text black)

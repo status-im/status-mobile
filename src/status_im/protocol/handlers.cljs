@@ -393,7 +393,7 @@
 
 (handlers/register-handler-fx
   :check-sync
-  (fn [{{:keys [web3] :as db} :db} _]
+  (fn [{{:keys [web3]} :db} _]
     {::web3-get-syncing web3
      :dispatch-later [{:ms 10000 :dispatch [:check-sync]}]}))
 
@@ -547,7 +547,7 @@
   [re-frame/trim-v]
   (fn [{{:keys [web3 contacts/contacts] :as db} :db}
        [{:keys                                               [from]
-         {:keys [group-id timestamp message-id] :as payload} :payload}]]
+         {:keys [group-id timestamp message-id]} :payload}]]
     (let [chat        (get-in db [:chats group-id])
           new-update? (chat/new-update? chat timestamp)]
       (when new-update?

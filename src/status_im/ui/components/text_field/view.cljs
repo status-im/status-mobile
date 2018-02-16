@@ -35,18 +35,18 @@
   (let [duration  (:label-animation-duration config)
         animation (animation/parallel (into []
                                             (concat
-                                     (when (or (nil? value-blank?) value-blank?)
-                                       [(animation/timing top {:toValue to-top
-                                                          :duration     duration})
-                                        (animation/timing font-size {:toValue to-font-size
-                                                                :duration     duration})])
-                                     [(animation/timing line-width {:toValue to-line-width
-                                                               :duration     duration})
-                                      (animation/timing line-height {:toValue to-line-height
-                                                                :duration     duration})])))]
+                                             (when (or (nil? value-blank?) value-blank?)
+                                               [(animation/timing top {:toValue to-top
+                                                                       :duration     duration})
+                                                (animation/timing font-size {:toValue to-font-size
+                                                                             :duration     duration})])
+                                             [(animation/timing line-width {:toValue to-line-width
+                                                                            :duration     duration})
+                                              (animation/timing line-height {:toValue to-line-height
+                                                                             :duration     duration})])))]
     (animation/start animation (fn [arg]
-                            (when (.-finished arg)
-                              (log/debug "Field animation finished"))))))
+                                (when (.-finished arg)
+                                  (log/debug "Field animation finished"))))))
 
 ; Invoked once before the component is mounted. The return value will be used
 ; as the initial value of this.state.
@@ -65,11 +65,11 @@
 (defn component-will-mount [component]
   (let [{:keys [value]} (reagent/props component)
         data {:label-top       (animation/create-value (if (string/blank? value)
-                                                    (:label-bottom config)
-                                                    (:label-top config)))
+                                                        (:label-bottom config)
+                                                        (:label-top config)))
               :label-font-size (animation/create-value (if (string/blank? value)
-                                                    (:label-font-large config)
-                                                    (:label-font-small config)))
+                                                        (:label-font-large config)
+                                                        (:label-font-small config)))
               :float-label?    (if (string/blank? value) false true)}]
     ;(log/debug "component-will-mount")
     (reagent/set-state component data)))
@@ -78,7 +78,7 @@
   (do
     (log/debug "input focused")
     (reagent/set-state component {:has-focus true
-                            :float-label?    true})
+                                  :float-label?    true})
     (field-animation (merge animation
                             {:to-line-width (:max-line-width (reagent/state component))}))
     (when onFocus (onFocus))))
@@ -86,7 +86,7 @@
 (defn on-input-blur [{:keys [component value animation onBlur]}]
   (log/debug "Input blurred")
   (reagent/set-state component {:has-focus false
-                          :float-label?    (if (string/blank? value) false true)})
+                                :float-label?    (if (string/blank? value) false true)})
   (field-animation animation (string/blank? value))
   (when onBlur (onBlur)))
 
@@ -107,7 +107,7 @@
                 max-length]} (reagent/state component)
         {:keys [wrapper-style input-style label-hidden? line-color focus-line-color focus-line-height
                 secure-text-entry label-color error-color error label value on-focus on-blur validator
-                auto-focus on-change-text on-change on-end-editing editable placeholder
+                auto-focus on-change-text on-change on-end-editing on-submit-editing editable placeholder
                 placeholder-text-color auto-capitalize multiline number-of-lines]}
         (merge default-props (reagent/props component))
         valid-value      (or valid-value "")
@@ -120,52 +120,52 @@
      (when-not label-hidden?
        [react/animated-text {:style (styles/label label-top label-font-size label-color)} label])
      [react/text-input {:ref                    #(reset! input-ref %)
-                  :style                  (merge styles/text-input input-style)
-                  :placeholder            (or placeholder "")
-                  :placeholder-text-color placeholder-text-color
-                  :editable               editable
-                  :multiline              multiline
-                  :number-of-lines        number-of-lines
-                  :secure-text-entry      secure-text-entry
-                  :auto-capitalize        auto-capitalize
-                  :on-focus               #(on-input-focus {:component component
-                                                            :animation {:top            label-top
-                                                                        :to-top         (:label-top config)
-                                                                        :font-size      label-font-size
-                                                                        :to-font-size   (:label-font-small config)
-                                                                        :line-width     line-width
-                                                                        :line-height    line-height
-                                                                        :to-line-height focus-line-height}
-                                                            :onFocus   on-focus})
-                  :on-blur                #(on-input-blur {:component component
-                                                           :value     (or current-value value)
-                                                           :animation {:top            label-top
-                                                                       :to-top         (:label-bottom config)
-                                                                       :font-size      label-font-size
-                                                                       :to-font-size   (:label-font-large config)
-                                                                       :line-width     line-width
-                                                                       :line-height    line-height
-                                                                       :to-line-width  0
-                                                                       :to-line-height 1}
-                                                           :onBlur    on-blur})
-                  :on-change-text         (fn [text]
-                                            (reagent/set-state component {:current-value text})
-                                            (if (or (not validator) (validator text))
-                                              (do
-                                                (reagent/set-state component {:valid-value text
-                                                                        :temp-value        nil})
-                                                (on-change-text text))
-                                              (reagent/set-state component {:temp-value valid-value
-                                                                      :max-length       (count valid-value)})))
-                  :on-change              on-change
-                  :default-value          value
-                  :value                  temp-value
-                  :max-length             max-length
-                  :on-submit-editing      #(.blur @input-ref)
-                  :on-end-editing         (when on-end-editing on-end-editing)
-                  :auto-focus             (true? auto-focus)}]
+                        :style                  (merge styles/text-input input-style)
+                        :placeholder            (or placeholder "")
+                        :placeholder-text-color placeholder-text-color
+                        :editable               editable
+                        :multiline              multiline
+                        :number-of-lines        number-of-lines
+                        :secure-text-entry      secure-text-entry
+                        :auto-capitalize        auto-capitalize
+                        :on-focus               #(on-input-focus {:component component
+                                                                  :animation {:top            label-top
+                                                                              :to-top         (:label-top config)
+                                                                              :font-size      label-font-size
+                                                                              :to-font-size   (:label-font-small config)
+                                                                              :line-width     line-width
+                                                                              :line-height    line-height
+                                                                              :to-line-height focus-line-height}
+                                                                  :onFocus   on-focus})
+                        :on-blur                #(on-input-blur {:component component
+                                                                 :value     (or current-value value)
+                                                                 :animation {:top            label-top
+                                                                             :to-top         (:label-bottom config)
+                                                                             :font-size      label-font-size
+                                                                             :to-font-size   (:label-font-large config)
+                                                                             :line-width     line-width
+                                                                             :line-height    line-height
+                                                                             :to-line-width  0
+                                                                             :to-line-height 1}
+                                                                 :onBlur    on-blur})
+                        :on-change-text         (fn [text]
+                                                  (reagent/set-state component {:current-value text})
+                                                  (if (or (not validator) (validator text))
+                                                    (do
+                                                      (reagent/set-state component {:valid-value text
+                                                                                    :temp-value        nil})
+                                                      (on-change-text text))
+                                                    (reagent/set-state component {:temp-value valid-value
+                                                                                  :max-length       (count valid-value)})))
+                        :on-change              on-change
+                        :default-value          value
+                        :value                  temp-value
+                        :max-length             max-length
+                        :on-submit-editing      #(do (.blur @input-ref) (when on-submit-editing (on-submit-editing)))
+                        :on-end-editing         (when on-end-editing on-end-editing)
+                        :auto-focus             (true? auto-focus)}]
      [react/view {:style    (styles/underline-container line-color)
-            :onLayout #(reagent/set-state component {:max-line-width (get-width %)})}
+                  :onLayout #(reagent/set-state component {:max-line-width (get-width %)})}
       [react/animated-view {:style (styles/underline focus-line-color line-width line-height)}]]
      [react/text {:style (styles/error-text error-color)} error]]))
 
@@ -178,6 +178,6 @@
                                                 (let [{:keys [temp-value]} (reagent/state comp)]
                                                   (when temp-value
                                                     (reagent/set-state comp {:temp-value nil
-                                                                       :max-length       nil}))))}]
+                                                                             :max-length       nil}))))}]
     ;(log/debug "Creating text-field component: " data)
     (reagent/create-class component-data)))

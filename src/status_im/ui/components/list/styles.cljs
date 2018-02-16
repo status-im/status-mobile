@@ -44,9 +44,7 @@
 (def icon-wrapper-size (+ icon-size (* 2 8)))
 
 (def item-icon-wrapper
-  {:width           icon-wrapper-size
-   :height          icon-wrapper-size
-   :align-items     :center
+  {:align-items     :center
    :justify-content :center})
 
 (def item-icon
@@ -68,7 +66,7 @@
 
 (def right-item-wrapper
   {:justify-content :center
-   :margin-right    horizontal-margin})
+   :margin-right    12})
 
 (def base-separator
   {:height           1

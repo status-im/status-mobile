@@ -29,11 +29,11 @@
         [react/text {:style style/add-contact-text}
          (i18n/label :t/add-to-contacts)]]])))
 
-(defn- on-options [chat-id chat-name group-chat?]
-  (list-selection/show {:title   chat-name
-                        :options (actions/actions group-chat? chat-id)}))
+(defn- on-options [chat-id chat-name group-chat? public?]
+  (list-selection/show {:title   (if public? (str "#" chat-name) chat-name)
+                        :options (actions/actions group-chat? chat-id public?)}))
 
-(defview chat-toolbar []
+(defview chat-toolbar [public?]
   (letsubs [accounts  [:get-accounts]
             creating? [:get :accounts/creating-account?]
             {:keys [group-chat name chat-id]} [:get-current-chat]]
@@ -48,7 +48,7 @@
       [toolbar-content/toolbar-content-view]
       [toolbar/actions [{:icon      :icons/options
                          :icon-opts {:color :black}
-                         :handler   #(on-options chat-id name group-chat)}]]]
+                         :handler   #(on-options chat-id name group-chat public?)}]]]
      [add-contact-bar]]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
@@ -95,12 +95,12 @@
                      :keyboardShouldPersistTaps (if platform/android? :always :handled)}]))
 
 (defview chat []
-  (letsubs [{:keys [group-chat input-text]} [:get-current-chat]
+  (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
             show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
             layout-height                   [:get :layout-height]
             current-view                    [:get :view-id]]
     [react/view {:style style/chat-view}
-     [chat-toolbar]
+     [chat-toolbar public?]
      (when (= :chat current-view)
        [messages-view-animation
         [messages-view group-chat]])

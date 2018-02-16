@@ -11,7 +11,6 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]))
 
-
 (defn- render-token [{:keys [symbol name icon]} visible-tokens]
   [list/item
    [list/item-image icon]

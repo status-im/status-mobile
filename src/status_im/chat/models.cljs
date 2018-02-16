@@ -13,7 +13,7 @@
   (update-in db [:chat-ui-props current-chat-id ui-element] not))
 
 (defn- create-new-chat
-  [{:keys [db now] :as cofx} chat-id]
+  [{:keys [db now]} chat-id]
   (let [name (get-in db [:contacts/contacts chat-id :name])]
     {:chat-id    chat-id
      :name       (or name (gfycat/generate-gfy chat-id))
@@ -28,7 +28,7 @@
   ([cofx chat-id]
    (add-chat cofx chat-id {}))
   ([{:keys [db get-stored-chat] :as cofx} chat-id chat-props]
-   (let [{:keys [chats deleted-chats]} db
+   (let [{:keys [deleted-chats]} db
          new-chat (merge (if (get deleted-chats chat-id)
                            (assoc (get-stored-chat chat-id) :is-active true)
                            (create-new-chat cofx chat-id))
@@ -64,3 +64,16 @@
   (and (> timestamp added-to-at)
        (> timestamp removed-at)
        (> timestamp removed-from-at)))
+
+(defn remove-chat [{:keys [db]} chat-id]
+  (let [{:keys [chat-id group-chat debug?]} (get-in db [:chats chat-id])]
+    (cond-> {:db                      (-> db
+                                          (update :chats dissoc chat-id)
+                                          (update :deleted-chats (fnil conj #{}) chat-id))
+             :delete-pending-messages chat-id}
+            (or group-chat debug?)
+            (assoc :delete-messages chat-id)
+            debug?
+            (assoc :delete-chat chat-id)
+            (not debug?)
+            (assoc :deactivate-chat chat-id))))

@@ -17,12 +17,6 @@
           :height        40
           :border-radius 20}))
 
-(defn default-chat-icon-menu-item [color]
-  (merge (default-chat-icon color)
-         {:width         24
-          :height        24
-          :border-radius 12}))
-
 (defn default-chat-icon-profile [color]
   (merge (default-chat-icon color)
          {:width         64
@@ -143,13 +137,6 @@
    :background-color color-white})
 (def online-dot-left (merge online-dot {:left 2.8}))
 (def online-dot-right (merge online-dot {:left 7.2}))
-
-(def photo-pencil
-  {:margin-left  8
-   :margin-right 2
-   :margin-top   6
-   :font-size    12
-   :color        :white})
 
 (def online-dot-menu-item
   (merge online-dot

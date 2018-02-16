@@ -13,7 +13,7 @@
             [status-im.chat.screen :refer [chat]]
             [status-im.ui.screens.add-new.views :refer [add-new]]
             [status-im.ui.screens.add-new.new-chat.views :refer [new-chat]]
-            [status-im.chat.new-public-chat.view :refer [new-public-chat]]
+            [status-im.ui.screens.add-new.new-public-chat.view :refer [new-public-chat]]
 
             [status-im.ui.screens.contacts.contact-list-modal.views :refer [contact-list-modal]]
 

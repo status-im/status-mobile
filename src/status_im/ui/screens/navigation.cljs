@@ -16,7 +16,7 @@
                  (pop stack))]
     (conj stack' view-id)))
 
-(defn- replace-view [db view-id]
+(defn replace-view [db view-id]
   (-> db
       (update :navigation-stack replace-top-element view-id)
       (assoc :view-id view-id)))
