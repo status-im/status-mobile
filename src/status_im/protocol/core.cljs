@@ -6,7 +6,6 @@
             [status-im.protocol.web3.inbox :as inbox]
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
-            [status-im.protocol.web3.utils :as u]
             [status-im.protocol.web3.keys :as shh-keys]
             [status-im.protocol.chat :as chat]
             [status-im.protocol.group :as group]
