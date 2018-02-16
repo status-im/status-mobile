@@ -167,7 +167,7 @@
                                    (when-not contact-only?
                                      [{:label  (i18n/label :t/scan-qr)
                                        :action request-camera-permissions}
-                                      {:label  (i18n/label :t/enter-contact-code)
+                                      {:label  (i18n/label :t/recipient-code)
                                        :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only?]}]
