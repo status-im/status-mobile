@@ -95,12 +95,12 @@
   :broadcast-status
   [(re-frame/inject-cofx :random-id)]
   (fn [{{:keys [current-public-key web3]
-         :accounts/keys [accounts current-account-id]
+         :accounts/keys [account]
          :contacts/keys [contacts]} :db
         random-id :random-id}
        [_ status]]
     (when-let [hashtags (seq (handlers/get-hashtags status))]
-      (let [{:keys [name photo-path]} (get accounts current-account-id)
+      (let [{:keys [name photo-path]} account
             message    {:message-id random-id
                         :from       current-public-key
                         :payload    {:message-id random-id

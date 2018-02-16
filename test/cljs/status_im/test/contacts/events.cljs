@@ -151,9 +151,7 @@
                       :status "status"
                       :updates-public-key "updates-public-key"
                       :updates-private-key "updates-private-key"}
-          accounts   {"current-account-id" account}
-          db         {:accounts/accounts accounts
-                      :accounts/current-account-id "current-account-id"
+          db         {:accounts/account account
                       :web3 "web3"
                       :current-public-key "current-public-key"
                       :notifications {:fcm-token "fcm-token"}}
@@ -169,9 +167,6 @@
 
       (testing "it adds web3"
         (is (= "web3" (:web3 actual-fx))))
-
-      (testing "it adds the current-account-id"
-        (is (= "current-account-id" (:current-account-id actual-fx))))
 
       (testing "it adds the fcm-token"
         (is (= "fcm-token" (:fcm-token actual-fx))))

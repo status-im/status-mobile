@@ -36,8 +36,6 @@
 (spec/def :accounts/account-creation? (spec/nilable boolean?))
 ;;true during login just created account
 (spec/def :accounts/creating-account? (spec/nilable boolean?))
-;;id of logged in account
-(spec/def :accounts/current-account-id (spec/nilable string?))
 ;;used during recovering account
 (spec/def :accounts/recover (spec/nilable map?))
 ;;used during logging

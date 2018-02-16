@@ -198,7 +198,7 @@
 (handlers/register-handler-fx
   :wallet/sign-transaction
   (fn [{{:keys          [web3]
-         :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
+         :accounts/keys [account] :as db} :db} [_ later?]]
     (let [db'     (assoc-in db [:wallet :send-transaction :wrong-password?] false)
           network (:network db)
           {:keys [amount id password to symbol gas gas-price]} (get-in db [:wallet :send-transaction])]
@@ -212,7 +212,7 @@
                                        :later? later?
                                        :in-progress? true)
          ::send-transaction {:web3      web3
-                             :from      (get-in accounts [current-account-id :address])
+                             :from      (:address account)
                              :to        to
                              :value     amount
                              :gas       gas
@@ -222,8 +222,7 @@
 
 (handlers/register-handler-fx
   :wallet/sign-transaction-modal
-  (fn [{{:keys          [web3]
-         :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
+  (fn [{{:keys [web3] :as db} :db} [_ later?]]
     (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
       {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
        ::accept-transaction {:id           id
