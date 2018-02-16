@@ -14,7 +14,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
             [status-im.core :as core]
-            [status-im.utils.snoopy :as snoopy]))
+            [status-im.utils.snoopy :as snoopy]
+            [taoensso.timbre :as log]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -79,8 +80,21 @@
        :display-name "root"
        :reagent-render views/main})))
 
+
+(defn sleep [msec]
+  (let [deadline (+ msec (.getTime (js/Date.)))]
+    (while (> deadline (.getTime (js/Date.))))))
+
 (defn init []
+  (log/debug "[INIT] android.core/init")
+  (log/debug "[INIT] status/init-jail")
+  (status/init-jail)
+  (sleep 2000)
+  (log/debug "[INIT] status/set-soft-input-mode")
   (status/set-soft-input-mode status/adjust-resize)
+  (log/debug "[INIT] init-back-button-handler!")
   (init-back-button-handler!)
+  (log/debug "[INIT] core/init")
   (core/init app-root)
+  (log/debug "[INIT] snoopy/subscribe!")
   (snoopy/subscribe!))

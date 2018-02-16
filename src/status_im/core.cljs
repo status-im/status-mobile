@@ -12,8 +12,11 @@
   (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
 
 (defn init [app-root]
-  (log/set-level! config/log-level)
+  #_(log/debug "[INIT] log/set-level!")
+  #_(log/set-level! config/log-level)
+  (log/debug "[INIT] error-handler/register-exception-handler!")
   (error-handler/register-exception-handler!)
-  (status/init-jail)
+  (log/debug "[INIT] .registerComponent")
   (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
+  (log/debug "[INIT] re-frame/dispatch-sync :initialize-app")
   (re-frame/dispatch-sync [:initialize-app]))

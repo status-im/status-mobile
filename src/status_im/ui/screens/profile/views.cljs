@@ -254,6 +254,9 @@
    [settings-item-separator]
    [settings-item :t/network (get-in networks [network :name])
     #(re-frame/dispatch [:navigate-to :network-settings]) true]
+   [settings-item-separator]
+   [settings-item :t/benchmark ""
+    #(re-frame/dispatch [:event-ping]) true]
    (when config/offline-inbox-enabled?
      [settings-item-separator])
    (when config/offline-inbox-enabled?

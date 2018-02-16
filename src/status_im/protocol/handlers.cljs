@@ -21,8 +21,10 @@
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
+            [status-im.utils.datetime :as datetime]
             [status-im.utils.web3-provider :as web3-provider]
-            [status-im.utils.ethereum.core :as utils]))
+            [status-im.utils.ethereum.core :as utils]
+            [status-im.utils.utils :as status.utils]))
 
 ;;;; COFX
 
@@ -614,6 +616,32 @@
        :db (update-in db [:chats group-id :contacts]
                       #(remove (fn [{:keys [identity]}]
                                  (= identity from)) %))})))
+
+(def timer (atom nil))
+
+(defn sleep [msec]
+  (let [deadline (+ msec (.getTime (js/Date.)))]
+    (while (> deadline (.getTime (js/Date.))))))
+
+(handlers/register-handler-fx
+  :event-ping
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [counter]]
+    (sleep 100)
+    (let [counter (or counter 0)]
+      (when (zero? counter)
+        (reset! timer (datetime/now-ms)))
+      (if (> counter 50)
+        (status.utils/show-popup "Benchmark result" (str "100 events ran in " (/ (- (datetime/now-ms) @timer) 1000 ) "s"))
+        {:db (assoc db :benchmark (str counter))
+         :dispatch [:event-pong (inc counter)]}))))
+
+(handlers/register-handler-fx
+  :event-pong
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [counter]]
+    (sleep 100)
+    {:dispatch [:event-ping counter]}))
 
 ;;ERROR
 
