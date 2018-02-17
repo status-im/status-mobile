@@ -1,30 +1,29 @@
 (ns status-im.ui.screens.wallet.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require-macros [status-im.utils.views :as views])
+  (:require [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.styles :as styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.ethereum.tokens :as tokens]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style styles/toolbar :flat? true}
    nil
    [toolbar/content-wrapper]
    [toolbar/actions
-    [(assoc (act/opts [{:label  (i18n/label :t/wallet-manage-assets)
-                        :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}])
-            :icon-opts {:color               :white
-                        :accessibility-label :options-menu-button})]]])
+    [{:icon      :icons/options
+      :icon-opts {:color               :white
+                  :accessibility-label :options-menu-button}
+      :options   [{:label  (i18n/label :t/wallet-manage-assets)
+                   :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
 
 (defn- total-section [usd-value]
-  [react/view {:style styles/main-section}
+  [react/view styles/section
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style               styles/total-balance-value
@@ -67,35 +66,34 @@
 (defn current-tokens [visible-tokens network]
   (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network))))
 
-(defn- asset-section [network balance visible-tokens refreshing?]
+(defn- asset-section [network balance visible-tokens]
   (let [tokens (current-tokens visible-tokens network)
         assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] tokens))]
     [react/view styles/asset-section
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
       {:default-separator? true
-       :data               assets
+       :scroll-enabled     false
        :key-fn             (comp str :symbol)
-       :render-fn          render-asset
-       :on-refresh         #(re-frame/dispatch [:update-wallet (map :symbol tokens)])
-       :refreshing         refreshing?}]]))
+       :data               assets
+       :render-fn          render-asset}]]))
 
-(defview wallet []
-  (letsubs [network          [:network]
-            balance          [:balance]
-            visible-tokens   [:wallet.settings/visible-tokens]
-            portfolio-value  [:portfolio-value]
-            prices-loading?  [:prices-loading?]
-            balance-loading? [:wallet/balance-loading?]
-            error-message?   [:wallet/error-message?]]
-    [react/view {:style components.styles/flex}
-     (when error-message?
-       (re-frame/dispatch [:wallet/show-error]))
-     [toolbar-view]
-     [react/view components.styles/flex
-      [total-section portfolio-value]
-      [list/action-list actions
-       {:container-style styles/action-section}]
-      [asset-section network balance visible-tokens
-       (and (or prices-loading? balance-loading?)
-            (not error-message?))]]]))
+(views/defview wallet []
+  (views/letsubs [network         [:network]
+                  balance         [:balance]
+                  visible-tokens  [:wallet.settings/visible-tokens]
+                  portfolio-value [:portfolio-value]]
+    (let [symbols (map :symbol (current-tokens visible-tokens network))]
+      [react/view styles/main-section
+       [toolbar-view]
+       [react/scroll-view {:content-container-style styles/scrollable-section
+                           :refresh-control
+                           (reagent/as-element
+                             [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet symbols])
+                                                     :tint-color :white
+                                                     :refreshing false}])}
+        [react/view {:style styles/scroll-top}] ;; Hack to allow different colors for top / bottom scroll view]
+        [total-section portfolio-value]
+        [list/action-list actions
+         {:container-style styles/action-section}]
+        [asset-section network balance visible-tokens]]])))

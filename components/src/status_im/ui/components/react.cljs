@@ -43,6 +43,8 @@
 (def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
+(def refresh-control (get-class "RefreshControl"))
+
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image (get-class "Image"))

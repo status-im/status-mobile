@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as styles]))
 
 ;; wallet
@@ -57,14 +58,32 @@
    :padding-vertical   15})
 
 (def cartouche-primary-text
-  {:color styles/color-white})
+  {:color colors/white})
 
 (def cartouche-secondary-text
-  {:color styles/color-white-transparent})
+  {:color colors/white-transparent})
 
 ;; Main section
 
 (def main-section
+  {:flex 1})
+
+(def scrollable-section
+  {:flex             1
+   :zIndex           1
+   :background-color colors/white})
+
+(def scroll-top
+  (let [height (:height (react/get-dimensions "window"))]
+    {:background-color colors/blue
+     :zIndex           -1
+     :position         :absolute
+     :height           height
+     :top              (- height)
+     :left             0
+     :right            0}))
+
+(def section
   {:background-color colors/blue})
 
 (def total-balance-container
@@ -80,19 +99,20 @@
 
 (def total-value
   {:font-size 14
-   :color     styles/color-white-transparent})
+   :color     colors/white-transparent})
 
 (defstyle total-balance-currency
   {:font-size   37
    :margin-left 9
-   :color       styles/color-white-transparent-5
+   :color       colors/white-lighter-transparent
    :android     {:letter-spacing 1.5}
    :ios         {:letter-spacing 1.16}})
 
 ;; Actions section
 
 (def action-section
-  {:background-color colors/blue})
+  {:flex 1
+   :background-color colors/blue})
 
 (def action
   {:background-color colors/white-transparent
@@ -112,12 +132,13 @@
 
 (def asset-section
   {:flex             1
-   :padding-vertical 16})
+   :padding-top      16
+   :background-color colors/white})
 
 (def asset-section-title
   {:font-size   14
    :margin-left 16
-   :color       styles/color-gray4})
+   :color       colors/gray})
 
 (def asset-item-value-container
   {:flex           1
@@ -127,15 +148,9 @@
 (def asset-item-value
   {:flex      -1
    :font-size 16
-   :color     styles/color-black})
+   :color     colors/black})
 
 (def asset-item-currency
   {:font-size   16
-   :color       styles/color-gray4
+   :color       colors/gray
    :margin-left 6})
-
-(def qr-code-preview
-  {:width           256
-   :height          256
-   :justify-content :center
-   :align-items     :center})
