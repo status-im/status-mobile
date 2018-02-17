@@ -3,13 +3,13 @@
                                                     online-color]]))
 
 (defn default-chat-icon [color]
-  {:margin          0
-   :width           40
-   :height          40
-   :alignItems      :center
-   :justifyContent  :center
-   :borderRadius    20
-   :backgroundColor color})
+  {:margin           0
+   :width            40
+   :height           40
+   :align-items      :center
+   :justify-content  :center
+   :border-radius    20
+   :background-color color})
 
 (defn default-chat-icon-chat-list [color]
   (merge (default-chat-icon color)
@@ -36,15 +36,15 @@
           :border-radius 32}))
 
 (def default-chat-icon-text
-  {:marginTop  -2
-   :color      color-white
-   :fontSize   16
-   :lineHeight 20})
+  {:margin-top  -2
+   :color       color-white
+   :font-size   16
+   :line-height 20})
 
 (def message-status-icon-text
-  {:marginTop -2
-   :color     color-white
-   :fontSize  24})
+  {:margin-top -2
+   :color      color-white
+   :font-size  24})
 
 (def chat-icon
   {:margin        4

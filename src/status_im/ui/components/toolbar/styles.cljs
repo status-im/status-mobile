@@ -25,9 +25,9 @@
    :margin-left    4})
 
 (defstyle toolbar-container
-  {:flex       1
-   :android    {:padding-left 18}
-   :ios        {:align-items  :center}})
+  {:flex    1
+   :android {:padding-left 18}
+   :ios     {:align-items :center}})
 
 (def toolbar-title-container
   {:flex           1
@@ -77,8 +77,8 @@
    :padding-horizontal 16})
 
 (defstyle item
-  {:ios     {:marginHorizontal 12
-             :marginVertical   16}
+  {:ios     {:margin-horizontal 12
+             :margin-vertical   16}
    :android {:margin 16}})
 
 (def item-text

@@ -15,8 +15,8 @@
                           styles/color-gray10-transparent)})
 
 (def tabs-container
-  {:flexDirection :row
-   :height        tabs.styles/tab-height})
+  {:flex-direction :row
+   :height         tabs.styles/tab-height})
 
 (defnstyle tab-title [active?]
   {:ios        {:font-size 15}
@@ -53,10 +53,10 @@
    :font-size    17})
 
 (def tx-time
-  {:flex-grow   1 
-   :font-size   14
-   :text-align  :right
-   :color       styles/color-gray4})
+  {:flex-grow  1 
+   :font-size  14
+   :text-align :right
+   :color      styles/color-gray4})
 
 (def address-row
   {:flex-direction :row
@@ -87,10 +87,10 @@
    :padding-vertical 12})
 
 (def sign-all-view
-  {:flex              1
-   :flex-direction    :column
-   :justify-content   :center
-   :background-color  styles/color-gray-transparent})
+  {:flex             1
+   :flex-direction   :column
+   :justify-content  :center
+   :background-color styles/color-gray-transparent})
 
 (def sign-all-popup
   {:align-self        :flex-start
@@ -215,5 +215,5 @@
    :background-color styles/color-cyan})
 
 (def filter-container
-  {:flex             1})
+  {:flex 1})
    ;:background-color colors/white})

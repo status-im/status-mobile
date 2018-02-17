@@ -197,9 +197,9 @@
             ^{:key whisper-identity}
             [react/image {:source {:uri (or (get-in contacts [whisper-identity :photo-path])
                                             (identicon/identicon whisper-identity))}
-                          :style  {:width        16
-                                   :height       16
-                                   :borderRadius 8}}])
+                          :style  {:width         16
+                                   :height        16
+                                   :border-radius 8}}])
           (if (> delivery-statuses-count 3)
             [react/text {:style style/delivery-text
                          :font  :default}
@@ -254,8 +254,8 @@
     (let [to-value @to-value]
       (when (pos? to-value)
         (animation/start
-          (animation/timing val {:toValue  to-value
-                                 :duration 250})
+         (animation/timing val {:toValue  to-value
+                                :duration 250})
           (fn [arg]
             (when (.-finished arg)
               (callback))))))))

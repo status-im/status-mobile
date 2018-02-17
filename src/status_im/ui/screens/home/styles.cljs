@@ -129,7 +129,7 @@
 
 (defstyle new-messages-text
   {:left       0
-   :fontSize   12
+   :font-size  12
    :color      colors/blue
    :text-align :center
    :android    {:top 2}
@@ -145,9 +145,9 @@
    :padding-right  14})
 
 (def create-icon
-  {:fontSize 20
-   :height   22
-   :color    colors/white})
+  {:font-size 20
+   :height    22
+   :color     colors/white})
 
 (def group-icon
   {:margin-top   8

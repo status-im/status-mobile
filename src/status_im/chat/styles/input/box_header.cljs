@@ -5,8 +5,8 @@
 
 (def header-container
   {:background-color common/color-white
-   :alignItems       :center
-   :justifyContent   :center
+   :align-items      :center
+   :justify-content  :center
    :height           header-height})
 
 (def header-title-container

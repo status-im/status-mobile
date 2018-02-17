@@ -6,8 +6,8 @@
 
 (defn icon-check-container [checked?]
   {:background-color (if checked? colors/blue colors/gray-lighter)
-   :alignItems     :center
-   :justifyContent :center
+   :align-items     :center
+   :justify-content :center
    :border-radius  2
    :width          24
    :height         24})

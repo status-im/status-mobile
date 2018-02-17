@@ -25,7 +25,7 @@
 (def header-container
   {:min-height       19
    :background-color common/color-white
-   :alignItems       :center})
+   :align-items      :center})
 
 (def header-icon
   {:background-color header-draggable-icon

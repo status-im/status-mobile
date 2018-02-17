@@ -15,7 +15,7 @@
 
 (def info-container
   {:flex            1
-   :flexDirection   :column
+   :flex-direction  :column
    :margin-left     16
    :margin-right    5
    :justify-content :center})
@@ -27,9 +27,9 @@
              :letter-spacing -0.2}})
 
 (def info-text
-  {:marginTop 1
-   :fontSize  12
-   :color     common/text2-color})
+  {:margin-top 1
+   :font-size  12
+   :color      common/text2-color})
 
 (def contact-container
   {:flex-direction   :row
@@ -37,14 +37,14 @@
    :background-color colors/white})
 
 (def forward-btn
-  {:opacity        0.4
-   :padding        12
-   :alignItems     :center
-   :justifyContent :center})
+  {:opacity         0.4
+   :padding         12
+   :align-items     :center
+   :justify-content :center})
 
 (def more-btn-container
-  {:alignItems     :center
-   :justifyContent :center})
+  {:align-items     :center
+   :justify-content :center})
 
 (def more-btn
   {:padding 16})

@@ -15,27 +15,27 @@
    :margin-bottom  0})
 
 (def toolbar-view
-  {:flexDirection   :row
-   :height          56
-   :backgroundColor component.styles/color-white
-   :elevation       2})
+  {:flex-direction   :row
+   :height           56
+   :background-color component.styles/color-white
+   :elevation        2})
 
 (def action
-  {:width          56
-   :height         56
-   :top            0
-   :alignItems     :center
-   :justifyContent :center})
+  {:width           56
+   :height          56
+   :top             0
+   :align-items     :center
+   :justify-content :center})
 
 (def icon-view
   {:width  56
    :height 56})
 
 (def back-icon
-  {:marginTop  21
-   :marginLeft 23
-   :width      8
-   :height     14})
+  {:margin-top  21
+   :margin-left 23
+   :width       8
+   :height      14})
 
 (defnstyle chat-name-view [show-actions]
   {:flex            1
@@ -46,8 +46,8 @@
    :ios             {:align-items :center}})
 
 (def chat-name-text
-  {:color      component.styles/color-gray6
-   :fontSize   16})
+  {:color     component.styles/color-gray6
+   :font-size 16})
 
 (def group-icon
   {:margin-top    4
@@ -72,34 +72,34 @@
    :android {:font-size 13}})
 
 (defn actions-wrapper [status-bar-height]
-  {:backgroundColor component.styles/color-white
-   :elevation       2
-   :position        :absolute
-   :top             (+ 55 status-bar-height)
-   :left            0
-   :right           0})
+  {:background-color component.styles/color-white
+   :elevation        2
+   :position         :absolute
+   :top              (+ 55 status-bar-height)
+   :left             0
+   :right            0})
 
 (def actions-separator
-  {:marginLeft      16
-   :height          1.5
-   :backgroundColor component.styles/separator-color})
+  {:margin-left      16
+   :height           1.5
+   :background-color component.styles/separator-color})
 
 (def actions-view
-  {:marginVertical 10})
+  {:margin-vertical 10})
 
 (def action-icon-row
-  {:flexDirection :row
-   :height        56})
+  {:flex-direction :row
+   :height         56})
 
 (def action-icon-view
   (merge icon-view
-         {:alignItems     :center
-          :justifyContent :center}))
+         {:align-items     :center
+          :justify-content :center}))
 
 (def action-view
-  {:flex           1
-   :alignItems     :flex-start
-   :justifyContent :center})
+  {:flex            1
+   :align-items     :flex-start
+   :justify-content :center})
 
 (def action-title
   {:margin-top -2.5
@@ -115,17 +115,17 @@
   {:marginBottom 20})
 
 (def typing-view
-  {:width        260
-   :marginTop    10
-   :paddingLeft  8
-   :paddingRight 8
-   :alignItems   :flex-start
-   :alignSelf    :flex-start})
+  {:width         260
+   :margin-top    10
+   :padding-left  8
+   :padding-right 8
+   :align-items   :flex-start
+   :align-self    :flex-start})
 
 (def typing-text
-  {:marginTop -2
-   :fontSize  12
-   :color     component.styles/text2-color})
+  {:margin-top -2
+   :font-size  12
+   :color      component.styles/text2-color})
 
 (def overlay-highlight
   {:flex 1})
@@ -142,13 +142,13 @@
    :elevation        8})
 
 (defn bottom-info-container [height]
-  {:backgroundColor component.styles/color-white
-   :elevation       2
-   :position        :absolute
-   :bottom          16
-   :left            16
-   :right           16
-   :height          height})
+  {:background-color component.styles/color-white
+   :elevation        2
+   :position         :absolute
+   :bottom           16
+   :left             16
+   :right            16
+   :height           height})
 
 (def bottom-info-list-container
   {:padding-left   16
@@ -164,9 +164,9 @@
    :padding-bottom 4})
 
 (def bottom-info-row-photo
-  {:width        42
-   :height       42
-   :borderRadius 21})
+  {:width         42
+   :height        42
+   :border-radius 21})
 
 (def bottom-info-row-text-container
   {:margin-left  16

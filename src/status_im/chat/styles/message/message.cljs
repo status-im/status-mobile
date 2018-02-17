@@ -4,17 +4,17 @@
             [status-im.constants :as constants]))
 
 (defstyle style-message-text
-  {:fontSize 15
-   :color    styles/text1-color
-   :android  {:line-height 22}
-   :ios      {:line-height 23}})
+  {:font-size 15
+   :color     styles/text1-color
+   :android   {:line-height 22}
+   :ios       {:line-height 23}})
 
 (def style-sub-text
-  {:top        -2
-   :fontSize   12
-   :color      styles/text2-color
-   :lineHeight 14
-   :height     16})
+  {:top         -2
+   :font-size   12
+   :color       styles/text2-color
+   :line-height 14
+   :height      16})
 
 (defn message-padding-top
   [{:keys [first-in-date? same-author? same-direction?]}]
@@ -27,7 +27,7 @@
 (defn last-message-padding
   [{:keys [last? typing]}]
   (when (and last? (not typing))
-    {:paddingBottom 16}))
+    {:padding-bottom 16}))
 
 (def message-datemark
   {:margin-top 10
@@ -45,64 +45,64 @@
   (let [align     (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
     (merge message-body-base
-           {:flexDirection direction
-            :width         260
-            :paddingTop    (message-padding-top message)
-            :alignSelf     align
-            :alignItems    align}
+           {:flex-direction direction
+            :width          260
+            :padding-top    (message-padding-top message)
+            :align-self     align
+            :align-items    align}
            (last-message-padding message))))
 
 (def selected-message
-  {:marginTop  18
-   :marginLeft 40
-   :fontSize   12
+  {:margin-top  18
+   :margin-left 40
+   :font-size   12
    :color      styles/text2-color})
 
 (def group-message-wrapper
-  {:flexDirection :column})
+  {:flex-direction :column})
 
 (defn group-message-view
   [{:keys [outgoing] :as message}]
   (let [align (if outgoing :flex-end :flex-start)]
-    {:flexDirection :column
-     :width         260
-     :padding-left  10
-     :padding-right 10
-     :alignItems    align}))
+    {:flex-direction :column
+     :width          260
+     :padding-left   10
+     :padding-right  10
+     :align-items    align}))
 
 (def message-author
-  {:width     36
-   :alignSelf :flex-start})
+  {:width      36
+   :align-self :flex-start})
 
 (def photo
-  {:borderRadius 18
+  {:border-radius 18
    :width        36
    :height       36})
 
 (def delivery-view
-  {:flexDirection :row
-   :marginTop     2
+  {:flex-direction :row
+   :margin-top     2
    :opacity       0.5})
 
 (defstyle delivery-text
   {:color      styles/color-gray4
-   :marginLeft 5
+   :margin-left 5
    :android    {:font-size 13}
    :ios        {:font-size 14}})
 
 (defn text-message
   [{:keys [outgoing group-chat incoming-group]}]
   (merge style-message-text
-         {:marginTop (if incoming-group 4 0)}))
+         {:margin-top (if incoming-group 4 0)}))
 
 (defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
   (merge {:padding         12
-          :backgroundColor styles/color-white
+          :background-color styles/color-white
           :border-radius   8}
          (when (= content-type constants/content-type-command)
-           {:paddingTop    10
-            :paddingBottom 14})))
+           {:padding-top    10
+            :padding-bottom 14})))
 
 (defstyle author
   {:color         styles/color-gray4
@@ -111,40 +111,40 @@
    :ios           {:font-size 14}})
 
 (def command-request-view
-  {:paddingRight 16})
+  {:padding-right 16})
 
 (def command-request-message-view
-  {:borderRadius     14
+  {:border-radius    14
    :padding-vertical 10
-   :paddingRight     28
-   :backgroundColor  styles/color-white})
+   :padding-right    28
+   :background-color styles/color-white})
 
 (def command-request-from-text
-  (merge style-sub-text {:marginBottom 2}))
+  (merge style-sub-text {:margin-bottom 2}))
 
 (defn command-request-image-touchable []
-  {:position       :absolute
-   :top            0
-   :right          -8
-   :alignItems     :center
-   :justifyContent :center
-   :width          48
-   :height         48})
+  {:position        :absolute
+   :top             0
+   :right           -8
+   :align-items     :center
+   :justify-content :center
+   :width           48
+   :height          48})
 
 (defn command-request-image-view [command scale]
-  {:width           32
-   :height          32
-   :borderRadius    16
-   :backgroundColor (:color command)
-   :transform       [{:scale scale}]})
+  {:width            32
+   :height           32
+   :border-radius    16
+   :background-color (:color command)
+   :transform        [{:scale scale}]})
 
 (def command-image-view
-  {:position   :absolute
-   :top        0
-   :right      0
-   :width      24
-   :height     24
-   :alignItems :center})
+  {:position    :absolute
+   :top         0
+   :right       0
+   :width       24
+   :height      24
+   :align-items :center})
 
 (def command-request-image
   {:position :absolute
@@ -154,17 +154,17 @@
    :height   13})
 
 (def command-request-text-view
-  {:marginTop 4
-   :height    14})
+  {:margin-top 4
+   :height     14})
 
 (def content-command-view
-  {:flexDirection :column
-   :alignItems    :flex-start})
+  {:flex-direction :column
+   :align-items    :flex-start})
 
 (def command-container
-  {:flexDirection :row
-   :margin-top    4
-   :marginRight   32})
+  {:flex-direction :row
+   :margin-top     4
+   :margin-right   32})
 
 (def command-image
   {:margin-top 9
@@ -174,75 +174,75 @@
 
 (def command-text
   (merge style-message-text
-         {:marginTop        8
-          :marginHorizontal 0}))
+         {:margin-top        8
+          :margin-horizontal 0}))
 
 (def audio-container
-  {:flexDirection :row
-   :alignItems    :center})
+  {:flex-direction :row
+   :align-items    :center})
 
 (def play-view
-  {:width        33
-   :height       33
-   :borderRadius 16
-   :elevation    1})
+  {:width         33
+   :height        33
+   :border-radius 16
+   :elevation     1})
 
 (def play-image
   {:width  33
    :height 33})
 
 (def track-container
-  {:marginTop  10
-   :marginLeft 10
-   :width      120
-   :height     26
-   :elevation  1})
+  {:margin-top  10
+   :margin-left 10
+   :width       120
+   :height      26
+   :elevation   1})
 
 (def track
-  {:position        :absolute
-   :top             4
-   :width           120
-   :height          2
-   :backgroundColor :#EC7262})
+  {:position         :absolute
+   :top              4
+   :width            120
+   :height           2
+   :background-color :#EC7262})
 
 (def track-mark
-  {:position        :absolute
-   :left            0
-   :top             0
-   :width           2
-   :height          10
-   :backgroundColor :#4A5258})
+  {:position         :absolute
+   :left             0
+   :top              0
+   :width            2
+   :height           10
+   :background-color :#4A5258})
 
 (def track-duration-text
-  {:position      :absolute
-   :left          1
-   :top           11
-   :fontSize      11
-   :color         :#4A5258
-   :letterSpacing 1
-   :lineHeight    15})
+  {:position       :absolute
+   :left           1
+   :top            11
+   :font-size      11
+   :color          :#4A5258
+   :letter-spacing 1
+   :line-height    15})
 
 (def status-container
   {:flex           1
-   :alignSelf      :center
-   :alignItems     :center
+   :align-self     :center
+   :align-items    :center
    :width          249
    :padding-bottom 16})
 
 (def status-image-view
-  {:marginTop 20})
+  {:margin-top 20})
 
 (def status-from
-  {:marginTop 20
-   :fontSize  18
-   :color     styles/text1-color})
+  {:margin-top 20
+   :font-size  18
+   :color      styles/text1-color})
 
 (def status-text
-  {:marginTop  10
-   :fontSize   14
-   :lineHeight 20
-   :textAlign  :center
-   :color      styles/text2-color})
+  {:margin-top  10
+   :font-size   14
+   :line-height 20
+   :text-align  :center
+   :color       styles/text2-color})
 
 (defn message-animated-container [height]
   {:height height})

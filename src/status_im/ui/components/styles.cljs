@@ -85,9 +85,9 @@
   {:flex 1})
 
 (def create-icon
-  {:fontSize 20
-   :height   22
-   :color    :white})
+  {:font-size 20
+   :height    22
+   :color     :white})
 
 (def icon-back
   {:width  8
@@ -122,17 +122,17 @@
    :height 12})
 
 (def white-form-text-input
-  {:marginLeft -4
-   :fontSize   14
-   :color      color-white})
+  {:margin-left -4
+   :font-size   14
+   :color       color-white})
 
 (def button-input-container
-  {:flex          1
-   :flexDirection :row})
+  {:flex           1
+   :flex-direction :row})
 
 (def button-input
-  {:flex          1
-   :flexDirection :column})
+  {:flex           1
+   :flex-direction :column})
 
 (def modal
   {:position :absolute

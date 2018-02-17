@@ -4,18 +4,18 @@
             [status-im.ui.components.colors :as colors]))
 
 (def gradient-top
-  {:flexDirection   :row
-   :height          3
-   :backgroundColor colors/gray-lighter})
+  {:flex-direction   :row
+   :height           3
+   :background-color colors/gray-lighter})
 
 (def gradient-top-colors
   ["rgba(25, 53, 76, 0.01)"
    "rgba(25, 53, 76, 0.1)"])
 
 (def gradient-bottom
-  {:flexDirection   :row
-   :height          2
-   :backgroundColor colors/gray-lighter})
+  {:flex-direction   :row
+   :height           2
+   :background-color colors/gray-lighter})
 
 (def gradient-bottom-colors
   ["rgba(25, 53, 76, 0.1)"
