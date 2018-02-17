@@ -65,11 +65,7 @@
 
 (defview message-content-command
   [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:content-command-ref content)]]
-    {:component-will-mount #(when-not (:preview content)
-                              (re-frame/dispatch [:request-command-message-data
-                                                  message {:data-type   :preview
-                                                           :cache-data? true}]))}
+  (letsubs [command [:get-command (:content-command-ref content)]] 
     (let [preview (:preview content)
           {:keys [type color] icon-path :icon} command]
       [react/view style/content-command-view

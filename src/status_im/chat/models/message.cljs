@@ -4,10 +4,8 @@
             [status-im.chat.events.console :as console-events]
             [status-im.chat.events.requests :as requests-events]
             [status-im.chat.models :as chat-model]
-            [status-im.chat.models.commands :as commands-model]
-            [status-im.utils.datetime :as datetime-utils]
-            [status-im.utils.clocks :as clocks-utils]
-            [status-im.utils.random :as random]))
+            [status-im.chat.models.commands :as commands-model] 
+            [status-im.utils.clocks :as clocks-utils]))
 
 (defn- get-current-account
   [{:accounts/keys [accounts current-account-id]}]
@@ -102,10 +100,10 @@
   [(re-frame/inject-cofx :random-id) (re-frame/inject-cofx :random-id-seq)
    (re-frame/inject-cofx :get-stored-chat) re-frame/trim-v])
 
-(defn- handle-message-from-bot [cofx {:keys [message chat-id]}]
+(defn- handle-message-from-bot [{:keys [random-id] :as cofx} {:keys [message chat-id]}]
   (when-let [message (cond
                        (string? message)
-                       {:message-id   (random/id)
+                       {:message-id   random-id
                         :content      (str message)
                         :content-type constants/text-content-type
                         :outgoing     false
@@ -114,7 +112,7 @@
                         :to           "me"}
 
                        (= "request" (:type message))
-                       {:message-id   (random/id)
+                       {:message-id   random-id
                         :content      (assoc (:content message) :bot chat-id)
                         :content-type constants/content-type-command-request
                         :outgoing     false
@@ -140,38 +138,23 @@
                                          :from current-account-id}}})))
 
 (defn- generate-message
-  [{:keys [web3 current-public-key chats network-status]}
-   {:keys [chat-id command message] :as args}]
-  (if command
-    (let [payload (-> command
-                      (select-keys [:content :content-type
-                                    :clock-value :show?])
-                      (assoc :timestamp (datetime-utils/now-ms)))
-          payload (if (= network-status :offline)
-                    (assoc payload :show? false)
-                    payload)]
-      {:from       current-public-key
-       :message-id (:message-id command)
-       :payload    payload})
-    (let [message' (select-keys message [:from :message-id])
-          payload  (select-keys message [:timestamp :content :content-type
-                                         :clock-value :show?])
-          payload  (if (= network-status :offline)
-                     (assoc payload :show? false)
-                     payload)]
-      (assoc message' :payload payload))))
+  [{:keys [network-status]} chat-id message] 
+  (assoc (select-keys message [:from :message-id])
+         :payload (cond-> (select-keys message [:content :content-type :clock-value :timestamp :show?])
+                    (= :offline network-status)
+                    (assoc :show? false))))
 
 (defn send
   [{{:keys          [web3 chats]
      :accounts/keys [accounts current-account-id]
      :contacts/keys [contacts] :as db} :db :as cofx}
-   {:keys [chat-id command] :as args}]
+   {:keys [chat-id command message] :as args}]
   (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
     (if dapp?
       (send-dapp-message! cofx args)
       (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])
             options {:web3    web3
-                     :message (generate-message db args)}]
+                     :message (generate-message db chat-id (or command message))}]
         (cond
           (and group-chat (not public?))
           (let [{:keys [public-key private-key]} (get chats chat-id)]
@@ -190,16 +173,16 @@
                                                       :payload {:title "Status" :body "You have a new message"}
                                                       :tokens [fcm-token]}})))))))
 
-(defn- prepare-message [params chat]
+(defn- prepare-message [params chat now random-id]
   (let [{:keys [chat-id identity message-text]} params
         {:keys [group-chat public? last-clock-value]} chat
-        message {:message-id   (random/id)
+        message {:message-id   random-id
                  :chat-id      chat-id
                  :content      message-text
                  :from         identity
                  :content-type constants/text-content-type
                  :outgoing     true
-                 :timestamp    (datetime-utils/now-ms)
+                 :timestamp    now
                  :clock-value  (clocks-utils/send last-clock-value)
                  :show?        true}]
     (cond-> message
@@ -215,21 +198,17 @@
       (not group-chat)
       (assoc :to chat-id :message-type :user-message))))
 
-(defn send-message [{{:keys [network-status] :as db} :db
-                     :keys                           [now]}
-                    {:keys [chat-id] :as params}]
+(defn send-message [{:keys [db now random-id] :as cofx} {:keys [chat-id] :as params}]
   (let [chat    (get-in db [:chats chat-id])
-        message (prepare-message params chat)
+        message (prepare-message params chat now random-id)
         params' (assoc params :message message)
-        fx      {:db                      (add-message-to-db db chat-id message true) 
-                 :save-message            message}]
-    (-> (merge fx (chat-model/upsert-chat (assoc fx :now now)
-                                          {:chat-id chat-id}))
-        (as-> fx'
-            (merge fx' (send fx' params'))))))
+        fx      (-> (chat-model/upsert-chat cofx {:chat-id chat-id})
+                    (update :db add-message-to-db chat-id message true)
+                    (assoc :save-message message))]
+    (merge fx (send cofx params'))))
 
 (defn- prepare-command
-  [identity chat-id clock-value
+  [identity chat-id now clock-value
    {request-params  :params
     request-command :command
     :keys           [prefill prefillBotDb]
@@ -255,7 +234,7 @@
     {:message-id   id
      :from         identity
      :to           chat-id
-     :timestamp    (datetime-utils/now-ms)
+     :timestamp    now
      :content      content'
      :content-type (or content-type
                        (if request
@@ -269,8 +248,7 @@
      :show?        true}))
 
 (defn send-command
-  [{{:keys [current-public-key network-status chats] :as db} :db
-    :keys [now random-id-seq]} result add-to-chat-id params]
+  [{{:keys [current-public-key chats] :as db} :db :keys [now random-id-seq] :as cofx} add-to-chat-id params]
   (let [{{:keys [handler-data
                  command]
           :as   content} :command
@@ -280,29 +258,19 @@
         hidden-params    (->> (:params command)
                               (filter :hidden)
                               (map :name))
-        command'         (prepare-command current-public-key chat-id last-clock-value request content)
+        command'         (prepare-command current-public-key chat-id now last-clock-value request content)
         params'          (assoc params :command command')
-
-        fx               {:db                      (-> (merge db (:db result))
-                                                       (add-message-to-db chat-id command' true)) 
-                          :save-message            (-> command'
-                                                       (assoc :chat-id chat-id)
-                                                       (update-in [:content :params]
-                                                                  #(apply dissoc % hidden-params))
-                                                       (dissoc :to-message :has-handler :raw-input))}]
-
-    (cond-> (merge fx
-                   (chat-model/upsert-chat (assoc fx :now now)
-                                           {:chat-id chat-id})
-                   (dissoc result :db))
-
-      true
-      (as-> fx'
-          (merge fx' (send fx' params')))
+        fx               (-> (chat-model/upsert-chat cofx {:chat-id chat-id})
+                             (update :db add-message-to-db chat-id command' true)
+                             (assoc :save-message (-> command'
+                                                      (assoc :chat-id chat-id)
+                                                      (update-in [:content :params]
+                                                                 #(apply dissoc % hidden-params))
+                                                      (dissoc :to-message :has-handler :raw-input))))]
+    (cond-> (merge fx (send cofx params'))
 
       (:to-message command')
-      (assoc :chat-requests/mark-as-answered {:chat-id    chat-id
-                                              :message-id (:to-message command')})
+      (requests-events/request-answered chat-id (:to-message command'))
 
       (= constants/console-chat-id chat-id)
       (as-> fx'
@@ -313,8 +281,8 @@
 (defn invoke-console-command-handler
   [{:keys [db] :as cofx} {:keys [chat-id command] :as command-params}]
   (let [fx-fn (get console-events/console-commands->fx (-> command :command :name))
-        result (fx-fn cofx command)]
-    (send-command cofx result chat-id command-params)))
+        fx    (fx-fn cofx command)]
+    (merge fx (send-command (assoc cofx :db (or (:db fx) db)) chat-id command-params))))
 
 (defn invoke-command-handlers
   [{{:keys          [bot-db]
@@ -347,16 +315,13 @@
 (defn process-command
   [{:keys [db] :as cofx} {:keys [command message chat-id] :as params}]
   (let [{:keys [command] :as content} command]
-    (-> {:db (chat-model/set-chat-ui-props db {:sending-in-progress? false})}
+    (cond
+      (and (= constants/console-chat-id chat-id)
+           (console-events/commands-names (:name command)))
+      (invoke-console-command-handler cofx params)
 
-        (as-> fx'
-            (cond
-              (and (= constants/console-chat-id chat-id)
-                   (console-events/commands-names (:name command)))
-              (invoke-console-command-handler (merge cofx fx') params)
+      (:has-handler command)
+      (invoke-command-handlers cofx params)
 
-              (:has-handler command)
-              (merge fx' (invoke-command-handlers fx' params))
-
-              :else
-              (merge fx' (send-command cofx fx' chat-id params)))))))
+      :else
+      (send-command cofx chat-id params))))

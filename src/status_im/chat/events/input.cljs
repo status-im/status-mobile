@@ -236,77 +236,50 @@
                                                 (min (count input-text)))]
               (merge fx (update-text-selection new-db new-selection)))))))
 
-(defn- request-command-data
-  "Requests command data from jail"
-  [{:keys [bot-db] :contacts/keys [contacts] :as db}
-   {{:keys [command
-            metadata
-            args]
-     :as   content} :content
-    :keys  [chat-id group-id jail-id data-type event-after-creator message-id current-time]}]
-  (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
-        metadata        (merge metadata
-                               (when dapp?
-                                 {:url  (i18n/get-contact-translated chat-id :dapp-url dapp-url)
-                                  :name (i18n/get-contact-translated chat-id :name name)}))
-        owner-id        (:owner-id command)
-        bot-db          (get bot-db owner-id)
-        params          (merge (input-model/args->params content)
-                               {:bot-db   bot-db
-                                :metadata metadata})
+;; function creating "message shaped" data from command, because that's what `request-command-message-data` expects
+(defn- command->message
+  [{:keys [bot-db current-chat-id chats]} {:keys [command] :as command-params}] 
+  (cond-> {:chat-id current-chat-id
+           :jail-id (:owner-id command)
+           :content {:command       (:name command)
+                     :type          (:type command)
+                     :scope-bitmask (:scope-bitmask command)
+                     :params        (assoc (input-model/args->params command-params)
+                                           :bot-db (get bot-db (:owner-id command)))}}
+    (get-in chats [current-chat-id :group-chat])
+    (assoc :group-id current-chat-id)))
 
-        command-message {:command    command
-                         :params     params
-                         :to-message (:to-message-id metadata)
-                         :created-at current-time
-                         :id         message-id
-                         :chat-id    chat-id
-                         :jail-id    (or owner-id jail-id)}
-
-        request-data    {:message-id   message-id
-                         :chat-id      chat-id
-                         :group-id     group-id
-                         :jail-id      (or owner-id jail-id)
-                         :content      {:command       (:name command)
-                                        :scope-bitmask (:scope-bitmask command)
-                                        :params        params
-                                        :type          (:type command)}}]
-    (commands-events/request-command-message-data db request-data
-                                                  {:data-type             data-type
-                                                   :proceed-event-creator (partial event-after-creator
-                                                                                   command-message)})))
-
-;; TODO (janherich) request-command-data functions and event need to be refactored, they are needlessly complicated
 (defn proceed-command
-  "Proceed with command processing by setting up and executing chain of events:
+  "Proceed with command processing by creating command message + setting up and executing chain of events:
   1. Params validation
   2. Short preview fetching
   3. Preview fetching"
-  [{:keys [current-chat-id chats] :as db} {{:keys [bot]} :command :as content} message-id current-time]
-  (let [params-template      {:content      content
-                              :chat-id      current-chat-id
-                              :group-id     (when (get-in chats [current-chat-id :group-chat])
-                                              current-chat-id)
-                              :jail-id      (or bot current-chat-id)
-                              :message-id   message-id
-                              :current-time current-time} 
-        preview-params       (merge params-template
-                                    {:data-type           :preview
-                                     :event-after-creator (fn [command-message jail-response]
-                                                            [::send-command
-                                                             (assoc-in command-message [:command :preview] jail-response)])})
-        short-preview-params (merge params-template
-                                    {:data-type           :short-preview
-                                     :event-after-creator (fn [_ jail-response]
-                                                            [::request-command-data
-                                                             (assoc-in preview-params [:content :command :short-preview] jail-response)])})
-        validation-params    (merge params-template
-                                    {:data-type           :validator
-                                     :event-after-creator (fn [_ jail-response]
-                                                            [::proceed-validation
-                                                             jail-response
-                                                             [[::request-command-data short-preview-params]]])})]
-    (request-command-data db validation-params)))
+  [{:keys [bot-db current-chat-id chats] :as db} {:keys [command metadata] :as command-params} message-id current-time]
+  (let [message     (command->message db command-params)
+        cmd-params  {:command    command
+                     :params     (get-in message [:content :params])
+                     :to-message (:to-message-id metadata)
+                     :created-at current-time
+                     :id         message-id
+                     :chat-id    current-chat-id
+                     :jail-id    (:jail-id message)}
+        event-chain {:data-type             :validator
+                     :proceed-event-creator (fn [validation-response]
+                                              [::proceed-validation
+                                               validation-response
+                                               [[:request-command-message-data
+                                                 message
+                                                 {:data-type             :short-preview
+                                                  :proceed-event-creator (fn [short-preview]
+                                                                           [:request-command-message-data
+                                                                            message
+                                                                            {:data-type             :preview
+                                                                             :proceed-event-creator (fn [preview]
+                                                                                                      [::send-command
+                                                                                                       (update cmd-params :command merge
+                                                                                                               {:short-preview short-preview
+                                                                                                                :preview       preview})])}])}]]])}]
+    (commands-events/request-command-message-data db message event-chain)))
 
 ;;;; Handlers
 
@@ -393,27 +366,21 @@
       {:dispatch-n (or error-events proceed-events)})))
 
 (handlers/register-handler-fx
-  ::request-command-data
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [command-params]]
-    (request-command-data db command-params)))
-
-(handlers/register-handler-fx
   ::send-command
   message-model/send-interceptors
-  (fn [cofx [{:keys [command] :as command-message}]]
-    (let [{{:keys          [current-public-key current-chat-id]
-            :accounts/keys [current-account-id] :as db} :db} cofx
-          fx (message-model/process-command cofx
+  (fn [{:keys [db] :as cofx} [{:keys [command] :as command-message}]]
+    (let [{:keys [current-public-key current-chat-id] :accounts/keys [current-account-id]} db
+          new-db (-> (model/set-chat-ui-props db {:sending-in-progress? false})
+                     (clear-seq-arguments)
+                     (set-chat-input-metadata nil)
+                     (set-chat-input-text nil))]
+      (merge {:db new-db}
+             (message-model/process-command (assoc cofx :db new-db)
                                             {:message  (get-in db [:chats current-chat-id :input-text])
                                              :command  command-message
                                              :chat-id  current-chat-id
                                              :identity current-public-key
-                                             :address  current-account-id})]
-      (update fx :db #(-> %
-                          (clear-seq-arguments)
-                          (set-chat-input-metadata nil)
-                          (set-chat-input-text nil))))))
+                                             :address  current-account-id})))))
 
 (defn command-complete?
   [chat-command]
@@ -443,8 +410,7 @@
                                                     (set-chat-input-text nil)))
                                 {:message-text input-text
                                  :chat-id      current-chat-id
-                                 :identity     current-public-key
-                                 :address      (:accounts/current-account-id db)})))
+                                 :identity     current-public-key})))
 
 
 (handlers/register-handler-fx
@@ -490,15 +456,13 @@
           seq-arguments    (get-in chats [current-chat-id :seq-arguments])
           command          (-> (input-model/selected-chat-command db)
                                (assoc :args (into [] (conj seq-arguments text))))]
-      (request-command-data db {:content             command
-                                :chat-id             current-chat-id
-                                :jail-id             (or (get-in command [:command :bot]) current-chat-id)
-                                :data-type           :validator
-                                :event-after-creator (fn [_ jail-response]
-                                                       [::proceed-validation
-                                                        jail-response
-                                                        [[::update-seq-arguments current-chat-id]
-                                                         [:send-current-message]]])}))))
+      (commands-events/request-command-message-data db (command->message db command)
+                                                    {:data-type             :validator
+                                                     :proceed-event-creator (fn [validation-response]
+                                                                              [::proceed-validation
+                                                                               validation-response
+                                                                               [[::update-seq-arguments current-chat-id]
+                                                                                [:send-current-message]]])}))))
 
 (handlers/register-handler-db
   :set-chat-seq-arg-input-text

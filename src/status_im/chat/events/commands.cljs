@@ -26,7 +26,7 @@
      content-command-name :content-command
      :keys [content-command-scope-bitmask bot scope-bitmask params type]} :content
     :keys [chat-id group-id jail-id] :as message}
-   {:keys [data-type proceed-event-creator cache-data?] :as opts}]
+   {:keys [data-type] :as opts}]
   (let [{:accounts/keys [current-account-id]
          :contacts/keys [contacts]} db
         jail-id               (or bot jail-id chat-id)
@@ -56,21 +56,9 @@
 (handlers/register-handler-fx
   ::jail-command-data-response
   [re-frame/trim-v]
-  (fn [{:keys [db]} [{{:keys [returned]} :result}
-                     {:keys [message-id chat-id]}
-                     {:keys [data-type proceed-event-creator cache-data?]}]]
-    (let [existing-message (get-in db [:chats chat-id :messages message-id])]
-      (cond-> {}
-
-        (and cache-data? existing-message returned)
-        (as-> fx
-            (let [updated-message (assoc-in existing-message [:content data-type] returned)]
-              (assoc fx
-                     :db (assoc-in db [:chats chat-id :messages message-id] updated-message)
-                     :update-message (select-keys updated-message [:message-id :content]))))
-
-        proceed-event-creator
-        (assoc :dispatch (proceed-event-creator returned))))))
+  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [chat-id]} {:keys [proceed-event-creator]}]]
+    (when proceed-event-creator
+      {:dispatch (proceed-event-creator returned)})))
 
 (handlers/register-handler-fx
   :request-command-message-data
