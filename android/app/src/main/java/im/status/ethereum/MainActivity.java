@@ -6,7 +6,9 @@ import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.PackageManager;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +21,10 @@ import com.testfairy.TestFairy;
 
 import java.util.Properties;
 
-public class MainActivity extends ReactActivity {
+public class MainActivity extends ReactActivity
+        implements ActivityCompat.OnRequestPermissionsResultCallback{
+
+    private static final int PERMISSION_REQUEST_CAMERA = 0;
 
     private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -169,5 +174,13 @@ public class MainActivity extends ReactActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(REJECTED_ROOTED_NOTIFICATION, true);
         editor.commit();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Permission has been granted. Start camera preview Activity.
+            com.github.alinz.reactnativewebviewbridge.WebViewBridgeManager.grantAccess(requestCode);
+        }
     }
 }
