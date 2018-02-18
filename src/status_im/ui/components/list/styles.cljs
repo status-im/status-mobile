@@ -44,7 +44,9 @@
 (def icon-wrapper-size (+ icon-size (* 2 8)))
 
 (def item-icon-wrapper
-  {:align-items     :center
+  {:width           icon-wrapper-size
+   :height          icon-wrapper-size
+   :align-items     :center
    :justify-content :center})
 
 (def item-icon
@@ -94,6 +96,21 @@
                      :margin-bottom 3}
    :ios             {:margin-top    10
                      :margin-bottom 2}})
+
+(def action-list
+  {:background-color colors/blue})
+
+(def action
+  {:background-color colors/white-transparent
+   :border-radius    50})
+
+(def action-label
+  {:color colors/white})
+
+(def action-separator
+  {:height           1
+   :background-color colors/white-light-transparent
+   :margin-left      70})
 
 (def list-with-label-wrapper
   {:margin-top        26

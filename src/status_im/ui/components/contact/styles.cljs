@@ -1,8 +1,8 @@
 (ns status-im.ui.components.contact.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as common]
-            [status-im.utils.platform]))
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
+  (:require [status-im.ui.components.styles :as common]
+            [status-im.utils.platform]
+            [status-im.ui.components.colors :as colors]))
 
 (defstyle contact-inner-container
   {:flex             1
@@ -48,3 +48,13 @@
 
 (def more-btn
   {:padding 16})
+
+(def toggle-container
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})
+
+(def check-icon
+  {:width  16
+   :height 16})

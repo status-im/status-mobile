@@ -150,7 +150,7 @@
                 :online-dot-right       styles/online-dot-right-profile
                 :size                   size
                 :chat-icon              styles/chat-icon-profile
-                :default-chat-icon      (styles/default-chat-icon-profile color)
+                :default-chat-icon      (styles/default-chat-icon-profile color size)
                 :default-chat-icon-text styles/default-chat-icon-text}]
     [react/view (:container styles)
      (when edit?

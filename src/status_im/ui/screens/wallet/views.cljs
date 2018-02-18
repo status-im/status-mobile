@@ -30,15 +30,6 @@
      [react/text {:style styles/total-balance-currency} (i18n/label :t/usd-currency)]]
     [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
 
-(defn- render-action [{:keys [label icon action]}]
-  [react/touchable-highlight {:on-press action}
-   [react/view
-    [list/item
-     [list/item-icon {:icon icon :style styles/action :icon-opts {:color :white}}]
-     [list/item-primary-only {:style styles/action-label}
-      label]
-     list/item-icon-forward]]])
-
 (def actions
   [{:label  (i18n/label :t/send-transaction)
     :icon   :icons/arrow-right
@@ -49,13 +40,6 @@
    {:label  (i18n/label :t/transaction-history)
     :icon   :icons/transaction-history
     :action #(re-frame/dispatch [:navigate-to :transactions-history])}])
-
-(defn- action-section []
-  [react/view styles/action-section
-   [list/flat-list
-    {:separator (when platform/ios? [react/view styles/action-separator])
-     :data      actions
-     :render-fn render-action}]])
 
 (defn- render-asset [{:keys [symbol icon decimals amount]}]
   [react/view
@@ -97,5 +81,6 @@
      [toolbar-view]
      [react/view components.styles/flex
       [total-section portfolio-value]
-      [action-section]
+      [list/action-list actions
+       {:container-style styles/action-section}]
       [asset-section network balance visible-tokens prices-loading? balance-loading?]]]))

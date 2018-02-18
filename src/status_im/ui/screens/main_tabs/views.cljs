@@ -7,9 +7,9 @@
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.components.styles :as common.styles]
             [status-im.ui.screens.home.views :as home]
-            [status-im.ui.screens.profile.views :as profile]
             [status-im.ui.screens.wallet.views :as wallet]
-            [status-im.ui.screens.main-tabs.styles :as styles]))
+            [status-im.ui.screens.main-tabs.styles :as styles]
+            [status-im.ui.screens.profile.user.views :as profile.user]))
 
 (def tabs-list-data
   [{:view-id :home
@@ -75,7 +75,7 @@
        {:enabled? (= :my-profile view-id)
         :preview  [react/view {}]}
        [react/navigation-wrapper
-        {:component    profile/my-profile
+        {:component    profile.user/my-profile
          :views        :my-profile
          :current-view view-id}]]
       [tabs view-id]]]))

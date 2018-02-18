@@ -34,20 +34,6 @@
       :accessibility-label :remove-button
       :label               (i18n/label :t/remove-from-group)}]))
 
-(defview edit-chat-group-contact-list []
-  (letsubs [chat-name [:chat :name]
-            contacts [:current-chat-contacts]
-            current-pk [:get :current-public-key]
-            group-admin [:chat :group-admin]]
-    (let [admin? (= current-pk group-admin)]
-      [react/view styles/group-container
-       [status-bar]
-       [toolbar/simple-toolbar chat-name]
-       [contacts-list
-        contacts
-        admin?
-        chat-extended-options]])))
-
 (defview contacts-list-view [group-id]
   (letsubs [contacts [:all-added-group-contacts group-id]]
     [contacts-list

@@ -170,6 +170,28 @@
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)}
           (when platform/ios? {:SectionSeparatorComponent (fn [] (reagent/as-element section-separator))}))])
 
+(defn- render-action [{:keys [label icon action]}
+                      {:keys [action-style action-label-style icon-opts]}]
+  [react/touchable-highlight {:on-press action}
+   [react/view
+    [item
+     [item-icon {:icon      icon
+                 :style     (merge styles/action action-style)
+                 :icon-opts (merge {:color :white} icon-opts)}]
+     [item-primary-only {:style (merge styles/action-label action-label-style)}
+      label]
+     item-icon-forward]]])
+
+
+(defn action-list [actions {:keys [container-style action-separator-style] :as styles}]
+  [react/view (merge styles/action-list container-style)
+   [flat-list
+    {:separator (when platform/ios?
+                  [react/view (merge styles/action-separator
+                                     action-separator-style)])
+     :data      actions
+     :render-fn #(render-action % styles)}]])
+
 (defn list-with-label [{:keys [style]} label list]
   [react/view (merge styles/list-with-label-wrapper style)
    [react/text {:style styles/label}

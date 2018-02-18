@@ -148,6 +148,8 @@
                   :my-profile/profile
                   :my-profile/default-name
                   :my-profile/editing?
+                  :group-chat-profile/profile
+                  :group-chat-profile/editing?
                   :networks/selected-network
                   :networks/networks
                   :node/after-start

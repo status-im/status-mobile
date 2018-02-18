@@ -25,7 +25,7 @@
        [react/text {:style styles/info-text}
         info])]]))
 
-(defn contact-view [{:keys [style contact extended? on-press extend-options info show-forward?]}]
+(defn contact-view [{:keys [style contact extended? on-press extend-options extend-title info show-forward?]}]
   [react/touchable-highlight (when-not extended?
                                {:on-press (when on-press #(on-press contact))})
     [react/view styles/contact-container
@@ -35,7 +35,8 @@
         [vector-icons/icon :icons/forward]])
      (when (and extended? (not (empty? extend-options)))
        [react/view styles/more-btn-container
-        [react/touchable-highlight {:on-press #(list-selection/show {:options extend-options})}
+        [react/touchable-highlight {:on-press #(list-selection/show {:options extend-options
+                                                                     :title   extend-title})}
          [react/view styles/more-btn
           [vector-icons/icon :icons/options {:accessibility-label :options}]]]])]])
 

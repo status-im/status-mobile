@@ -135,7 +135,7 @@
   (fn [{db :db} [_ chat-id]]
     {:db (assoc db :new-chat-name (get-in db [:chats chat-id :name])
                    :group/group-type :chat-group)
-     :dispatch [:navigate-to :chat-group-settings]}))
+     :dispatch [:navigate-to :group-chat-profile]}))
 
 (handlers/register-handler-fx
   :add-new-group-chat-participants
@@ -162,8 +162,8 @@
                                        (select-keys db [:current-chat-id :contacts/contacts]))}))
 
 (handlers/register-handler-fx
-  :set-chat-name
-  (fn [{{:keys [current-chat-id new-chat-name] :as db} :db} _]
+  :set-group-chat-name
+  (fn [{{:keys [current-chat-id] :as db} :db} [_ new-chat-name]]
     {:db (assoc-in db [:chats current-chat-id :name] new-chat-name)
      ::save-chat-property [current-chat-id :name new-chat-name]}))
 

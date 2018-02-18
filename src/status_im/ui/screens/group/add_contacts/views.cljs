@@ -8,7 +8,8 @@
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]
-            [status-im.ui.screens.contacts.styles :as contacts.styles]))
+            [status-im.ui.screens.contacts.styles :as contacts.styles]
+            [status-im.ui.components.styles :as components.styles]))
 
 (defn- on-toggle [checked? whisper-identity]
   (let [action (if checked? :deselect-contact :select-contact)]
@@ -29,7 +30,9 @@
    toolbar/default-nav-back
    [toolbar/content-title title]
    (when (pos? count)
-     [toolbar/text-action {:handler handler}
+     [toolbar/text-action {:handler    handler
+                           :uppercase? components.styles/uppercase?
+                           :style      styles/toggle-list-action}
       label])])
 
 (defn toggle-list [contacts render-function]
@@ -67,9 +70,23 @@
       (:name group)]
      [toggle-list contacts group-toggle-contact]]))
 
+(defn toggle-participants-handler []
+  (re-frame/dispatch [:add-new-group-chat-participants])
+  (re-frame/dispatch [:navigate-back]))
+
+(defn add-participants-toggle-list-toolbar [selected-contacts-count]
+  [toolbar/toolbar {}
+   toolbar/default-nav-back
+   [toolbar/content-title (i18n/label :t/add-members)]
+   (when (pos? selected-contacts-count)
+     [toolbar/text-action {:handler    toggle-participants-handler
+                           :uppercase? components.styles/uppercase?
+                           :style      styles/toggle-list-action}
+      (i18n/label :t/add)])])
+
 (defview add-participants-toggle-list []
-  (letsubs [contacts [:all-new-contacts]
-            chat-name [:chat :name]
+  (letsubs [contacts                [:all-new-contacts]
+            chat-name               [:chat :name]
             selected-contacts-count [:selected-participants-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
@@ -77,6 +94,6 @@
                            :handler #(do
                                        (re-frame/dispatch [:add-new-group-chat-participants])
                                        (re-frame/dispatch [:navigate-back]))
-                           :label   (i18n/label :t/save)}
+                           :label   (i18n/label :t/add)}
       chat-name]
      [toggle-list contacts group-toggle-participant]]))
