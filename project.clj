@@ -50,18 +50,7 @@
                                         [re-frisk-remote "0.5.3"]
                                         [re-frisk-sidecar "0.5.4"]
                                         [hawk "0.2.11"]]
-                         :source-paths ["src" "env/dev"]
-                         :cljsbuild    {:builds
-                                        {:ios
-                                         {:source-paths ["react-native/src" "src" "env/dev"]
-                                          :compiler     {:output-to     "target/ios/app.js"
-                                                         :output-dir    "target/ios"}
-                                          :figwheel     true}
-                                         :android
-                                         {:source-paths ["react-native/src" "src" "env/dev"]
-                                          :compiler     {:output-to     "target/android/app.js"
-                                                         :output-dir    "target/android"}
-                                          :figwheel     true}}}}]
+                         :source-paths ["src" "env/dev"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.7"]]
                         :cljsbuild    {:builds

@@ -2,49 +2,18 @@
   (:use [figwheel-sidecar.repl-api :as ra])
   (:require [hawk.core :as hawk]
             [re-frisk-sidecar.core :as rfs]
-            [clojure.string :as s]
-            [status-im.utils.core :as utils]))
-
-(defn get-test-build [build]
-  (update build :source-paths
-          (fn [paths] (let [paths-set (set paths)]
-                        (-> paths-set
-                            (disj "env/dev")
-                            (conj "test/cljs")
-                            vec)))))
+            [status-im.utils.core :as utils]
+            [figwheel :as config]))
 
 (defn start-figwheel
   "Start figwheel for one or more builds"
-  [build-ids cljs-builds]
-  (ra/start-figwheel!
-    {:figwheel-options {:nrepl-port 7888}
-     :build-ids        build-ids
-     :all-builds       cljs-builds}))
+  [build-ids]
+  (ra/start-figwheel! (config/system-options build-ids)))
 
 (defn stop-figwheel
   "Stops figwheel"
   []
   (ra/stop-figwheel!))
-
-(defn test-id? [id]
-  (s/includes? (name id) "-test"))
-
-(defn get-id [id]
-  (-> id
-      name
-      (s/replace #"-test" "")
-      keyword))
-
-(defn get-builds [ids all-builds]
-  (keep
-    (fn [id]
-      (assoc
-        (let [build (get all-builds (get-id id))]
-          (if (test-id? id)
-            (get-test-build build)
-            build))
-        :id id))
-    ids))
 
 (defn start
   ([]
@@ -59,19 +28,8 @@
                                (spit path (str js-resourced " ;;"))
                                (spit path js-resourced))
                              ctx)}])
-   ;; read project.clj to get build configs
-   (let [profiles        (->> "project.clj"
-                              slurp
-                              read-string
-                              (drop-while #(not= % :profiles))
-                              (apply hash-map)
-                              :profiles)
-         dev-cljs-builds (get-in profiles [:dev :cljsbuild :builds])
-         fig-cljs-builds (get-in profiles [:figwheel 1 :cljsbuild :builds])
-         cljs-builds     (utils/deep-merge dev-cljs-builds fig-cljs-builds)
-         builds          (get-builds build-ids cljs-builds)]
-     (start-figwheel build-ids builds)
-     (rfs/-main))))
+   (start-figwheel build-ids)
+   (rfs/-main)))
 
 (def stop ra/stop-figwheel!)
 
