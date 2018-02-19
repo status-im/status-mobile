@@ -35,7 +35,7 @@
       :on-submit-editing      (fn [e]
                                 (if single-line-input?
                                   (re-frame/dispatch [:send-current-message])
-                                  (.setNativeProps @input-ref (clj->js {:text (str input-text "\n")}))))
+                                  (.setNativeProps @input-ref (clj->js {:text input-text}))))
       :on-layout              (fn [e]
                                 (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
       :on-change              (fn [e]
