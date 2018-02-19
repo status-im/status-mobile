@@ -115,7 +115,8 @@ function amountParameterBox(groupChat, params, context) {
         showBack: true,
         markup: status.components.scrollView(
             {
-                keyboardShouldPersistTaps: "always"
+                keyboardShouldPersistTaps: "always",
+                bounces: false,
             },
             [status.components.view(
                 {

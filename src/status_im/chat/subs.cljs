@@ -320,15 +320,6 @@
       (input-utils/default-container-area-height bottom layout-height))))
 
 (reg-sub
-  :get-max-container-area-height
-  :<- [:get-current-chat-ui-prop :input-height]
-  :<- [:get :layout-height]
-  :<- [:chat-input-margin]
-  (fn [[input-height layout-height chat-input-margin]]
-    (let [bottom (+ input-height chat-input-margin)]
-      (input-utils/max-container-area-height bottom layout-height))))
-
-(reg-sub
   :chat-animations
   (fn [db [_ key type]]
     (let [chat-id (subscribe [:get-current-chat-id])]
