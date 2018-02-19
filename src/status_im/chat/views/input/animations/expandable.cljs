@@ -25,7 +25,7 @@
             to-change-height  (if (= to-changed-height :max)
                                 (input-utils/max-container-area-height @chat-input-margin @layout-height)
                                 to-changed-height)
-            to-value          (or to-change-height (or height @to-default-height))]
+            to-value          (or to-change-height height @to-default-height)]
         (re-frame/dispatch [:set :expandable-view-height-to-value to-value])
         (animation/start
           (animation/spring anim-value {:toValue  to-value
