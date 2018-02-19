@@ -91,8 +91,7 @@ class TestMessages(MultipleDeviceTestCase):
         for console in device_1, device_2, device_3:
             console.create_user()
             console.back_button.click()
-        home_1, home_2, home_3 = device_1.get_home_view(), device_2.get_home_view(), \
-                                 device_3.get_home_view()
+        home_1, home_2, home_3 = device_1.get_home_view(), device_2.get_home_view(), device_3.get_home_view()
         public_key_2, public_key_3 = home_2.get_public_key(), home_3.get_public_key()
         profile_1 = home_1.profile_button.click()
         profile_2, profile_3 = home_2.get_profile_view(), home_3.get_profile_view()

@@ -25,11 +25,11 @@ class JoinPublicChatButton(BaseButton):
             "//android.widget.TextView[@text='Join public chat']")
 
 
-class NameEditBox(BaseEditBox):
+class ChatNameEditBox(BaseEditBox):
     def __init__(self, driver):
-        super(NameEditBox, self).__init__(driver)
+        super(ChatNameEditBox, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector("//android.widget.EditText[@NAF='true']")
+            self.Locator.xpath_selector("//android.widget.EditText")
 
 
 class OpenDAapButton(BaseButton):
@@ -58,6 +58,12 @@ class EnterUrlEditbox(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
+class UsernameCheckbox(BaseButton):
+    def __init__(self, driver, username):
+        super(UsernameCheckbox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup[2]/*" % username)
+
+
 class StartNewChatView(ContactsView):
     def __init__(self, driver):
         super(StartNewChatView, self).__init__(driver)
@@ -69,6 +75,9 @@ class StartNewChatView(ContactsView):
         self.open_d_app_button = OpenDAapButton(self.driver)
         self.open_button = OpenButton(self.driver)
 
-        self.name_edit_box = NameEditBox(self.driver)
+        self.chat_name_editbox = ChatNameEditBox(self.driver)
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
         self.confirm_button = ConfirmButton(self.driver)
+
+    def get_username_checkbox(self, username: str):
+        return UsernameCheckbox(self.driver, username)

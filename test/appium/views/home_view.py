@@ -79,17 +79,17 @@ class HomeView(BaseView):
         start_new_chat = self.plus_button.click()
         start_new_chat.new_group_chat_button.click()
         for user_name in user_names_to_add:
-            user_contact = start_new_chat.element_by_text(user_name, 'button')
+            user_contact = start_new_chat.get_username_checkbox(user_name)
             user_contact.scroll_to_element()
             user_contact.click()
         start_new_chat.next_button.click()
-        start_new_chat.name_edit_box.send_keys(group_chat_name)
-        start_new_chat.save_button.click()
+        start_new_chat.chat_name_editbox.send_keys(group_chat_name)
+        start_new_chat.confirm_button.click()
 
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
-        start_new_chat.name_edit_box.send_keys(chat_name)
+        start_new_chat.chat_name_edit_box.send_keys(chat_name)
         start_new_chat.confirm_button.click()
 
     def get_public_key(self):
