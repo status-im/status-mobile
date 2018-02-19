@@ -11,16 +11,6 @@ class ChatMessageInput(BaseEditBox):
         self.locator = self.Locator.accessibility_id('chat-message-input')
 
 
-class SendMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(SendMessageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("send-message-button")
-
-    def click(self):
-        self.find_element().click()
-        info('Tap on %s' % self.name)
-
-
 class AddToContacts(BaseButton):
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
@@ -38,17 +28,13 @@ class UserNameText(BaseText):
 class TransactionPopupText(BaseText):
     def __init__(self, driver):
         super(TransactionPopupText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Send transaction']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Specify amount']")
 
 
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='/send']")
-
-    def click(self):
-        desired_element = TransactionPopupText(self.driver)
-        self.click_until_presence_of_element(desired_element=desired_element)
 
 
 class RequestCommand(BaseButton):
@@ -116,12 +102,6 @@ class MoreUsersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
-class UserProfileIconTopRight(BaseButton):
-    def __init__(self, driver):
-        super(UserProfileIconTopRight, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chat-icon')
-
-
 class UserProfileDetails(BaseButton):
     def __init__(self, driver):
         super(UserProfileDetails, self).__init__(driver)
@@ -138,15 +118,27 @@ class OpenInBrowserButton(BaseButton):
         return BaseWebView(self.driver)
 
 
+class CommandsButton(BaseButton):
+    def __init__(self, driver):
+        super(CommandsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(// android.view.ViewGroup[@ content-desc="icon"])[3]')
+
+
+class ViewProfileButton(BaseButton):
+    def __init__(self, driver):
+        super(ViewProfileButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="View profile"]')
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
 
         self.chat_message_input = ChatMessageInput(self.driver)
-        self.send_message_button = SendMessageButton(self.driver)
         self.add_to_contacts = AddToContacts(self.driver)
         self.user_name_text = UserNameText(self.driver)
 
+        self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
 
@@ -155,13 +147,13 @@ class ChatView(BaseView):
         self.delete_chat_button = DeleteChatButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
+        self.view_profile_button = ViewProfileButton(self.driver)
         self.more_users_button = MoreUsersButton(self.driver)
         self.user_options = UserOptions(self.driver)
         self.remove_button = RemoveButton(self.driver)
 
         self.first_recipient_button = FirstRecipient(self.driver)
 
-        self.user_profile_icon_top_right = UserProfileIconTopRight(self.driver)
         self.user_profile_details = UserProfileDetails(self.driver)
 
         self.open_in_browser_button = OpenInBrowserButton(self.driver)
@@ -195,7 +187,7 @@ class ChatView(BaseView):
                 [i for i in list(set(expected_messages) - set(received_messages))])))
 
     def send_eth_to_request(self, request, sender_password):
-        gas_popup = self.element_by_text_part('Send transaction')
+        gas_popup = self.element_by_text_part('Specify amount')
         request.click_until_presence_of_element(gas_popup)
         send_transaction = self.get_send_transaction_view()
         self.send_message_button.click_until_presence_of_element(send_transaction.sign_transaction_button)

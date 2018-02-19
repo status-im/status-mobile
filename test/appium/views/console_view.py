@@ -57,9 +57,9 @@ class ConsoleView(BaseView):
     def create_user(self):
         self.request_password_icon.click()
         self.chat_request_input.send_keys("qwerty1234")
-        self.confirm()
+        self.send_message_button.click()
         self.chat_request_input.send_keys("qwerty1234")
-        self.confirm()
+        self.send_message_button.click()
         self.find_full_text(
             "Here is your signing phrase. You will use it to verify your transactions. Write it down and keep it safe!")
 

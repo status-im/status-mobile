@@ -89,7 +89,7 @@ class ManageAssetsButton(BaseButton):
 class STTCheckBox(BaseButton):
     def __init__(self, driver):
         super(STTCheckBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("(//*[@text='STT']//..//android.view.ViewGroup)[1]")
+        self.locator = self.Locator.xpath_selector("//*[@text='STT']//..//android.widget.CheckBox")
 
 
 class DoneButton(BaseButton):

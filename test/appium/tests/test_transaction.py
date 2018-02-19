@@ -24,6 +24,7 @@ class TestTransaction(SingleDeviceTestCase):
         initial_balance_recipient = api_requests.get_balance(recipient['address'])
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_with_user(recipient['username']).click()
+        chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.send_as_keyevent(transaction_amount)
         send_transaction_view = chat_view.get_send_transaction_view()
@@ -50,6 +51,7 @@ class TestTransaction(SingleDeviceTestCase):
         transaction_amount = '0.001'
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_with_user(recipient['username']).click()
+        chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.send_as_keyevent(transaction_amount)
         send_transaction_view = chat_view.get_send_transaction_view()
@@ -76,6 +78,7 @@ class TestTransaction(SingleDeviceTestCase):
         home_view.get_back_to_home_view()
         home_view.create_group_chat([recipient['username']], 'trg_%s' % get_current_time())
         chat_view = home_view.get_chat_view()
+        chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.first_recipient_button.click()
         chat_view.send_as_keyevent(transaction_amount)
@@ -127,9 +130,9 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(amount)
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.enter_contact_code_button.click()
+        send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
+        send_transaction.done_button.click_until_presence_of_element(send_transaction.sign_later_button)
         send_transaction.sign_later_button.click()
         send_transaction.yes_button.click()
         send_transaction.ok_button_apk.click()
@@ -142,12 +145,10 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction.got_it_button.click()
         api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
         transactions_view.history_tab.click()
-        transaction = transactions_view.transactions_table.find_transaction(amount=amount)
-        details_view = transaction.click()
-        details_view.get_transaction_hash()
+        transactions_view.transactions_table.find_transaction(amount=amount)
 
     @pytest.mark.pr
-    def test_send_stt_from_wallet_via_enter_contact_code(self):
+    def test_send_stt_from_wallet_via_enter_recipient_address(self):
         sender = transaction_users_wallet['A_USER']
         recipient = transaction_users_wallet['B_USER']
         sign_in_view = SignInView(self.driver)
@@ -167,7 +168,7 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(send_transaction.get_unique_amount())
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.enter_contact_code_button.click()
+        send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
@@ -219,6 +220,7 @@ class TestTransactions(MultipleDeviceTestCase):
         device_1_chat = device_1_home.get_chat_view()
         device_2_chat = device_2_home.get_chat_view()
         amount = device_1_chat.get_unique_amount()
+        device_1_chat.commands_button.click()
         device_1_chat.request_command.click()
         device_1_chat.first_recipient_button.click()
         device_1_chat.send_as_keyevent(amount)
@@ -249,6 +251,7 @@ class TestTransactions(MultipleDeviceTestCase):
         amount = device_1_chat.get_unique_amount()
         one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
         one_to_one_chat_device_2.click()
+        device_1_chat.commands_button.click_until_presence_of_element(device_1_chat.request_command)
         device_1_chat.request_command.click()
         device_1_chat.send_as_keyevent(amount)
         device_1_chat.send_message_button.click()

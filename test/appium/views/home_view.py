@@ -9,7 +9,7 @@ class PlusButton(BaseButton):
     def __init__(self, driver):
         super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.view.ViewGroup/android.widget.TextView[@text='+']")
+            "//*[@text='+']")
 
     def navigate(self):
         from views.start_new_chat_view import StartNewChatView
@@ -90,7 +90,7 @@ class HomeView(BaseView):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
         start_new_chat.chat_name_editbox.send_keys(chat_name)
-        start_new_chat.confirm_button.click()
+        start_new_chat.confirm()
 
     def get_public_key(self):
         profile_view = self.profile_button.click()

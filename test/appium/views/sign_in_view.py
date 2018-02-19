@@ -1,5 +1,5 @@
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-
+from tests import get_current_time
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
@@ -100,18 +100,18 @@ class SignInView(BaseView):
 
     def create_user(self):
         self.create_account_button.click()
-        self.password_input.send_keys('qwerty1234')
+        self.password_input.set_value('qwerty1234')
         self.next_button.click()
-        self.confirm_password_input.send_keys('qwerty1234')
+        self.confirm_password_input.set_value('qwerty1234')
         self.next_button.click()
-        self.name_input.wait_for_element(30)
-        self.name_input.send_keys('Test Name')
+        self.name_input.wait_for_element(45)
+        self.name_input.set_value('user_%s' % get_current_time())
         self.next_button.click()
         self.element_by_text("NO, I DON'T WANT TO SHARE").click()
 
     def recover_access(self, passphrase, password):
         recover_access_view = self.i_have_account_button.click()
-        recover_access_view.passphrase_input.send_keys(passphrase)
+        recover_access_view.passphrase_input.set_value(passphrase)
         recover_access_view.password_input.click()
-        recover_access_view.password_input.send_keys(password)
+        recover_access_view.password_input.set_value(password)
         recover_access_view.sign_in_button.click()

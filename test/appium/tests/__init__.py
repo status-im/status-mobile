@@ -56,7 +56,6 @@ transaction_users = dict()
 transaction_users['A_USER'] = dict()
 transaction_users['A_USER']['password'] = "qwerty"
 transaction_users['A_USER']['passphrase'] = "pet letter very ozone shop humor shuffle bounce convince soda hint brave"
-
 transaction_users['A_USER']['username'] = "Evergreen Handsome Cottontail"
 transaction_users['A_USER']['address'] = "67a50ef1d26de6d65dbfbb88172ac1e7017e766d"
 transaction_users['A_USER']['public_key'] = "0x040e016b940e067997be8d91298d893ff2bc3580504b4ccb155ea03d183b85f1" \
@@ -64,7 +63,6 @@ transaction_users['A_USER']['public_key'] = "0x040e016b940e067997be8d91298d893ff
 transaction_users['B_USER'] = dict()
 transaction_users['B_USER']['password'] = "qwerty"
 transaction_users['B_USER']['passphrase'] = "resemble soap taxi meat reason inflict dilemma calm warrior key gloom again"
-
 transaction_users['B_USER']['username'] = "Brief Organic Xenops"
 transaction_users['B_USER']['address'] = "3d672407a7e1250bbff85b7cfdb456f5015164db"
 transaction_users['B_USER']['public_key'] = "0x0406b17e5cdfadb2a05e84508b1a2916def6395e6295f57e92b85f915d40bca3" \
@@ -87,3 +85,24 @@ transaction_users_wallet['B_USER']['address'] = "5261ceba31e3a7204b498b2dd20220a
 transaction_users_wallet['B_USER']['public_key'] = "0x04cd70746f3df6cae7b45c32c211bd7e9e95ed5a1ec470db8f3b1f244eed182" \
                                                    "1d4a2053d7671802c5f7ce5b81f5fc2016a8109e1bc83f151ceff21f08c0cdcc6e4"
 
+group_chat_users = dict()
+group_chat_users['A_USER'] = dict()
+group_chat_users['A_USER']['password'] = "qwerty"
+group_chat_users['A_USER']['passphrase'] = "thank fruit brisk pond opera census grid husband claw sight chunk arena"
+group_chat_users['A_USER']['username'] = "Soupy Thorough Arrowcrab"
+group_chat_users['A_USER']['public_key'] = "0x04354b5882a1a0c1612d81271477925e7209d676f6fa310f8c28b761499ea39d83aacff" \
+                                           "380a181362dc5507ff116e8388a03b53f085d39536642529b5212f7cc00"
+
+group_chat_users['B_USER'] = dict()
+group_chat_users['B_USER']['password'] = "qwerty"
+group_chat_users['B_USER']['passphrase'] = "label ill slender audit atom love vote snap edit program climb beyond"
+group_chat_users['B_USER']['username'] = "Sleepy Friendly Eel"
+group_chat_users['B_USER']['public_key'] = "0x049fca07d1d85cd8fac7f2615c61323e0e32ad46b93169dfb2b1cdc3bfeb66d1974c575" \
+                                           "ba84b79e63fa567ba62d93d45a4f28442a63a9bee353423c02c1b7a7134"
+
+group_chat_users['C_USER'] = dict()
+group_chat_users['C_USER']['password'] = "qwerty"
+group_chat_users['C_USER']['passphrase'] = "you salmon ticket antique spray panther flee neck scale mad trial exile"
+group_chat_users['C_USER']['username'] = "Voluminous Buoyant Mouflon"
+group_chat_users['C_USER']['public_key'] = "0x042a59230f87211cf5f6c86203fdf415fd0a5a9ea600baa7b69d476a83e0a7826aa8c87" \
+                                           "b9f6aa2c459c0c7115d8c82887a5462d7c2fd4590c2e98aa87ed6caa9ce"

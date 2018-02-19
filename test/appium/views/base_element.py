@@ -122,7 +122,7 @@ class BaseButton(BaseElement):
         info('Tap on %s' % self.name)
         return self.navigate()
 
-    def click_until_presence_of_element(self, desired_element, attempts=5):
+    def click_until_presence_of_element(self, desired_element, attempts=3):
         counter = 0
         while not desired_element.is_element_present() and counter <= attempts:
             try:

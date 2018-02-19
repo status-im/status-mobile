@@ -61,7 +61,7 @@ class EnterUrlEditbox(BaseEditBox):
 class UsernameCheckbox(BaseButton):
     def __init__(self, driver, username):
         super(UsernameCheckbox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup[2]/*" % username)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.widget.CheckBox" % username)
 
 
 class StartNewChatView(ContactsView):

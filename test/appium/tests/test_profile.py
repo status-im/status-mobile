@@ -8,7 +8,6 @@ from views.sign_in_view import SignInView
 @pytest.mark.all
 class TestProfileView(SingleDeviceTestCase):
 
-    @pytest.mark.pr
     def test_qr_code_and_its_value(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -26,9 +25,10 @@ class TestProfileView(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         home_view.add_contact(basic_user['public_key'])
         chat_view = home_view.get_chat_view()
-        chat_view.user_profile_icon_top_right.click()
-        chat_view.user_profile_details.click()
-        chat_view.find_full_text(basic_user['username'])
+        chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
+        chat_view.view_profile_button.click()
+        for text in basic_user['username'], 'In contacts', 'Send transaction', 'Send message', 'Contact code':
+            chat_view.find_full_text(text)
 
     @pytest.mark.pr
     def test_network_switch(self):
@@ -37,7 +37,7 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
         sign_in_view = profile_view.switch_network('Rinkeby with upstream RPC')
         sign_in_view.first_account_button.click()
-        sign_in_view.password_input.send_keys('qwerty1234')
+        sign_in_view.password_input.set_value('qwerty1234')
         sign_in_view.sign_in_button.click()
-        sign_in_view.profile_button.click()
-        sign_in_view.find_full_text('RINKEBY WITH UPSTREAM RPC', 20)
+        desired_network = sign_in_view.element_by_text('RINKEBY WITH UPSTREAM RPC')
+        sign_in_view.profile_button.click_until_presence_of_element(desired_network)

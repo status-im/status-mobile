@@ -60,13 +60,13 @@ class ChooseRecipientButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Specify recipient...']")
 
     def click(self):
-        desired_element = EnterContactCodeButton(self.driver)
+        desired_element = EnterRecipientAddressButton(self.driver)
         self.click_until_presence_of_element(desired_element=desired_element)
 
 
-class EnterContactCodeButton(BaseButton):
+class EnterRecipientAddressButton(BaseButton):
     def __init__(self, driver):
-        super(EnterContactCodeButton, self).__init__(driver)
+        super(EnterRecipientAddressButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
 
 
@@ -99,7 +99,7 @@ class SendTransactionView(BaseView):
         super(SendTransactionView, self).__init__(driver)
 
         self.chose_recipient_button = ChooseRecipientButton(self.driver)
-        self.enter_contact_code_button = EnterContactCodeButton(self.driver)
+        self.enter_recipient_address_button = EnterRecipientAddressButton(self.driver)
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
         self.recent_recipients_button = RecentRecipientsButton(self.driver)

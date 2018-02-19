@@ -4,6 +4,7 @@ import pytest
 import emoji
 
 from tests.base_test_case import MultipleDeviceTestCase
+from tests import group_chat_users
 from views.sign_in_view import SignInView
 
 unicode_text_message = '%s%s%s%s %s%s%s%s%s%s%s' % (chr(355), chr(275), chr(353), chr(539), chr(1084), chr(949),
@@ -86,21 +87,30 @@ class TestMessages(MultipleDeviceTestCase):
     @pytest.mark.pr
     def test_group_chat_messages(self):
         self.create_drivers(3)
-        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), \
-                                       SignInView(self.drivers[2])
-        for sign_in in device_1, device_2, device_3:
-            sign_in.create_user()
+
+        device_1, device_2, device_3 = \
+            SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(self.drivers[2])
+
+        for data in (device_1, group_chat_users['A_USER']), \
+                    (device_2, group_chat_users['B_USER']), \
+                    (device_3, group_chat_users['C_USER']):
+            data[0].recover_access(data[1]['passphrase'], data[1]['password'])
+
         home_1, home_2, home_3 = device_1.get_home_view(), device_2.get_home_view(), device_3.get_home_view()
-        public_key_2, public_key_3 = home_2.get_public_key(), home_3.get_public_key()
-        profile_1 = home_1.profile_button.click()
-        profile_2, profile_3 = home_2.get_profile_view(), home_3.get_profile_view()
-        username_1, username_2, username_3 = profile_1.username_text.text, profile_2.username_text.text, \
-                                             profile_3.username_text.text
-        for profile in profile_1, profile_2, profile_3:
-            profile.home_button.click()
+
+        public_key_2, public_key_3 = \
+            group_chat_users['B_USER']['public_key'], \
+            group_chat_users['C_USER']['public_key']
+
+        username_1, username_2, username_3 = \
+            group_chat_users['A_USER']['username'], \
+            group_chat_users['B_USER']['username'], \
+            group_chat_users['C_USER']['username']
+
         for public_key in public_key_2, public_key_3:
             home_1.add_contact(public_key)
-            home_1.back_button.click()
+            home_1.get_back_to_home_view()
+
         chat_name = 'super_group_chat'
         home_1.create_group_chat(sorted([username_2, username_3]), chat_name)
         chat_1 = home_1.get_chat_view()
