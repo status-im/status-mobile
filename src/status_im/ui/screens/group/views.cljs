@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
+            [status-im.chat.views.actions :refer [delete-confirmation]]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.contacts.styles :as cstyles]
             [status-im.ui.components.common.common :as common]
@@ -59,28 +60,32 @@
        (i18n/label :t/delete-group-prompt)]]]]])
 
 (defn group-chat-settings-btns []
-  [react/view styles/settings-group-container
-   [react/view {:opacity 0.4}
-    [react/touchable-highlight {:on-press #()}
-     [react/view styles/settings-group-item
-      [react/view styles/settings-icon-container
-       [vi/icon :icons/speaker {:color :blue}]]
-      [react/view styles/settings-group-text-container
-       [react/text {:style styles/settings-group-text}
-        (i18n/label :t/mute-notifications)]]]]]
-   [action-separator]
-   [action-button {:label     (i18n/label :t/clear-history)
-                   :icon      :icons/close
-                   :icon-opts {:color :blue}
-                   :on-press  #(re-frame/dispatch [:clear-history])}]
-   [action-separator]
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:leave-group-chat])}
-    [react/view styles/settings-group-item
-     [react/view styles/delete-icon-container
-      [vi/icon :icons/arrow-right {:color :red}]]
-     [react/view styles/settings-group-text-container
-      [react/text {:style styles/delete-group-text}
-       (i18n/label :t/leave-chat)]]]]])
+  (let [leave-group-dispatch-fn #(re-frame/dispatch [:leave-group-chat])]
+    [react/view styles/settings-group-container
+     [react/view {:opacity 0.4}
+      [react/touchable-highlight {:on-press #()}
+       [react/view styles/settings-group-item
+        [react/view styles/settings-icon-container
+         [vi/icon :icons/speaker {:color :blue}]]
+        [react/view styles/settings-group-text-container
+         [react/text {:style styles/settings-group-text}
+          (i18n/label :t/mute-notifications)]]]]]
+     [action-separator]
+     [action-button {:label     (i18n/label :t/clear-history)
+                     :icon      :icons/close
+                     :icon-opts {:color :blue}
+                     :on-press  #(re-frame/dispatch [:clear-history])}]
+     [action-separator]
+     [react/touchable-highlight {:on-press #(delete-confirmation
+                                              :t/delete-group
+                                              :t/delete-group-confirmation
+                                              leave-group-dispatch-fn)}
+      [react/view styles/settings-group-item
+       [react/view styles/delete-icon-container
+        [vi/icon :icons/arrow-right {:color :red}]]
+       [react/view styles/settings-group-text-container
+        [react/text {:style styles/delete-group-text}
+         (i18n/label :t/leave-chat)]]]]]))
 
 (defn more-btn [contacts-limit contacts-count on-press]
   [react/view

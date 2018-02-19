@@ -150,6 +150,7 @@
    :invite-friends                        "Invite friends"
    :chats                                 "Chats"
    :delete-chat                           "Delete chat"
+   :delete-chat-confirmation              "This chat will be removed from your list. This will not affect your contacts"
    :group-chat                            "Group chat"
    :new-group-chat                        "New group chat"
    :new-public-group-chat                 "Join public chat"
