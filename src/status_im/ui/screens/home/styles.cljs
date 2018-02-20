@@ -3,6 +3,8 @@
   (:require [status-im.ui.components.styles :as component.styles]
             [status-im.ui.components.colors :as colors]))
 
+(def delete-button-width 100)
+
 (defn toolbar []
   {:background-color colors/white})
 
@@ -155,3 +157,17 @@
    :width        14
    :height       9
    :tint-color   :white})
+
+(def delete-icon-highlight
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :right            -800
+   :width            800
+   :background-color colors/light-red})
+
+(def delete-icon-container
+  {:flex            1
+   :width           delete-button-width
+   :justify-content :center
+   :align-items     :center})

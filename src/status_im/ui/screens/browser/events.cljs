@@ -25,6 +25,11 @@
   (fn [browser]
     (browser-store/save browser)))
 
+(re-frame/reg-fx
+  :remove-browser
+  (fn [browser-id]
+    (browser-store/delete browser-id)))
+
 (defn match-url [url]
   (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
 
@@ -77,3 +82,10 @@
   [re-frame/trim-v]
   (fn [{:keys [db now] :as cofx} [options]]
     {:db (update db :browser/options merge options)}))
+
+(handlers/register-handler-fx
+  :remove-browser
+  [re-frame/trim-v]
+  (fn [{:keys [db]} [browser-id]]
+    {:db (update-in db [:browser/browsers] dissoc browser-id)
+     :remove-browser browser-id}))
