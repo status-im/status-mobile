@@ -1,4 +1,4 @@
-(ns status-im.chat.handlers 
+(ns status-im.chat.handlers
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models]
@@ -7,7 +7,8 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as random]
-            status-im.chat.events))
+            status-im.chat.events
+            [status-im.utils.datetime :as datetime]))
 
 (handlers/register-handler
   :leave-group-chat
@@ -71,7 +72,8 @@
 
 (handlers/register-handler-fx
   :create-new-public-chat
-  (fn [{:keys [db]} [_ topic]]
+  [(re-frame/inject-cofx :now)]
+  (fn [{:keys [db now]} [_ topic]]
     (let [exists? (boolean (get-in db [:chats topic]))
           chat    {:chat-id               topic
                    :name                  topic
@@ -79,7 +81,7 @@
                    :group-chat            true
                    :public?               true
                    :is-active             true
-                   :timestamp             (random/timestamp)
+                   :timestamp             now
                    :last-to-clock-value   0
                    :last-from-clock-value 0}]
       (merge
@@ -125,7 +127,7 @@
 (defn prepare-group-chat
   [{:keys [current-public-key username]
     :group/keys [selected-contacts]
-    :contacts/keys [contacts]} group-name]
+    :contacts/keys [contacts]} group-name timestamp]
   (let [selected-contacts'  (mapv #(hash-map :identity %) selected-contacts)
         chat-name (if-not (string/blank? group-name)
                     group-name
@@ -139,17 +141,19 @@
      :group-chat            true
      :group-admin           current-public-key
      :is-active             true
-     :timestamp             (random/timestamp)
+     :timestamp             timestamp
      :contacts              selected-contacts'
      :last-to-clock-value   0
      :last-from-clock-value 0}))
 
 (handlers/register-handler-fx
   :create-new-group-chat-and-open
-  (fn [{:keys [db]} [_ group-name]]
+  [(re-frame/inject-cofx :now)]
+  (fn [{:keys [db now]} [_ group-name]]
     (let [new-chat (prepare-group-chat (select-keys db [:group/selected-contacts :current-public-key :username
                                                         :contacts/contacts])
-                                       group-name)]
+                                       group-name
+                                       now)]
       {:db (-> db
                (assoc-in [:chats (:chat-id new-chat)] new-chat)
                (assoc :group/selected-contacts #{}))

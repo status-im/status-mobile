@@ -1,13 +1,11 @@
 (ns status-im.utils.random
-  (:require [status-im.js-dependencies :as dependencies]))
-
-(defn timestamp []
-  (.getTime (js/Date.)))
+  (:require [status-im.js-dependencies :as dependencies]
+            [status-im.utils.datetime :as datetime]))
 
 (def chance (dependencies/Chance.))
 
 (defn id []
-  (str (timestamp) "-" (.guid chance)))
+  (str (datetime/timestamp) "-" (.guid chance)))
 
 (defn rand-gen
   [seed]

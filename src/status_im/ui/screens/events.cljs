@@ -69,7 +69,7 @@
 (re-frame/reg-cofx
  :now
  (fn [coeffects _]
-   (assoc coeffects :now (time/now-ms))))
+   (assoc coeffects :now (time/timestamp))))
 
 (re-frame/reg-cofx
  :random-id

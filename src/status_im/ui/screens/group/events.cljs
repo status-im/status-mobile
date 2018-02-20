@@ -6,7 +6,9 @@
             [status-im.data-store.contact-groups :as groups]
             [clojure.string :as string]
             [status-im.utils.random :as random]
-            [status-im.ui.screens.group.navigation]))
+            [status-im.ui.screens.group.navigation]
+            [status-im.utils.datetime :as datetime]
+            [re-frame.core :as re-frame]))
 
 ;;;; COFX
 
@@ -65,12 +67,14 @@
 
 (register-handler-fx
   :create-new-contact-group
-  (fn [{{:group/keys [contact-groups selected-contacts] :as db} :db} [_ group-name]]
+  [(re-frame/inject-cofx :now)]
+  (fn [{{:group/keys [contact-groups selected-contacts] :as db} :db
+        now :now} [_ group-name]]
     (let [selected-contacts' (mapv #(hash-map :identity %) selected-contacts)
           new-group {:group-id    (random/id)
                      :name        group-name
                      :order       (count contact-groups)
-                     :timestamp   (random/timestamp)
+                     :timestamp   now
                      :contacts    selected-contacts'}]
       {:db (update db :group/contact-groups merge {(:group-id new-group) new-group})
        ::save-contact-group new-group})))

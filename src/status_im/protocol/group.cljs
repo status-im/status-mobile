@@ -9,7 +9,8 @@
     [status-im.protocol.web3.filtering :as f]
     [status-im.protocol.listeners :as l]
     [clojure.string :as str]
-    [status-im.protocol.web3.keys :as shh-keys]))
+    [status-im.protocol.web3.keys :as shh-keys]
+    [status-im.utils.datetime :as datetime]))
 
 (defn prepare-mesage
   [{:keys [message group-id keypair new-keypair type username requires-ack?]}]
@@ -18,7 +19,7 @@
                              :username username
                              :group-id group-id
                              :type type
-                             :timestamp (u/timestamp))
+                             :timestamp (datetime/timestamp))
                      (assoc :topics [f/status-topic]
                             :key-password group-id
                             :requires-ack? (or (nil? requires-ack?) requires-ack?)
@@ -97,7 +98,7 @@
                             :requires-ack? true
                             :type type)
                      (update :payload assoc
-                             :timestamp (u/timestamp)
+                             :timestamp (datetime/timestamp)
                              :group-id id
                              :group-admin admin
                              :group-name name

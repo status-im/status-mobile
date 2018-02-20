@@ -29,7 +29,7 @@
   :<- [:get-contacts]
   :<- [:get :current-public-key]
   (fn [[discoveries chats contacts current-public-key]]
-    (let [now-ms (time/now-ms)]
+    (let [now-ms (time/timestamp)]
       (map #(assoc % :priority (calculate-priority now-ms chats current-public-key contacts %)) (vals discoveries)))))
 
 (reg-sub :discover/search-tags :discover-search-tags)

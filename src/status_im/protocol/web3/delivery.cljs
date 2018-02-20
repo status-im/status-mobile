@@ -8,7 +8,8 @@
             [status-im.protocol.validation :refer-macros [valid?]]
             [clojure.set :as set]
             [status-im.protocol.web3.keys :as shh-keys]
-            [status-im.utils.async :refer [timeout]]))
+            [status-im.utils.async :refer [timeout]]
+            [status-im.utils.datetime :as datetime]))
 
 (defonce loop-state (atom nil))
 (defonce messages (atom {}))
@@ -162,7 +163,7 @@
   (swap! messages update-in [web3 id to]
          (fn [{:keys [attempts] :as data}]
            (assoc data :attempts (inc attempts)
-                       :last-attempt (u/timestamp)))))
+                       :last-attempt (datetime/timestamp)))))
 
 (defn delivery-callback
   [web3 post-error-callback {:keys [id requires-ack? to]} message]
@@ -206,7 +207,7 @@
       ;; continue attempts
       (<= attempts max-attempts-number)
       ;; check retransmission interval
-      (<= (+ last-attempt (* 1000 ack-not-received-s-interval)) (u/timestamp)))))
+      (<= (+ last-attempt (* 1000 ack-not-received-s-interval)) (datetime/timestamp)))))
 
 (defn- check-ttl
   [message message-type ttl-config default-ttl]

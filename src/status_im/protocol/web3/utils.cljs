@@ -16,9 +16,6 @@
 (defn shh [web3]
   (.-shh web3))
 
-(defn timestamp []
-  (to-long (now)))
-
 (defn extract-enode-id [enode]
   (-> enode
       (string/split #"/")

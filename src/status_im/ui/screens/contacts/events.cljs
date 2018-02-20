@@ -22,7 +22,8 @@
             [cljs.spec.alpha :as spec]
             [status-im.protocol.web3.utils :as web3.utils]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.datetime :as datetime]))
 ;;;; COFX
 
 (reg-cofx
@@ -71,7 +72,7 @@
                                        :fcm-token     fcm-token}
                              :keypair {:public  updates-public-key
                                        :private updates-private-key}
-                             :timestamp (web3.utils/timestamp)}}})))
+                             :timestamp (datetime/timestamp)}}})))
 
 (reg-fx
   ::reset-pending-messages
@@ -146,7 +147,7 @@
       {:group-id  id'
        :name      (:en name)
        :order     0
-       :timestamp (random/timestamp)
+       :timestamp (datetime/timestamp)
        :contacts  (mapv #(hash-map :identity %) contacts)})]])
 
 ;; NOTE(oskarth): We now overwrite default contacts upon upgrade with default_contacts.json data.

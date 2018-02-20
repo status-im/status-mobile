@@ -1,7 +1,6 @@
 (ns status-im.data-store.realm.contact-groups
   (:require [goog.object :as object]
-            [status-im.data-store.realm.core :as realm]
-            [status-im.utils.random :refer [timestamp]])
+            [status-im.data-store.realm.core :as realm])
   (:refer-clojure :exclude [exists?]))
 
 (defn get-all

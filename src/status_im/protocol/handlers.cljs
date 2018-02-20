@@ -185,7 +185,7 @@
 (re-frame/reg-fx
   ::load-processed-messages!
   (fn []
-    (let [now      (datetime/now-ms)
+    (let [now      (datetime/timestamp)
           messages (processed-messages/get-filtered (str "ttl > " now))]
       (cache/init! messages)
       (processed-messages/delete (str "ttl <=" now)))))
@@ -465,7 +465,7 @@
               processed-message {:id         (random/id)
                                  :message-id message-id
                                  :type       type
-                                 :ttl        (+ (datetime/now-ms) ttl-s)}
+                                 :ttl        (+ (datetime/timestamp) ttl-s)}
               chat-message (#{:message :group-message} (:type payload))
               route-fx (case type
                          (:message

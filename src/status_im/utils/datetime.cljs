@@ -108,8 +108,8 @@
 (defn to-date [ms]
   (from-long ms))
 
-(defn now-ms []
-  (to-long (now)))
+(defn timestamp []
+  (inst-ms (js/Date.)))
 
 (defn format-date [format date]
   (let [local (plus (from-date date) time-zone-offset)]

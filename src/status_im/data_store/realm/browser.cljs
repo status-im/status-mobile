@@ -1,6 +1,5 @@
 (ns status-im.data-store.realm.browser
-  (:require [status-im.data-store.realm.core :as realm]
-    [status-im.utils.random :refer [timestamp]])
+  (:require [status-im.data-store.realm.core :as realm])
   (:refer-clojure :exclude [exists?]))
 
 (defn get-all

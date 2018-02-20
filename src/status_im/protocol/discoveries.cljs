@@ -8,7 +8,8 @@
     [cljs.spec.alpha :as s]
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.utils.random :as random]
-    [status-im.protocol.web3.keys :as shh-keys]))
+    [status-im.protocol.web3.keys :as shh-keys]
+    [status-im.utils.datetime :as datetime]))
 
 (def discover-topic-prefix "status-discover-")
 (def discover-topic "0xbeefdead")
@@ -33,7 +34,7 @@
                    {:requires-ack? false
                     :type          :online
                     :key-password  discovery-key-password
-                    :payload       {:content {:timestamp (u/timestamp)}}
+                    :payload       {:content {:timestamp (datetime/timestamp)}}
                     :topics        [f/status-topic]})]
     (d/add-pending-message! web3 message')))
 
@@ -116,7 +117,7 @@
         (assoc :type :profile
                :topics [f/status-topic]
                :key-password discovery-key-password)
-        (assoc-in [:payload :timestamp] (u/timestamp))
+        (assoc-in [:payload :timestamp] (datetime/timestamp))
         (assoc-in [:payload :content :profile]
                   (get-in message [:payload :profile]))
         (update :payload dissoc :profile))))
@@ -139,7 +140,7 @@
                            :requires-ack? false
                            :key-password discovery-key-password
                            :topics [f/status-topic])
-                    (assoc-in [:payload :timestamp] (u/timestamp)))]
+                    (assoc-in [:payload :timestamp] (datetime/timestamp)))]
     (d/add-pending-message! web3 message)))
 
 (s/def :status/payload

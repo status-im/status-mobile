@@ -308,7 +308,7 @@
       ;;
       ;; :update-contact!
       ;;TODO :update-chat!
-      (let [timestamp (datetime/now-ms)]
+      (let [timestamp (datetime/timestamp)]
         (def received-contact2 (assoc received-contact1
                                       :last-updated timestamp
                                       :status "new status"

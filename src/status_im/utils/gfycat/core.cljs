@@ -3,7 +3,7 @@
             [status-im.utils.gfycat.adjectives :as adjectives]
             [clojure.string :as str]
             [status-im.utils.random :as rnd]
-            [status-im.utils.datetime :refer [now-ms]]))
+            [status-im.utils.datetime :as datetime]))
 
 (defn- pick-random
   [gen vector]
@@ -25,4 +25,4 @@
      nil unknown-gfy
      "0" unknown-gfy
      (build-gfy public-key)))
-  ([] (generate-gfy (now-ms))))
+  ([] (generate-gfy (datetime/timestamp))))

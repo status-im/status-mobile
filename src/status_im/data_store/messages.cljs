@@ -4,7 +4,8 @@
             [status-im.constants :as constants]
             [status-im.data-store.realm.messages :as data-store]
             [status-im.utils.random :as random]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.core :as utils]
+            [status-im.utils.datetime :as datetime]))
 
 (defn- command-type?
   [type]
@@ -76,7 +77,7 @@
     (data-store/save (prepare-message (merge default-values
                                              message
                                              {:from      (or from "anonymous")
-                                              :timestamp (random/timestamp)})))))
+                                              :timestamp (datetime/timestamp)})))))
 
 (defn update-message
   [{:keys [message-id] :as message}]

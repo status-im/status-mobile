@@ -2,7 +2,7 @@
   (:require [goog.object :as object]
             [status-im.data-store.realm.core :as realm]
             [status-im.data-store.realm.messages :as messages]
-            [status-im.utils.random :refer [timestamp]]
+            [status-im.utils.datetime :as datetime]
             [taoensso.timbre :as log])
   (:refer-clojure :exclude [exists?]))
 
@@ -78,7 +78,7 @@
                  (fn []
                    (doto chat
                      (aset "is-active" false)
-                     (aset "removed-at" (timestamp)))))))
+                     (aset "removed-at" (datetime/timestamp)))))))
 
 (defn get-contacts
   [chat-id]
@@ -100,7 +100,7 @@
 (defn add-contacts
   [chat-id identities]
   (let [contacts (get-contacts chat-id)
-        added-at (timestamp)]
+        added-at (datetime/timestamp)]
     (realm/write @realm/account-realm
                  #(save-contacts identities contacts added-at))))
 
