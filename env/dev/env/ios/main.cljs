@@ -3,10 +3,9 @@
             [re-frisk-remote.core :as rr]
             [status-im.ios.core :as core]
             [status-im.utils.handlers :as utils.handlers]
-            [figwheel.client :as figwheel :include-macros true]
+            [figwheel.client :as figwheel]
             [env.config :as conf]
-            [env.utils]
-            [cljs.pprint]))
+            [env.utils]))
 
 (enable-console-print!)
 
@@ -15,11 +14,13 @@
 
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])
+
+;; Do not delete, root-el is used by the figwheel-bridge.js
 (def root-el (r/as-element [reloader]))
 
-(figwheel/start {:websocket-url (:ios conf/figwheel-urls)
+(figwheel/start {:websocket-url    (:ios conf/figwheel-urls)
                  :heads-up-display false
-                 :jsload-callback #(swap! cnt inc)})
+                 :jsload-callback  #(swap! cnt inc)})
 
 (utils.handlers/add-pre-event-callback rr/pre-event-callback)
 

@@ -53,9 +53,10 @@
                                     (re-frame/dispatch [:update-input-data]))))
       :on-content-size-change (when (and (not input-focused?)
                                          (not single-line-input?))
-                                #(let [h (-> (.-nativeEvent %)
-                                             (.-contentSize)
-                                             (.-height))]
+                                #(let [s (.-contentSize (.-nativeEvent %))
+                                       w (.-width s)
+                                       h (.-height s)]
+                                   (set-container-width-fn w)
                                    (set-layout-height-fn h)))
       :on-selection-change    #(let [s   (-> (.-nativeEvent %)
                                              (.-selection))

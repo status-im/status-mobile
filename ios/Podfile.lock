@@ -20,13 +20,13 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - Instabug (7.2.6)
   - Protobuf (3.3.0)
-  - React (0.51.0):
-    - React/Core (= 0.51.0)
+  - React (0.53.3):
+    - React/Core (= 0.53.3)
   - react-native-background-timer (2.0.0):
     - React
-  - React/Core (0.51.0):
-    - yoga (= 0.51.0.React)
-  - yoga (0.51.0.React)
+  - React/Core (0.53.3):
+    - yoga (= 0.53.3.React)
+  - yoga (0.53.3.React)
 
 DEPENDENCIES:
   - FirebaseMessaging
@@ -51,9 +51,9 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   Instabug: 49d4fbf1bf14e2f9074dfb7774ca5611bae993b4
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
-  React: 352f02f1db6e4744f9a758527e13e3fdefbbd6ba
+  React: fd20e9486c9d994fb6e40d6e67dbd29c7709889c
   react-native-background-timer: 10063c04bf85d7f8811dff8c74399f0aa715245f
-  yoga: b5d96400ca8b2936965a7a6516da7c1177f432a3
+  yoga: c7c8e64dbc2552b1ceac0b491ff03f5e5128b501
 
 PODFILE CHECKSUM: 2fb09df3e1ea33a8eef1757e72a6577bd5d547c1
 

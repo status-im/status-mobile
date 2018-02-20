@@ -1,7 +1,7 @@
 (ns ^:figwheel-no-load env.android.main
   (:require [reagent.core :as r]
             [status-im.android.core :as core]
-            [figwheel.client :as figwheel :include-macros true]
+            [figwheel.client :as figwheel]
             [re-frisk-remote.core :as rr]
             [env.config :as conf]
             [env.utils]
@@ -14,11 +14,13 @@
 
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])
+
+;; Do not delete, root-el is used by the figwheel-bridge.js
 (def root-el (r/as-element [reloader]))
 
-(figwheel/start {:websocket-url (:android conf/figwheel-urls)
+(figwheel/start {:websocket-url    (:android conf/figwheel-urls)
                  :heads-up-display false
-                 :jsload-callback #(swap! cnt inc)})
+                 :jsload-callback  #(swap! cnt inc)})
 
 (utils.handlers/add-pre-event-callback rr/pre-event-callback)
 

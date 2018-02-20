@@ -101,7 +101,7 @@
 (defn- base-list-props
   [{:keys [render-fn empty-component header separator default-separator?]}]
   (let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
-    (merge {:keyExtractor (fn [_ i] i)}
+    (merge {:keyExtractor (fn [_ i] (str i))}
            (when render-fn               {:renderItem (wrap-render-fn render-fn)})
            (when separator               {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
            (when empty-component         {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
