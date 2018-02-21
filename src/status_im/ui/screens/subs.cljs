@@ -55,8 +55,3 @@
 (reg-sub :get-screen-params
   (fn [db [_ view-id]]
     (get-in db [:navigation/screen-params (or view-id (:view-id db))])))
-
-(reg-sub :delete-swipe-position
-  (fn [db [_ item-id]]
-    (let [item-animation (get-in db [:chat-animations item-id])]
-      (if (some? item-animation) (:delete-swiped item-animation) nil))))

@@ -35,6 +35,9 @@
 (defn stop-animation [anim-value]
   (.stopAnimation anim-value))
 
+(defn value [anim-value]
+  (.-value anim-value))
+
 (defn set-value [anim-value value]
   (.setValue anim-value value))
 

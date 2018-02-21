@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.home.views.inner-item
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.styles :as component.styles]
             [status-im.utils.core :as utils]
@@ -11,7 +11,6 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as const]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
 
 (defn message-content-text [{:keys [content] :as message}] 
@@ -88,40 +87,38 @@
                                                  public-key unremovable? :as chat]}]
   (letsubs [last-message [:get-last-message chat-id]]
     (let [name (or (i18n/get-contact-translated chat-id :name name)
-               (gfycat/generate-gfy public-key))]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
-       [react/view styles/chat-container
-        [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online]]
-        [react/view styles/chat-info-container
-         [react/view styles/item-upper-container
-          [chat-list-item-name name group-chat public? public-key]
-          (when last-message
-            [react/view styles/message-status-container
-             [message-status chat last-message]
-             [message-timestamp last-message]])]
-         [react/view styles/item-lower-container
-          [message-content-text last-message]
-          [unviewed-indicator chat-id]]]]])))
+                   (gfycat/generate-gfy public-key))]
+      [react/view styles/chat-container
+       [react/view styles/chat-icon-container
+        [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online]]
+       [react/view styles/chat-info-container
+        [react/view styles/item-upper-container
+         [chat-list-item-name name group-chat public? public-key]
+         (when last-message
+           [react/view styles/message-status-container
+            [message-status chat last-message]
+            [message-timestamp last-message]])]
+        [react/view styles/item-lower-container
+         [message-content-text last-message]
+         [unviewed-indicator chat-id]]]])))
 
 (defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
   (letsubs [contact' [:contact-by-identity contact]]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
-     [react/view styles/chat-container
-      [react/view styles/chat-icon-container
-       (if contact'
-         [chat-icon.screen/dapp-icon-browser contact' 36]
-         [react/view styles/browser-icon-container
-          [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
-      [react/view styles/chat-info-container
-       [react/view styles/item-upper-container
-        [react/view styles/name-view
-         [react/view {:flex-shrink 1}
-          [react/text {:style styles/name-text
-                       :number-of-lines 1}
-           name]]]]
-       [react/view styles/item-lower-container
-        [react/view styles/last-message-container
-         [react/text {:style styles/last-message-text
+    [react/view styles/chat-container
+     [react/view styles/chat-icon-container
+      (if contact'
+        [chat-icon.screen/dapp-icon-browser contact' 36]
+        [react/view styles/browser-icon-container
+         [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
+     [react/view styles/chat-info-container
+      [react/view styles/item-upper-container
+       [react/view styles/name-view
+        [react/view {:flex-shrink 1}
+         [react/text {:style styles/name-text
                       :number-of-lines 1}
-          (or url (i18n/label :t/dapp))]]]]]]))
+          name]]]]
+      [react/view styles/item-lower-container
+       [react/view styles/last-message-container
+        [react/text {:style styles/last-message-text
+                     :number-of-lines 1}
+         (or url (i18n/label :t/dapp))]]]]]))

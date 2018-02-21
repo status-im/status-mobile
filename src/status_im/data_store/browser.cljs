@@ -17,7 +17,3 @@
 (defn save
   [{:keys [browser-id] :as browser}]
   (data-store/save browser (exists? browser-id)))
-
-(defn delete
-  [browser-id]
-  (data-store/delete (exists? browser-id)))

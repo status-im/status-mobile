@@ -47,7 +47,6 @@
             :icons/browse              (slurp/slurp-svg "./resources/icons/browse.svg")
             :icons/close               (slurp/slurp-svg "./resources/icons/close.svg")
             :icons/copy-from           (slurp/slurp-svg "./resources/icons/copy_from.svg")
-            :icons/delete              (slurp/slurp-svg "./resources/icons/delete.svg")
             :icons/dots-horizontal     (slurp/slurp-svg "./resources/icons/dots_horizontal.svg")
             :icons/dots-vertical       (slurp/slurp-svg "./resources/icons/dots_vertical.svg")
             :icons/exclamation_mark    (slurp/slurp-svg "./resources/icons/exclamation_mark.svg")
