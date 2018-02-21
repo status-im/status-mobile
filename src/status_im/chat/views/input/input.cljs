@@ -32,10 +32,11 @@
       :blur-on-submit         false
       :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused? true}])
       :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
-      :on-submit-editing      (fn [e]
+      :on-submit-editing      (fn [_]
                                 (if single-line-input?
                                   (re-frame/dispatch [:send-current-message])
-                                  (.setNativeProps input-ref (clj->js {:text input-text}))))
+                                  (when @input-ref
+                                    (.setNativeProps @input-ref (clj->js {:text input-text})))))
       :on-layout              (fn [e]
                                 (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
       :on-change              (fn [e]
