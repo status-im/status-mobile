@@ -4,7 +4,7 @@
   {
    ;;common
    :members-title                         "Membres"
-   :not-implemented                       "! Non disponible"
+   :not-implemented                       "!Non disponible"
    :chat-name                             "Pseudonyme"
    :notifications-title                   "Notifications et sons"
    :offline                               "Hors ligne"
@@ -26,8 +26,14 @@
    :photos-access-error                   "Merci d'aller dans vos paramètres système et de vous assurer que Status > Photos est sélectionné afin d'accorder la permission d'utiliser vos photos."
 
    ;;drawer
-   :switch-users                          "Changer d'utilisateur"
-   :current-network                       "Le réseau actuel"
+   :switch-users                          "Changer d'untilisateur"
+   :logout-title                          "Se déconnecter ?"
+   :logout-are-you-sure                   "Êtes-vous sur de vouloir vous\ndéconnecter ?"
+   :logout                                "Se déconnecter"
+   :current-network                       "Réseau actuel"
+
+   ;;home
+   :home                                  "Menu"
 
    ;;chat
    :is-typing                             "écrit..."
@@ -47,7 +53,7 @@
    :suggestions-requests                  "Demandes"
    :suggestions-commands                  "Commandes"
    :faucet-success                        "La demande de Faucet a été reçue"
-   :faucet-error                          "Erreur avec la demande de Faucet"
+   :faucet-error                          "Erreur lors de la demande de Faucet"
 
    ;;sync
    :sync-in-progress                      "Synchronisation en cours..."
@@ -78,8 +84,11 @@
 
    ;;profile
    :profile                               "Profil"
-   :edit-profile                          "Modifier profil"
+   :view-profile                          "Voir le profil"
+   :edit-profile                          "Modifier le profil"
+   :main-currency                         "Devise principale"
    :message                               "Message"
+   :notifications                         "Notifications"
    :not-specified                         "Non spécifié"
    :public-key                            "Clé publique"
    :phone-number                          "Numéro de téléphone"
@@ -92,7 +101,7 @@
    :start-conversation                    "Débuter une conversation"
    :send-transaction                      "Envoyer une transaction"
    :testnet-text                          "Vous êtes connecté au réseau de test {{testnet}}. Surtout n'envoyez jamais de vrai ETH ou SNT vers vos adresses"
-   :mainnet-text                          "Vous êtes sur le réseau principal. Vous pouvez envoyer de vrai ETH"
+   :mainnet-text                          "Vous êtes sur le réseau principal. Vous pouvez envoyer du vrai ETH"
 
    ;;make_photo
    :image-source-title                    "Photo de profil"
@@ -105,7 +114,8 @@
    :sharing-cancel                        "Annuler"
 
    :browsing-title                        "Naviguer"
-   :browsing-open-in-web-browser          "Ouvrir dans le navigateur"
+   :browsing-open-in-web-browser          "Ouvrir dans le navigateur web"
+   :browsing-open-in-browser              "Ouvrir dans le navigateur"
    :browsing-cancel                       "Annuler"
 
    ;;sign-up
@@ -120,9 +130,9 @@
    :shake-your-phone                      "Vous avez trouvé un bug ou alors avez une suggestion? ~Secouez~ simplement votre téléphone!"
    :intro-status                          "Chattez avec moi pour configurer votre compte et modifier vos paramètres !"
    :intro-message1                        "Bienvenue dans Status\nTapez sur ce message pour définir votre mot de passe et commencer !"
-   :account-generation-message            "Donnez-moi une seconde, je dois faire quelques calculs de ouf pour générer votre compte !"
+   :account-generation-message            "Donnez-moi une seconde, je dois faire quelques calculs ingénieux pour générer votre compte !"
    :move-to-internal-failure-message      "Nous devons déplacer des fichiers importants depuis un stockage extérieur vers un stockage local. Afin de faire cela, nous avons besoin de votre permission. Nous n'utiliserons plus de stockage extérieur dans nos futures versions."
-   :debug-enabled                         "Le serveur Debug a été lancé! Vous pouvez désormais utiliser *status-dev-cli scan* pour trouver le serveur depuis votre ordinateur sur le même réseau."
+   :debug-enabled                         "Le serveur de debug a été lancé! Vous pouvez désormais utiliser *status-dev-cli scan* pour trouver le serveur depuis votre ordinateur sur le même réseau."
 
    ;;phone types
    :phone-e164                            "International 1"
@@ -131,20 +141,26 @@
    :phone-significant                     "Significatif"
 
    ;;chats
+   :new                                   "Nouveau"
+   :new-chat                              "Nouveau chat"
+   :start-new-chat                        "Commencer un nouveau chat"
+   :start-group-chat                      "Commencer un nouveau chat de groupe"
+   :invite-friends                        "Inviter des amis"
    :chats                                 "Chats"
-   :delete-chat                           "Supprimer chat"
+   :delete-chat                           "Supprimer le chat"
    :new-group-chat                        "Nouveau chat de groupe"
-   :new-public-group-chat                 "Rejoindre chat public"
-   :edit-chats                            "Modifier chats"
-   :search-chats                          "Rechercher chats"
-   :empty-topic                           "Sujet indéfini"
+   :new-public-group-chat                 "Rejoindre un chat public"
+   :edit-chats                            "Modifier les chats"
+   :search-chats                          "Rechercher des chats"
+   :empty-topic                           "Sujet non-défini"
    :topic-format                          "Mauvais format [a-z0-9\\-]+"
    :public-group-topic                    "Sujet"
+   :set-a-topic                           "Définir le sujet"
 
    ;;discover
    :discover                              "Découvrir"
    :none                                  "Aucun"
-   :search-tags                           "Entrez vos mots clés ici"
+   :search-tags                           "Entrez vos mots-clés ici"
    :popular-tags                          "Mots-clés populaires"
    :recent                                "Récent"
    :no-statuses-found                     "Aucun statut trouvé"
@@ -174,8 +190,9 @@
    :contacts-group-new-chat               "Démarrer un nouveau chat"
    :choose-from-contacts                  "Ajouter depuis mes contacts"
    :no-contacts                           "Pas encore de contacts"
-   :show-qr                               "Afficher le QR"
-   :enter-address                         "Entrer Adresse"
+   :show-qr                               "Afficher le code QR"
+   :enter-address                         "Entrer l'adresse"
+   :enter-contact-code                    "Enter le code du contact"
    :more                                  "plus"
 
    ;;group-settings
@@ -212,7 +229,7 @@
 
    ;;new-contact
    :add-new-contact                       "Ajouter un nouveau contact"
-   :scan-qr                               "Scanner le QR"
+   :scan-qr                               "Scanner le code QR"
    :name                                  "Nom"
    :address-explication                   "Peut-être qu'ici devrait se trouver un texte expliquant ce qu'est une adresse et où la chercher"
    :enter-valid-public-key                "Veuillez saisir une clé publique valide ou scanner un code QR"
@@ -257,8 +274,8 @@
    :got-it                                "Compris"
    :block                                 "Bloc"
    :hash                                  "Hash"
-   :gas-limit                             "limite Gas"
-   :gas-price                             "prix Gas"
+   :gas-limit                             "limite du Gas"
+   :gas-price                             "prix du Gas"
    :gas-used                              "Gas utilisé"
    :cost-fee                              "Coût/Frais"
    :nonce                                 "Nonce"
@@ -307,7 +324,7 @@
    :transactions-history                  "Historique"
    :transactions-unsigned                 "Non-Signées"
    :transactions-history-empty            "Aucune transaction dans votre historique pour le moment"
-   :transactions-unsigned-empty           "Vous n'avez aucune transaction non signée"
+   :transactions-unsigned-empty           "Vous n'avez aucune transaction non-signée"
    :transactions-filter-title             "Filtrer l'historique"
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Type"
@@ -317,18 +334,18 @@
    :transaction-sent                      "Transaction envoyée"
    :transaction-moved-text                "La transaction va rester dans la liste 'Non-signées' pendant 5 mins"
    :transaction-moved-title               "Transaction déplacée"
-   :sign-later-title                      "Voulez vous signer la transaction ultérieurement?"
+   :sign-later-title                      "Voulez-vous signer la transaction ultérieurement?"
    :sign-later-text                       "Vous pourrez signer la transaction dans l'historique des transactions"
    :not-applicable                        "Ne s'applique pas aux transactions non signées"
 
    ;; Wallet Send
    :wallet-choose-recipient               "Choisir le destinataire"
    :wallet-choose-from-contacts           "Choisir à partir des Contacts"
-   :wallet-address-from-clipboard         "Utiliser l'adresse du presse-papiers"
+   :wallet-address-from-clipboard         "Utiliser l'adresse dans le presse-papiers"
    :wallet-invalid-address                "Adresse invalide: \n {{data}}"
    :wallet-browse-photos                  "Parcourir les Photos"
    :validation-amount-invalid-number      "Le montant n'est pas un nombre valide"
-   :validation-amount-is-too-precise      "Le montant est trop précis. La plus petite unité que vous pouvez saisir est 1 Wei (1x10^-18 ETH)"
+   :validation-amount-is-too-precise      "Le montant est trop précis. La plus petite unité que vous puissiez saisir est 1 Wei (1x10^-18 ETH)"
 
 
 
@@ -338,8 +355,8 @@
    :add-new-network                       "Ajouter un nouveau réseau"
    :existing-networks                     "Réseaux existants"
    :add-json-file                         "Ajouter un fichier JSON"
-   :paste-json-as-text                    "Coller JSON en texte"
-   :paste-json                            "Coller JSON"
+   :paste-json-as-text                    "Coller le JSON en tant que texte"
+   :paste-json                            "Coller le JSON"
    :specify-rpc-url                       "Préciser une URL RPC"
    :edit-network-config                   "Modifier la configuration réseau"
    :connected                             "Connecté"
