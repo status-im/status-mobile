@@ -54,7 +54,6 @@
 		92A0DF7D1F4DE3A4002051BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 92A0DF491F4DE3A0002051BC /* GoogleService-Info.plist */; };
 		9E0B01A11DDC5DA7002B0359 /* SF-UI-Text-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9E0B01A01DDC5DA7002B0359 /* SF-UI-Text-Light.otf */; };
 		9E3AB6D01D87DB2B008846B4 /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3AB6C61D87DA2B008846B4 /* libReact-Native-Webview-Bridge.a */; };
-		9E54D6001F17A5DB009F0C16 /* libTestFairy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E54D5FD1F17A5DB009F0C16 /* libTestFairy.a */; };
 		9E54D6011F17A5DB009F0C16 /* upload-dsym.sh in Resources */ = {isa = PBXBuildFile; fileRef = 9E54D5FF1F17A5DB009F0C16 /* upload-dsym.sh */; };
 		9E7C64731E03FDDE004C7042 /* libRCTCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20B7D1151D3F74CD00B70F14 /* libRCTCamera.a */; };
 		9ED2F45E1D9D535A00B36508 /* SF-UI-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED2F45D1D9D52DD00B36508 /* SF-UI-Text-Regular.otf */; };
@@ -683,7 +682,6 @@
 				BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
 				3E15DFEC1F6F4D7CAE088F49 /* libTcpSockets.a in Frameworks */,
 				E0AD9E8F495A4907B65104BF /* libRCTImageResizer.a in Frameworks */,
-				9E54D6001F17A5DB009F0C16 /* libTestFairy.a in Frameworks */,
 				5F8585D411844E5981B94F40 /* libRNInstabug.a in Frameworks */,
 				8E55E6877F950B81C8D711C5 /* libPods-StatusIm.a in Frameworks */,
 				925C1F491F7B73B20063DFA0 /* FirebaseInstanceID.framework in Frameworks */,
