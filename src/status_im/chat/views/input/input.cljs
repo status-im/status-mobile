@@ -35,7 +35,7 @@
       :on-submit-editing      (fn [e]
                                 (if single-line-input?
                                   (re-frame/dispatch [:send-current-message])
-                                  (.setNativeProps @input-ref (clj->js {:text input-text}))))
+                                  (.setNativeProps input-ref (clj->js {:text input-text}))))
       :on-layout              (fn [e]
                                 (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
       :on-change              (fn [e]
@@ -125,7 +125,7 @@
                                   :editable            true
                                   :on-submit-editing   (fn []
                                                          (when-not (or (string/blank? seq-arg-input-text)
-                                                                       (get-in @command [:command :hide-send-button]))
+                                                                       (get-in command [:command :hide-send-button]))
                                                            (re-frame/dispatch [:send-seq-argument]))
                                                          (utils/set-timeout
                                                            #(re-frame/dispatch [:chat-input-focus :seq-input-ref])
