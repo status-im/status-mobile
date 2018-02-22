@@ -11,7 +11,7 @@
    :right    0
    :bottom   0})
 
-(defn expandable-container [anim-value bottom]
+(defn expandable-container [anim-value bottom max-height]
   {:background-color common/color-white
    :height           anim-value
    :left             0
@@ -20,7 +20,8 @@
    :position         :absolute
    :border-top-color color-root-border
    :border-top-width 1
-   :elevation        2})
+   :elevation        2
+   :max-height       max-height})
 
 (def header-container
   {:min-height       19

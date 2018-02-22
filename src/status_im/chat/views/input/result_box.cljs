@@ -18,7 +18,6 @@
   [markup [:result-box-markup]]
   (when markup
     [expandable-view {:key           :result-box
-                      :draggable?    true
                       :custom-header (box-header/get-header :result-box)}
      [result-box-container markup]
      [offline-view]]))

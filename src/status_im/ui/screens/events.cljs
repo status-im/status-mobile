@@ -249,7 +249,7 @@
   :initialize-account-db
   (fn [{:keys [accounts/accounts contacts/contacts networks/networks
                network network-status view-id navigation-stack chats
-               access-scope->commands-responses layout-height
+               access-scope->commands-responses
                status-module-initialized? status-node-started?
                inbox/wnode]
         :or [network (get app-db :network)
@@ -259,7 +259,6 @@
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address
-                     :layout-height layout-height
                      ;; TODO (yenda) bad, this is derived data and shouldn't be stored in the db
                      ;; the cost of retrieving public key from db with a function taking using
                      ;; current-account-id is negligeable

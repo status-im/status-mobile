@@ -8,7 +8,6 @@
             [status-im.chat.models.commands :as commands-model]
             [status-im.chat.models.message :as message-model]
             [status-im.chat.events.commands :as commands-events]
-            [status-im.chat.events.animation :as animation-events]
             [status-im.bots.events :as bots-events]
             [status-im.ui.components.react :as react-comp]
             [status-im.utils.datetime :as time]

@@ -35,24 +35,17 @@
     :last?       last?}])
 
 (defview suggestions-view []
-  (letsubs [show-suggestions-view? [:show-suggestions-view?]
-            responses              [:get-available-responses]
-            commands               [:get-available-commands]]
-    (let [number-of-entries (+ (count responses) (count commands))]
-      [expandable/expandable-view {:key             :suggestions
-                                   :draggable?      false
-                                   :height          (* number-of-entries
-                                                       (+ style/item-height
-                                                          style/border-height))
-                                   :dynamic-height? true}
-       [react/view
-        [react/scroll-view {:keyboard-should-persist-taps :always
-                            :bounces                      false}
-         (when (seq responses)
-           (for [[i response] (map-indexed vector responses)]
-             ^{:key i}
-             [response-item response (= i (dec (count responses)))]))
-         (when (seq commands)
-           (for [[i command] (map-indexed vector commands)]
-             ^{:key i}
-             [command-item command (= i (dec (count commands)))]))]]])))
+  (letsubs [responses [:get-available-responses]
+            commands  [:get-available-commands]]
+    [expandable/expandable-view {:key :suggestions}
+     [react/view
+      [react/scroll-view {:keyboard-should-persist-taps :always
+                          :bounces                      false}
+       (when (seq responses)
+         (for [[i response] (map-indexed vector responses)]
+           ^{:key i}
+           [response-item response (= i (dec (count responses)))]))
+       (when (seq commands)
+         (for [[i command] (map-indexed vector commands)]
+           ^{:key i}
+           [command-item command (= i (dec (count commands)))]))]]]))

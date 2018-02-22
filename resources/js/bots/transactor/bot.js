@@ -71,11 +71,11 @@ function amountParameterBox(groupChat, params, context) {
     } else {
         contactAddress = context.to;
     }
-    
+
     var txData;
     var amount;
     var amountIndex = groupChat ? 1 : 0;
-    
+
     try {
         amount = params.args[amountIndex].replace(",", ".");
         txData = {
@@ -88,7 +88,7 @@ function amountParameterBox(groupChat, params, context) {
             to: contactAddress,
             value: 0
         };
-    } 
+    }
 
     var sliderValue = params["bot-db"]["sliderValue"] || 0;
 
@@ -109,177 +109,144 @@ function amountParameterBox(groupChat, params, context) {
             sliderValue: sliderValue
         });
     }
-    
+
     return {
         title: I18n.t('send_title'),
         showBack: true,
-        markup: status.components.scrollView(
-            {
-                keyboardShouldPersistTaps: "always",
-                bounces: false,
-            },
-            [status.components.view(
-                {
-                    flex: 1
+        markup: status.components.view({
+            flex: 1
+        }, [
+            status.components.text({
+                    style: {
+                        fontSize: 14,
+                        color: "rgb(147, 155, 161)",
+                        paddingTop: 12,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        paddingBottom: 20
+                    }
                 },
-                [
-                    status.components.text(
-                        {
+                I18n.t('send_specify_amount')
+            ),
+            status.components.touchable(
+                {
+                    onPress: status.components.dispatch([status.events.FOCUS_INPUT, []])
+                },
+                status.components.view({
+                    flexDirection: "row",
+                    alignItems: "center",
+                    textAlign: "center",
+                    justifyContent: "center"
+                }, [
+                    status.components.text({
+                            font: "light",
+                            numberOfLines: 1,
+                            ellipsizeMode: "tail",
                             style: {
-                                fontSize: 14,
-                                color: "rgb(147, 155, 161)",
-                                paddingTop: 12,
-                                paddingLeft: 16,
-                                paddingRight: 16,
-                                paddingBottom: 20
+                                maxWidth: 250,
+                                fontSize: 38,
+                                marginLeft: 8,
+                                color: "black"
                             }
                         },
-                        I18n.t('send_specify_amount')
+                        amount || "0.00"
                     ),
-                    status.components.touchable(
-                        {
-                            onPress: status.components.dispatch([status.events.FOCUS_INPUT, []])
-                        },
-                        status.components.view(
-                            {
-                                flexDirection: "row",
-                                alignItems: "center",
-                                textAlign: "center",
-                                justifyContent: "center"
-                            },
-                            [
-                                status.components.text(
-                                    {
-                                        font: "light",
-                                        numberOfLines: 1,
-                                        ellipsizeMode: "tail",
-                                        style: {
-                                            maxWidth: 250,
-                                            fontSize: 38,
-                                            marginLeft: 8,
-                                            color: "black"
-                                        }
-                                    },
-                                    amount || "0.00"
-                                ),
-                                status.components.text(
-                                    {
-                                        font: "light",
-                                        style: {
-                                            fontSize: 38,
-                                            marginLeft: 8,
-                                            color: "rgb(147, 155, 161)"
-                                        }
-                                    },
-                                    I18n.t('eth')
-                                ),
-                            ]
-                        )
-                    ),
-                    status.components.text(
-                        {
+                    status.components.text({
+                            font: "light",
                             style: {
-                                fontSize: 14,
-                                color: "rgb(147, 155, 161)",
-                                paddingTop: 14,
-                                paddingLeft: 16,
-                                paddingRight: 16,
-                                paddingBottom: 5
+                                fontSize: 38,
+                                marginLeft: 8,
+                                color: "rgb(147, 155, 161)"
                             }
                         },
-                        I18n.t('send_fee')
+                        I18n.t('eth')
                     ),
-                    status.components.view(
-                        {
-                            flexDirection: "row"
-                        },
-                        [
-                            status.components.text(
-                                {
-                                    style: {
-                                        fontSize: 17,
-                                        color: "black",
-                                        paddingLeft: 16
-                                    }
-                                },
-                                [status.components.subscribe(["calculatedFee"])]
-                            ),
-                            status.components.text(
-                                {
-                                    style: {
-                                        fontSize: 17,
-                                        color: "rgb(147, 155, 161)",
-                                        paddingLeft: 4,
-                                        paddingRight: 4
-                                    }
-                                },
-                                I18n.t('eth')
-                            )
-                        ]
-                    ),
-                    status.components.slider(
-                        {
-                            maximumValue: 2,
-                            minimumValue: -2,
-                            onSlidingComplete: status.components.dispatch(
-                                [status.events.UPDATE_DB, "sliderValue"]
-                            ),
-                            step: 1,
-                            style: {
-                                marginLeft: 16,
-                                marginRight: 16
-                            }
+                ])
+            ),
+            status.components.text({
+                    style: {
+                        fontSize: 14,
+                        color: "rgb(147, 155, 161)",
+                        paddingTop: 14,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        paddingBottom: 5
+                    }
+                },
+                I18n.t('send_fee')
+            ),
+            status.components.view({
+                flexDirection: "row"
+            }, [
+                status.components.text({
+                    style: {
+                        fontSize: 17,
+                        color: "black",
+                        paddingLeft: 16
+                    }
+                }, [status.components.subscribe(["calculatedFee"])]),
+                status.components.text({
+                        style: {
+                            fontSize: 17,
+                            color: "rgb(147, 155, 161)",
+                            paddingLeft: 4,
+                            paddingRight: 4
                         }
-                    ),
-                    status.components.view(
-                        {
-                            flexDirection: "row"
-                        },
-                        [
-                            status.components.text(
-                                {
-                                    style: {
-                                        flex: 1,
-                                        fontSize: 14,
-                                        color: "rgb(147, 155, 161)",
-                                        paddingLeft: 16,
-                                        alignSelf: "flex-start"
-                                    }
-                                },
-                                I18n.t('send_cheaper')
-                            ),
-                            status.components.text(
-                                {
-                                    style: {
-                                        flex: 1,
-                                        fontSize: 14,
-                                        color: "rgb(147, 155, 161)",
-                                        paddingRight: 16,
-                                        alignSelf: "flex-end",
-                                        textAlign: "right"
-                                    }
-                                },
-                                I18n.t('send_faster')
-                            )
-                        ]
-                    ),
-                    status.components.text(
-                        {
-                            style: {
-                                fontSize: 14,
-                                color: "black",
-                                paddingTop: 16,
-                                paddingLeft: 16,
-                                paddingRight: 16,
-                                paddingBottom: 16,
-                                lineHeight: 24
-                            }
-                        },
-                        [status.components.subscribe(["feeExplanation"])]
-                    )
-                ]
-            )]
-        )
+                    },
+                    I18n.t('eth')
+                )
+            ]),
+            status.components.slider({
+                maximumValue: 2,
+                minimumValue: -2,
+                onSlidingComplete: status.components.dispatch(
+                    [status.events.UPDATE_DB, "sliderValue"]
+                ),
+                step: 1,
+                style: {
+                    marginLeft: 16,
+                    marginRight: 16
+                }
+            }),
+            status.components.view({
+                flexDirection: "row"
+            }, [
+                status.components.text({
+                        style: {
+                            flex: 1,
+                            fontSize: 14,
+                            color: "rgb(147, 155, 161)",
+                            paddingLeft: 16,
+                            alignSelf: "flex-start"
+                        }
+                    },
+                    I18n.t('send_cheaper')
+                ),
+                status.components.text({
+                        style: {
+                            flex: 1,
+                            fontSize: 14,
+                            color: "rgb(147, 155, 161)",
+                            paddingRight: 16,
+                            alignSelf: "flex-end",
+                            textAlign: "right"
+                        }
+                    },
+                    I18n.t('send_faster')
+                )
+            ]),
+            status.components.text({
+                style: {
+                    fontSize: 14,
+                    color: "black",
+                    paddingTop: 16,
+                    paddingLeft: 16,
+                    paddingRight: 16,
+                    paddingBottom: 16,
+                    lineHeight: 24
+                }
+            }, [status.components.subscribe(["feeExplanation"])])
+        ])
     };
 }
 
@@ -322,7 +289,7 @@ function validateSend(validateRecipient, params, context) {
             };
         }
     }
-    
+
     if (!params["amount"]) {
         return {
             markup: status.components.validationMessage(
@@ -380,7 +347,7 @@ function validateSend(validateRecipient, params, context) {
         };
     }
 
-    
+
     var fee = calculateFee(
         params["bot-db"]["sliderValue"],
         {
@@ -406,7 +373,7 @@ function handleSend(groupChat, params, context) {
 
     var gasPrice = calculateGasPrice(params["bot-db"]["sliderValue"]);
     var data = {
-        from: context.from, 
+        from: context.from,
         value: val,
         gas: web3.toBigNumber(21000)
     };
@@ -423,14 +390,14 @@ function handleSend(groupChat, params, context) {
 
     web3.eth.sendTransaction(data, function(error, hash) {
         if (error) {
-            // Do nothing, as error handling will be done as response to transaction.failed event from go 
+            // Do nothing, as error handling will be done as response to transaction.failed event from go
         } else {
             status.sendSignal("handler-result", {
                 status: "success",
                 hash: hash,
                 origParams: context["orig-params"]
             });
-        } 
+        }
     });
     // async handler, so we don't return anything immediately
 }
@@ -593,7 +560,7 @@ var paramsGroupRequest = [recipientRequestParam, amountRequestParam];
 
 function handlePersonalRequest(params, context) {
     var val = params["amount"].replace(",", ".");
-    
+
     return {
         event: "request",
         request: {
@@ -608,7 +575,7 @@ function handlePersonalRequest(params, context) {
 
 function handleGroupRequest(params, context) {
     var val = params["amount"].replace(",", ".");
-    
+
     return {
         event: "request",
         request: {
@@ -654,8 +621,8 @@ function previewRequest(showRecipient, params, context) {
             I18n.t('request_requesting_from') + " " + params["bot-db"]["public"]["recipient"]["name"]
         );
         markup.push(recipientRow);
-    } 
-    
+    }
+
     return {
         markup: status.components.view(
             {
@@ -694,7 +661,7 @@ function validateRequest(validateRecipient, params) {
             };
         }
     }
-    
+
     if (!params["amount"]) {
         return {
             markup: status.components.validationMessage(
@@ -723,7 +690,7 @@ function validateRequest(validateRecipient, params) {
             )
         };
     }
-    
+
     try {
         var val = web3.toWei(amount, "ether");
         if (val < 0) {

@@ -96,10 +96,11 @@
 
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
-            show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
-            layout-height                   [:get :layout-height]
-            current-view                    [:get :view-id]]
-    [react/view {:style style/chat-view}
+            show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
+            current-view      [:get :view-id]]
+    [react/view {:style     style/chat-view
+                 :on-layout (fn [e]
+                              (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
      [chat-toolbar public?]
      (when (= :chat current-view)
        [messages-view-animation

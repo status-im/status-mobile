@@ -1,16 +1,8 @@
-var jsSuggestionsContainerStyle = {
-    keyboardShouldPersistTaps: "always",
-    backgroundColor: "white",
-    flexGrow: 1,
-    bounces: false
-};
-
 var jsSuggestionContainerStyle = {
     backgroundColor: "white"
 };
 
 var jsSubContainerStyle = {
-    //height: 56,
     paddingTop: 9,
     borderBottomWidth: 1,
     borderBottomColor: "#0000001f"
@@ -348,8 +340,7 @@ function jsSuggestions(params, context) {
     }
 
     if (sugestionsMarkup.length > 0) {
-        var view = status.components.scrollView(jsSuggestionsContainerStyle, sugestionsMarkup);
-        return {markup: view};
+        return {markup: status.components.view({}, sugestionsMarkup)};
     } else {
         return {markup: null};
     }
@@ -473,14 +464,7 @@ function faucetSuggestions(params) {
         );
     });
 
-    var view = status.components.scrollView(
-        suggestionsContainerStyle,
-        suggestions
-    );
-
-    var entryHeight = subContainerStyle.height + subContainerStyle.borderBottomWidth;
-
-    return {markup: view, height: entryHeight * faucets.length};
+    return {markup: status.components.view({}, suggestions)};
 }
 
 var faucetCommandConfig ={
@@ -554,14 +538,7 @@ function debugSuggestions(params) {
         );
     });
 
-    var view = status.components.scrollView(
-        suggestionsContainerStyle,
-        suggestions
-    );
-
-    var entryHeight = subContainerStyle.height + subContainerStyle.borderBottomWidth;
-
-    return {markup: view, height: entryHeight * values.length};
+    return {markup: status.components.view({}, suggestions)};
 }
 
 status.command({
