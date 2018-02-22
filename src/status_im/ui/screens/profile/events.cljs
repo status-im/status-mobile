@@ -39,12 +39,6 @@
           (as-> fx
               (merge fx (input-events/select-chat-input-command (:db fx) send-command nil true)))))))
 
-(handlers/register-handler-fx
-  :profile/send-message
-  (fn [_ [_ identity]]
-    (when identity
-      {:dispatch [:navigation-replace :chat identity]})))
-
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))
 
