@@ -51,7 +51,7 @@
 (handlers/register-handler-fx
   :my-profile.drawer/edit-name
   (fn [{:keys [db]} _]
-    (let [{:my-profile/keys [default-name edit auto-save]} db
+    (let [{:my-profile/keys [default-name]} db
           {:keys [name public-key]}                        (get-current-account db)]
       {:db (cond-> db
              (not default-name) (assoc :my-profile/default-name (gfycat/generate-gfy public-key))

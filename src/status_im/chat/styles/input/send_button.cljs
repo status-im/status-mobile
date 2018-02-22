@@ -6,6 +6,7 @@
    :width            30
    :height           30
    :border-radius    15
+   :margin           10
    :padding          4
    :margin-left      8
    :margin-bottom    11

@@ -1,8 +1,6 @@
 (ns status-im.chat.styles.input.input
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def min-input-height 36)
 (def padding-vertical 8)
@@ -10,7 +8,7 @@
 (def max-input-height (* 4 min-input-height))
 
 (defnstyle root [margin-bottom]
-  {:background-color common/color-white
+  {:background-color colors/white
    :margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
@@ -20,8 +18,7 @@
 (def input-container
   {:flex-direction   :row
    :align-items      :flex-end
-   :padding-left     14
-   :padding-right    14})
+   :padding-left     14})
 
 (def input-root
   {:padding-top    padding-vertical
@@ -93,7 +90,7 @@
                          :left        left}})
 
 (def input-commands-icon
-  {:margin-bottom 14
+  {:margin        14
    :height        24
    :width         24})
 

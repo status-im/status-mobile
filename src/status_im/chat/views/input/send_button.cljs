@@ -1,7 +1,6 @@
 (ns status-im.chat.views.input.send-button
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.chat.styles.input.send-button :as style]
             [status-im.ui.components.animation :as animation]
@@ -9,7 +8,7 @@
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.utils.utils :as utils]))
 
-(defn send-button-view-on-update [{:keys [spin-value opacity-value command-completion]}]
+(defn send-button-view-on-update [{:keys [spin-value command-completion]}]
   (fn [_]
     (let [to-spin-value (if (some #{:complete :no-command} [@command-completion]) 1 0)]
       (animation/start

@@ -113,7 +113,7 @@
             arg-pos            [:current-chat-argument-position]
             seq-arg-input-text [:chat :seq-argument-input-text]]
     (when (get-in command [:command :sequential-params])
-      (let [{:keys [placeholder hidden type]} (get-in command [:command :params arg-pos])]
+      (let [{:keys [placeholder type]} (get-in command [:command :params arg-pos])]
         [react/text-input (merge {:ref                 #(re-frame/dispatch [:set-chat-ui-props {:seq-input-ref %}])
                                   :style               (style/seq-input-text command-width container-width)
                                   :default-value       (or seq-arg-input-text "")
@@ -174,9 +174,9 @@
                                    (re-frame/dispatch [:set-chat-ui-props {:input-height h}])))}
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input?}]
-        (when (string/blank? input-text)
-          [commands-button])
-        [send-button/send-button-view]]])))
+        (if (string/blank? input-text)
+          [commands-button]
+          [send-button/send-button-view])]])))
 
 (defn container []
   [react/view
