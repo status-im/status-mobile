@@ -20,10 +20,10 @@
 
     [react/view styles/barcode-scanner-container
      [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
-     [camera/camera {:onBarCodeRead #(re-frame/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
-                     :ref           #(reset! camera-initialized? true)
-                     :captureAudio  false
-                     :style         styles/barcode-scanner}]
+     ;[camera/camera {:onBarCodeRead #(re-frame/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
+     ;                :ref           #(reset! camera-initialized? true)
+     ;                :captureAudio  false
+     ;                :style         styles/barcode-scanner}]
      [react/view styles/rectangle-container
       [react/view styles/rectangle
        [react/image {:source {:uri :corner_left_top}

@@ -11,7 +11,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.styles :as tst]
-            [status-im.ui.components.icons.custom-icons :refer [ion-icon]]
+            ;[status-im.ui.components.icons.custom-icons :refer [ion-icon]]
             [status-im.ui.components.sync-state.offline :refer [offline-view]]
             [status-im.ui.components.context-menu :refer [context-menu]]
             [status-im.ui.components.tabs.styles :refer [tabs-height]]

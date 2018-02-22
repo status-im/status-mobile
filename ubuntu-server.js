@@ -10,6 +10,11 @@
  *
  */
 
+if (process.argv.indexOf('--pipe') != -1) {
+  console.log = console.error
+  console.info = console.error
+}
+
 var net = require('net');
 var repl = require('repl');
 var vm = require('vm');
@@ -112,7 +117,7 @@ function rnUbuntuServer(readable, writable) {
 }
 
 if (process.argv.indexOf('--pipe') != -1) {
-  console.log = console.error
+  console.log("Loaded realmConstructor: " + realmConstructor);
   rnUbuntuServer(process.stdin, process.stdout);
 } else {
   var server = net.createServer((sock) => {

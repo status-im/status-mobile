@@ -25,7 +25,9 @@
     "react-native-http-bridge",
     "react-native-contacts",
     "react-native-popup-menu",
-    "react-native-swiper"
+    "react-native-swiper",
+    "react-native-mapbox-gl",
+    "react-native-webview-bridge"
   ],
   "imageDirs": [
     "resources/images",

@@ -4,10 +4,10 @@
             [status-im.utils.platform :as platform]
             [status-im.react-native.js-dependencies :as rn-dependecies]))
 
-(def default-camera (.-default rn-dependecies/camera))
+(def default-camera (comment (.-default rn-dependecies/camera)))
 
 (defn constants [t]
-  (-> (aget rn-dependecies/camera "constants" t)
+  (-> (comment (aget rn-dependecies/camera "constants" t))
       (js->clj)
       (keywordize-keys)))
 

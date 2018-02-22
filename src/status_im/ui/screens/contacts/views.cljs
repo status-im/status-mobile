@@ -9,7 +9,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.drawer.view :as drawer]
-            [status-im.ui.components.icons.custom-icons :refer [ion-icon]]
+            ;[status-im.ui.components.icons.custom-icons :refer [ion-icon]]
             [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.utils.platform :refer [platform-specific ios? android?]]
             [status-im.utils.utils :as u]
@@ -113,8 +113,9 @@
      :accessibility-label :new-contact
      :buttonColor         :#9b59b6
      :onPress             #(dispatch [:navigate-to :new-contact])}
-    [ion-icon {:name  :md-create
-               :style chats-list.styles/create-icon}]]])
+    ;[ion-icon {:name  :md-create
+    ;           :style chats-list.styles/create-icon}]
+    ]])
 
 (defview contact-groups-list [_]
   (letsubs [contacts       [:get-added-contacts-with-limit contacts-limit]

@@ -29,16 +29,17 @@
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/image-source-title)]]
-     (comment [camera/camera {:style         {:flex 1}
-                     :aspect        (:fill camera/aspects)
-                     :captureQuality "480p"
-                     :captureTarget (:disk camera/capture-targets)
-                     :type          "front"
-                     :ref           #(reset! camera-ref %)}])
+    ; (comment [camera/camera {:style         {:flex 1}
+    ;                 :aspect        (:fill camera/aspects)
+    ;                 :captureQuality "480p"
+    ;                 :captureTarget (:disk camera/capture-targets)
+    ;                 :type          "front"
+    ;                 :ref           #(reset! camera-ref %)}])
      [react/view {:style {:padding 10}}
       [react/touchable-highlight {:style    {:align-self "center"}
                                   :on-press (fn []
                                               ())}
        [react/view
-        [custom-icons/ion-icon {:name  :md-camera
-                                :style {:font-size 36}}]]]]]))
+        ;[custom-icons/ion-icon {:name  :md-camera
+        ;                        :style {:font-size 36}}]
+        ]]]]))

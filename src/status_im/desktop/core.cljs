@@ -6,13 +6,13 @@
             status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
-            [status-im.utils.config :as config]
             [status-im.ui.screens.views :as views]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.react :as react]
             [status-im.native-module.core :as status]
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
             [status-im.core :as core]))
 
@@ -36,7 +36,7 @@
       (let [lcl (.-locale rn-dependencies/i18n)] (print "== locale:" lcl)))
 
 (defn check-react-native-config []
-  (print "== react-native-config value of log-level from config: "config/log-level))
+      (print "== react-native-config value of log-level from config: "config/log-level))
 
 (defn check-3rdparty-libraries []
       (print "========= Check 3rd party libraries ==========")

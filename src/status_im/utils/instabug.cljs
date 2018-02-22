@@ -5,7 +5,7 @@
 (defn log [str]
   (if js/goog.DEBUG
     (log/debug str)
-    (.IBGLog rn-dependencies/instabug str)))
+    (comment (.IBGLog rn-dependencies/instabug str))))
 
 (defn instabug-appender []
   {:enabled?   true

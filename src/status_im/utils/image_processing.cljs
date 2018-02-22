@@ -5,10 +5,10 @@
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn- resize [path max-width max-height on-resize on-error]
-  (let [resize-fn (aget rn-dependencies/image-resizer "default" "createResizedImage")]
+  (comment (let [resize-fn (aget rn-dependencies/image-resizer "default" "createResizedImage")]
     (-> (resize-fn path max-width max-height "JPEG" 75 0 nil)
         (.then on-resize)
-        (.catch on-error))))
+        (.catch on-error)))))
 
 (defn- image-base64-encode [path on-success on-error]
   (let [on-error   (fn [error]

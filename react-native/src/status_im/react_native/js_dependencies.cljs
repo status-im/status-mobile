@@ -19,7 +19,7 @@
 (def instabug               "");;(js/require "instabug-reactnative"))
 (def invertible-scroll-view (js/require "react-native-invertible-scroll-view"))
 (def linear-gradient        (js/require "react-native-linear-gradient"))
-(def mapbox-gl              "");;(js/require "react-native-mapbox-gl"))
+(def mapbox-gl              (js/require "react-native-mapbox-gl"))
 (def nfc                   "");; (js/require "nfc-react-native"))
 (def orientation            "");;(js/require "react-native-orientation"))
 (def popup-menu             (js/require "react-native-popup-menu"))
@@ -30,7 +30,7 @@
 (def sortable-listview      "");;(js/require "react-native-sortable-listview"))
 (def swiper                 (js/require "react-native-swiper"))
 (def vector-icons           "");;(js/require "react-native-vector-icons/Ionicons"))
-(def webview-bridge         "");;(js/require "react-native-webview-bridge"))
+(def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    "");;(js/require "react-native-svg"))
 (def react-native-fcm       "");;(js/require "react-native-fcm"))
 
