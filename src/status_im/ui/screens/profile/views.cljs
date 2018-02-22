@@ -116,7 +116,7 @@
    [action-button/action-button {:label     (i18n/label :t/start-conversation)
                                  :icon      :icons/chats
                                  :icon-opts {:color :blue}
-                                 :on-press  #(re-frame/dispatch [:profile/send-message whisper-identity])}]
+                                 :on-press  #(re-frame/dispatch [:start-chat whisper-identity {:navigation-replace? true}])}]
    (when-not dapp?
      [react/view
       [action-button/action-separator]
