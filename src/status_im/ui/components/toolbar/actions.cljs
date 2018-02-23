@@ -1,9 +1,11 @@
 (ns status-im.ui.components.toolbar.actions
-  (:require [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.ui.components.styles :as styles]))
 
 (defn add [handler]
-  {:icon    :icons/add
-   :handler handler})
+  {:icon      :icons/add
+   :icon-opts styles/icon-add
+   :handler   handler})
 
 (defn opts [options]
   {:icon    :icons/options

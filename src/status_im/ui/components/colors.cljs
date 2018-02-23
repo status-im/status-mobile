@@ -9,7 +9,8 @@
 (def gray "#939ba1") ;; Used as a background for a light foreground and as section header and secondary text color
 (def gray-light "#e8ebec") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
-(def blue "#4360df") ;; Used as main wallet color
+(def blue "#4360df") ;; Used as main wallet color, and ios home add button
+(def blue-transparent "rgba(67, 96, 223, 0.10)") ;; Used as shadow on ios home add button
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
 (def text-light-gray "#212121") ;; Used for labels (home items)
 

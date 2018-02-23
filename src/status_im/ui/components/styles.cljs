@@ -1,5 +1,6 @@
 (ns status-im.ui.components.styles
-  (:require [status-im.utils.platform :as platform]))
+  (:require [status-im.utils.platform :as platform]
+            [status-im.ui.components.colors :as colors]))
 
 ;; TODO(oskarth): Make a palette of all these colors
 
@@ -98,8 +99,16 @@
    :height 24})
 
 (def icon-add
-  {:width  14
-   :height 14})
+  {:width           14
+   :height          14
+   :color           colors/blue
+   :container-style {:background-color colors/blue-transparent
+                     :border-radius    32
+                     :width            32
+                     :height           32
+                     :display          :flex
+                     :justify-content  :center
+                     :align-items      :center}})
 
 (def icon-ok
   {:width  18
