@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.chat.views.toolbar-content :as toolbar-content]
             [status-im.ui.components.webview-bridge :as components.webview-bridge]
@@ -58,14 +58,13 @@
       (re-frame/dispatch [:update-browser (assoc browser :url url :name title)]))
     (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
 
-(views/defview browser []
+(views/defview ^:theme ^:avoid-keyboard? browser []
   (views/letsubs [webview (atom nil)
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]]
-    [react/keyboard-avoiding-view styles/browser
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [toolbar.view/toolbar {}
       toolbar.view/default-nav-back
       (if dapp?

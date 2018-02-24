@@ -6,7 +6,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.styles :as styles]))
@@ -37,19 +36,6 @@
     [toolbar/content-title {:color :white}
      title]
     options]))
-
-(defn- top-view [avoid-keyboard?]
-  (if avoid-keyboard?
-    react/keyboard-avoiding-view
-    react/view))
-
-(defn simple-screen
-  ([toolbar content] (simple-screen nil toolbar content))
-  ([{:keys [avoid-keyboard? status-bar-type]} toolbar content]
-   [(top-view avoid-keyboard?) {:flex 1 :background-color colors/blue}
-    [status-bar/status-bar {:type (or status-bar-type :wallet)}]
-    toolbar
-    content]))
 
 (defn- cartouche-content [{:keys [disabled?]} content]
   [react/view {:style (styles/cartouche-content-wrapper disabled?)}

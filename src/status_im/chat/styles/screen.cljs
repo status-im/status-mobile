@@ -2,10 +2,6 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.styles :as component.styles]))
 
-(def chat-view
-  {:flex             1
-   :background-color component.styles/chat-background})
-
 (def toolbar-container
   {})
 

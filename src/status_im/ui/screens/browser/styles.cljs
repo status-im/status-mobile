@@ -2,8 +2,6 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
-(def browser {:flex 1})
-
 (defstyle dapp-name
   {:flex            1
    :justify-content :center

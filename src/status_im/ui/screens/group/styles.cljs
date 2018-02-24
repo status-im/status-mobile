@@ -7,11 +7,6 @@
    :height  18
    :opacity (if enabled? 1 0.3)})
 
-(def group-container
-  {:flex             1
-   :flex-direction   :column
-   :background-color common/color-white})
-
 (defstyle reorder-list-container
   {:flex    1
    :android {:padding-top 16}})

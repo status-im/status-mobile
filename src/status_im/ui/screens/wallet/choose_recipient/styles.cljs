@@ -84,7 +84,6 @@
 
 (def qr-code
   {:flex             1
-   :background-color colors/white-lighter-transparent
    :align-items      :center})
 
 (defn qr-code-text [dimensions]

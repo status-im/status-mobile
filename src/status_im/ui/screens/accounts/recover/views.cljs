@@ -3,10 +3,10 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.accounts.recover.styles :as styles]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.screens.accounts.recover.db :as recover.db]
             [status-im.ui.screens.accounts.db :as db]
             [cljs.spec.alpha :as spec]
@@ -36,22 +36,21 @@
        :secure-text-entry true
        :error             error}]]))
 
-(defview recover []
+(defview ^:theme ^:avoid-keyboard? recover []
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
                         (spec/valid? ::recover.db/passphrase passphrase)
                         (spec/valid? ::db/password password))]
-      [react/keyboard-avoiding-view {:style styles/screen-container}
-       [status-bar/status-bar]
+      [react/view common.styles/flex
        [toolbar/toolbar nil toolbar/default-nav-back
         [toolbar/content-title (i18n/label :t/sign-in-to-another)]]
        [components.common/separator]
        [react/view {:margin 16}
         [passphrase-input (or passphrase "")]
         [password-input (or password "")]]
-       [react/view {:flex 1}]
+       [react/view common.styles/flex]
        [react/view {:style styles/bottom-button-container}
-        [react/view {:style {:flex 1}}]
+        [react/view common.styles/flex]
         [components.common/bottom-button
          {:forward?  true
           :label     (i18n/label :t/sign-in)

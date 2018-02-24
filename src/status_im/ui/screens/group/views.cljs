@@ -5,7 +5,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.contact.contact :as contact]
@@ -15,7 +15,6 @@
 
 (defn group-toolbar [group-type edit?]
   [react/view
-   [status-bar/status-bar]
    [toolbar/simple-toolbar
     (i18n/label
       (if (= group-type :contact-group)
@@ -48,13 +47,12 @@
          [toolbar/text-action {:handler handler}
           (i18n/label :t/create)])))])
 
-(views/defview new-group []
+(views/defview ^:theme ^:avoid-keyboard? new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:get :new-chat-name]]
     (let [save-btn-enabled? (and (spec/valid? ::v/name group-name) (pos? (count contacts)))]
-      [react/keyboard-avoiding-view (merge {:behavior :padding}
-                                           styles/group-container)
-       [status-bar/status-bar]
+      [react/view (merge {:behavior :padding}
+                         components.styles/flex)
        [toolbar group-name save-btn-enabled?]
        [group-name-view]
        [list/list-with-label {:flex 1}

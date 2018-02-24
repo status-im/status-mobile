@@ -8,7 +8,6 @@
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -104,12 +103,12 @@
   (when (and gas gas-price)
     (money/wei->ether (.times gas gas-price))))
 
-(defview transaction-fee []
+(defview ^{:theme :modal-wallet} ^:avoid-keyboard? transaction-fee []
   (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
             edit [:wallet/edit]]
     (let [gas       (or (:gas edit) (:gas transaction))
           gas-price (or (:gas-price edit) (:gas-price transaction))]
-      [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
+      [react/view components.styles/flex
        [toolbar true act/close-white
         (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
@@ -172,8 +171,7 @@
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? symbol]}]
   (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
-    [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
-                                      :status-bar-type (if modal? :modal-wallet :wallet)}
+    [react/view components.styles/flex
      [toolbar from-chat? (if modal? act/close-white act/back-white)
       (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
@@ -207,22 +205,20 @@
         [sign-panel])
       (when in-progress? [react/view styles/processing-view])]]))
 
-(defview send-transaction []
+(defview ^{:theme :wallet} ^:avoid-keyboard? send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
             symbol      [:wallet.send/symbol]
             advanced?   [:wallet.send/advanced?]
             scroll      (atom nil)]
     [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]))
 
-(defview send-transaction-modal []
+(defview ^{:theme :modal-wallet} ^:avoid-keyboard? send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
             symbol      [:wallet.send/symbol]
             advanced?   [:wallet.send/advanced?]]
     (if transaction
       [send-transaction-panel {:modal? true :transaction transaction :advanced? advanced? :symbol symbol}]
-      [react/view wallet.styles/wallet-modal-container
-       [react/view components.styles/flex
-        [status-bar/status-bar {:type :modal-wallet}]
-        [toolbar false act/close-white
-         (i18n/label :t/send-transaction)]
-        [react/text {:style styles/empty-text} (i18n/label :t/unsigned-transaction-expired)]]])))
+      [react/view components.styles/flex
+       [toolbar false act/close-white
+        (i18n/label :t/send-transaction)]
+       [react/text {:style styles/empty-text} (i18n/label :t/unsigned-transaction-expired)]])))

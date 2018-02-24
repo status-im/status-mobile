@@ -3,10 +3,10 @@
   (:require [clojure.string :as string]
             [status-im.ui.screens.accounts.styles :as ast]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.screens.accounts.login.styles :as styles]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as components]
@@ -48,12 +48,11 @@
                  :numberOfLines 1}
      name]]])
 
-(defview login []
+(defview ^:theme ^:avoid-keyboard? login []
   (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]
             can-navigate-back? [:can-navigate-back?]
             password-text-input (atom nil)]
-    [react/keyboard-avoiding-view {:style ast/accounts-view}
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [login-toolbar can-navigate-back?]
      [components.common/separator]
      [react/view styles/login-view

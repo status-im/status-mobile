@@ -4,9 +4,9 @@
             [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.i18n :as i18n]))
 
 (defn contacts-list [contacts extended? extend-options]
@@ -41,9 +41,8 @@
      true
      (contact-extended-options group-id)]))
 
-(defview edit-contact-group-contact-list []
+(defview ^:theme edit-contact-group-contact-list []
   (letsubs [group [:get-contact-group]]
-    [react/view styles/group-container
-     [status-bar]
+    [react/view common.styles/flex
      [toolbar/simple-toolbar (:name group)]
      [contacts-list-view (:group-id group)]]))

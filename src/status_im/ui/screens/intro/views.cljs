@@ -4,12 +4,10 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.intro.styles :as styles]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.status-bar.view :as status-bar]))
+            [status-im.i18n :as i18n]))
 
-(defview intro []
+(defview ^{:theme :intro} intro []
   [react/view {:style styles/intro-view}
-   [status-bar/status-bar {:flat? true}]
    [react/view {:style styles/intro-logo-container}
     [components.common/logo styles/intro-logo]]
    [react/text {:style styles/intro-text}

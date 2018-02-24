@@ -85,7 +85,7 @@
    [profile.components/settings-title (i18n/label :t/members-title)]
    [chat-group-contacts-view admin?]])
 
-(defview group-chat-profile []
+(defview ^:theme group-chat-profile []
   (letsubs [current-chat [:get-current-chat]
             editing?     [:get :group-chat-profile/editing?]
             changed-chat [:get :group-chat-profile/profile]
@@ -93,7 +93,7 @@
             group-admin  [:chat :group-admin]]
     (let [shown-chat (merge current-chat changed-chat)
           admin?     (= current-pk group-admin)]
-      [react/view profile.components.styles/profile
+      [react/view common.styles/flex
        (if editing?
          [group-chat-profile-edit-toolbar]
          [group-chat-profile-toolbar])

@@ -5,11 +5,11 @@
             [status-im.ui.components.contact.contact :refer [toogle-contact-view]]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.ui.screens.contacts.styles :as contacts.styles]
-            [status-im.ui.components.styles :as components.styles]))
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.common.styles :as common.styles]))
 
 (defn- on-toggle [checked? whisper-identity]
   (let [action (if checked? :deselect-contact :select-contact)]
@@ -42,12 +42,11 @@
                     :render-fn                 render-function
                     :keyboardShouldPersistTaps :always}]])
 
-(defview contact-toggle-list []
+(defview ^:theme ^:avoid-keyboard? contact-toggle-list []
   (letsubs [contacts [:all-added-people-contacts]
             selected-contacts-count [:selected-contacts-count]
             group-type [:get-group-type]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
+    [react/view common.styles/flex
      [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
                            :label   (i18n/label :t/next)
                            :count   (pos? selected-contacts-count)}
@@ -56,12 +55,11 @@
                     :t/group-chat))]
      [toggle-list contacts group-toggle-contact]]))
 
-(defview add-contacts-toggle-list []
+(defview ^:theme ^:avoid-keyboard? add-contacts-toggle-list []
   (letsubs [contacts [:all-group-not-added-contacts]
             group [:get-contact-group]
             selected-contacts-count [:selected-contacts-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
+    [react/view common.styles/flex
      [toggle-list-toolbar {:count   selected-contacts-count
                            :handler #(do
                                        (re-frame/dispatch [:add-selected-contacts-to-group])
@@ -84,12 +82,11 @@
                            :style      styles/toggle-list-action}
       (i18n/label :t/add)])])
 
-(defview add-participants-toggle-list []
+(defview ^:theme ^:avoid-keyboard? add-participants-toggle-list []
   (letsubs [contacts                [:all-new-contacts]
             chat-name               [:chat :name]
             selected-contacts-count [:selected-participants-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
+    [react/view common.styles/flex
      [toggle-list-toolbar {:count   selected-contacts-count
                            :handler #(do
                                        (re-frame/dispatch [:add-new-group-chat-participants])

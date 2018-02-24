@@ -172,23 +172,6 @@
                        [view props])]
     (vec (concat view-element children))))
 
-(views/defview with-activity-indicator
-  [{:keys [timeout style enabled? preview]} comp]
-  (views/letsubs
-    [loading (reagent/atom true)]
-    {:component-did-mount (fn []
-                            (if (or (nil? timeout)
-                                    (> 100 timeout))
-                              (reset! loading false)
-                              (utils/set-timeout #(reset! loading false)
-                                                 timeout)))}
-    (if (and (not enabled?) @loading)
-      (or preview
-          [view {:style (or style {:justify-content :center
-                                   :align-items     :center})}
-           [activity-indicator {:animating true}]])
-      comp)))
-
 (defn navigation-wrapper
   "Wraps component so that it will be shown only when current-screen is one of views"
   [{:keys [component views current-view hide?]
@@ -209,67 +192,7 @@
         component'
         [view style (if (fn? component) [component] component)]))))
 
-(defn with-empty-preview [comp]
-  [with-activity-indicator
-   {:preview [view {}]}
-   comp])
-
 ;; Platform-specific View
 
 (def platform-specific-view
   (if platform/iphone-x? safe-area-view view))
-
-(defmulti create-main-screen-view #(cond
-                                     platform/iphone-x? :iphone-x
-                                     platform/ios?      :ios
-                                     platform/android?  :android))
-
-(defmethod create-main-screen-view :iphone-x [current-view]
-  (fn [props & children]
-    (let [props    (merge props
-                          {:background-color
-                           (case current-view
-                             (:wallet
-                              :wallet-send-transaction
-                              :wallet-transaction-sent
-                              :wallet-request-transaction
-                              :wallet-send-assets
-                              :wallet-request-assets
-                              :choose-recipient
-                              :recent-recipients
-                              :wallet-send-transaction-modal
-                              :wallet-transaction-sent-modal
-                              :wallet-send-transaction-request
-                              :wallet-transaction-fee
-                              :contact-code)      styles/color-blue4
-                             (:qr-viewer
-                              :recipient-qr-code) "#2f3031"
-                             (:accounts :login
-                              :wallet-transactions-filter
-                              :contact-list-modal) styles/color-white
-                             :transparent)})
-          children (cond-> children
-                     (#{:wallet
-                        :recent-recipients
-                        :wallet-send-assets
-                        :wallet-request-assets} current-view)
-                     (conj [view {:background-color styles/color-white
-                                  :position         :absolute
-                                  :bottom           0
-                                  :right            0
-                                  :left             0
-                                  :height           100
-                                  :z-index          -1000}]))]
-      (apply vector safe-area-view props children))))
-
-(defmethod create-main-screen-view :default [_]
-  view)
-
-(views/defview main-screen-modal-view [current-view & components]
-  (views/letsubs [signing? [:get-in [:wallet :send-transaction :signing?]]]
-    (let [main-screen-view (create-main-screen-view current-view)]
-      [main-screen-view styles/flex
-       [keyboard-avoiding-view {:flex 1 :flex-direction :column}
-        (apply vector view styles/flex components)
-        (when (and platform/iphone-x? (not signing?))
-          [view {:flex 0 :height 34}])]])))

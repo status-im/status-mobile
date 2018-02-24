@@ -5,12 +5,10 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.usage-data.styles :as styles]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.status-bar.view :as status-bar]))
+            [status-im.i18n :as i18n]))
 
-(defview usage-data []
+(defview ^{:theme :accounts} usage-data []
   [react/view {:style styles/usage-data-view}
-   [status-bar/status-bar {:flat? true}]
    [react/view {:style styles/logo-container}
     [components.common/logo styles/logo]
     [react/image {:source (:analytics-image resources/ui)

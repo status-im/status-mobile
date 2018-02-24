@@ -1,5 +1,6 @@
 (ns status-im.utils.views
-  (:require [clojure.walk :as w]))
+  (:require [clojure.walk :as w]
+            [cljs.spec.alpha :as spec]))
 
 (defn atom? [sub]
   (or (vector? sub)
@@ -47,11 +48,20 @@
                                     1 [nil {} (first rest-body')]
                                     2 [(first rest-body') {} (second rest-body')]
                                     3 rest-body')
-        [subs-bindings vars-bindings] (prepare-subs subs)]
+        [subs-bindings vars-bindings] (prepare-subs subs)
+        {:keys [theme avoid-keyboard?]} (meta n)]
     `(do
        (when-not (find-ns 're-frame.core)
          (require 're-frame.core))
+       (when-not (find-ns 'status-im.ui.components.theme)
+         (require 'status-im.ui.components.theme))
        (defn ~n ~params
+         {:pre [(spec/valid? (spec/nilable
+                              (spec/or :bool boolean?
+                                       :set  #{:main :accounts :intro :chat :qr-code
+                                               :wallet :wallet-home :wallet-2 :transactions
+                                               :modal-wallet :modal-white :modal}))
+                             ~theme)]}
          (let [~@subs-bindings]
            (reagent.core/create-class
             (merge ~(->> component-map
@@ -65,7 +75,9 @@
                     :reagent-render
                                   (fn ~params
                                     (let [~@vars-bindings]
-                                      ~body))})))))))
+                                      (if ~theme
+                                        (status-im.ui.components.theme/theme ~theme ~avoid-keyboard? ~body)
+                                        ~body)))})))))))
 
 (defn check-view [all {:keys [view views component hide? parent]}]
   (let [parent           (or parent :root)
@@ -133,7 +145,7 @@
              children)
       ~@(map (fn [[component-name children]]
                   `[status-im.ui.components.react/navigation-wrapper
-                    {:component    [status-im.ui.components.react/with-empty-preview
+                    {:component    [status-im.ui.components.views/with-empty-preview
                                     ~(-generate-component config view-sym component-name)]
                      :views        ~(conj
                                      (reduce
@@ -212,7 +224,7 @@
         :current-view view-id76826}]
       [status-im.ui.components.react/navigation-wrapper
        {:hide?        true,
-        :component    [status-im.ui.components.react/with-empty-preview
+        :component    [status-im.ui.components.views/with-empty-preview
                        [status-im.ui.components.react/view
                         {:flex (if
                                 (clojure.core/contains?
@@ -242,7 +254,7 @@
                           :current-view view-id76826}]
                         [status-im.ui.components.react/navigation-wrapper
                          {:hide?        true,
-                          :component    [status-im.ui.components.react/with-empty-preview
+                          :component    [status-im.ui.components.views/with-empty-preview
                                          [status-im.ui.components.react/view
                                           {:flex (if
                                                   (clojure.core/contains?

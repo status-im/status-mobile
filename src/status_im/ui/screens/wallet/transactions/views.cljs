@@ -5,11 +5,9 @@
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [status-im.utils.money :as money]))
 
@@ -138,10 +136,9 @@
     :render-fn  render-item-filter
     :data       (:type m)}])
 
-(defview filter-history []
+(defview ^{:theme :modal-white} filter-history []
   (letsubs [filter-data [:wallet.transactions/filters]]
     [react/view styles/filter-container
-     [status-bar/status-bar {:type :modal-white}]
      [toolbar/toolbar {}
       [toolbar/nav-clear-text (i18n/label :t/done)]
       [toolbar/content-title (i18n/label :t/transactions-filter-title)]
@@ -184,11 +181,10 @@
    (for [{:keys [content view-id]} tabs-list]
      ^{:key view-id} [tab view-id content (= view-id current-view-id)])])
 
-(defview transactions []
+(defview ^{:theme :transactions} transactions []
   (letsubs [current-tab                 [:get :view-id]
             filter-data                 [:wallet.transactions/filters]]
-    [react/view styles/transacions-view
-     [status-bar/status-bar]
+    [react/view {:style components.styles/flex}
      [toolbar-view current-tab filter-data]
      [tabs current-tab]
      [(case current-tab
@@ -258,12 +254,11 @@
   [(actions/opts [{:label (i18n/label :t/copy-transaction-hash) :action #(react/copy-to-clipboard hash)}
                   {:label (i18n/label :t/open-on-etherscan) :action #(.openURL react/linking url)}])])
 
-(defview transaction-details []
+(defview ^:theme transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations                           [:wallet.transactions.details/confirmations]
             confirmations-progress                  [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style components.styles/flex}
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]

@@ -9,7 +9,7 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.toolbar.view :as toolbar]))
 
 (defn- options-list [{:keys [address]}]
@@ -44,10 +44,9 @@
      :icon-opts {:color colors/blue}
      :on-press  #(list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})})}]])
 
-(views/defview add-new []
+(views/defview ^:theme add-new []
   (views/letsubs [account  [:get-current-account]]
-    [react/view {:flex 1 :background-color :white}
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [toolbar/simple-toolbar (i18n/label :t/new)]
      [common/separator]
      [options-list account]]))

@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.chat.styles.screen :as style]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.chat.views.actions :as actions]
             [status-im.chat.views.bottom-info :as bottom-info]
             [status-im.chat.views.message.datemark :as message-datemark]
@@ -14,7 +15,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.views :as comp.views]
             [status-im.ui.components.sync-state.offline :as offline]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]))
@@ -37,7 +38,6 @@
   (letsubs [accounts  [:get-accounts]
             {:keys [group-chat name chat-id]} [:get-current-chat]]
     [react/view
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar-content/toolbar-content-view]
@@ -69,7 +69,7 @@
                               [(animation/anim-delay timeout)
                                (animation/spring opacity {:toValue  1
                                                           :duration duration})])))}
-    [react/with-activity-indicator
+    [comp.views/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}
      [react/animated-view {:style (style/message-view-animated opacity)}
@@ -89,11 +89,11 @@
                      :enableEmptySections       true
                      :keyboardShouldPersistTaps (if platform/android? :always :handled)}]))
 
-(defview chat []
+(defview ^{:theme :chat} chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
             current-view      [:get :view-id]]
-    [react/view {:style     style/chat-view
+    [react/view {:style     common.styles/flex
                  :on-layout (fn [e]
                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
      [chat-toolbar public?]

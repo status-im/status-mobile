@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.profile.photo-capture.views
+  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.icons.custom-icons :as custom-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.profile.photo-capture.styles :as styles]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]))
 
@@ -22,10 +22,9 @@
                      (log/debug type error))]
     (image-processing/img->base64 path on-success on-error)))
 
-(defn profile-photo-capture []
+(views/defview ^:theme profile-photo-capture []
   (let [camera-ref (reagent/atom nil)]
-    [react/view styles/container
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/image-source-title)]]

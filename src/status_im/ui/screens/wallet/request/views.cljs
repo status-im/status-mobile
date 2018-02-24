@@ -9,7 +9,6 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.request.styles :as styles]
@@ -24,12 +23,12 @@
 
 ;; Request screen
 
-(views/defview send-transaction-request []
+(views/defview ^{:theme :wallet} ^:avoid-keyboard? send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [{:keys [to to-name whisper-identity]} [:wallet.send/transaction]
                   {:keys [amount amount-error]}         [:wallet.request/transaction]
                   scroll (atom nil)]
-    [comp/simple-screen {:avoid-keyboard? true}
+    [react/view components.styles/flex
      [comp/toolbar (i18n/label :t/new-request)]
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
@@ -62,17 +61,17 @@
      (i18n/label :t/request-qr-legend)
      address]))
 
-(views/defview request-transaction []
+(views/defview ^{:theme :wallet} request-transaction []
   (views/letsubs [{:keys [address]} [:get-current-account]
                   chain-id          [:get-network-id]]
-    [comp/simple-screen
+    [react/view components.styles/flex
      [comp/toolbar {}
       comp/default-action
       (i18n/label :t/receive)
       [toolbar/actions [{:icon      :icons/share
                          :icon-opts {:color :white}
                          :handler   #(list-selection/open-share {:message address})}]]]
-     [react/view {:flex 1}
+     [react/view components.styles/flex
       [common/network-info {:text-color :white}]
       [react/scroll-view styles/request-wrapper
        [qr-code address chain-id]

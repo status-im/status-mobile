@@ -4,8 +4,7 @@
 
 (def intro-view
   {:flex               1
-   :padding-horizontal 30
-   :background-color   colors/white})
+   :padding-horizontal 30})
 
 (def intro-logo-container
   {:flex            1

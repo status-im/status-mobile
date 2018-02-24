@@ -6,7 +6,6 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.text-field.view :as text-field]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
@@ -55,10 +54,9 @@
 
 (def default-public-chats ["status" "openbounty" "ethereum"])
 
-(views/defview new-public-chat []
+(views/defview ^:theme new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]]
     [react/view styles/group-container
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/public-chat)]
      [react/view styles/chat-name-container
