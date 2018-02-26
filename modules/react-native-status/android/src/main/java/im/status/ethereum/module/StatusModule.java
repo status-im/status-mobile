@@ -229,6 +229,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             } catch (Exception e) {
 
             }
+            try {
+                JSONObject whisperConfig = (JSONObject) jsonConfig.get("WhisperConfig");
+                if (whisperConfig == null) {
+                    whisperConfig = new JSONObject();
+                }
+                whisperConfig.put("LightClient", true);
+                jsonConfig.put("WhisperConfig", whisperConfig);
+            } catch (Exception e) {
+
+            }
             jsonConfig.put("KeyStoreDir", newKeystoreDir);
 
             config = jsonConfig.toString();
@@ -237,7 +247,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.d(TAG, "Default configuration will be used");
         }
 
-        Log.d(TAG, "Node config " + config);
+        String configOutput = config;
+        final int maxOutputLen = 4000;
+        while (!configOutput.isEmpty()) {
+            Log.d(TAG, "Node config:" + configOutput.substring(0, Math.min(maxOutputLen, configOutput.length())));
+            if (configOutput.length() > maxOutputLen) {
+                configOutput = configOutput.substring(maxOutputLen);
+            } else {
+                break;
+            }
+        }
 
         String res = Statusgo.StartNode(config);
         if (res.startsWith("{\"error\":\"\"")) {

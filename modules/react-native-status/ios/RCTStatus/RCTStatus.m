@@ -205,6 +205,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     [resultingConfigJson setValue:logUrl.path forKey:@"LogFile"];
     [resultingConfigJson setValue:([logLevel length] == 0 ? [NSString stringWithUTF8String: "ERROR"] : logLevel) forKey:@"LogLevel"];
     
+    [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKeyPath:@"WhisperConfig.LightClient"];
     if(upstreamURL != nil) {
         [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKeyPath:@"UpstreamConfig.Enabled"];
         [resultingConfigJson setValue:upstreamURL forKeyPath:@"UpstreamConfig.URL"];
