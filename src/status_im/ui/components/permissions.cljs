@@ -25,7 +25,8 @@
                       (then)
                       (else-fn)))
             (.catch else-fn))))
-
+    (then)
+    #_
     (if ((set permissions) :camera)
       (camera/request-access-ios then else)
       (then))))
