@@ -20,5 +20,6 @@
   (-should-move-to-internal-storage? [this callback])
   (-notify-users [this {:keys [message payload tokens] :as m} callback])
   (-add-peer [this enode callback])
-  (-close-application [this]))
+  (-close-application [this])
+  (-connection-change [this data]))
 

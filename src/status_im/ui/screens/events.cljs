@@ -4,7 +4,7 @@
             status-im.commands.handlers.jail
             status-im.commands.events.loading
             status-im.commands.handlers.debug
-            status-im.network.handlers
+            status-im.network.events
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
             status-im.ui.screens.accounts.login.events
@@ -226,7 +226,7 @@
      :dispatch-n       [[:initialize-db]
                         [:load-accounts]
                         [:check-console-chat]
-                        [:listen-to-network-status!]
+                        [:listen-to-network-status]
                         [:initialize-crypt]
                         [:initialize-geth]]}))
 

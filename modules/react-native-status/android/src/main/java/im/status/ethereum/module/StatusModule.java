@@ -699,4 +699,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void closeApplication() {
         System.exit(0);
     }
+
+    @ReactMethod
+    public void connectionChange(final String type, final boolean isExpensive) {
+        Log.d(TAG, "ConnectionChange: " + type + ", is expensive " + isExpensive);
+        Statusgo.ConnectionChange(type, isExpensive ? 1 : 0);
+    }
 }

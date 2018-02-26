@@ -92,3 +92,6 @@
 
 (defn close-application []
   (module-interface/-close-application rns-module))
+
+(defn connection-change [data]
+  (module-interface/-connection-change rns-module data))

@@ -232,6 +232,9 @@
 (defn close-application []
   (.closeApplication status))
 
+(defn connection-change [{:keys [type expensive?]}]
+  (.connectionChange status type expensive?))
+
 (defrecord ReactNativeStatus []
   module/IReactNativeStatus
   ;; status-go calls
@@ -276,4 +279,6 @@
   (-should-move-to-internal-storage? [this callback]
     (should-move-to-internal-storage? callback))
   (-close-application [this]
-    (close-application)))
+    (close-application))
+  (-connection-change [this data]
+   (connection-change data)))

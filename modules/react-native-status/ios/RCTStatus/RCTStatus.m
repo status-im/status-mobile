@@ -403,6 +403,15 @@ RCT_EXPORT_METHOD(closeApplication) {
     exit(0);
 }
 
+
+RCT_EXPORT_METHOD(connectionChange:(NSString *)type
+                       isExpensive:(BOOL)isExpensive) {
+#if DEBUG
+    NSLog(@"ConnectionChange() method called");
+#endif
+    ConnectionChange((char *) [type UTF8String], isExpensive? 1 : 0);
+}
+
 + (void)signalEvent:(const char *) signal
 {
     if(!signal){

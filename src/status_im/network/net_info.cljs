@@ -2,13 +2,30 @@
   (:require [taoensso.timbre :as log]
             [status-im.ui.components.react :as react-components]))
 
-(defn init [callback]
+(defn is-connected? [callback]
   (when react-components/net-info
     (.then (.fetch (.-isConnected react-components/net-info))
            (fn [is-connected?]
              (log/debug "Is connected?" is-connected?)
              (callback is-connected?)))))
 
-(defn add-listener [listener]
+(defn- wrap-net-info [callback]
+  (fn [info-js]
+    (let [info (js->clj info-js :keywordize-keys true)]
+      (.then (.isConnectionExpensive react-components/net-info)
+             (fn [expensive?]
+               (callback {:type (:type info) :expensive? expensive?}))))))
+
+(defn net-info [callback]
+  (when react-components/net-info
+    (.then (.getConnectionInfo react-components/net-info)
+           (wrap-net-info callback))))
+
+(defn add-connection-listener [listener]
   (when react-components/net-info
     (.addEventListener (.-isConnected react-components/net-info) "connectionChange" listener)))
+
+(defn add-net-info-listener [listener]
+  (when react-components/net-info
+    (.addEventListener react-components/net-info "connectionChange"
+                       (wrap-net-info listener))))
