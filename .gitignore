@@ -32,6 +32,9 @@ project.xcworkspace
 local.properties
 *.iml
 
+# Atom
+.tags*
+
 # node.js
 #
 node_modules/

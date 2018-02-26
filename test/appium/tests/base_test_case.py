@@ -4,7 +4,7 @@ import re
 import subprocess
 import asyncio
 from selenium.common.exceptions import WebDriverException
-from tests import test_data, start_threads
+from tests import test_suite_data, start_threads
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
@@ -49,10 +49,10 @@ class AbstractTestCase:
     @property
     def capabilities_sauce_lab(self):
         desired_caps = dict()
-        desired_caps['app'] = 'sauce-storage:' + test_data.apk_name
+        desired_caps['app'] = 'sauce-storage:' + test_suite_data.apk_name
 
         desired_caps['build'] = pytest.config.getoption('build')
-        desired_caps['name'] = test_data.test_name
+        desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'
         desired_caps['appiumVersion'] = '1.7.1'
         desired_caps['platformVersion'] = '6.0'
@@ -92,11 +92,6 @@ class AbstractTestCase:
     def implicitly_wait(self):
         return 8
 
-    def update_test_info_dict(self):
-        test_data.test_info[test_data.test_name] = dict()
-        test_data.test_info[test_data.test_name]['jobs'] = list()
-        test_data.test_info[test_data.test_name]['steps'] = str()
-
     errors = []
 
     def verify_no_errors(self):
@@ -107,8 +102,6 @@ class AbstractTestCase:
 class SingleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
-        self.update_test_info_dict()
-
         capabilities = {'local': {'executor': self.executor_local,
                                   'capabilities': self.capabilities_local},
                         'sauce': {'executor': self.executor_sauce_lab,
@@ -117,7 +110,7 @@ class SingleDeviceTestCase(AbstractTestCase):
         self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
                                        capabilities[self.environment]['capabilities'])
         self.driver.implicitly_wait(self.implicitly_wait)
-        test_data.test_info[test_data.test_name]['jobs'].append(self.driver.session_id)
+        test_suite_data.current_test.jobs.append(self.driver.session_id)
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
@@ -131,7 +124,6 @@ class SingleDeviceTestCase(AbstractTestCase):
 class LocalMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
-        self.update_test_info_dict()
         self.drivers = dict()
 
     def create_drivers(self, quantity):
@@ -139,7 +131,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
         for driver in range(quantity):
             self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
-            test_data.test_info[test_data.test_name]['jobs'].append(self.drivers[driver].session_id)
+            test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -157,7 +149,6 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         asyncio.set_event_loop(cls.loop)
 
     def setup_method(self, method):
-        self.update_test_info_dict()
         self.drivers = dict()
 
     def create_drivers(self, quantity=2):
@@ -167,7 +158,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
                                                     self.capabilities_sauce_lab))
         for driver in range(quantity):
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
-            test_data.test_info[test_data.test_name]['jobs'].append(self.drivers[driver].session_id)
+            test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:

@@ -20,18 +20,29 @@ def get_current_time():
 def info(text: str):
     if "Base" not in text:
         logging.info(text)
-        test_data.test_info[test_data.test_name]['steps'] += text + '\n'
+        test_suite_data.current_test.steps.append(text)
 
 
-class TestData(object):
+class SingleTestData(object):
+    def __init__(self, name, steps=list(), jobs=list(), error=None):
+        self.name = name
+        self.steps = steps
+        self.jobs = jobs
+        self.error = error
 
+
+class TestSuiteData(object):
     def __init__(self):
-        self.test_name = None
         self.apk_name = None
-        self.test_info = dict()
+        self.current_test = None
+        self.tests = list()
+
+    def add_test(self, test):
+        self.tests.append(test)
+        self.current_test = test
 
 
-test_data = TestData()
+test_suite_data = TestSuiteData()
 
 
 basic_user = dict()
