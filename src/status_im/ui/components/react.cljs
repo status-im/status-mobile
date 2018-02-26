@@ -78,17 +78,20 @@
         (dissoc :font)
         (assoc style-key (merge style font)))))
 
+
+(defn transform-to-uppercase [{:keys [uppercase? force-uppercase?] :as opts} ts]
+  (if (or force-uppercase? (and uppercase? platform/android?))
+    (vec (map string/upper-case ts))
+    ts))
+
 (defn text
   ([t]
-   (reagent/as-element [text-class t]))
-  ([{:keys [uppercase?] :as opts} t & ts]
-   (reagent/as-element
-     (let [ts (cond->> (conj ts t)
-                       uppercase? (map #(when % (string/upper-case %))))]
-       (vec (concat
-              [text-class (add-font-style :style opts)]
-              ts))))))
-
+   [text-class t])
+  ([opts t & ts]
+   (->> (conj ts t)
+        (transform-to-uppercase opts)
+        (concat [text-class (add-font-style :style opts)])
+        (vec))))
 
 (defn text-input [{:keys [font style] :as opts
                    :or   {font :default}} text]

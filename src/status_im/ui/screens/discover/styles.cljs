@@ -37,12 +37,6 @@
    :android {:color     styles/color-gray2
              :font-size 14}})
 
-;; NOTE(oskarth): Hacky use of defstyle to get
-;; platform specific styles in place where they belong
-(defstyle subtitle-text-augment
-  {:ios     {:uppercase? false}
-   :android {:uppercase? true}})
-
 (defstyle discover-item-status-text
   {:ios     {:font-size      14
              :letter-spacing -0.1}
@@ -155,12 +149,6 @@
    :padding-left   7
    :padding-right  8
    :padding-bottom 5})
-
-;; NOTE(goranjovic): Another hacky use of defstyle to get
-;; platform specific styles in place where they belong
-(defstyle chat-button-text-case
-  {:ios     {:uppercase? false}
-   :android {:uppercase? true}})
 
 (defstyle chat-button-text
   {:color   styles/color-blue4

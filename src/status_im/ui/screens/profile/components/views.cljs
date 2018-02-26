@@ -77,7 +77,7 @@
      (when-not (string/blank? value)
        [react/text {:style           styles/settings-item-value
                     :number-of-lines 1
-                    :uppercase?      components.styles/uppercase?}
+                    :uppercase?      true}
         value])]
     (when active?
       [vector-icons/icon :icons/forward {:color colors/gray}])]])

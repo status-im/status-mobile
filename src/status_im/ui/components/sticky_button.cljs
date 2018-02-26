@@ -25,6 +25,6 @@
   ([label on-press once?]
    [react/touchable-highlight {:on-press (if once? (u/wrap-call-once! on-press) on-press)}
     [react/view sticky-button-style
-     [react/text {:style sticky-button-label-style
-                  :uppercase? (get-in platform/platform-specific [:uppercase?])}
+     [react/text {:style      sticky-button-label-style
+                  :uppercase? true}
            label]]]))

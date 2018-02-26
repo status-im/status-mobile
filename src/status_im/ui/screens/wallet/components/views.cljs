@@ -47,7 +47,7 @@
       [react/view {:flex-direction :row}
        [react/text {:style styles/text-list-primary-content}
         name]
-       [react/text {:uppercase? true}
+       [react/text {:force-uppercase? true}
         (clojure.core/name symbol)]]
       [list/item-secondary (wallet.utils/format-amount (symbol balance) decimals)]]]]])
 
@@ -207,4 +207,5 @@
 (defn button-text [label]
   [react/text {:style      styles/button-text
                :font       (if platform/android? :medium :default)
-               :uppercase? (get-in platform/platform-specific [:uppercase?])} label])
+               :uppercase? true}
+   label])

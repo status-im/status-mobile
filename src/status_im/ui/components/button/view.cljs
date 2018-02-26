@@ -18,7 +18,7 @@
                                     (when disabled?
                                       {:opacity 0.4}))
                  :font       (if platform/android? :medium :default)
-                 :uppercase? (get-in platform/platform-specific [:uppercase?])}
+                 :uppercase? true}
      label]
     icon]])
 

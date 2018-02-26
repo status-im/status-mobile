@@ -23,7 +23,8 @@
     {:on-press #(re-frame/dispatch [:group-chat-profile/start-editing])}
     [react/view
      [react/text {:style      common.styles/label-action-text
-                  :uppercase? components.styles/uppercase?} (i18n/label :t/edit)]]]])
+                  :uppercase? true}
+      (i18n/label :t/edit)]]]])
 
 (defn group-chat-profile-edit-toolbar []
   [toolbar/toolbar {}

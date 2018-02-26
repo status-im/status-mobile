@@ -23,7 +23,7 @@
      ;; NOTE(oskarth): text-transform to uppercase not supported as RN style
      ;; https://github.com/facebook/react-native/issues/2088
      [react/text {:style      (styles/title-action-text active?)
-                  :uppercase? (:uppercase? styles/subtitle-text-augment)}
+                  :uppercase? true}
       (i18n/label action-kw)]]]])
 
  ;; TODO(oskarth): Reconcile with above fn
@@ -53,7 +53,8 @@
     [react/view styles/chat-button-inner
       [vector-icons/icon :icons/chats {:color :active}]
       [react/text {:style      styles/chat-button-text
-                   :uppercase? (:uppercase? styles/chat-button-text-case)} (i18n/label :t/chat)]]]])
+                   :uppercase? true}
+       (i18n/label :t/chat)]]]])
 
 (defn discover-list-item [{:keys [message show-separator? current-account contacts]}]
   (let [{contact-name       :name

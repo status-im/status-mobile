@@ -30,7 +30,7 @@
         [react/view styles/transaction-details-container
          [react/text {:style      styles/transaction-details
                       :font       (if platform/android? :medium :default)
-                      :uppercase? (get-in platform/platform-specific [:uppercase?])}
+                      :uppercase? true}
           (i18n/label :t/view-transaction-details)]]]
      [components/separator]
      [react/touchable-highlight {:on-press            #(re-frame/dispatch close-transaction-screen-event)
@@ -38,7 +38,7 @@
       [react/view styles/got-it-container
        [react/text {:style      styles/got-it
                     :font       (if platform/android? :medium :default)
-                    :uppercase? (get-in platform/platform-specific [:uppercase?])}
+                    :uppercase? true}
         (i18n/label :t/got-it)]]]]))
 
 (defview transaction-sent-modal []

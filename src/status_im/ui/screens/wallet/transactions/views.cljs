@@ -174,7 +174,7 @@
       [list/section-list {:sections (wrap-filter-data filter-data)}]]]))
 
 (defn history-tab [active?]
-  [react/text {:uppercase?          true
+  [react/text {:force-uppercase?    true
                :style               (styles/tab-title active?)
                :accessibility-label :history-button}
    (i18n/label :t/transactions-history)])
@@ -183,7 +183,7 @@
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
     [react/view {:flex-direction :row}
      [react/text {:style               (styles/tab-title active?)
-                  :uppercase?          true
+                  :force-uppercase?    true
                   :accessibility-label :unsigned-transactions-button}
       (i18n/label :t/transactions-unsigned)]
      (when (pos? unsigned-transactions-count)

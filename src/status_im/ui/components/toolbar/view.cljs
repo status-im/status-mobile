@@ -76,7 +76,7 @@
   [react/text (cond-> {:style      (merge styles/item styles/item-text style
                                           (when disabled? styles/toolbar-text-action-disabled))
                        :on-press   (when-not disabled? handler)
-                       :uppercase? components.styles/uppercase?}
+                       :uppercase? true}
                 accessibility-label
                 (assoc :accessibility-label accessibility-label))
    title])

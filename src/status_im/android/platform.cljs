@@ -16,7 +16,6 @@
    :chats                        {:action-button?       true
                                   :new-chat-in-toolbar? false
                                   :render-separator?    false}
-   :uppercase?                   true
    :contacts                     {:action-button?          true
                                   :new-contact-in-toolbar? false}
    :group-block-shadows?         true

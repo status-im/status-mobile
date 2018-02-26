@@ -30,7 +30,8 @@
      :accessibility-label :edit-button}
     [react/view
      [react/text {:style      common.styles/label-action-text
-                  :uppercase? components.styles/uppercase?} (i18n/label :t/edit)]]]])
+                  :uppercase? true}
+      (i18n/label :t/edit)]]]])
 
 (defn my-profile-edit-toolbar []
   [toolbar/toolbar {}
@@ -80,7 +81,7 @@
    [react/view styles/share-contact-code
     [react/view styles/share-contact-code-text-container
      [react/text {:style      styles/share-contact-code-text
-                  :uppercase? components.styles/uppercase?}
+                  :uppercase? true}
       (i18n/label :t/share-contact-code)]]
     [react/view {:style               styles/share-contact-icon-container
                  :accessibility-label :share-my-contact-code-button}

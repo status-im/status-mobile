@@ -37,7 +37,7 @@
            [react/view {:style               st/connect-button
                         :accessibility-label :network-connect-button}
             [react/text {:style      st/connect-button-label
-                         :uppercase? (get-in platform/platform-specific [:uppercase?])}
+                         :uppercase? true}
              (i18n/label :t/connect)]]
            [react/text {:style st/connect-button-description}
             (i18n/label :t/connecting-requires-login)]]])
@@ -51,7 +51,7 @@
           [react/view st/edit-button-container
            [react/view st/edit-button
             [react/text {:style      st/edit-button-label
-                         :uppercase? (get-in platform/platform-specific [:uppercase?])}
+                         :uppercase? true}
              (i18n/label :t/edit-network-config)]]
            #_[context-menu                                      ; TODO should be implemented later
               [view st/edit-button

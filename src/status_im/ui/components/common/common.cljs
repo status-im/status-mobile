@@ -76,7 +76,7 @@
   [react/touchable-highlight {:on-press on-press :disabled disabled?}
    [react/view (styles/bottom-button disabled?)
     [react/text {:style      styles/bottom-button-label
-                 :uppercase? platform/android?}
+                 :uppercase? true}
      (or label (i18n/label :t/next))]
     (when forward?
       [icons/icon :icons/forward {:color colors/blue}])]])
@@ -84,6 +84,7 @@
 (defn button [{:keys [on-press label background? style] :or {background? true}}]
   [react/touchable-highlight {:on-press on-press}
    [react/view {:style (styles/button style background?)}
-    [react/text {:uppercase? platform/android?
-                 :style styles/button-label}
+    [react/text {:uppercase? true
+                 :style      styles/button-label}
      label]]])
+
