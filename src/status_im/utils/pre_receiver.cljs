@@ -8,13 +8,6 @@
 (defn- add-message-mock [{:keys [id clock-value] :as msg}]
   (log/debug "add-message-mock:" id clock-value))
 
-(defn- earliest-clock-value-seen? [seen id clock-value]
-  (->> seen
-       (filter (fn [[_ x]] (= x id)))
-       sort
-       ffirst
-       (= clock-value)))
-
 (defn start!
   "Starts a pre-receiver that returns channel to put messages on. Once
   'delay-ms' (default 50ms) time has passed, calls add-fn on message."
@@ -22,20 +15,23 @@
        :or {delay-ms 50 reorder? true add-fn add-message-mock}}]]
   (let [in-ch     (async/chan)
         mature-ch (async/chan)
-        seen      (atom #{})]
+        msg-queue (atom #{})]
     (async/go-loop []
-      (let [{:keys [message-id clock-value] :as msg} (async/<! in-ch)]
-        (swap! seen conj [clock-value message-id])
-        (async/<! (async-utils/timeout delay-ms))
-        (async/put! mature-ch msg))
-      (recur))
-    (async/go-loop []
-      (let [{:keys [message-id clock-value] :as msg} (async/<! mature-ch)]
+      (let [msg (async/<! in-ch)]
         (if reorder?
-          (if (earliest-clock-value-seen? @seen message-id clock-value)
-            (do (swap! seen disj [clock-value message-id])
-                (add-fn msg))
-            (async/put! mature-ch msg))
-          (add-fn msg)))
+          (swap! msg-queue conj msg)
+          (async/put! mature-ch msg)))
+      (recur))
+    (when reorder?
+      (async/go-loop []
+        (async/<! (async-utils/timeout delay-ms))
+        (doseq [msg (->> @msg-queue
+                         (sort #(< (:clock-value %1)
+                                   (:clock-value %2))))]
+          (async/put! mature-ch msg)
+          (swap! msg-queue disj msg))
+        (recur)))
+    (async/go-loop []
+      (add-fn (async/<! mature-ch))
       (recur))
     in-ch))
