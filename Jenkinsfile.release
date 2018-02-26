@@ -29,11 +29,8 @@ node ('macos1'){
     stage('Git & Dependencies') {
       slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
 
-      git([url: 'https://github.com/status-im/status-react.git', branch: 'develop'])
       checkout scm
       sh 'git checkout -- .'
-      sh 'git fetch'
-      sh 'git checkout develop'
       sh 'git checkout remotes/origin/' + BRANCH_NAME
       sh 'git fetch --tags'
 
