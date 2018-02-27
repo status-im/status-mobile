@@ -234,14 +234,17 @@
                      #(re-frame/dispatch [::get-sym-key-error %]))))
 
 (re-frame/reg-fx
- ::request-messages
- (fn [{:keys [wnode topic sym-key-id web3]}]
-   (inbox/request-messages web3
-                           wnode
-                           topic
-                           sym-key-id
-                           #(re-frame/dispatch [::request-messages-success %])
-                           #(re-frame/dispatch [::request-messages-error %]))))
+  ::request-messages
+  (fn [{:keys [wnode topic sym-key-id web3 from to]}]
+    (inbox/request-messages
+     {:web3       web3
+      :wnode      wnode
+      :topic      topic
+      :from       from
+      :to         to
+      :sym-key-id sym-key-id
+      :on-success #(re-frame/dispatch [::request-messages-success %])
+      :on-error   #(re-frame/dispatch [::request-messages-error %])})))
 
 (re-frame/reg-fx
   ::handle-whisper-message
@@ -287,12 +290,15 @@
 ;; NOTE(dmitryn): events chain
 ;; add-peer -> fetch-peers -> mark-trusted-peer -> get-sym-key -> request-messages
 (handlers/register-handler-fx
-  :initialize-offline-inbox
-  (fn [{:keys [db]} [_ web3]]
-    (log/info "offline inbox: initialize")
-    (let [wnode (get-wnode db)]
-      {::add-peer {:wnode wnode
-                   :web3  web3}})))
+ :initialize-offline-inbox
+ (fn [{:keys [db]} [_ web3 from to]]
+   (log/info "offline inbox: initialize")
+   (when web3
+     (let [wnode (get-wnode db)]
+       {:db        (assoc db :inbox/from from
+                             :inbox/to to)
+        ::add-peer {:wnode wnode
+                    :web3  web3}}))))
 
 (handlers/register-handler-fx
   ::add-peer-success
@@ -335,20 +341,23 @@
 
 
 (handlers/register-handler-fx
-  ::get-sym-key-success
-  (fn [{:keys [db]} [_ web3 sym-key-id]]
-    (log/info "offline inbox: get-sym-key response" sym-key-id)
-    (let [wnode (get-wnode db)
-          topic    (:inbox/topic db)]
-      {::request-messages {:wnode      wnode
-                           :topic      topic
-                           :sym-key-id sym-key-id
-                           :web3       web3}})))
+ ::get-sym-key-success
+ (fn [{:keys [db]} [_ web3 sym-key-id]]
+   (log/info "offline inbox: get-sym-key response" sym-key-id)
+   (let [{:inbox/keys [topic from to]} db
+         wnode (get-wnode db)]
+     {::request-messages {:wnode      wnode
+                          :topic      topic
+                          :sym-key-id sym-key-id
+                          :from       from
+                          :to         to
+                          :web3       web3}})))
 
 (handlers/register-handler-fx
-  ::request-messages-success
-  (fn [_ [_ response]]
-    (log/info "offline inbox: request-messages response" response)))
+ ::request-messages-success
+ (fn [{:keys [db]} [_ response]]
+   (log/info "offline inbox: request-messages response" response)
+   {:db (dissoc db :inbox/from :inbox/to)}))
 
 (handlers/register-handler-fx
   ::add-peer-error

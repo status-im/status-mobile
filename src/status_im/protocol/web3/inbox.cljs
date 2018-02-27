@@ -66,16 +66,23 @@
     (status/call-web3 payload
                       (response-handler error-fn success-fn))))
 
-(defn request-messages [web3 wnode topic sym-key-id success-fn error-fn]
+(defn request-messages
+  [{:keys [web3 wnode topic sym-key-id on-success on-error from to]}]
   (log/info "offline inbox: sym-key-id" sym-key-id)
-  (let [opts {:mailServerPeer wnode
-              :topic          topic
-              :symKeyID       sym-key-id}]
+  (let [opts (cond-> {:mailServerPeer wnode
+                      :topic          topic
+                      :symKeyID       sym-key-id}
+
+                     from
+                     (assoc :from from)
+
+                     to
+                     (assoc :to to))]
     (log/info "offline inbox: request-messages request")
     (log/info "offline inbox: request-messages args" (pr-str opts))
     (.requestMessages (web3.utils/shh web3)
                       (clj->js opts)
-                      (response-handler error-fn success-fn))))
+                      (response-handler on-error on-success))))
 
 (defn initialize! [web3]
   (re-frame/dispatch [:initialize-offline-inbox web3]))
