@@ -34,7 +34,7 @@
      :on-change-text    #(re-frame/dispatch [:set :public-group-topic %])
      :on-submit-editing #(when topic (re-frame/dispatch [:create-new-public-chat topic]))
      :value             topic
-     :validator         #(re-matches #"[a-z\-]+" %)
+     :validator         #(re-matches #"[a-z\-]*" %)
      :auto-capitalize   :none}]])
 
 (defn- public-chat-icon [topic]
