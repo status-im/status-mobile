@@ -21,9 +21,10 @@
   (set! (.-torchMode default-camera) (get torch-modes state)))
 
 (defn request-access-ios [then else]
-  (-> (.checkVideoAuthorizationStatus default-camera)
-      (.then then)
-      (.catch else)))
+  (let [status (.checkVideoAuthorizationStatus default-camera)]
+    (.then status then)
+    (when else
+      (.catch status else))))
 
 (defn camera [props]
   (reagent/create-element default-camera (clj->js (merge {:inverted true} props))))
