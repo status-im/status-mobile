@@ -152,6 +152,7 @@
    :chats                                 "Chats"
    :delete-chat                           "Delete chat"
    :group-chat                            "Group chat"
+   :group-info                            "Group info"
    :delete-chat-confirmation              "Are you sure you want to delete this chat?"
    :delete-group-chat-confirmation        "Are you sure you want to delete this group chat?"
    :new-group-chat                        "New group chat"

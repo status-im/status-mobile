@@ -2,9 +2,13 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]))
 
-(defn view-profile [chat-id group?]
+(defn view-profile [chat-id]
   {:label  (i18n/label :t/view-profile)
-   :action #(re-frame/dispatch [(if group? :show-group-chat-profile :show-profile) chat-id])})
+   :action #(re-frame/dispatch [:show-profile chat-id])})
+
+(defn group-info [chat-id]
+  {:label  (i18n/label :t/group-info)
+   :action #(re-frame/dispatch [:show-group-chat-profile chat-id])})
 
 (defn- clear-history []
   {:label  (i18n/label :t/clear-history)
@@ -19,11 +23,11 @@
    :action #(re-frame/dispatch [:leave-group-chat? chat-id])})
 
 (defn- chat-actions [chat-id]
-  [(view-profile chat-id false)
+  [(view-profile chat-id)
    (delete-chat chat-id false)])
 
 (defn- group-chat-actions [chat-id]
-  [(view-profile chat-id true)
+  [(group-info chat-id)
    (clear-history)
    (delete-chat chat-id true)
    (leave-group-chat chat-id false)])
