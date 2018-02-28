@@ -69,7 +69,7 @@
   [{:keys [chats]} {:keys [whisper-identity]}]
   (if (get chats whisper-identity)
     (if (get-in chats [whisper-identity :debug?])
-      (do (re-frame/dispatch [:remove-chat whisper-identity])
+      (do (re-frame/dispatch [:delete-chat whisper-identity])
           (respond {:type :ok
                     :text "The DApp or bot has been removed."}))
       (respond {:type :error

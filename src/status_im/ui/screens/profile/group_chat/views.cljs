@@ -49,9 +49,8 @@
       :action #(utils/show-confirmation (i18n/label :t/delete-chat-title)
                                         (i18n/label :t/delete-group-chat-confirmation)
                                         (i18n/label :t/delete)
-                                        (fn []              ;; TODO(goranjovic) - fix double dispatch after rebase agains group chat actions
-                                           (re-frame/dispatch [:remove-chat chat-id])
-                                           (re-frame/dispatch [:navigation-replace :home])))}
+                                        (fn []
+                                          (re-frame/dispatch [:delete-chat chat-id])))}
      {:label  (i18n/label :t/leave-group)
       :icon   :icons/arrow-left
       :action #(utils/show-confirmation (i18n/label :t/leave-group-title)

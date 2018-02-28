@@ -1,5 +1,8 @@
 (ns status-im.data-store.pending-messages
-  (:require [status-im.data-store.realm.pending-messages :as data-store]
+  (:require [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]
+            [status-im.data-store.realm.pending-messages :as data-store]
             [status-im.utils.hex :as i]))
 
 (defn- get-id
@@ -44,6 +47,7 @@
   [message-id]
   (data-store/delete message-id))
 
-(defn delete-all-by-chat-id
-  [chat-id]
-  (data-store/delete-all-by-chat-id chat-id))
+(re-frame/reg-fx
+  :delete-pending-messages
+  (fn [chat-id]
+    (async/go (async/>! core/realm-queue #(data-store/delete-all-by-chat-id chat-id)))))

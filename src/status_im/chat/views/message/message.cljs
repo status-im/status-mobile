@@ -67,7 +67,7 @@
 
 (defview message-content-command
   [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:content-command-ref content)]]
+  (letsubs [command [:get-command (:command-ref content)]] 
     (let [preview (:preview content)
           {:keys [type color] icon-path :icon} command]
       [react/view style/content-command-view
