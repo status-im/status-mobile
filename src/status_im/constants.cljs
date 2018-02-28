@@ -85,12 +85,12 @@
 (def default-wnode "main")
 
 (def default-wnodes
-  {"main" {:id      "main"
-           :name    "Status mailserver"
-           :address "enode://72d8d7d1bd17621d0becf99f51d85662336f40688757b63c4ac9794acab1913ffd81c151e19c7a63d1f9b8a8bba2f3ec630a760ce186c8ea55f9efd7389da4e1@163.172.177.138:40404"}
-   "test" {:id      "test"
-           :name    "Status mailserver (test)"
-           :address "enode://e2fdcf8a55d9d1ab75b492c3b9a99c206cf5ceede3db716033d0605205218c9d9a406d04b3460f4e8a64f16907ab78ba88e0e46324568bf58b3329e2c5483faa@163.172.177.138:30353"}})
+  {"main"   {:id      "main"
+             :name    "Status mailserver A"
+             :address "enode://fa63a6cc730468c5456eab365b2a7a68a166845423c8c9acc363e5f8c4699ff6d954e7ec58f13ae49568600cff9899561b54f6fc2b9923136cd7104911f31cce@163.172.168.202:30303"}
+   "backup" {:id      "backup"
+             :name    "Status mailserver B"
+             :address "enode://90cbf961c87eb837adc1300a0a6722a57134d843f0028a976d35dff387f101a2754842b6b694e50a01093808f304440d4d968bcbc599259e895ff26e5a1a17cf@51.15.194.39:30303"}})
 
 ;; TODO(oskarth): Determine if this is the correct topic or not
 (def inbox-topic "0xaabb11ee")
