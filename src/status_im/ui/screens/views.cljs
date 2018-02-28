@@ -50,7 +50,8 @@
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]
             [status-im.ui.screens.browser.views :refer [browser]]
-            [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]))
+            [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
+            [status-im.utils.config :as config]))
 
 (defn validate-current-view
   [current-view signed-up?]
@@ -175,7 +176,7 @@
                           (throw (str "Unknown view: " current-view)))
               main-screen-view (create-main-screen-view current-view)]
           [main-screen-view common-styles/flex
-           (if (and android?
+           (if (and config/compile-views-enabled?
                     signed-up?
                     (#{:home :wallet :my-profile :chat :wallet-send-transaction
                        :choose-recipient :wallet-transaction-sent :transactions-history
