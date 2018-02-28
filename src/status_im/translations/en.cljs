@@ -172,6 +172,7 @@
    :start-new-chat                        "Start new chat"
    :start-group-chat                      "Start group chat"
    :invite-friends                        "Invite friends"
+   :get-status-at                         "Get Status at http://status.im?refCode={{address}}"
    :chats                                 "Chats"
    :delete-chat                           "Delete chat"
    :group-chat                            "Group chat"
