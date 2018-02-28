@@ -88,9 +88,9 @@
    [react/view cstyles/show-all
     [react/touchable-highlight {:on-press on-press}
      [react/view
-      [react/text {:style cstyles/show-all-text
-                   :uppercase? (components.styles/uppercase?)
-                   :font (if ios? :default :medium)}
+      [react/text {:style      cstyles/show-all-text
+                   :uppercase? components.styles/uppercase?
+                   :font       (if ios? :default :medium)}
        (str (- contacts-count contacts-limit) " " (i18n/label :t/more))]]]]])
 
 (def ^:const contacts-limit 3)
