@@ -6,8 +6,6 @@
 # To use this script in Xcode, add the script's path to a "Run Script" build
 # phase for your application target.
 
-MAIN_GIT_BRANCH="develop"  # status-react uses develop instead of master as the main dev tree
-
 set -o errexit
 set -o nounset
 
@@ -50,30 +48,11 @@ else
     IFS=$OLD_IFS
 fi
 
-# Bundle version (commits-on-master[-until-branch "." commits-on-branch])
-# Assumes that two release branches will not diverge from the same commit on master.
-if [ $(git rev-parse --abbrev-ref HEAD) = "$MAIN_GIT_BRANCH" ]; then
-    MASTER_COMMIT_COUNT=$(git rev-list --count HEAD)
-    BRANCH_COMMIT_COUNT=0
-    BUNDLE_VERSION="$MASTER_COMMIT_COUNT"
-else
-    MASTER_COMMIT_COUNT=$(git rev-list --count $(git rev-list ${MAIN_GIT_BRANCH}.. | tail -n 1)^)
-    BRANCH_COMMIT_COUNT=$(git rev-list --count ${MAIN_GIT_BRANCH}..)
-    if [ $BRANCH_COMMIT_COUNT = 0 ]
-    then BUNDLE_VERSION="$MASTER_COMMIT_COUNT"
-    else BUNDLE_VERSION="${MASTER_COMMIT_COUNT}.${BRANCH_COMMIT_COUNT}"
-    fi
-fi
-
 # For debugging:
 echo "BUILD VERSION: $BUILD_VERSION"
 echo "LATEST_TAG: $LATEST_TAG"
 echo "COMMIT_COUNT_SINCE_TAG: $COMMIT_COUNT_SINCE_TAG"
 echo "SHORT VERSION: $SHORT_VERSION"
-echo "MASTER_COMMIT_COUNT: $MASTER_COMMIT_COUNT"
-echo "BRANCH_COMMIT_COUNT: $BRANCH_COMMIT_COUNT"
-echo "BUNDLE_VERSION: $BUNDLE_VERSION"
 
 /usr/libexec/PlistBuddy -c "Add :CFBundleBuildVersion string $BUILD_VERSION" "$INFO_PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :CFBundleBuildVersion $BUILD_VERSION" "$INFO_PLIST"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $SHORT_VERSION" "$INFO_PLIST"
-/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUNDLE_VERSION" "$INFO_PLIST"

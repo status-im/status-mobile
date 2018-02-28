@@ -26,11 +26,9 @@ node ('macos1') {
 
     stage('Git & Dependencies') {
       slackSend color: 'good', message: REPO + ":" + BRANCH_NAME + ' build started. ' + env.BUILD_URL
-      git([url: 'https://github.com/' + REPO + '/status-react.git', branch: BRANCH_NAME])
-      // Checkout master because used for iOS Plist version information
-      sh 'git checkout -- .'
-      sh 'git checkout develop'
-      sh 'git checkout ' + BRANCH_NAME
+
+      checkout scm
+
       sh 'rm -rf node_modules'
 
       sh 'test ${JENKINS_REBASE_DEVELOP} -eq 1 && git rebase origin/develop || echo "Not rebasing on develop."'

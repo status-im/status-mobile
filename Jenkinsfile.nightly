@@ -28,11 +28,9 @@ node ('macos1'){
 
     stage('Git & Dependencies') {
       slackSend color: 'good', message: 'Nightly build started. ' + env.BUILD_URL
-      git([url: 'https://github.com/status-im/status-react.git', branch: 'develop'])
-      // Checkout master because used for iOS Plist version information
-      sh 'git fetch --tags'
-      sh 'git checkout -- .'
-      sh 'git checkout develop'
+
+      checkout scm
+
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
       sh 'lein deps'

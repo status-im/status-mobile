@@ -28,10 +28,6 @@ node ('macos1') {
       slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
       checkout scm
-      sh 'git checkout -- .'
-      sh 'git checkout develop'
-      sh 'git checkout remotes/origin/' + BRANCH_NAME
-      sh 'git rebase origin/develop'
 
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
