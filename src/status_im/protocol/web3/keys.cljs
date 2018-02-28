@@ -1,5 +1,6 @@
 (ns status-im.protocol.web3.keys
-  (:require [taoensso.timbre :as log]))
+  (:require [taoensso.timbre :as log]
+            [re-frame.core :as re-frame]))
 
 (def status-key-password "status-key-password")
 (def status-group-key-password "status-public-group-key-password")
@@ -31,3 +32,20 @@
 
 (defn reset-keys! []
   (reset! password->keys {}))
+
+(defn generate-sym-key-from-password
+  [{:keys [web3 password on-success on-error]}]
+  (.. web3
+      -shh
+      (generateSymKeyFromPassword password (fn [err resp]
+                                             (if-not err
+                                               (on-success resp)
+                                               (on-error err))))))
+
+(re-frame/reg-fx
+  :shh/generate-sym-key-from-password
+  (fn [{:keys [web3 password on-success on-error]}]
+    (generate-sym-key-from-password {:web3       web3
+                                     :password   password
+                                     :on-success on-success
+                                     :on-error   on-error})))

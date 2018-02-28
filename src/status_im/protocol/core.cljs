@@ -94,17 +94,16 @@
     (if config/offline-inbox-enabled?
       (do (log/info "offline inbox: flag enabled")
           (f/add-filter!
-            web3
-            {:key      identity
-             :allowP2P true
-             :topics  (f/get-topics identity)}
-            (l/message-listener listener-options))
-          (inbox/initialize! web3))
+           web3
+           {:key      identity
+            :allowP2P true
+            :topics  (f/get-topics identity)}
+           (l/message-listener listener-options)))
       (f/add-filter!
-        web3
-        {:key    identity
-         :topics (f/get-topics identity)}
-        (l/message-listener listener-options)))
+       web3
+       {:key    identity
+        :topics (f/get-topics identity)}
+       (l/message-listener listener-options)))
 
     ;; start listening to profiles
     (doseq [{:keys [identity keypair]} contacts]
@@ -114,12 +113,12 @@
                     :callback callback}))
     (d/set-pending-mesage-callback! callback)
     (let [online-message #(discoveries/send-online!
-                            {:web3    web3
-                             :message {:from       identity
-                                       :message-id (random/id)
-                                       :keypair    profile-keypair}})]
+                           {:web3    web3
+                            :message {:from       identity
+                                      :message-id (random/id)
+                                      :keypair    profile-keypair}})]
       (d/run-delivery-loop!
-        web3
-        (assoc options :online-message online-message)))
+       web3
+       (assoc options :online-message online-message)))
     (doseq [pending-message pending-messages]
       (d/add-prepared-pending-message! web3 pending-message))))

@@ -22,6 +22,7 @@
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
+            [status-im.utils.config :as config]
             [status-im.utils.web3-provider :as web3-provider]
             [status-im.utils.ethereum.core :as utils]))
 
@@ -191,158 +192,16 @@
       (processed-messages/delete (str "ttl <=" now)))))
 
 (re-frame/reg-fx
- ::add-peer
- (fn [{:keys [wnode web3]}]
-   (inbox/add-peer wnode
-                   #(re-frame/dispatch [::add-peer-success web3 %])
-                   #(re-frame/dispatch [::add-peer-error %]))))
-
-(re-frame/reg-fx
- ::fetch-peers
- (fn [{:keys [wnode web3 retries]}]
-   ;; Run immediately on first run, add delay before retry
-   (let [delay (cond
-                 (zero? retries) 0
-                 (< retries 3)   300
-                 (< retries 10)  1000
-                 :else           5000)]
-     (if (> retries 100)
-       (log/error "Number of retries for fetching peers exceed" wnode)
-       (js/setTimeout
-        (fn [] (inbox/fetch-peers #(re-frame/dispatch [::fetch-peers-success web3 % retries])
-                                 #(re-frame/dispatch [::fetch-peers-error %])))
-        delay)))))
-
-(re-frame/reg-fx
- ::mark-trusted-peer
- (fn [{:keys [wnode web3 peers]}]
-   (inbox/mark-trusted-peer web3
-                            wnode
-                            peers
-                            #(re-frame/dispatch [::mark-trusted-peer-success web3 %])
-                            #(re-frame/dispatch [::mark-trusted-peer-error %]))))
-
-(re-frame/reg-fx
- ::get-sym-key
- (fn [{:keys [web3 password]}]
-   (web3.keys/get-sym-key web3
-                     password
-                     #(re-frame/dispatch [::get-sym-key-success web3 %])
-                     #(re-frame/dispatch [::get-sym-key-error %]))))
-
-(re-frame/reg-fx
- ::request-messages
- (fn [{:keys [wnode topic sym-key-id web3]}]
-   (inbox/request-messages web3
-                           wnode
-                           topic
-                           sym-key-id
-                           #(re-frame/dispatch [::request-messages-success %])
-                           #(re-frame/dispatch [::request-messages-error %]))))
-
-(re-frame/reg-fx
- ::handle-whisper-message
- listeners/handle-whisper-message)
+  ::handle-whisper-message
+  listeners/handle-whisper-message)
 
 ;;;; Handlers
-
-;; NOTE(dmitryn): events chain
-;; add-peer -> fetch-peers -> mark-trusted-peer -> get-sym-key -> request-messages
 (handlers/register-handler-fx
- :initialize-offline-inbox
- (fn [{:keys [db]} [_ web3]]
-   (log/info "offline inbox: initialize")
-   (let [wnode-id (get db :inbox/wnode)
-         wnode    (get-in db [:inbox/wnodes wnode-id :address])]
-     {::add-peer {:wnode wnode
-                  :web3  web3}})))
-
-(handlers/register-handler-fx
- ::add-peer-success
- (fn [{:keys [db]} [_ web3 response]]
-   (let [wnode-id (get db :inbox/wnode)
-         wnode    (get-in db [:inbox/wnodes wnode-id :address])]
-     (log/info "offline inbox: add-peer response" wnode response)
-     {::fetch-peers {:wnode wnode
-                     :web3  web3
-                     :retries 0}})))
-
-(handlers/register-handler-fx
- ::fetch-peers-success
- (fn [{:keys [db]} [_ web3 peers retries]]
-   (let [wnode-id (get db :inbox/wnode)
-         wnode    (get-in db [:inbox/wnodes wnode-id :address])]
-     (log/info "offline inbox: fetch-peers response" peers)
-     (if (inbox/registered-peer? peers wnode)
-       {::mark-trusted-peer {:wnode wnode
-                             :web3  web3
-                             :peers peers}}
-       (do
-         (log/info "Peer" wnode "is not registered. Retrying fetch peers.")
-         {::fetch-peers {:wnode   wnode
-                         :web3    web3
-                         :retries (inc retries)}})))))
-
-(handlers/register-handler-fx
- ::mark-trusted-peer-success
- (fn [{:keys [db]} [_ web3 response]]
-   (let [wnode-id (get db :inbox/wnode)
-         wnode    (get-in db [:inbox/wnodes wnode-id :address])
-         password (:inbox/password db)]
-     (log/info "offline inbox: mark-trusted-peer response" wnode response)
-     {::get-sym-key {:password password
-                     :web3     web3}})))
-
-
-
-(handlers/register-handler-fx
- ::get-sym-key-success
- (fn [{:keys [db]} [_ web3 sym-key-id]]
-   (log/info "offline inbox: get-sym-key response" sym-key-id)
-   (let [wnode-id (get db :inbox/wnode)
-         wnode    (get-in db [:inbox/wnodes wnode-id :address])
-         topic    (:inbox/topic db)]
-     {::request-messages {:wnode      wnode
-                          :topic      topic
-                          :sym-key-id sym-key-id
-                          :web3       web3}})))
-
-(handlers/register-handler-fx
- ::request-messages-success
- (fn [_ [_ response]]
-   (log/info "offline inbox: request-messages response" response)))
-
-(handlers/register-handler-fx
- ::add-peer-error
- (fn [_ [_ error]]
-   (log/error "offline inbox: add-peer error" error)))
-
-(handlers/register-handler-fx
- ::fetch-peers-error
- (fn [_ [_ error]]
-   (log/error "offline inbox: fetch-peers error" error)))
-
-(handlers/register-handler-fx
- ::mark-trusted-peer-error
- (fn [_ [_ error]]
-   (log/error "offline inbox: mark-trusted-peer error" error)))
-
-(handlers/register-handler-fx
- ::get-sym-key-error
- (fn [_ [_ error]]
-   (log/error "offline inbox: get-sym-key error" error)))
-
-(handlers/register-handler-fx
- ::request-messages-error
- (fn [_ [_ error]]
-   (log/error "offline inbox: request-messages error" error)))
-
-(handlers/register-handler-fx
- :handle-whisper-message
- (fn [_ [_ error msg options]]
-   {::handle-whisper-message {:error error
-                              :msg msg
-                              :options options}}))
+  :handle-whisper-message
+  (fn [_ [_ error msg options]]
+    {::handle-whisper-message {:error error
+                               :msg msg
+                               :options options}}))
 
 ;;; INITIALIZE PROTOCOL
 (handlers/register-handler-fx
@@ -355,13 +214,22 @@
   (fn [{:keys [db web3 groups all-contacts pending-messages]} [current-account-id ethereum-rpc-url]]
     (let [{:keys [public-key status updates-public-key
                   updates-private-key]}
-          (get-in db [:accounts/accounts current-account-id])]
+          (get-in db [:accounts/accounts current-account-id])
+          wnode-id (get db :inbox/wnode)
+          wnode    (get-in db [:inbox/wnodes wnode-id :address])
+          password (:inbox/password db)]
       (when public-key
-        {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
-                         :updates-public-key updates-public-key :updates-private-key updates-private-key
-                         :status status :contacts all-contacts}
-         :db (assoc db :web3 web3
-                       :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
+        (merge {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
+                                :updates-public-key updates-public-key :updates-private-key updates-private-key
+                                :status status :contacts all-contacts}
+                :db (assoc db :web3 web3
+                           :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}
+               (when config/offline-inbox-enabled?
+                 ;; generate) sym-key for offline inboxing
+                 {:shh/generate-sym-key-from-password {:password   password
+                                                       :web3       web3
+                                                       :on-success #(re-frame/dispatch [:inbox/request-messages %])
+                                                       :on-error   #(log/error "offline inbox: get-sym-key error" %)}}))))))
 
 (handlers/register-handler-fx
   :load-processed-messages
@@ -461,8 +329,8 @@
           (when (nil? route-fx) (log/debug "Unknown message type" type))
           (cache/add! processed-message)
           (merge
-            {::save-processed-messages processed-message}
-            route-fx))))))
+           {::save-processed-messages processed-message}
+           route-fx))))))
 
 (handlers/register-handler-fx
   :update-message-status
