@@ -106,10 +106,9 @@
 (defview transaction-fee []
   (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
             edit [:wallet/edit]]
-    (let [gas (or (:gas edit) (:gas transaction))
+    (let [gas       (or (:gas edit) (:gas transaction))
           gas-price (or (:gas-price edit) (:gas-price transaction))]
-      [wallet.components/simple-screen {:avoid-keyboard?     true
-                                        :status-toolbar-type :modal-wallet}
+      [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
        [toolbar true act/close-white
         (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
