@@ -3,11 +3,9 @@
             [re-frame.core :refer [dispatch reg-fx]]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [taoensso.timbre :as log]
-            [status-im.chat.console :as console-chat]
             [status-im.utils.types :refer [json->clj]]
             [status-im.data-store.core :as data-store]
             [status-im.native-module.core :as status]
-            [status-im.constants :refer [console-chat-id]]
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.constants :as constants]))
@@ -15,7 +13,6 @@
 ;;;; FX
 
 (reg-fx ::stop-node (fn [] (status/stop-node)))
-
 
 (reg-fx
   ::login
@@ -94,11 +91,10 @@
 (register-handler-fx
   :login-account
   (fn [{{:keys [network status-node-started?] :as db} :db}
-       [_ address password account-creation?]]
+       [_ address password]]
     (let [{account-network :network} (get-network-by-address db address)
           wnode (get-wnode-by-address db address)
           db' (-> db
-                  (assoc :accounts/account-creation? account-creation?)
                   (assoc :inbox/wnode wnode)
                   (assoc-in [:accounts/login :processing] true))
           wrap-fn (cond (not status-node-started?)
@@ -113,32 +109,27 @@
 
 (register-handler-fx
   :login-handler
-  (fn [{{:accounts/keys [account-creation?] :as db} :db} [_ login-result address]]
+  (fn [{db :db} [_ login-result address]]
     (let [data    (json->clj login-result)
           error   (:error data)
           success (zero? (count error))
           db'     (assoc-in db [:accounts/login :processing] false)]
-      (log/debug "Logging result: " login-result)
-      (merge
-       {:db (if success db' (assoc-in db' [:accounts/login :error] error))}
-       (when success
-         (log/debug "Logged in" (when account-creation? " new account") ":" address)
-         {::clear-web-data nil
-          ::change-account [address account-creation?]})))))
+      (if success
+        {:db db'
+         ::clear-web-data nil
+         ::change-account [address]}
+        {:db (assoc-in db' [:accounts/login :error] error)}))))
 
 (register-handler-fx
   :change-account-handler
-  (fn [{db :db} [_ error address new-account?]]
-    (let [recover-in-progress? (:accounts/recover db)]
-      (if (nil? error)
-        {:db         (dissoc db :accounts/login)
-         :dispatch-n [[:stop-debugging]
-                      [:initialize-account
-                       address
-                       (when (or new-account? recover-in-progress?)
-                         [[:chat-received-message/add console-chat/shake-your-phone-message]])]
-                      [:navigate-to-clean :home]
-                      (if new-account?
-                        [:navigate-to-chat console-chat-id]
-                        [:navigate-to :home])]}
-        (log/debug "Error changing acount: " error)))))
+  (fn [{{:keys [view-id] :as db} :db} [_ error address]]
+    (if (nil? error)
+      {:db         (cond-> (dissoc db :accounts/login)
+                     (= view-id :create-account)
+                     (assoc-in [:accounts/create :step] :enter-name))
+       :dispatch-n (concat
+                     [[:stop-debugging]
+                      [:initialize-account address]]
+                     (when (not= view-id :create-account)
+                       [[:navigate-to-clean :home]]))}
+      (log/debug "Error changing acount: " error))))

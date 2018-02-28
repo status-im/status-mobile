@@ -57,8 +57,7 @@
               (repeat (- columns extras) {:name ""})))))
 
 (defview main []
-  (letsubs [all-dapps    [:discover/all-dapps]
-            tabs-hidden? [:tabs-hidden?]]
+  (letsubs [all-dapps    [:discover/all-dapps]]
     (let [columns 3]
       (when (seq all-dapps)
         [react/view styles/all-dapps-container

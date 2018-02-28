@@ -242,11 +242,10 @@
                               :wallet-send-transaction-request
                               :wallet-transaction-fee
                               :contact-code)      styles/color-blue4
-                             (:accounts
-                              :login)             styles/color-blue2
                              (:qr-viewer
                               :recipient-qr-code) "#2f3031"
-                             (:wallet-transactions-filter
+                             (:accounts :login
+                              :wallet-transactions-filter
                               :contact-list-modal) styles/color-white
                              :transparent)})
           children (cond-> children

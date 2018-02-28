@@ -28,7 +28,7 @@
        (every? :checked? (:tokens filter-data))))
 
 (defn- toolbar-view [current-tab filter-data]
-  [toolbar/toolbar {:flat? true}
+  [toolbar/toolbar nil
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case current-tab
@@ -187,7 +187,7 @@
 (defview transactions []
   (letsubs [current-tab                 [:get :view-id]
             filter-data                 [:wallet.transactions/filters]]
-    [react/view {:style components.styles/flex}
+    [react/view styles/transacions-view
      [status-bar/status-bar]
      [toolbar-view current-tab filter-data]
      [tabs current-tab]

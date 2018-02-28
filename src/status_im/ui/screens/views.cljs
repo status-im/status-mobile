@@ -7,7 +7,7 @@
             [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
-            [status-im.ui.screens.accounts.recover.views :refer [recover recover-modal]]
+            [status-im.ui.screens.accounts.recover.views :refer [recover]]
             [status-im.ui.screens.accounts.views :refer [accounts]]
 
             [status-im.chat.screen :refer [chat]]
@@ -38,7 +38,6 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.discover.search-results.views :as discover-search]
             [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]
             [status-im.ui.screens.discover.all-dapps.views :as discover-all-dapps]
@@ -51,14 +50,10 @@
             [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
+            [status-im.ui.screens.intro.views :refer [intro]]
+            [status-im.ui.screens.accounts.create.views :refer [create-account]]
+            [status-im.ui.screens.usage-data.views :refer [usage-data]]
             [status-im.utils.config :as config]))
-
-(defn validate-current-view
-  [current-view signed-up?]
-  (if (or (contains? #{:login :chat :recover :accounts} current-view)
-          signed-up?)
-    current-view
-    :chat))
 
 ;;; defines hierarchy of views, when parent screen is opened children screens
 ;;; are pre-rendered, currently it is:
@@ -129,76 +124,77 @@
             modal-view [:get :modal]]
     {:component-will-update (fn [] (react/dismiss-keyboard!))}
     (when view-id
-      (let [current-view (validate-current-view view-id signed-up?)]
-        (let [component (case current-view
-                          (:home :wallet :my-profile) main-tabs
-                          :browser browser
-                          :open-dapp open-dapp
-                          :dapp-description dapp-description
-                          :wallet-send-transaction send-transaction
-                          :wallet-transaction-sent transaction-sent
-                          :wallet-request-transaction request-transaction
-                          :wallet-send-transaction-request send-transaction-request
-                          (:transactions-history :unsigned-transactions) wallet-transactions/transactions
-                          :wallet-transaction-details wallet-transactions/transaction-details
-                          :wallet-send-assets wallet.components/send-assets
-                          :wallet-request-assets wallet.components/request-assets
-                          :new add-new
-                          :new-group new-group
-                          :add-contacts-toggle-list add-contacts-toggle-list
-                          :add-participants-toggle-list add-participants-toggle-list
-                          :edit-group-contact-list edit-contact-group-contact-list
-                          :new-public-chat new-public-chat
-                          :contact-toggle-list contact-toggle-list
-                          :new-chat new-chat
-                          :qr-scanner qr-scanner
-                          :chat chat
-                          :profile profile.contact/profile
-                          :group-chat-profile profile.group-chat/group-chat-profile
-                          :discover-all-recent discover-recent/discover-all-recent
-                          :discover-all-popular-hashtags discover-popular/discover-all-popular-hashtags
-                          :discover-search-results discover-search/discover-search-results
-                          :discover-dapp-details discover-dapp-details/dapp-details
-                          :discover-all-dapps discover-all-dapps/main
-                          :profile-photo-capture profile-photo-capture
-                          :accounts accounts
-                          :login login
-                          :recover recover
-                          :network-settings network-settings
-                          :offline-messaging-settings offline-messaging-settings
-                          :paste-json-text paste-json-text
-                          :add-rpc-url add-rpc-url
-                          :network-details network-details
-                          :recent-recipients recent-recipients
-                          :recipient-qr-code recipient-qr-code
-                          :contact-code contact-code
-                          :profile-qr-viewer profile.user/qr-viewer
-                          (throw (str "Unknown view: " current-view)))
-              main-screen-view (create-main-screen-view current-view)]
-          [main-screen-view common-styles/flex
-           (if (and config/compile-views-enabled?
-                    signed-up?
-                    (#{:home :wallet :my-profile :chat :wallet-send-transaction
-                       :choose-recipient :wallet-transaction-sent :transactions-history
-                       :unsigned-transactions :wallet-request-transaction :edit-my-profile
-                       :profile-photo-capture :wallet-request-assets}
-                     current-view))
-             [root-view]
-             [component])
-           (when modal-view
-             [view common-styles/modal
-              [modal {:animation-type   :slide
-                      :transparent      true
-                      :on-request-close #(dispatch [:navigate-back])}
-               (let [component (case modal-view
-                                 :qr-scanner qr-scanner
-                                 :recover-modal recover-modal
-                                 :contact-list-modal contact-list-modal
-                                 :wallet-transactions-filter wallet-transactions/filter-history
-                                 :wallet-settings-assets wallet-settings/manage-assets
-                                 :wallet-send-transaction-modal send-transaction-modal
-                                 :wallet-transaction-sent-modal transaction-sent-modal
-                                 :wallet-transaction-fee wallet.send/transaction-fee
-                                 (throw (str "Unknown modal view: " modal-view)))]
-                 [react/main-screen-modal-view modal-view
-                   [component]])]])])))))
+      (let [component (case view-id
+                        :intro intro
+                        :create-account create-account
+                        :usage-data usage-data
+                        (:home :wallet :my-profile) main-tabs
+                        :browser browser
+                        :open-dapp open-dapp
+                        :dapp-description dapp-description
+                        :wallet-send-transaction send-transaction
+                        :wallet-transaction-sent transaction-sent
+                        :wallet-request-transaction request-transaction
+                        :wallet-send-transaction-request send-transaction-request
+                        (:transactions-history :unsigned-transactions) wallet-transactions/transactions
+                        :wallet-transaction-details wallet-transactions/transaction-details
+                        :wallet-send-assets wallet.components/send-assets
+                        :wallet-request-assets wallet.components/request-assets
+                        :new add-new
+                        :new-group new-group
+                        :add-contacts-toggle-list add-contacts-toggle-list
+                        :add-participants-toggle-list add-participants-toggle-list
+                        :edit-group-contact-list edit-contact-group-contact-list
+                        :new-public-chat new-public-chat
+                        :contact-toggle-list contact-toggle-list
+                        :new-chat new-chat
+                        :qr-scanner qr-scanner
+                        :chat chat
+                        :profile profile.contact/profile
+                        :group-chat-profile profile.group-chat/group-chat-profile
+                        :discover-all-recent discover-recent/discover-all-recent
+                        :discover-all-popular-hashtags discover-popular/discover-all-popular-hashtags
+                        :discover-search-results discover-search/discover-search-results
+                        :discover-dapp-details discover-dapp-details/dapp-details
+                        :discover-all-dapps discover-all-dapps/main
+                        :profile-photo-capture profile-photo-capture
+                        :accounts accounts
+                        :login login
+                        :recover recover
+                        :network-settings network-settings
+                        :offline-messaging-settings offline-messaging-settings
+                        :paste-json-text paste-json-text
+                        :add-rpc-url add-rpc-url
+                        :network-details network-details
+                        :recent-recipients recent-recipients
+                        :recipient-qr-code recipient-qr-code
+                        :contact-code contact-code
+                        :profile-qr-viewer profile.user/qr-viewer
+                        [react/view [react/text (str "Unknown view: " view-id)]])
+            main-screen-view (create-main-screen-view view-id)]
+        [main-screen-view common-styles/flex
+         (if (and config/compile-views-enabled?
+                  signed-up?
+                  (#{:home :wallet :my-profile :chat :wallet-send-transaction
+                     :choose-recipient :wallet-transaction-sent :transactions-history
+                     :unsigned-transactions :wallet-request-transaction :edit-my-profile
+                     :profile-photo-capture :wallet-request-assets}
+                    view-id))
+           [root-view]
+           [component])
+         (when modal-view
+           [view common-styles/modal
+            [modal {:animation-type   :slide
+                    :transparent      true
+                    :on-request-close #(dispatch [:navigate-back])}
+             (let [component (case modal-view
+                               :qr-scanner qr-scanner
+                               :contact-list-modal contact-list-modal
+                               :wallet-transactions-filter wallet-transactions/filter-history
+                               :wallet-settings-assets wallet-settings/manage-assets
+                               :wallet-send-transaction-modal send-transaction-modal
+                               :wallet-transaction-sent-modal transaction-sent-modal
+                               :wallet-transaction-fee wallet.send/transaction-fee
+                               [react/view [react/text (str "Unknown modal view: " modal-view)]])]
+               [react/main-screen-modal-view modal-view
+                 [component]])]])]))))

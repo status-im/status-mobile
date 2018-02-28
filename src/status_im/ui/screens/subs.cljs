@@ -31,13 +31,6 @@
   (fn [current-account]
     (:signed-up? current-account)))
 
-(reg-sub :tabs-hidden?
-  :<- [:get-in [:chat-list-ui-props :edit?]]
-  :<- [:get-in [:contacts/ui-props :edit?]]
-  :<- [:get :view-id]
-  (fn [[chats-edit-mode? contacts-edit-mode? view-id]]
-    (and (= view-id :contact-list) contacts-edit-mode?)))
-
 (reg-sub :network
   (fn [db]
     (:network db)))
@@ -54,3 +47,7 @@
 (reg-sub :get-screen-params
   (fn [db [_ view-id]]
     (get-in db [:navigation/screen-params (or view-id (:view-id db))])))
+
+(reg-sub :can-navigate-back?
+  (fn [db]
+    (> (count (:navigation-stack db)) 1)))

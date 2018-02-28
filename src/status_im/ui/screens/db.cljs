@@ -28,7 +28,7 @@
              :group/contact-groups       {}
              :group/selected-contacts    #{}
              :chats                      {}
-             :current-chat-id            constants/console-chat-id
+             :current-chat-id            nil
              :selected-participants      #{}
              :discoveries                {}
              :discover-search-tags       #{}
@@ -139,8 +139,7 @@
                   :group/selected-contacts
                   :group/groups-order
                   :accounts/accounts
-                  :accounts/account-creation?
-                  :accounts/creating-account?
+                  :accounts/create
                   :accounts/current-account-id
                   :accounts/recover
                   :accounts/login

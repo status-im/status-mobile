@@ -8,7 +8,6 @@
 
 (defview discover-all-recent []
   (letsubs [discoveries     [:discover/recent-discoveries]
-            tabs-hidden?    [:tabs-hidden?]
             current-account [:get-current-account]
             contacts        [:get-contacts]]
     [react/view styles/all-recent-container
@@ -16,7 +15,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/recent)]]
      (when (seq discoveries)
-       [react/scroll-view (styles/list-container tabs-hidden?)
+       [react/scroll-view (styles/list-container false)
         [react/view styles/status-list-outer
          [react/view styles/status-list-inner
           (let [discoveries (map-indexed vector discoveries)]

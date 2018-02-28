@@ -15,10 +15,8 @@
   :initialize-browsers
   [(re-frame/inject-cofx :all-stored-browsers)]
   (fn [{:keys [db all-stored-browsers]} _]
-    (let [{:accounts/keys [account-creation?]} db]
-      (when-not account-creation?
-        (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
-          {:db (assoc db :browser/browsers browsers)})))))
+    (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
+      {:db (assoc db :browser/browsers browsers)})))
 
 (re-frame/reg-fx
   :save-browser

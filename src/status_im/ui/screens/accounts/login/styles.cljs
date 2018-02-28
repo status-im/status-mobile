@@ -1,46 +1,44 @@
 (ns status-im.ui.screens.accounts.login.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.styles :as st]))
+  (:require [status-im.ui.components.styles :as st]
+            [status-im.ui.components.colors :as colors]))
 
 (defstyle login-view
   {:flex              1
-   :ios               {:margin-top    10
-                       :margin-bottom 10}
-   :android           {:margin-top    16
-                       :margin-bottom 16}
    :margin-horizontal 16})
 
 (defstyle login-badge-container
-  {:background-color :white
-   :ios              {:padding-top   16
-                      :height        150}
-   :android          {:border-radius 4
-                      :padding-top   12
-                      :height        144}})
-
-(defstyle sign-it-text
-  {:color   :white
-   :ios     {:font-size 17
-             :letter-spacing -0.2}
-   :android {:font-size 16}})
-
-(def sign-it-disabled-text
-  (merge sign-it-text
-         {:color st/color-gray2}))
-
-(def sign-in-button
-  {:background-color st/color-blue3
-   :align-items      :center
-   :justify-content  :center
-   :height           52
-   :border-radius    8})
+  {:margin-top 24})
 
 (def processing-view
-  {:position         :absolute
-   :top              0
-   :bottom           0
-   :right            0
-   :left             0
-   :align-items      :center
-   :justify-content  :center
-   :background-color (str st/color-black "1A")})
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
+
+(def sign-you-in
+  {:margin-top     16
+   :font-size      13
+   :letter-spacing -0.2
+   :color          colors/text-light-gray})
+
+(def bottom-button-container
+  {:flex-direction    :row
+   :margin-horizontal 12
+   :margin-vertical   15
+   :align-items       :center})
+
+(def login-badge
+  {:align-items :center})
+
+(def login-badge-image
+  {:width         56
+   :height        56
+   :border-radius 28})
+
+(def login-badge-name
+  {:font-size  15
+   :color      colors/text-light-gray
+   :margin-top 8})
+
+(def password-container
+  {:margin-top 24})

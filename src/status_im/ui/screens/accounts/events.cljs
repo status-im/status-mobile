@@ -13,17 +13,8 @@
             [status-im.ui.screens.accounts.statuses :as statuses]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.utils.hex :as utils.hex]))
-
-;;;; Helper fns
-
-(defn create-account
-  "Takes db and password, creates map of effects describing account creation"
-  [db password]
-  {:db              (assoc db :accounts/creating-account? true)
-   ::create-account password
-   ;; TODO(janherich): get rid of this shitty delayed dispatch once sending commands/msgs is refactored
-   :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
+            [status-im.utils.hex :as utils.hex]
+            status-im.ui.screens.accounts.create.navigation))
 
 ;;;; COFX
 
@@ -90,6 +81,12 @@
                                          :private updates-private-key}}}}))))
 ;;;; Handlers
 
+(handlers/register-handler-fx
+  :create-account
+  (fn [{{:accounts/keys [create] :as db} :db}]
+    {:db (update db :accounts/create assoc :step :account-creating :error nil)
+     ::create-account (:password create)}))
+
 (defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
   [{:keys [network inbox/wnode] :networks/keys [networks] :as db} {:keys [address] :as account}]
@@ -126,15 +123,7 @@
       (log/debug "account-created")
       (when-not (str/blank? pubkey)
         (-> (add-account db account)
-            (assoc :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
-                                [:login-account normalized-address password true]]))))))
-
-(handlers/register-handler-fx
-  :create-new-account-handler
-  (fn [_ _]
-    {:dispatch-n [[:initialize-db]
-                  [:load-accounts]
-                  [:check-console-chat true]]}))
+            (assoc :dispatch [:login-account normalized-address password true]))))))
 
 (handlers/register-handler-fx
   :load-accounts
@@ -204,3 +193,20 @@
         ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
         ;; account with network update when last update was more then week ago
         (account-update {:db db} nil)))))
+
+(handlers/register-handler-fx
+  :account-set-name
+  (fn [{{:accounts/keys [create] :as db} :db} _]
+    (-> {:db (assoc-in db [:accounts/create :show-welcome?] true)
+         :dispatch [:navigate-to-clean :usage-data]}
+        (account-update {:name (:name create)}))))
+
+(handlers/register-handler-fx
+  :update-sign-in-time
+  (fn [{db :db now :now} _]
+    (account-update {:db db} {:last-sign-in now})))
+
+(handlers/register-handler-fx
+  :reset-account-creation
+  (fn [{db :db} _]
+    {:db (update db :accounts/create assoc :step :enter-password :password nil :password-confirm nil :error nil)}))

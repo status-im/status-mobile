@@ -24,9 +24,9 @@
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.browser.events
             status-im.ui.screens.offline-messaging-settings.events
+            status-im.ui.screens.usage-data.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
             [status-im.data-store.core :as data-store]
@@ -159,13 +159,14 @@
 (re-frame/reg-fx
   :initialize-geth-fx
   (fn [config]
+    ;;TODO get rid of this, because we don't need this anymore
     (status/should-move-to-internal-storage?
       (fn [should-move?]
         (if should-move?
           (re-frame/dispatch [:request-permissions
                               [:read-external-storage]
                               #(move-to-internal-storage config)
-                              #(re-frame/dispatch [:move-to-internal-failure-message])])
+                              #()])
           (status/start-node config))))))
 
 (re-frame/reg-fx
@@ -225,7 +226,7 @@
     {::testfairy-alert nil
      :dispatch-n       [[:initialize-db]
                         [:load-accounts]
-                        [:check-console-chat]
+                        [:initialize-views]
                         [:listen-to-network-status]
                         [:initialize-crypt]
                         [:initialize-geth]]}))
@@ -234,7 +235,6 @@
   :initialize-db
   (fn [{{:keys          [status-module-initialized? status-node-started?
                          network-status network]
-         :networks/keys [networks]
          :or {network (get app-db :network)}} :db} _]
     {::init-store nil
      :db          (assoc app-db
@@ -247,8 +247,8 @@
 
 (handlers/register-handler-db
   :initialize-account-db
-  (fn [{:keys [accounts/accounts contacts/contacts networks/networks
-               network network-status view-id navigation-stack chats
+  (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
+               network network-status view-id navigation-stack
                access-scope->commands-responses
                status-module-initialized? status-node-started?
                inbox/wnode]
@@ -268,7 +268,7 @@
                      :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                      :status-node-started? status-node-started?
                      :accounts/accounts accounts
-                     :accounts/creating-account? false
+                     :accounts/create create
                      :networks/networks networks
                      :network-status network-status
                      :network network
@@ -291,24 +291,24 @@
                           [:send-account-update-if-needed]
                           [:update-wallet]
                           [:update-transactions]
-                          [:get-fcm-token]]
+                          [:get-fcm-token]
+                          [:update-sign-in-time]]
                    (seq events-after)
                    (into events-after))}))
 
 (handlers/register-handler-fx
-  :check-console-chat
-  (fn [{{:accounts/keys [accounts] :as db} :db} [_ open-console?]]
-    (let [view (if (empty? accounts)
-                 :chat
-                 :accounts)]
-      (merge
-       {:db (assoc db
-                   :view-id view
-                   :navigation-stack (list view))}
-       (when (or (empty? accounts) open-console?)
-         {:dispatch-n (concat [[:init-console-chat]]
-                              (when open-console?
-                                [[:navigate-to-chat console-chat-id]]))})))))
+  :initialize-views
+  (fn [{{:accounts/keys [accounts] :as db} :db}]
+    {:db (if (empty? accounts)
+           (assoc db :view-id :intro :navigation-stack (list :intro))
+           (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
+             (-> db
+                 (assoc :view-id :login
+                        :navigation-stack (list :login))
+                 (update :accounts/login assoc
+                         :address address
+                         :photo-path photo-path
+                         :name name))))}))
 
 (handlers/register-handler-fx
   :initialize-crypt

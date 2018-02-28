@@ -31,7 +31,6 @@
    :android          {:padding-top    8
                       :padding-bottom 8}})
 
-
 (def action-button-label-disabled
   (merge action-button-label
          {:color styles/color-gray4}))

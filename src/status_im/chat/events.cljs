@@ -7,7 +7,6 @@
             [status-im.protocol.core :as protocol]
             [status-im.chat.models :as models]
             [status-im.chat.console :as console]
-            [status-im.chat.constants :as chat.constants]
             [status-im.data-store.chats :as chats]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.pending-messages :as pending-messages]
@@ -29,7 +28,7 @@
   :stored-unviewed-messages
   (fn [cofx _]
     (assoc cofx :stored-unviewed-messages
-           (messages/get-unviewed (-> cofx :db :current-public-key)))))
+                (messages/get-unviewed (-> cofx :db :current-public-key)))))
 
 (re-frame/reg-cofx
   :get-stored-message
@@ -129,7 +128,7 @@
   [re-frame/trim-v]
   (fn [db [details]]
     (models/set-chat-ui-props db {:show-bottom-info? true
-                                  :bottom-info details})))
+                                  :bottom-info       details})))
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
 
@@ -153,18 +152,15 @@
     (update-in db [:chats chat-id :messages message-id] assoc :appearing? false)))
 
 (defn init-console-chat
-  [{:keys [chats] :accounts/keys [current-account-id] :as db}]
+  [{:keys [chats] :as db}]
   (if (chats constants/console-chat-id)
     {:db db}
-    (cond-> {:db (-> db
-                     (assoc :current-chat-id constants/console-chat-id)
-                     (update :chats assoc constants/console-chat-id console/chat))
-             :dispatch-n [[:add-contacts [console/contact]]]
-             :save-chat console/chat
-             :save-all-contacts [console/contact]}
-
-      (not current-account-id)
-      (update :dispatch-n concat [[:chat-received-message/add-when-commands-loaded console/intro-message1]]))))
+    {:db                (-> db
+                            (assoc :current-chat-id constants/console-chat-id)
+                            (update :chats assoc constants/console-chat-id console/chat))
+     :dispatch          [:add-contacts [console/contact]]
+     :save-chat         console/chat
+     :save-all-contacts [console/contact]}))
 
 (handlers/register-handler-fx
   :init-console-chat
@@ -186,31 +182,26 @@
                get-stored-messages
                stored-unviewed-messages
                stored-message-ids]} _]
-    (let [{:accounts/keys [account-creation?]} db
-          load-default-contacts-event [:load-default-contacts!]]
-      (if account-creation?
-        {:db db
-         :dispatch load-default-contacts-event}
-        (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
-                                                  (assoc-in acc [chat-id message-id] request))
-                                                {}
-                                                stored-unanswered-requests)
-              chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                              (let [chat-messages (index-messages (get-stored-messages chat-id))]
-                                (assoc acc chat-id
+    (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
+                                              (assoc-in acc [chat-id message-id] request))
+                                            {}
+                                            stored-unanswered-requests)
+          chats (reduce (fn [acc {:keys [chat-id] :as chat}]
+                          (let [chat-messages (index-messages (get-stored-messages chat-id))]
+                            (assoc acc chat-id
                                        (assoc chat
-                                              :unviewed-messages      (get stored-unviewed-messages chat-id)
-                                              :requests               (get chat->message-id->request chat-id)
-                                              :messages               chat-messages
-                                              :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
-                                                                                      (-> chat-messages keys set))))))
-                            {}
-                            all-stored-chats)]
-          (-> db
-              (assoc :chats         chats
-                     :deleted-chats inactive-chat-ids)
-              init-console-chat
-              (update :dispatch-n conj load-default-contacts-event)))))))
+                                         :unviewed-messages (get stored-unviewed-messages chat-id)
+                                         :requests (get chat->message-id->request chat-id)
+                                         :messages chat-messages
+                                         :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
+                                                                                 (-> chat-messages keys set))))))
+                        {}
+                        all-stored-chats)]
+      (-> db
+          (assoc :chats chats
+                 :deleted-chats inactive-chat-ids)
+          init-console-chat
+          (update :dispatch-n conj [:load-default-contacts!])))))
 
 (handlers/register-handler-fx
   :send-seen!
@@ -219,40 +210,18 @@
     (let [{:keys [web3 chats] :contacts/keys [contacts]} db
           {:keys [group-chat public? messages]} (get chats chat-id)
           statuses (assoc (get-in messages [message-id :user-statuses]) me :seen)]
-      (cond-> {:db (-> db
-                       (update-in [:chats chat-id :unviewed-messages] disj message-id)
-                       (assoc-in [:chats chat-id :messages message-id :user-statuses] statuses))
+      (cond-> {:db             (-> db
+                                   (update-in [:chats chat-id :unviewed-messages] disj message-id)
+                                   (assoc-in [:chats chat-id :messages message-id :user-statuses] statuses))
                :update-message {:message-id    message-id
                                 :user-statuses statuses}}
-        ;; for public chats and 1-1 bot/dapp chats, it makes no sense to signalise `:seen` msg
-        (not (or public? (get-in contacts [chat-id :dapp?])))
-        (assoc :protocol-send-seen {:web3    web3
-                                    :message (cond-> {:from       me
-                                                      :to         from
-                                                      :message-id message-id}
-                                               group-chat (assoc :group-id chat-id))})))))
-
-(handlers/register-handler-fx
-  :show-mnemonic
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [mnemonic signing-phrase]]
-    (let [crazy-math-message? (contains? (get-in db [:chats chat.constants/console-chat-id]) chat.constants/crazy-math-message-id)
-          messages-events     (->> (console/passphrase-messages mnemonic signing-phrase crazy-math-message?)
-                                   (mapv #(vector :chat-received-message/add %)))]
-      {:dispatch-n messages-events})))
-
-;; TODO(alwx): can be simplified
-(handlers/register-handler-fx
-  :account-generation-message
-  (fn [{:keys [db]} _]
-    (when-not (contains? (get-in db [:chats chat.constants/console-chat-id]) chat.constants/passphrase-message-id)
-      {:dispatch [:chat-received-message/add console/account-generation-message]})))
-
-(handlers/register-handler-fx
-  :move-to-internal-failure-message
-  (fn [{:keys [db]} _]
-    (when-not (contains? (get-in db [:chats chat.constants/console-chat-id]) chat.constants/move-to-internal-failure-message-id)
-      {:dispatch [:chat-received-message/add console/move-to-internal-failure-message]})))
+              ;; for public chats and 1-1 bot/dapp chats, it makes no sense to signalise `:seen` msg
+              (not (or public? (get-in contacts [chat-id :dapp?])))
+              (assoc :protocol-send-seen {:web3    web3
+                                          :message (cond-> {:from       me
+                                                            :to         from
+                                                            :message-id message-id}
+                                                           group-chat (assoc :group-id chat-id))})))))
 
 (handlers/register-handler-fx
   :browse-link-from-message
@@ -269,8 +238,8 @@
                      (models/set-chat-ui-props {:validation-messages nil})
                      (update-in [:chats chat-id] dissoc :chat-loaded-event))}
 
-      chat-loaded-event
-      (assoc :dispatch chat-loaded-event))))
+            chat-loaded-event
+            (assoc :dispatch chat-loaded-event))))
 
 (handlers/register-handler-fx
   :add-chat-loaded-event
@@ -278,7 +247,7 @@
   (fn [{:keys [db] :as cofx} [chat-id event]]
     (if (get (:chats db) chat-id)
       {:db (assoc-in db [:chats chat-id :chat-loaded-event] event)}
-      (-> (models/add-chat cofx chat-id) ; chat not created yet, we have to create it
+      (-> (models/add-chat cofx chat-id)                    ; chat not created yet, we have to create it
           (assoc-in [:db :chats chat-id :chat-loaded-event] event)))))
 
 ;; TODO(janherich): remove this unnecessary event in the future (only model function `add-chat` will stay)
@@ -309,7 +278,7 @@
   :start-chat
   [(re-frame/inject-cofx :get-stored-chat) re-frame/trim-v]
   (fn [{:keys [db] :as cofx} [contact-id {:keys [navigation-replace?]}]]
-    (when (not= (:current-public-key db) contact-id) ; don't allow to open chat with yourself
+    (when (not= (:current-public-key db) contact-id)        ; don't allow to open chat with yourself
       (if (get (:chats db) contact-id)
         (navigate-to-chat cofx contact-id navigation-replace?) ; existing chat, just preload and displey
         (let [add-chat-fx (models/add-chat cofx contact-id)] ; new chat, create before preload & display
@@ -334,12 +303,12 @@
                                             (update :chats dissoc chat-id)
                                             (update :deleted-chats (fnil conj #{}) chat-id))
                :delete-pending-messages chat-id}
-        (or group-chat debug?)
-        (assoc :delete-messages chat-id)
-        debug?
-        (assoc :delete-chat chat-id)
-        (not debug?)
-        (assoc :deactivate-chat chat-id)))))
+              (or group-chat debug?)
+              (assoc :delete-messages chat-id)
+              debug?
+              (assoc :delete-chat chat-id)
+              (not debug?)
+              (assoc :deactivate-chat chat-id)))))
 
 (handlers/register-handler-fx
   :delete-chat

@@ -1,63 +1,59 @@
 (ns status-im.ui.screens.accounts.recover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :refer [dispatch]]
-            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.ui.components.react :refer [view
-                                                   text
-                                                   image
-                                                   keyboard-avoiding-view
-                                                   touchable-highlight]]
-            [status-im.ui.components.sticky-button :refer [sticky-button]]
-            [status-im.ui.components.status-bar.view :refer [status-bar]]
+  (:require [re-frame.core :as re-frame]
+            [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.accounts.recover.styles :as st]
-            [status-im.ui.screens.accounts.recover.db :as v]
+            [status-im.ui.screens.accounts.recover.styles :as styles]
+            [status-im.ui.screens.accounts.recover.db :as recover.db]
+            [status-im.ui.screens.accounts.db :as db]
             [cljs.spec.alpha :as spec]
-            [clojure.string :as str]))
+            [status-im.ui.components.common.common :as components.common]))
 
 (defview passphrase-input [passphrase]
   (letsubs [error [:get-in [:accounts/recover :passphrase-error]]]
-    [view {:margin-top 10}
-     [text-input-with-label {:label             (i18n/label :t/passphrase)
-                             :description       (i18n/label :t/twelve-words-in-correct-order)
-                             :multiline         true
-                             :auto-expanding    true
-                             :max-height        st/passphrase-input-max-height
-                             :default-value     passphrase
-                             :auto-capitalize   :none
-                             :on-change-text    #(dispatch [:set-in [:accounts/recover :passphrase] %])
-                             :error             error}]]))
+    [text-input/text-input-with-label
+     {:style          {:flex 1}
+      :height         92
+      :label          (i18n/label :t/passphrase)
+      :placeholder    (i18n/label :t/enter-12-words)
+      :multiline      true
+      :default-value  passphrase
+      :on-change-text #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
+      :error          error}]))
 
 (defview password-input [password]
   (letsubs [error [:get-in [:accounts/recover :password-error]]]
-    [view {:margin-top 10}
-     [text-input-with-label {:label             (i18n/label :t/password)
-                             :default-value     password
-                             :auto-capitalize   :none
-                             :on-change-text    #(dispatch [:set-in [:accounts/recover :password] %])
-                             :secure-text-entry true
-                             :error             error}]]))
+    [react/view {:margin-top 10}
+     [text-input/text-input-with-label
+      {:label             (i18n/label :t/password)
+       :placeholder       (i18n/label :t/enter-password)
+       :default-value     password
+       :auto-focus        false
+       :on-change-text    #(re-frame/dispatch [:set-in [:accounts/recover :password] %])
+       :secure-text-entry true
+       :error             error}]]))
 
-(defview recover [& [modal?]]
+(defview recover []
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
-                        (spec/valid? ::v/passphrase passphrase)
-                        (spec/valid? ::v/password password))]
-      [keyboard-avoiding-view {:style st/screen-container}
-       [status-bar]
-       [toolbar/toolbar {:modal? modal?} toolbar/default-nav-back
-        [toolbar/content-title (i18n/label :t/recover-access)]]
-       [passphrase-input (or passphrase "")]
-       [password-input (or password "")]
-       [view {:flex 1}]
-       (when valid-form?
-         [sticky-button
-          (i18n/label :t/recover-access)
-          #(do
-             (when modal? (dispatch [:navigate-back]))
-             (dispatch [:recover-account passphrase password]))])])))
-
-(defview recover-modal []
-  [recover true])
+                        (spec/valid? ::recover.db/passphrase passphrase)
+                        (spec/valid? ::db/password password))]
+      [react/keyboard-avoiding-view {:style styles/screen-container}
+       [status-bar/status-bar]
+       [toolbar/toolbar nil toolbar/default-nav-back
+        [toolbar/content-title (i18n/label :t/sign-in-to-another)]]
+       [components.common/separator]
+       [react/view {:margin 16}
+        [passphrase-input (or passphrase "")]
+        [password-input (or password "")]]
+       [react/view {:flex 1}]
+       [react/view {:style styles/bottom-button-container}
+        [react/view {:style {:flex 1}}]
+        [components.common/bottom-button
+         {:forward?  true
+          :label     (i18n/label :t/sign-in)
+          :disabled? (not valid-form?)
+          :on-press  #(re-frame/dispatch [:recover-account passphrase password])}]]])))

@@ -1,0 +1,27 @@
+(ns status-im.ui.components.text-input.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
+  (:require [status-im.ui.components.colors :as colors]))
+
+(def label
+  {:font-size      14
+   :letter-spacing -0.2
+   :color          colors/black})
+
+(defn input-container [height]
+  {:padding          16
+   :justify-content  :center
+   :margin-vertical  8
+   :height           (or height 52)
+   :border-radius    8
+   :background-color colors/gray-lighter})
+
+(def input
+  {:font-size      15
+   :letter-spacing -0.2
+   :color          colors/black
+   :padding        0})
+
+(def error
+  {:bottom-value -20
+   :color        colors/red-light
+   :font-size    12})

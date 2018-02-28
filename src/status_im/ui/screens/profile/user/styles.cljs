@@ -11,7 +11,7 @@
    :align-items       :center
    :height            42
    :border-radius     components.styles/border-radius
-   :background-color  colors/blue-transparent})
+   :background-color  (colors/alpha colors/blue 0.1)})
 
 (def share-contact-code-text-container
   {:padding-left    16

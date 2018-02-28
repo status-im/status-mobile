@@ -35,16 +35,11 @@
 
 (defview chat-toolbar [public?]
   (letsubs [accounts  [:get-accounts]
-            creating? [:get :accounts/creating-account?]
             {:keys [group-chat name chat-id]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
      [toolbar/toolbar {}
-      (when-not creating?
-        (if (empty? accounts)
-          [toolbar/nav-clear-text {:handler #(re-frame/dispatch [:navigate-to-modal :recover-modal])}
-           (i18n/label :t/recover)]
-          toolbar/default-nav-back))
+      toolbar/default-nav-back
       [toolbar-content/toolbar-content-view]
       [toolbar/actions [{:icon      :icons/options
                          :icon-opts {:color :black}

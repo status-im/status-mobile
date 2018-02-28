@@ -12,6 +12,7 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.screens.wallet.components :as wallet.components]
@@ -51,7 +52,7 @@
          :on-change-text         #(re-frame/dispatch [:wallet.send/set-password %])
          :style                  styles/password}]]]
      (when wrong-password?
-       [components/tooltip (i18n/label :t/wrong-password)])]))
+       [tooltip/tooltip (i18n/label :t/wrong-password)])]))
 
 ;; "Cancel" and "Sign Transaction >" buttons, signing with password
 (defview signing-buttons [cancel-handler sign-handler in-progress?]

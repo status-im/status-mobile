@@ -6,7 +6,7 @@
    :padding-top      24})
 
 (def action
-  {:background-color colors/blue-transparent
+  {:background-color (colors/alpha colors/blue 0.1)
    :border-radius    50})
 
 (def action-label

@@ -66,11 +66,9 @@
             show-actions? [:get-current-chat-ui-prop :show-actions?]
             accounts      [:get-accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
-            sync-state    [:sync-state]
-            creating?     [:get :accounts/creating-account?]]
+            sync-state    [:sync-state]]
     [react/view (st/chat-name-view (or (empty? accounts)
-                                       show-actions?
-                                       creating?))
+                                       show-actions?))
      (let [chat-name (if (string/blank? name)
                        (generate-gfy public-key)
                        (or (i18n/get-contact-translated chat-id :name name)

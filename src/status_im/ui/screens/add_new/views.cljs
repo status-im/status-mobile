@@ -43,10 +43,8 @@
      :on-press  #()}]])
 
 (defview add-new []
-  (letsubs [contacts [:all-added-group-contacts]
-            params [:get :contacts/click-params]]
-    [react/view {:flex 1}
-     [status-bar/status-bar]
-     [toolbar.view/simple-toolbar (i18n/label :t/new)]
-     [components/separator]
-     [options-list]]))
+  [react/view {:flex 1 :background-color :white}
+   [status-bar/status-bar]
+   [toolbar.view/simple-toolbar (i18n/label :t/new)]
+   [components/separator]
+   [options-list]])

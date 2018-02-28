@@ -155,3 +155,51 @@
    :width        14
    :height       9
    :tint-color   :white})
+
+(def no-chats
+  {:flex              1
+   :align-items       :center
+   :justify-content   :center
+   :margin-horizontal 34})
+
+(def no-chats-text
+  {:font-size      14
+   :line-height    21
+   :letter-spacing -0.2
+   :text-align     :center
+   :color          colors/gray})
+
+(def welcome-view
+  {:flex               1
+   :padding-horizontal 30})
+
+(def welcome-image-container
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
+
+(def welcome-image
+  {:width  320
+   :height 278})
+
+(def welcome-text
+  {:line-height    28
+   :font-size      22
+   :font-weight    :bold
+   :letter-spacing -0.3
+   :text-align     :center
+   :color          colors/black})
+
+(def welcome-text-description
+  {:line-height    21
+   :margin-top     8
+   :margin-bottom  32
+   :font-size      14
+   :letter-spacing -0.2
+   :text-align     :center
+   :color          colors/gray})
+
+(def toolbar-logo
+  {:size      42
+   :icon-size 17
+   :shadow?   false})

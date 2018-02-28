@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.accounts.recover.styles
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.utils.platform :refer [ios?]]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def screen-container
   {:flex             1
-   :background-color common/color-white})
+   :background-color colors/white})
 
-(def passphrase-input-max-height
-  (if ios? 78 72))
+(def bottom-button-container
+  {:flex-direction    :row
+   :margin-horizontal 12
+   :margin-vertical   15})

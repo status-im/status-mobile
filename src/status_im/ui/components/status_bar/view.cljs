@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.styles :as styles]))
 
-(defn status-bar [{type :type}]
+(defn status-bar [{:keys [type flat?]}]
   (let [[status-bar-style view-style]
         (case type
           :main         [styles/status-bar-main styles/view-main]
@@ -15,5 +15,5 @@
           :wallet-tab   [styles/status-bar-wallet-tab styles/view-wallet-tab]
           [styles/status-bar-default styles/view-default])]
     [react/view
-     [react/status-bar status-bar-style]
-     [react/view {:style view-style}]]))
+     [react/status-bar (cond-> status-bar-style flat? (assoc :elevation 0))]
+     [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}]]))

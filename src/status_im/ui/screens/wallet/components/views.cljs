@@ -4,18 +4,15 @@
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list.styles :as list.styles]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.screens.wallet.components :as components]
-            [status-im.ui.screens.wallet.components.animations :as animations]
             [status-im.ui.screens.wallet.components.styles :as styles]
             [status-im.ui.screens.wallet.choose-recipient.views :as choose-recipient]
             [status-im.ui.screens.wallet.views :as wallet]
@@ -23,17 +20,8 @@
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.platform :as platform]))
-
-(views/defview tooltip [label]
-  (views/letsubs [bottom-value (animation/create-value -30)
-                  opacity-value (animation/create-value 0)]
-    {:component-did-mount (animations/animate-tooltip bottom-value opacity-value)}
-    [react/view styles/tooltip-container
-     [react/animated-view {:style (styles/tooltip-animated bottom-value opacity-value)}
-      [react/view styles/tooltip-text-container
-       [react/text {:style styles/tooltip-text} label]]
-      [vector-icons/icon :icons/tooltip-triangle {:color :white :style styles/tooltip-triangle}]]]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.tooltip.views :as tooltip]))
 
 (defn view-asset [symbol]
   [react/view
@@ -198,7 +186,7 @@
     (i18n/label :t/amount)
     [amount-input m]]
    (when error
-     [tooltip error])])
+     [tooltip/tooltip error])])
 
 (defn separator []
   [react/view styles/separator])

@@ -19,15 +19,13 @@
    :android          {:height 55}
    :ios              {:height 56}})
 
-(defnstyle toolbar-nav-actions-container
-  [actions]
+(def toolbar-nav-actions-container
   {:flex-direction :row
    :margin-left    4})
 
 (defstyle toolbar-container
-  {:flex    1
-   :android {:padding-left 18}
-   :ios     {:align-items :center}})
+  {:flex        1
+   :align-items :center})
 
 (def toolbar-title-container
   {:flex           1
@@ -38,15 +36,7 @@
   {:color          styles/text1-color
    :letter-spacing -0.2
    :font-size      17
-   :ios            {:text-align "center"}})
-
-(defstyle toolbar-border-container
-  {:ios {:background-color styles/color-white}})
-
-(defstyle toolbar-border
-  {:ios {:height           1
-         :background-color styles/color-gray5
-         :opacity          0.5}})
+   :text-align     :center})
 
 (def toolbar-actions
   {:flex           0
@@ -71,10 +61,6 @@
 (def nav-item-button
   {:padding-vertical   16
    :padding-horizontal 12})
-
-(def nav-item-text
-  {:padding-vertical   18
-   :padding-horizontal 16})
 
 (defstyle item
   {:ios     {:margin-horizontal 12

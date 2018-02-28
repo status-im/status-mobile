@@ -3,7 +3,7 @@
     [re-frame.core :refer [dispatch]]
     [status-im.ui.components.status-bar.view :as status-bar]
     [status-im.ui.components.toolbar.view :as toolbar]
-    [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
+    [status-im.ui.components.text-input.view :as text-input]
     [status-im.ui.screens.network-settings.views :as network-settings]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.sticky-button :as sticky-button]
@@ -18,7 +18,7 @@
       (i18n/label :t/add-network)]
      [network-settings/network-badge]
      [react/view {:margin-top 8}
-      [text-input-with-label {:label (i18n/label :t/rpc-url)}]]
+      [text-input/text-input-with-label {:label (i18n/label :t/rpc-url)}]]
      [react/view {:flex 1}]
      (when (not (str/blank? rpc-url))
        [sticky-button/sticky-button (i18n/label :t/add-network) #()])]))

@@ -41,16 +41,6 @@
         ;; regular non command message, we can add it right away
         (message-model/receive cofx message)))))
 
-;; TODO janherich: get rid of this special case once they hacky app start-up sequence is refactored
-(handlers/register-handler-fx
-  :chat-received-message/add-when-commands-loaded
-  message-model/receive-interceptors
-  (fn [{:keys [db] :as cofx} [{:keys [chat-id] :as message}]]
-    (if (and (:status-node-started? db)
-             (get-in db [:contacts/contacts chat-id :jail-loaded?]))
-      (message-model/receive cofx message)
-      {:dispatch-later [{:ms 400 :dispatch [:chat-received-message/add-when-commands-loaded message]}]})))
-
 ;; TODO(alwx): refactor this when status-im.commands.handlers.jail is refactored
 (handlers/register-handler-fx
   :chat-received-message/bot-response

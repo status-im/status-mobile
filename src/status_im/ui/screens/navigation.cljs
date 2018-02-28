@@ -21,9 +21,6 @@
       (update :navigation-stack replace-top-element view-id)
       (assoc :view-id view-id)))
 
-(defn- can-navigate-back? [db]
-  (not (get db :accounts/creating-account?)))
-
 ;; public fns
 
 (defn navigate-to-clean [db view-id]
@@ -89,15 +86,13 @@
       (>= 1 (count navigation-stack)) db
 
       :else
-      (if (can-navigate-back? db)
-        (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
-              first-in-stack (first navigation-stack)]
-          (if (= view-id first-in-stack)
-            (-> db
-                (assoc :view-id previous-view-id)
-                (assoc :navigation-stack navigation-stack'))
-            (assoc db :view-id first-in-stack)))
-        db))))
+      (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
+            first-in-stack (first navigation-stack)]
+        (if (= view-id first-in-stack)
+          (-> db
+              (assoc :view-id previous-view-id)
+              (assoc :navigation-stack navigation-stack'))
+          (assoc db :view-id first-in-stack))))))
 
 (register-handler-db
   :navigate-to-clean

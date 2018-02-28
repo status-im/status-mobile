@@ -1,28 +1,30 @@
 (ns status-im.ui.screens.accounts.login.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [re-frame.core :refer [dispatch dispatch-sync]]
             [status-im.ui.screens.accounts.styles :as ast]
-            [status-im.ui.screens.accounts.views :refer [account-badge]]
-            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.ui.components.status-bar.view :refer [status-bar]]
+            [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
-            [status-im.ui.screens.accounts.login.styles :as st]
+            [status-im.ui.screens.accounts.login.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.react :as components]))
+            [status-im.ui.components.react :as components]
+            [status-im.ui.components.common.common :as components.common]
+            [re-frame.core :as re-frame]
+            [cljs.spec.alpha :as spec]
+            [status-im.ui.screens.accounts.db :as db]))
 
-(defn login-toolbar []
-  [toolbar/toolbar {:background-color :transparent}
-   [toolbar/nav-button (act/back-white #(dispatch [:navigate-back]))]
-   [toolbar/content-title {:color :white} (i18n/label :t/sign-in-to-status)]])
-
-(def password-text-input (atom nil))
+(defn login-toolbar [can-navigate-back?]
+  [toolbar/toolbar
+   nil
+   (when can-navigate-back?
+     [toolbar/nav-button act/default-back])
+   [toolbar/content-title (i18n/label :t/sign-in-to-status)]])
 
 (defn login-account [password-text-input address password]
-  (.blur @password-text-input)
-  (dispatch [:login-account address password]))
+  (.blur password-text-input)
+  (re-frame/dispatch [:login-account address password]))
 
 (defn- error-key [error]
   ;; TODO Improve selection logic when status-go provide an error code
@@ -37,31 +39,53 @@
     :else
     :t/unknown-status-go-error))
 
+(defn account-login-badge [photo-path name]
+  [react/view styles/login-badge
+   [react/image {:source {:uri (if (string/blank? photo-path) :avatar photo-path)}
+                 :style  styles/login-badge-image}]
+   [react/view
+    [react/text {:style         styles/login-badge-name
+                 :numberOfLines 1}
+     name]]])
+
 (defview login []
-  (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]]
-    [react/view ast/accounts-container
-     [status-bar {:type :transparent}]
-     [login-toolbar]
-     [react/view st/login-view
-      [react/view st/login-badge-container
-       [account-badge address photo-path name]
-       [react/view {:height 8}]
-       [text-input-with-label {:ref               #(reset! password-text-input %)
-                               :label             (i18n/label :t/password)
-                               :auto-capitalize   :none
-                               :hide-underline?   true
-                               :on-change-text    #(do
-                                                     (dispatch [:set-in [:accounts/login :password] %])
-                                                     (dispatch [:set-in [:accounts/login :error] ""]))
-                               :on-submit-editing #(login-account password-text-input address password)
-                               :auto-focus        true
-                               :secure-text-entry true
-                               :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]
-      (let [enabled? (pos? (count password))]
-        [react/view {:margin-top 16}
-         [react/touchable-highlight (if enabled? {:on-press #(login-account password-text-input address password)})
-          [react/view st/sign-in-button
-           [react/text {:style (if enabled? st/sign-it-text st/sign-it-disabled-text)} (i18n/label :t/sign-in)]]]])]
-     (when processing
-       [react/view st/processing-view
-        [components/activity-indicator {:animating true}]])]))
+  (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]
+            can-navigate-back? [:can-navigate-back?]
+            password-text-input (atom nil)]
+    [react/keyboard-avoiding-view {:style ast/accounts-view}
+     [status-bar/status-bar]
+     [login-toolbar can-navigate-back?]
+     [components.common/separator]
+     [react/view styles/login-view
+      [react/view styles/login-badge-container
+       [account-login-badge photo-path name]
+       [react/view styles/password-container
+        [text-input/text-input-with-label
+         {:label             (i18n/label :t/password)
+          :placeholder       (i18n/label :t/password)
+          :ref               #(reset! password-text-input %)
+          :auto-focus        can-navigate-back? ;;this needed because keyboard overlays testfairy alert
+          :on-submit-editing #(login-account @password-text-input address password)
+          :on-change-text    #(do
+                                (re-frame/dispatch [:set-in [:accounts/login :password] %])
+                                (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
+          :secure-text-entry true
+          :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]]]
+     [react/view styles/processing-view
+      (when processing
+        [components/activity-indicator {:animating true}])
+      (when processing
+        [react/text {:style styles/sign-you-in}
+         (i18n/label :t/sign-you-in)])]
+     (when-not processing
+       [react/view {:style styles/bottom-button-container}
+        (when-not can-navigate-back?
+          [components.common/bottom-button
+           {:label    (i18n/label :t/other-accounts)
+            :on-press #(re-frame/dispatch [:navigate-to-clean :accounts])}])
+        [react/view {:style {:flex 1}}]
+        [components.common/bottom-button
+         {:forward?  true
+          :label     (i18n/label :t/sign-in)
+          :disabled? (not (spec/valid? ::db/password password))
+          :on-press  #(login-account @password-text-input address password)}]])]))

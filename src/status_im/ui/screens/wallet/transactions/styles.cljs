@@ -53,7 +53,7 @@
    :font-size    17})
 
 (def tx-time
-  {:flex-grow  1 
+  {:flex-grow  1
    :font-size  14
    :text-align :right
    :color      styles/color-gray4})
@@ -216,4 +216,7 @@
 
 (def filter-container
   {:flex 1})
-   ;:background-color colors/white})
+
+(def transacions-view
+  {:flex             1
+   :background-color :white})

@@ -22,11 +22,9 @@
                        ;; this listener and handle application's closing
                        ;; in handlers
                        (let [stack      (subscribe [:get :navigation-stack])
-                             creating?  (subscribe [:get :accounts/creating-account?])
                              result-box (subscribe [:get-current-chat-ui-prop :result-box])
                              webview    (subscribe [:get :webview-bridge])]
                          (cond
-                           @creating? true
 
                            (and @webview (:can-go-back? @result-box))
                            (do (.goBack @webview) true)

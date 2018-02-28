@@ -571,66 +571,6 @@ status.command({
 });
 
 status.response({
-    name: "password",
-    color: "#7099e6",
-    scope: ["personal-chats", "anonymous", "dapps"],
-    description: I18n.t('password_description'),
-    icon: "lock_white",
-    sequentialParams: true,
-    params: [
-        {
-            name: "password",
-            type: status.types.PASSWORD,
-            placeholder: I18n.t('password_placeholder'),
-            hidden: true
-        },
-        {
-            name: "password-confirmation",
-            type: status.types.PASSWORD,
-            placeholder: I18n.t('password_placeholder2'),
-            hidden: true
-        }
-    ],
-    validator: function (params, context) {
-        if (!params.hasOwnProperty("password-confirmation") || params["password-confirmation"].length === 0) {
-            if (params.password === null || params.password.length < 6) {
-                var error = status.components.validationMessage(
-                    I18n.t('password_validation_title'),
-                    I18n.t('password_error')
-                );
-                return {markup: error};
-            }
-        } else {
-            if (params.password !== params["password-confirmation"]) {
-                var error = status.components.validationMessage(
-                    I18n.t('password_validation_title'),
-                    I18n.t('password_error1')
-                );
-                return {markup: error};
-            }
-        }
-
-    },
-    preview: function (params, context) {
-        var style = {
-            marginTop: 5,
-            marginHorizontal: 0,
-            fontSize: 14,
-            color: "black"
-        };
-
-        if (context.platform == "ios") {
-            style.fontSize = 8;
-            style.marginTop = 10;
-            style.marginBottom = 2;
-            style.letterSpacing = 1;
-        }
-
-        return {markup: status.components.text({style: style}, "●●●●●●●●●●")};
-    }
-});
-
-status.response({
     name: "grant-permissions",
     scope: ["personal-chats", "anonymous", "registered", "dapps"],
     color: "#7099e6",

@@ -1,5 +1,8 @@
 (ns status-im.ui.screens.accounts.subs
-  (:require [re-frame.core :refer [reg-sub subscribe]]))
+  (:require [re-frame.core :refer [reg-sub subscribe]]
+            [clojure.string :as string]
+            [status-im.ui.screens.accounts.db :as db]
+            [cljs.spec.alpha :as spec]))
 
 (reg-sub :get-current-public-key
   (fn [db]
@@ -18,3 +21,11 @@
   :<- [:get-accounts]
   (fn [[account-id accounts]]
     (some-> accounts (get account-id))))
+
+(reg-sub
+  :get-account-creation-next-enabled?
+  (fn [{:accounts/keys [create]}]
+   (let [{:keys [step password password-confirm name]} create]
+     (or (and password (= :enter-password step) (spec/valid? ::db/password password))
+         (and password-confirm (= :confirm-password step) (spec/valid? ::db/password password-confirm))
+         (and name (= :enter-name step) (not (string/blank? name)))))))

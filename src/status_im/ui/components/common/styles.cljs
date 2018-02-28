@@ -1,5 +1,5 @@
 (ns status-im.ui.components.common.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.styles :as styles]
             [status-im.ui.components.colors :as colors]))
 
@@ -49,15 +49,6 @@
                     :padding-top      20
                     :padding-bottom   17
                     :margin-top       8}})
-
-(defstyle form-title-extend-container
-  {:ios     {:margin-top       16
-             :background-color colors/white}
-   :android {:margin-top       8
-             :background-color colors/gray-lighter}})
-
-(def form-title-extend-button
-  {:padding 16})
 
 (defstyle form-title
   {:flex-shrink 1
@@ -109,3 +100,51 @@
    :color         colors/blue
    :ios           {:font-size 15}
    :android       {:font-size 14}})
+
+(defstyle logo-shaddow
+  {:ios     {:shadowColor   colors/black
+             :shadowOffset  {:height 5}
+             :shadowRadius  10
+             :shadowOpacity 0.14}
+   :android {:elevation 2}})
+
+(defn logo-container [size shadow?]
+  (merge
+    {:width            size
+     :height           size
+     :border-radius    size
+     :background-color colors/blue
+     :align-items      :center
+     :justify-content  :center}
+    (when shadow?
+      logo-shaddow)))
+
+(defn logo [icon-size]
+  {:color  :white
+   :width  icon-size
+   :height icon-size})
+
+(defn bottom-button [disabled?]
+  {:flex-direction :row
+   :align-items    :center
+   :opacity        (if disabled? 0.4 1)})
+
+(def bottom-button-label
+  {:font-size      15
+   :letter-spacing -0.2
+   :color          colors/blue})
+
+(defn button [style background?]
+  (merge
+    {:padding-vertical   12
+     :padding-horizontal 42
+     :border-radius      8}
+    style
+    (when background?
+      {:background-color (colors/alpha colors/blue 0.1)})))
+
+(def button-label
+  {:font-size      15
+   :letter-spacing -0.2
+   :text-align     :center
+   :color          colors/blue})

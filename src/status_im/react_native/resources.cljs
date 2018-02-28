@@ -18,8 +18,10 @@
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")})
 
 (def assets
-  {:ethereum       (js/require "./resources/images/assets/ethereum.png")})
+  {:ethereum (js/require "./resources/images/assets/ethereum.png")})
 
 (def ui
-  {:empty-hashtags (js/require "./resources/images/ui/empty-hashtags.png")
-   :empty-recent   (js/require "./resources/images/ui/empty-recent.png")})
+  {:empty-hashtags  (js/require "./resources/images/ui/empty-hashtags.png")
+   :empty-recent    (js/require "./resources/images/ui/empty-recent.png")
+   :analytics-image (js/require "./resources/images/ui/analytics-image.png")
+   :welcome-image   (js/require "./resources/images/ui/welcome-image.png")})

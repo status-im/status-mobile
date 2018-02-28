@@ -99,10 +99,10 @@
    :height 24})
 
 (def icon-add
-  {:width           14
-   :height          14
+  {:width           24
+   :height          24
    :color           colors/blue
-   :container-style {:background-color colors/blue-transparent
+   :container-style {:background-color (colors/alpha colors/blue 0.12)
                      :border-radius    32
                      :width            32
                      :height           32

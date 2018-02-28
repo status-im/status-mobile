@@ -28,6 +28,26 @@
    :camera-access-error                   "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                   "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
 
+   ;;sign in
+   :intro-text                            "Status is an open source decentralized chat and Ethereum browser"
+   :intro-text-description                "Status is built with the help of the community to help you use all the benefits of decentralized web in your mobile phone"
+   :create-account                        "Create account"
+   :already-have-account                  "I already have an account"
+   :creating-your-account                 "Creating your account on the blockchain. We can't touch it, no one can, except for you!"
+   :password-placeholder                  "Type your password"
+   :password-placeholder2                 "Confirm your password"
+   :name-placeholder                      "Enter your full name…"
+   :password_error1                       "Password confirmation doesn't match password."
+   :password-description                  "You'll need this password to open the app, confirm transactions and whenever you need to regain access on a new device or install."
+   :name-description                      "This will be the name everybody who uses Status will see. You can change it later."
+   :other-accounts                        "Other accounts"
+   :sign-you-in                           "Signing you in…"
+
+   :help-improve                          "Help improve Status \n by sharing usage data"
+   :help-improve-description              "We strive to collect only what we need to understand how and where we can improve Status"
+   :share-usage-data                      "Share usage data"
+   :dont-want-to-share                    "No, i don't want to share"
+
    ;;drawer
    :switch-users                          "Switch users"
    :logout-title                          "Log out?"
@@ -37,6 +57,9 @@
 
    ;;home
    :home                                  "Home"
+   :no-recent-chats                       "There are no recent Chats or DApps here yet.\nUse the “Plus” button to see the list of Dapps or discover people to chat with"
+   :welcome-to-status                     "Welcome to Status"
+   :welcome-to-status-description         "Here you can chat with people in a secure private chat, browse and interact with DApps. Use the “Plus” icon above to explore Status"
 
    ;;chat
    :is-typing                             "is typing"
@@ -271,6 +294,7 @@
    :password                              "Password"
    :sign-in-to-status                     "Sign in to Status"
    :sign-in                               "Sign in"
+   :sign-in-to-another                    "Sign in to another account"
    :wrong-password                        "Wrong password"
    :enter-password                        "Enter password"
 
@@ -278,10 +302,13 @@
    :passphrase                            "Passphrase"
    :recover                               "Recover"
    :twelve-words-in-correct-order         "12 words in correct order"
+   :enter-12-words                        "Enter the 12 words of your seed phrase"
+
 
    ;;accounts
    :recover-access                        "Recover access"
    :create-new-account                    "Create new account"
+   :add-existing-account                  "Add existing account"
 
    ;;wallet-qr-code
    :done                                  "Done"
