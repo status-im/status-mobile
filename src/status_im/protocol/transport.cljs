@@ -2,7 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.protocol.web3.utils :as web3.utils]
-            [status-im.protocol.chat :as chat]))
+            [status-im.protocol.chat :as chat]
+            [status-im.protocol.core :as protocol]))
 
 (defn message-id [message]
   (web3.utils/sha3 (pr-str message)))
@@ -16,7 +17,7 @@
   (receive [this chat-id signature cofx]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
-  message/StatusMessage
+  StatusMessage
   (send [this chat-id cofx]
     (let [message-id (message-id this)]
       (protocol/contact-request!
@@ -35,7 +36,7 @@
   (receive [this chat-id signature {:keys [db] :as cofx}]))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
-  message/StatusMessage
+  StatusMessage
   (send [this chat-id cofx]
     (let [message-id (message-id this)]
       (protocol/contact-request!
@@ -54,7 +55,7 @@
   (receive [this chat-id signature cofx]))
 
 (defrecord ContactMessage [content content-type message-type to-clock-value timestamp]
-  message/StatusMessage
+  StatusMessage
   (send [this chat-id cofx]
     (chat/send! {:web3 web3
                  :message (-> (into {} this)
