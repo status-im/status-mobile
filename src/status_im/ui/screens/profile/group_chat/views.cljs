@@ -34,7 +34,9 @@
 
 (defn actions [admin? chat-id]
   (concat
-    (when admin?
+    ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
+    ;; due to this bug - https://github.com/status-im/status-react/issues/3463
+    #_(when admin?
       [{:label  (i18n/label :add-members)
         :icon   :icons/add
         :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
@@ -62,7 +64,9 @@
 (defn contact-actions [contact]
   [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])
     :label  (i18n/label :t/view-profile)}
-   {:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
+   ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
+   ;; due to this bug - https://github.com/status-im/status-react/issues/3463
+   #_{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
     :label  (i18n/label :t/remove-from-chat)}])
 
 (defn render-contact [contact admin?]
