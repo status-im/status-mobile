@@ -73,13 +73,15 @@
   :create-new-public-chat
   (fn [{:keys [db]} [_ topic]]
     (let [exists? (boolean (get-in db [:chats topic]))
-          chat    {:chat-id     topic
-                   :name        topic
-                   :color       components.styles/default-chat-color
-                   :group-chat  true
-                   :public?     true
-                   :is-active   true
-                   :timestamp   (random/timestamp)}]
+          chat    {:chat-id               topic
+                   :name                  topic
+                   :color                 components.styles/default-chat-color
+                   :group-chat            true
+                   :public?               true
+                   :is-active             true
+                   :timestamp             (random/timestamp)
+                   :last-to-clock-value   0
+                   :last-from-clock-value 0}]
       (merge
        (when-not exists?
          {:db (assoc-in db [:chats (:chat-id chat)] chat)
@@ -129,16 +131,18 @@
                     group-name
                     (group-name-from-contacts contacts selected-contacts username))
         {:keys [public private]} (protocol/new-keypair!)]
-    {:chat-id     (random/id)
-     :public-key  public
-     :private-key private
-     :name        chat-name
-     :color       components.styles/default-chat-color
-     :group-chat  true
-     :group-admin current-public-key
-     :is-active   true
-     :timestamp   (random/timestamp)
-     :contacts    selected-contacts'}))
+    {:chat-id               (random/id)
+     :public-key            public
+     :private-key           private
+     :name                  chat-name
+     :color                 components.styles/default-chat-color
+     :group-chat            true
+     :group-admin           current-public-key
+     :is-active             true
+     :timestamp             (random/timestamp)
+     :contacts              selected-contacts'
+     :last-to-clock-value   0
+     :last-from-clock-value 0}))
 
 (handlers/register-handler-fx
   :create-new-group-chat-and-open
