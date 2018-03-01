@@ -60,6 +60,7 @@
      [react/view {:style (assoc components.styles/flex :background-color :white)}
       [list/flat-list {:default-separator? true
                        :data               (concat [tokens/ethereum] (wallet/current-tokens visible-tokens network))
+                       :key-fn             (comp str :symbol)
                        :render-fn          #(render-token % balance type)}]]]))
 
 (defn send-assets []
@@ -129,6 +130,7 @@
      [components/toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      contacts
+                       :key-fn    :address
                        :render-fn render-contact}]]]))
 
 (defn contact-code []

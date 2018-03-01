@@ -13,6 +13,7 @@
   [react/view {:flex 1}
    [list/flat-list {:data                      contacts
                     :enableEmptySections       true
+                    :key-fn                    :address
                     :render-fn                 (fn [contact]
                                                  [contact-view {:contact        contact
                                                                 :extended?      extended?

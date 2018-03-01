@@ -37,6 +37,7 @@
      [react/view styles/accounts-container
       [react/view styles/accounts-list-container
        [list/flat-list {:data      (vals accounts)
+                        :key-fn    :address
                         :render-fn (fn [account] [account-view account])
                         :separator [react/view {:height 12}]}]]
       [react/view

@@ -100,6 +100,11 @@
   (fn [data]
     (reagent/as-element (f (.-item data) (.-index data) (.-separators data)))))
 
+(defn- wrap-key-fn [f]
+  (fn [data index]
+    {:post [(string? %)]}
+    (f data index)))
+
 (def default-separator [react/view styles/separator])
 
 (def default-header [react/view styles/list-header-footer-spacing])
@@ -109,13 +114,13 @@
 (def section-separator [react/view styles/section-separator])
 
 (defn- base-list-props
-  [{:keys [render-fn empty-component header separator default-separator?]}]
+  [{:keys [key-fn render-fn empty-component header separator default-separator?]}]
   (let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
-    (merge {:keyExtractor (fn [_ i] (str i))}
-           (when render-fn               {:renderItem (wrap-render-fn render-fn)})
-           (when separator               {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
-           (when empty-component         {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
-           (when header                  {:ListHeaderComponent (fn [] (reagent/as-element header))}))))
+    (merge (when key-fn          {:keyExtractor (wrap-key-fn key-fn)})
+           (when render-fn       {:renderItem (wrap-render-fn render-fn)})
+           (when separator       {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
+           (when empty-component {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
+           (when header          {:ListHeaderComponent (fn [] (reagent/as-element header))}))))
 
 ;; Workaround an issue in reagent that does not consider JS array as JS value
 ;; This forces clj <-> js serialization and breaks clj semantic
@@ -206,6 +211,7 @@
                   [react/view (merge styles/action-separator
                                      action-separator-style)])
      :data      actions
+     :key-fn    (fn [_ i] (str i))
      :render-fn #(render-action % styles)}]])
 
 (defn list-with-label [{:keys [style]} label list]

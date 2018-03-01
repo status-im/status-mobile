@@ -39,6 +39,7 @@
      [react/text {:style styles/list-title}
       (i18n/label :t/selected-dapps)]
      [list/flat-list {:data                      dapps
+                      :key-fn                    :dapp-url
                       :render-fn                 render-row
                       :default-separator?        true
                       :enableEmptySections       true

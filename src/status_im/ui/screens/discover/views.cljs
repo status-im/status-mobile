@@ -126,6 +126,7 @@
   [react/view styles/public-chats-container
    [components/title-no-action :t/public-chats]
    [list/flat-list {:data      public-chats-mock-data
+                    :key-fn    :topic
                     :render-fn render-public-chats-item}]])
 
 (defview discover [current-view?]

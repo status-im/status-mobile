@@ -82,8 +82,9 @@
              (i18n/label :t/no-recent-chats)]]
            :else
            [list/flat-list {:data      home-items
-                            :render-fn (fn [[home-item-id :as home-item]]
-                                         ^{:key home-item-id} [home-list-deletable home-item])}])
+                            :key-fn    first
+                            :render-fn (fn [home-item]
+                                         [home-list-deletable home-item])}])
      (when platform/android?
        [home-action-button])
      [connectivity/error-view]]))

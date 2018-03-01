@@ -51,6 +51,7 @@
      [toolbar/simple-toolbar (i18n/label :t/contacts)]
      [list/flat-list {:style                     st/contacts-list-modal
                       :data                      contacts
+                      :key-fn                    :address
                       :render-fn                 (render-row click-handler action params)
                       :header                    (when-not (:hide-actions? params)
                                                    [react/view

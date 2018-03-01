@@ -19,6 +19,7 @@
 (defn tags-menu [tags]
   [react/view styles/tag-title-container
    [list/flat-list {:data                              tags
+                    :key-fn                            (fn [_ i] (str i))
                     :render-fn                         render-tag
                     :horizontal                        true
                     :shows-horizontal-scroll-indicator false

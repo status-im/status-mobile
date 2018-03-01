@@ -65,6 +65,7 @@
       [render-header wnodes]
       [list/flat-list {:data (vals wnodes)
                        :separator? false
+                       :key-fn :id
                        :render-fn (render-row current-wnode)
                        :ListFooterComponent (reagent/as-element (render-footer))
                        :style styles/wnodes-list}]]]))

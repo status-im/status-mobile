@@ -43,6 +43,7 @@
      [react/text {:style open-dapp.styles/list-title}
       (i18n/label :t/contacts)]
      [list/flat-list {:data                      contacts
+                      :key-fn                    :address
                       :render-fn                 render-row
                       :default-separator?        true
                       :enableEmptySections       true

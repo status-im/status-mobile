@@ -98,8 +98,8 @@
        [react/text {:style style/empty-chat-text}
         (i18n/label :t/empty-chat-description)]]
       [list/flat-list {:data                      messages
-                       :render-fn                 (fn [{:keys [message-id] :as message}]
-                                                    ^{:key message-id}
+                       :key-fn                    #(or (:message-id %) (:value %))
+                       :render-fn                 (fn [message]
                                                     [message-row {:group-chat         group-chat
                                                                   :current-public-key current-public-key
                                                                   :row                message}])

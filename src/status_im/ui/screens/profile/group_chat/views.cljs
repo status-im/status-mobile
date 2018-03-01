@@ -84,6 +84,7 @@
     [react/view
      [list/flat-list {:data      contacts
                       :separator list/default-separator
+                      :key-fn    :address
                       :render-fn #(render-contact % admin?)}]]))
 
 (defn members-list [admin?]

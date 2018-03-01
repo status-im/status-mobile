@@ -56,6 +56,7 @@
        [list/list-with-label {:flex 1}
         (i18n/label :t/members-title)
         [list/flat-list {:data                      contacts
+                         :key-fn                    :address
                          :render-fn                 render-contact
                          :bounces                   false
                          :keyboardShouldPersistTaps :always

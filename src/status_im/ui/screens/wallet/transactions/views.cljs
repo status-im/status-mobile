@@ -121,6 +121,7 @@
      (when error-message?
        (re-frame/dispatch [:wallet/show-error]))
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
+                         :key-fn          :hash
                          :render-fn       render-transaction
                          :empty-component [react/text {:style styles/empty-text}
                                            (i18n/label :t/transactions-history-empty)]
@@ -131,6 +132,7 @@
   (letsubs [transactions [:wallet.transactions/unsigned-transactions-list]]
     [react/view {:style components.styles/flex}
      [list/flat-list {:data            transactions
+                      :key-fn          (fn [_ i] (str i))
                       :render-fn       render-transaction
                       :empty-component [react/text {:style               styles/empty-text
                                                     :accessibility-label :no-unsigned-transactions-text}
@@ -171,7 +173,8 @@
                             :accessibility-label :select-all-button}
        (i18n/label :t/transactions-filter-select-all)]]
      [react/view {:style (merge {:background-color :white} components.styles/flex)}
-      [list/section-list {:sections (wrap-filter-data filter-data)}]]]))
+      [list/section-list {:sections (wrap-filter-data filter-data)
+                          :key-fn   :id}]]]))
 
 (defn history-tab [active?]
   [react/text {:force-uppercase?    true

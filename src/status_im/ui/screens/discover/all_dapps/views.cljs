@@ -38,6 +38,7 @@
     true]
    (if (seq dapps)
      [list/flat-list {:data                              (vals dapps)
+                      :key-fn                            :dapp-url
                       :render-fn                         render-dapp
                       :horizontal                        true
                       :default-separator?                false
@@ -54,7 +55,9 @@
     (if (zero? extras)
       dapps
       (concat dapps
-              (repeat (- columns extras) {:name ""})))))
+              (map (fn [i] {:name ""
+                            :dapp-url (str "blank-" i)})
+                   (range (- columns extras)))))))
 
 (defview main []
   (letsubs [all-dapps    [:discover/all-dapps]]
@@ -65,6 +68,7 @@
           toolbar/default-nav-back
           [toolbar/content-title (i18n/label :t/dapps)]]
          [list/flat-list {:data                    (add-blank-dapps-for-padding columns (vals all-dapps))
+                          :key-fn                  :dapp-url
                           :render-fn               render-dapp
                           :num-columns             columns
                           :content-container-style styles/all-dapps-flat-list}]]))))

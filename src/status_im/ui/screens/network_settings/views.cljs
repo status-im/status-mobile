@@ -66,6 +66,7 @@
      [react/view {:flex 1}
       [list/flat-list {:style     styles/networks-list
                        :data      (vals networks)
+                       :key-fn    :id
                        :render-fn (render-network network)
                        :header    [react/view
                                    [actions-view

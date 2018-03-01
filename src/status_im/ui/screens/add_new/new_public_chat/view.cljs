@@ -73,5 +73,6 @@
                    :font  :medium}
        (i18n/label :t/selected)]]
      [list/flat-list {:data               default-public-chats
+                      :key-fn             identity
                       :render-fn          render-topic
                       :default-separator? true}]]))

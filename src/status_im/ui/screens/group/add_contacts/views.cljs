@@ -37,6 +37,7 @@
   [react/view {:flex 1}
    [list/flat-list {:style                     contacts.styles/contacts-list
                     :data                      contacts
+                    :key-fn                    :address
                     :render-fn                 render-function
                     :keyboardShouldPersistTaps :always}]])
 

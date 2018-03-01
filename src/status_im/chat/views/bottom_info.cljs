@@ -76,5 +76,6 @@
             [container (* styles/item-height (count statuses))
              [list/flat-list {:contentContainerStyle styles/bottom-info-list-container
                               :data                statuses
+                              :key-fn              :address
                               :render-fn           (render-status @contacts)
                               :enableEmptySections true}]]]))})))

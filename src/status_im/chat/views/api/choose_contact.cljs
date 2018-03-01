@@ -27,6 +27,7 @@
                           :padding-bottom 12}}
       title]
      [list/flat-list {:data                      contacts
+                      :key-fn                    :address
                       :render-fn                 (render-contact arg-index bot-db-key)
                       :enableEmptySections       true
                       :keyboardShouldPersistTaps :always

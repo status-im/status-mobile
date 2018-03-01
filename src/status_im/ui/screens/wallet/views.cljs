@@ -75,6 +75,7 @@
      [list/flat-list
       {:default-separator? true
        :data               assets
+       :key-fn             (comp str :symbol)
        :render-fn          render-asset
        :on-refresh         #(re-frame/dispatch [:update-wallet (map :symbol tokens)])
        :refreshing         refreshing?}]]))

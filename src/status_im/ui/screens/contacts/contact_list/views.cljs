@@ -32,6 +32,7 @@
   (letsubs [contacts [:all-added-group-contacts (:group-id group)]]
     [list/flat-list {:style                     styles/contacts-list
                      :data                      contacts
+                     :key-fn                    :address
                      :render-fn                 (render-row group edit?)
                      :enableEmptySections       true
                      :keyboardShouldPersistTaps :always
