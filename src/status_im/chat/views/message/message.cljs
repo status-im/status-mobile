@@ -127,7 +127,7 @@
                   (fn [text-seq]
                     (map (fn [text] {:text text :url? false}) text-seq))))
 
-(defn- autolink [string on-press]
+(defn- autolink [string event-on-press]
   (->> (parse-url string)
        (map-indexed (fn [idx {:keys [text url?]}]
                       (if url?
@@ -135,7 +135,7 @@
                           [react/text
                            {:key      idx
                             :style    {:color colors/blue}
-                            :on-press #(on-press url)}
+                            :on-press #(re-frame/dispatch [event-on-press url])}
                            (utils/truncate-str text 32 true)])
                         text)))
        vec))
@@ -150,7 +150,7 @@
        replacements))
 
 ;; todo rewrite this, naive implementation
-(defn- parse-text [string url-on-press]
+(defn- parse-text [string event-on-press]
   (parse-str-regx string
                   regx-styled
                   (fn [text-seq]
@@ -165,13 +165,15 @@
                     (map-indexed (fn [idx string]
                                    (apply react/text
                                           {:key (str idx "_" string)}
-                                          (autolink string url-on-press)))
+                                          (autolink string event-on-press)))
                                  text-seq))))
+
+(def cached-parse-text (memoize parse-text))
 
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
-   (let [parsed-text (parse-text content #(re-frame/dispatch [:browse-link-from-message %]))]
+   (let [parsed-text (cached-parse-text content :browse-link-from-message)]
      [react/text {:style (style/text-message message)} parsed-text])])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
