@@ -1,7 +1,6 @@
 (ns status-im.chat.views.message.message
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [clojure.walk :as walk]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as animation]
@@ -21,8 +20,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]
-            [status-im.chat.events.console :as console]
-            [taoensso.timbre :as log]))
+            [status-im.chat.events.console :as console]))
 
 (def window-width (:width (react/get-dimensions "window")))
 
@@ -69,7 +67,7 @@
   [{:keys [content params] :as message}]
   (letsubs [command [:get-command (:content-command-ref content)]]
     (let [preview (:preview content)
-          {:keys [type color] icon-path :icon} command]
+          {:keys [color] icon-path :icon} command]
       [react/view style/content-command-view
        (when color
          [react/view style/command-container
@@ -192,7 +190,7 @@
   [wrapper message [text-message message]])
 
 (defmethod message-content constants/content-type-status
-  [_ message]
+  [_ _]
   [message-content-status])
 
 (defmethod message-content constants/content-type-command
@@ -242,7 +240,7 @@
              (str "+ " (- delivery-statuses-count 3))])]]))))
 
 (defn message-delivery-status
-  [{:keys [message-id chat-id current-public-key user-statuses content]}]
+  [{:keys [chat-id current-public-key user-statuses content]}]
   (let [outgoing-status (or (get user-statuses current-public-key) :sending)
         delivery-status (get user-statuses chat-id)
         status          (cond (and (= constants/console-chat-id chat-id)
@@ -276,7 +274,9 @@
      (when-not same-author?
        (if outgoing
          [my-photo from]
-         [member-photo from]))]
+         [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
+          [react/view
+           [member-photo from]]]))]
     [react/view (style/group-message-view message)
      content
      (when last-outgoing?
@@ -292,9 +292,9 @@
         (animation/start
          (animation/timing val {:toValue  to-value
                                 :duration 250})
-          (fn [arg]
-            (when (.-finished arg)
-              (callback))))))))
+         (fn [arg]
+           (when (.-finished arg)
+             (callback))))))))
 
 (defn message-container [message & children]
   (if (:appearing? message)
