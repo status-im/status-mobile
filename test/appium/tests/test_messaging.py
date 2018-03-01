@@ -4,7 +4,7 @@ import pytest
 import emoji
 
 from tests.base_test_case import MultipleDeviceTestCase
-from views.console_view import ConsoleView
+from views.sign_in_view import SignInView
 
 unicode_text_message = '%s%s%s%s %s%s%s%s%s%s%s' % (chr(355), chr(275), chr(353), chr(539), chr(1084), chr(949),
                                                     chr(349), chr(353), chr(513), chr(485), chr(283))
@@ -23,10 +23,9 @@ class TestMessages(MultipleDeviceTestCase):
     @pytest.mark.pr
     def test_one_to_one_chat_messages_and_delete_chat(self):
         self.create_drivers(2)
-        device_1, device_2 = ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1])
-        for console in device_1, device_2:
-            console.create_user()
-            console.back_button.click()
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        for sign_in in device_1, device_2:
+            sign_in.create_user()
         device_1_home, device_2_home = device_1.get_home_view(), device_2.get_home_view()
         device_2_public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()
@@ -78,6 +77,7 @@ class TestMessages(MultipleDeviceTestCase):
 
         device_1_chat.chat_options.click()
         device_1_chat.delete_chat_button.click()
+        device_1_chat.delete_button.click()
         if not device_1_home.plus_button.is_element_present() or \
                 device_1_chat.element_by_text_part(device_2_username[:25]).is_element_present():
             self.errors.append('Chat was not deleted')
@@ -86,11 +86,10 @@ class TestMessages(MultipleDeviceTestCase):
     @pytest.mark.pr
     def test_group_chat_messages(self):
         self.create_drivers(3)
-        device_1, device_2, device_3 = ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1]), \
-                                       ConsoleView(self.drivers[2])
-        for console in device_1, device_2, device_3:
-            console.create_user()
-            console.back_button.click()
+        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), \
+                                       SignInView(self.drivers[2])
+        for sign_in in device_1, device_2, device_3:
+            sign_in.create_user()
         home_1, home_2, home_3 = device_1.get_home_view(), device_2.get_home_view(), device_3.get_home_view()
         public_key_2, public_key_3 = home_2.get_public_key(), home_3.get_public_key()
         profile_1 = home_1.profile_button.click()
@@ -140,13 +139,12 @@ class TestMessages(MultipleDeviceTestCase):
     @pytest.mark.pr
     def test_public_chat(self):
         self.create_drivers(2)
-        device_1, device_2 = ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1])
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         users = []
         chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
-        for console in device_1, device_2:
-            console.create_user()
-            console.back_button.click()
-            home = console.get_home_view()
+        for sign_in in device_1, device_2:
+            sign_in.create_user()
+            home = sign_in.get_home_view()
             profile = home.profile_button.click()
             users.append(profile.username_text.text)
             profile.home_button.click()

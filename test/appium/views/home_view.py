@@ -89,7 +89,7 @@ class HomeView(BaseView):
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
-        start_new_chat.chat_name_edit_box.send_keys(chat_name)
+        start_new_chat.chat_name_editbox.send_keys(chat_name)
         start_new_chat.confirm_button.click()
 
     def get_public_key(self):

@@ -60,7 +60,7 @@ class RequestCommand(BaseButton):
 class ChatOptions(BaseButton):
     def __init__(self, driver):
         super(ChatOptions, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chat-menu')
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[2]')
 
 
 class MembersButton(BaseButton):

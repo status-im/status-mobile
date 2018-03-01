@@ -1,9 +1,10 @@
 import pytest
 import time
-from views.console_view import ConsoleView
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests import transaction_users, api_requests, get_current_time, transaction_users_wallet
 from selenium.common.exceptions import TimeoutException
+
+from views.sign_in_view import SignInView
 
 
 @pytest.mark.all
@@ -12,10 +13,9 @@ class TestTransaction(SingleDeviceTestCase):
     @pytest.mark.pr
     def test_transaction_send_command_one_to_one_chat(self):
         recipient = transaction_users['B_USER']
-        console_view = ConsoleView(self.driver)
-        console_view.create_user()
-        console_view.back_button.click()
-        home_view = console_view.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
         transaction_amount = home_view.get_unique_amount()
         sender_public_key = home_view.get_public_key()
         sender_address = home_view.public_key_to_address(sender_public_key)
@@ -44,9 +44,9 @@ class TestTransaction(SingleDeviceTestCase):
     def test_transaction_send_command_wrong_password(self):
         sender = transaction_users['A_USER']
         recipient = transaction_users['B_USER']
-        console_view = ConsoleView(self.driver)
-        console_view.recover_access(sender['passphrase'], sender['password'], sender['username'])
-        home_view = console_view.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
         transaction_amount = '0.001'
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_with_user(recipient['username']).click()
@@ -63,10 +63,9 @@ class TestTransaction(SingleDeviceTestCase):
     @pytest.mark.pr
     def test_transaction_send_command_group_chat(self):
         recipient = transaction_users['A_USER']
-        console_view = ConsoleView(self.driver)
-        console_view.create_user()
-        console_view.back_button.click()
-        home_view = console_view.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
         transaction_amount = '0.001'
         sender_public_key = home_view.get_public_key()
         sender_address = home_view.public_key_to_address(sender_public_key)
@@ -89,12 +88,10 @@ class TestTransaction(SingleDeviceTestCase):
 
     @pytest.mark.pr
     def test_send_transaction_from_daap(self):
-        console = ConsoleView(self.driver)
         sender = transaction_users['B_USER']
-        console.recover_access(sender['passphrase'],
-                               sender['password'],
-                               sender['username'])
-        home_view = console.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
         address = transaction_users['B_USER']['address']
         initial_balance = api_requests.get_balance(address)
         start_new_chat_view = home_view.plus_button.click()
@@ -117,11 +114,9 @@ class TestTransaction(SingleDeviceTestCase):
     def test_send_eth_from_wallet_sign_later(self):
         sender = transaction_users_wallet['B_USER']
         recipient = transaction_users_wallet['A_USER']
-        console_view = ConsoleView(self.driver)
-        console_view.recover_access(sender['passphrase'],
-                                    sender['password'],
-                                    sender['username'])
-        home_view = console_view.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
         initial_balance_recipient = api_requests.get_balance(recipient['address'])
         home_view.add_contact(recipient['public_key'])
         home_view.get_back_to_home_view()
@@ -155,11 +150,9 @@ class TestTransaction(SingleDeviceTestCase):
     def test_send_stt_from_wallet_via_enter_contact_code(self):
         sender = transaction_users_wallet['A_USER']
         recipient = transaction_users_wallet['B_USER']
-        console_view = ConsoleView(self.driver)
-        console_view.recover_access(sender['passphrase'],
-                                    sender['password'],
-                                    sender['username'])
-        home_view = console_view.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
         home_view.add_contact(recipient['public_key'])
         home_view.get_back_to_home_view()
         wallet_view = home_view.wallet_button.click()
@@ -185,11 +178,9 @@ class TestTransaction(SingleDeviceTestCase):
     @pytest.mark.pr
     def test_send_eth_from_wallet_sign_now(self):
         sender = transaction_users_wallet['A_USER']
-        console_view = ConsoleView(self.driver)
-        console_view.recover_access(sender['passphrase'],
-                                    sender['password'],
-                                    sender['username'])
-        home_view = console_view.get_home_view()
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         send_transaction = wallet_view.send_button.click()
         send_transaction.amount_edit_box.click()
@@ -214,12 +205,10 @@ class TestTransactions(MultipleDeviceTestCase):
         recipient = transaction_users['A_USER']
         sender = transaction_users['B_USER']
         self.create_drivers(2)
-        device_1, device_2 = \
-            ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1])
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
             user_details[1].recover_access(passphrase=user_details[0]['passphrase'],
-                                           password=user_details[0]['password'],
-                                           username=user_details[0]['username'])
+                                           password=user_details[0]['password'])
         device_2_home = device_2.get_home_view()
         device_1_home = device_1.get_home_view()
         device_1_home.add_contact(sender['public_key'])
@@ -244,12 +233,10 @@ class TestTransactions(MultipleDeviceTestCase):
         recipient = transaction_users['B_USER']
         sender = transaction_users['A_USER']
         self.create_drivers(2)
-        device_1, device_2 = \
-            ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1])
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
             user_details[1].recover_access(passphrase=user_details[0]['passphrase'],
-                                           password=user_details[0]['password'],
-                                           username=user_details[0]['username'])
+                                           password=user_details[0]['password'])
         device_2_home = device_2.get_home_view()
         device_1_home = device_1.get_home_view()
         device_1_home.add_contact(sender['public_key'])
@@ -279,12 +266,10 @@ class TestTransactions(MultipleDeviceTestCase):
         recipient = transaction_users_wallet['B_USER']
         sender = transaction_users_wallet['A_USER']
         self.create_drivers(2)
-        device_1, device_2 = \
-            ConsoleView(self.drivers[0]), ConsoleView(self.drivers[1])
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
             user_details[1].recover_access(passphrase=user_details[0]['passphrase'],
-                                           password=user_details[0]['password'],
-                                           username=user_details[0]['username'])
+                                           password=user_details[0]['password'])
         device_2_home = device_2.get_home_view()
         device_1_home = device_1.get_home_view()
         device_1_home.add_contact(sender['public_key'])

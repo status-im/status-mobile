@@ -67,7 +67,7 @@ class ChooseRecipientButton(BaseButton):
 class EnterContactCodeButton(BaseButton):
     def __init__(self, driver):
         super(EnterContactCodeButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Enter contact code']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
 
 
 class EnterRecipientAddressInput(BaseEditBox):

@@ -1,18 +1,16 @@
 import pytest
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from tests.base_test_case import MultipleDeviceTestCase
-from views.console_view import ConsoleView
+from views.sign_in_view import SignInView
 
 
 class TestMultipleDevices(MultipleDeviceTestCase):
 
     def test_group_chat_send_receive_messages_and_remove_user(self):
         self.create_drivers(2)
-        device_1, device_2 = \
-            ConsoleView(self.drivers[0]),  ConsoleView(self.drivers[1])
-        for console in device_1, device_2:
-            console.create_user()
-            console.back_button.click()
+        device_1, device_2 = SignInView(self.drivers[0]),  SignInView(self.drivers[1])
+        for sign_in in device_1, device_2:
+            sign_in.create_user()
         device_1_home = device_1.get_home_view()
         device_2_home = device_2.get_home_view()
         device_1_public_key = device_1_home.get_public_key()

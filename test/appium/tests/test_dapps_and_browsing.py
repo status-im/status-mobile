@@ -1,6 +1,6 @@
 import pytest
-from views.console_view import ConsoleView
 from tests.base_test_case import SingleDeviceTestCase
+from views.sign_in_view import SignInView
 
 
 @pytest.mark.all
@@ -8,10 +8,9 @@ class TestDappsAnsBrowsing(SingleDeviceTestCase):
 
     @pytest.mark.pr
     def test_browse_link_entering_url_in_dapp_view(self):
-        console = ConsoleView(self.driver)
-        console.create_user()
-        console.back_button.click()
-        home_view = console.get_home_view()
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        home_view = sign_in.get_home_view()
         start_new_chat = home_view.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.enter_url_editbox.send_keys('status.im')
