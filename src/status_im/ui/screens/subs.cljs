@@ -51,3 +51,8 @@
 (reg-sub :can-navigate-back?
   (fn [db]
     (> (count (:navigation-stack db)) 1)))
+
+(reg-sub :delete-swipe-position
+  (fn [db [_ item-id]]
+    (let [item-animation (get-in db [:chat-animations item-id])]
+      (if (some? item-animation) (:delete-swiped item-animation) nil))))

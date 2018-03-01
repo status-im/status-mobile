@@ -10,6 +10,9 @@
             [status-im.ui.components.sync-state.offline :refer [offline-view]]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.home.styles :as styles]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.screens.home.animations.responder :as responder]
             [status-im.utils.platform :as platform]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
@@ -31,14 +34,24 @@
                          :accessibility-label :plus-button
                          :on-press            #(re-frame/dispatch [:navigate-to :new])}])
 
-(defn- home-list-item [[home-item-id home-item]]
-  (if (:chat-id home-item)
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat home-item-id])}
-     [react/view
-      [inner-item/home-list-chat-item-inner-view home-item]]]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser home-item])}
-     [react/view
-      [inner-item/home-list-browser-item-inner-view home-item]]]))
+(views/defview home-list-deletable [[home-item-id home-item]]
+  (views/letsubs [swiped?      [:delete-swipe-position home-item-id]]
+    (let [delete-action       (if (:chat-id home-item) :remove-chat :remove-browser)
+          inner-item-view          (if (:chat-id home-item)
+                                inner-item/home-list-chat-item-inner-view
+                                inner-item/home-list-browser-item-inner-view)
+          offset-x            (animation/create-value (if swiped? styles/delete-button-width 0))
+          swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width home-item-id swiped?)
+          swipe-pan-handler   (responder/pan-handlers swipe-pan-responder)]
+      [react/view swipe-pan-handler
+       [react/animated-view {:style {:flex 1 :right offset-x}}
+        [inner-item-view home-item]
+        [react/touchable-highlight {:style styles/delete-icon-highlight
+                                    :on-press #(do
+                                                 (re-frame/dispatch [:set-swipe-position home-item-id false])
+                                                 (re-frame/dispatch [delete-action home-item-id]))}
+         [react/view {:style styles/delete-icon-container}
+          [vector-icons/icon :icons/delete {:color colors/red}]]]]])))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
 (views/defview welcome [view-id]
@@ -70,7 +83,7 @@
            :else
            [list/flat-list {:data      home-items
                             :render-fn (fn [[home-item-id :as home-item]]
-                                         ^{:key home-item-id} [home-list-item home-item])}])
+                                         ^{:key home-item-id} [home-list-deletable home-item])}])
      (when platform/android?
        [home-action-button])
      [offline-view]]))

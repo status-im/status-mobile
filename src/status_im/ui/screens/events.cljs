@@ -403,3 +403,9 @@
   :request-permissions
   (fn [_ [_ permissions then else]]
     {::request-permissions-fx [permissions then else]}))
+
+(handlers/register-handler-db
+  :set-swipe-position
+  [re-frame/trim-v]
+  (fn [db [item-id value]]
+    (assoc-in db [:chat-animations item-id :delete-swiped] value)))

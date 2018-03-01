@@ -14,6 +14,11 @@
   [browser update?]
   (realm/save @realm/account-realm :browser browser update?))
 
+(defn delete
+  [browser-id]
+  (when-let [browser (realm/get-one-by-field @realm/account-realm :browser :browser-id browser-id)]
+    (realm/delete @realm/account-realm browser)))
+
 (defn exists?
   [browser-id]
   (realm/exists? @realm/account-realm :browser {:browser-id browser-id}))
