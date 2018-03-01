@@ -8,14 +8,14 @@
             [status-im.ui.components.react :as react]
             [taoensso.timbre :as log]))
 
-(defview parameter-box-container []
+(defview ^:no-theme parameter-box-container []
   [{:keys [markup]} [:chat-parameter-box]
    bot-id-bot-db [:current-bot-db]]
   (when markup
     [react/view style/root
      (command-utils/generate-hiccup markup (first bot-id-bot-db) (second bot-id-bot-db))]))
 
-(defview parameter-box-view []
+(defview ^:no-theme parameter-box-view []
   (letsubs [show-parameter-box? [:show-parameter-box?]
             parameter-box [:chat-parameter-box]]
     (let [{:keys [title]} parameter-box]

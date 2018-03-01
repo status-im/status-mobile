@@ -117,7 +117,7 @@
       (i18n/label :t/logout)]]]])
 
 
-(defview my-profile []
+(defview ^:no-theme my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]]

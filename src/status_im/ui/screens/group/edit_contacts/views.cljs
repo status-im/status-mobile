@@ -34,14 +34,14 @@
       :accessibility-label :remove-button
       :label               (i18n/label :t/remove-from-group)}]))
 
-(defview contacts-list-view [group-id]
+(defview ^:no-theme contacts-list-view [group-id]
   (letsubs [contacts [:all-added-group-contacts group-id]]
     [contacts-list
      contacts
      true
      (contact-extended-options group-id)]))
 
-(defview ^:theme edit-contact-group-contact-list []
+(defview edit-contact-group-contact-list []
   (letsubs [group [:get-contact-group]]
     [react/view common.styles/flex
      [toolbar/simple-toolbar (:name group)]

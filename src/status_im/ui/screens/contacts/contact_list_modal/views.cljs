@@ -41,7 +41,7 @@
                                 (click-handler row action params))}]))
 
 
-(defview contact-list-modal []
+(defview ^:no-theme contact-list-modal []
   (letsubs [contacts [:all-added-people-contacts]
             click-handler [:get :contacts/click-handler]
             action [:get :contacts/click-action]

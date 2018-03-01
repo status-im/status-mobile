@@ -30,7 +30,7 @@
                          [:navigate-back]
                          [:wallet/sign-transaction true]))))
 
-(defview sign-panel []
+(defview ^:no-theme sign-panel []
   (letsubs [account [:get-current-account]
             wrong-password? [:wallet.send/wrong-password?]
             signing-phrase (:signing-phrase @account)
@@ -54,7 +54,7 @@
        [tooltip/tooltip (i18n/label :t/wrong-password)])]))
 
 ;; "Cancel" and "Sign Transaction >" buttons, signing with password
-(defview signing-buttons [cancel-handler sign-handler in-progress?]
+(defview ^:no-theme signing-buttons [cancel-handler sign-handler in-progress?]
   (letsubs [sign-enabled? [:wallet.send/sign-password-enabled?]]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons

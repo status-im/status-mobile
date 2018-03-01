@@ -16,7 +16,7 @@
                                     :friction 10
                                     :tension  60}))))
 
-(defview expandable-view [{:keys [key custom-header]} & elements]
+(defview ^:no-theme expandable-view [{:keys [key custom-header]} & elements]
   (letsubs [anim-value         (animation/create-value 0)
             input-height       [:get-current-chat-ui-prop :input-height]
             chat-input-margin  [:chat-input-margin]

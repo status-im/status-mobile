@@ -18,7 +18,7 @@
                               :on-press      #(re-frame/dispatch [:navigate-to :dapp-description row])
                               :show-forward? true}])
 
-(views/defview ^:theme ^:avoid-keyboard? open-dapp []
+(views/defview ^:avoid-keyboard? open-dapp []
   (views/letsubs [dapps [:all-dapp-with-url-contacts]
                   url-text (atom nil)]
     [react/view common.styles/flex
@@ -41,7 +41,7 @@
                       :enableEmptySections       true
                       :keyboardShouldPersistTaps :always}]]))
 
-(views/defview ^:theme ^:avoid-keyboard? dapp-description []
+(views/defview ^:avoid-keyboard? dapp-description []
   (views/letsubs [{:keys [name dapp-url] :as dapp} [:get-screen-params]]
     [react/view common.styles/flex
      [toolbar.view/simple-toolbar]

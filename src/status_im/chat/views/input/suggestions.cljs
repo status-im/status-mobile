@@ -17,7 +17,7 @@
                  :number-of-lines 2}
      description]]])
 
-(defview suggestions-view []
+(defview ^:no-theme suggestions-view []
   (letsubs [commands [:get-available-commands]]
     [expandable/expandable-view {:key             :suggestions
                                  :draggable?      false

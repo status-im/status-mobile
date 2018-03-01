@@ -19,7 +19,7 @@
     [react/text {:font :medium
                  :style styles/dapp-details-section-content-text} content]]])
 
-(defview dapp-details []
+(defview ^:no-theme dapp-details []
   (letsubs [{:keys [photo-path name dapp-url] :as dapp} [:get :discover-current-dapp]]
     [react/view styles/dapp-details-container
      [toolbar/toolbar {}

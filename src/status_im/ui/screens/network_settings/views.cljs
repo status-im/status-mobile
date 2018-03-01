@@ -55,7 +55,7 @@
            [react/text {:style styles/network-item-connected-text}
             (i18n/label :t/connected)])]]])))
 
-(views/defview ^:theme network-settings []
+(views/defview network-settings []
   (views/letsubs [{:keys [network networks]} [:get-current-account]]
     [react/view common.styles/flex
      [toolbar/simple-toolbar

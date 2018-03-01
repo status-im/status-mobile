@@ -56,7 +56,7 @@
       (concat dapps
               (repeat (- columns extras) {:name ""})))))
 
-(defview main []
+(defview ^:no-theme main []
   (letsubs [all-dapps    [:discover/all-dapps]]
     (let [columns 3]
       (when (seq all-dapps)

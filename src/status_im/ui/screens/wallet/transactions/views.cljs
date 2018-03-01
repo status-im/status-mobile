@@ -97,7 +97,7 @@
 (defn update-transactions [m filter-data]
   (update m :data (fn [v] (filter #(filtered-transaction? % filter-data) v))))
 
-(defview history-list []
+(defview ^:no-theme history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             transactions-loading?     [:wallet.transactions/transactions-loading?]
             filter-data               [:wallet.transactions/filters]]
@@ -109,7 +109,7 @@
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
                          :refreshing      (boolean transactions-loading?)}]]))
 
-(defview unsigned-list []
+(defview ^:no-theme unsigned-list []
   (letsubs [transactions [:wallet.transactions/unsigned-transactions-list]]
     [react/view {:style components.styles/flex}
      [list/flat-list {:data            transactions
@@ -153,7 +153,7 @@
                :style      (styles/tab-title active?)}
    (i18n/label :t/transactions-history)])
 
-(defview unsigned-tab [active?]
+(defview ^:no-theme unsigned-tab [active?]
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
     [react/view {:flex-direction :row}
      [react/text {:style      (styles/tab-title active?)
@@ -254,7 +254,7 @@
   [(actions/opts [{:label (i18n/label :t/copy-transaction-hash) :action #(react/copy-to-clipboard hash)}
                   {:label (i18n/label :t/open-on-etherscan) :action #(.openURL react/linking url)}])])
 
-(defview ^:theme transaction-details []
+(defview transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations                           [:wallet.transactions.details/confirmations]
             confirmations-progress                  [:wallet.transactions.details/confirmations-progress]]

@@ -40,7 +40,7 @@
          [react/view styles/more-btn
           [vector-icons/icon :icons/options {:accessibility-label :options}]]]])]])
 
-(views/defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
+(views/defview ^:no-theme toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key whisper-identity]]
     [react/view styles/contact-container
      [contact-inner-view {:contact contact}]

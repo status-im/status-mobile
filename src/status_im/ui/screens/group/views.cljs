@@ -21,7 +21,7 @@
         (if edit? :t/edit-group :t/new-group)
         (if edit? :t/chat-settings :t/group-chat)))]])
 
-(views/defview group-name-view []
+(views/defview ^:no-theme group-name-view []
   (views/letsubs [new-group-name [:get :new-chat-name]]
     [react/view add-new.styles/input-container
      [react/text-input
@@ -47,7 +47,7 @@
          [toolbar/text-action {:handler handler}
           (i18n/label :t/create)])))])
 
-(views/defview ^:theme ^:avoid-keyboard? new-group []
+(views/defview ^:avoid-keyboard? new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:get :new-chat-name]]
     (let [save-btn-enabled? (and (spec/valid? ::v/name group-name) (pos? (count contacts)))]

@@ -26,7 +26,7 @@
 
 (def window-width (:width (react/get-dimensions "window")))
 
-(defview message-author-name [{:keys [outgoing from username] :as message}]
+(defview ^:no-theme message-author-name [{:keys [outgoing from username] :as message}]
   (letsubs [current-account [:get-current-account]
             incoming-name   [:contact-name-by-identity from]]
     (when-let [name (if outgoing
@@ -34,7 +34,7 @@
                       (or incoming-name username (gfycat/generate-gfy from)))]
       [react/text {:style style/author} name])))
 
-(defview message-content-status []
+(defview ^:no-theme message-content-status []
   (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
             members                                          [:current-chat-contacts]]
     (let [{:keys [status]} (if group-id
@@ -65,7 +65,7 @@
                  :font  :default}
      "03:39"]]])
 
-(defview message-content-command
+(defview ^:no-theme message-content-command
   [{:keys [content params] :as message}]
   (letsubs [command [:get-command (:content-command-ref content)]]
     (let [preview (:preview content)
@@ -213,7 +213,7 @@
                 :font  :default}
     (i18n/message-status-label status)]])
 
-(defview group-message-delivery-status [{:keys [message-id group-id current-public-key user-statuses] :as msg}]
+(defview ^:no-theme group-message-delivery-status [{:keys [message-id group-id current-public-key user-statuses] :as msg}]
   (letsubs [{participants :contacts} [:get-current-chat]
             contacts                 [:get-contacts]]
     (let [outgoing-status         (or (get user-statuses current-public-key) :sending)
@@ -260,11 +260,11 @@
                                  photo-path)}
                  :style  style/photo}]])
 
-(defview member-photo [from]
+(defview ^:no-theme member-photo [from]
   (letsubs [photo-path [:get-photo-path from]]
     (photo from photo-path)))
 
-(defview my-photo [from]
+(defview ^:no-theme my-photo [from]
   (letsubs [{:keys [photo-path]} [:get-current-account]]
     (photo from photo-path)))
 

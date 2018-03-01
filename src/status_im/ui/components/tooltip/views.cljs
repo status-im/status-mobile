@@ -6,7 +6,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.tooltip.styles :as styles]))
 
-(views/defview tooltip [label & [{:keys [bottom-value color font-size] :or {bottom-value -30 color :white font-size 15}}]]
+(views/defview ^:no-theme tooltip [label & [{:keys [bottom-value color font-size] :or {bottom-value -30 color :white font-size 15}}]]
   (views/letsubs [bottom-anim-value (animation/create-value bottom-value)
                   opacity-value (animation/create-value 0)]
     {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value)}

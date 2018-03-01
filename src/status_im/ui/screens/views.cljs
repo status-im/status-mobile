@@ -119,7 +119,7 @@
     :parent    :my-profile
     :component profile-photo-capture}])
 
-(defview main []
+(defview ^:no-theme main []
   (letsubs [signed-up? [:signed-up?]
             view-id    [:get :view-id]
             modal-view [:get :modal]]

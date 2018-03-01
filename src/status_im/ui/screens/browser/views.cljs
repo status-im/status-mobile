@@ -14,7 +14,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]))
 
-(views/defview toolbar-content-dapp [contact-identity]
+(views/defview ^:no-theme toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:contact-by-identity contact-identity]]
     [react/view styles/toolbar-content-dapp
      [chat-icon.screen/dapp-icon-browser contact 36]
@@ -58,7 +58,7 @@
       (re-frame/dispatch [:update-browser (assoc browser :url url :name title)]))
     (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
 
-(views/defview ^:theme ^:avoid-keyboard? browser []
+(views/defview ^:avoid-keyboard? browser []
   (views/letsubs [webview (atom nil)
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]

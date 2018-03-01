@@ -70,7 +70,7 @@
        :on-refresh         #(re-frame/dispatch [:update-wallet (map :symbol tokens)])
        :refreshing         (boolean (or prices-loading? balance-loading?))}]]))
 
-(defview wallet []
+(defview ^:no-theme wallet []
   (letsubs [network          [:network]
             balance          [:balance]
             visible-tokens   [:wallet.settings/visible-tokens]

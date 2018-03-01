@@ -22,7 +22,7 @@
                      (log/debug type error))]
     (image-processing/img->base64 path on-success on-error)))
 
-(views/defview ^:theme profile-photo-capture []
+(views/defview profile-photo-capture []
   (let [camera-ref (reagent/atom nil)]
     [react/view common.styles/flex
      [toolbar/toolbar {}

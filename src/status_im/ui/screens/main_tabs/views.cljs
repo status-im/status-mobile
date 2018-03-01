@@ -78,13 +78,13 @@
       :current-view view-id}]]
    [tabs view-id]])
 
-(views/defview ^:theme main-tabs-theme-default [view-id]
+(views/defview main-tabs-theme-default [view-id]
   [main-tabs-content view-id])
 
 (views/defview ^{:theme :wallet-home} main-tabs-theme-wallet [view-id]
   [main-tabs-content view-id])
 
-(views/defview main-tabs []
+(views/defview ^:no-theme main-tabs []
   (views/letsubs [view-id [:get :view-id]]
     (let [theme-wrapper (if (= view-id :wallet)
                           main-tabs-theme-wallet

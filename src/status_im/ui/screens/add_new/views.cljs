@@ -44,7 +44,7 @@
      :icon-opts {:color colors/blue}
      :on-press  #(list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})})}]])
 
-(views/defview ^:theme add-new []
+(views/defview add-new []
   (views/letsubs [account  [:get-current-account]]
     [react/view common.styles/flex
      [toolbar/simple-toolbar (i18n/label :t/new)]

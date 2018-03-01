@@ -34,7 +34,7 @@
 
     (str (i18n/label :t/sync-in-progress) " " percentage "% " currentBlock)))
 
-(defview last-activity [{:keys [online-text sync-state]}]
+(defview ^:no-theme last-activity [{:keys [online-text sync-state]}]
   [state [:get :sync-data]]
   [react/text {:style st/last-activity-text}
    (case sync-state
@@ -56,7 +56,7 @@
           (let [cnt (inc (count contacts))]
             (i18n/label-pluralize cnt :t/members-active)))]])))
 
-(defview toolbar-content-view []
+(defview ^:no-theme toolbar-content-view []
   (letsubs [group-chat    [:chat :group-chat]
             name          [:chat :name]
             chat-id       [:chat :chat-id]

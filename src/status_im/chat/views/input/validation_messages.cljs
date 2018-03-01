@@ -16,7 +16,7 @@
   [react/view {:flex 1}
    markup])
 
-(defview validation-messages-view []
+(defview ^:no-theme validation-messages-view []
   (letsubs [chat-input-margin [:chat-input-margin]
             input-height [:get-current-chat-ui-prop :input-height]
             messages [:validation-messages]]

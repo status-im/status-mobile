@@ -11,7 +11,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 
-(defview transaction-sent [& [modal?]]
+(defview ^:no-theme transaction-sent [& [modal?]]
   (letsubs [close-transaction-screen-event [:wallet.sent/close-transaction-screen-event]]
     [react/platform-specific-view wallet.styles/wallet-modal-container
      [status-bar/status-bar {:type (if modal? :modal-wallet :transparent)}]
@@ -39,5 +39,5 @@
                     :uppercase? (get-in platform/platform-specific [:uppercase?])}
         (i18n/label :t/got-it)]]]]))
 
-(defview transaction-sent-modal []
+(defview ^:no-theme transaction-sent-modal []
   [transaction-sent true])
