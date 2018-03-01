@@ -55,25 +55,6 @@
                                    :identity whisper-identity})))
 
 (reg-fx
-  ::send-contact-request-fx
-  (fn [{:keys [web3 current-public-key name whisper-identity
-               photo-path current-account-id status fcm-token
-               updates-public-key updates-private-key] :as params}]
-    (protocol/contact-request!
-     {:web3    web3
-      :message {:from       current-public-key
-                :to         whisper-identity
-                :message-id (random/id)
-                :payload    {:contact {:name          name
-                                       :profile-image photo-path
-                                       :address       current-account-id
-                                       :status        status
-                                       :fcm-token     fcm-token}
-                             :keypair {:public  updates-public-key
-                                       :private updates-private-key}
-                             :timestamp (web3.utils/timestamp)}}})))
-
-(reg-fx
   ::reset-pending-messages
   (fn [from]
     (protocol/reset-pending-messages! from)))

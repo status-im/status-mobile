@@ -19,18 +19,38 @@
   message/StatusMessage
   (send [this chat-id cofx]
     (let [message-id (message-id this)]
-      (chat/send! {:web3 web3
-                   :message (-> (into {} this)
-                                (assoc :to chat-id))})))
+      (protocol/contact-request!
+       {:web3    web3
+        :message {:from       current-public-key
+                  :to         whisper-identity
+                  :message-id (random/id)
+                  :payload    {:contact {:name          name
+                                         :profile-image photo-path
+                                         :address       current-account-id
+                                         :status        status
+                                         :fcm-token     fcm-token}
+                               :keypair {:public  updates-public-key
+                                         :private updates-private-key}
+                               :timestamp (web3.utils/timestamp)}}})))
   (receive [this chat-id signature {:keys [db] :as cofx}]))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id cofx]
     (let [message-id (message-id this)]
-      (chat/send! {:web3 web3
-                   :message (-> (into {} this)
-                                (assoc :to chat-id))})))
+      (protocol/contact-request!
+       {:web3    web3
+        :message {:from       current-public-key
+                  :to         whisper-identity
+                  :message-id (random/id)
+                  :payload    {:contact {:name          name
+                                         :profile-image photo-path
+                                         :address       current-account-id
+                                         :status        status
+                                         :fcm-token     fcm-token}
+                               :keypair {:public  updates-public-key
+                                         :private updates-private-key}
+                               :timestamp (web3.utils/timestamp)}}})))
   (receive [this chat-id signature cofx]))
 
 (defrecord ContactMessage [content content-type message-type to-clock-value timestamp]
