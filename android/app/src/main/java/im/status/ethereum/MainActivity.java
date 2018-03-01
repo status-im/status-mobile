@@ -7,12 +7,15 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.provider.Settings;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
@@ -70,8 +73,30 @@ public class MainActivity extends ReactActivity
         properties.setProperty("https.nonProxyHosts", "localhost|127.0.0.1");
     }
 
+    private Intent createNotificationSettingsIntent() {
+        final Intent intent = new Intent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra("app_package", getPackageName());
+            intent.putExtra("app_uid", getApplicationInfo().uid);
+        } else {
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+        }
+        return intent;
+    }
+
+    @Override
+    public void onNewIntent(final Intent intent) {
+        if (intent.getData().getScheme().startsWith("app-settings")) {
+            startActivity(createNotificationSettingsIntent());
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         // Make sure we get an Alert for every uncaught exceptions
         registerUncaughtExceptionHandler(MainActivity.this);
 

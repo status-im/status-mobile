@@ -81,14 +81,12 @@
     [react/view styles/share-contact-icon-container
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
-
-
 (defn my-profile-settings [{:keys [network networks]}]
   [react/view
    [profile.components/settings-title (i18n/label :t/settings)]
    [profile.components/settings-item :t/main-currency "USD" #() false]
    [profile.components/settings-item-separator]
-   [profile.components/settings-item :t/notifications "" #() true]
+   [profile.components/settings-item :t/notifications "" #(.openURL react/linking "app-settings://notification/status-im") true]
    [profile.components/settings-item-separator]
    [profile.components/settings-item :t/network (get-in networks [network :name])
     #(re-frame/dispatch [:navigate-to :network-settings]) true]
