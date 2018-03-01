@@ -74,7 +74,7 @@
     :request :wallet-request-assets
     (throw (str "Unknown type: " k))))
 
-(views/defview ^:no-theme asset-selector [{:keys [disabled? type symbol]}]
+(views/defview asset-selector [{:keys [disabled? type symbol]}]
   (views/letsubs [balance  [:balance]
                   network  [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
@@ -95,7 +95,7 @@
   [react/text {:style (merge styles/recipient-address (when-not address styles/recipient-no-address))}
    (or (ethereum/normalized-address address) (i18n/label :t/specify-recipient))])
 
-(views/defview ^:no-theme recipient-contact [address name]
+(views/defview recipient-contact [address name]
   (views/letsubs [contact [:contact/by-address address]]
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container

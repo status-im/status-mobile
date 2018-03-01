@@ -50,7 +50,7 @@
                     [common/list-footer]
                     [common/bottom-shadow]]])
 
-(defview offline-messaging-settings []
+(defview ^:theme offline-messaging-settings []
   (letsubs [current-wnode  [:get :inbox/wnode]
             wnodes         [:get :inbox/wnodes]]
     [react/view common.styles/flex

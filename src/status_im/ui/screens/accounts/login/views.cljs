@@ -48,7 +48,7 @@
                  :numberOfLines 1}
      name]]])
 
-(defview ^:avoid-keyboard? login []
+(defview ^:theme ^:avoid-keyboard? login []
   (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]
             can-navigate-back? [:can-navigate-back?]
             password-text-input (atom nil)]

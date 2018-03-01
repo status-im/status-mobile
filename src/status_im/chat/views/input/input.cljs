@@ -16,7 +16,7 @@
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.utils.utils :as utils]))
 
-(defview ^:no-theme basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
+(defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
   (letsubs [input-text     [:chat :input-text]
             command        [:selected-chat-command]
             input-focused? [:get-current-chat-ui-prop :input-focused?]
@@ -65,7 +65,7 @@
       :placeholder-text-color colors/gray
       :auto-capitalize        :sentences}]))
 
-(defview ^:no-theme invisible-input [{:keys [set-layout-width-fn value]}]
+(defview invisible-input [{:keys [set-layout-width-fn value]}]
   (letsubs [input-text [:chat :input-text]]
     [react/text {:style     style/invisible-input-text
                  :on-layout #(let [w (-> (.-nativeEvent %)
@@ -74,7 +74,7 @@
                                (set-layout-width-fn w))}
      (or input-text "")]))
 
-(defview ^:no-theme invisible-input-height [{:keys [set-layout-height-fn container-width]}]
+(defview invisible-input-height [{:keys [set-layout-height-fn container-width]}]
   (letsubs [input-text [:chat :input-text]]
     [react/text {:style     (style/invisible-input-text-height container-width)
                  :on-layout #(let [h (-> (.-nativeEvent %)
@@ -90,7 +90,7 @@
         (animation/timing opacity-value {:toValue  to-value
                                          :duration 300})))))
 
-(defview ^:no-theme input-helper [{:keys [width]}]
+(defview input-helper [{:keys [width]}]
   (letsubs [placeholder   [:chat-input-placeholder]
             opacity-value (animation/create-value 0)
             on-update     (input-helper-view-on-update {:opacity-value opacity-value
@@ -108,7 +108,7 @@
     :number {:keyboard-type "numeric"}
     nil))
 
-(defview ^:no-theme seq-input [{:keys [command-width container-width]}]
+(defview seq-input [{:keys [command-width container-width]}]
   (letsubs [command            [:selected-chat-command]
             arg-pos            [:current-chat-argument-position]
             seq-arg-input-text [:chat :seq-argument-input-text]]
@@ -133,7 +133,7 @@
                                                            100))}
                                  (get-options type))]))))
 
-(defview ^:no-theme input-view [{:keys [single-line-input?]}]
+(defview input-view [{:keys [single-line-input?]}]
   (letsubs [command [:selected-chat-command]]
     (let [component              (reagent/current-component)
           set-layout-width-fn    #(reagent/set-state component {:width %})
@@ -161,7 +161,7 @@
     [vi/icon :icons/input-commands {:container-style style/input-commands-icon
                                     :color           :dark}]]])
 
-(defview ^:no-theme input-container []
+(defview input-container []
   (letsubs [margin     [:chat-input-margin]
             input-text [:chat :input-text]
             result-box [:get-current-chat-ui-prop :result-box]]

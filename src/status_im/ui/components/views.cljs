@@ -7,7 +7,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]))
 
-(views/defview ^:no-theme with-activity-indicator
+(views/defview with-activity-indicator
   [{:keys [timeout style enabled? preview]} comp]
   (views/letsubs
     [loading (reagent/atom true)]
@@ -29,7 +29,7 @@
    {:preview [react/view {}]}
    comp])
 
-(views/defview ^:no-theme modal [view-id & components]
+(views/defview modal [view-id & components]
   (views/letsubs [signing? [:get-in [:wallet :send-transaction :signing?]]]
     [react/view styles/flex
      (apply vector react/view styles/flex components)

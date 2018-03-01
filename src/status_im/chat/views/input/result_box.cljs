@@ -10,11 +10,11 @@
             [status-im.chat.views.input.box-header :as box-header]
             [status-im.ui.components.sync-state.offline :refer [offline-view]]))
 
-(defview ^:no-theme result-box-container [markup]
+(defview result-box-container [markup]
   [view {:flex 1}
    markup])
 
-(defview ^:no-theme result-box-view []
+(defview result-box-view []
   [markup [:result-box-markup]]
   (when markup
     [expandable-view {:key           :result-box

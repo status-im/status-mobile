@@ -18,7 +18,7 @@
                               :on-press      #(re-frame/dispatch [:show-profile (:whisper-identity %)])
                               :show-forward? true}])
 
-(views/defview ^:avoid-keyboard? new-chat []
+(views/defview ^:theme ^:avoid-keyboard? new-chat []
   (views/letsubs [contacts      [:all-added-people-contacts]
                   error-message [:new-contact-error-message]]
     [react/view common.styles/flex

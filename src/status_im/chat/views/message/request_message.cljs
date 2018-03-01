@@ -73,13 +73,13 @@
              (when command-icon
                [icon command-icon st/command-request-image])]]))})))
 
-(defview ^:no-theme message-content-command-request
+(defview message-content-command-request
   [{:keys [message-id content] :as message}]
   (letsubs [command             [:get-command (:content-command-ref content)]
             answered?           [:is-request-answered? message-id]
-            status-initialized? [:get :status-module-initialized?]]
+            status-initialized? [:get :status-module-initialized?]] 
     (let [{:keys        [prefill prefill-bot-db prefillBotDb params preview]
-           text-content :text} content
+           text-content :text} content 
           command          (if (and params command)
                              (merge command {:prefill        prefill
                                              :prefill-bot-db (or prefill-bot-db prefillBotDb)})
@@ -92,7 +92,7 @@
        [touchable-highlight
         {:on-press on-press-handler}
         [view st/command-request-message-view
-         (if (:markup preview)
+         (if (:markup preview) 
            [view (commands-utils/generate-hiccup (:markup preview))]
            [text {:style st/style-message-text
                   :font  :default}

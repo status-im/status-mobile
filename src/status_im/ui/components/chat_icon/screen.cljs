@@ -30,7 +30,7 @@
      [react/view online-dot-left]
      [react/view online-dot-right]]]])
 
-(defview ^:no-theme pending-contact-badge
+(defview pending-contact-badge
   [chat-id {:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]
   (letsubs [pending-contact? [:get-in [:contacts/contacts chat-id :pending?]]]
     (when pending-contact?
@@ -38,7 +38,7 @@
        [react/view pending-outer-circle
         [react/view pending-inner-circle]]])))
 
-(defview ^:no-theme chat-icon-view [chat-id _group-chat name _online styles & [hide-dapp?]]
+(defview chat-icon-view [chat-id _group-chat name _online styles & [hide-dapp?]]
   (letsubs [photo-path [:get-chat-photo chat-id]
             dapp?      [:get-in [:contacts/contacts chat-id :dapp?]]]
     [react/view (:container styles)

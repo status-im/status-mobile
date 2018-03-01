@@ -40,7 +40,7 @@
     :enter-password (re-frame/dispatch [:navigate-back])
     :confirm-password (re-frame/dispatch [:reset-account-creation])))
 
-(defview ^:no-theme input [step error]
+(defview input [step error]
   [text-input/text-input-with-label
    {:label             (get-in steps [step :input-label])
     :placeholder       (get-in steps [step :input-placeholder])

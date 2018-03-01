@@ -42,7 +42,7 @@
                     :render-fn                 render-function
                     :keyboardShouldPersistTaps :always}]])
 
-(defview ^:avoid-keyboard? contact-toggle-list []
+(defview ^:theme ^:avoid-keyboard? contact-toggle-list []
   (letsubs [contacts [:all-added-people-contacts]
             selected-contacts-count [:selected-contacts-count]
             group-type [:get-group-type]]
@@ -55,7 +55,7 @@
                     :t/group-chat))]
      [toggle-list contacts group-toggle-contact]]))
 
-(defview ^:avoid-keyboard? add-contacts-toggle-list []
+(defview ^:theme ^:avoid-keyboard? add-contacts-toggle-list []
   (letsubs [contacts [:all-group-not-added-contacts]
             group [:get-contact-group]
             selected-contacts-count [:selected-contacts-count]]
@@ -82,7 +82,7 @@
                            :style      styles/toggle-list-action}
       (i18n/label :t/add)])])
 
-(defview ^:avoid-keyboard? add-participants-toggle-list []
+(defview ^:theme ^:avoid-keyboard? add-participants-toggle-list []
   (letsubs [contacts                [:all-new-contacts]
             chat-name               [:chat :name]
             selected-contacts-count [:selected-participants-count]]

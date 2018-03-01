@@ -12,7 +12,7 @@
             [cljs.spec.alpha :as spec]
             [status-im.ui.components.common.common :as components.common]))
 
-(defview ^:no-theme passphrase-input [passphrase]
+(defview passphrase-input [passphrase]
   (letsubs [error [:get-in [:accounts/recover :passphrase-error]]]
     [text-input/text-input-with-label
      {:style          {:flex 1}
@@ -24,7 +24,7 @@
       :on-change-text #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
       :error          error}]))
 
-(defview ^:no-theme password-input [password]
+(defview password-input [password]
   (letsubs [error [:get-in [:accounts/recover :password-error]]]
     [react/view {:margin-top 10}
      [text-input/text-input-with-label
@@ -36,7 +36,7 @@
        :secure-text-entry true
        :error             error}]]))
 
-(defview ^:avoid-keyboard? recover []
+(defview ^:theme ^:avoid-keyboard? recover []
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
                         (spec/valid? ::recover.db/passphrase passphrase)

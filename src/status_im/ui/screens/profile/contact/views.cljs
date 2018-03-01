@@ -99,7 +99,7 @@
    [profile.components/settings-item-separator]
    [profile-info-public-key-item whisper-identity]])
 
-(defview profile []
+(defview ^:theme profile []
   (letsubs [contact [:contact]
             chat-id [:get :current-chat-id]]
     [react/view common.styles/flex

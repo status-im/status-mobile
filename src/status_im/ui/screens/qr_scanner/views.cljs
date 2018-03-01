@@ -8,12 +8,12 @@
             [status-im.ui.screens.qr-scanner.styles :as styles]
             [status-im.ui.components.common.styles :as common.styles]))
 
-(defview ^:no-theme qr-scanner-toolbar [title hide-nav?]
+(defview qr-scanner-toolbar [title hide-nav?]
   (letsubs [modal [:get :modal]]
     [react/view
      [toolbar/simple-toolbar title]]))
 
-(defview qr-scanner []
+(defview ^:theme qr-scanner []
   (letsubs [{identifier :current-qr-context} [:get-screen-params]
             camera-initialized? (reagent/atom false)]
     [react/view common.styles/flex

@@ -41,7 +41,7 @@
       [inner-item/home-list-browser-item-inner-view home-item]]]))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
-(views/defview ^:no-theme welcome [view-id]
+(views/defview welcome [view-id]
   (views/letsubs [handler #(re-frame/dispatch [:set-in [:accounts/create :show-welcome?] false])]
     {:component-will-update  handler
      :component-will-unmount handler}
@@ -55,7 +55,7 @@
       [react/text {:style styles/welcome-text-description}
        (i18n/label :t/welcome-to-status-description)]]]))
 
-(views/defview ^:no-theme home []
+(views/defview home []
   (views/letsubs [home-items [:home-items]
                   show-welcome? [:get-in [:accounts/create :show-welcome?]]
                   view-id [:get :view-id]]

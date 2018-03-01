@@ -20,7 +20,7 @@
                                 :extended?      edit?
                                 :extend-options (contact-options/contact-options row group)}]))
 
-(defview ^:no-theme contact-list-toolbar-edit [group]
+(defview contact-list-toolbar-edit [group]
   [toolbar/toolbar {}
    [toolbar/nav-button (act/back #(re-frame/dispatch [:set-in [:contacts/list-ui-props :edit?] false]))]
    [toolbar/content-title
@@ -28,7 +28,7 @@
       (i18n/label :t/contacts)
       (or (:name group) (i18n/label :t/contacts-group-new-chat)))]])
 
-(defview ^:no-theme contacts-list-view [group edit?]
+(defview contacts-list-view [group edit?]
   (letsubs [contacts [:all-added-group-contacts (:group-id group)]]
     [list/flat-list {:style                     styles/contacts-list
                      :data                      contacts
@@ -38,7 +38,7 @@
                      :header                    list/default-header
                      :footer                    list/default-footer}]))
 
-(defview ^:no-theme contact-list []
+(defview contact-list []
   (letsubs [edit? [:get-in [:contacts/list-ui-props :edit?]]
             group [:get-contact-group]]
     [react/view {:flex 1}

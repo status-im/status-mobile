@@ -13,7 +13,7 @@
             [status-im.constants :as const]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
 
-(defn message-content-text [{:keys [content] :as message}]
+(defn message-content-text [{:keys [content] :as message}] 
   [react/view styles/last-message-container
    (cond
 
@@ -38,7 +38,7 @@
                   :number-of-lines 1}
       content])])
 
-(defview ^:no-theme message-status [{:keys [chat-id contacts]}
+(defview message-status [{:keys [chat-id contacts]}
                          {:keys [message-id user-statuses outgoing] :as msg}]
   (letsubs [current-public-key [:get-current-public-key]]
     (let [delivery-statuses (dissoc user-statuses current-public-key)
@@ -54,7 +54,7 @@
     [react/text {:style styles/datetime-text}
      (time/to-short-str timestamp)]))
 
-(defview ^:no-theme unviewed-indicator [chat-id]
+(defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
     (when (pos? unviewed-messages-count)
       [react/view styles/new-messages-container
@@ -82,7 +82,7 @@
          (str "#" chat-name)
          chat-name)]]]))
 
-(defview ^:no-theme home-list-chat-item-inner-view [{:keys [chat-id name color online
+(defview home-list-chat-item-inner-view [{:keys [chat-id name color online
                                                  group-chat contacts public?
                                                  public-key unremovable? :as chat]}]
   (letsubs [last-message [:get-last-message chat-id]]
@@ -102,7 +102,7 @@
          [message-content-text last-message]
          [unviewed-indicator chat-id]]]])))
 
-(defview ^:no-theme home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
+(defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
   (letsubs [contact' [:contact-by-identity contact]]
     [react/view styles/chat-container
      [react/view styles/chat-icon-container

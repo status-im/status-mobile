@@ -15,7 +15,7 @@
         (animation/timing spin-value {:toValue  to-spin-value
                                       :duration 300})))))
 
-(defview ^:no-theme send-button-view []
+(defview send-button-view []
   (letsubs [command-completion [:command-completion]
             selected-command   [:selected-chat-command]
             input-text         [:chat :input-text]

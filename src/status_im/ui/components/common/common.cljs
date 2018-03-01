@@ -55,7 +55,7 @@
         count-value])]]
    [top-shadow]])
 
-(defview ^:no-theme network-info [{:keys [text-color]}]
+(defview network-info [{:keys [text-color]}]
   (letsubs [network-id [:get-network-id]]
     [react/view
      [react/view styles/network-container

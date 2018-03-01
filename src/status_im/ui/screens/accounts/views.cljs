@@ -28,7 +28,7 @@
     [react/view {:flex 1}]
     [icons/icon :icons/forward {:color (colors/alpha colors/gray-icon 0.4)}]]])
 
-(defview accounts []
+(defview ^:theme accounts []
   (letsubs [accounts [:get-accounts]]
     [react/view common.styles/flex
      [toolbar/toolbar nil nil

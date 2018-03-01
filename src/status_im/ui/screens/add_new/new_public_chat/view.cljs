@@ -54,7 +54,7 @@
 
 (def default-public-chats ["status" "openbounty" "ethereum"])
 
-(views/defview new-public-chat []
+(views/defview ^:theme new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]]
     [react/view styles/group-container
      [toolbar/simple-toolbar

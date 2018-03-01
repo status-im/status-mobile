@@ -14,7 +14,7 @@
                                                                    :contact contact}])}]))
 
 
-(defview ^:no-theme choose-contact-view [{title      :title
+(defview choose-contact-view [{title      :title
                                arg-index  :index
                                bot-db-key :bot-db-key}]
   (letsubs [contacts [:people-in-current-chat]]

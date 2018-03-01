@@ -73,7 +73,7 @@
      :extend-title   (:name contact)
      :extended?      admin?}]])
 
-(defview ^:no-theme chat-group-contacts-view [admin?]
+(defview chat-group-contacts-view [admin?]
   (letsubs [contacts [:current-chat-contacts]]
     [react/view
      [list/flat-list {:data      contacts
@@ -85,7 +85,7 @@
    [profile.components/settings-title (i18n/label :t/members-title)]
    [chat-group-contacts-view admin?]])
 
-(defview group-chat-profile []
+(defview ^:theme group-chat-profile []
   (letsubs [current-chat [:get-current-chat]
             editing?     [:get :group-chat-profile/editing?]
             changed-chat [:get :group-chat-profile/profile]

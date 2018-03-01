@@ -20,7 +20,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]))
 
-(defview ^:no-theme add-contact-bar []
+(defview add-contact-bar []
   (letsubs [chat-id          [:get-current-chat-id]
             pending-contact? [:current-contact :pending?]]
     (when pending-contact?
@@ -34,7 +34,7 @@
   (list-selection/show {:title   (if public? (str "#" chat-name) chat-name)
                         :options (actions/actions group-chat? chat-id public?)}))
 
-(defview ^:no-theme chat-toolbar [public?]
+(defview chat-toolbar [public?]
   (letsubs [accounts  [:get-accounts]
             {:keys [group-chat name chat-id]} [:get-current-chat]]
     [react/view
@@ -58,7 +58,7 @@
                                :group-chat group-chat
                                :current-public-key current-public-key)])
 
-(defview ^:no-theme messages-view-animation [message-view]
+(defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
   (letsubs [opacity       (animation/create-value 0)
             duration      (if platform/android? 100 200)
@@ -75,7 +75,7 @@
      [react/animated-view {:style (style/message-view-animated opacity)}
       message-view]]))
 
-(defview ^:no-theme messages-view [group-chat]
+(defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
             current-public-key [:get-current-public-key]]
     [list/flat-list {:data                      messages
