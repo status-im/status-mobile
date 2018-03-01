@@ -28,8 +28,13 @@
                  [view
                   [contact-view
                    {:contact        row
-                    :extend-options [{:action #(dispatch [:remove-group-chat-participants #{(:whisper-identity row)}])
-                                      :label  (label :t/remove)}]
+                    ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
+                    ;; due to this bug - https://github.com/status-im/status-react/issues/3463
+                    #_
+                    :extend-options
+                    #_
+                    [{:action #(dispatch [:remove-group-chat-participants #{(:whisper-identity row)}])
+                      :label  (label :t/remove)}]
                     :extended?      admin?}]
                   (when-not (= row (last limited-contacts))
                     [common/list-separator])])
@@ -42,6 +47,9 @@
             group-admin [:chat :group-admin]]
     (let [admin? (= current-pk group-admin)]
       [view
+       ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
+       ;; due to this bug - https://github.com/status-im/status-react/issues/3463
+       #_
        (when admin?
          [add-btn #(dispatch [:navigate-to :add-participants-toggle-list])])
        [chat-group-contacts-view admin?]])))
