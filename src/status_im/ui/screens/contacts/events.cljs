@@ -22,7 +22,12 @@
             [cljs.spec.alpha :as spec]
             [status-im.protocol.web3.utils :as web3.utils]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
+            [re-frame.core :as re-frame]
+            [status-im.utils.js-resources :as js-resources]))
 ;;;; COFX
 
 (reg-cofx
@@ -189,16 +194,30 @@
        (:group-id (first contacts))
        (mapv :whisper-identity contacts)])))
 
-(register-handler-fx
+(defn default-contact-events [contact-groups default-groups contacts default-contacts]
+  (doseq [event (concat
+                  (prepare-default-groups-events contact-groups default-groups)
+                  (prepare-default-contacts-events contacts default-contacts)
+                  (prepare-add-chat-events contacts default-contacts)
+                  (prepare-add-contacts-to-groups-events contacts default-contacts))]
+    (re-frame/dispatch event)))
+
+
+(def dev-contacts-url
+  "https://gist.githubusercontent.com/jacqueswww/0debd3f20efd99b827df62d1f21f3e9f/raw/")
+
+(reg-fx
   :load-default-contacts!
-  [(inject-cofx ::get-default-contacts-and-groups)]
-  (fn [{:keys [db default-contacts default-groups]} _]
-    (let [{:contacts/keys [contacts] :group/keys [contact-groups]} db]
-      {:dispatch-n (concat
-                    (prepare-default-groups-events contact-groups default-groups)
-                    (prepare-default-contacts-events contacts default-contacts)
-                    (prepare-add-chat-events contacts default-contacts)
-                    (prepare-add-contacts-to-groups-events contacts default-contacts))})))
+  (fn [db]
+    (let [{:contacts/keys [contacts] :group/keys [contact-groups]} db
+          default-groups   js-resources/default-contact-groups
+          default-contacts js-resources/default-contacts]
+      (if config/dev-contacts-enabled?
+        (utils/http-get dev-contacts-url
+                        #(default-contact-events contact-groups default-groups contacts
+                                                 (merge default-contacts (types/json->clj %)))
+                        #(default-contact-events contact-groups default-groups contacts default-contacts))
+        (default-contact-events contact-groups default-groups contacts default-contacts)))))
 
 (register-handler-fx
   :load-contacts

@@ -201,7 +201,7 @@
           (assoc :chats chats
                  :deleted-chats inactive-chat-ids)
           init-console-chat
-          (update :dispatch-n conj [:load-default-contacts!])))))
+          (assoc :load-default-contacts! db)))))
 
 (handlers/register-handler-fx
   :send-seen!
