@@ -6,7 +6,7 @@
             [status-im.ui.components.button.view :as button]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.views :as comp.views]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
@@ -43,18 +43,17 @@
 (defn- size [{:keys [height width]}]
   (int (* 2 (/ (min height width) 3))))
 
-(defview choose-recipient []
+(defview ^{:theme :qr-code} choose-recipient []
   (letsubs [dimensions        (react/get-dimensions "window")
             camera-flashlight [:wallet.send/camera-flashlight]
             view              [:get :view-id]]
     [react/view {:style styles/qr-code}
-     [status-bar/status-bar {:type :transparent}]
      [toolbar-view camera-flashlight]
      [react/text {:style (styles/qr-code-text dimensions)}
       (i18n/label :t/scan-qr-code)]
      [react/view {:style          styles/qr-container
                   :pointer-events :none}
-      [react/with-activity-indicator
+      [comp.views/with-activity-indicator
        {}
        [camera/camera {:style         styles/preview
                        :aspect        :fill

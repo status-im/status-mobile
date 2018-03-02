@@ -5,7 +5,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.i18n :as i18n]
@@ -99,11 +99,10 @@
    [profile.components/settings-item-separator]
    [profile-info-public-key-item whisper-identity]])
 
-(defview profile []
+(defview ^:theme profile []
   (letsubs [contact [:contact]
             chat-id [:get :current-chat-id]]
-    [react/view profile.components.styles/profile
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [profile-contact-toolbar contact]
      [network-info]
      [react/scroll-view

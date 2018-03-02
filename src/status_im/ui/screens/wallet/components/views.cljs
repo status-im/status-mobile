@@ -51,11 +51,11 @@
         (clojure.core/name symbol)]]
       [list/item-secondary (wallet.utils/format-amount (symbol balance) decimals)]]]]])
 
-(views/defview assets [type]
+(views/defview ^{:theme :wallet-2} assets [type]
   (views/letsubs [network        [:network]
                   visible-tokens [:wallet.settings/visible-tokens]
                   balance        [:balance]]
-    [components/simple-screen
+    [react/view components.styles/flex
      [components/toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
       [list/flat-list {:default-separator? true
@@ -117,9 +117,9 @@
      [react/text {:style list.styles/secondary-text}
       (ethereum/normalized-address (:address contact))]]]])
 
-(views/defview recent-recipients []
+(views/defview ^{:theme :wallet-2} recent-recipients []
   (views/letsubs [contacts [:all-added-people-contacts]]
-    [components/simple-screen
+    [react/view components.styles/flex
      [components/toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      contacts
@@ -128,7 +128,7 @@
 (defn contact-code []
   (let [content (reagent/atom nil)]
     (fn []
-      [components/simple-screen {:avoid-keyboard? true}
+      [react/keyboard-avoiding-view components.styles/flex
        [components/toolbar {:style wallet.styles/toolbar-bottom-line}
         components/default-action
         (i18n/label :t/recipient)]

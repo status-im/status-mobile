@@ -2,13 +2,13 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as rf]
-    [status-im.ui.components.status-bar.view :as status-bar]
     [status-im.ui.components.toolbar.view :as toolbar]
     [status-im.ui.screens.network-settings.views :as network-settings]
     [status-im.ui.components.react :as react]
     [status-im.utils.platform :as platform]
     [status-im.i18n :as i18n]
-    [status-im.ui.screens.network-settings.styles :as st]))
+    [status-im.ui.screens.network-settings.styles :as st]
+    [status-im.ui.components.common.styles :as common.styles]))
 
 (def options
   [{:text  (i18n/label :t/add-json-file)
@@ -20,13 +20,12 @@
    {:text  (i18n/label :t/:remove-network)
     :value #(rf/dispatch [:network-remove])}])
 
-(views/defview network-details []
+(views/defview ^:theme network-details []
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]
                   {:keys [network]} [:get-current-account]]
     (let [{:keys [id name config]} selected-network
           connected? (= id network)]
-      [react/view {:flex 1}
-       [status-bar/status-bar]
+      [react/view common.styles/flex
        [toolbar/simple-toolbar]
        [network-settings/network-badge
         {:name       name

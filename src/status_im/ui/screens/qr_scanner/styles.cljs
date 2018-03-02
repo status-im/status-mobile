@@ -3,10 +3,6 @@
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.utils.platform :as p]))
 
-(def barcode-scanner-container
-  {:flex             1
-   :background-color :white})
-
 (def barcode-scanner
   {:flex            1
    :justify-content :flex-end

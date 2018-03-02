@@ -13,7 +13,7 @@
 
 (defview transaction-sent [& [modal?]]
   (letsubs [close-transaction-screen-event [:wallet.sent/close-transaction-screen-event]]
-    [react/view wallet.styles/wallet-modal-container
+    [react/platform-specific-view wallet.styles/wallet-modal-container
      [status-bar/status-bar {:type (if modal? :modal-wallet :transparent)}]
      [react/view styles/transaction-sent-container
       [react/view styles/ok-icon-container

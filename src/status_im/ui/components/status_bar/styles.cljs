@@ -94,8 +94,7 @@
    :android (create-status-bar-style {:translucent?     true})})
 
 (def view-wallet
-  (create-view-style {:background-color styles/color-blue4
-                      :elevation        elevation}))
+  (create-view-style {:background-color styles/color-blue4}))
 
 ;; :default
 (defstyle status-bar-default

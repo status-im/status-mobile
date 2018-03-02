@@ -4,21 +4,19 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.camera :as camera]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.qr-scanner.styles :as styles]))
+            [status-im.ui.screens.qr-scanner.styles :as styles]
+            [status-im.ui.components.common.styles :as common.styles]))
 
 (defview qr-scanner-toolbar [title hide-nav?]
   (letsubs [modal [:get :modal]]
     [react/view
-     [status-bar/status-bar]
      [toolbar/simple-toolbar title]]))
 
-(defview qr-scanner []
+(defview ^:theme qr-scanner []
   (letsubs [{identifier :current-qr-context} [:get-screen-params]
             camera-initialized? (reagent/atom false)]
-
-    [react/view styles/barcode-scanner-container
+    [react/view common.styles/flex
      [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
      [camera/camera {:onBarCodeRead #(re-frame/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
                      :ref           #(reset! camera-initialized? true)

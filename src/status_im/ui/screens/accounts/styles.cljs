@@ -3,10 +3,6 @@
   (:require [status-im.ui.components.styles :as common]
             [status-im.ui.components.colors :as colors]))
 
-(def accounts-view
-  {:flex             1
-   :background-color colors/white})
-
 (def accounts-container
   {:flex               1
    :padding-horizontal 16

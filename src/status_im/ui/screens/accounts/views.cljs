@@ -3,8 +3,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.accounts.styles :as styles]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -28,10 +28,9 @@
     [react/view {:flex 1}]
     [icons/icon :icons/forward {:color (colors/alpha colors/gray-icon 0.4)}]]])
 
-(defview accounts []
+(defview ^:theme accounts []
   (letsubs [accounts [:get-accounts]]
-    [react/view styles/accounts-view
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [toolbar/toolbar nil nil
       [toolbar/content-title (i18n/label :t/sign-in-to-status)]]
      [react/view styles/accounts-container

@@ -6,7 +6,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]))
@@ -20,11 +19,10 @@
    [list/item-checkbox {:checked?        (contains? visible-tokens (keyword symbol))
                         :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}]])
 
-(defview manage-assets []
+(defview ^{:theme :modal-wallet} manage-assets []
   (letsubs [network        [:network]
             visible-tokens [:wallet.settings/visible-tokens]]
     [react/view (merge components.styles/flex {:background-color :white})
-     [status-bar/status-bar {:type :modal-wallet}]
      [toolbar/toolbar #_{} {:style wallet.styles/toolbar}
       [toolbar/nav-text {:style {:color :white}}
        (i18n/label :t/done)]

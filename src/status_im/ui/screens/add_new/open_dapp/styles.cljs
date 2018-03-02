@@ -1,10 +1,6 @@
 (ns status-im.ui.screens.add-new.open-dapp.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def main-container
-  {:flex             1
-   :background-color colors/white})
-
 (def gray-label
   {:font-size      14
    :letter-spacing -0.2

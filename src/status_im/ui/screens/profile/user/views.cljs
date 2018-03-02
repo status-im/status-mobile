@@ -57,11 +57,10 @@
                       :icon-opts {:color :black}
                       :handler   #(list-selection/open-share {:message value})}]]])
 
-(defview qr-viewer []
+(defview ^{:theme :modal} qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
     [react/view {:flex-grow      1
                  :flex-direction :column}
-     [status-bar/status-bar {:type :modal}]
      [qr-viewer-toolbar (:name contact) value]
      [qr-code-viewer/qr-code-viewer {}
       value (i18n/label :t/qr-code-public-key-hint) (str value)]]))

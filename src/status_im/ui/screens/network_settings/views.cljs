@@ -8,7 +8,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.common.common :as common]
             [status-im.ui.screens.network-settings.styles :as styles]
-            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]))
 
@@ -55,13 +55,12 @@
            [react/text {:style styles/network-item-connected-text}
             (i18n/label :t/connected)])]]])))
 
-(views/defview network-settings []
+(views/defview ^:theme network-settings []
   (views/letsubs [{:keys [network networks]} [:get-current-account]]
-    [react/view {:flex 1}
-     [status-bar/status-bar]
+    [react/view common.styles/flex
      [toolbar/simple-toolbar
       (i18n/label :t/network-settings)]
-     [react/view {:flex 1}
+     [react/view common.styles/flex
       [list/flat-list {:style     styles/networks-list
                        :data      (vals networks)
                        :render-fn (render-network network)

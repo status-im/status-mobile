@@ -48,14 +48,13 @@
     :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
     :error             error}])
 
-(defview create-account []
+(defview ^{:theme :accounts} ^:avoid-keyboard? create-account []
   (letsubs [step [:get-in [:accounts/create :step]]
             next-enabled? [:get-account-creation-next-enabled?]
             error [:get-in [:accounts/create :error]]
             password [:get-in [:accounts/create :password]]
             password-confirm [:get-in [:accounts/create :password-confirm]]]
-    [react/keyboard-avoiding-view {:style styles/create-account-view}
-     [status-bar/status-bar {:flat? true}]
+    [react/view components.styles/flex
      (when (= :account-creating step)
        [react/view styles/account-creating-view
         [react/view styles/account-creating-logo-container

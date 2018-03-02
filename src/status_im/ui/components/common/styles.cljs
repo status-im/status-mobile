@@ -148,3 +148,15 @@
    :letter-spacing -0.2
    :text-align     :center
    :color          colors/blue})
+
+(defn iphone-x-bottom-bar-color-fill [color]
+  {:background-color color
+   :position         :absolute
+   :bottom           0
+   :right            0
+   :left             0
+   :height           34
+   :z-index          -1000})
+
+(def flex
+  {:flex 1})

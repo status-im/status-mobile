@@ -4,8 +4,7 @@
 
 (def usage-data-view
   {:flex               1
-   :padding-horizontal 30
-   :background-color   colors/white})
+   :padding-horizontal 30})
 
 (def logo-container
   {:flex            1
