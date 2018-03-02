@@ -15,7 +15,7 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.sync-state.offline :as offline]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]))
 
@@ -103,4 +103,4 @@
      [input/container {:text-empty? (string/blank? input-text)}]
      (when show-bottom-info?
        [bottom-info/bottom-info-view])
-     [offline/offline-view {:top (get platform/platform-specific :status-bar-default-height)}]]))
+     [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]))

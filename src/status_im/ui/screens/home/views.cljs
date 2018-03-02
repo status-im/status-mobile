@@ -7,7 +7,7 @@
             [status-im.ui.components.native-action-button :refer [native-action-button]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
-            [status-im.ui.components.sync-state.offline :refer [offline-view]]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -86,4 +86,4 @@
                                          ^{:key home-item-id} [home-list-deletable home-item])}])
      (when platform/android?
        [home-action-button])
-     [offline-view]]))
+     [connectivity/error-view]]))

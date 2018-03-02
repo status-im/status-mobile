@@ -8,7 +8,7 @@
                                                    icon]]
             [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
             [status-im.chat.views.input.box-header :as box-header]
-            [status-im.ui.components.sync-state.offline :refer [offline-view]]))
+            [status-im.ui.components.connectivity.view :as connectivity]))
 
 (defview result-box-container [markup]
   [view {:flex 1}
@@ -20,4 +20,4 @@
     [expandable-view {:key           :result-box
                       :custom-header (box-header/get-header :result-box)}
      [result-box-container markup]
-     [offline-view]]))
+     [connectivity/error-view]]))

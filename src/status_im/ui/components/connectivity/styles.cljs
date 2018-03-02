@@ -1,4 +1,4 @@
-(ns status-im.ui.components.sync-state.styles
+(ns status-im.ui.components.connectivity.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 
 (defnstyle offline-wrapper [top opacity window-width pending?]

@@ -68,6 +68,9 @@
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
+(spec/def ::mailserver-status (spec/nilable keyword?))
+(spec/def ::peers-count (spec/nilable integer?))
+
 ;;;;NODE
 
 (spec/def ::sync-listening-started (spec/nilable boolean?))
@@ -174,6 +177,8 @@
                   ::keyboard-max-height
                   ::orientation
                   ::network-status
+                  ::mailserver-status
+                  ::peers-count
                   ::sync-listening-started
                   ::sync-state
                   ::sync-data

@@ -31,13 +31,26 @@
   (fn [current-account]
     (:signed-up? current-account)))
 
-(reg-sub :network
-  (fn [db]
-    (:network db)))
+(reg-sub :network :network)
 
-(reg-sub :sync-state
-  (fn [db]
-    (:sync-state db)))
+(reg-sub :sync-state :sync-state)
+(reg-sub :network-status :network-status)
+(reg-sub :peers-count :peers-count)
+(reg-sub :mailserver-status :mailserver-status)
+
+(reg-sub :offline?
+  :<- [:network-status]
+  :<- [:sync-state]
+  (fn [[network-status sync-state]]
+    (or (= network-status :offline)
+        (= sync-state :offline))))
+
+(reg-sub :connection-problem?
+  :<- [:mailserver-status]
+  :<- [:peers-count]
+  (fn [[mailserver-status peers-count]]
+    (or (= :disconnected mailserver-status)
+        (zero? peers-count))))
 
 (reg-sub :syncing?
   :<- [:sync-state]

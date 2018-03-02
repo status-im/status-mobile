@@ -8,6 +8,7 @@
    :chat-name                             "Chat name"
    :notifications-title                   "Notifications and sounds"
    :offline                               "Offline"
+   :connection-problem                    "Messages connection problem"
    :search-for                            "Search for..."
    :cancel                                "Cancel"
    :next                                  "Next"
