@@ -293,12 +293,11 @@
                           [:update-transactions]
                           [:get-fcm-token]
                           [:update-sign-in-time]]
-                   (seq events-after)
-                   (into events-after))}))
+                   (seq events-after) (into events-after))}))
 
 (handlers/register-handler-fx
   :initialize-views
-  (fn [{{:accounts/keys [accounts] :as db} :db}]
+  (fn [{{:accounts/keys [accounts] :as db} :db} _]
     {:db (if (empty? accounts)
            (assoc db :view-id :intro :navigation-stack (list :intro))
            (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
@@ -348,17 +347,17 @@
 (defn handle-jail-signal [{:keys [chat_id data]}]
   (let [{:keys [event data]} (types/json->clj data)]
     (case event
-      "local-storage" (re-frame/dispatch [:set-local-storage {:chat-id chat_id
-                                                              :data    data}])
-      "show-suggestions" (re-frame/dispatch [:show-suggestions-from-jail {:chat-id chat_id
-                                                                          :markup  data}])
-      "send-message" (re-frame/dispatch [:chat-send-message/from-jail {:chat-id chat_id
-                                                                       :message data}])
-      "handler-result" (let [orig-params (:origParams data)]
-                         ;; TODO(janherich): figure out and fix chat_id from event
-                         (re-frame/dispatch [:command-handler! (:chat-id orig-params)
-                                             (restore-command-ref-keyword orig-params)
-                                             {:result {:returned (dissoc data :origParams)}}]))
+      "local-storage"    [:set-local-storage {:chat-id chat_id
+                                              :data    data}]
+      "show-suggestions" [:show-suggestions-from-jail {:chat-id chat_id
+                                                       :markup  data}]
+      "send-message"     [:chat-send-message/from-jail {:chat-id chat_id
+                                                        :message data}]
+      "handler-result"   (let [orig-params (:origParams data)]
+                           ;; TODO(janherich): figure out and fix chat_id from event
+                           [:command-handler! (:chat-id orig-params)
+                            (restore-command-ref-keyword orig-params)
+                            {:result {:returned (dissoc data :origParams)}}])
       (log/debug "Unknown jail signal " event))))
 
 (handlers/register-handler-fx
@@ -366,15 +365,17 @@
   (fn [_ [_ event-str]]
     (log/debug :event-str event-str)
     (inst/log (str "Signal event: " event-str))
-    (let [{:keys [type event]} (types/json->clj event-str)]
-      (case type
-        "transaction.queued"      (re-frame/dispatch [:transaction-queued event])
-        "transaction.failed"      (re-frame/dispatch [:transaction-failed event])
-        "node.started"            (re-frame/dispatch [:status-node-started])
-        "node.stopped"            (re-frame/dispatch [:status-node-stopped])
-        "module.initialized"      (re-frame/dispatch [:status-module-initialized])
-        "jail.signal"             (handle-jail-signal event)
-        (log/debug "Event " type " not handled")))))
+    (let [{:keys [type event]} (types/json->clj event-str)
+          to-dispatch (case type
+                        "transaction.queued" [:transaction-queued event]
+                        "transaction.failed" [:transaction-failed event]
+                        "node.started"       [:status-node-started]
+                        "node.stopped"       [:status-node-stopped]
+                        "module.initialized" [:status-module-initialized]
+                        "jail.signal"        (handle-jail-signal event)
+                        (log/debug "Event " type " not handled"))]
+      (when to-dispatch
+        {:dispatch to-dispatch}))))
 
 (handlers/register-handler-fx
   :status-module-initialized
@@ -384,13 +385,13 @@
 
 (handlers/register-handler-fx
   :status-node-started
-  (fn [{{:node/keys [after-start] :as db} :db}]
+  (fn [{{:node/keys [after-start] :as db} :db} _]
     (merge {:db (assoc db :status-node-started? true)}
            (when after-start {:dispatch-n [after-start]}))))
 
 (handlers/register-handler-fx
   :status-node-stopped
-  (fn [{{:node/keys [after-stop]} :db}]
+  (fn [{{:node/keys [after-stop]} :db} _]
     (when after-stop {:dispatch-n [after-stop]})))
 
 (handlers/register-handler-fx

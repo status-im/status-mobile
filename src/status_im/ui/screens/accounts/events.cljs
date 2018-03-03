@@ -83,7 +83,7 @@
 
 (handlers/register-handler-fx
   :create-account
-  (fn [{{:accounts/keys [create] :as db} :db}]
+  (fn [{{:accounts/keys [create] :as db} :db} _]
     {:db (update db :accounts/create assoc :step :account-creating :error nil)
      ::create-account (:password create)}))
 
@@ -123,7 +123,7 @@
       (log/debug "account-created")
       (when-not (str/blank? pubkey)
         (-> (add-account db account)
-            (assoc :dispatch [:login-account normalized-address password true]))))))
+            (assoc :dispatch [:login-account normalized-address password]))))))
 
 (handlers/register-handler-fx
   :load-accounts

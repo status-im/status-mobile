@@ -26,17 +26,16 @@
 
 (reg-fx
   ::change-account
-  (fn [[address new-account?]]
+  (fn [[address]]
     ;; if we don't add delay when running app without status-go
     ;; "null is not an object (evaluating 'realm.schema')" error appears
-    (if config/stub-status-go?
-      (utils/set-timeout
-        (fn []
-          (data-store/change-account address new-account?
-                                     #(dispatch [:change-account-handler % address])))
-        300)
-      (data-store/change-account address new-account?
-                                 #(dispatch [:change-account-handler % address])))))
+    (let [change-account-fn (fn [] (data-store/change-account address
+                                                              false
+                                                              #(dispatch [:change-account-handler % address])))]
+      (if config/stub-status-go?
+        (utils/set-timeout change-account-fn
+                           300)
+        (change-account-fn)))))
 
 ;;;; Handlers
 
@@ -90,8 +89,7 @@
 
 (register-handler-fx
   :login-account
-  (fn [{{:keys [network status-node-started?] :as db} :db}
-       [_ address password]]
+  (fn [{{:keys [network status-node-started?] :as db} :db} [_ address password]]
     (let [{account-network :network} (get-network-by-address db address)
           wnode (get-wnode-by-address db address)
           db' (-> db
