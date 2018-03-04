@@ -3,12 +3,14 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]))
 
-(defn button [{:keys [on-press style disabled? fit-to-text? text-style] :or {fit-to-text? true}} label icon]
+(defn button [{:keys [on-press style disabled? fit-to-text? text-style accessibility-label] :or {fit-to-text? true}} label icon]
   [react/touchable-highlight (merge {:underlay-color styles/border-color-high}
                                     (when-not fit-to-text?
                                       {:style styles/button-container})
                                     (when (and on-press (not disabled?))
-                                      {:on-press on-press}))
+                                      {:on-press on-press})
+                                    (when accessibility-label
+                                      {:accessibility-label accessibility-label}))
    [react/view {:style (merge styles/button
                               style)}
     [react/text {:style      (merge styles/button-text

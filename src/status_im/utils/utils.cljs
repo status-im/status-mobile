@@ -23,11 +23,14 @@
            content
            ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
            (clj->js
-            (vector (merge {:text (i18n/label :t/cancel) :style "cancel"}
+            (vector (merge {:text                (i18n/label :t/cancel)
+                            :style               "cancel"
+                            :accessibility-label :cancel-button}
                            (when on-cancel {:onPress on-cancel}))
-                    {:text    (or confirm-button-text "OK")
-                     :onPress on-accept
-                     :style   "destructive"})))))
+                    {:text                (or confirm-button-text "OK")
+                     :onPress             on-accept
+                     :style               "destructive"
+                     :accessibility-label :confirm-button})))))
 
 (defn show-question
   ([title content on-accept]
@@ -37,9 +40,12 @@
            title
            content
            (clj->js
-            (vector (merge {:text (i18n/label :t/no)}
+            (vector (merge {:text                (i18n/label :t/no)
+                            :accessibility-label :no-button}
                            (when on-cancel {:onPress on-cancel}))
-                    {:text (i18n/label :t/yes) :onPress on-accept})))))
+                    {:text                (i18n/label :t/yes)
+                     :onPress             on-accept
+                     :accessibility-label :yes-button})))))
 
 (defn http-post
   "Performs an HTTP POST request"

@@ -80,7 +80,8 @@
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
        (i18n/label :t/wallet-asset)
-       [react/view styles/asset-content-container
+       [react/view {:style               styles/asset-content-container
+                    :accessibility-label :choose-asset-button}
         [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
         [react/view styles/asset-text-content
          [react/view styles/asset-label-content
@@ -92,20 +93,23 @@
           (str (wallet.utils/format-amount (symbol balance) decimals))]]]])))
 
 (defn- recipient-address [address]
-  [react/text {:style (merge styles/recipient-address (when-not address styles/recipient-no-address))}
+  [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
+               :accessibility-label :recipient-address-text}
    (or (ethereum/normalized-address address) (i18n/label :t/specify-recipient))])
 
-(views/defview recipient-contact [address name]
+(views/defview recipient-contact [address name request?]
   (views/letsubs [contact [:contact/by-address address]]
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon
         [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]]
-       [react/view styles/recipient-name
-        [react/text {:style           (styles/participant true)
-                     :number-of-lines 1}
+       [react/view {:style styles/recipient-name}
+        [react/text {:style               (styles/participant true)
+                     :accessibility-label (if request? :contact-name-text :recipient-name-text)
+                     :number-of-lines     1}
          name]
-        [react/text {:style (styles/participant (and (not name) address?))}
+        [react/text {:style               (styles/participant (and (not name) address?))
+                     :accessibility-label (if request? :contact-address-text :recipient-address-text)}
          (ethereum/normalized-address address)]]])))
 
 (defn render-contact [contact]
@@ -113,8 +117,10 @@
    [list/item
     [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]
     [list/item-content
-     [list/item-primary (:name contact)]
-     [react/text {:style list.styles/secondary-text}
+     [list/item-primary {:accessibility-label :contact-name-text}
+      (:name contact)]
+     [react/text {:style list.styles/secondary-text
+                  :accessibility-label :contact-address-text}
       (ethereum/normalized-address (:address contact))]]]])
 
 (views/defview recent-recipients []
@@ -135,10 +141,11 @@
        [react/view components.styles/flex
         [components/cartouche {}
          (i18n/label :t/recipient)
-         [components/text-input {:multiline      true
-                                 :style          styles/contact-code-text-input
-                                 :placeholder    (i18n/label :t/recipient-code)
-                                 :on-change-text #(reset! content %)}]]
+         [components/text-input {:multiline           true
+                                 :style               styles/contact-code-text-input
+                                 :placeholder         (i18n/label :t/recipient-code)
+                                 :on-change-text      #(reset! content %)
+                                 :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
          [button/button {:disabled? (string/blank? @content)
                          :on-press  #(re-frame/dispatch [:wallet/fill-request-from-url @content])}
@@ -162,22 +169,28 @@
                                       {:label  (i18n/label :t/recipient-code)
                                        :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
-(defn recipient-selector [{:keys [name address disabled? contact-only?]}]
-  [components/cartouche {:on-press #(on-choose-recipient contact-only?) :disabled? disabled? :icon :icons/dots-horizontal}
+(defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
+  [components/cartouche {:on-press  #(on-choose-recipient contact-only?)
+                         :disabled? disabled?
+                         :icon      :icons/dots-horizontal
+                         :icon-opts {:accessibility-label :choose-contact-button}}
    (i18n/label :t/wallet-choose-recipient)
-   (if name
-     [recipient-contact address name]
-     [recipient-address address])])
+   [react/view {:accessibility-label :choose-recipient-button}
+    (if name
+      [recipient-contact address name request?]
+      [recipient-address address])]])
 
 (defn- amount-input [{:keys [input-options disabled?]}]
-  [react/view components.styles/flex
+  [react/view {:style               components.styles/flex
+               :accessibility-label :specify-amount-button}
    [components/text-input
     (merge
       (if disabled?
         {:editable false}
-        {:keyboard-type :numeric
-         :placeholder   (i18n/label :t/amount-placeholder)
-         :style         components.styles/flex})
+        {:keyboard-type       :numeric
+         :placeholder         (i18n/label :t/amount-placeholder)
+         :style               components.styles/flex
+         :accessibility-label :amount-input})
       input-options)]])
 
 (defn amount-selector [{:keys [error disabled?] :as m}]

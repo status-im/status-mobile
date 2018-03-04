@@ -18,8 +18,9 @@
      [react/view styles/transaction-sent-container
       [react/view styles/ok-icon-container
        [vi/icon :icons/ok {:color components.styles/color-blue4}]]
-      [react/text {:style      styles/transaction-sent
-                   :font       (if platform/android? :medium :default)}
+      [react/text {:style               styles/transaction-sent
+                   :font                (if platform/android? :medium :default)
+                   :accessibility-label :transaction-sent-text}
        (i18n/label :t/transaction-sent)]
       [react/view styles/gap]
       [react/text {:style styles/transaction-sent-description} (i18n/label :t/transaction-description)]]
@@ -27,14 +28,15 @@
      ;; TODO (andrey) uncomment when will be implemented
      #_[react/touchable-highlight {:on-press #()}; TODO (andrey) #(re-frame/dispatch [:navigate-to-clean :wallet-transaction-details])}
         [react/view styles/transaction-details-container
-         [react/text {:style styles/transaction-details
+         [react/text {:style      styles/transaction-details
                       :font       (if platform/android? :medium :default)
                       :uppercase? (get-in platform/platform-specific [:uppercase?])}
           (i18n/label :t/view-transaction-details)]]]
      [components/separator]
-     [react/touchable-highlight {:on-press #(re-frame/dispatch close-transaction-screen-event)}
+     [react/touchable-highlight {:on-press            #(re-frame/dispatch close-transaction-screen-event)
+                                 :accessibility-label :got-it-button}
       [react/view styles/got-it-container
-       [react/text {:style styles/got-it
+       [react/text {:style      styles/got-it
                     :font       (if platform/android? :medium :default)
                     :uppercase? (get-in platform/platform-specific [:uppercase?])}
         (i18n/label :t/got-it)]]]]))

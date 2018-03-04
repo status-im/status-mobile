@@ -37,7 +37,8 @@
        [react/view styles/request-details-wrapper
         [components/recipient-selector {:contact-only? true
                                         :address       to
-                                        :name          to-name}]
+                                        :name          to-name
+                                        :request?      true}]
         [components/asset-selector {:disabled? true
                                     :symbol    :ETH}]
         [components/amount-selector {:error         amount-error
@@ -47,9 +48,10 @@
                                                      :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
       [bottom-buttons/bottom-buttons styles/bottom-buttons
        nil ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
-       [button/button {:disabled?  (not (and to amount))
-                       :on-press   #(re-frame/dispatch [:wallet-send-request whisper-identity amount])
-                       :text-style {:padding-horizontal 0}}
+       [button/button {:disabled?           (not (and to amount))
+                       :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount])
+                       :text-style          {:padding-horizontal 0}
+                       :accessibility-label :sent-request-button}
         (i18n/label :t/send-request)
         [vector-icons/icon :icons/forward {:color :white}]]]]]))
 
@@ -70,12 +72,14 @@
       comp/default-action
       (i18n/label :t/receive)
       [toolbar/actions [{:icon      :icons/share
-                         :icon-opts {:color :white}
+                         :icon-opts {:color               :white
+                                     :accessibility-label :share-button}
                          :handler   #(list-selection/open-share {:message address})}]]]
      [react/view {:flex 1}
       [common/network-info {:text-color :white}]
       [react/scroll-view styles/request-wrapper
        [qr-code address chain-id]
-       [button/primary-button {:on-press #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
-                               :style    styles/send-request}
+       [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
+                               :style               styles/send-request
+                               :accessibility-label :sent-transaction-request-button}
         (i18n/label :t/send-transaction-request)]]]]))

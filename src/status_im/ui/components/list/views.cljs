@@ -60,13 +60,17 @@
                  :style  (merge styles/item-image image-style)}]])
 
 (defn item-primary
-  [primary]
-  [react/text {:style styles/primary-text} primary])
+  ([s] (item-primary nil s))
+  ([{:keys [style] :as props} s]
+   [react/text (merge {:style styles/primary-text}
+                      (dissoc props :style))
+    s]))
 
 (defn item-primary-only
   ([s] (item-primary-only nil s))
-  ([{:keys [style]} s]
-   [react/text {:style (merge styles/primary-text-only style)}
+  ([{:keys [style] :as props} s]
+   [react/text (merge {:style (merge styles/primary-text-only style)}
+                      (dissoc props :style))
     s]))
 
 (defn item-secondary
@@ -176,10 +180,10 @@
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)}
           (when platform/ios? {:SectionSeparatorComponent (fn [] (reagent/as-element section-separator))}))])
 
-(defn- render-action [{:keys [label icon action disabled?]}
+(defn- render-action [{:keys [label accessibility-label icon action disabled?]}
                       {:keys [action-style action-label-style icon-opts]}]
   [react/touchable-highlight {:on-press action}
-   [react/view
+   [react/view {:accessibility-label accessibility-label}
     [item
      [item-icon {:icon      icon
                  :style     (merge styles/action

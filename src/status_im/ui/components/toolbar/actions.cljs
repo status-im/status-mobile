@@ -14,7 +14,7 @@
 (defn back [handler]
   {:icon                :icons/back
    :handler             handler
-   :accessibility-label :toolbar-back-button})
+   :accessibility-label :back-button})
 
 (def default-handler #(re-frame/dispatch [:navigate-back]))
 
@@ -22,9 +22,10 @@
   (back default-handler))
 
 (defn back-white [handler]
-  {:icon      :icons/back
-   :icon-opts {:color :white}
-   :handler   handler})
+  {:icon                :icons/back
+   :icon-opts           {:color :white}
+   :handler             handler
+   :accessibility-label :back-button})
 
 (defn close [handler]
   {:icon    :icons/close

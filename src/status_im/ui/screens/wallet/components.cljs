@@ -56,7 +56,7 @@
    [react/view {:flex 1}
     content]])
 
-(defn cartouche [{:keys [disabled? on-press icon] :or {icon :icons/forward} :as m} header content]
+(defn cartouche [{:keys [disabled? on-press icon icon-opts] :or {icon :icons/forward} :as m} header content]
   [react/view {:style styles/cartouche-container}
    [react/text {:style styles/cartouche-header}
     header]
@@ -69,7 +69,7 @@
           [react/view styles/cartouche-icon-wrapper
            [react/view {:flex 1} ;; Let content shrink if needed
             content]
-           [vector-icons/icon icon {:color :white}]]
+           [vector-icons/icon icon (merge {:color :white} icon-opts)]]
           content)]]])])
 
 (defn- cartouche-primary-text [s]

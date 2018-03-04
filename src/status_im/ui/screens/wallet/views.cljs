@@ -20,35 +20,44 @@
    [toolbar/actions
     [(assoc (act/opts [{:label  (i18n/label :t/wallet-manage-assets)
                         :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}])
-       :icon-opts {:color :white})]]])
+            :icon-opts {:color               :white
+                        :accessibility-label :options-menu-button})]]])
 
 (defn- total-section [usd-value]
   [react/view {:style styles/main-section}
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
-     [react/text {:style styles/total-balance-value} usd-value]
-     [react/text {:style styles/total-balance-currency} (i18n/label :t/usd-currency)]]
+     [react/text {:style               styles/total-balance-value
+                  :accessibility-label :total-amount-value-text}
+      usd-value]
+     [react/text {:style               styles/total-balance-currency
+                  :accessibility-label :total-amount-currency-text}
+      (i18n/label :t/usd-currency)]]
     [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
 
 (def actions
-  [{:label  (i18n/label :t/send-transaction)
-    :icon   :icons/arrow-right
-    :action #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
-   {:label  (i18n/label :t/receive-transaction)
-    :icon   :icons/arrow-left
-    :action #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
-   {:label  (i18n/label :t/transaction-history)
-    :icon   :icons/transaction-history
-    :action #(re-frame/dispatch [:navigate-to :transactions-history])}])
+  [{:label               (i18n/label :t/send-transaction)
+    :accessibility-label :send-transaction-button
+    :icon                :icons/arrow-right
+    :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
+   {:label               (i18n/label :t/receive-transaction)
+    :accessibility-label :receive-transaction-button
+    :icon                :icons/arrow-left
+    :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
+   {:label               (i18n/label :t/transaction-history)
+    :accessibility-label :transaction-history-button
+    :icon                :icons/transaction-history
+    :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [{:keys [symbol icon decimals amount]}]
   [react/view
    [list/item
     [list/item-image icon]
     [react/view {:style styles/asset-item-value-container}
-     [react/text {:style           styles/asset-item-value
-                  :number-of-lines 1
-                  :ellipsize-mode  :tail}
+     [react/text {:style               styles/asset-item-value
+                  :number-of-lines     1
+                  :ellipsize-mode      :tail
+                  :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
       (wallet.utils/format-amount amount decimals)]
      [react/text {:style           styles/asset-item-currency
                   :uppercase?      true

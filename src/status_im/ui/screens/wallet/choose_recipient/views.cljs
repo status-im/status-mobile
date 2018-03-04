@@ -50,7 +50,8 @@
     [react/view {:style styles/qr-code}
      [status-bar/status-bar {:type :transparent}]
      [toolbar-view camera-flashlight]
-     [react/text {:style (styles/qr-code-text dimensions)}
+     [react/text {:style               (styles/qr-code-text dimensions)
+                  :accessibility-label :scan-qr-code-with-wallet-address-text}
       (i18n/label :t/scan-qr-code)]
      [react/view {:style          styles/qr-container
                   :pointer-events :none}
@@ -63,5 +64,7 @@
                        :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}]]
       [viewfinder dimensions (size dimensions)]]
      [bottom-buttons/bottom-button
-      [button/button {:disabled? false :on-press #(re-frame/dispatch [:navigate-back])}
+      [button/button {:disabled?           false
+                      :on-press            #(re-frame/dispatch [:navigate-back])
+                      :accessibility-label :cancel-button}
        (i18n/label :t/cancel)]]]))

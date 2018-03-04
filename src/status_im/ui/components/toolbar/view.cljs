@@ -72,11 +72,13 @@
 
 ;; Actions
 
-(defn text-action [{:keys [style handler disabled?]} title]
-  [react/text {:style      (merge styles/item styles/item-text-action style
-                                  (when disabled? styles/toolbar-text-action-disabled))
-               :on-press   (when-not disabled? handler)
-               :uppercase? components.styles/uppercase?}
+(defn text-action [{:keys [style handler disabled? accessibility-label]} title]
+  [react/text (cond-> {:style      (merge styles/item styles/item-text style
+                                          (when disabled? styles/toolbar-text-action-disabled))
+                       :on-press   (when-not disabled? handler)
+                       :uppercase? components.styles/uppercase?}
+                accessibility-label
+                (assoc :accessibility-label accessibility-label))
    title])
 
 (def blank-action [react/view {:style (merge styles/item styles/toolbar-action)}])

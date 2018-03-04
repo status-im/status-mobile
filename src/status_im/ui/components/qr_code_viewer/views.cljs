@@ -12,7 +12,8 @@
 (defn- footer [style value]
   [react/view styles/footer
    [react/view styles/wallet-info
-    [react/text {:style (merge styles/hash-value-text style)}
+    [react/text {:style               (merge styles/hash-value-text style)
+                 :accessibility-label :address-text}
      value]]])
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style]} value hint legend]
@@ -23,7 +24,8 @@
       hint]
      (when width
        (let [size (int (* 0.7 (min width height)))]
-         [react/view {:style (styles/qr-code-container size)}
+         [react/view {:style               (styles/qr-code-container size)
+                      :accessibility-label :qr-code-image}
           [qr-code {:value value
                     :size  (- size (* 2 styles/qr-code-padding))}]]))
      [footer footer-style legend]]))

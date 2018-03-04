@@ -27,7 +27,8 @@
     [react/view (merge components.styles/flex {:background-color :white})
      [status-bar/status-bar {:type :modal-wallet}]
      [toolbar/toolbar #_{} {:style wallet.styles/toolbar}
-      [toolbar/nav-text {:style {:color :white}}
+      [toolbar/nav-text {:style               {:color :white}
+                         :accessibility-label :done-button}
        (i18n/label :t/done)]
       [toolbar/content-title {:color :white}
        (i18n/label :t/wallet-assets)]]

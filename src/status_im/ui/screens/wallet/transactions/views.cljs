@@ -18,10 +18,11 @@
   (re-frame/dispatch [:wallet/discard-unsigned-transaction-with-confirmation id]))
 
 (defn history-action [filter?]
-  (merge
-    {:icon    :icons/filter
-     :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
-    (when filter? {:icon-opts {:overlay-style styles/corner-dot}})))
+  (cond->
+      {:icon      :icons/filter
+       :icon-opts {:accessibility-label :filters-button}
+       :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
+    filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- all-checked? [filter-data]
   (and (every? :checked? (:type filter-data))
@@ -39,10 +40,12 @@
 
 (defn action-buttons [{:keys [id] :as transaction}]
   [react/view {:style styles/action-buttons}
-   [button/primary-button {:style    {:margin-right 12}
-                           :on-press #(re-frame/dispatch [:wallet/show-sign-transaction id])}
+   [button/primary-button {:style               {:margin-right 12}
+                           :on-press            #(re-frame/dispatch [:wallet/show-sign-transaction id])
+                           :accessibility-label :sign-button}
     (i18n/label :t/transactions-sign)]
-   [button/secondary-button {:on-press #(on-delete-transaction transaction)}
+   [button/secondary-button {:on-press            #(on-delete-transaction transaction)
+                             :accessibility-label :delete-button}
     (i18n/label :t/delete)]])
 
 (defn- inbound? [type] (= :inbound type))
@@ -62,36 +65,46 @@
     (throw (str "Unknown transaction type: " k))))
 
 (defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted] :as transaction}]
-  (let [[label contact address] (if (inbound? type)
-                                  [(i18n/label :t/from) from-contact from]
-                                  [(i18n/label :t/to) to-contact to])]
+  (let [[label contact address
+         contact-accessibility-label
+         address-accessibility-label] (if (inbound? type)
+                                        [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
+                                        [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
+        unsigned?                     (unsigned? type)]
     [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
-     [react/view
+     [react/view {:accessibility-label (if unsigned? :unsigned-transaction-item :transaction-item)}
       [list/item
        [list/item-icon (transaction-type->icon (keyword type))]
        [list/item-content
         [react/view {:style styles/amount-time}
-         [react/text {:style styles/tx-amount
-                      :ellipsize-mode "tail"
+         [react/text {:style           styles/tx-amount
+                      :ellipsize-mode  "tail"
                       :number-of-lines 1}
-          (money/wei->str :eth value)]
+          [react/text {:accessibility-label :amount-text}
+           (->> value (money/wei-> :eth) money/to-fixed str)]
+          " "
+          [react/text {:accessibility-label :currency-text}
+           (clojure.string/upper-case (name :eth))]]
          [react/text {:style styles/tx-time}
           time-formatted]]
         [react/view {:style styles/address-row}
          [react/text {:style styles/address-label}
           label]
          (when contact
-           [react/text {:style styles/address-contact}
+           [react/text {:style               styles/address-contact
+                        :accessibility-label contact-accessibility-label}
             contact])
-         [react/text {:style styles/address-hash
-                      :ellipsize-mode "middle"
-                      :number-of-lines 1}
+         [react/text {:style               styles/address-hash
+                      :ellipsize-mode      "middle"
+                      :number-of-lines     1
+                      :accessibility-label address-accessibility-label}
           address]]
-        (when (unsigned? type)
+        (when unsigned?
           [action-buttons transaction])]
-       [list/item-icon {:icon :icons/forward
-                        :style {:margin-top 10}
-                        :icon-opts styles/forward}]]]]))
+       [list/item-icon {:icon      :icons/forward
+                        :style     {:margin-top 10}
+                        :icon-opts (merge styles/forward
+                                          {:accessibility-label :show-transaction-button})}]]]]))
 
 (defn filtered-transaction? [transaction filter-data]
   (:checked? (some #(when (= (:type transaction) (:id %)) %) (:type filter-data))))
@@ -119,23 +132,26 @@
     [react/view {:style components.styles/flex}
      [list/flat-list {:data            transactions
                       :render-fn       render-transaction
-                      :empty-component [react/text {:style styles/empty-text}
+                      :empty-component [react/text {:style               styles/empty-text
+                                                    :accessibility-label :no-unsigned-transactions-text}
                                         (i18n/label :t/transactions-unsigned-empty)]}]]))
 
 ;; Filter history
 
 (defn- item-filter [{:keys [icon checked? path]} content]
-  [list/list-item-with-checkbox
-   {:checked?        checked?
-    :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}
-   [list/item
-    [list/item-icon icon]
-    content]])
+  [react/view {:accessibility-label :filter-item}
+   [list/list-item-with-checkbox
+    {:checked?        checked?
+     :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}
+    [list/item
+     [list/item-icon icon]
+     content]]])
 
 (defn- render-item-filter [{:keys [id label checked?]}]
   [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
    [list/item-content
-    [list/item-primary-only label]]])
+    [list/item-primary-only {:accessibility-label :filter-name-text}
+     label]]])
 
 (defn- wrap-filter-data [m]
   [{:title      (i18n/label :t/transactions-filter-type)
@@ -148,27 +164,31 @@
     [react/view styles/filter-container
      [status-bar/status-bar {:type :modal-white}]
      [toolbar/toolbar {}
-      [toolbar/nav-clear-text (i18n/label :t/done)]
+      [toolbar/nav-clear-text {:accessibility-label :done-button} (i18n/label :t/done)]
       [toolbar/content-title (i18n/label :t/transactions-filter-title)]
-      [toolbar/text-action {:handler #(re-frame/dispatch [:wallet.transactions/filter-all])
-                            :disabled? (all-checked? filter-data)}
+      [toolbar/text-action {:handler             #(re-frame/dispatch [:wallet.transactions/filter-all])
+                            :disabled?           (all-checked? filter-data)
+                            :accessibility-label :select-all-button}
        (i18n/label :t/transactions-filter-select-all)]]
-     [react/view {:style (merge {:background-color  :white} components.styles/flex)}
+     [react/view {:style (merge {:background-color :white} components.styles/flex)}
       [list/section-list {:sections (wrap-filter-data filter-data)}]]]))
 
 (defn history-tab [active?]
-  [react/text {:uppercase? true
-               :style      (styles/tab-title active?)}
+  [react/text {:uppercase?          true
+               :style               (styles/tab-title active?)
+               :accessibility-label :history-button}
    (i18n/label :t/transactions-history)])
 
 (defview unsigned-tab [active?]
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
     [react/view {:flex-direction :row}
-     [react/text {:style      (styles/tab-title active?)
-                  :uppercase? true}
+     [react/text {:style               (styles/tab-title active?)
+                  :uppercase?          true
+                  :accessibility-label :unsigned-transactions-button}
       (i18n/label :t/transactions-unsigned)]
      (when (pos? unsigned-transactions-count)
-       [react/text {:style styles/tab-unsigned-transactions-count}
+       [react/text {:style               styles/tab-unsigned-transactions-count
+                    :accessibility-label :unsigned-transactions-counter-text}
         (str " " unsigned-transactions-count)])]))
 
 (def tabs-list
@@ -201,11 +221,16 @@
         :unsigned-transactions unsigned-list
         react/view)]]))
 
-(defn- pretty-print-asset [symbol amount]
-  (case symbol
-    ;; TODO (jeluard) Format tokens amount once tokens history is supported
-    :ETH (if amount (money/wei->str :eth amount) "...")
-    (throw (str "Unknown asset symbol: " symbol))))
+(defn- pretty-print-asset [symbol amount & [with-currency?]]
+  (let [token (case symbol
+                ;; TODO (jeluard) Format tokens amount once tokens history is supported
+                :ETH :eth
+                (throw (str "Unknown asset symbol: " symbol)))]
+    (if amount
+      (if with-currency?
+        (money/wei->str token amount)
+        (->> amount (money/wei-> token) money/to-fixed str))
+      "...")))
 
 
 (defn details-header [{:keys [value date type symbol]}]
@@ -213,7 +238,12 @@
    [react/view {:style styles/details-header-icon}
     [list/item-icon (transaction-type->icon type)]]
    [react/view {:style styles/details-header-infos}
-    [react/text {:style styles/details-header-value} (pretty-print-asset symbol value)]
+    [react/text {:style styles/details-header-value}
+     [react/text {:accessibility-label :amount-text}
+      (pretty-print-asset symbol value)]
+     " "
+     [react/text {:accessibility-label :currency-text}
+      (clojure.string/upper-case (name symbol))]]
     [react/text {:style styles/details-header-date} date]]])
 
 (defn progress-bar [progress]
@@ -230,14 +260,22 @@
     (i18n/label :t/confirmations-helper-text)]])
 
 (defn details-list-row
-  ([label value]
-   (details-list-row label value nil))
-  ([label value extra-value]
-   [react/view {:style styles/details-row}
-    [react/text {:style styles/details-item-label} (i18n/label label)]
-    [react/view {:style styles/details-item-value-wrapper}
-     [react/text {:style styles/details-item-value} (str value)]
-     [react/text {:style styles/details-item-extra-value} (str extra-value)]]]))
+  ([label props-value]
+   (details-list-row label props-value nil))
+  ([label props-value extra-props-value]
+   (let [[props value]             (if (string? props-value)
+                                     [nil props-value]
+                                     props-value)
+         [extra-props extra-value] (if (string? extra-props-value)
+                                     [nil extra-props-value]
+                                     extra-props-value)]
+     [react/view {:style styles/details-row}
+      [react/text {:style styles/details-item-label} (i18n/label label)]
+      [react/view {:style styles/details-item-value-wrapper}
+       [react/text (merge {:style styles/details-item-value} props)
+        (str value)]
+       [react/text (merge {:style styles/details-item-extra-value} extra-props)
+        (str extra-value)]]])))
 
 (defn details-list [{:keys [block hash
                             from from-wallet from-contact
@@ -247,11 +285,17 @@
    [details-list-row :t/block block]
    [details-list-row :t/hash hash]
    [details-list-row :t/from
-    (or from-wallet from-contact from)
-    (when (or from-wallet from-contact) from)]
+    [{:accessibility-label (if from-wallet :sender-name-text :sender-address-text)}
+     (or from-wallet from-contact from)]
+    (when (or from-wallet from-contact)
+      [{:accessibility-label :sender-address-text}
+       from])]
    [details-list-row :t/to
-    (or to-wallet to-contact to)
-    (when (or to-wallet to-contact) to)]
+    [{:accessibility-label (if to-wallet :recipient-name-text :recipient-address-text)}
+     (or to-wallet to-contact to)]
+    (when (or to-wallet to-contact)
+      [{:accessibility-label :recipient-address-text}
+       to])]
    [details-list-row :t/gas-limit gas-limit]
    [details-list-row :t/gas-price gas-price-gwei gas-price-eth]
    [details-list-row :t/gas-used gas-used]
