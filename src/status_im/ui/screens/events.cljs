@@ -163,10 +163,8 @@
     (status/should-move-to-internal-storage?
       (fn [should-move?]
         (if should-move?
-          (re-frame/dispatch [:request-permissions
-                              [:read-external-storage]
-                              #(move-to-internal-storage config)
-                              #()])
+          (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
+                                                    :on-allowed  #(move-to-internal-storage config)}])
           (status/start-node config))))))
 
 (re-frame/reg-fx
@@ -175,9 +173,9 @@
     (status/module-initialized!)))
 
 (re-frame/reg-fx
-  ::request-permissions-fx
-  (fn [[permissions then else]]
-    (permissions/request-permissions permissions then else)))
+  :request-permissions-fx
+  (fn [options]
+    (permissions/request-permissions options)))
 
 (re-frame/reg-fx
   ::testfairy-alert
@@ -379,8 +377,10 @@
 (handlers/register-handler-fx
   :status-module-initialized
   (fn [{:keys [db]} _]
-    {:db                            (assoc db :status-module-initialized? true)
-     ::status-module-initialized-fx nil}))
+    (merge {:db                            (assoc db :status-module-initialized? true)
+            ::status-module-initialized-fx nil}
+           (when-let [permissions-event @status-im.ui.components.permissions/pending-permissions-event]
+             {:dispatch permissions-event}))))
 
 (handlers/register-handler-fx
   :status-node-started
@@ -401,8 +401,8 @@
 
 (handlers/register-handler-fx
   :request-permissions
-  (fn [_ [_ permissions then else]]
-    {::request-permissions-fx [permissions then else]}))
+  (fn [_ [_ options]]
+    {:request-permissions-fx options}))
 
 (handlers/register-handler-db
   :set-swipe-position
