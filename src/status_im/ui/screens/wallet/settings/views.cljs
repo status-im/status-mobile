@@ -12,13 +12,14 @@
             [status-im.utils.ethereum.tokens :as tokens]))
 
 (defn- render-token [{:keys [symbol name icon]} visible-tokens]
-  [list/item
-   [list/item-image icon]
-   [list/item-content
-    [list/item-primary name]
-    [list/item-secondary symbol]]
-   [list/item-checkbox {:checked?        (contains? visible-tokens (keyword symbol))
-                        :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}]])
+  [list/list-item-with-checkbox
+   {:checked?        (contains? visible-tokens (keyword symbol))
+    :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
+   [list/item
+    [list/item-image icon]
+    [list/item-content
+     [list/item-primary name]
+     [list/item-secondary symbol]]]])
 
 (defview manage-assets []
   (letsubs [network        [:network]

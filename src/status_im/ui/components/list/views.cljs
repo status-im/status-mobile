@@ -82,6 +82,12 @@
   [react/view {:style (merge style styles/item-checkbox)}
    [checkbox/checkbox props]])
 
+(defn list-item-with-checkbox [{:keys [on-value-change checked? plain-checkbox?] :as props} item]
+  (let [handler  #(on-value-change (not checked?))
+        checkbox [(if plain-checkbox? checkbox/checkbox item-checkbox) props]
+        item     (conj item checkbox)]
+    [touchable-item handler item]))
+
 (def item-icon-forward
   [item-icon {:icon      :icons/forward
               :icon-opts {:color colors/white-light-transparent}}])

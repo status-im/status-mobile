@@ -7,6 +7,7 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.contact.styles :as styles]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.list.views :as list]
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn- contact-inner-view
@@ -42,7 +43,9 @@
 
 (views/defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key whisper-identity]]
-    [react/view styles/contact-container
-     [contact-inner-view {:contact contact}]
-     [checkbox/checkbox {:checked?         checked
-                         :on-value-change  #(on-toggle-handler checked whisper-identity)}]]))
+    [list/list-item-with-checkbox
+     {:checked?        checked
+      :on-value-change #(on-toggle-handler checked whisper-identity)
+      :plain-checkbox? true}
+     [react/view styles/contact-container
+      [contact-inner-view {:contact contact}]]]))

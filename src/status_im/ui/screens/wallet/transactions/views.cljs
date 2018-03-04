@@ -122,10 +122,12 @@
 ;; Filter history
 
 (defn- item-filter [{:keys [icon checked? path]} content]
-  [list/item
-   [list/item-icon icon]
-   content
-   [list/item-checkbox {:checked? checked? :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}]])
+  [list/list-item-with-checkbox
+   {:checked?        checked?
+    :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}
+   [list/item
+    [list/item-icon icon]
+    content]])
 
 (defn- render-item-filter [{:keys [id label checked?]}]
   [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
