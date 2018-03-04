@@ -45,7 +45,7 @@
                        :params                  jail-params
                        :callback-events-creator (fn [jail-response]
                                                   [[::jail-command-data-response
-                                                    jail-response message opts]])}}) 
+                                                    jail-response message opts]])}})
         {:db (update-in db [:contacts/contacts jail-id :jail-loaded-events]
                         conj [:request-command-message-data message opts])}))))
 
@@ -70,7 +70,6 @@
   (fn [_ [{command-name :name}]]
     (case (keyword command-name)
       :grant-permissions
-      {:dispatch [:request-permissions
-                  [:read-external-storage]
-                  #(re-frame/dispatch [:initialize-geth])]}
+      {:dispatch [:request-permissions {:permissions [:read-external-storage]
+                                        :on-allowed  #(re-frame/dispatch [:initialize-geth])}]}
       (log/debug "ignoring command: " command-name))))

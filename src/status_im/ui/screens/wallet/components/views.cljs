@@ -157,8 +157,8 @@
   [choose-recipient/choose-recipient])
 
 (defn- request-camera-permissions []
-  (re-frame/dispatch [:request-permissions [:camera]
-                      #(re-frame/dispatch [:navigate-to :recipient-qr-code])]))
+  (re-frame/dispatch [:request-permissions {:permissions [:camera]
+                                            :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])}]))
 
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)

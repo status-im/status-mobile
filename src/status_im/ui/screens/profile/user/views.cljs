@@ -49,11 +49,10 @@
     :action #(re-frame/dispatch [:my-profile/update-picture])}
    {:label  (i18n/label :t/image-source-make-photo)
     :action (fn []
-              (re-frame/dispatch [:request-permissions
-                                  [:camera :write-external-storage]
-                                  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
-                                  #(utils/show-popup (i18n/label :t/error)
-                                                     (i18n/label :t/camera-access-error))]))}])
+              (re-frame/dispatch [:request-permissions {:permissions [:camera :write-external-storage]
+                                                        :on-allowed  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
+                                                        :on-denied   #(utils/show-popup (i18n/label :t/error)
+                                                                                        (i18n/label :t/camera-access-error))}]))}])
 
 (defn qr-viewer-toolbar [label value]
   [toolbar/toolbar {}
