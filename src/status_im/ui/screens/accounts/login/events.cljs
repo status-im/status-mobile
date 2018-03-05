@@ -57,8 +57,8 @@
   ::login-account
   (fn [{db :db} [_ address password]]
     (wrap-with-login-account-fx
-      (assoc db :node/after-start nil)
-      address password)))
+     (assoc db :node/after-start nil)
+     address password)))
 
 (defn get-network-by-address [db address]
   (let [accounts (get db :accounts/accounts)
@@ -80,8 +80,8 @@
   ::start-node
   (fn [{db :db} [_ address password]]
     (wrap-with-initialize-geth-fx
-      (assoc db :node/after-stop nil)
-      address password)))
+     (assoc db :node/after-stop nil)
+     address password)))
 
 (defn wrap-with-stop-node-fx [db address password]
   {:db         (assoc db :node/after-stop [::start-node address password])
