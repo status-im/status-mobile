@@ -46,6 +46,7 @@
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image (get-class "Image"))
+(def check-box (get-class "CheckBox"))
 
 (def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
 (def touchable-highlight-class (get-class "TouchableHighlight"))
