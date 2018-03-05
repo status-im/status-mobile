@@ -37,7 +37,9 @@
  'status-im.test.utils.async
  'status-im.test.chat.events
  'status-im.test.accounts.events
- 'status-im.test.contacts.events
+ ;; TODO(goranjovic) - disabled contact events testing until we settle with a permanent solution
+ ;; this is a temporary fix for offsite.
+ ;; 'status-im.test.contacts.events
  'status-im.test.profile.events
  'status-im.test.data-store.realm.core
  'status-im.test.bots.events

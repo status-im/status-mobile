@@ -33,3 +33,4 @@
 (def many-whisper-topics-enabled? (enabled? (get-config :MANY_WHISPER_TOPICS_ENABLED 0)))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def compile-views-enabled? (enabled? (get-config :COMPILE_VIEWS_ENABLED 0)))
+(def dev-contacts-enabled? (enabled? (get-config :DEV_CONTACTS_ENABLED 0)))
