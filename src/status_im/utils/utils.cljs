@@ -94,3 +94,6 @@
 
 (defn clear-interval [id]
   (.clearInterval rn-dependencies/background-timer id))
+
+(defn get-version-number []
+  (.-appVersion (.-default rn-dependencies/version-number)))

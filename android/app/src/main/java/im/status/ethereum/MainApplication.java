@@ -3,6 +3,7 @@ package im.status.ethereum;
 import android.support.multidex.MultiDexApplication;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
+import com.apsl.versionnumber.RNVersionNumberPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
@@ -72,6 +73,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new RCTCameraPackage(),
                     new OrientationPackage(),
                     new RNFSPackage(),
+                    new RNVersionNumberPackage(),
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
