@@ -117,6 +117,9 @@
                   :font  (if platform/android? :medium :default)}
       (i18n/label :t/logout)]]]])
 
+(defn version []
+  [react/view styles/version
+   [react/text (utils/get-version-number)]])
 
 (defview my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
@@ -134,4 +137,5 @@
          [share-contact-code current-account public-key]]
         [react/view profile.components.styles/profile-info-container
          [my-profile-settings current-account]]
-        [logout]]])))
+        [logout]
+        [version]]])))

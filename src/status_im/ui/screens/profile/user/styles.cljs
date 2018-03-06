@@ -32,6 +32,13 @@
    :align-items     :center
    :justify-content :center})
 
+(defstyle version
+          {:padding-horizontal 16
+           :font-size          11
+           :text-color         "#93ab91"
+           :android            {:font-family "Roboto-Regular"}
+           :ios                {:font-family "SFUIText-Regular"}})
+
 (defstyle logout-text
   (merge profile.components.styles/settings-item-text
          {:color colors/red}))
