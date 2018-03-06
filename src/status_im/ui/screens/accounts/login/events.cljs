@@ -123,11 +123,11 @@
   (fn [{{:keys [view-id] :as db} :db} [_ error address]]
     (if (nil? error)
       {:db         (cond-> (dissoc db :accounts/login)
-                     (= view-id :create-account)
-                     (assoc-in [:accounts/create :step] :enter-name))
+                           (= view-id :create-account)
+                           (assoc-in [:accounts/create :step] :enter-name))
        :dispatch-n (concat
                      [[:stop-debugging]
-                      [:initialize-account address]]
-                     (when (not= view-id :create-account)
-                       [[:navigate-to-clean :home]]))}
+                      [:initialize-account address
+                       (when (not= view-id :create-account)
+                         [[:navigate-to-clean :home]])]])}
       (log/debug "Error changing acount: " error))))
