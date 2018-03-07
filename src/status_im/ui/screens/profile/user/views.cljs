@@ -26,7 +26,8 @@
    nil
    [toolbar/content-title ""]
    [react/touchable-highlight
-    {:on-press #(re-frame/dispatch [:my-profile/start-editing-profile])}
+    {:on-press            #(re-frame/dispatch [:my-profile/start-editing-profile])
+     :accessibility-label :edit-button}
     [react/view
      [react/text {:style      common.styles/label-action-text
                   :uppercase? components.styles/uppercase?} (i18n/label :t/edit)]]]])
@@ -35,9 +36,10 @@
   [toolbar/toolbar {}
    nil
    [toolbar/content-title ""]
-   [toolbar/default-done {:handler   #(re-frame/dispatch [:my-profile/save-profile])
-                          :icon      :icons/ok
-                          :icon-opts {:color colors/blue}}]])
+   [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
+                          :icon                :icons/ok
+                          :icon-opts           {:color colors/blue}
+                          :accessibility-label :done-button}]])
 
 (def profile-icon-options
   [{:label  (i18n/label :t/image-source-gallery)
@@ -52,10 +54,12 @@
 
 (defn qr-viewer-toolbar [label value]
   [toolbar/toolbar {}
-   [toolbar/default-done {:icon-opts {:color colors/black}}]
+   [toolbar/default-done {:icon-opts           {:color colors/black}
+                          :accessibility-label :done-button}]
    [toolbar/content-title label]
    [toolbar/actions [{:icon      :icons/share
-                      :icon-opts {:color :black}
+                      :icon-opts {:color               :black
+                                  :accessibility-label :share-code-button}
                       :handler   #(list-selection/open-share {:message value})}]]])
 
 (defview qr-viewer []
@@ -78,7 +82,8 @@
      [react/text {:style      styles/share-contact-code-text
                   :uppercase? components.styles/uppercase?}
       (i18n/label :t/share-contact-code)]]
-    [react/view styles/share-contact-icon-container
+    [react/view {:style               styles/share-contact-icon-container
+                 :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
 (defn my-profile-settings [{:keys [network networks]}]
@@ -86,15 +91,17 @@
    [profile.components/settings-title (i18n/label :t/settings)]
    [profile.components/settings-item :t/main-currency "USD" #() false]
    [profile.components/settings-item-separator]
-   [profile.components/settings-item :t/notifications "" #(.openURL react/linking "app-settings://notification/status-im") true]
+   [profile.components/settings-item :t/notifications "" #(.openURL react/linking "app-settings://notification/status-im") true
+    :notifications-button]
    [profile.components/settings-item-separator]
    [profile.components/settings-item :t/network (get-in networks [network :name])
-    #(re-frame/dispatch [:navigate-to :network-settings]) true]
+    #(re-frame/dispatch [:navigate-to :network-settings]) true :network-button]
    (when config/offline-inbox-enabled?
      [profile.components/settings-item-separator])
    (when config/offline-inbox-enabled?
      [profile.components/settings-item :t/offline-messaging-settings ""
-      #(re-frame/dispatch [:navigate-to :offline-messaging-settings]) true])])
+      #(re-frame/dispatch [:navigate-to :offline-messaging-settings]) true
+      :offline-messages-settings-button])])
 
 (defn navigate-to-accounts []
   ;; TODO(rasom): probably not the best place for this call
@@ -109,7 +116,8 @@
 (defn logout []
   [react/view {}
    [react/touchable-highlight
-    {:on-press handle-logout}
+    {:on-press            handle-logout
+     :accessibility-label :log-out-button}
     [react/view profile.components.styles/settings-item
      [react/text {:style styles/logout-text
                   :font  (if platform/android? :medium :default)}

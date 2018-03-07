@@ -16,12 +16,13 @@
 (defn profile-name-input [name on-change-text-event]
   [react/view
    [react/text-input
-    {:style          styles/profile-name-input-text
-     :placeholder    ""
-     :default-value  name
-     :auto-focus     true
-     :on-change-text #(when on-change-text-event
-                        (re-frame/dispatch [on-change-text-event %]))}]])
+    {:style               styles/profile-name-input-text
+     :placeholder         ""
+     :default-value       name
+     :auto-focus          true
+     :on-change-text      #(when on-change-text-event
+                             (re-frame/dispatch [on-change-text-event %]))
+     :accessibility-label :username-input}]])
 
 (defn show-profile-icon-actions [options]
   (when (seq options)
@@ -40,7 +41,8 @@
 (defn profile-header-edit [{:keys [name] :as contact}
                            icon-options on-change-text-event allow-icon-change?]
   [react/view styles/profile-header-edit
-   [react/touchable-highlight {:on-press #(show-profile-icon-actions icon-options)}
+   [react/touchable-highlight {:on-press            #(show-profile-icon-actions icon-options)
+                               :accessibility-label :edit-profile-photo-button}
     [react/view styles/modal-menu
      [chat-icon.screen/my-profile-icon {:account contact
                                         :edit?   allow-icon-change?}]]]
@@ -61,10 +63,12 @@
   [react/text {:style styles/settings-title}
    title])
 
-(defn settings-item [label-kw value action-fn active?]
+(defn settings-item [label-kw value action-fn active? & [accessibility-label]]
   [react/touchable-highlight
-   {:on-press action-fn
-    :disabled (not active?)}
+   (cond-> {:on-press action-fn
+            :disabled (not active?)}
+     accessibility-label
+     (assoc :accessibility-label accessibility-label))
    [react/view styles/settings-item
     [react/view styles/settings-item-text-wrapper
      [react/text {:style           styles/settings-item-text

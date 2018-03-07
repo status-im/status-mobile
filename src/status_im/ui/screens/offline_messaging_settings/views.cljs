@@ -24,7 +24,8 @@
       [react/list-item
        ^{:key row}
        [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:connect-wnode id])}
+        {:on-press            #(re-frame/dispatch [:connect-wnode id])
+         :accessibility-label :mailserver-item}
         [react/view styles/wnode-item
          [wnode-icon connected?]
          [react/view styles/wnode-item-inner

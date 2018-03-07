@@ -24,7 +24,7 @@
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]
                   {:keys [network]} [:get-current-account]]
     (let [{:keys [id name config]} selected-network
-          connected? (= id network)]
+          connected?               (= id network)]
       [react/view {:flex 1}
        [status-bar/status-bar]
        [toolbar/simple-toolbar]
@@ -34,14 +34,16 @@
        (when-not connected?
          [react/touchable-highlight {:on-press #(rf/dispatch [:connect-network id])}
           [react/view st/connect-button-container
-           [react/view st/connect-button
+           [react/view {:style               st/connect-button
+                        :accessibility-label :network-connect-button}
             [react/text {:style      st/connect-button-label
                          :uppercase? (get-in platform/platform-specific [:uppercase?])}
              (i18n/label :t/connect)]]
            [react/text {:style st/connect-button-description}
             (i18n/label :t/connecting-requires-login)]]])
        [react/view st/network-config-container
-        [react/text {:style st/network-config-text}
+        [react/text {:style               st/network-config-text
+                     :accessibility-label :network-details-text}
          config]]
        ;; TODO(rasom): uncomment edit-button when it will be functional,
        ;; https://github.com/status-im/status-react/issues/2104

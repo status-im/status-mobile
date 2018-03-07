@@ -12,18 +12,21 @@
             [status-im.ui.screens.profile.user.views :as profile.user]))
 
 (def tabs-list-data
-  [{:view-id :home
-    :content {:title         (i18n/label :t/home)
-              :icon-inactive :icons/home
-              :icon-active   :icons/home-active}}
-   {:view-id :wallet
-    :content {:title         (i18n/label :t/wallet)
-              :icon-inactive :icons/wallet
-              :icon-active   :icons/wallet-active}}
-   {:view-id :my-profile
-    :content {:title         (i18n/label :t/profile)
-              :icon-inactive :icons/profile
-              :icon-active   :icons/profile-active}}])
+  [{:view-id             :home
+    :content             {:title         (i18n/label :t/home)
+                          :icon-inactive :icons/home
+                          :icon-active   :icons/home-active}
+    :accessibility-label :home-tab-button}
+   {:view-id             :wallet
+    :content             {:title         (i18n/label :t/wallet)
+                          :icon-inactive :icons/wallet
+                          :icon-active   :icons/wallet-active}
+    :accessibility-label :wallet-tab-button}
+   {:view-id             :my-profile
+    :content             {:title         (i18n/label :t/profile)
+                          :icon-inactive :icons/profile
+                          :icon-active   :icons/profile-active}
+    :accessibility-label :profile-tab-button}])
 
 (defn- tab-content [{:keys [title icon-active icon-inactive]}]
   (fn [active?]
@@ -37,17 +40,20 @@
 
 (def tabs-list (map #(update % :content tab-content) tabs-list-data))
 
-(defn- tab [view-id content active?]
-  [react/touchable-highlight {:style    common.styles/flex
-                              :disabled active?
-                              :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
+(defn- tab [view-id content active? accessibility-label]
+  [react/touchable-highlight
+   (cond-> {:style    common.styles/flex
+            :disabled active?
+            :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
+     accessibility-label
+     (assoc :accessibility-label accessibility-label))
    [react/view
     [content active?]]])
 
 (defn tabs [current-view-id]
   [react/view {:style styles/tabs-container}
-   (for [{:keys [content view-id]} tabs-list]
-     ^{:key view-id} [tab view-id content (= view-id current-view-id)])])
+   (for [{:keys [content view-id accessibility-label]} tabs-list]
+     ^{:key view-id} [tab view-id content (= view-id current-view-id) accessibility-label])])
 
 (views/defview main-tabs []
   (views/letsubs [view-id [:get :view-id]]
