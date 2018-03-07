@@ -29,7 +29,8 @@
    toolbar/default-nav-back
    [toolbar/content-title title]
    (when (pos? count)
-     [toolbar/text-action {:handler handler}
+     [toolbar/text-action {:handler             handler
+                           :accessibility-label :next-button}
       label])])
 
 (defn toggle-list [contacts render-function]

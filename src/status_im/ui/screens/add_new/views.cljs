@@ -15,34 +15,39 @@
 (defn- options-list [{:keys [address]}]
   [react/view action-button.styles/actions-list
    [action-button/action-button
-    {:label     (i18n/label :t/start-new-chat)
-     :icon      :icons/newchat
-     :icon-opts {:color colors/blue}
-     :on-press  #(re-frame/dispatch [:navigate-to :new-chat])}]
+    {:label               (i18n/label :t/start-new-chat)
+     :accessibility-label :start-1-1-chat-button
+     :icon                :icons/newchat
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
    [action-button/action-button
-    {:label     (i18n/label :t/start-group-chat)
-     :icon      :icons/contacts
-     :icon-opts {:color colors/blue}
-     :on-press  #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}]
+    {:label               (i18n/label :t/start-group-chat)
+     :accessibility-label :start-group-chat-button
+     :icon                :icons/contacts
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}]
    [action-button/action-separator]
    [action-button/action-button
-    {:label     (i18n/label :t/new-public-group-chat)
-     :icon      :icons/public
-     :icon-opts {:color colors/blue}
-     :on-press  #(re-frame/dispatch [:navigate-to :new-public-chat])}]
+    {:label               (i18n/label :t/new-public-group-chat)
+     :accessibility-label :join-public-chat-button
+     :icon                :icons/public
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:navigate-to :new-public-chat])}]
    [action-button/action-separator]
    [action-button/action-button
-    {:label     (i18n/label :t/open-dapp)
-     :icon      :icons/address
-     :icon-opts {:color colors/blue}
-     :on-press  #(re-frame/dispatch [:navigate-to :open-dapp])}]
+    {:label               (i18n/label :t/open-dapp)
+     :accessibility-label :open-dapp-button
+     :icon                :icons/address
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:navigate-to :open-dapp])}]
    [action-button/action-separator]
    [action-button/action-button
-    {:label     (i18n/label :t/invite-friends)
-     :icon      :icons/share
-     :icon-opts {:color colors/blue}
-     :on-press  #(list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})})}]])
+    {:label               (i18n/label :t/invite-friends)
+     :accessibility-label :invite-friends-button
+     :icon                :icons/share
+     :icon-opts           {:color colors/blue}
+     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})})}]])
 
 (views/defview add-new []
   (views/letsubs [account  [:get-current-account]]

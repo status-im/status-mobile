@@ -108,7 +108,7 @@
         {:keys [wrapper-style input-style label-hidden? focus-line-height
                 secure-text-entry label-color error-color error label value on-focus on-blur validator
                 auto-focus on-change-text on-change on-end-editing on-submit-editing editable placeholder
-                placeholder-text-color auto-capitalize multiline number-of-lines]}
+                placeholder-text-color auto-capitalize multiline number-of-lines accessibility-label]}
         (merge default-props (reagent/props component))
         valid-value      (or valid-value "")
         label-color      (if (and error (not float-label?)) error-color label-color)
@@ -161,7 +161,8 @@
                         :max-length             max-length
                         :on-submit-editing      #(do (.blur @input-ref) (when on-submit-editing (on-submit-editing)))
                         :on-end-editing         (when on-end-editing on-end-editing)
-                        :auto-focus             (true? auto-focus)}]]))
+                        :auto-focus             (true? auto-focus)
+                        :accessibility-label    accessibility-label}]]))
 
 (defn text-field [_ _]
   (let [component-data {:get-initial-state    get-initial-state

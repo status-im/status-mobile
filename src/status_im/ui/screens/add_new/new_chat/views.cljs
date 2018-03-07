@@ -25,15 +25,17 @@
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat)]
      [react/view add-new.styles/input-container
-      [react/text-input {:on-change-text    #(re-frame/dispatch [:set :contacts/new-identity %])
-                         :on-submit-editing #(when-not error-message
-                                               (re-frame/dispatch [:add-contact-handler]))
-                         :placeholder       (i18n/label :t/enter-contact-code)
-                         :style             add-new.styles/input}]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
-                                                                 {:toolbar-title (i18n/label :t/new-contact)}
-                                                                 :set-contact-identity-from-qr])
-                                  :style    {:margin-right 14}}
+      [react/text-input {:on-change-text      #(re-frame/dispatch [:set :contacts/new-identity %])
+                         :on-submit-editing   #(when-not error-message
+                                                 (re-frame/dispatch [:add-contact-handler]))
+                         :placeholder         (i18n/label :t/enter-contact-code)
+                         :style               add-new.styles/input
+                         :accessibility-label :enter-contact-code-input}]
+      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:scan-qr-code
+                                                                            {:toolbar-title (i18n/label :t/new-contact)}
+                                                                            :set-contact-identity-from-qr])
+                                  :style               {:margin-right 14}
+                                  :accessibility-label :scan-contact-code-button}
        [react/view
         [vector-icons/icon :icons/qr {:color colors/blue}]]]]
      [react/text {:style styles/error-message}

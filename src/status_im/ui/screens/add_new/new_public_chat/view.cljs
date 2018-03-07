@@ -26,16 +26,17 @@
   [react/view (merge add-new.styles/input-container {:margin-top 8})
    [react/text {:style styles/topic-hash} "#"]
    [text-field/text-field
-    {:wrapper-style     styles/group-chat-name-wrapper
-     :line-color        components.styles/color-transparent
-     :focus-line-color  components.styles/color-transparent
-     :label-hidden?     true
-     :input-style       styles/group-chat-topic-input
-     :on-change-text    #(re-frame/dispatch [:set :public-group-topic %])
-     :on-submit-editing #(when topic (re-frame/dispatch [:create-new-public-chat topic]))
-     :value             topic
-     :validator         #(re-matches #"[a-z\-]*" %)
-     :auto-capitalize   :none}]])
+    {:wrapper-style       styles/group-chat-name-wrapper
+     :line-color          components.styles/color-transparent
+     :focus-line-color    components.styles/color-transparent
+     :label-hidden?       true
+     :input-style         styles/group-chat-topic-input
+     :on-change-text      #(re-frame/dispatch [:set :public-group-topic %])
+     :on-submit-editing   #(when topic (re-frame/dispatch [:create-new-public-chat topic]))
+     :value               topic
+     :validator           #(re-matches #"[a-z\-]*" %)
+     :auto-capitalize     :none
+     :accessibility-label :chat-name-input}]])
 
 (defn- public-chat-icon [topic]
   [react/view styles/public-chat-icon
@@ -44,7 +45,8 @@
     (first topic)]])
 
 (defn- render-topic [topic]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:create-new-public-chat topic])}
+  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:create-new-public-chat topic])
+                              :accessibility-label :chat-item}
    [react/view
     [list/item
      [public-chat-icon topic]

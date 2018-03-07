@@ -17,14 +17,17 @@
   (views/letsubs [new-group-name [:get :new-chat-name]]
     [react/view add-new.styles/input-container
      [react/text-input
-      {:auto-focus     true
-       :on-change-text #(re-frame/dispatch [:set :new-chat-name %])
-       :default-value  new-group-name
-       :placeholder    (i18n/label :t/set-a-topic)
-       :style          add-new.styles/input}]]))
+      {:auto-focus          true
+       :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
+       :default-value       new-group-name
+       :placeholder         (i18n/label :t/set-a-topic)
+       :style               add-new.styles/input
+       :accessibility-label :chat-name-input}]]))
 
 (defn- render-contact [contact]
-  [contact/contact-view {:contact contact :style styles/contact}])
+  [contact/contact-view {:contact             contact
+                         :style               styles/contact
+                         :accessibility-label :chat-member-item}])
 
 (defn- toolbar [group-name save-btn-enabled?]
   [toolbar/toolbar {}
@@ -34,9 +37,11 @@
      (let [handler #(re-frame/dispatch [:create-new-group-chat-and-open group-name])]
        (if platform/android?
          [toolbar/actions [{:icon      :icons/ok
-                            :icon-opts {:color :blue}
+                            :icon-opts {:color               :blue
+                                        :accessibility-label :create-button}
                             :handler   handler}]]
-         [toolbar/text-action {:handler handler}
+         [toolbar/text-action {:handler             handler
+                               :accessibility-label :create-button}
           (i18n/label :t/create)])))])
 
 (views/defview new-group []

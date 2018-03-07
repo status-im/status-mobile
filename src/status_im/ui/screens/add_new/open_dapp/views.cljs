@@ -14,9 +14,10 @@
             [status-im.ui.screens.add-new.open-dapp.styles :as styles]))
 
 (defn render-row [row _ _]
-  [contact-view/contact-view {:contact       row
-                              :on-press      #(re-frame/dispatch [:navigate-to :dapp-description row])
-                              :show-forward? true}])
+  [contact-view/contact-view {:contact             row
+                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description row])
+                              :show-forward?       true
+                              :accessibility-label :dapp-item}])
 
 (views/defview open-dapp []
   (views/letsubs [dapps [:all-dapp-with-url-contacts]
@@ -26,14 +27,15 @@
      [toolbar.view/simple-toolbar (i18n/label :t/open-dapp)]
      [components/separator]
      [react/view add-new.styles/input-container
-      [react/text-input {:on-change-text    #(reset! url-text %)
-                         :on-submit-editing #(do
-                                               (re-frame/dispatch [:navigate-to-clean :home])
-                                               (re-frame/dispatch [:open-browser {:url @url-text}]))
-                         :placeholder       (i18n/label :t/enter-url)
-                         :auto-capitalize   :none
-                         :auto-correct      false
-                         :style             add-new.styles/input}]]
+      [react/text-input {:on-change-text      #(reset! url-text %)
+                         :on-submit-editing   #(do
+                                                 (re-frame/dispatch [:navigate-to-clean :home])
+                                                 (re-frame/dispatch [:open-browser {:url @url-text}]))
+                         :placeholder         (i18n/label :t/enter-url)
+                         :auto-capitalize     :none
+                         :auto-correct        false
+                         :style               add-new.styles/input
+                         :accessibility-label :dapp-url-input}]]
      [react/text {:style styles/list-title}
       (i18n/label :t/selected-dapps)]
      [list/flat-list {:data                      dapps
@@ -49,15 +51,18 @@
      [toolbar.view/simple-toolbar]
      [react/view {:margin-top 24 :align-items :center}
       [chat-icon.screen/dapp-icon-browser dapp 56]
-      [react/text {:style styles/dapp-name}
+      [react/text {:style               styles/dapp-name
+                   :accessibility-label :dapp-name-text}
        name]
       [react/text {:style styles/dapp}
        (i18n/label :t/dapp)]]
      [react/view {:margin-top 24}
-      [action-button/action-button {:label (i18n/label :t/open) :icon :icons/address
-                                    :on-press #(do
-                                                 (re-frame/dispatch [:navigate-to-clean :home])
-                                                 (re-frame/dispatch [:open-dapp-in-browser dapp]))}]
+      [action-button/action-button {:label               (i18n/label :t/open)
+                                    :icon                :icons/address
+                                    :accessibility-label :open-dapp-button
+                                    :on-press            #(do
+                                                            (re-frame/dispatch [:navigate-to-clean :home])
+                                                            (re-frame/dispatch [:open-dapp-in-browser dapp]))}]
       [components/separator {:margin-left 72}]]
      [react/view styles/description-container
       [react/text {:style styles/gray-label}

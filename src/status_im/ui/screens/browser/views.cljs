@@ -19,9 +19,10 @@
     [react/view styles/toolbar-content-dapp
      [chat-icon.screen/dapp-icon-browser contact 36]
      [react/view styles/dapp-name
-      [react/text {:style           styles/dapp-name-text
-                   :number-of-lines 1
-                   :font            :toolbar-title}
+      [react/text {:style               styles/dapp-name-text
+                   :number-of-lines     1
+                   :font                :toolbar-title
+                   :accessibility-label :dapp-name-text}
        (:name contact)]
       [react/text {:style styles/dapp-text}
        (i18n/label :t/dapp)]]]))
@@ -89,10 +90,14 @@
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])
      [react/view styles/toolbar
-      [react/touchable-highlight {:on-press #(.goBack @webview) :disabled (not can-go-back?)}
+      [react/touchable-highlight {:on-press            #(.goBack @webview)
+                                  :disabled            (not can-go-back?)
+                                  :accessibility-label :previou-page-button}
        [react/view (when (not can-go-back?) {:opacity 0.4})
         [vector-icons/icon :icons/arrow-left]]]
-      [react/touchable-highlight {:on-press #(.goForward @webview) :disabled (not can-go-forward?)
-                                  :style styles/forward-button}
+      [react/touchable-highlight {:on-press            #(.goForward @webview)
+                                  :disabled            (not can-go-forward?)
+                                  :style               styles/forward-button
+                                  :accessibility-label :next-page-button}
        [react/view (when (not can-go-forward?) {:opacity 0.4})
         [vector-icons/icon :icons/arrow-right]]]]]))

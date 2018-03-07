@@ -11,13 +11,14 @@
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn- contact-inner-view
-  ([{:keys [info style] {:keys [whisper-identity name] :as contact} :contact}]
+  ([{:keys [info style] {:keys [whisper-identity name dapp?] :as contact} :contact}]
    [react/view (merge styles/contact-inner-container style)
     [react/view
      [chat-icon/contact-icon-contacts-tab contact]]
     [react/view styles/info-container
-     [react/text {:style           styles/name-text
-                  :number-of-lines 1}
+     [react/text (cond-> {:style           styles/name-text
+                          :number-of-lines 1}
+                   dapp? (assoc :accessibility-label :dapp-name))
       (if (pos? (count (:name contact)))
         (i18n/get-contact-translated whisper-identity :name name)
         ;;TODO is this correct behaviour?
@@ -26,9 +27,11 @@
        [react/text {:style styles/info-text}
         info])]]))
 
-(defn contact-view [{:keys [style contact extended? on-press extend-options extend-title info show-forward?]}]
-  [react/touchable-highlight (when-not extended?
-                               {:on-press (when on-press #(on-press contact))})
+(defn contact-view [{:keys [style contact extended? on-press extend-options extend-title info show-forward? accessibility-label]
+                     :or {accessibility-label :contact-item}}]
+  [react/touchable-highlight (merge {:accessibility-label accessibility-label}
+                                    (when-not extended?
+                                      {:on-press (when on-press #(on-press contact))}))
     [react/view styles/contact-container
      [contact-inner-view {:contact contact :info info :style style}]
      (when show-forward?
@@ -43,9 +46,10 @@
 
 (views/defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key whisper-identity]]
-    [list/list-item-with-checkbox
-     {:checked?        checked
-      :on-value-change #(on-toggle-handler checked whisper-identity)
-      :plain-checkbox? true}
-     [react/view styles/contact-container
-      [contact-inner-view {:contact contact}]]]))
+    [react/view {:accessibility-label :contact-item}
+     [list/list-item-with-checkbox
+      {:checked?        checked
+       :on-value-change #(on-toggle-handler checked whisper-identity)
+       :plain-checkbox? true}
+      [react/view styles/contact-container
+       [contact-inner-view {:contact contact}]]]]))
