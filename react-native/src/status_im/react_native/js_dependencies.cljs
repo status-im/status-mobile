@@ -21,7 +21,6 @@
 (def react-native           (js/require "react-native"))
 (def realm                  (js/require "realm"))
 (def vector-icons           (js/require "react-native-vector-icons/Ionicons"))
-(def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-fcm       (js/require "react-native-fcm"))
 (def snoopy                 (js/require "rn-snoopy"))

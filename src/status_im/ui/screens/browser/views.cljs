@@ -5,8 +5,6 @@
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
-            [status-im.chat.views.toolbar-content :as toolbar-content]
-            [status-im.ui.components.webview-bridge :as components.webview-bridge]
             [status-im.utils.js-resources :as js-res]
             [status-im.ui.components.react :as components]
             [reagent.core :as reagent]
@@ -72,20 +70,20 @@
         [toolbar-content-dapp contact]
         [toolbar-content browser])]
      (if url
-       [components.webview-bridge/webview-bridge
+       [react/web-view
         {:ref                                   #(reset! webview %)
          :source                                {:uri url}
          :java-script-enabled                   true
          :bounces                               false
-         :local-storage-enabled                 true
+         :dom-storage-enabled                   true
          :start-in-loading-state                true
          :render-error                          web-view-error
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
-         :injected-on-start-loading-java-script (str js-res/web3
+         :injected-java-script                  (str js-res/web3
                                                      js-res/jquery
-                                                     (js-res/web3-init rpc-url))
-         :injected-java-script                  (str js-res/webview-js extra-js)}]
+                                                     extra-js
+                                                     (js-res/web3-init rpc-url))}]
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])
      [react/view styles/toolbar

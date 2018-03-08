@@ -57,7 +57,6 @@
 ;;object? doesn't work
 (spec/def ::web3 (spec/nilable any?))
 ;;object?
-(spec/def ::webview-bridge (spec/nilable any?))
 (spec/def ::status-module-initialized? (spec/nilable boolean?))
 (spec/def ::status-node-started? (spec/nilable boolean?))
 ;;height of native keyboard if shown
@@ -170,7 +169,6 @@
                   ::was-modal?
                   ::rpc-url
                   ::web3
-                  ::webview-bridge
                   ::status-module-initialized?
                   ::status-node-started?
                   ::keyboard-height

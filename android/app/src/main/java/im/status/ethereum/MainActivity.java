@@ -176,11 +176,4 @@ public class MainActivity extends ReactActivity
         editor.commit();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permission has been granted. Start camera preview Activity.
-            com.github.alinz.reactnativewebviewbridge.WebViewBridgeManager.grantAccess(requestCode);
-        }
-    }
 }

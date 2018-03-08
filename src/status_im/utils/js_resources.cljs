@@ -28,8 +28,6 @@
 
 (def status-js (str (slurp "resources/js/status.js")
                     (slurp "resources/js/i18n.js")))
-
-(def webview-js (slurp "resources/js/webview.js"))
 (def jquery (str
               " if (typeof jQuery2 == 'undefined') {"
               (slurp "resources/js/vendors/jquery-3.1.1.min.js")

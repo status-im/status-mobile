@@ -208,7 +208,6 @@ dependencies {
     implementation project(':react-native-orientation')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
-    implementation project(':react-native-webview-bridge')
     implementation 'testfairy:testfairy-android-sdk:1.+@aar'
     implementation project(':react-native-config')
     implementation project(':react-native-fcm')

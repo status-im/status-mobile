@@ -14,7 +14,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.github.yamill.orientation.OrientationPackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
@@ -75,7 +74,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG, callRPC),
                     new ReactNativeConfigPackage()
                                                                                     ));
 
