@@ -8,6 +8,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [re-frame.core :as re-frame]
             [status-im.ui.components.common.styles :as common.styles]
@@ -98,6 +99,7 @@
     (let [shown-chat (merge current-chat changed-chat)
           admin?     (= current-pk group-admin)]
       [react/view profile.components.styles/profile
+       [status-bar/status-bar]
        (if editing?
          [group-chat-profile-edit-toolbar]
          [group-chat-profile-toolbar])
