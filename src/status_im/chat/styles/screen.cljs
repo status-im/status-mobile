@@ -3,6 +3,10 @@
   (:require [status-im.ui.components.styles :as component.styles]
             [status-im.ui.components.colors :as colors]))
 
+
+(def scroll-root
+  {:flex 1})
+
 (def chat-view
   {:flex             1
    :background-color component.styles/chat-background})

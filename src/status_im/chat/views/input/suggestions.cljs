@@ -19,12 +19,7 @@
 
 (defview suggestions-view []
   (letsubs [commands [:get-available-commands]]
-    [expandable/expandable-view {:key             :suggestions
-                                 :draggable?      false
-                                 :height          (* (count commands)
-                                                     (+ style/item-height
-                                                        style/border-height))
-                                 :dynamic-height? true}
+    [expandable/expandable-view {:key :suggestions}
      [react/view
       [react/scroll-view {:keyboard-should-persist-taps :always
                           :bounces                      false}

@@ -112,14 +112,20 @@
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
             current-view      [:get :view-id]]
-    [react/view {:style     style/chat-view
-                 :on-layout (fn [e]
-                              (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-     [chat-toolbar public?]
-     (when (= :chat current-view)
-       [messages-view-animation
-        [messages-view group-chat]])
-     [input/container {:text-empty? (string/blank? input-text)}]
-     (when show-bottom-info?
-       [bottom-info/bottom-info-view])
-     [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]))
+    ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
+    ;; more details here: https://github.com/facebook/react-native/issues/11071
+    [react/scroll-view {:scroll-enabled               false
+                        :style                        style/scroll-root
+                        :content-container-style      style/scroll-root
+                        :keyboard-should-persist-taps :handled}
+     [react/view {:style     style/chat-view
+                  :on-layout (fn [e]
+                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+      [chat-toolbar public?]
+      (when (= :chat current-view)
+        [messages-view-animation
+         [messages-view group-chat]])
+      [input/container {:text-empty? (string/blank? input-text)}]
+      (when show-bottom-info?
+        [bottom-info/bottom-info-view])
+      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))

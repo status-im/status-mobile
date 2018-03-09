@@ -31,7 +31,9 @@
       :editable               true
       :blur-on-submit         false
       :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused? true}])
-      :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
+      :on-blur                (fn []
+                                (re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
+                                (re-frame/dispatch [:set-chat-input-text ""]))
       :on-submit-editing      (fn [_]
                                 (if single-line-input?
                                   (re-frame/dispatch [:send-current-message])
@@ -41,7 +43,7 @@
                                 (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
       :on-change              (fn [e]
                                 (let [native-event (.-nativeEvent e)
-                                      text         (.-text native-event)
+                                      text (.-text native-event)
                                       content-size (.. native-event -contentSize)]
                                   (when (and (not single-line-input?)
                                              content-size)
@@ -58,8 +60,8 @@
                                        h (.-height s)]
                                    (set-container-width-fn w)
                                    (set-layout-height-fn h)))
-      :on-selection-change    #(let [s   (-> (.-nativeEvent %)
-                                             (.-selection))
+      :on-selection-change    #(let [s (-> (.-nativeEvent %)
+                                           (.-selection))
                                      end (.-end s)]
                                  (re-frame/dispatch [:update-text-selection end]))
       :style                  (style/input-view height single-line-input?)
@@ -157,7 +159,7 @@
 (defn commands-button []
   [react/touchable-highlight
    {:on-press #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
-                   (react/dismiss-keyboard!))}
+                   (re-frame/dispatch [:chat-input-focus :input-ref]))}
    [react/view
     [vi/icon :icons/input-commands {:container-style style/input-commands-icon
                                     :color           :dark}]]])
