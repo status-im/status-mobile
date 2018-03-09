@@ -26,6 +26,9 @@ HELP_FUN = \
 
 # Main targets
 
+setup: ##@prepare Install all the requirements for status-react
+	./scripts/setup
+
 prepare: ##@prepare Install dependencies and prepare workspace
 	lein deps
 	npm install
@@ -49,6 +52,11 @@ release-ios: prod-build-ios ##@build build release for iOS release
 
 prod-build:
 	lein prod-build
+
+full-prod-build: ##@build build prod for both Android and iOS
+	./scripts/bundle-status-go.sh ios
+	./scripts/bundle-status-go.sh android
+	$(MAKE) prod-build
 
 prod-build-android:
 	lein prod-build-android
