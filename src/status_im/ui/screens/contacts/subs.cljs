@@ -98,10 +98,15 @@
     (->> (remove :pending? (vals groups))
          (sort-by :order >))))
 
-(reg-sub :contact
+(reg-sub :current-contact-identity
   (fn [db]
-    (let [identity (:contacts/identity db)]
-      (get-in db [:contacts/contacts identity]))))
+    (:contacts/identity db)))
+
+(reg-sub :contact
+  :<- [:get-contacts]
+  :<- [:current-contact-identity]
+  (fn [[contacts identity]]
+    (contacts identity)))
 
 (reg-sub :contact-by-identity
   (fn [db [_ identity]]

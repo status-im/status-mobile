@@ -9,7 +9,7 @@ class PlusButton(BaseButton):
     def __init__(self, driver):
         super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.view.ViewGroup/android.widget.TextView[@text='+']")
+            "//*[@text='+']")
 
     def navigate(self):
         from views.start_new_chat_view import StartNewChatView
@@ -31,6 +31,16 @@ class ChatElement(BaseButton):
     def navigate(self):
         from views.chat_view import ChatView
         return ChatView(self.driver)
+
+    @property
+    def swipe_delete_button(self):
+        class DeleteButton(BaseButton):
+            def __init__(self, driver, parent_locator: str):
+                super(DeleteButton, self).__init__(driver)
+                locator_str = "/../../following-sibling::*[1][name()='android.view.ViewGroup']/*[@content-desc='icon']"
+                self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
+
+        return DeleteButton(self.driver, self.locator.value)
 
 
 class FirstChatElementTitle(BaseText):
@@ -90,7 +100,7 @@ class HomeView(BaseView):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
         start_new_chat.chat_name_editbox.send_keys(chat_name)
-        start_new_chat.confirm_button.click()
+        start_new_chat.confirm()
 
     def get_public_key(self):
         profile_view = self.profile_button.click()
@@ -99,3 +109,12 @@ class HomeView(BaseView):
         public_key = profile_view.get_text_from_qr()
         profile_view.cross_icon.click()
         return public_key
+
+    def swipe_and_delete_chat(self, chat_name: str):
+        chat_element = self.get_chat_with_user(chat_name)
+        location = chat_element.find_element().location
+        x, y = location['x'], location['y']
+        size = chat_element.find_element().size
+        width, height = size['width'], size['height']
+        self.driver.swipe(start_x=x + width / 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+        chat_element.swipe_delete_button.click()

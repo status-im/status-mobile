@@ -4,6 +4,7 @@
             [status-im.data-store.contacts :as contacts]
             [clojure.string :as s]
             [status-im.protocol.core :as protocol]
+            [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.utils :refer [http-post]]
             [status-im.utils.random :as random]
             [taoensso.timbre :as log]
@@ -11,8 +12,6 @@
             [status-im.utils.js-resources :as js-res]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.js-dependencies :as dependencies]
-            [status-im.utils.identicon :refer [identicon]]
-            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.contacts.navigation]
             [status-im.ui.screens.navigation :as navigation]
@@ -259,21 +258,12 @@
       (assoc-in  [:db :contacts/new-identity] "")
       (assoc ::save-contact contact)))
 
-(register-handler-fx
-  :add-new-contact-and-open-chat
-  (fn [{:keys [db]} [_ {:keys [whisper-identity] :as contact}]]
-    (when-not (get-in db [:contacts/contacts whisper-identity])
-      (let [contact (assoc contact :address (public-key->address whisper-identity))]
-        (-> {:db db}
-            (add-new-contact contact)
-            (update :db #(navigation/navigate-to-clean % :home))
-            (assoc :dispatch [:start-chat whisper-identity {:navigation-replace? true}]))))))
-
-(defn add-pending-contact [{:keys [db] :as fx} chat-or-whisper-id]
+(defn add-contact [{:keys [db] :as fx} chat-or-whisper-id]
   (let [{:keys [chats] :contacts/keys [contacts]} db
         contact (if-let [contact-info (get-in chats [chat-or-whisper-id :contact-info])]
                   (read-string contact-info)
-                  (get contacts chat-or-whisper-id))
+                  (or (get contacts chat-or-whisper-id)
+                      (utils.contacts/whisper-id->new-contact chat-or-whisper-id)))
         contact' (assoc contact
                         :address (public-key->address chat-or-whisper-id)
                         :pending? false)]
@@ -282,18 +272,21 @@
         (discover-events/send-portions-when-contact-exists chat-or-whisper-id)
         (add-new-contact contact'))))
 
-(register-handler-fx
-  :add-pending-contact
-  (fn [{:keys [db]} [_ chat-or-whisper-id]]
-    (add-pending-contact {:db db} chat-or-whisper-id)))
+(defn add-contact-and-open-chat [fx whisper-id]
+  (-> fx
+      (add-contact whisper-id)
+      (update :db #(navigation/navigate-to-clean % :home))
+      (assoc :dispatch [:start-chat whisper-id {:navigation-replace? true}])))
 
 (register-handler-fx
-  :add-pending-contact-and-open-chat
+  :add-contact
+  (fn [{:keys [db]} [_ chat-or-whisper-id]]
+    (add-contact {:db db} chat-or-whisper-id)))
+
+(register-handler-fx
+  :add-contact-and-open-chat
   (fn [{:keys [db]} [_ whisper-id]]
-    (-> {:db db}
-        (add-pending-contact whisper-id)
-        (update :db #(navigation/navigate-to-clean % :home))
-        (assoc :dispatch [:start-chat whisper-id {:navigation-replace? true}]))))
+    (add-contact-and-open-chat {:db db} whisper-id)))
 
 (register-handler-fx
   :set-contact-identity-from-qr
@@ -383,11 +376,6 @@
 
 (register-handler-fx
   :add-contact-handler
-  (fn [{:keys [db]}]
-    (let [{:contacts/keys [new-identity]} db]
-      (when (and new-identity (not (string/blank? new-identity)))
-        {:dispatch (if (get-in db [:contacts/contacts new-identity])
-                     [:add-pending-contact-and-open-chat new-identity]
-                     [:add-new-contact-and-open-chat {:name             (generate-gfy new-identity)
-                                                      :photo-path       (identicon new-identity)
-                                                      :whisper-identity new-identity}])}))))
+  (fn [{{:contacts/keys [new-identity] :as db} :db}]
+    (when (seq new-identity)
+      (add-contact-and-open-chat {:db db} new-identity))))

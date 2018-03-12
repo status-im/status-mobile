@@ -24,7 +24,7 @@
             pending-contact? [:current-contact :pending?]]
     (when pending-contact?
       [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
+       {:on-press #(re-frame/dispatch [:add-contact chat-id])}
        [react/view style/add-contact
         [react/text {:style style/add-contact-text}
          (i18n/label :t/add-to-contacts)]]])))
