@@ -149,9 +149,10 @@
           (i18n/label :t/done)]]]])))
 
 (defn- advanced-cartouche [{:keys [gas gas-price]} modal?]
-  [react/view styles/advanced-cartouche
-   [wallet.components/cartouche {:disabled? modal? :on-press #(do (re-frame/dispatch [:wallet.send/clear-gas])
-                                                                  (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
+  [react/view
+   [wallet.components/cartouche {:disabled? modal?
+                                 :on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
+                                                 (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
     (i18n/label :t/wallet-transaction-fee)
     [react/view styles/advanced-options-text-wrapper
      [react/text {:style styles/advanced-fees-text}
@@ -178,7 +179,11 @@
       (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
-      [react/scroll-view (merge {:keyboardShouldPersistTaps :always} (when-not modal? {:ref #(reset! scroll %)}))
+      [react/scroll-view (merge {:keyboard-should-persist-taps :always
+                                 :on-content-size-change       #(when @scroll
+                                                                  (.scrollToEnd @scroll))}
+                                (when-not modal?
+                                  {:ref #(reset! scroll %)}))
        [react/view styles/send-transaction-form
         [components/recipient-selector {:disabled? modal?
                                         :address   to

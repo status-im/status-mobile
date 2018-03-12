@@ -60,9 +60,6 @@
    :margin-top        22
    :margin-horizontal 92})
 
-(def advanced-cartouche
-  {:padding-bottom 50})
-
 (def advanced-button
   {:flex-direction   :row
    :background-color styles/color-blue6
