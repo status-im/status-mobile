@@ -1,24 +1,25 @@
 (ns status-im.ui.screens.profile.user.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.react :as react]
-            [re-frame.core :as re-frame]
-            [status-im.ui.components.common.styles :as common.styles]
-            [status-im.ui.components.styles :as components.styles]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.protocol.core :as protocol]
+            [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.utils :as utils]
+            [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
-            [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
-            [status-im.ui.components.action-button.styles :as action-button.styles]
-            [status-im.protocol.core :as protocol]))
+            [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]))
+
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {}
@@ -59,11 +60,10 @@
 
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
-    [react/view {:flex-grow      1
-                 :flex-direction :column}
+    [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal}]
      [qr-viewer-toolbar (:name contact) value]
-     [qr-code-viewer/qr-code-viewer {}
+     [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
       value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
 
 (defn- show-qr [contact source value]

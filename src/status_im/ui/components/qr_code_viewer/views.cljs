@@ -15,10 +15,10 @@
     [react/text {:style (merge styles/hash-value-text style)}
      value]]])
 
-(defn qr-code-viewer [{:keys [hint-style footer-style]} value hint legend]
+(defn qr-code-viewer [{:keys [style hint-style footer-style]} value hint legend]
   {:pre [(not (nil? value))]}
   (let [{:keys [width height]} (react/get-dimensions "window")]
-    [react/view {:style     styles/qr-code}
+    [react/view {:style (merge styles/qr-code style)}
      [react/text {:style (merge styles/qr-code-hint hint-style)}
       hint]
      (when width

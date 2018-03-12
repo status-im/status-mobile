@@ -32,6 +32,13 @@
    :align-items     :center
    :justify-content :center})
 
+(def qr-code
+  {:background-color colors/gray-lighter})
+
+(def qr-code-viewer
+  {:flex-grow      1
+   :flex-direction :column})
+
 (defstyle logout-text
   (merge profile.components.styles/settings-item-text
          {:color colors/red}))

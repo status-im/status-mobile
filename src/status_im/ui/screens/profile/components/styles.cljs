@@ -42,23 +42,27 @@
 (def settings-item-separator
   {:margin-left 16})
 
-(defstyle settings-item
+(def settings-item
   {:padding-horizontal 16
+   :flex               1
    :flex-direction     :row
    :align-items        :center
    :background-color   colors/white
    :height             52})
 
+(def settings-item-text-wrapper
+  {:flex             1
+   :flex-direction   :row
+   :justify-content  :space-between})
+
 (defstyle settings-item-text
-  {:flex      1
-   :flex-wrap :nowrap
+  {:flex-wrap :nowrap
    :font-size 15
    :ios       {:letter-spacing -0.2}
    :android   {:color colors/black}})
 
 (def settings-item-value
-  {:flex          2
-   :flex-wrap     :nowrap
+  {:flex-wrap     :nowrap
    :text-align    :right
    :padding-right 10
    :font-size     15
