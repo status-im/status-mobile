@@ -138,10 +138,10 @@
   (merge
     {:padding-vertical   12
      :padding-horizontal 42
-     :border-radius      8}
-    style
-    (when background?
-      {:background-color (colors/alpha colors/blue 0.1)})))
+     :border-radius      8
+     :background-color   (when background?
+                           (colors/alpha colors/blue 0.1))}
+    style))
 
 (def button-label
   {:font-size      15

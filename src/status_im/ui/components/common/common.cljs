@@ -72,11 +72,11 @@
     (when forward?
       [icons/icon :icons/forward {:color colors/blue}])]])
 
-(defn button [{:keys [on-press label background? style] :or {background? true}}]
+(defn button [{:keys [on-press label background? button-style label-style] :or {background? true}}]
   [react/touchable-highlight {:on-press on-press}
-   [react/view {:style (styles/button style background?)}
+   [react/view {:style (styles/button button-style background?)}
     [react/text {:uppercase? true
-                 :style      styles/button-label}
+                 :style      (merge styles/button-label label-style)}
      label]]])
 
 (defn counter

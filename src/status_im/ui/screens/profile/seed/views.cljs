@@ -42,9 +42,9 @@
     (i18n/label :t/your-data-belongs-to-you)]
    [react/text {:style styles/intro-description}
     (i18n/label :t/your-data-belongs-to-you-description)]
-   [components.common/button {:style    styles/intro-button
-                              :on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
-                              :label    (i18n/label :t/ok-continue)}]])
+   [components.common/button {:button-style styles/intro-button
+                              :on-press     #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
+                              :label        (i18n/label :t/ok-continue)}]])
 
 (defn six-words [words]
   [react/view {:style styles/six-words-container}
@@ -129,9 +129,9 @@
     (i18n/label :t/you-are-all-set)]
    [react/text {:style styles/finish-description}
     (i18n/label :t/you-are-all-set-description)]
-   [components.common/button {:style    styles/finish-button
-                              :on-press #(re-frame/dispatch [:navigate-back])
-                              :label    (i18n/label :t/ok-got-it)}]])
+   [components.common/button {:button-style styles/finish-button
+                              :on-press     #(re-frame/dispatch [:navigate-back])
+                              :label        (i18n/label :t/ok-got-it)}]])
 
 (defview backup-seed []
   (letsubs [current-account [:get-current-account]

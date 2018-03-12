@@ -27,6 +27,7 @@
 (spec/def :account/settings (spec/nilable (spec/map-of keyword? any?)))
 (spec/def :account/signing-phrase :global/not-empty-string)
 (spec/def :account/mnemonic (spec/nilable string?))
+(spec/def :account/wallet-set-up-passed? (spec/nilable boolean?))
 (spec/def :account/sharing-usage-data? (spec/nilable boolean?))
 (spec/def :account/dev-mode? (spec/nilable boolean?))
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
@@ -37,8 +38,9 @@
                               :opt-un [:account/debug? :account/status :account/last-updated
                                        :account/email :account/signed-up? :account/network
                                        :account/networks :account/settings :account/wnode
-                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
-                                       :account/seed-backed-up? :account/mnemonic]))
+                                       :account/last-sign-in :account/sharing-usage-data?
+                                       :account/dev-mode? :account/wallet-set-up-passed?
+                                       :account/seed-backed-up? :account/mnemonic ]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

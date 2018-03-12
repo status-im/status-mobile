@@ -3,8 +3,7 @@
   (:require [status-im.chat.views.input.animations.expandable :as expandable]
             [status-im.chat.styles.input.parameter-box :as style]
             [status-im.commands.utils :as command-utils]
-            [status-im.ui.components.react :as react]
-            [taoensso.timbre :as log]))
+            [status-im.ui.components.react :as react]))
 
 (defview parameter-box-container []
   [{:keys [markup]} [:chat-parameter-box]

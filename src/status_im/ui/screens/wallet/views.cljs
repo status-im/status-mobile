@@ -8,6 +8,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.styles :as styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]))
 
@@ -78,7 +79,7 @@
        :data               assets
        :render-fn          render-asset}]]))
 
-(views/defview wallet []
+(views/defview wallet-root []
   (views/letsubs [network         [:network]
                   balance         [:balance]
                   visible-tokens  [:wallet.settings/visible-tokens]
@@ -97,3 +98,9 @@
         [list/action-list actions
          {:container-style styles/action-section}]
         [asset-section network balance visible-tokens]]])))
+
+(views/defview wallet []
+  (views/letsubs [{:keys [wallet-set-up-passed?]} [:get-current-account]]
+    (if wallet-set-up-passed?
+      [wallet-root]
+      [onboarding.views/onboarding])))
