@@ -27,7 +27,8 @@
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
-            "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
+            "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]
+            "compile-cli"        ["with-profile""dev" "cljsbuild" "auto" "cli"]}
   :profiles {:dev      {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                         :cljsbuild    {:builds
                                        {:ios
@@ -42,7 +43,16 @@
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
                                                             :optimizations :none}
-                                         :warning-handlers [status-im.utils.build/warning-handler]}}}
+                                         :warning-handlers [status-im.utils.build/warning-handler]}
+
+                                        :cli
+                                        {:source-paths ["src" "cli"],
+                                         :compiler     {:main          status-im.cli.core,
+                                                        :output-to     "target/cli/index.js",
+                                                        :output-dir    "target/cli",
+                                                        :optimizations :advanced,
+                                                        :target        :nodejs,
+                                                        :pretty-print  true}}}}
                         :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
