@@ -7,6 +7,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
+            [status-im.utils.contacts :as utils.contacts]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.list.views :as list]))
 
@@ -19,7 +20,7 @@
   (concat (if pending?
             [{:label  (i18n/label :t/add-to-contacts)
               :icon   :icons/add-contact
-              :action #(re-frame/dispatch [:add-pending-contact chat-id])}]
+              :action #(re-frame/dispatch [:add-contact whisper-identity])}]
             [{:label     (i18n/label :t/in-contacts)
               :icon      :icons/in-contacts
               :disabled? true}])
@@ -52,19 +53,21 @@
    [profile-info-contact-code-item whisper-identity]])
 
 (defview profile []
-  (letsubs [contact [:contact]
+  (letsubs [identity        [:current-contact-identity]
+            maybe-contact   [:contact]
             chat-id [:get :current-chat-id]]
-    [react/view profile.components.styles/profile
-     [status-bar/status-bar]
-     [profile-contact-toolbar]
-     [react/scroll-view
-      [react/view profile.components.styles/profile-form
-       [profile.components/profile-header contact false false nil nil]]
-      [list/action-list (actions contact chat-id)
-       {:container-style        styles/action-container
-        :action-style           styles/action
-        :action-label-style     styles/action-label
-        :action-separator-style styles/action-separator
-        :icon-opts              styles/action-icon-opts}]
-      [react/view styles/contact-profile-info-container
-       [profile-info contact]]]]))
+    (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))]
+      [react/view profile.components.styles/profile
+       [status-bar/status-bar]
+       [profile-contact-toolbar]
+       [react/scroll-view
+        [react/view profile.components.styles/profile-form
+         [profile.components/profile-header contact false false nil nil]]
+        [list/action-list (actions contact chat-id)
+         {:container-style        styles/action-container
+          :action-style           styles/action
+          :action-label-style     styles/action-label
+          :action-separator-style styles/action-separator
+          :icon-opts              styles/action-icon-opts}]
+        [react/view styles/contact-profile-info-container
+         [profile-info contact]]]])))

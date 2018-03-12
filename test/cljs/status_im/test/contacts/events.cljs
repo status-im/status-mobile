@@ -110,7 +110,7 @@
    contact-request-received (update-contact, watch-contact ;TODO :update-chat!)
    contact-update-received (update-contact ;TODO :update-chat!)
    hide-contact (update-contact ;TODO :account-update-keys)
-   add-contact-handler (add-pending-contact, status-im.contacts.events/add-new-contact
+   add-contact-handler (add-contact, status-im.contacts.events/add-new-contact
                         status-im.contacts.events/send-contact-request ;TODO :discoveries-send-portions)
 
    create-new-contact-group
@@ -241,7 +241,8 @@
     (def new-contact {:name ""
                       :photo-path ""
                       :whisper-identity new-contact-public-key
-                      :address new-contact-address})
+                      :address new-contact-address
+                      :pending? false})
     (def contact (rf/subscribe [:contact-by-identity new-contact-public-key]))
     (def current-chat-id (rf/subscribe [:get-current-chat-id]))
 
@@ -338,11 +339,11 @@
         (is (= (assoc received-contact2 :pending? true)
                (get @contacts new-contact-public-key)))))
 
-    (testing ":add-contact-handler event - :add-pending-contact"
+    (testing ":add-contact-handler event - :add-contact"
 
       ;; :add-contact-handler event dispatches next 4 events
       ;;
-      ;; :add-pending-contact
+      ;; :add-contact
       ;; :status-im.contacts.events/add-new-contact
       ;; :status-im.contacts.events/send-contact-request
       ;;TODO :discoveries-send-portions
