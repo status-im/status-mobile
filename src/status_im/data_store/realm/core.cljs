@@ -4,6 +4,7 @@
             [status-im.data-store.realm.schemas.base.core :as base]
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
+            [status-im.utils.async :as utils.async]
             [clojure.string :as str]
             [goog.string :as gstr]
             [cognitect.transit :as transit]
@@ -42,6 +43,8 @@
 (def base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas))
 
 (def account-realm (atom (open-migrated-realm new-account-filename account/schemas)))
+
+(def realm-queue (utils.async/task-queue 2000))
 
 (defn close-account-realm []
   (close @account-realm)

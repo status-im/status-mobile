@@ -22,14 +22,14 @@
      :is-active             true
      :timestamp             now
      :contacts              [{:identity chat-id}]
-     :last-to-clock-value   0
-     :last-from-clock-value 0}))
+     :last-from-clock-value 0
+     :last-to-clock-value   0}))
 
 (defn add-chat
   "Adds new chat to db & realm, if the chat with same id already exists, justs restores it"
-  ([cofx chat-id]
-   (add-chat cofx chat-id {}))
-  ([{:keys [db get-stored-chat] :as cofx} chat-id chat-props]
+  ([chat-id cofx]
+   (add-chat chat-id {} cofx))
+  ([chat-id chat-props {:keys [db get-stored-chat] :as cofx}]
    (let [{:keys [deleted-chats]} db
          new-chat (merge (if (get deleted-chats chat-id)
                            (assoc (get-stored-chat chat-id) :is-active true)
@@ -45,7 +45,7 @@
 ;; is wrongfuly named
 (defn update-chat
   "Updates chat properties when not deleted, if chat is not present in app-db, creates a default new one"
-  [{:keys [db] :as cofx} {:keys [chat-id] :as chat-props}]
+  [{:keys [chat-id] :as chat-props} {:keys [db] :as cofx}]
   (let [{:keys [chats deleted-chats]} db]
     (if (get deleted-chats chat-id) ;; when chat is deleted, don't change anything
       {:db db}
@@ -59,15 +59,15 @@
 ;; exist and update it if it does
 (defn upsert-chat
   "Just like `update-chat` only implicitely updates timestamp"
-  [cofx chat]
-  (update-chat cofx (assoc chat :timestamp (:now cofx))))
+  [chat cofx]
+  (update-chat (assoc chat :timestamp (:now cofx)) cofx))
 
 (defn new-update? [{:keys [added-to-at removed-at removed-from-at]} timestamp]
   (and (> timestamp added-to-at)
        (> timestamp removed-at)
        (> timestamp removed-from-at)))
 
-(defn remove-chat [{:keys [db]} chat-id]
+(defn remove-chat [chat-id {:keys [db]}]
   (let [{:keys [chat-id group-chat debug?]} (get-in db [:chats chat-id])]
     (cond-> {:db                      (-> db
                                           (update :chats dissoc chat-id)

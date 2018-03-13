@@ -11,25 +11,23 @@
 ;;;; Helper fns
 
 (defn console-respond-command-messages
-  [command random-id-seq]
-  (let [{:keys [command handler-data]} command]
-    (when command
-      (let [{:keys [name]} command]
-        (case name
-          "js" (let [{:keys [err data messages]} handler-data
-                     content                     (or err data)
-                     message-events              (mapv (fn [{:keys [message type]} id]
-                                                         (console-chat/console-message
-                                                          {:message-id id
-                                                           :content (str type ": " message)
-                                                           :content-type constants/text-content-type}))
-                                                       messages random-id-seq)]
-                 (conj message-events
-                       (console-chat/console-message
-                        {:message-id   (first random-id-seq)
-                         :content      (str content)
-                         :content-type constants/text-content-type})))
-          (log/debug "ignoring command: " name))))))
+  [{:keys [name] :as command} handler-data random-id-seq] 
+  (when command 
+    (case name
+      "js" (let [{:keys [err data messages]} handler-data
+                 content                     (or err data)
+                 message-events              (mapv (fn [{:keys [message type]} id]
+                                                     (console-chat/console-message
+                                                      {:message-id id
+                                                       :content (str type ": " message)
+                                                       :content-type constants/text-content-type}))
+                                                   messages random-id-seq)]
+             (conj message-events
+                   (console-chat/console-message
+                    {:message-id   (first random-id-seq)
+                     :content      (str content)
+                     :content-type constants/text-content-type})))
+      (log/debug "ignoring command: " name))))
 
 (defn faucet-base-url->url [url]
   (str url "/donate/0x%s"))

@@ -1,7 +1,6 @@
 (ns status-im.chat.events.receive-message
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log] 
-            [status-im.data-store.messages :as messages-store]
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.models.message :as message-model]
             [status-im.constants :as constants]

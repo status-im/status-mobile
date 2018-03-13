@@ -42,13 +42,6 @@
   (fn [coeffects _]
     (assoc coeffects :pending-messages (pending-messages/get-all))))
 
-(re-frame/reg-cofx
-  ::message-get-by-id
-  (fn [coeffects _]
-    (let [[{{:keys [message-id]} :payload}] (:event coeffects)]
-      (assoc coeffects :message-by-id (messages/get-by-id message-id)))))
-
-
 ;;;; FX
 
 (def ^:private protocol-realm-queue (async-utils/task-queue 2000))
@@ -386,17 +379,38 @@
    (re-frame/inject-cofx ::get-web3)
    (re-frame/inject-cofx ::get-chat-groups)
    (re-frame/inject-cofx ::get-pending-messages)
-   (re-frame/inject-cofx :get-all-contacts)]
-  (fn [{:keys [db web3 groups all-contacts pending-messages]} [current-account-id ethereum-rpc-url]]
-    (let [{:keys [public-key status updates-public-key
-                  updates-private-key]}
-          (get-in db [:accounts/accounts current-account-id])]
+   (re-frame/inject-cofx :get-all-contacts)
+   (re-frame/inject-cofx :data-store/transport)]
+  (fn [{:data-store/keys [transport] :keys [db web3 groups all-contacts pending-messages]} [current-account-id ethereum-rpc-url]]
+    (let [{:keys [public-key status updates-public-key updates-private-key]} (get-in db [:accounts/accounts current-account-id])]
       (when public-key
-        {::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
+        {;;TODO (yenda) remove once go implements persistence
+         :shh/add-sym-keys {:web3 web3
+                            :transport transport
+                            :success-event ::sym-key-added}
+         ::init-whisper {:web3 web3 :public-key public-key :groups groups :pending-messages pending-messages
                          :updates-public-key updates-public-key :updates-private-key updates-private-key
                          :status status :contacts all-contacts}
+         :transport/init-whisper {:web3       web3
+                                  :public-key public-key
+                                  :transport  transport}
          :db (assoc db :web3 web3
-                    :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url))}))))
+                    :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url)
+                    :transport/chats transport)}))))
+
+;;TODO (yenda) remove once go implements persistence
+(handlers/register-handler-fx
+  ::sym-key-added
+  (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
+    (let [web3 (:web3 db)
+          {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
+      {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+       :data-store.transport/save {:chat-id chat-id
+                                   :chat (assoc chat :sym-key-id sym-key-id)}
+       :shh/add-filter {:web3 web3
+                        :sym-key-id sym-key-id
+                        :topic topic
+                        :chat-id chat-id}})))
 
 (handlers/register-handler-fx
   :load-processed-messages
@@ -600,8 +614,8 @@
 (handlers/register-handler-fx
   :participant-removed-from-group
   [re-frame/trim-v
-   (re-frame/inject-cofx ::message-get-by-id)]
-  (fn [{{:keys [current-public-key chats contacts/contacts]} :db message-by-id :message-by-id}
+   (re-frame/inject-cofx :get-stored-message)]
+  (fn [{{:keys [current-public-key chats contacts/contacts]} :db message-by-id :get-stored-message}
        [{:keys                                              [from]
          {:keys [group-id identity message-id timestamp]}   :payload
          :as                                                message}]]

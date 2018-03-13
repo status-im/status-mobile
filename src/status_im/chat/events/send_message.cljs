@@ -1,11 +1,11 @@
 (ns status-im.chat.events.send-message
-  (:require [re-frame.core :as re-frame] 
+  (:require [re-frame.core :as re-frame]
             [status-im.chat.models.message :as message-model]
-            [status-im.constants :as constants] 
+            [status-im.constants :as constants]
             [status-im.native-module.core :as status]
             [status-im.protocol.core :as protocol] 
-            [status-im.utils.handlers :as handlers] 
-            [status-im.utils.types :as types] 
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
@@ -37,7 +37,7 @@
   :chat-send-message/send-command
   message-model/send-interceptors
   (fn [cofx [add-to-chat-id params]]
-    (message-model/send-command cofx add-to-chat-id params)))
+    (message-model/send-command cofx params)))
 
 (handlers/register-handler-fx
   :chat-send-message/from-jail
