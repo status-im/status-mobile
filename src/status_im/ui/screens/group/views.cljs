@@ -13,15 +13,6 @@
             [status-im.ui.screens.group.styles :as styles]
             [status-im.ui.screens.group.db :as v]))
 
-(defn group-toolbar [group-type edit?]
-  [react/view
-   [status-bar/status-bar]
-   [toolbar/simple-toolbar
-    (i18n/label
-      (if (= group-type :contact-group)
-        (if edit? :t/edit-group :t/new-group)
-        (if edit? :t/chat-settings :t/group-chat)))]])
-
 (views/defview group-name-view []
   (views/letsubs [new-group-name [:get :new-chat-name]]
     [react/view add-new.styles/input-container

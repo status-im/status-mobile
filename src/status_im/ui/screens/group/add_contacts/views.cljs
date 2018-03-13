@@ -8,8 +8,7 @@
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]
-            [status-im.ui.screens.contacts.styles :as contacts.styles]
-            [status-im.ui.components.styles :as components.styles]))
+            [status-im.ui.screens.contacts.styles :as contacts.styles]))
 
 (defn- on-toggle [checked? whisper-identity]
   (let [action (if checked? :deselect-contact :select-contact)]
@@ -30,9 +29,7 @@
    toolbar/default-nav-back
    [toolbar/content-title title]
    (when (pos? count)
-     [toolbar/text-action {:handler    handler
-                           :uppercase? components.styles/uppercase?
-                           :style      styles/toggle-list-action}
+     [toolbar/text-action {:handler handler}
       label])])
 
 (defn toggle-list [contacts render-function]
@@ -69,20 +66,6 @@
                            :label   (i18n/label :t/save)}
       (:name group)]
      [toggle-list contacts group-toggle-contact]]))
-
-(defn toggle-participants-handler []
-  (re-frame/dispatch [:add-new-group-chat-participants])
-  (re-frame/dispatch [:navigate-back]))
-
-(defn add-participants-toggle-list-toolbar [selected-contacts-count]
-  [toolbar/toolbar {}
-   toolbar/default-nav-back
-   [toolbar/content-title (i18n/label :t/add-members)]
-   (when (pos? selected-contacts-count)
-     [toolbar/text-action {:handler    toggle-participants-handler
-                           :uppercase? components.styles/uppercase?
-                           :style      styles/toggle-list-action}
-      (i18n/label :t/add)])])
 
 (defview add-participants-toggle-list []
   (letsubs [contacts                [:all-new-contacts]

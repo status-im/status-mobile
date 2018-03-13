@@ -170,9 +170,3 @@
 (def list-view-container
   {:flex       1
    :margin-top 10})
-
-(defstyle toggle-list-action
-  {:font-size 14
-   :android   {:font-weight "500"}})
-
-

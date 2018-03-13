@@ -72,11 +72,11 @@
 
 ;; Actions
 
-(defn text-action [{:keys [style handler disabled? uppercase?]} title]
-  [react/text {:style      (merge styles/item styles/item-text style
+(defn text-action [{:keys [style handler disabled?]} title]
+  [react/text {:style      (merge styles/item styles/item-text-action style
                                   (when disabled? styles/toolbar-text-action-disabled))
                :on-press   (when-not disabled? handler)
-               :uppercase? uppercase?}
+               :uppercase? components.styles/uppercase?}
    title])
 
 (def blank-action [react/view {:style (merge styles/item styles/toolbar-action)}])
@@ -86,7 +86,7 @@
    [react/view {:style (merge styles/item styles/toolbar-action)}
     (when overlay-style
       [react/view overlay-style])
-    [vector-icons/icon icon icon-opts]]])
+    [vector-icons/icon icon (merge {:container-style styles/action-default} icon-opts)]]])
 
 (defn- option-actions [icon icon-opts options]
   [icon-action icon icon-opts

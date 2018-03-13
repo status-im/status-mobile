@@ -1,8 +1,8 @@
 (ns status-im.ui.components.toolbar.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
-(def toolbar-background1 styles/color-white)
+(def toolbar-background colors/white)
 
 (def toolbar-height 56)
 (def toolbar-icon-width 24)
@@ -14,7 +14,7 @@
    :flex-direction   :row
    :align-items      :center
    :justify-content  :space-between
-   :background-color (or background-color toolbar-background1)
+   :background-color (or background-color toolbar-background)
    :elevation        (if flat? 0 2)
    :android          {:height 55}
    :ios              {:height 56}})
@@ -33,7 +33,7 @@
    :margin-left    6})
 
 (defstyle toolbar-title-text
-  {:color          styles/text1-color
+  {:color          colors/black
    :letter-spacing -0.2
    :font-size      17
    :text-align     :center})
@@ -49,8 +49,7 @@
            {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
 (def toolbar-action
-  {:width           toolbar-icon-width
-   :height          toolbar-icon-height
+  {:flex            1
    :align-items     :center
    :justify-content :center})
 
@@ -63,17 +62,24 @@
    :padding-horizontal 12})
 
 (defstyle item
-  {:ios     {:margin-horizontal 12
-             :margin-vertical   16}
-   :android {:margin 16}})
+  {:ios     {:padding-horizontal 12
+             :padding-vertical   16}
+   :android {:padding 16}})
 
 (def item-text
-  {:color     styles/color-blue4
+  {:color     colors/blue
    :font-size 17})
 
-(def toolbar-text-action-disabled {:color styles/color-gray7})
+(defstyle item-text-action
+  {:color   colors/blue
+   :ios     {:font-size      15
+             :letter-spacing -0.2}
+   :android {:font-size      14
+             :letter-spacing 0.5}})
 
-(def item-text-white-background {:color styles/color-blue4})
+(def toolbar-text-action-disabled {:color colors/gray})
+
+(def item-text-white-background {:color colors/blue})
 
 ;;TODO(goranjovic) - Breaks the toolbar title into new line on smaller screens
 ;;e.g. see Discover > Popular hashtags on iPhone 5s
