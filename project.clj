@@ -87,6 +87,7 @@
                                                          :optimizations      :simple
                                                          :closure-defines    {"goog.DEBUG" false}
                                                          :parallel-build     false
+                                                         :elide-asserts      true
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
@@ -99,5 +100,6 @@
                                                          :optimizations      :simple
                                                          :closure-defines    {"goog.DEBUG" false}
                                                          :parallel-build     false
+                                                         :elide-asserts      true
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}}}}})
