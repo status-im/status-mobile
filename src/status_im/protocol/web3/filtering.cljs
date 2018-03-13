@@ -2,11 +2,19 @@
   (:require [status-im.protocol.web3.utils :as u]
             [status-im.utils.config :as config]
             [cljs.spec.alpha :as s]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [goog.string :as gstring]
+            [goog.string.format]))
 
 ;; XXX(oskarth): Perf issue to have one topic
 ;; See https://github.com/status-im/ideas/issues/55#issuecomment-355511183
-(def status-topic "0xaabb11ee")
+(def status-topic "0xaabb1122")
+(def contact-request-topic "Ox636f6e74")
+
+(defn get-contact-request-topic []
+  (if config/many-whisper-topics-enabled?
+    [contact-request-topic]
+    [status-topic]))
 
 (defonce filters (atom {}))
 
@@ -19,6 +27,7 @@
 ;; that requires no coordination for 1-1 chats.
 (defn identity->topic [identity]
   (apply str (take 10 identity)))
+
 
 (defn get-topics [& [identity]]
   (if config/many-whisper-topics-enabled?

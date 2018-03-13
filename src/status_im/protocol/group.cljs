@@ -132,21 +132,21 @@
 (defn start-watching-group!
   [{:keys [web3 group-id keypair callback identity]}]
   (shh-keys/get-sym-key
-    web3
-    group-id
-    (fn [key-id]
-      (f/add-filter!
-        web3
-        (if (and config/offline-inbox-enabled?
-                 config/offline-inbox-many-enabled?)
-          {:topics   [f/status-topic]
-           :key      key-id
-           :allowP2P true
-           :type     :sym}
-          {:topics   [f/status-topic]
-           :key      key-id
-           :type     :sym})
-        (l/message-listener {:web3     web3
-                             :identity identity
-                             :callback callback
-                             :keypair  keypair})))))
+   web3
+   group-id
+   (fn [key-id]
+     (f/add-filter!
+      web3
+      (if (and config/offline-inbox-enabled?
+               config/offline-inbox-many-enabled?)
+        {:topics   [f/status-topic]
+         :key      key-id
+         :allowP2P true
+         :type     :sym}
+        {:topics   [f/status-topic]
+         :key      key-id
+         :type     :sym})
+      (l/message-listener {:web3     web3
+                           :identity identity
+                           :callback callback
+                           :keypair  keypair})))))
