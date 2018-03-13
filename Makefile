@@ -125,3 +125,14 @@ android-ports: ##@other Add reverse proxy to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081
 	adb reverse tcp:3449 tcp:3449
 	adb reverse tcp:4567 tcp:4567
+
+startdev-%:
+	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
+	$(eval DEVICE := $(word 3, $(subst -, , $@)))
+	if [[ "$(SYSTEM)" == "android" ]]; then\
+	  ${MAKE} prepare && ${MAKE} android-ports; \
+	else \
+	  ${MAKE} prepare-ios; \
+	fi
+	${MAKE} dev-$(SYSTEM)-$(DEVICE)
+	${MAKE} -j3 react-native repl-$(SYSTEM) run-$(SYSTEM)
