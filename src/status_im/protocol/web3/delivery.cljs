@@ -224,7 +224,8 @@
 
 (defn run-delivery-loop!
   [web3 {:keys [delivery-loop-ms-interval default-ttl ttl-config
-                send-online-s-interval online-message post-error-callback]
+                send-online-s-interval online-message post-error-callback
+                pow-target pow-time]
          :as   options}]
   {:pre [(valid? ::delivery-options options)]}
   (debug :run-delivery-loop!)
@@ -243,7 +244,10 @@
           ;; check each message asynchronously
           (when (should-be-retransmitted? options data)
             (try
-              (let [message' (check-ttl message type ttl-config default-ttl)
+              (let [message' (-> message
+                                 (check-ttl type ttl-config default-ttl)
+                                 (assoc :powTarget pow-target
+                                        :powTime pow-time))
                     callback (delivery-callback web3 post-error-callback data message')]
                 (t/post-message! web3 message' callback))
               (catch :default err

@@ -23,7 +23,8 @@
             [status-im.native-module.core :as status]
             [clojure.string :as string]
             [status-im.utils.web3-provider :as web3-provider]
-            [status-im.utils.ethereum.core :as utils]))
+            [status-im.utils.ethereum.core :as utils]
+            [status-im.utils.config :as config]))
 
 ;;;; COFX
 
@@ -83,7 +84,9 @@
                                               :keypair  {:public  public-key
                                                          :private private-key}}))
                                          contacts)
-      :post-error-callback         #(re-frame/dispatch [::post-error %])})))
+      :post-error-callback         #(re-frame/dispatch [::post-error %])
+      :pow-target                  config/pow-target
+      :pow-time                    config/pow-time})))
 
 (re-frame/reg-fx
   ::web3-get-syncing
