@@ -2,6 +2,7 @@ _extends: probot-settings
 
 project-board:
   name: 'Pipeline for QA'
+  tested-pr-label-name: 'Tested - Issues'
   contributor-column-name: 'CONTRIBUTOR'
   review-column-name: 'REVIEW'
   test-column-name: 'TO TEST'
