@@ -1,6 +1,8 @@
 package im.status.ethereum;
 
 import android.content.Context;
+import android.annotation.TargetApi;
+import android.support.annotation.Nullable;
 import android.app.AlertDialog;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
@@ -19,6 +21,7 @@ import android.provider.Settings;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
 
@@ -28,6 +31,8 @@ public class MainActivity extends ReactActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
 
     private static final int PERMISSION_REQUEST_CAMERA = 0;
+
+    @Nullable private PermissionListener mPermissionListener;
 
     private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -201,8 +206,17 @@ public class MainActivity extends ReactActivity
         editor.commit();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    public void requestPermissions(String[] permissions, int requestCode, PermissionListener listener) {
+        mPermissionListener = listener;
+        requestPermissions(permissions, requestCode);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            mPermissionListener = null;
+        }
         if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Permission has been granted. Start camera preview Activity.
             com.github.alinz.reactnativewebviewbridge.WebViewBridgeManager.grantAccess(requestCode);
