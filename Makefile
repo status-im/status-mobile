@@ -135,4 +135,4 @@ startdev-%:
 	  ${MAKE} prepare-ios; \
 	fi
 	${MAKE} dev-$(SYSTEM)-$(DEVICE)
-	${MAKE} -j3 react-native repl-$(SYSTEM) run-$(SYSTEM)
+	${MAKE} -j2 react-native repl-$(SYSTEM)
