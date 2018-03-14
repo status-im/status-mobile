@@ -2,17 +2,11 @@
   (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 
 (def text-field-container
-  {:position       :relative
-   :height         72
-   :padding-top    30
-   :padding-bottom 34})
+  {:padding-top 2})
 
 (def text-input
   {:font-size           16
-   :height              34
-   :line-height         34
-   :padding-bottom      5
-   :text-align-vertical :top})
+   :text-align-vertical :center})
 
 (defnstyle label [top font-size color]
   {:position         :absolute
@@ -22,9 +16,6 @@
    :background-color :transparent
    :ios              {:left 0}
    :android          {:left 4}})
-
-(def label-float
-  {})
 
 (defn underline-container [background-color]
   {:background-color background-color

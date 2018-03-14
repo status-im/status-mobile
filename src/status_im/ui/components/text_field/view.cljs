@@ -105,14 +105,12 @@
                 valid-value
                 temp-value
                 max-length]} (reagent/state component)
-        {:keys [wrapper-style input-style label-hidden? line-color focus-line-color focus-line-height
+        {:keys [wrapper-style input-style label-hidden? focus-line-height
                 secure-text-entry label-color error-color error label value on-focus on-blur validator
                 auto-focus on-change-text on-change on-end-editing on-submit-editing editable placeholder
                 placeholder-text-color auto-capitalize multiline number-of-lines]}
         (merge default-props (reagent/props component))
         valid-value      (or valid-value "")
-        line-color       (if error error-color line-color)
-        focus-line-color (if error error-color focus-line-color)
         label-color      (if (and error (not float-label?)) error-color label-color)
         label            (when-not label-hidden?
                            (if error (str label " *") label))]
@@ -163,11 +161,7 @@
                         :max-length             max-length
                         :on-submit-editing      #(do (.blur @input-ref) (when on-submit-editing (on-submit-editing)))
                         :on-end-editing         (when on-end-editing on-end-editing)
-                        :auto-focus             (true? auto-focus)}]
-     [react/view {:style    (styles/underline-container line-color)
-                  :onLayout #(reagent/set-state component {:max-line-width (get-width %)})}
-      [react/animated-view {:style (styles/underline focus-line-color line-width line-height)}]]
-     [react/text {:style (styles/error-text error-color)} error]]))
+                        :auto-focus             (true? auto-focus)}]]))
 
 (defn text-field [_ _]
   (let [component-data {:get-initial-state    get-initial-state

@@ -27,10 +27,7 @@
          {:margin-left 14}))
 
 (def group-chat-name-wrapper
-  {:flex           1
-   :padding-top    0
-   :height         40
-   :padding-bottom 0})
+  {:flex 1})
 
 (def group-container
   {:flex             1
