@@ -222,9 +222,10 @@
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
             symbol      [:wallet.send/symbol]
-            advanced?   [:wallet.send/advanced?]]
+            advanced?   [:wallet.send/advanced?]
+            scroll      (atom nil)]
     (if transaction
-      [send-transaction-panel {:modal? true :transaction transaction :advanced? advanced? :symbol symbol}]
+      [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]
