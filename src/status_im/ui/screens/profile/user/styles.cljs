@@ -42,3 +42,6 @@
 (defstyle logout-text
   (merge profile.components.styles/settings-item-text
          {:color colors/red}))
+
+(defstyle my-profile-info-container
+  {:background-color colors/white})

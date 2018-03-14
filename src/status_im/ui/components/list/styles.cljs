@@ -104,8 +104,14 @@
   {:background-color colors/white-transparent
    :border-radius    50})
 
+(def action-disabled
+  {:background-color colors/gray-lighter})
+
 (def action-label
   {:color colors/white})
+
+(def action-label-disabled
+  {:color colors/gray})
 
 (def action-separator
   {:height           1

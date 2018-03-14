@@ -123,10 +123,12 @@
    :update-status                         "Update your status..."
    :add-a-status                          "Add a status..."
    :status-prompt                         "Set your status. Using #hastags will help others discover you and talk about what's on your mind"
+   :contact-code                          "Contact code"
    :add-to-contacts                       "Add to contacts"
    :in-contacts                           "In contacts"
    :remove-from-contacts                  "Remove from contacts"
    :start-conversation                    "Start conversation"
+   :send-message                          "Send message"
    :testnet-text                          "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
    :mainnet-text                          "You’re on the Mainnet. Real ETH will be sent"
 

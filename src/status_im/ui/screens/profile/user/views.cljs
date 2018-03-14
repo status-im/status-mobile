@@ -130,6 +130,6 @@
          [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
-        [react/view profile.components.styles/profile-info-container
+        [react/view styles/my-profile-info-container
          [my-profile-settings current-account]]
         [logout]]])))

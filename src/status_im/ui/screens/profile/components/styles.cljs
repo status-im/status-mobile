@@ -88,6 +88,3 @@
 (def profile-form
   {:background-color colors/white
    :padding          16})
-
-(defstyle profile-info-container
-  {:background-color colors/white})
