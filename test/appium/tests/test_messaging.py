@@ -75,16 +75,11 @@ class TestMessages(MultipleDeviceTestCase):
             web_view.find_full_text('Browse, chat and make payments securely on the decentralized web.')
             device_1_chat.back_button.click()
 
-        device_1_chat.chat_options.click()
-        device_1_chat.delete_chat_button.click()
-        device_1_chat.delete_button.click()
-        if not device_1_home.plus_button.is_element_present() or \
-                device_1_chat.element_by_text_part(device_2_username[:25]).is_element_present():
-            self.errors.append('Chat was not deleted')
+        device_1_chat.delete_chat(device_2_username[:25], self.errors)
         self.verify_no_errors()
 
     @pytest.mark.pr
-    def test_group_chat_messages(self):
+    def test_group_chat_messages_and_delete_chat(self):
         self.create_drivers(3)
         device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), \
                                        SignInView(self.drivers[2])
@@ -127,12 +122,11 @@ class TestMessages(MultipleDeviceTestCase):
 
         chat_1.chat_message_input.send_keys(unicode_text_message)
         chat_1.send_message_button.click()
-        for home in home_2, home_3:
-            home.element_by_text(chat_name, 'button').click()
-
-        chat_2, chat_3 = home_2.get_chat_view(), home_3.get_chat_view()
         for chat in chat_2, chat_3:
             chat.wait_for_messages_by_user(username_1, unicode_text_message, self.errors)
+
+        for chat in chat_1, chat_2, chat_3:
+            chat.delete_chat(chat_name, self.errors)
 
         self.verify_no_errors()
 
@@ -166,4 +160,6 @@ class TestMessages(MultipleDeviceTestCase):
         chat_2.send_as_keyevent(message_with_new_line)
         chat_2.send_message_button.click()
         chat_1.wait_for_messages_by_user(users[1], messages_to_receive_2, self.errors)
+        for chat in chat_1, chat_2:
+            chat.delete_chat(chat_name, self.errors)
         self.verify_no_errors()
