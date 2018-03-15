@@ -257,35 +257,41 @@
   (fn [cofx [chat-id chat-props]]
     (models/add-chat cofx chat-id chat-props)))
 
-(defn navigate-to-chat
+(defn- ensure-chat-exists
+  "Takes chat-id and coeffects map and returns fx to create chat if it doesn't exist"
+  [chat-id cofx]
+  (when-not (get-in cofx [:db :chats chat-id])
+    (models/add-chat cofx chat-id)))
+
+(defn- navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
-  ([cofx chat-id]
-   (navigate-to-chat cofx chat-id false))
-  ([cofx chat-id navigation-replace?]
-   (let [nav-fn (if navigation-replace?
-                  #(navigation/replace-view % :chat)
-                  #(navigation/navigate-to % :chat))]
-     (-> (preload-chat-data cofx chat-id)
-         (update :db nav-fn)))))
+  [chat-id navigation-replace? cofx]
+  (let [nav-fn (if navigation-replace?
+                 #(navigation/replace-view % :chat)
+                 #(navigation/navigate-to % :chat))]
+    (-> (preload-chat-data cofx chat-id)
+        (update :db nav-fn))))
 
 (handlers/register-handler-fx
   :navigate-to-chat
   [re-frame/trim-v]
   (fn [cofx [chat-id {:keys [navigation-replace?]}]]
-    (navigate-to-chat cofx chat-id navigation-replace?)))
+    (navigate-to-chat chat-id navigation-replace? cofx)))
+
+(defn start-chat
+  "Start a chat, making sure it exists"
+  [chat-id navigation-replace? {:keys [db] :as cofx}]
+  (when (not= (:current-public-key db) chat-id) ; don't allow to open chat with yourself
+    (handlers/merge-fx
+      cofx
+      (ensure-chat-exists chat-id)
+      (navigate-to-chat chat-id navigation-replace?))))
 
 (handlers/register-handler-fx
   :start-chat
   [(re-frame/inject-cofx :get-stored-chat) re-frame/trim-v]
-  (fn [{:keys [db] :as cofx} [contact-id {:keys [navigation-replace?]}]]
-    (when (not= (:current-public-key db) contact-id)        ; don't allow to open chat with yourself
-      (if (get (:chats db) contact-id)
-        (navigate-to-chat cofx contact-id navigation-replace?) ; existing chat, just preload and displey
-        (let [add-chat-fx (models/add-chat cofx contact-id)] ; new chat, create before preload & display
-          (merge add-chat-fx
-                 (navigate-to-chat (assoc cofx :db (:db add-chat-fx))
-                                   contact-id
-                                   navigation-replace?)))))))
+  (fn [cofx [contact-id {:keys [navigation-replace?]}]]
+      (start-chat contact-id navigation-replace? cofx)))
 
 ;; TODO(janherich): remove this unnecessary event in the future (only model function `update-chat` will stay)
 (handlers/register-handler-fx

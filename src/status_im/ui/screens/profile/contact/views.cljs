@@ -16,7 +16,7 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]])
 
-(defn actions [{:keys [pending? whisper-identity dapp?]} chat-id]
+(defn actions [{:keys [pending? whisper-identity dapp?]}]
   (concat (if pending?
             [{:label  (i18n/label :t/add-to-contacts)
               :icon   :icons/add-contact
@@ -30,7 +30,7 @@
           (when-not dapp?
             [{:label  (i18n/label :t/send-transaction)
               :icon   :icons/arrow-right
-              :action #(re-frame/dispatch [:profile/send-transaction chat-id whisper-identity])}])))
+              :action #(re-frame/dispatch [:profile/send-transaction whisper-identity])}])))
 
 (defn profile-info-item [{:keys [label value options accessibility-label]}]
   [react/view styles/profile-info-item
@@ -54,8 +54,7 @@
 
 (defview profile []
   (letsubs [identity        [:current-contact-identity]
-            maybe-contact   [:contact]
-            chat-id [:get :current-chat-id]]
+            maybe-contact   [:contact]]
     (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))]
       [react/view profile.components.styles/profile
        [status-bar/status-bar]
@@ -63,7 +62,7 @@
        [react/scroll-view
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header contact false false nil nil]]
-        [list/action-list (actions contact chat-id)
+        [list/action-list (actions contact)
          {:container-style        styles/action-container
           :action-style           styles/action
           :action-label-style     styles/action-label
