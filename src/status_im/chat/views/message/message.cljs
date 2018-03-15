@@ -103,7 +103,7 @@
 (defn- parse-str-regx [string regx matched-fn unmatched-fn]
   (if (string? string)
     (let [unmatched-text (as-> (->> (string/split string regx)
-                                    (remove empty?)
+                                    (remove nil?)
                                     vec) $
                            (if (zero? (count $))
                              [nil]
