@@ -127,7 +127,7 @@
                            {:key      idx
                             :style    {:color colors/blue}
                             :on-press #(on-press url)}
-                           (utils/truncate-str text 32 true)])
+                           url])
                         text)))
        vec))
 
