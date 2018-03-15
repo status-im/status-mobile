@@ -3,11 +3,13 @@ import sys
 import re
 import subprocess
 import asyncio
-from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads
+
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
+from selenium.common.exceptions import WebDriverException
+from tests import test_suite_data, start_threads
+from views.base_view import BaseView
 
 
 class AbstractTestCase:
@@ -54,7 +56,7 @@ class AbstractTestCase:
         desired_caps['build'] = pytest.config.getoption('build')
         desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.1'
+        desired_caps['appiumVersion'] = '1.7.2'
         desired_caps['platformVersion'] = '6.0'
         desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
         desired_caps['deviceOrientation'] = "portrait"
@@ -69,7 +71,7 @@ class AbstractTestCase:
         desired_caps['app'] = pytest.config.getoption('apk')
         desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.7.1'
+        desired_caps['appiumVersion'] = '1.7.2'
         desired_caps['platformVersion'] = '6.0'
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False
@@ -113,6 +115,7 @@ class SingleDeviceTestCase(AbstractTestCase):
                 self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
                                                capabilities[self.environment]['capabilities'])
                 self.driver.implicitly_wait(self.implicitly_wait)
+                BaseView(self.driver).accept_agreements()
                 test_suite_data.current_test.jobs.append(self.driver.session_id)
                 break
             except WebDriverException:
@@ -137,6 +140,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
         for driver in range(quantity):
             self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
+            BaseView(self.drivers[driver]).accept_agreements()
             test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
@@ -164,6 +168,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
                                                     self.capabilities_sauce_lab))
         for driver in range(quantity):
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
+            BaseView(self.drivers[driver]).accept_agreements()
             test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):

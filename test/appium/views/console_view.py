@@ -45,15 +45,6 @@ class ConsoleView(BaseView):
         self.recover_button = RecoverButton(self.driver)
         self.chat_request_input = ChatRequestInput(self.driver)
 
-        self.accept_agreements()
-
-    def accept_agreements(self):
-        for i in self.ok_button_apk, self.continue_button_apk:
-            try:
-                i.click()
-            except (NoSuchElementException, TimeoutException):
-                pass
-
     def create_user(self):
         self.request_password_icon.click()
         self.chat_request_input.send_keys("qwerty1234")

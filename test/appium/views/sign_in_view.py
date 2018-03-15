@@ -1,4 +1,3 @@
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from tests import get_current_time
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
@@ -88,15 +87,6 @@ class SignInView(BaseView):
         self.add_existing_account_button = AddExistingAccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.name_input = NameInput(self.driver)
-
-        self.accept_agreements()
-
-    def accept_agreements(self):
-        for i in self.ok_button_apk, self.continue_button_apk:
-            try:
-                i.click()
-            except (NoSuchElementException, TimeoutException):
-                pass
 
     def create_user(self):
         self.create_account_button.click()

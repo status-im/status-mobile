@@ -3,7 +3,7 @@ import base64
 import zbarlight
 from tests import info
 from eth_keys import datatypes
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from PIL import Image
 from datetime import datetime
 from io import BytesIO
@@ -13,7 +13,7 @@ from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 class BackButton(BaseButton):
     def __init__(self, driver):
         super(BackButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='toolbar-back-button']")
+        self.locator = self.Locator.accessibility_id('back-button')
 
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):
@@ -66,16 +66,16 @@ class OkButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='OK']")
 
 
-class ContinueButtonAPK(BaseButton):
+class ContinueButton(BaseButton):
     def __init__(self, driver):
-        super(ContinueButtonAPK, self).__init__(driver)
+        super(ContinueButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
 
 
 class HomeButton(BaseButton):
     def __init__(self, driver):
         super(HomeButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Home']/..")
+        self.locator = self.Locator.accessibility_id('home-tab-button')
 
     def navigate(self):
         from views.home_view import HomeView
@@ -85,7 +85,7 @@ class HomeButton(BaseButton):
 class WalletButton(BaseButton):
     def __init__(self, driver):
         super(WalletButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Wallet']/..")
+        self.locator = self.Locator.accessibility_id('wallet-tab-button')
 
     def click(self):
         from views.wallet_view import TransactionsButton
@@ -100,7 +100,7 @@ class WalletButton(BaseButton):
 class ProfileButton(BaseButton):
     def __init__(self, driver):
         super(ProfileButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Profile']/..")
+        self.locator = self.Locator.accessibility_id('profile-tab-button')
 
     def navigate(self):
         from views.profile_view import ProfileView
@@ -171,8 +171,8 @@ class BaseView(object):
         self.back_button = BackButton(self.driver)
         self.allow_button = AllowButton(self.driver)
         self.deny_button = DenyButton(self.driver)
-        self.continue_button_apk = ContinueButtonAPK(self.driver)
-        self.ok_button_apk = OkButton(self.driver)
+        self.continue_button = ContinueButton(self.driver)
+        self.ok_button = OkButton(self.driver)
         self.next_button = NextButton(self.driver)
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
@@ -187,6 +187,14 @@ class BaseView(object):
             'edit_box': BaseEditBox,
             'text': BaseText
         }
+
+    def accept_agreements(self):
+        for i in self.ok_button, self.continue_button:
+            try:
+                i.wait_for_element(4)
+                i.click()
+            except (NoSuchElementException, TimeoutException):
+                pass
 
     @property
     def logcat(self):

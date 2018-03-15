@@ -7,7 +7,7 @@ class SendButton(BaseButton):
 
     def __init__(self, driver):
         super(SendButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Send transaction']")
+        self.locator = self.Locator.accessibility_id('send-transaction-button')
 
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
@@ -18,7 +18,7 @@ class RequestButton(BaseButton):
 
     def __init__(self, driver):
         super(RequestButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Receive transaction']")
+        self.locator = self.Locator.accessibility_id('receive-transaction-button')
 
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
@@ -29,21 +29,21 @@ class SendRequestButton(BaseButton):
 
     def __init__(self, driver):
         super(SendRequestButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='SEND REQUEST']")
+        self.locator = self.Locator.accessibility_id('sent-request-button')
 
 
 class ChooseRecipientButton(BaseButton):
 
     def __init__(self, driver):
         super(ChooseRecipientButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Choose recipient...']")
+        self.locator = self.Locator.accessibility_id('choose-recipient-button')
 
 
 class TransactionsButton(BaseButton):
 
     def __init__(self, driver):
         super(TransactionsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Transaction History']")
+        self.locator = self.Locator.accessibility_id('transaction-history-button')
 
     def navigate(self):
         from views.transactions_view import TransactionsView
@@ -71,13 +71,13 @@ class UsdTotalValueText(BaseText):
 class SendTransactionRequestButton(BaseButton):
     def __init__(self, driver):
         super(SendTransactionRequestButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='SEND A TRANSACTION REQUEST']")
+        self.locator = self.Locator.accessibility_id('sent-transaction-request-button')
 
 
 class OptionsButton(BaseButton):
     def __init__(self, driver):
         super(OptionsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
+        self.locator = self.Locator.accessibility_id('options-menu-button')
 
 
 class ManageAssetsButton(BaseButton):
@@ -89,13 +89,13 @@ class ManageAssetsButton(BaseButton):
 class STTCheckBox(BaseButton):
     def __init__(self, driver):
         super(STTCheckBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='STT']//..//android.widget.CheckBox")
+        self.locator = self.Locator.xpath_selector("//*[@text='STT']/../android.widget.CheckBox")
 
 
 class DoneButton(BaseButton):
     def __init__(self, driver):
         super(DoneButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Done']")
+        self.locator = self.Locator.accessibility_id('done-button')
 
 
 class WalletView(BaseView):

@@ -121,7 +121,8 @@ class OpenInBrowserButton(BaseButton):
 class CommandsButton(BaseButton):
     def __init__(self, driver):
         super(CommandsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(// android.view.ViewGroup[@ content-desc="icon"])[3]')
+        self.locator = self.Locator.xpath_selector(
+            '//*[@content-desc="chat-message-input"]/..//android.view.ViewGroup[@content-desc="icon"]')
 
 
 class ViewProfileButton(BaseButton):
@@ -178,6 +179,22 @@ class ChatView(BaseView):
         repeat = 0
         while repeat <= wait_time:
             received_messages = [element.text for element in MessageByUsername(self.driver, username).find_elements()]
+            if not set(expected_messages) - set(received_messages):
+                break
+            time.sleep(3)
+            repeat += 3
+        if set(expected_messages) - set(received_messages):
+            errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
+                [i for i in list(set(expected_messages) - set(received_messages))])))
+
+    def wait_for_messages(self, username: str, expected_messages: list, errors: list, wait_time: int = 30):
+        expected_messages = expected_messages if type(expected_messages) == list else [expected_messages]
+        repeat = 0
+        received_messages = list()
+        while repeat <= wait_time:
+            for message in expected_messages:
+                if self.element_by_text(message, 'text').is_element_present(1):
+                    received_messages.append(message)
             if not set(expected_messages) - set(received_messages):
                 break
             time.sleep(3)

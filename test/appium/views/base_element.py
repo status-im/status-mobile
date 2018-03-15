@@ -57,6 +57,15 @@ class BaseElement(object):
                                                                                                seconds)
             raise exception
 
+    def wait_for_visibility_of_element(self, seconds=10):
+        try:
+            return WebDriverWait(self.driver, seconds)\
+                .until(expected_conditions.visibility_of_element_located((self.locator.by, self.locator.value)))
+        except TimeoutException as exception:
+            exception.msg = "'%s' is not found on screen, using: '%s', during '%s' seconds" % (self.name, self.locator,
+                                                                                               seconds)
+            raise exception
+
     def scroll_to_element(self):
         for _ in range(9):
             try:
@@ -68,8 +77,14 @@ class BaseElement(object):
     def is_element_present(self, sec=5):
         try:
             info('Wait for %s' % self.name)
-            self.wait_for_element(sec)
-            return True
+            return self.wait_for_element(sec)
+        except TimeoutException:
+            return False
+
+    def is_element_displayed(self, sec=5):
+        try:
+            info('Wait for %s' % self.name)
+            return self.wait_for_visibility_of_element(sec)
         except TimeoutException:
             return False
 

@@ -14,6 +14,12 @@ class PlusButton(BaseButton):
         from views.start_new_chat_view import StartNewChatView
         return StartNewChatView(self.driver)
 
+    def click(self):
+        from views.start_new_chat_view import StartNewChatButton
+        desired_element = StartNewChatButton(self.driver)
+        self.click_until_presence_of_element(desired_element=desired_element)
+        return self.navigate()
+
 
 class ConsoleButton(BaseButton):
     def __init__(self, driver):
@@ -70,7 +76,7 @@ class HomeView(BaseView):
 
     def get_back_to_home_view(self):
         counter = 0
-        while not self.home_button.is_element_present():
+        while not self.home_button.is_element_displayed(2):
             try:
                 if counter >= 5:
                     return
@@ -80,9 +86,11 @@ class HomeView(BaseView):
 
     def add_contact(self, public_key):
         start_new_chat = self.plus_button.click()
-        start_new_chat.add_new_contact.click()
-        start_new_chat.public_key_edit_box.send_keys(public_key)
+        start_new_chat.start_new_chat_button.click()
+        start_new_chat.public_key_edit_box.set_value(public_key)
         start_new_chat.confirm()
+        one_to_one_chat = self.get_chat_view()
+        one_to_one_chat.chat_message_input.wait_for_element(60)
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         start_new_chat = self.plus_button.click()

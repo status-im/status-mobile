@@ -1,32 +1,30 @@
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 class FirstRecipient(BaseButton):
     def __init__(self, driver):
         super(FirstRecipient, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Choose recipient']/.."
-                                                   "//android.widget.ImageView[@content-desc='chat-icon']")
+        self.locator = self.Locator.accessibility_id('chat-icon')
 
 
 class SignTransactionButton(BaseButton):
     def __init__(self, driver):
         super(SignTransactionButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='SIGN TRANSACTION']")
+        self.locator = self.Locator.accessibility_id('sign-transaction-button')
 
 
 class SignLaterButton(BaseButton):
     def __init__(self, driver):
         super(SignLaterButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='SIGN LATER']")
+        self.locator = self.Locator.accessibility_id('sign-later-button')
 
 
 class AmountEditBox(BaseEditBox, BaseButton):
 
     def __init__(self, driver):
         super(AmountEditBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Amount']/..//android.widget.EditText")
+        self.locator = self.Locator.accessibility_id('amount-input')
 
 
 class PasswordInput(BaseEditBox):
@@ -38,7 +36,7 @@ class PasswordInput(BaseEditBox):
 class EnterPasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(EnterPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@NAF='true']")
+        self.locator = self.Locator.accessibility_id('enter-password-input')
 
 
 class ConfirmButton(BaseButton):
@@ -50,14 +48,14 @@ class ConfirmButton(BaseButton):
 class GotItButton(BaseButton):
     def __init__(self, driver):
         super(GotItButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='GOT IT']")
+        self.locator = self.Locator.accessibility_id('got-it-button')
 
 
 class ChooseRecipientButton(BaseButton):
 
     def __init__(self, driver):
         super(ChooseRecipientButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Specify recipient...']")
+        self.locator = self.Locator.accessibility_id('choose-recipient-button')
 
     def click(self):
         desired_element = EnterRecipientAddressButton(self.driver)
@@ -85,7 +83,7 @@ class RecentRecipientsButton(BaseButton):
 class SelectAssetButton(BaseButton):
     def __init__(self, driver):
         super(SelectAssetButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[4]/..')
+        self.locator = self.Locator.accessibility_id('choose-asset-button')
 
 
 class STTButton(BaseButton):
