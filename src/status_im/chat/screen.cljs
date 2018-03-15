@@ -37,7 +37,8 @@
 (defview add-contact-bar []
   (letsubs [chat-id          [:get-current-chat-id]
             pending-contact? [:current-contact :pending?]]
-    (when pending-contact?
+    (when (or (nil? pending-contact?) ; user not in contact list
+              pending-contact?)
       [react/touchable-highlight
        {:on-press #(re-frame/dispatch [:add-contact chat-id])}
        [react/view style/add-contact
@@ -59,7 +60,7 @@
       [toolbar/actions [{:icon      :icons/options
                          :icon-opts {:color :black}
                          :handler   #(on-options chat-id name group-chat public?)}]]]
-     [add-contact-bar]]))
+     (when-not (or public? group-chat) [add-contact-bar])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
