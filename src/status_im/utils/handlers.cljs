@@ -11,13 +11,6 @@
 (defn add-pre-event-callback [callback]
   (reset! pre-event-callback callback))
 
-(defn side-effect!
-  "Middleware for handlers that will not affect db."
-  [handler]
-  (fn [db params]
-    (handler db params)
-    db))
-
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
   (->interceptor

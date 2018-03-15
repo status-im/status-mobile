@@ -1,5 +1,7 @@
 (ns status-im.chat.models
-  (:require [status-im.ui.components.styles :as styles]
+  (:require [clojure.string :as string]
+            [status-im.protocol.core :as protocol]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn set-chat-ui-props
@@ -15,14 +17,13 @@
 (defn- create-new-chat
   [{:keys [db now]} chat-id]
   (let [name (get-in db [:contacts/contacts chat-id :name])]
-    {:chat-id               chat-id
-     :name                  (or name (gfycat/generate-gfy chat-id))
-     :color                 styles/default-chat-color
-     :group-chat            false
-     :is-active             true
-     :timestamp             now
-     :contacts              [{:identity chat-id}]
-     :last-to-clock-value   0
+    {:chat-id    chat-id
+     :name       (or name (gfycat/generate-gfy chat-id))
+     :color      components.styles/default-chat-color
+     :group-chat false
+     :is-active  true
+     :timestamp  now
+     :contacts   [{:identity chat-id}]:last-to-clock-value   0
      :last-from-clock-value 0}))
 
 (defn add-chat
@@ -73,9 +74,36 @@
                                           (update :chats dissoc chat-id)
                                           (update :deleted-chats (fnil conj #{}) chat-id))
              :delete-pending-messages chat-id}
-            (or group-chat debug?)
-            (assoc :delete-messages chat-id)
-            debug?
-            (assoc :delete-chat chat-id)
-            (not debug?)
-            (assoc :deactivate-chat chat-id))))
+      (or group-chat debug?)
+      (assoc :delete-messages chat-id)
+      debug?
+      (assoc :delete-chat chat-id)
+      (not debug?)
+      (assoc :deactivate-chat chat-id))))
+
+(defn group-name-from-contacts [contacts selected-contacts username]
+  (->> (select-keys contacts selected-contacts)
+       vals
+       (map :name)
+       (cons username)
+       (string/join ", ")))
+
+(defn prepare-group-chat
+  [{:keys [db random-id now keypair]} group-name]
+  (let [{:keys          [current-public-key username]
+         :group/keys    [selected-contacts]
+         :contacts/keys [contacts]} db
+        selected-contacts' (mapv #(hash-map :identity %) selected-contacts)
+        chat-name          (if-not (string/blank? group-name)
+                             group-name
+                             (group-name-from-contacts contacts selected-contacts username))]
+    {:chat-id     random-id
+     :public-key  (:public keypair)
+     :private-key (:private keypair)
+     :name        chat-name
+     :color       components.styles/default-chat-color
+     :group-chat  true
+     :group-admin current-public-key
+     :is-active   true
+     :timestamp   now
+     :contacts    selected-contacts'}))

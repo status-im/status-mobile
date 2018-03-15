@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.events
   (:require status-im.bots.events
-            status-im.chat.handlers
-            status-im.commands.handlers.jail
+            status-im.chat.events
+            status-im.commands.events.debug
+            status-im.commands.events.jail
             status-im.commands.events.loading
-            status-im.commands.handlers.debug
             status-im.network.events
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events

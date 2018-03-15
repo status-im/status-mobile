@@ -6,7 +6,7 @@
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.screens.accounts.events :as accounts-events]
             [status-im.chat.events :as chat-events]
-            [status-im.chat.events.input :as input-events]
+            [status-im.chat.events.input :as input.events]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.image-processing :refer [img->base64]]
             [taoensso.timbre :as log]))
@@ -32,7 +32,7 @@
     (let [send-command (get-in contacts chat-const/send-command-ref)]
       (-> (chat-events/navigate-to-chat cofx chat-id)
           (as-> fx
-              (merge fx (input-events/select-chat-input-command (:db fx) send-command nil true)))))))
+              (merge fx (input.events/select-chat-input-command (:db fx) send-command nil true)))))))
 
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))

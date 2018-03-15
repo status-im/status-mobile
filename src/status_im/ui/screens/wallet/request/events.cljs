@@ -3,7 +3,7 @@
             [status-im.ui.screens.wallet.db :as wallet-db]
             [status-im.utils.handlers :as handlers]
             [status-im.chat.constants :as chat-const]
-            [status-im.chat.events.input :as input-events]
+            [status-im.chat.events.input :as input.events]
             [status-im.utils.money :as money]))
 
 (handlers/register-handler-fx
@@ -11,8 +11,8 @@
   [re-frame/trim-v]
   (fn [{{:contacts/keys [contacts] :as db} :db} [amount]]
     (-> db
-        (input-events/select-chat-input-command
-         (assoc (get-in contacts chat-const/request-command-ref) :prefill [amount]) nil true)
+        (input.events/select-chat-input-command
+          (assoc (get-in contacts chat-const/request-command-ref) :prefill [amount]) nil true)
         (assoc :dispatch [:send-current-message]))))
 
 (handlers/register-handler-fx
