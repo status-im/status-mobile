@@ -21,3 +21,4 @@ class TestDappsAnsBrowsing(SingleDeviceTestCase):
         browsing_view.back_to_home_button.click()
 
         assert home_view.first_chat_element_title.text == 'Status | The Mobile Ethereum Client'
+        home_view.swipe_and_delete_chat('Status | The Mobile Ethereum Client')
