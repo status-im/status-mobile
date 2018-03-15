@@ -280,8 +280,7 @@
     [react/view (style/group-message-view message)
      content
      (when last-outgoing?
-       (if (or (= (keyword message-type) :group-user-message)
-               group-chat)
+       (if (= message-type :group-user-message)
          [group-message-delivery-status message]
          [message-delivery-status message]))]]])
 
@@ -321,13 +320,15 @@
                   children)])}))
     (into [react/view] children)))
 
-(defn chat-message [{:keys [outgoing message-id chat-id from current-public-key] :as message}]
+(defn chat-message [{:keys [outgoing message-id message-type chat-id from current-public-key] :as message}]
   (reagent/create-class
     {:display-name
      "chat-message"
      :component-did-mount
      ;; send `:seen` signal when we have signed-in user, message not from us and we didn't sent it already
+     ;; + it's not public group message
      #(when (and current-public-key message-id chat-id (not outgoing)
+                 (#{:user-message :group-user-message} message-type)
                  (not (models.message/message-seen-by? message current-public-key)))
         (re-frame/dispatch [:send-seen! {:chat-id    chat-id
                                          :from       from
