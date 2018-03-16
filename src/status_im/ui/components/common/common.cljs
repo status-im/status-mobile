@@ -88,3 +88,16 @@
                  :style      styles/button-label}
      label]]])
 
+(defn counter
+  ([value] (counter nil value))
+  ([{:keys [size] :or {size 18}} value]
+   [react/view {:style (styles/counter-container size)}
+    [react/text {:style (styles/counter-label size)}
+     value]]))
+
+(defn image-contain
+  ([source] (image-contain nil source))
+  ([{:keys [style]} source]
+   [react/view {:style (merge styles/image-contain
+                              style)}
+    [react/image {:source source :resizeMode :contain :style styles/image-contain-image}]]))

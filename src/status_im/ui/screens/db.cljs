@@ -146,10 +146,11 @@
                   :accounts/current-account-id
                   :accounts/recover
                   :accounts/login
-                  :my-profile/drawer
                   :my-profile/profile
                   :my-profile/default-name
                   :my-profile/editing?
+                  :my-profile/advanced?
+                  :my-profile/seed
                   :group-chat-profile/profile
                   :group-chat-profile/editing?
                   :networks/selected-network

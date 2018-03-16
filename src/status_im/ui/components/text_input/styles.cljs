@@ -21,7 +21,7 @@
    :color          colors/black
    :padding        0})
 
-(def error
-  {:bottom-value -20
+(defn error [label?]
+  {:bottom-value (if label? -20 0)
    :color        colors/red-light
    :font-size    12})

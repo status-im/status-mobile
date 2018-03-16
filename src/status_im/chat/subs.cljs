@@ -52,15 +52,18 @@
       platform/ios? kb-height
       :default 0)))
 
-(defn active-chats [[_ chat]]
-  ;;TODO (andrey) console should be shown in dev mode only, will be done soon
-  (and (:is-active chat))) ;(not= const/console-chat-id (:chat-id chat))))
+(defn active-chats [dev-mode?]
+  (fn [[_ chat]]
+    (and (:is-active chat)
+         (or dev-mode?
+             (not= const/console-chat-id (:chat-id chat))))))
 
 (reg-sub
   :get-active-chats
   :<- [:get-chats]
-  (fn [chats]
-    (into {} (filter active-chats chats))))
+  :<- [:get-current-account]
+  (fn [[chats {:keys [dev-mode?]}]]
+    (into {} (filter (active-chats dev-mode?) chats))))
 
 (reg-sub
   :get-chat
@@ -324,3 +327,9 @@
   (fn [db [_ key type]]
     (let [chat-id (subscribe [:get-current-chat-id])]
       (get-in db [:chat-animations @chat-id key type]))))
+
+(reg-sub
+  :get-chats-unread-messages-number
+  :<- [:get-active-chats]
+  (fn [chats _]
+    (apply + (map #(count (:unviewed-messages %)) (vals chats)))))

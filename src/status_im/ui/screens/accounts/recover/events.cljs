@@ -39,6 +39,7 @@
                    :photo-path          (identicon/identicon public-key)
                    :updates-public-key  public
                    :updates-private-key private
+                   :mnemonic            ""
                    :signed-up?          true
                    :signing-phrase      phrase}]
       (when-not (string/blank? public-key)

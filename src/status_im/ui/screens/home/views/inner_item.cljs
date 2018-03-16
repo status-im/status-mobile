@@ -12,7 +12,8 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as const]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.common.common :as components.common]))
 
 (defn message-content-text [{:keys [content] :as message}] 
   [react/view styles/last-message-container
@@ -58,10 +59,7 @@
 (defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
     (when (pos? unviewed-messages-count)
-      [react/view styles/new-messages-container
-       [react/text {:style styles/new-messages-text
-                    :font  :medium}
-        unviewed-messages-count]])))
+      [components.common/counter {:size 22} unviewed-messages-count])))
 
 (defn chat-list-item-name [name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
@@ -89,7 +87,6 @@
   (letsubs [last-message [:get-last-message chat-id]]
     (let [name (or (i18n/get-contact-translated chat-id :name name)
                 (gfycat/generate-gfy public-key))]
-      [react/view
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
        [react/view styles/chat-container
         [react/view styles/chat-icon-container
@@ -103,7 +100,7 @@
              [message-timestamp last-message]])]
          [react/view styles/item-lower-container
           [message-content-text last-message]
-          [unviewed-indicator chat-id]]]]]])))
+          [unviewed-indicator chat-id]]]]])))
 
 (defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
   (letsubs [contact' [:contact-by-identity contact]]

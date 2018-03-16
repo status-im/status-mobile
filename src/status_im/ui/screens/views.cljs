@@ -53,6 +53,7 @@
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
             [status-im.ui.screens.usage-data.views :refer [usage-data]]
+            [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
             [status-im.utils.config :as config]))
 
 ;;; defines hierarchy of views, when parent screen is opened children screens
@@ -170,6 +171,7 @@
                         :recipient-qr-code recipient-qr-code
                         :contact-code contact-code
                         :profile-qr-viewer profile.user/qr-viewer
+                        :backup-seed backup-seed
                         [react/view [react/text (str "Unknown view: " view-id)]])
             main-screen-view (create-main-screen-view view-id)]
         [main-screen-view common-styles/flex

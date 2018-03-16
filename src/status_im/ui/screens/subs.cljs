@@ -16,7 +16,8 @@
             status-im.ui.screens.network-settings.subs
             status-im.ui.screens.browser.subs
             status-im.bots.subs
-            status-im.ui.screens.add-new.new-chat.subs))
+            status-im.ui.screens.add-new.new-chat.subs
+            status-im.ui.screens.profile.subs))
 
 (reg-sub :get
   (fn [db [_ k]]

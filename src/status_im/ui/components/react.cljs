@@ -46,6 +46,7 @@
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image (get-class "Image"))
+(def switch (get-class "Switch"))
 (def check-box (get-class "CheckBox"))
 
 (def touchable-without-feedback (get-class "TouchableWithoutFeedback"))

@@ -11,15 +11,16 @@
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
-
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.common.common :as components.common]
+            [clojure.string :as string]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {}
@@ -87,22 +88,24 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
-(defn my-profile-settings [{:keys [network networks]}]
+(defn my-profile-settings [{:keys [seed-backed-up? mnemonic]}]
   [react/view
    [profile.components/settings-title (i18n/label :t/settings)]
-   [profile.components/settings-item :t/main-currency "USD" #() false]
+   [profile.components/settings-item {:label-kw :t/main-currency
+                                      :value "USD"
+                                      :active? false}]
    [profile.components/settings-item-separator]
-   [profile.components/settings-item :t/notifications "" #(.openURL react/linking "app-settings://notification/status-im") true
+   [profile.components/settings-item {:label-kw :t/notifications
+                                      :action-fn #(.openURL react/linking "app-settings://notification/status-im")}
     :notifications-button]
    [profile.components/settings-item-separator]
-   [profile.components/settings-item :t/network (get-in networks [network :name])
-    #(re-frame/dispatch [:navigate-to :network-settings]) true :network-button]
-   (when config/offline-inbox-enabled?
-     [profile.components/settings-item-separator])
-   (when config/offline-inbox-enabled?
-     [profile.components/settings-item :t/offline-messaging-settings ""
-      #(re-frame/dispatch [:navigate-to :offline-messaging-settings]) true
-      :offline-messages-settings-button])])
+   (when (and (not seed-backed-up?) (not (string/blank? mnemonic)))
+     [react/view
+      [profile.components/settings-item
+       {:label-kw     :t/backup-your-seed
+        :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
+        :icon-content [components.common/counter {:size 22} 1]}]
+      [profile.components/settings-item-separator]])])
 
 (defn navigate-to-accounts []
   ;; TODO(rasom): probably not the best place for this call
@@ -124,6 +127,36 @@
                   :font  (if platform/android? :medium :default)}
       (i18n/label :t/logout)]]]])
 
+(defview advanced [{:keys [network networks dev-mode?]}]
+  (letsubs [advanced? [:get :my-profile/advanced?]]
+    [react/view
+     [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
+                                 :style styles/advanced-button}
+      [react/view {:style styles/advanced-button-container}
+       [react/view {:style styles/advanced-button-container-background}
+        [react/view {:style styles/advanced-button-row}
+         [react/text {:style styles/advanced-button-label}
+          (i18n/label :t/wallet-advanced)]
+         [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
+     (when advanced?
+       [react/view
+        [profile.components/settings-item
+         {:label-kw :t/network
+          :value (get-in networks [network :name])
+          :action-fn #(re-frame/dispatch [:navigate-to :network-settings])
+          :accessibility-label :network-button}]
+        (when config/offline-inbox-enabled?
+          [profile.components/settings-item-separator])
+        (when config/offline-inbox-enabled?
+          [profile.components/settings-item
+           {:label-kw :t/offline-messaging-settings
+            :action-fn #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+            :accessibility-label :offline-messages-settings-button}])
+        [profile.components/settings-item-separator]
+        [profile.components/settings-switch-item
+         {:label-kw :t/dev-mode
+          :value dev-mode?
+          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]])]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
@@ -141,4 +174,5 @@
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account]]
-        [logout]]])))
+        [logout]
+        [advanced shown-account]]])))

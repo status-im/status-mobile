@@ -119,6 +119,7 @@
                               :updates-private-key (:private keypair)
                               :photo-path          (identicon pubkey)
                               :signing-phrase      signing-phrase
+                              :mnemonic            mnemonic
                               :settings            {:wallet {:visible-tokens {:testnet #{:STT} :mainnet #{:SNT}}}}}]
       (log/debug "account-created")
       (when-not (str/blank? pubkey)
@@ -158,13 +159,18 @@
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update."
   [{{:accounts/keys [accounts current-account-id] :as db} :db :as fx} new-account-fields]
   (let [current-account (get accounts current-account-id)
-        new-account     (merge current-account new-account-fields)]
-    (-> fx
-        (assoc-in [:db :accounts/accounts current-account-id] new-account)
-        (assoc ::save-account new-account
-               ::broadcast-account-update (merge (select-keys db [:current-public-key :web3])
-                                                 (select-keys new-account [:name :photo-path :status
-                                                                           :updates-public-key :updates-private-key]))))))
+        new-account     (merge current-account new-account-fields)
+        broadcast-fields [:name :photo-path :status
+                          :updates-public-key :updates-private-key]]
+    (cond-> fx
+            true
+            (assoc-in [:db :accounts/accounts current-account-id] new-account)
+            true
+            (assoc ::save-account new-account)
+
+            (seq (clojure.set/intersection (set (keys new-account-fields)) (set broadcast-fields)))
+            (assoc ::broadcast-account-update (merge (select-keys db [:current-public-key :web3])
+                                                     (select-keys new-account broadcast-fields))))))
 
 (handlers/register-handler-fx
   :account-update-keys
@@ -210,3 +216,8 @@
   :reset-account-creation
   (fn [{db :db} _]
     {:db (update db :accounts/create assoc :step :enter-password :password nil :password-confirm nil :error nil)}))
+
+(handlers/register-handler-fx
+  :switch-dev-mode
+  (fn [{db :db} [_ dev-mode]]
+    (account-update {:db db} {:dev-mode? dev-mode})))

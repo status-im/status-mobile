@@ -6,7 +6,6 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.screens.profile.components.styles :as styles]
             [status-im.ui.components.common.common :as common]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]))
@@ -63,7 +62,8 @@
   [react/text {:style styles/settings-title}
    title])
 
-(defn settings-item [label-kw value action-fn active? & [accessibility-label]]
+(defn settings-item [{:keys [label-kw value action-fn active? accessibility-label icon-content]
+                      :or {value "" active? true}}]
   [react/touchable-highlight
    (cond-> {:on-press action-fn
             :disabled (not active?)}
@@ -79,5 +79,17 @@
                     :number-of-lines 1
                     :uppercase?      true}
         value])]
-    (when active?
-      [vector-icons/icon :icons/forward {:color colors/gray}])]])
+    (if icon-content
+      icon-content
+      (when active?
+        [vector-icons/icon :icons/forward {:color colors/gray}]))]])
+
+(defn settings-switch-item [{:keys [label-kw value action-fn active?] :or {active? true}}]
+  [react/view styles/settings-item
+   [react/view styles/settings-item-text-wrapper
+    [react/text {:style styles/settings-item-text}
+     (i18n/label label-kw)]]
+   [react/switch {:on-tint-color   colors/blue
+                  :value           value
+                  :on-value-change action-fn
+                  :disabled        (not active?)}]])

@@ -11,6 +11,7 @@
 (def gray-icon "#6e777e") ;; Used for forward icon in accounts
 (def gray-light "#e8ebec") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
+(def gray-border "#ececf0")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
 (def red-light "#ffe5ea") ;; error tooltip

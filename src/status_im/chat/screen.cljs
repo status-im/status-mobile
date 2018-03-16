@@ -50,12 +50,11 @@
                         :options (actions/actions group-chat? chat-id public?)}))
 
 (defview chat-toolbar [public?]
-  (letsubs [accounts  [:get-accounts]
-            {:keys [group-chat name chat-id]} [:get-current-chat]]
+  (letsubs [{:keys [group-chat name chat-id]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
      [toolbar/platform-agnostic-toolbar {}
-      toolbar/default-nav-back
+      toolbar/nav-back-count
       [toolbar-content/toolbar-content-view]
       [toolbar/actions [{:icon      :icons/options
                          :icon-opts {:color :black}

@@ -148,3 +148,28 @@
    :letter-spacing -0.2
    :text-align     :center
    :color          colors/blue})
+
+(defn counter-container [size]
+  {:width            size
+   :height           size
+   :border-radius    (/ size 2)
+   :background-color colors/blue
+   :align-items      :center
+   :justify-content  :center})
+
+(defn counter-label [size]
+  {:font-size      (/ size 2)
+   :letter-spacing -0.2
+   :text-align     :center
+   :color          colors/white})
+
+(def image-contain
+  {:flex-direction  :row
+   :flex            1
+   :align-items     :center
+   :justify-content :center
+   :flex-wrap       :wrap})
+
+(def image-contain-image
+  {:flex-direction :row
+   :flex           1})

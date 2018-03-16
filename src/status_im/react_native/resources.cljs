@@ -24,4 +24,5 @@
   {:empty-hashtags  (js/require "./resources/images/ui/empty-hashtags.png")
    :empty-recent    (js/require "./resources/images/ui/empty-recent.png")
    :analytics-image (js/require "./resources/images/ui/analytics-image.png")
-   :welcome-image   (js/require "./resources/images/ui/welcome-image.png")})
+   :welcome-image   (js/require "./resources/images/ui/welcome-image.png")
+   :lock            (js/require "./resources/images/ui/lock.png")})

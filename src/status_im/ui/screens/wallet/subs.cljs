@@ -44,3 +44,7 @@
   (fn [wallet]
     (or (get-in wallet [:errors :balance-update])
         (get-in wallet [:errors :prices-update]))))
+
+(reg-sub :get-wallet-unread-messages-number
+  (fn [db]
+    0))

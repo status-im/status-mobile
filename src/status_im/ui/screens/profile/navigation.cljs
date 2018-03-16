@@ -9,3 +9,6 @@
                                   :source  source
                                   :value   value})))
 
+(defmethod navigation/preload-data! :backup-seed
+  [db]
+  (assoc db :my-profile/seed {:step :intro}))

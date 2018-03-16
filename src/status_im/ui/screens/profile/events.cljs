@@ -34,7 +34,7 @@
           (as-> fx
               (merge fx (input-events/select-chat-input-command (:db fx) send-command nil true)))))))
 
-(defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
+(defn get-current-account [{:accounts/keys [current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))
 
 (defn valid-name? [name]
@@ -61,15 +61,7 @@
       (get-in db [:accounts/accounts current-account-id :name]))))
 
 (defn clear-profile [fx]
-  (update fx :db dissoc :my-profile/profile :my-profile/drawer :my-profile/default-name :my-profile/editing?))
-
-(handlers/register-handler-fx
-  :my-profile.drawer/save-name
-  (fn [{:keys [db now]} _]
-    (let [cleaned-name (clean-name db :my-profile/drawer)]
-      (-> (clear-profile {:db db})
-          (accounts-events/account-update {:name         cleaned-name
-                                           :last-updated now})))))
+  (update fx :db dissoc :my-profile/profile :my-profile/default-name :my-profile/editing?))
 
 (handlers/register-handler-fx
   :my-profile/start-editing-profile
@@ -99,3 +91,23 @@
   (fn [{:keys [db]} _]
     (-> {:db db}
         (update :db dissoc :group-chat-profile/editing?))))
+
+(handlers/register-handler-fx
+  :my-profile/enter-two-random-words
+  (fn [{:keys [db]} []]
+    (let [{:keys [mnemonic]} (get-current-account db)
+          shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]
+      {:db (assoc db :my-profile/seed {:step :first-word
+                                       :first-word (first shuffled-mnemonic)
+                                       :second-word (second shuffled-mnemonic)})})))
+
+(handlers/register-handler-fx
+  :my-profile/set-step
+  (fn [{:keys [db]} [_ step]]
+    {:db (update db :my-profile/seed assoc :step step :error nil :word nil)}))
+
+(handlers/register-handler-fx
+  :my-profile/finish
+  (fn [{:keys [db]} _]
+    (-> {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
+        (accounts-events/account-update {:seed-backed-up? true}))))

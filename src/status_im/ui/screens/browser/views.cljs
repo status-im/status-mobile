@@ -5,7 +5,6 @@
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
-            [status-im.chat.views.toolbar-content :as toolbar-content]
             [status-im.ui.components.webview-bridge :as components.webview-bridge]
             [status-im.utils.js-resources :as js-res]
             [status-im.ui.components.react :as components]
@@ -16,32 +15,34 @@
 
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:contact-by-identity contact-identity]]
-    [react/view styles/toolbar-content-dapp
-     [chat-icon.screen/dapp-icon-browser contact 36]
-     [react/view styles/dapp-name
-      [react/text {:style               styles/dapp-name-text
-                   :number-of-lines     1
-                   :font                :toolbar-title
-                   :accessibility-label :dapp-name-text}
-       (:name contact)]
-      [react/text {:style styles/dapp-text}
-       (i18n/label :t/dapp)]]]))
+    [react/view
+     [react/view styles/toolbar-content-dapp
+      [chat-icon.screen/dapp-icon-browser contact 36]
+      [react/view styles/dapp-name
+       [react/text {:style               styles/dapp-name-text
+                    :number-of-lines     1
+                    :font                :toolbar-title
+                    :accessibility-label :dapp-name-text}
+        (:name contact)]
+       [react/text {:style styles/dapp-text}
+        (i18n/label :t/dapp)]]]]))
 
 (defn toolbar-content [{:keys [url] :as browser}]
   (let [url-text (atom nil)]
-    [react/view (styles/toolbar-content false)
-     [react/text-input {:on-change-text    #(reset! url-text %)
-                        :on-submit-editing #(re-frame/dispatch [:update-browser (assoc browser :url @url-text)])
-                        :auto-focus        (not url)
-                        :placeholder       (i18n/label :t/enter-url)
-                        :auto-capitalize   :none
-                        :auto-correct      false
-                        :default-value     url
-                        :style             styles/url-input}]
-     ;;TODO .reload doesn't work, implement later
-     #_[react/touchable-highlight {:on-press #(when @webview (.reload @webview))}
-        [react/view
-         [vector-icons/icon :icons/refresh]]]]))
+    [react/view
+     [react/view (styles/toolbar-content false)
+      [react/text-input {:on-change-text    #(reset! url-text %)
+                         :on-submit-editing #(re-frame/dispatch [:update-browser (assoc browser :url @url-text)])
+                         :auto-focus        (not url)
+                         :placeholder       (i18n/label :t/enter-url)
+                         :auto-capitalize   :none
+                         :auto-correct      false
+                         :default-value     url
+                         :style             styles/url-input}]
+      ;;TODO .reload doesn't work, implement later
+      #_[react/touchable-highlight {:on-press #(when @webview (.reload @webview))}
+         [react/view
+          [vector-icons/icon :icons/refresh]]]]]))
 
 (defn web-view-error []
   (reagent/as-element
@@ -54,7 +55,7 @@
      [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
-  (let [{:strs [loading url title canGoBack canGoForward]} (js->clj event)]
+  (let [{:strs [url title canGoBack canGoForward]} (js->clj event)]
     (when-not (= "about:blank" url)
       (re-frame/dispatch [:update-browser (assoc browser :url url :name title)]))
     (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
@@ -64,14 +65,15 @@
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
-                  rpc-url [:get :rpc-url]]
+                  rpc-url [:get :rpc-url]
+                  unread-messages-number [:get-chats-unread-messages-number]]
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
-      toolbar.view/default-nav-back
+      toolbar.view/nav-back-count
       (if dapp?
-        [toolbar-content-dapp contact]
-        [toolbar-content browser])]
+        [toolbar-content-dapp contact unread-messages-number]
+        [toolbar-content browser unread-messages-number])]
      (if url
        [components.webview-bridge/webview-bridge
         {:ref                                   #(reset! webview %)

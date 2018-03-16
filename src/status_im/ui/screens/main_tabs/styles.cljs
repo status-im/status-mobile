@@ -28,3 +28,10 @@
 
 (defn tab-icon [active?]
   {:color (if active? styles/color-blue4 styles/color-gray4)})
+
+(def counter-container
+  {:position :absolute
+   :top      4})
+
+(def counter
+  {:margin-left 18})

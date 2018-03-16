@@ -6,8 +6,9 @@
 
 (defn text-input-with-label [{:keys [label error style height] :as props}]
   [react/view
-   [react/text {:style styles/label}
-    label]
+   (when label
+     [react/text {:style styles/label}
+      label])
    [react/view {:style (styles/input-container height)}
     [react/text-input
      (merge
@@ -17,4 +18,4 @@
         :auto-capitalize        :none}
        (dissoc props :style :height))]]
    (when error
-     [tooltip/tooltip error styles/error])])
+     [tooltip/tooltip error (styles/error label)])])

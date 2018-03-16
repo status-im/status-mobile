@@ -84,3 +84,8 @@
 ;;TODO(goranjovic) - Breaks the toolbar title into new line on smaller screens
 ;;e.g. see Discover > Popular hashtags on iPhone 5s
 (def ios-content-item {:position :absolute :right 40 :left 40})
+
+(def counter-container
+  {:position :absolute
+   :top      19
+   :right    2})

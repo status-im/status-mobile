@@ -9,7 +9,9 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.constants :refer [console-chat-id]]))
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.styles :as common.styles]))
 
 (defn- online-text [contact chat-id]
   (cond
@@ -67,21 +69,22 @@
             accounts      [:get-accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
             sync-state    [:sync-state]]
-    [react/view (st/chat-name-view (or (empty? accounts)
-                                       show-actions?))
-     (let [chat-name (if (string/blank? name)
-                       (generate-gfy public-key)
-                       (or (i18n/get-contact-translated chat-id :name name)
-                           (i18n/label :t/chat-name)))]
-       [react/text {:style           st/chat-name-text
-                    :number-of-lines 1
-                    :font            :toolbar-title}
-        (if public?
-          (str "#" chat-name)
-          chat-name)])
-     (if group-chat
-       [group-last-activity {:contacts   contacts
-                             :public?    public?
-                             :sync-state sync-state}]
-       [last-activity {:online-text (online-text contact chat-id)
-                       :sync-state  sync-state}])]))
+    [react/view common.styles/flex
+     [react/view (st/chat-name-view (or (empty? accounts)
+                                        show-actions?))
+      (let [chat-name (if (string/blank? name)
+                        (generate-gfy public-key)
+                        (or (i18n/get-contact-translated chat-id :name name)
+                            (i18n/label :t/chat-name)))]
+        [react/text {:style           st/chat-name-text
+                     :number-of-lines 1
+                     :font            :toolbar-title}
+         (if public?
+           (str "#" chat-name)
+           chat-name)])
+      (if group-chat
+        [group-last-activity {:contacts   contacts
+                              :public?    public?
+                              :sync-state sync-state}]
+        [last-activity {:online-text (online-text contact chat-id)
+                        :sync-state  sync-state}])]]))

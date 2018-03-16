@@ -1,4 +1,5 @@
 (ns status-im.ui.components.toolbar.view
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -8,7 +9,8 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.styles :as styles]
             [status-im.utils.platform :as platform]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.core :as utils]
+            [status-im.ui.components.common.common :as components.common]))
 
 ;; Navigation item
 
@@ -26,6 +28,14 @@
   [nav-item (merge {:style styles/nav-item-button} props)
    [vector-icons/icon icon icon-opts]])
 
+(defview nav-button-with-count [props]
+  (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
+    [react/view
+     [nav-button props]
+     (when (pos? unread-messages-number)
+       [react/view styles/counter-container
+        [components.common/counter unread-messages-number]])]))
+
 (defn nav-text
   ([text] (nav-text nil text))
   ([{:keys [handler] :as props} text]
@@ -40,6 +50,8 @@
    (nav-text (merge props styles/item-text-white-background) text)))
 
 (def default-nav-back [nav-button actions/default-back])
+
+(def nav-back-count [nav-button-with-count actions/default-back])
 
 (defn default-done
   "Renders a touchable icon on Android or a label or iOS."

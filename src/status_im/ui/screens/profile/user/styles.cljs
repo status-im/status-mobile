@@ -45,3 +45,27 @@
 
 (defstyle my-profile-info-container
   {:background-color colors/white})
+
+(def advanced-button
+  {:margin-top    16
+   :margin-bottom 12})
+
+(def advanced-button-container
+  {:align-items     :center
+   :justify-content :center})
+
+(def advanced-button-container-background
+  {:padding-left     16
+   :padding-right    12
+   :padding-vertical 6
+   :border-radius    18
+   :background-color (colors/alpha colors/blue 0.1)})
+
+(def advanced-button-row
+  {:flex-direction :row
+   :align-items    :center})
+
+(def advanced-button-label
+  {:font-size      15
+   :letter-spacing -0.2
+   :color          colors/blue})
