@@ -236,6 +236,9 @@
 (defn connection-change [{:keys [type expensive?]}]
   (.connectionChange status type expensive?))
 
+(defn app-state-change [state]
+  (.appStateChange status state))
+
 (defrecord ReactNativeStatus []
   module/IReactNativeStatus
   ;; status-go calls
@@ -282,4 +285,6 @@
   (-close-application [this]
     (close-application))
   (-connection-change [this data]
-   (connection-change data)))
+   (connection-change data))
+  (-app-state-change [this state]
+   (app-state-change state)))

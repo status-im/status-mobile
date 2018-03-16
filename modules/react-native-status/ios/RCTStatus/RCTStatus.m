@@ -412,6 +412,13 @@ RCT_EXPORT_METHOD(connectionChange:(NSString *)type
     ConnectionChange((char *) [type UTF8String], isExpensive? 1 : 0);
 }
 
+RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
+#if DEBUG
+    NSLog(@"AppStateChange() method called");
+#endif
+    AppStateChange((char *) [type UTF8String]);
+}
+
 + (void)signalEvent:(const char *) signal
 {
     if(!signal){

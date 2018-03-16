@@ -705,4 +705,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Log.d(TAG, "ConnectionChange: " + type + ", is expensive " + isExpensive);
         Statusgo.ConnectionChange(type, isExpensive ? 1 : 0);
     }
+
+    @ReactMethod
+    public void appStateChange(final String type) {
+        Log.d(TAG, "AppStateChange: " + type);
+        Statusgo.AppStateChange(type);
+    }
 }

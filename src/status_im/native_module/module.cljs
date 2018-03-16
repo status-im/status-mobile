@@ -21,5 +21,6 @@
   (-notify-users [this {:keys [message payload tokens] :as m} callback])
   (-add-peer [this enode callback])
   (-close-application [this])
-  (-connection-change [this data]))
+  (-connection-change [this data])
+  (-app-state-change [this state]))
 

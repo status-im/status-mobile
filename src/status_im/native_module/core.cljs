@@ -95,3 +95,6 @@
 
 (defn connection-change [data]
   (module-interface/-connection-change rns-module data))
+
+(defn app-state-change [state]
+  (module-interface/-app-state-change rns-module state))
