@@ -4,10 +4,10 @@
 
 (defn wrap-first-time
   "Allows to avoid
-  \"Use of undeclared Var status-im.utils.platform/platform\"
+  \"Use of undeclared Var status-im.utils.platform/os\"
   warning. When defstyle or defnstyle is called first time status-im.utils.platform
   namespace will be explicitly required so that clojurescript compiler will compile
-  it before using status-im.utils.platform/platform in macro"
+  it before using status-im.utils.platform/os in macro"
   [body]
   `(do
      ~@[(when @first-time
@@ -18,7 +18,7 @@
 (defn body [style]
   `(let [style#            ~style
          common#            (dissoc style# :android :ios)
-         platform#          (keyword status-im.utils.platform/platform)
+         platform#          (keyword status-im.utils.platform/os)
          platform-specific# (get style# platform#)]
      (if platform-specific#
        (merge common# platform-specific#)

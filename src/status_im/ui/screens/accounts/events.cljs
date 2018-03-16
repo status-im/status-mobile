@@ -109,7 +109,7 @@
   ::account-created
   [re-frame/trim-v (re-frame/inject-cofx :get-new-keypair!)
    (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
-  (fn [{:keys [keypair signing-phrase status db] :as cofx} [{:keys [pubkey address mnemonic]} password]]
+  (fn [{:keys [keypair signing-phrase status db]} [{:keys [pubkey address mnemonic]} password]]
     (let [normalized-address (utils.hex/normalize-hex address)
           account            {:public-key          pubkey
                               :address             normalized-address
@@ -207,6 +207,12 @@
     (-> {:db (assoc-in db [:accounts/create :show-welcome?] true)
          :dispatch [:navigate-to-clean :usage-data]}
         (account-update {:name (:name create)}))))
+
+(handlers/register-handler-fx
+  :account-finalized
+  (fn [{db :db} _]
+    {:db db
+     :dispatch [:navigate-to-clean :home]}))
 
 (handlers/register-handler-fx
   :update-sign-in-time

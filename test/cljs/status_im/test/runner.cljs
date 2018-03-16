@@ -23,7 +23,8 @@
             [status-im.test.utils.signing-phrase.core]
             [status-im.test.utils.transducers]
             [status-im.test.utils.async]
-            [status-im.test.utils.datetime]))
+            [status-im.test.utils.datetime]
+            [status-im.test.utils.mixpanel]))
 
 (enable-console-print!)
 
@@ -57,4 +58,5 @@
  'status-im.test.utils.gfycat.core
  'status-im.test.utils.signing-phrase.core
  'status-im.test.utils.transducers
- 'status-im.test.utils.datetime)
+ 'status-im.test.utils.datetime
+ 'status-im.test.utils.mixpanel)

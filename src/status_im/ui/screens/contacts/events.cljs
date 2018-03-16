@@ -5,7 +5,6 @@
             [clojure.string :as s]
             [status-im.protocol.core :as protocol]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.utils.utils :refer [http-post]]
             [status-im.utils.random :as random]
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]

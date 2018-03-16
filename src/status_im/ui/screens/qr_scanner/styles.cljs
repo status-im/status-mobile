@@ -1,16 +1,13 @@
 (ns status-im.ui.screens.qr-scanner.styles
-  (:require [status-im.ui.components.styles :refer [color-white]]
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]
-            [status-im.utils.platform :as p]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.toolbar.styles :as toolbar.styles]))
 
 (def barcode-scanner-container
   {:flex             1
    :background-color :white})
 
 (def barcode-scanner
-  {:flex            1
-   :justify-content :flex-end
-   :align-items     :center})
+  {:flex 1})
 
 (def rectangle-container
   {:position         :absolute
@@ -73,5 +70,5 @@
 (def import-text
   {:flex           1
    :flex-direction :column
-   :color          color-white
+   :color          colors/white
    :margin-left    8})

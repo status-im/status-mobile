@@ -107,20 +107,22 @@
         :icon-content [components.common/counter {:size 22} 1]}]
       [profile.components/settings-item-separator]])])
 
-(defn navigate-to-accounts []
+(defn navigate-to-accounts [sharing-usage-data?]
   ;; TODO(rasom): probably not the best place for this call
   (protocol/stop-whisper!)
-  (re-frame/dispatch [:navigate-to :accounts]))
+  (re-frame/dispatch [:navigate-to :accounts])
+  (when sharing-usage-data?
+    (re-frame/dispatch [:unregister-mixpanel-tracking])))
 
-(defn handle-logout []
+(defn handle-logout [sharing-usage-data?]
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) navigate-to-accounts))
+                           (i18n/label :t/logout) #(navigate-to-accounts sharing-usage-data?)))
 
-(defn logout []
+(defn logout [sharing-usage-data?]
   [react/view {}
    [react/touchable-highlight
-    {:on-press            handle-logout
+    {:on-press            #(handle-logout sharing-usage-data?)
      :accessibility-label :log-out-button}
     [react/view profile.components.styles/settings-item
      [react/text {:style styles/logout-text
@@ -159,7 +161,7 @@
           :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]])]))
 
 (defview my-profile []
-  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
+  (letsubs [{:keys [public-key sharing-usage-data?] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]]
     (let [shown-account (merge current-account changed-account)]
@@ -174,5 +176,5 @@
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account]]
-        [logout]
+        [logout sharing-usage-data?]
         [advanced shown-account]]])))

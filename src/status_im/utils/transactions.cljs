@@ -1,5 +1,5 @@
 (ns status-im.utils.transactions
-  (:require [status-im.utils.utils :as utils]
+  (:require [status-im.utils.http :as http]
             [status-im.utils.types :as types]))
 
 (defn- get-network-subdomain [network]
@@ -52,6 +52,6 @@
                {})))
 
 (defn get-transactions [network account on-success on-error]
-  (utils/http-get (get-transaction-url network account)
-                  #(on-success (format-transactions-response % account))
-                  on-error))
+  (http/get (get-transaction-url network account)
+            #(on-success (format-transactions-response % account))
+             on-error))

@@ -120,13 +120,14 @@
 
 (register-handler-fx
   :change-account-handler
-  (fn [{{:keys [view-id] :as db} :db} [_ error address]]
+  (fn [{{:keys [accounts/accounts view-id] :as db} :db} [_ error address]]
     (if (nil? error)
       {:db         (cond-> (dissoc db :accounts/login)
                            (= view-id :create-account)
                            (assoc-in [:accounts/create :step] :enter-name))
        :dispatch-n (concat
                      [[:stop-debugging]
+                      (when (:sharing-usage-data? (accounts address)) [:register-mixpanel-tracking address])
                       [:initialize-account address
                        (when (not= view-id :create-account)
                          [[:navigate-to-clean :home]])]])}

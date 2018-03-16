@@ -1,5 +1,5 @@
 (ns status-im.utils.prices
-  (:require [status-im.utils.utils :as utils]
+  (:require [status-im.utils.http :as http]
             [status-im.utils.types :as types]))
 
 ;; Responsible for interacting with Cryptocompare API to get current prices for
@@ -25,7 +25,7 @@
      :last-day     (:OPEN24HOUR entry)}))
 
 (defn get-prices [from to on-success on-error]
-  (utils/http-get
+  (http/get
    (gen-price-url from to)
    (fn [resp] (on-success (format-price-resp from to resp)))
    on-error))

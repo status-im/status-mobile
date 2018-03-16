@@ -12,7 +12,7 @@
 (defn- generate-context
   "Generates context for jail call"
   [current-account-id chat-id to group-id]
-  (merge {:platform     platform/platform
+  (merge {:platform     platform/os
           :from         current-account-id
           :to           to
           :chat         {:chat-id    chat-id

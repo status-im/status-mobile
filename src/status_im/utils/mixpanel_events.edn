@@ -1,0 +1,146 @@
+;; This file is supposed to be edited by Chad.
+;; Chad loves mixpanel. When Chad was a child he dreamed of being a mixpanel tamer.
+
+[;; Account creation
+
+ {:label     "Account created"
+  :trigger   [:account-finalized]}
+ {:label     "Account restored"
+  :trigger   [:account-recovered]}
+
+ ;; Account lifecycle
+
+ {:label      "Login"
+  :trigger    [:initialize-account]}
+
+ {:label      "Logout"
+  :trigger    [:navigate-to :accounts]}
+
+ ;; Tab navigation
+
+ {:label      "Tap"
+  :trigger    [:navigate-to-clean :home]
+  :properties {:target :home}}
+ {:label      "Tap"
+  :trigger    [:navigate-to-tab :home]
+  :properties {:target :home}}
+ {:label      "Tap"
+  :trigger    [:navigate-to-tab :my-profile]
+  :properties {:target :my-profile}}
+ {:label      "Tap"
+  :trigger    [:navigate-to-clean :wallet]
+  :properties {:target :wallet}}
+ {:label      "Tap"
+  :trigger    [:navigate-to-tab :wallet]
+  :properties {:target :wallet}}
+
+ ;; New
+ {:label      "Tap"
+  :trigger    [:navigate-to-tab :new]
+  :properties {:target :new}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :new-chat]
+  :properties {:target :new-chat}}
+ {:label      "Tap"
+  :trigger    [:scan-qr-code]
+  :properties {:target :new-chat-qr-code}}
+ {:label      "Tap"
+  :trigger    [:show-profile]
+  :properties {:target :show-profile}}
+ {:label      "Tap"
+  :trigger    [:open-contact-toggle-list :chat-group]
+  :properties {:target :new-group-chat}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :new-public-chat]
+  :properties {:target :new-public-chat}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :open-dapp]
+  :properties {:target :open-dapp}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :dapp-description]
+  :properties {:target :open-dapp-description}}
+ {:label      "Tap"
+  :trigger    [:open-dapp-in-browser]
+  :properties {:target :open-selected-dapp}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :new-group]
+  :properties {:target :start-group-chat-next}}
+ {:label      "Tap"
+  :trigger    [:create-new-public-chat]
+  :properties {:target :create-public-chat}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :new-public-chat]
+  :properties {:target :join-public-chat}}
+
+  ;; Chat
+
+ {:label      "Tap"
+  :trigger    [:navigate-to-chat]
+  :properties {:target :open-existing-chat}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :browser]
+  :properties {:target :open-existing-dapp}}
+ {:label      "Tap"
+  :trigger    [:start-chat]
+  :properties {:target :start-chat}}
+ {:label      "Tap"
+  :trigger    [:send-current-message]
+  :properties {:target :send-current-message}}
+
+ ;; Wallet
+ {:label      "Tap"
+  :trigger    [:navigate-to :wallet-send-transaction]
+  :properties {:target :wallet-send-transaction}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :wallet-request-transaction]
+  :properties {:target :wallet-request-transaction}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :transactions-history]
+  :properties {:target :transactions-history}}
+ {:label      "Tap"
+   :trigger    [:navigate-to :recent-recipients]
+   :properties {:target :select-recipient
+                :type   :recent-recipients}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :recipient-qr-code]
+  :properties {:target :select-recipient
+               :type   :recipient-qr-code}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :contact-code]
+  :properties {:target :select-recipient
+               :type   :contact-code}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :wallet-send-assets]
+  :properties {:target :wallet-send-assets}}
+ {:label      "Tap"
+  :trigger    [:wallet.send/toggle-advanced]
+  :properties {:target :wallet-advanced}}
+ {:label      "Tap"
+  :trigger    [:wallet.send/set-signing?]
+  :properties {:target :wallet-open-sign-transaction}}
+ {:label      "Tap"
+  :trigger    [:wallet/sign-transaction]
+  :properties {:target :wallet-sign-transaction}}
+ {:label      "Tap"
+  :trigger    [:navigate-to-clean :wallet]
+  :properties {:target :wallet-got-it}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :wallet-transaction-sent]
+  :properties {:target :wallet-transaction-sent}}
+
+
+ ;;Profile
+ {:label      "Tap"
+  :trigger    [:my-profile/start-editing-profile]
+  :properties {:target :edit-profile}}
+ {:label      "Tap"
+  :trigger    [:my-profile/update-picture]
+  :properties {:target :edit-image
+               :type   :gallery}}
+ {:label      "Tap"
+   :trigger    [:navigate-to :profile-photo-capture]
+   :properties {:target :edit-image
+                :type   :capture}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :profile-qr-viewer]
+  :properties {:target :share-contact-code}}]

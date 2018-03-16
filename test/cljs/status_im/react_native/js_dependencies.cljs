@@ -36,6 +36,7 @@
 (def snoopy-bars             #js {:default #js {}})
 (def snoopy-buffer           #js {:default #js {}})
 (def EventEmmiter            #js {})
+(def fetch                   #js {})
 
 (def background-timer       #js {:setTimeout js/setTimeout
                                  :setInterval js/setInterval

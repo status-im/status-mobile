@@ -18,6 +18,12 @@
     (handler db params)
     db))
 
+(defn- pretty-print-event [ctx]
+  (let [[first second] (get-coeffect ctx :event)]
+    (if (map? second)
+      first
+      (str first " " second))))
+
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
   (->interceptor
@@ -26,13 +32,12 @@
              [context]
              (when @pre-event-callback
                (@pre-event-callback (get-coeffect context :event)))
-             (log/debug "Handling re-frame event: " (first (get-coeffect context :event)))
+             (log/debug "Handling re-frame event: " (pretty-print-event context))
              context)))
 
 (defn- check-spec-msg-path-problem [problem]
-  (let [pred (:pred problem)]
-    (str "Spec: " (-> problem :via last) "\n"
-         "Predicate: " (subs (str (:pred problem)) 0 50))))
+  (str "Spec: " (-> problem :via last) "\n"
+       "Predicate: " (subs (str (:pred problem)) 0 50)))
 
 (defn- check-spec-msg-path-problems [path path-problems]
   (str "Key path: " path "\n"
