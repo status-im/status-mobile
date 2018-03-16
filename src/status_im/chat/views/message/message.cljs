@@ -257,12 +257,14 @@
   (letsubs [{:keys [photo-path]} [:get-current-account]]
     (photo from photo-path)))
 
-(defview message-author-name [from]
+(defview message-author-name [from message-username]
   (letsubs [username    [:contact-name-by-identity from]]
-    [react/text {:style style/message-author-name} username]))
+    [react/text {:style style/message-author-name} (or username
+                                                       message-username
+                                                       (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn message-body
-  [{:keys [last-outgoing? last-by-same-author? message-type same-author? from outgoing group-chat] :as message} content]
+  [{:keys [last-outgoing? last-by-same-author? message-type same-author? from outgoing group-chat username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
     [react/view style/message-author
@@ -274,7 +276,7 @@
            [member-photo from]]]))]
     [react/view (style/group-message-view outgoing)
      (when-not same-author?
-       [message-author-name from])
+       [message-author-name from username])
      content]]
    (when last-outgoing?
      [react/view style/delivery-status
