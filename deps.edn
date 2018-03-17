@@ -1,0 +1,29 @@
+{:paths ["components/src" "src" "resources"]
+ :deps  {org.clojure/clojure         {:mvn/version "1.9.0"}
+         org.clojure/clojurescript   {:mvn/version "1.10.238"}
+         org.clojure/core.async      {:mvn/version "0.4.474"}
+         reagent                     {:mvn/version "0.7.0"
+                                      :exclusions  [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]}
+         status-im/re-frame          {:mvn/version "0.10.2"}
+         com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+         com.taoensso/timbre         {:mvn/version "4.10.0"}
+         hickory                     {:mvn/version "0.7.1"}
+         com.cognitect/transit-cljs  {:mvn/version "0.8.243"}}
+
+ :aliases
+ {:repl {:extra-deps
+         {;; Figwheel ClojureScript REPL
+          com.cemerick/piggieback {:mvn/version "0.2.2"
+                                   :exclusions  [com.google.javascript/closure-compiler]}
+          figwheel-sidecar        {:mvn/version "0.5.14"
+                                   :exclusions  [com.google.javascript/closure-compiler]}
+          re-frisk-remote         {:mvn/version "0.5.3"}
+          re-frisk-sidecar        {:mvn/version "0.5.4"}
+          hawk                    {:mvn/version "0.2.11"}
+
+          ;; CIDER compatible nREPL
+          cider/cider-nrepl       {:mvn/version "0.16.0"}
+          org.clojure/tools.nrepl {:mvn/version "0.2.13"}
+          refactor-nrepl          {:mvn/version "2.3.1"}}}
+  :test {:extra-deps {day8.re-frame/test {:mvn/version "0.1.5"}
+                      doo                {:mvn/version "0.1.9"}}}}}
