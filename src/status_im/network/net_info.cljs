@@ -1,6 +1,7 @@
 (ns status-im.network.net-info
   (:require [taoensso.timbre :as log]
-            [status-im.ui.components.react :as react-components]))
+            [status-im.ui.components.react :as react-components]
+            [status-im.utils.platform :as platform]))
 
 (defn is-connected? [callback]
   (when react-components/net-info
@@ -11,10 +12,13 @@
 
 (defn- wrap-net-info [callback]
   (fn [info-js]
-    (let [info (js->clj info-js :keywordize-keys true)]
-      (.then (.isConnectionExpensive react-components/net-info)
-             (fn [expensive?]
-               (callback {:type (:type info) :expensive? expensive?}))))))
+    (let [info      (js->clj info-js :keywordize-keys true)
+          callback' #(callback {:type (:type info) :expensive? %})]
+      (if platform/ios?
+        (callback' false)
+        (.then (.isConnectionExpensive react-components/net-info)
+               (fn [expensive?]
+                 (callback' expensive?)))))))
 
 (defn net-info [callback]
   (when react-components/net-info
