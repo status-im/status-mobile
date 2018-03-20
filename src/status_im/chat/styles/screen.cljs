@@ -222,4 +222,5 @@
   {:color          colors/gray
    :font-size      14
    :line-height    20
-   :letter-spacing -0.2})
+   :letter-spacing -0.2
+   :text-align     :center})
