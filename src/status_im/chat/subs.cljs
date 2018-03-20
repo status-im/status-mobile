@@ -91,25 +91,48 @@
   (fn [[chats id] [_ k chat-id]]
     (get-in chats [(or chat-id id) k])))
 
+(defn- partition-by-datemark
+  "Reduce step which expects the input list of messages to be sorted by clock value.
+  It makes best effort to group them by day.
+  We cannot sort them by :timestamp, as that represents the clock of the sender
+  and we have no guarantees on the order.
+
+  We naively and arbitrarly group them assuming that out-of-order timestamps
+  fall in the previous bucket.
+
+  A sends M1 to B with timestamp 2000-01-01T00:00:00
+  B replies M2 with timestamp    1999-12-31-23:59:59
+
+  M1 needs to be displayed before M2
+
+  so we bucket both in 1999-12-31"
+  [{:keys [acc last-timestamp last-datemark]} {:keys [timestamp datemark] :as msg}]
+  (if (or (empty? acc)                                       ; initial element
+          (and (not= last-datemark datemark)                 ; not the same day
+               (< timestamp last-timestamp)))                ; not out-of-order
+    {:last-timestamp timestamp
+     :last-datemark datemark
+     :acc  (conj acc [datemark [msg]])}                      ; add new datemark group
+    {:last-timestamp (max timestamp last-timestamp)
+     :last-datemark last-datemark
+     :acc (conj (pop acc) (update (peek acc) 1 conj msg))})) ; conj to the last element
+
 (defn message-datemark-groups
   "Transforms map of messages into sequence of `[datemark messages]` tuples, where
-  messages with particular datemark are sorted according to their `:clock-values` and
-  tuples themeselves are sorted according to the highest `:clock-values` in the messages."
+  messages with particular datemark are sorted according to their clock-values."
   [id->messages]
-  (let [clock-sorter (juxt :from-clock-value :to-clock-value)
-        datemark->messages (transduce (comp (map second)
-                                            (filter :show?)
-                                            (map (fn [{:keys [timestamp] :as msg}]
-                                                   (assoc msg :datemark (time/day-relative timestamp)))))
-                                      (completing (fn [acc {:keys [datemark] :as msg}]
-                                                    (update acc datemark conj msg)))
-                                      {}
-                                      id->messages)]
-    (->> datemark->messages
-         (map (fn [[datemark messages]]
-                [datemark (->> messages (sort-by clock-sorter) reverse)]))
-         (sort-by (comp clock-sorter first second))
-         reverse)))
+  (let [sorted-messages     (->> id->messages
+                                 vals
+                                 (sort-by (juxt (comp unchecked-negate :clock-value) :message-id))) ; sort-by clock in reverse order, break ties by :message-id field
+        remove-hidden-xf    (filter :show?)
+        add-datemark-xf     (map (fn [{:keys [timestamp] :as msg}]
+                                   (assoc msg :datemark (time/day-relative timestamp))))]
+    (-> (transduce (comp remove-hidden-xf
+                         add-datemark-xf)
+                   (completing partition-by-datemark)
+                   {:acc []}
+                   sorted-messages)
+        :acc)))
 
 (reg-sub
   :get-chat-message-datemark-groups

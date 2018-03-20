@@ -2,6 +2,7 @@
   (:require [status-im.ui.components.styles :refer [default-chat-color]]
             [status-im.utils.random :as random]
             [status-im.constants :as constants]
+            [status-im.utils.clocks :as utils.clocks]
             [status-im.i18n :as i18n]
             [clojure.string :as string]))
 
@@ -12,6 +13,7 @@
    :chat-id      constants/console-chat-id
    :from         constants/console-chat-id
    :to           "me"
+   :clock-value  (utils.clocks/send 0)
    :content      content
    :content-type content-type})
 
@@ -27,8 +29,7 @@
    :contacts     [{:identity         constants/console-chat-id
                    :text-color       "#FFFFFF"
                    :background-color "#AB7967"}]
-   :last-to-clock-value   0
-   :last-from-clock-value 0})
+   :last-clock-value   0})
 
 (def contact
   {:whisper-identity constants/console-chat-id
