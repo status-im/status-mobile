@@ -35,6 +35,10 @@
            #_
            {:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 
+(def default-account-settings
+  {:wallet {:visible-tokens {:testnet #{:STT}
+                             :mainnet #{:SNT}}}})
+
 (defn- transform-config [networks]
   (->> networks
        (map (fn [[network-name {:keys [config] :as data}]]

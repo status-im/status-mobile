@@ -10,7 +10,8 @@
     [status-im.utils.handlers :as handlers]
     [status-im.utils.gfycat.core :as gfycat]
     [status-im.utils.signing-phrase.core :as signing-phrase]
-    [status-im.utils.hex :as utils.hex]))
+    [status-im.utils.hex :as utils.hex]
+    [status-im.constants :as constants]))
 
 ;;;; FX
 
@@ -41,7 +42,8 @@
                    :updates-private-key private
                    :mnemonic            ""
                    :signed-up?          true
-                   :signing-phrase      phrase}]
+                   :signing-phrase      phrase
+                   :settings            constants/default-account-settings}]
       (when-not (string/blank? public-key)
         (-> db 
             (accounts-events/add-account account)

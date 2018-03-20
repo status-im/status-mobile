@@ -14,6 +14,7 @@
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.hex :as utils.hex]
+            [status-im.constants :as constants]
             status-im.ui.screens.accounts.create.navigation))
 
 ;;;; COFX
@@ -120,7 +121,7 @@
                               :photo-path          (identicon pubkey)
                               :signing-phrase      signing-phrase
                               :mnemonic            mnemonic
-                              :settings            {:wallet {:visible-tokens {:testnet #{:STT} :mainnet #{:SNT}}}}}]
+                              :settings            constants/default-account-settings}]
       (log/debug "account-created")
       (when-not (str/blank? pubkey)
         (-> (add-account db account)
