@@ -24,8 +24,7 @@
      :is-active             true
      :timestamp             now
      :contacts              [{:identity chat-id}]
-     :last-from-clock-value 0
-     :last-to-clock-value   0}))
+     :last-clock-value      0}))
 
 (defn add-chat
   "Adds new chat to db & realm, if the chat with same id already exists, justs restores it"
@@ -52,8 +51,7 @@
               :public?               true
               :is-active             true
               :timestamp             now
-              :last-to-clock-value   0
-              :last-from-clock-value 0}]
+              :last-clock-value   0}]
     {:db        (assoc-in db [:chats topic] chat)
      :data-store/save-chat chat}))
 
@@ -68,8 +66,7 @@
               :is-active             true
               :timestamp             now
               :contacts              (mapv (partial hash-map :identity) participants)
-              :last-to-clock-value   0
-              :last-from-clock-value 0}]
+              :last-clock-value   0}]
     {:db        (assoc-in db [:chats chat-id] chat)
      :data-store/save-chat chat}))
 

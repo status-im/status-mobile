@@ -4,6 +4,7 @@
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.models.message :as message-model]
             [status-im.constants :as constants]
+            [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as random]))
 
@@ -65,6 +66,7 @@
                                  :content      (str type ": " message)
                                  :content-type constants/content-type-log-message
                                  :outgoing     false
+                                 :clock-value  (utils.clocks/send 0)
                                  :chat-id      chat-id
                                  :from         chat-id
                                  :to           "me"}]))))
@@ -74,6 +76,7 @@
                              :content      (str content)
                              :content-type constants/text-content-type
                              :outgoing     false
+                             :clock-value  (utils.clocks/send 0)
                              :chat-id      chat-id
                              :from         chat-id
                              :to           "me"}])))))

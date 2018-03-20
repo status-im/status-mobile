@@ -41,11 +41,11 @@
 (deftest day-relative-before-yesterday-us-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-time-fmt (d/mk-fmt "us" d/short-date-time-format)]
+                d/date-fmt (d/mk-fmt "us" d/short-date-time-format)]
     (is (= (d/day-relative epoch) "Jan 1, 1970, 12:00:00 AM"))))
 
 (deftest day-relative-before-yesterday-nb-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-time-fmt (d/mk-fmt "nb-NO" d/short-date-time-format)]
+                d/date-fmt (d/mk-fmt "nb-NO" d/short-date-time-format)]
     (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))
