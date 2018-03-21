@@ -58,7 +58,7 @@
 
    ;;home
    :home                                 "Home"
-   :no-recent-chats                      "There are no recent Chats or DApps here yet.\nUse the “Plus” button to see the list of Dapps or discover people to chat with"
+   :no-recent-chats                      "There are no recent Chats or DApps here yet. Use the “Plus” button to see the list of Dapps or discover people to chat with."
    :welcome-to-status                    "Welcome to Status"
    :welcome-to-status-description        "Here you can chat with people in a secure private chat, browse and interact with DApps. Use the “Plus” icon above to explore Status"
 
