@@ -15,6 +15,7 @@
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im.utils.build :as build]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
@@ -88,46 +89,43 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
-(defn my-profile-settings [{:keys [seed-backed-up? mnemonic]}]
-  [react/view
-   [profile.components/settings-title (i18n/label :t/settings)]
-   [profile.components/settings-item {:label-kw :t/main-currency
-                                      :value "USD"
-                                      :active? false}]
-   [profile.components/settings-item-separator]
-   [profile.components/settings-item {:label-kw :t/notifications
-                                      :action-fn #(.openURL react/linking "app-settings://notification/status-im")}
-    :notifications-button]
-   [profile.components/settings-item-separator]
-   (when (and (not seed-backed-up?) (not (string/blank? mnemonic)))
-     [react/view
-      [profile.components/settings-item
-       {:label-kw     :t/backup-your-seed
-        :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
-        :icon-content [components.common/counter {:size 22} 1]}]
-      [profile.components/settings-item-separator]])])
-
-(defn navigate-to-accounts [sharing-usage-data?]
+(defn- navigate-to-accounts [sharing-usage-data?]
   ;; TODO(rasom): probably not the best place for this call
   (protocol/stop-whisper!)
   (re-frame/dispatch [:navigate-to :accounts])
   (when sharing-usage-data?
     (re-frame/dispatch [:unregister-mixpanel-tracking])))
 
-(defn handle-logout [sharing-usage-data?]
+(defn- handle-logout [sharing-usage-data?]
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
                            (i18n/label :t/logout) #(navigate-to-accounts sharing-usage-data?)))
 
-(defn logout [sharing-usage-data?]
-  [react/view {}
-   [react/touchable-highlight
-    {:on-press            #(handle-logout sharing-usage-data?)
-     :accessibility-label :log-out-button}
-    [react/view profile.components.styles/settings-item
-     [react/text {:style styles/logout-text
-                  :font  (if platform/android? :medium :default)}
-      (i18n/label :t/logout)]]]])
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
+  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
+    [react/view
+     [profile.components/settings-title (i18n/label :t/settings)]
+     [profile.components/settings-item {:label-kw :t/main-currency
+                                        :value    (i18n/label :usd-currency)
+                                        :active?  false}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw            :t/notifications
+                                        :accessibility-label :notifications-button
+                                        :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]
+     (when show-backup-seed?
+       [profile.components/settings-item-separator])
+     (when show-backup-seed?
+       [profile.components/settings-item
+        {:label-kw     :t/backup-your-seed
+         :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
+         :icon-content [components.common/counter {:size 22} 1]}])
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw            :t/logout
+                                        :accessibility-label :log-out-button
+                                        :value               build/version
+                                        :destructive?        true
+                                        :hide-arrow?         true
+                                        :action-fn           #(handle-logout sharing-usage-data?)}]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced? [:get :my-profile/advanced?]]
@@ -175,6 +173,5 @@
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account]]
-        [logout sharing-usage-data?]
+         [my-profile-settings current-account sharing-usage-data?]]
         [advanced shown-account]]])))
