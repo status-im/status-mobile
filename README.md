@@ -7,7 +7,7 @@ Join us in creating a browser, messenger, and gateway to a decentralized world. 
 
 ## Why?
 
-We believe in a medium of pure free trade, economies with fair, permission-less access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
+We believe in a medium of pure free trade, economies with fair, permission-less access and a world without intermediaries! We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
 
 We want to take responsibility for our data, the way we conduct ourselves privately and promote this way of life to a mass audience.
 
