@@ -45,7 +45,8 @@
              :inbox/wnodes               constants/default-wnodes
              :inbox/topic                constants/inbox-topic
              :inbox/password             constants/inbox-password
-             :my-profile/editing?        false})
+             :my-profile/editing?        false
+             :desktop/desktop            {:tab-view-id :home}})
 
 ;;;;GLOBAL
 
@@ -116,6 +117,8 @@
                                                                          :navigation.screen-params/edit-contact-group
                                                                          :navigation.screen-params/dapp-description])))
 
+(spec/def :desktop/desktop (spec/nilable any?))
+
 ;;;;NETWORK
 
 (spec/def ::network (spec/nilable string?))
@@ -164,7 +167,8 @@
                   :browser/browsers
                   :browser/options
                   :new/open-dapp
-                  :navigation/screen-params]
+                  :navigation/screen-params
+                  :desktop/desktop]
                  :opt-un
                  [::current-public-key
                   ::modal

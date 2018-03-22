@@ -73,7 +73,7 @@
 ;; Accessor methods for React Components
 
 (defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
-  (let [font  (get-in platform/platform-specific [:fonts (keyword font)])
+  (let [font (get-in platform/platform-specific [:fonts (keyword font)])
         style (get opts style-key)]
     (-> opts
         (dissoc :font)
@@ -98,13 +98,13 @@
                    :or   {font :default}} text]
   (let [font (get-in platform/platform-specific [:fonts (keyword font)])]
     [text-input-class (merge
-                       {:underline-color-android :transparent
-                        :placeholder-text-color  styles/text2-color
-                        :placeholder             (i18n/label :t/type-a-message)
-                        :value                   text}
-                       (-> opts
-                           (dissoc :font)
-                           (assoc :style (merge style font))))]))
+                        {:underline-color-android :transparent
+                         :placeholder-text-color  styles/text2-color
+                         :placeholder             (i18n/label :t/type-a-message)
+                         :value                   text}
+                        (-> opts
+                            (dissoc :font)
+                            (assoc :style (merge style font))))]))
 
 (defn icon
   ([n] (icon n styles/icon-default))
@@ -202,10 +202,10 @@
                         (views current-view)
                         (= views current-view))
 
-        style         (if current-view?
-                        {:flex 1}
-                        {:opacity 0
-                         :flex    0})
+        style (if current-view?
+                {:flex 1}
+                {:opacity 0
+                 :flex    0})
 
         component' (if (fn? component) [component] component)]
 
@@ -226,8 +226,8 @@
 
 (defmulti create-main-screen-view #(cond
                                      platform/iphone-x? :iphone-x
-                                     platform/ios?      :ios
-                                     platform/android?  :android))
+                                     platform/ios? :ios
+                                     platform/android? :android))
 
 (defmethod create-main-screen-view :iphone-x [current-view]
   (fn [props & children]
@@ -254,17 +254,17 @@
                               :contact-list-modal) styles/color-white
                              :transparent)})
           children (cond-> children
-                     (#{:wallet
-                        :recent-recipients
-                        :wallet-send-assets
-                        :wallet-request-assets} current-view)
-                     (conj [view {:background-color styles/color-white
-                                  :position         :absolute
-                                  :bottom           0
-                                  :right            0
-                                  :left             0
-                                  :height           100
-                                  :z-index          -1000}]))]
+                           (#{:wallet
+                              :recent-recipients
+                              :wallet-send-assets
+                              :wallet-request-assets} current-view)
+                           (conj [view {:background-color styles/color-white
+                                        :position         :absolute
+                                        :bottom           0
+                                        :right            0
+                                        :left             0
+                                        :height           100
+                                        :z-index          -1000}]))]
       (apply vector safe-area-view props children))))
 
 (defmethod create-main-screen-view :default [_]

@@ -3,7 +3,14 @@
 
 (defn system-options [builds-to-start]
   {:nrepl-port 7888
-   :builds     [{:id           :ios
+   :builds     [{:id           :desktop
+                 :source-paths ["react-native/src" "src" "env/dev"]
+                 :compiler     {:output-to     "target/ios/desktop.js"
+                                :main          "env.desktop.main"
+                                :output-dir    "target/desktop"
+                                :optimizations :none}
+                 :figwheel     true}
+                {:id           :ios
                  :source-paths ["react-native/src" "src" "env/dev"]
                  :compiler     {:output-to     "target/ios/app.js"
                                 :main          "env.ios.main"

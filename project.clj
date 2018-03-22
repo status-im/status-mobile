@@ -31,18 +31,24 @@
   :profiles {:dev      {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                         :cljsbuild    {:builds
                                        {:ios
-                                        {:source-paths ["react-native/src" "src"]
+                                        {:source-paths ["components/src" "react-native/src" "src"]
                                          :compiler     {:output-to     "target/ios/app.js"
                                                         :main          "env.ios.main"
                                                         :output-dir    "target/ios"
                                                         :optimizations :none}}
                                         :android
-                                        {:source-paths     ["react-native/src" "src"]
+                                        {:source-paths     ["components/src" "react-native/src" "src"]
                                          :compiler         {:output-to     "target/android/app.js"
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
                                                             :optimizations :none}
-                                         :warning-handlers [status-im.utils.build/warning-handler]}}}
+                                         :warning-handlers [status-im.utils.build/warning-handler]}
+                                        :desktop
+                                        {:source-paths ["components/src" "react-native/src" "src"]
+                                         :compiler     {:output-to     "target/desktop/app.js"
+                                                        :main          "env.desktop.main"
+                                                        :output-dir    "target/desktop"
+                                                        :optimizations :none}}}}
                         :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
@@ -50,12 +56,12 @@
                                         [re-frisk-remote "0.5.3"]
                                         [re-frisk-sidecar "0.5.4"]
                                         [hawk "0.2.11"]]
-                         :source-paths ["src" "env/dev"]}]
+                         :source-paths ["src" "env/dev" "react-native/src" "components/src"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.7"]]
                         :cljsbuild    {:builds
                                        [{:id           "test"
-                                         :source-paths ["src" "test/cljs"]
+                                         :source-paths ["components/src" "src" "test/cljs"]
                                          :compiler     {:main          status-im.test.runner
                                                         :output-to     "target/test/test.js"
                                                         :output-dir    "target/test"
@@ -78,7 +84,7 @@
                                                         :target        :nodejs}}]}}
              :prod     {:cljsbuild {:builds
                                     {:ios
-                                     {:source-paths     ["react-native/src" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
                                       :compiler         {:output-to          "index.ios.js"
                                                          :main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
@@ -91,7 +97,7 @@
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
-                                     {:source-paths     ["react-native/src" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
                                       :compiler         {:output-to          "index.android.js"
                                                          :main               "env.android.main"
                                                          :output-dir         "target/android-prod"
