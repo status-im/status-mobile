@@ -25,11 +25,12 @@
       [components.common/logo styles/toolbar-logo]])
    [toolbar/actions
     (when platform/ios?
-      [(toolbar.actions/add #(re-frame/dispatch [:navigate-to :new]))])]])
+      [(-> (toolbar.actions/add #(re-frame/dispatch [:navigate-to :new]))
+           (assoc-in [:icon-opts :accessibility-label] :new-chat-button))])]])
 
 (defn- home-action-button []
   [react/view styles/action-button-container
-   [react/touchable-highlight {:accessibility-label :plus-button
+   [react/touchable-highlight {:accessibility-label :new-chat-button
                                :on-press            #(re-frame/dispatch [:navigate-to :new])}
     [react/view styles/action-button
      [icons/icon :icons/add {:color :white}]]]])
@@ -43,7 +44,7 @@
           offset-x (animation/create-value (if swiped? styles/delete-button-width 0))
           swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width home-item-id swiped?)
           swipe-pan-handler (responder/pan-handlers swipe-pan-responder)]
-      [react/view swipe-pan-handler
+      [react/view (assoc swipe-pan-handler :accessibility-label :chat-item)
        [react/animated-view {:style {:flex 1 :right offset-x}}
         [inner-item-view home-item]
         [react/touchable-highlight {:style    styles/delete-icon-highlight

@@ -36,12 +36,13 @@
 
     (str (i18n/label :t/sync-in-progress) " " percentage "% " currentBlock)))
 
-(defview last-activity [{:keys [online-text sync-state]}]
+(defview last-activity [{:keys [online-text sync-state accessibility-label]}]
   [state [:get :sync-data]]
-  [react/text {:style st/last-activity-text}
+  [react/text {:style               st/last-activity-text
+               :accessibility-label accessibility-label}
    (case sync-state
      :in-progress (in-progress-text state)
-     :synced (i18n/label :t/sync-synced)
+     :synced      (i18n/label :t/sync-synced)
      online-text)])
 
 (defn- group-last-activity [{:keys [contacts sync-state public?]}]
@@ -76,9 +77,10 @@
                         (generate-gfy public-key)
                         (or (i18n/get-contact-translated chat-id :name name)
                             (i18n/label :t/chat-name)))]
-        [react/text {:style           st/chat-name-text
-                     :number-of-lines 1
-                     :font            :toolbar-title}
+        [react/text {:style               st/chat-name-text
+                     :number-of-lines     1
+                     :font                :toolbar-title
+                     :accessibility-label :chat-name-text}
          (if public?
            (str "#" chat-name)
            chat-name)])
@@ -86,5 +88,6 @@
         [group-last-activity {:contacts   contacts
                               :public?    public?
                               :sync-state sync-state}]
-        [last-activity {:online-text (online-text contact chat-id)
-                        :sync-state  sync-state}])]]))
+        [last-activity {:online-text         (online-text contact chat-id)
+                        :sync-state          sync-state
+                        :accessibility-label :last-seen-text}])]]))

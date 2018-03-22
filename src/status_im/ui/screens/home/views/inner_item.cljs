@@ -16,12 +16,13 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]))
 
-(defn message-content-text [{:keys [content] :as message}] 
+(defn message-content-text [{:keys [content] :as message}]
   [react/view styles/last-message-container
    (cond
 
      (not message)
-     [react/text {:style styles/last-message-text}
+     [react/text {:style               styles/last-message-text
+                  :accessibility-label :no-messages-text}
       (i18n/label :t/no-messages)]
 
      (str/blank? content)
@@ -29,16 +30,18 @@
       ""]
 
      (:content content)
-     [react/text {:style           styles/last-message-text
-                  :number-of-lines 1}
+     [react/text {:style               styles/last-message-text
+                  :number-of-lines     1
+                  :accessibility-label :chat-message-text}
       (:content content)]
 
      (and (:command content) (-> content :short-preview :markup))
      (commands-utils/generate-hiccup (-> content :short-preview :markup))
 
      :else
-     [react/text {:style           styles/last-message-text
-                  :number-of-lines 1}
+     [react/text {:style               styles/last-message-text
+                  :number-of-lines     1
+                  :accessibility-label :chat-message-text}
       content])])
 
 (defview message-status [{:keys [chat-id contacts]}
@@ -54,13 +57,16 @@
 
 (defn message-timestamp [{:keys [timestamp]}]
   (when timestamp
-    [react/text {:style styles/datetime-text}
+    [react/text {:style               styles/datetime-text
+                 :accessibility-label :last-message-time-text}
      (time/to-short-str timestamp)]))
 
 (defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
     (when (pos? unviewed-messages-count)
-      [components.common/counter {:size 22} unviewed-messages-count])))
+      [components.common/counter {:size                22
+                                  :accessibility-label :unread-messages-count-text}
+       unviewed-messages-count])))
 
 (defn chat-list-item-name [name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
@@ -76,8 +82,9 @@
        [react/view styles/private-group-icon-container
         [vector-icons/icon :icons/group-chat {:color colors/gray}]])
      [react/view {:flex-shrink 1}
-      [react/text {:style styles/name-text
-                   :number-of-lines 1}
+      [react/text {:style               styles/name-text
+                   :number-of-lines     1
+                   :accessibility-label :chat-name-text}
        (if public-group?
          (str "#" chat-name)
          chat-name)]]]))
@@ -117,11 +124,13 @@
        [react/view styles/item-upper-container
         [react/view styles/name-view
          [react/view {:flex-shrink 1}
-          [react/text {:style styles/name-text
-                       :number-of-lines 1}
+          [react/text {:style               styles/name-text
+                       :accessibility-label :chat-name-text
+                       :number-of-lines     1}
            name]]]]
        [react/view styles/item-lower-container
         [react/view styles/last-message-container
-         [react/text {:style styles/last-message-text
-                      :number-of-lines 1}
+         [react/text {:style               styles/last-message-text
+                      :accessibility-label :chat-url-text
+                      :number-of-lines     1}
           (or url (i18n/label :t/dapp))]]]]]]))

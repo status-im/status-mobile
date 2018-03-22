@@ -345,7 +345,7 @@
                                                       (react/dismiss-keyboard!))
                                     :on-long-press #(when (= content-type constants/text-content-type)
                                                       (list-selection/share content (i18n/label :t/message)))}
-         [react/view
+         [react/view {:accessibility-label :chat-item}
           (let [incoming-group (and group-chat (not outgoing))]
             [message-content message-body (merge message
                                                  {:current-public-key current-public-key

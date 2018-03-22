@@ -18,19 +18,23 @@
 
 (defn actions [{:keys [pending? whisper-identity dapp?]}]
   (concat (if pending?
-            [{:label  (i18n/label :t/add-to-contacts)
-              :icon   :icons/add-contact
-              :action #(re-frame/dispatch [:add-contact whisper-identity])}]
-            [{:label     (i18n/label :t/in-contacts)
-              :icon      :icons/in-contacts
-              :disabled? true}])
-          [{:label  (i18n/label :t/send-message)
-            :icon   :icons/chats
-            :action #(re-frame/dispatch [:start-chat whisper-identity {:navigation-replace? true}])}]
+            [{:label               (i18n/label :t/add-to-contacts)
+              :icon                :icons/add-contact
+              :action              #(re-frame/dispatch [:add-contact whisper-identity])
+              :accessibility-label :add-to-contacts-button}]
+            [{:label               (i18n/label :t/in-contacts)
+              :icon                :icons/in-contacts
+              :disabled?           true
+              :accessibility-label :in-contacts-button}])
+          [{:label               (i18n/label :t/send-message)
+            :icon                :icons/chats
+            :action              #(re-frame/dispatch [:start-chat whisper-identity {:navigation-replace? true}])
+            :accessibility-label :start-conversation-button}]
           (when-not dapp?
-            [{:label  (i18n/label :t/send-transaction)
-              :icon   :icons/arrow-right
-              :action #(re-frame/dispatch [:profile/send-transaction whisper-identity])}])))
+            [{:label               (i18n/label :t/send-transaction)
+              :icon                :icons/arrow-right
+              :action              #(re-frame/dispatch [:profile/send-transaction whisper-identity])
+              :accessibility-label :send-transaction-button}])))
 
 (defn profile-info-item [{:keys [label value options accessibility-label]}]
   [react/view styles/profile-info-item

@@ -41,7 +41,8 @@
     (when (or (nil? pending-contact?) ; user not in contact list
               pending-contact?)
       [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:add-contact chat-id])}
+       {:on-press            #(re-frame/dispatch [:add-contact chat-id])
+        :accessibility-label :add-to-contacts-button}
        [react/view style/add-contact
         [react/text {:style style/add-contact-text}
          (i18n/label :t/add-to-contacts)]]])))
@@ -58,7 +59,8 @@
       toolbar/nav-back-count
       [toolbar-content/toolbar-content-view]
       [toolbar/actions [{:icon      :icons/options
-                         :icon-opts {:color :black}
+                         :icon-opts {:color               :black
+                                     :accessibility-label :chat-menu-button}
                          :handler   #(on-options chat-id name group-chat public?)}]]]
      (when-not (or public? group-chat) [add-contact-bar])]))
 

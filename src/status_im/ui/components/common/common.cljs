@@ -80,9 +80,11 @@
 
 (defn counter
   ([value] (counter nil value))
-  ([{:keys [size] :or {size 18}} value]
+  ([{:keys [size accessibility-label] :or {size 18}} value]
    [react/view {:style (styles/counter-container size)}
-    [react/text {:style (styles/counter-label size)}
+    [react/text (cond-> {:style (styles/counter-label size)}
+                  accessibility-label
+                  (assoc :accessibility-label accessibility-label))
      value]]))
 
 (defn image-contain

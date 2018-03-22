@@ -12,16 +12,17 @@
 
 ;; profile header elements
 
-(defn- profile-name-input [name on-change-text-event]
+(defn- profile-name-input [name on-change-text-event & [props]]
   [react/view
    [react/text-input
-    {:style               styles/profile-name-input-text
-     :placeholder         ""
-     :default-value       name
-     :auto-focus          true
-     :on-change-text      #(when on-change-text-event
-                             (re-frame/dispatch [on-change-text-event %]))
-     :accessibility-label :username-input}]])
+    (merge {:style               styles/profile-name-input-text
+            :placeholder         ""
+            :default-value       name
+            :auto-focus          true
+            :on-change-text      #(when on-change-text-event
+                                    (re-frame/dispatch [on-change-text-event %]))
+            :accessibility-label :username-input}
+           props)]])
 
 (defn- show-profile-icon-actions [options]
   (when (seq options)
@@ -37,8 +38,8 @@
                  :number-of-lines 1}
      name]]])
 
-(defn- profile-header-edit [{:keys [name] :as contact}
-                            icon-options on-change-text-event allow-icon-change?]
+(defn- profile-header-edit [{:keys [name group-chat] :as contact}
+                           icon-options on-change-text-event allow-icon-change?]
   [react/view styles/profile-header-edit
    [react/touchable-highlight {:on-press            #(show-profile-icon-actions icon-options)
                                :accessibility-label :edit-profile-photo-button}
@@ -46,7 +47,8 @@
      [chat-icon.screen/my-profile-icon {:account contact
                                         :edit?   allow-icon-change?}]]]
    [react/view styles/profile-header-name-container
-    [profile-name-input name on-change-text-event]]])
+    [profile-name-input name on-change-text-event
+     (when group-chat {:accessibility-label :chat-name-input})]]])
 
 (defn profile-header [contact editing? allow-icon-change? options on-change-text-event]
   (if editing?

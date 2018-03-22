@@ -158,8 +158,9 @@
 
 (defn commands-button []
   [react/touchable-highlight
-   {:on-press #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
-                   (re-frame/dispatch [:chat-input-focus :input-ref]))}
+   {:on-press            #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
+                              (re-frame/dispatch [:chat-input-focus :input-ref]))
+    :accessibility-label :chat-commands-button}
    [react/view
     [vi/icon :icons/input-commands {:container-style style/input-commands-icon
                                     :color           :dark}]]])
