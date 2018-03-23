@@ -19,10 +19,11 @@
 (defview expandable-view [{:keys [key]} & elements]
   (letsubs [anim-value         (animation/create-value 0)
             input-height       [:get-current-chat-ui-prop :input-height]
+            input-focused?     [:get-current-chat-ui-prop :input-focused?]
+            messages-focused?  [:get-current-chat-ui-prop :messages-focused?]
             chat-input-margin  [:chat-input-margin]
             keyboard-height    [:get :keyboard-height]
-            chat-layout-height [:get :layout-height]
-            input-focused?     [:get-current-chat-ui-prop :input-focused?]]
+            chat-layout-height [:get :layout-height]]
     (let [input-height (or input-height (+ input-style/padding-vertical
                                            input-style/min-input-height
                                            input-style/padding-vertical
@@ -34,5 +35,5 @@
         (into [react/scroll-view {:keyboard-should-persist-taps :always
                                   :on-content-size-change       #(expandable-view-on-update anim-value %2)
                                   :bounces                      false}]
-              (when input-focused?
-                elements))]])))
+          (when (or input-focused? (not messages-focused?))
+            elements))]])))

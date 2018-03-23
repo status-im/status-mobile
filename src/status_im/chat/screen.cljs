@@ -89,13 +89,19 @@
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}
-     [react/animated-view {:style (style/message-view-animated opacity)}
-      message-view]]))
+      [react/touchable-without-feedback
+       {:on-press (fn [_]
+                    (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                    (react/dismiss-keyboard!))}
+       [react/animated-view {:style (style/message-view-animated opacity)}
+        message-view]]]))
 
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
-            current-public-key [:get-current-public-key]
-            chat-id            [:get-current-chat-id]]
+            chat-id            [:get-current-chat-id]
+            current-public-key [:get-current-public-key]]
+    {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
+                                                                   :input-focused? false}])}
     (if (empty? messages)
       [react/view style/empty-chat-container
        [react/text {:style style/empty-chat-text}
@@ -111,7 +117,7 @@
                        :inverted                  true
                        :onEndReached              #(re-frame/dispatch [:load-more-messages])
                        :enableEmptySections       true
-                       :keyboardShouldPersistTaps (if platform/android? :always :handled)}])))
+                       :keyboardShouldPersistTaps :handled}])))
 
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]

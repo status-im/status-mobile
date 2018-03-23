@@ -29,10 +29,9 @@
       :default-value          (or input-text "")
       :editable               true
       :blur-on-submit         false
-      :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused? true}])
-      :on-blur                (fn []
-                                (re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
-                                (re-frame/dispatch [:set-chat-input-text ""]))
+      :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
+                                                                        :messages-focused? false}])
+      :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
       :on-submit-editing      (fn [_]
                                 (if single-line-input?
                                   (re-frame/dispatch [:send-current-message])

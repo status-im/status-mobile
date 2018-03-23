@@ -51,6 +51,7 @@
 (def check-box (get-class "CheckBox"))
 
 (def touchable-highlight-class (get-class "TouchableHighlight"))
+(def touchable-without-feedback-class (get-class "TouchableWithoutFeedback"))
 (def touchable-opacity (get-class "TouchableOpacity"))
 (def activity-indicator (get-class "ActivityIndicator"))
 
@@ -113,6 +114,11 @@
   [touchable-highlight-class
    (merge {:underlay-color :transparent} props)
    content])
+
+(defn touchable-without-feedback [props content]
+ [touchable-without-feedback-class
+  props
+  content])
 
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))

@@ -339,10 +339,11 @@
 
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
   [message-container message
-   [react/touchable-highlight {:on-press      #(when platform/ios?
-                                                 (react/dismiss-keyboard!))
-                               :on-long-press #(when (= content-type constants/text-content-type)
-                                                 (list-selection/share content (i18n/label :t/message)))}
+  [react/touchable-highlight {:on-press      (fn [_]
+                                               (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                                               (react/dismiss-keyboard!))
+                              :on-long-press #(when (= content-type constants/text-content-type)
+                                                (list-selection/share content (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message
