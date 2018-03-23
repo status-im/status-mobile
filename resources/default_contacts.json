@@ -42,7 +42,8 @@
         {
             "en": "http://auctionhouse.dappbench.com"
         },
-        "groups": ["state-of-dapps"]
+        "groups": ["state-of-dapps"],
+        "description": "Decentralized auctions for on-chain assets."
     },
 
     "flight-delays-suck":
@@ -57,7 +58,8 @@
         {
             "en": "https://fdd.etherisc.com"
         },
-        "groups": ["state-of-dapps"]
+        "groups": ["state-of-dapps"],
+        "description": "Get instant payout in case your flight is late."
     },
 
     "FirstBlood":
@@ -72,7 +74,8 @@
         {
             "en": "https://app.firstblood.io"
         },
-        "groups": ["state-of-dapps"]
+        "groups": ["state-of-dapps"],
+        "description": "ESports for Everyone! A platform that lets players challenge the field and win rewards."
     },
 
     "Ethlance":
