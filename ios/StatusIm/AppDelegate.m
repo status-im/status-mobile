@@ -95,10 +95,6 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [SplashScreen show];
-  NSString *testfairyEnabled = [ReactNativeConfig envFor:@"TESTFAIRY_ENABLED"];
-  if([testfairyEnabled isEqualToString:@"1"]){
-    [TestFairy begin:@"969f6c921cb435cea1d41d1ea3f5b247d6026d55"];
-  }
   [Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
 
   [FIRApp configure];

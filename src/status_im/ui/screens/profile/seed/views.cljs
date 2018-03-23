@@ -5,14 +5,17 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.colors :as colors]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.common.styles :as components.common.styles]
             [clojure.string :as string]
+            [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.profile.seed.styles :as styles]
             [status-im.i18n :as i18n]
@@ -56,12 +59,19 @@
       (when (not= i (first (last words)))
         [react/view {:style styles/six-words-separator}])])])
 
-(defn twelve-words [{:keys [mnemonic]}]
-  (let [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))]
+(defview twelve-words [{:keys [mnemonic]}]
+  (letsubs [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))
+            ref (reagent/atom nil)]
+    {:component-did-mount (fn [_] (when config/testfairy-enabled?
+                                    ;; NOTE(dmitryn) Doesn't work on Android without setTimeout
+                                    (js/setTimeout
+                                      #(.hideView js-dependencies/testfairy @ref)
+                                      100)))}
     [react/view {:style styles/twelve-words-container}
      [react/text {:style styles/twelve-words-label}
       (i18n/label :t/your-seed-phrase)]
-     [react/view {:style styles/twelve-words-columns}
+     [react/view {:style styles/twelve-words-columns
+                  :ref (partial reset! ref)}
       [six-words (subvec mnemonic-vec 0 6)]
       [react/view {:style styles/twelve-words-columns-separator}]
       [six-words (subvec mnemonic-vec 6 12)]]

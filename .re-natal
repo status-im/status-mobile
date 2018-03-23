@@ -44,7 +44,8 @@
     "rn-snoopy/stream/buffer",
     "react-native/Libraries/vendor/emitter/EventEmitter",
     "react-native-background-timer",
-    "react-native-fetch-polyfill"
+    "react-native-fetch-polyfill",
+    "react-native-testfairy"
   ],
   "imageDirs": [
     "resources/images"

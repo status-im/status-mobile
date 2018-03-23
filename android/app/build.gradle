@@ -206,10 +206,10 @@ dependencies {
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-webview-bridge')
-    implementation 'testfairy:testfairy-android-sdk:1.+@aar'
     implementation project(':react-native-config')
     implementation project(':react-native-fcm')
     implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
+    compile project(':react-native-testfairy')
 
     implementation 'status-im:function:0.0.1'
     implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
