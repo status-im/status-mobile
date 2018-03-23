@@ -11,6 +11,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as const]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]))
@@ -70,10 +71,10 @@
     [react/view styles/name-view
      (when public-group?
        [react/view styles/public-group-icon-container
-        [vector-icons/icon :icons/public-chat {:style styles/public-group-icon}]])
+        [vector-icons/icon :icons/public-chat {:color colors/gray}]])
      (when private-group?
        [react/view styles/private-group-icon-container
-        [vector-icons/icon :icons/group-chat {:style styles/private-group-icon}]])
+        [vector-icons/icon :icons/group-chat {:color colors/gray}]])
      [react/view {:flex-shrink 1}
       [react/text {:style styles/name-text
                    :number-of-lines 1}
