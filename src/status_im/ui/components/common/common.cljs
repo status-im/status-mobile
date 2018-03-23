@@ -13,25 +13,15 @@
 
 (defn top-shadow []
   (when platform/android?
-    [react/linear-gradient
-     {:style  styles/gradient-bottom
-      :colors styles/gradient-top-colors}]))
+    [react/view]))
 
 (defn bottom-shadow []
   (when platform/android?
-    [react/linear-gradient
-     {:style  styles/gradient-top
-      :colors styles/gradient-bottom-colors}]))
+    [react/view]))
 
 (defn separator [style & [wrapper-style]]
   [react/view (merge styles/separator-wrapper wrapper-style)
    [react/view (merge styles/separator style)]])
-
-(defn form-spacer []
-  [react/view
-   [bottom-shadow]
-   [react/view styles/form-spacer]
-   [top-shadow]])
 
 (defn list-separator []
   [separator styles/list-separator])

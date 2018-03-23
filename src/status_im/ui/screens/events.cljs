@@ -10,7 +10,6 @@
             status-im.ui.screens.accounts.login.events
             status-im.ui.screens.accounts.recover.events
             status-im.ui.screens.contacts.events
-            status-im.ui.screens.discover.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.ui.screens.navigation

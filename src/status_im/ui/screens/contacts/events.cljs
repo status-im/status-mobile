@@ -6,22 +6,17 @@
             [status-im.protocol.core :as protocol]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.random :as random]
-            [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]
             [status-im.utils.js-resources :as js-res]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.js-dependencies :as dependencies]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.contacts.navigation]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.discover.events :as discover-events]
             [status-im.chat.console :as console-chat]
             [status-im.commands.events.loading :as loading-events]
-            [cljs.spec.alpha :as spec]
-            [status-im.protocol.web3.utils :as web3.utils]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [clojure.string :as string]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.datetime :as datetime]
+            [status-im.js-dependencies :as js-dependencies]))
+
 ;;;; COFX
 
 (reg-cofx
@@ -135,7 +130,7 @@
                          128 public-key
                          nil)]
     (when normalized-key
-      (subs (.sha3 dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+      (subs (.sha3 js-dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
 
 (defn- prepare-default-groups-events [groups default-groups]
   [[:add-contact-groups
@@ -268,7 +263,6 @@
                         :pending? false)]
     (-> fx
         (watch-contact contact')
-        (discover-events/send-portions-when-contact-exists chat-or-whisper-id)
         (add-new-contact contact'))))
 
 (defn add-contact-and-open-chat [fx whisper-id]

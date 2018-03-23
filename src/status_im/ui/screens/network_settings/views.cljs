@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.network-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.action-button.styles :as action-button-styles]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -16,33 +15,11 @@
   [react/view (styles/network-icon connected? size)
    [vector-icons/icon :icons/network {:color (if connected? :white :gray)}]])
 
-(defn network-badge [& [{:keys [name connected? options]}]]
-  [react/view styles/network-badge
-   [network-icon connected? 56]
-   [react/view {:padding-left 16}
-    [react/text {:style styles/badge-name-text}
-     (or name (i18n/label :t/new-network))]
-    (when connected?
-      [react/text {:style styles/badge-connected-text}
-       (i18n/label :t/connected)])]])
-
 (defn actions-view []
-  [react/view action-button-styles/actions-list
-   ;; TODO(rasom): uncomment add-new-network button when it will be functional,
-   ;; https://github.com/status-im/status-react/issues/2104
-   #_[react/view {:opacity 0.4}
-      [action-button/action-button
-       {:label     (i18n/label :t/add-new-network)
-        :icon      :icons/add
-        :icon-opts {:color :blue}}]]
-   #_[context-menu                                          ; TODO should be implemented later
-      [action-button-view (i18n/label :t/add-new-network) :add_blue]
-      [{:text (i18n/label :t/add-json-file) :value #(dispatch [:navigate-to :paste-json-text])}
-       {:text (i18n/label :t/paste-json-as-text) :value #(dispatch [:navigate-to :paste-json-text])}
-       {:text (i18n/label :t/specify-rpc-url) :value #(dispatch [:navigate-to :add-rpc-url])}]]])
+  [react/view action-button-styles/actions-list])
 
 (defn render-network [current-network]
-  (fn [{:keys [id name config] :as network}]
+  (fn [{:keys [id name] :as network}]
     (let [connected? (= id current-network)]
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}])

@@ -24,6 +24,7 @@
 (def path (get-class "Path"))
 (def use (get-class "Use"))
 (def defs (get-class "Defs"))
+(def circle (get-class "Circle"))
 
 (def icons {:icons/discover            (components.svg/slurp-svg "./resources/icons/bottom/discover_gray.svg")
             :icons/contacts            (components.svg/slurp-svg "./resources/icons/bottom/contacts_gray.svg")
@@ -80,7 +81,8 @@
             :icons/wnode               (components.svg/slurp-svg "./resources/icons/wnode.svg")
             :icons/refresh             (components.svg/slurp-svg "./resources/icons/refresh.svg")
             :icons/newchat             (components.svg/slurp-svg "./resources/icons/newchat.svg")
-            :icons/logo                (components.svg/slurp-svg "./resources/icons/logo.svg")})
+            :icons/logo                (components.svg/slurp-svg "./resources/icons/logo.svg")
+            :icons/camera              (components.svg/slurp-svg "./resources/icons/camera.svg")})
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

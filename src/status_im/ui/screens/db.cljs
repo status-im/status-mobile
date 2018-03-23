@@ -10,7 +10,6 @@
             status-im.chat.specs
             status-im.commands.specs
             status-im.ui.screens.profile.db
-            status-im.ui.screens.discover.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
             status-im.ui.screens.browser.db
@@ -64,8 +63,6 @@
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
-;;:unknown - not used
-(spec/def ::orientation (spec/nilable keyword?))
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
@@ -180,7 +177,6 @@
                   ::status-node-started?
                   ::keyboard-height
                   ::keyboard-max-height
-                  ::orientation
                   ::network-status
                   ::mailserver-status
                   ::peers-count
@@ -211,6 +207,7 @@
                   :chat/selected-participants
                   :chat/chat-loaded-callbacks
                   :chat/public-group-topic
+                  :chat/public-group-topic-error
                   :chat/messages
                   :chat/not-loaded-message-ids
                   :chat/last-clock-value

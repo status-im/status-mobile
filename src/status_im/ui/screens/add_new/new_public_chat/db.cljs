@@ -16,4 +16,4 @@
 
 (spec/def ::topic (spec/and :global/not-empty-string
                             ::legal-name
-                            (partial re-matches #"[a-z0-9\-]+")))
+                            (partial re-matches #"[a-z\-]+")))

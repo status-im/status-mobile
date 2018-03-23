@@ -219,3 +219,16 @@
    :width           delete-button-width
    :justify-content :center
    :align-items     :center})
+
+(def action-button-container
+  {:position :absolute
+   :bottom   16
+   :right    16})
+
+(def action-button
+  {:width            56
+   :height           56
+   :background-color colors/blue
+   :border-radius    28
+   :align-items      :center
+   :justify-content  :center})

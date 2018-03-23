@@ -1,25 +1,16 @@
 (ns status-im.ui.components.styles
-  (:require [status-im.utils.platform :as platform]
-            [status-im.ui.components.colors :as colors]))
-
-;; TODO(oskarth): Make a palette of all these colors
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def color-transparent "transparent")
 (def color-blue "#7099e6")
-(def color-blue2 "#5b6dee")
-(def color-blue3 "#424fae")
 (def color-blue4 "#4360df") ; colors/blue
-(def color-blue4-faded "rgba(67,96,222,0.87)")
 (def color-blue4-transparent "rgba(67, 96, 223, 0.10)")
 (def color-blue6 "#3745AF")
 (def color-blue-transparent "#7099e632")
 (def color-black "#000000")
 (def color-purple "#a187d5")
-(def color-gray-transparent-light "rgba(0, 0, 0, 0.1)")
-(def color-gray-transparent-medium-light "rgba(0, 0, 0, 0.2)")
 (def color-gray-transparent "rgba(0, 0, 0, 0.4)")
 (def color-gray4-transparent "rgba(147, 155, 161, 0.2)")
-(def color-gray10-transparent "rgba(184, 193, 199, 0.5)")
 (def color-gray "#838c93de")
 (def color-gray2 "#8f838c93")
 (def color-gray3 "#00000040")
@@ -28,42 +19,25 @@
 (def color-gray6 "#212121")
 (def color-gray7 "#9fa3b4")
 (def color-gray9 "#E9EBEC")
-(def color-gray10 "#9BA3A8")
-(def color-gray11 "#EEF1F5")
 (def color-dark "#49545d")
-(def color-steel "#838b91")
 (def color-white "white")
 (def color-white-transparent "#ffffff66")
 (def color-white-transparent-1 "#f1f1f11a")
-(def color-white-transparent-2 "#fefefe21")
 (def color-white-transparent-3 "#FFFFFF1A")
 (def color-white-transparent-4 "#FFFFFF33")
 (def color-white-transparent-5 "#FFFFFF8C")
-(def color-white-transparent-6 "rgba(255, 255, 255, 0.6)")
 (def color-light-blue "#628fe3")
 (def color-light-blue-transparent "#628fe333")
-(def color-light-blue6 "#e3ebfa")
-(def color-dark-blue-1 "#252c4a")
 (def color-dark-blue-2 "#1f253f")
-(def color-dark-blue-3 "#191f37")
-(def color-dark-blue-4 "#6e00e4")
 (def color-light-gray "#EEF2F5")
-(def color-light-gray2 "#ececf0")
 (def color-light-gray3 "#e8ebec")
-(def color-light-gray4 "#eff2f3")
-(def color-light-gray5 "#D7D7D7")
 (def color-light-gray6 "#BAC1C6")
 (def color-red "red")
 (def color-red-2 "#d84b4b")
-(def color-red-3 "#FFC1BD")
-(def color-red-4 "#8A3832")
 (def color-light-red "#e86363")
-(def color-green-1 "#a8f4d4")
-(def color-green-2 "#448469")
 (def color-green-3 "#44d058")
 (def color-green-3-light "rgba(68, 208, 88, 0.2)")
 (def color-green-4 "#0dcd8d")
-(def color-cyan "#7adcfb")
 
 (def color-separator "#D6D6D6")
 
@@ -76,7 +50,6 @@
 (def online-color color-light-blue)
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
-(def selected-message-color "#E4E9ED")
 (def separator-color "#0000001f")
 (def default-chat-color color-purple)
 
@@ -117,23 +90,6 @@
 (def icon-qr
   {:width  23
    :height 22})
-
-(def icon-scan
-  {:width  18
-   :height 18})
-
-(def icon-plus
-  {:width  18
-   :height 18})
-
-(def icon-close
-  {:width  12
-   :height 12})
-
-(def white-form-text-input
-  {:margin-left -4
-   :font-size   14
-   :color       color-white})
 
 (def button-input-container
   {:flex           1

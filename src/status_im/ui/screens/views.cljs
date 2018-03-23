@@ -38,16 +38,8 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
-            [status-im.ui.screens.discover.search-results.views :as discover-search]
-            [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]
-            [status-im.ui.screens.discover.all-dapps.views :as discover-all-dapps]
-            [status-im.ui.screens.discover.popular-hashtags.views :as discover-popular]
-            [status-im.ui.screens.discover.dapp-details.views :as discover-dapp-details]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
-            [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
-            [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
-            [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
@@ -153,20 +145,12 @@
                         :chat chat
                         :profile profile.contact/profile
                         :group-chat-profile profile.group-chat/group-chat-profile
-                        :discover-all-recent discover-recent/discover-all-recent
-                        :discover-all-popular-hashtags discover-popular/discover-all-popular-hashtags
-                        :discover-search-results discover-search/discover-search-results
-                        :discover-dapp-details discover-dapp-details/dapp-details
-                        :discover-all-dapps discover-all-dapps/main
                         :profile-photo-capture profile-photo-capture
                         :accounts accounts
                         :login login
                         :recover recover
                         :network-settings network-settings
                         :offline-messaging-settings offline-messaging-settings
-                        :paste-json-text paste-json-text
-                        :add-rpc-url add-rpc-url
-                        :network-details network-details
                         :recent-recipients recent-recipients
                         :recipient-qr-code recipient-qr-code
                         :contact-code contact-code

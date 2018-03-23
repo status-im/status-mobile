@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [hickory.core :as hickory]))
 
-(def svg-tags #{:svg :g :rect :path :use :defs})
+(def svg-tags #{:svg :g :rect :path :use :defs :circle})
 
 (defmacro slurp-svg [file]
   "Reads svg file, and return function (fn [color] ..), which returns hiccup structure for react-native-svg lib

@@ -210,6 +210,7 @@
    :search-chats                         "Search chats"
    :empty-topic                          "Empty topic"
    :topic-format                         "Wrong format [a-z0-9\\-]+"
+   :topic-name-error                     "A topic name can contain only following characters: a-z -"
    :public-group-topic                   "Topic"
    :set-a-topic                          "Set a topic"
    :empty-chat-description               "There are no messages \nin this chat yet"

@@ -197,15 +197,12 @@ dependencies {
     implementation project(':react-native-dialogs')
     implementation project(':react-native-randombytes')
     implementation project(':realm')
-    implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:23.0.1"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-i18n')
-    implementation project(':react-native-linear-gradient')
     implementation project(':react-native-camera')
     implementation project(':react-native-status')
-    implementation project(':react-native-orientation')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-webview-bridge')

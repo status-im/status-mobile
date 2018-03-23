@@ -11,4 +11,4 @@
 
 (defmethod nav/preload-data! :new-public-chat
   [db]
-  (dissoc db :public-group-topic))
+  (dissoc db :public-group-topic :public-group-topic-error))
