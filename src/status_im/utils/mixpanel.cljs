@@ -37,11 +37,14 @@
 (def event-by-trigger (reduce-kv #(assoc %1 (:trigger %3) %3) {} events))
 
 (defn matches? [event trigger]
-  (if (= 1 (count trigger))
-    (= (first event) (first trigger))
-    (and
-      (= (first event) (first trigger))
-      (= (second event) (second trigger)))))
+  (cond (= 1 (count trigger))
+        (= (first event) (first trigger))
+        (= 2 (count trigger))
+        (and
+          (= (first event) (first trigger))
+          (= (second event) (second trigger)))
+        :else
+        (= event trigger)))
 
 (defn matching-events [event definitions]
   (reduce-kv #(if (matches? event %2) (conj %1 %3) %1) [] definitions))
