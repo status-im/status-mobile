@@ -47,7 +47,8 @@
       (when-not (string/blank? public-key)
         (-> db 
             (accounts-events/add-account account)
-            (assoc :dispatch [:login-account address password]))))))
+            (assoc :dispatch [:login-account address password])
+            (assoc :dispatch-later [{:ms 2000 :dispatch [:navigate-to :usage-data]}]))))))
 
 (handlers/register-handler-fx
   :recover-account
