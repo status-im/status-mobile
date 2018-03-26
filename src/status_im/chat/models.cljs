@@ -15,15 +15,13 @@
 (defn- create-new-chat
   [{:keys [db now]} chat-id]
   (let [name (get-in db [:contacts/contacts chat-id :name])]
-    {:chat-id               chat-id
-     :name                  (or name (gfycat/generate-gfy chat-id))
-     :color                 styles/default-chat-color
-     :group-chat            false
-     :is-active             true
-     :timestamp             now
-     :contacts              [{:identity chat-id}]
-     :last-to-clock-value   0
-     :last-from-clock-value 0}))
+    {:chat-id    chat-id
+     :name       (or name (gfycat/generate-gfy chat-id))
+     :color      styles/default-chat-color
+     :group-chat false
+     :is-active  true
+     :timestamp  now
+     :contacts   [{:identity chat-id}]}))
 
 (defn add-chat
   "Adds new chat to db & realm, if the chat with same id already exists, justs restores it"
