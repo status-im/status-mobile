@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.chat.styles.screen :as style]
             [status-im.utils.platform :as platform]
@@ -92,11 +93,14 @@
 
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
-            current-public-key [:get-current-public-key]]
+            current-public-key [:get-current-public-key]
+            chat-id            [:get-current-chat-id]]
     (if (empty? messages)
       [react/view style/empty-chat-container
        [react/text {:style style/empty-chat-text}
-        (i18n/label :t/empty-chat-description)]]
+        (if (= chat-id constants/console-chat-id)
+          (i18n/label :t/empty-chat-description-console)
+          (i18n/label :t/empty-chat-description))]]
       [list/flat-list {:data                      messages
                        :key-fn                    #(or (:message-id %) (:value %))
                        :render-fn                 (fn [message]

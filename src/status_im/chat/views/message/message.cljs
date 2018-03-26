@@ -20,7 +20,8 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]
-            [status-im.chat.events.console :as console]))
+            [status-im.chat.events.console :as console]
+            [status-im.react-native.resources :as resources]))
 
 (def window-width (:width (react/get-dimensions "window")))
 
@@ -244,9 +245,13 @@
 
 (defn- photo [from photo-path]
   [react/view
-   [react/image {:source {:uri (if (string/blank? photo-path)
-                                 (identicon/identicon from)
-                                 photo-path)}
+   [react/image {:source (if (string/starts-with? photo-path "contacts://")
+                           (->> (string/replace photo-path #"contacts://" "")
+                                (keyword)
+                                (get resources/contacts))
+                           {:uri (if (string/blank? photo-path)
+                                   (identicon/identicon from)
+                                   photo-path)})
                  :style  style/photo}]])
 
 (defview member-photo [from]

@@ -87,11 +87,12 @@
                                                  public-key unremovable? :as chat]}]
   (letsubs [last-message [:get-last-message chat-id]]
     (let [name (or (i18n/get-contact-translated chat-id :name name)
-                (gfycat/generate-gfy public-key))]
+                   (gfycat/generate-gfy public-key))
+          hide-dapp? (= chat-id const/console-chat-id)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
        [react/view styles/chat-container
         [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online]]
+         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online hide-dapp?]]
         [react/view styles/chat-info-container
          [react/view styles/item-upper-container
           [chat-list-item-name name group-chat public? public-key]

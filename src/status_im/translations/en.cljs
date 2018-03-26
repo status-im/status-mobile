@@ -29,6 +29,8 @@
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
 
+   :status-console                       "Status Console"
+
    ;;sign in
    :intro-text                           "Status is an open source decentralized chat and Ethereum browser"
    :intro-text-description               "Status is built with the help of the community to help you use all the benefits of decentralized web in your mobile phone"
@@ -214,6 +216,7 @@
    :public-group-topic                   "Topic"
    :set-a-topic                          "Set a topic"
    :empty-chat-description               "There are no messages \nin this chat yet"
+   :empty-chat-description-console       "Look under the hood! Console is a javascript runtime environment that exposes the whole web3 API. Type \"web3.\" to get started."
 
    ;;discover
    :discover                             "Discover"

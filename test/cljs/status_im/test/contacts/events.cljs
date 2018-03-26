@@ -53,8 +53,8 @@
 
 (def console-contact
   {:whisper-identity "console"
-   :name             "Console"
-   :photo-path       "console"
+   :name             "status-console"
+   :photo-path       "contacts://console"
    :dapp?            true
    :unremovable?     true
    :bot-url          "local://console-bot"
