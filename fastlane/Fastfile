@@ -1,0 +1,33 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+
+platform :ios do
+  desc "Deploy a new internal build to iTunes Connect"
+  lane :nightly do
+    upload_to_testflight(
+      ipa: "status/StatusIm.ipa"
+    )
+    slack(message: "New nightly build uploaded to iTunes Connect")
+  end
+end
+
+
+platform :android do
+  desc "Deploy a new internal build to Google Play"
+  lane :nightly do
+    upload_to_play_store(
+      track: "internal",
+      apk: "android/app/build/outputs/apk/release/app-release.apk"
+    )
+    slack(message: "New nightly build uploaded to Google Play")
+  end
+end
