@@ -1,6 +1,11 @@
 ;; This file is supposed to be edited by Chad.
 ;; Chad loves mixpanel. When Chad was a child he dreamed of being a mixpanel tamer.
 
+;; To add a new event definition, add a new map to this vector
+;; :label is a free string that is displayed in mixpanel
+;; :trigger is the re-frame style event that when matched will generate the emission of a mixpanel event
+;; :properties is a map of key / value pair that will be added to the mixpanel event to provide more context
+
 [;; Account creation
 
  {:label     "Account created"
