@@ -69,12 +69,13 @@
                                                         :preamble      ["js/hook-require.js"]
                                                         :target        :nodejs}}
                                         {:id           "protocol"
-                                         :source-paths ["src" "test/cljs"]
-                                         :compiler     {:main          status-im.test.protocol.runner
-                                                        :output-to     "target/test/test.js"
-                                                        :output-dir    "target/test"
-                                                        :optimizations :none
-                                                        :target        :nodejs}}
+                                         :source-paths ["components/src" "src" "test/cljs"]
+                                         :compiler     {:main             status-im.test.protocol.runner
+                                                        :output-to        "target/test/test.js"
+                                                        :output-dir       "target/test"
+                                                        :optimizations    :none
+                                                        :preamble         ["js/hook-require.js"]
+                                                        :target           :nodejs}}
                                         {:id           "env-dev-utils"
                                          :source-paths ["env/dev/env/utils.cljs" "test/env/dev"]
                                          :compiler     {:main          env.test.runner

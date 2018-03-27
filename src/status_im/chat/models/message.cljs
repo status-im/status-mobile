@@ -219,8 +219,8 @@
     (and group-chat (not public?))
     (assoc :message-type :group-user-message)))
 
-(defn- prepare-plain-message [{:keys [identity message-text]}
-                              {:keys [chat-id last-to-clock-value last-from-clock-value] :as chat} now]
+(defn- prepare-plain-message [chat-id {:keys [identity message-text]}
+                              {:keys [last-to-clock-value last-from-clock-value] :as chat} now]
   (add-message-type {:chat-id          chat-id
                      :content          message-text
                      :from             identity
@@ -243,7 +243,7 @@
                        (send chat-id send-record))))
 
 (defn send-message [{:keys [db now random-id] :as cofx} {:keys [chat-id] :as params}]
-  (upsert-and-send (prepare-plain-message params (get-in db [:chats chat-id]) now) cofx))
+  (upsert-and-send (prepare-plain-message chat-id params (get-in db [:chats chat-id]) now) cofx))
 
 (defn- prepare-command-message
   [identity
