@@ -367,7 +367,7 @@
 (handlers/register-handler-fx
   ::send-command
   message-model/send-interceptors
-  (fn [{:keys [db] :as cofx} [{:keys [command] :as command-message}]]
+  (fn [{:keys [db] :as cofx} [command-message]]
     (let [{:keys [current-public-key current-chat-id] :accounts/keys [current-account-id]} db
           new-db (-> (model/set-chat-ui-props db {:sending-in-progress? false})
                      (clear-seq-arguments)

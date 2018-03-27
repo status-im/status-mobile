@@ -5,14 +5,13 @@
             [status-im.utils.utils :refer [show-popup]]
             [status-im.utils.types :as types]
             [status-im.commands.utils :refer [reg-handler]]
-            [status-im.ui.components.react :as r]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log]
             [status-im.data-store.local-storage :as local-storage]))
 
 (defn command-handler!
-  [_ [chat-id
+  [_ [_
       {:keys [command] :as params}
       {:keys [result error]}]]
   (let [{:keys [returned]} result
@@ -23,19 +22,17 @@
         (dispatch [:set-chat-ui-props {:validation-messages markup}]))
 
       result
-      (let [command' (assoc command :handler-data returned)
-            params'  (assoc params :command command')] 
-        (dispatch [:chat-send-message/send-command chat-id params']))
+      (dispatch [:chat-send-message/send-command (assoc-in params [:command :handler-data] returned)])
 
       (not (or error handler-error))
-      (dispatch [:chat-send-message/send-command chat-id params])
+      (dispatch [:chat-send-message/send-command params])
 
       :else nil)))
 
 (defn suggestions-handler!
   [{:keys [chats] :as db}
    [{:keys [chat-id bot-id default-db command parameter-index result]}]]
-  (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
+  (let [{:keys [markup] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
         current-input (get-in chats [chat-id :input-text])
         path (if command
@@ -49,7 +46,7 @@
                                    :db  default-db}])))))
 
 (defn suggestions-events-handler!
-  [{:keys [bot-db] :as db} [bot-id [n & data :as ev] val]]
+  [{:keys [bot-db]} [bot-id [n & data] val]]
   (log/debug "Suggestion event: " n (first data) val) 
   (case (keyword n)
     :set-command-argument
