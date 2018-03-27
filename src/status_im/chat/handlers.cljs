@@ -81,9 +81,7 @@
                    :group-chat            true
                    :public?               true
                    :is-active             true
-                   :timestamp             now
-                   :last-to-clock-value   0
-                   :last-from-clock-value 0}]
+                   :timestamp             now}]
       (merge
        (when-not exists?
          {:db (assoc-in db [:chats (:chat-id chat)] chat)
@@ -142,9 +140,7 @@
      :group-admin           current-public-key
      :is-active             true
      :timestamp             timestamp
-     :contacts              selected-contacts'
-     :last-to-clock-value   0
-     :last-from-clock-value 0}))
+     :contacts              selected-contacts'}))
 
 (handlers/register-handler-fx
   :create-new-group-chat-and-open

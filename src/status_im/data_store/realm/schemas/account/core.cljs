@@ -20,8 +20,7 @@
             [status-im.data-store.realm.schemas.account.v19.core :as v19]
             [status-im.data-store.realm.schemas.account.v20.core :as v20]
             [status-im.data-store.realm.schemas.account.v21.core :as v21]
-            [status-im.data-store.realm.schemas.account.v22.core :as v22]
-            [status-im.data-store.realm.schemas.account.v23.core :as v23]))
+            [status-im.data-store.realm.schemas.account.v22.core :as v22]))
 
 
 ;; TODO(oskarth): Add failing test if directory vXX exists but isn't in schemas.
@@ -92,7 +91,5 @@
                :migration     v21/migration}
               {:schema        v22/schema
                :schemaVersion 22
-               :migration     v22/migration}
-              {:schema        v23/schema
-               :schemaVersion 23
-               :migration     v23/migration}])
+               :migration     v22/migration}])
+
