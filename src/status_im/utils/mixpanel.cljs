@@ -29,7 +29,7 @@
                               props)})))
 
 (defn track [id label props]
-  (http/get (build-url id label props)))
+  (http/get (build-url id label props) nil identity))
 
 ;; Mixpanel events definition
 
