@@ -1,7 +1,5 @@
 (ns status-im.chat.events.commands
-  (:require [cljs.reader :as reader]
-            [clojure.string :as str]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
@@ -69,7 +67,7 @@
 (handlers/register-handler-fx
   :execute-command-immediately
   [re-frame/trim-v]
-  (fn [_ [{command-name :name :as command}]]
+  (fn [_ [{command-name :name}]]
     (case (keyword command-name)
       :grant-permissions
       {:dispatch [:request-permissions

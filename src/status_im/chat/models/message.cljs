@@ -1,10 +1,11 @@
 (ns status-im.chat.models.message
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.utils.core :as utils]
             [status-im.chat.events.console :as console-events]
             [status-im.chat.events.requests :as requests-events]
             [status-im.chat.models :as chat-model]
-            [status-im.chat.models.commands :as commands-model] 
+            [status-im.chat.models.commands :as commands-model]
             [status-im.utils.clocks :as clocks-utils]))
 
 (defn- get-current-account
@@ -138,7 +139,7 @@
                                          :from current-account-id}}})))
 
 (defn- generate-message
-  [{:keys [network-status]} chat-id message] 
+  [{:keys [network-status]} chat-id message]
   (assoc (select-keys message [:from :message-id])
          :payload (cond-> (select-keys message [:content :content-type :clock-value :timestamp :show?])
                     (= :offline network-status)
@@ -248,7 +249,7 @@
      :show?        true}))
 
 (defn send-command
-  [{{:keys [current-public-key chats] :as db} :db :keys [now random-id-seq] :as cofx} add-to-chat-id params]
+  [{{:keys [current-public-key chats]} :db :keys [now random-id-seq] :as cofx} params]
   (let [{{:keys [handler-data
                  command]
           :as   content} :command
@@ -279,15 +280,18 @@
             (update fx' :dispatch-n into events))))))
 
 (defn invoke-console-command-handler
-  [{:keys [db] :as cofx} {:keys [chat-id command] :as command-params}]
+  [{:keys [db] :as cofx} {:keys [command] :as command-params}]
   (let [fx-fn (get console-events/console-commands->fx (-> command :command :name))
         fx    (fx-fn cofx command)]
-    (merge fx (send-command (assoc cofx :db (or (:db fx) db)) chat-id command-params))))
+    (let [command (send-command (assoc cofx :db (or (:db fx) db)) command-params)
+          dn      (concat (:dispatch-n fx) (:dispatch-n command))]
+      ;; Make sure `dispatch-n` do not collide
+      ;; TODO (jeluard) Refactor to rely on merge-fx and reduce creation of `dispatch-n`
+      (merge {:dispatch-n dn} (dissoc fx :dispatch-n) (dissoc command :dispatch-n)))))
 
 (defn invoke-command-handlers
-  [{{:keys          [bot-db]
-     :accounts/keys [accounts current-account-id]
-     :contacts/keys [contacts] :as db} :db}
+  [{{:accounts/keys [accounts current-account-id]
+     :contacts/keys [contacts]} :db}
    {{:keys [command params id]} :command
     :keys [chat-id address]
     :as orig-params}]
@@ -295,7 +299,6 @@
         handler-type (if (= :command type) :commands :responses)
         to           (get-in contacts [chat-id :address])
         identity     (or owner-id bot chat-id)
-        bot-db       (get bot-db (or bot chat-id))
         ;; TODO what's actually semantic difference between `:parameters` and `:context`
         ;; and do we have some clear API for both ? seems very messy and unorganized now
         jail-params  {:parameters params
@@ -313,8 +316,8 @@
                                               [[:command-handler! chat-id orig-params jail-response]]))}}))
 
 (defn process-command
-  [{:keys [db] :as cofx} {:keys [command message chat-id] :as params}]
-  (let [{:keys [command] :as content} command]
+  [cofx {:keys [command chat-id] :as params}]
+  (let [{:keys [command]} command]
     (cond
       (and (= constants/console-chat-id chat-id)
            (console-events/commands-names (:name command)))
@@ -324,4 +327,4 @@
       (invoke-command-handlers cofx params)
 
       :else
-      (send-command cofx chat-id params))))
+      (send-command cofx params))))

@@ -89,7 +89,6 @@
 (defn add-pending-message!
   [web3 message]
   {:pre [(valid? :protocol/message message)]}
-  (debug :add-pending-message! message)
   ;; encryption can take some time, better to run asynchronously
   (async/go (async/>! pending-message-queue [web3 message])))
 
