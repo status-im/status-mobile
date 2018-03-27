@@ -21,6 +21,14 @@
  {:label      "Logout"
   :trigger    [:navigate-to :accounts]}
 
+ ; Push notification settings
+
+ {:label      "Granted push notifications"
+  :trigger    [:request-notifications-granted]}
+
+ {:label      "Denied push notifications"
+  :trigger    [:request-notifications-denied]}
+
  ;; Tab navigation
 
  {:label      "Tap"

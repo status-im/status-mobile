@@ -177,6 +177,11 @@
     (permissions/request-permissions options)))
 
 (re-frame/reg-fx
+  ::request-notifications-fx
+  (fn [_]
+    (notifications/request-permissions)))
+
+(re-frame/reg-fx
   ::testfairy-alert
   (fn []
     (when config/testfairy-enabled?
@@ -417,6 +422,11 @@
   :request-permissions
   (fn [_ [_ options]]
     {:request-permissions-fx options}))
+
+(handlers/register-handler-fx
+  :request-notifications
+  (fn [_ _]
+    {::request-notifications-fx {}}))
 
 (handlers/register-handler-db
   :set-swipe-position

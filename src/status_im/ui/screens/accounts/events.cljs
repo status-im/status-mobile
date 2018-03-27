@@ -212,7 +212,8 @@
   :account-finalized
   (fn [{db :db} _]
     {:db db
-     :dispatch [:navigate-to-clean :home]}))
+     :dispatch-n [[:navigate-to-clean :home]
+                  [:request-notifications]]}))
 
 (handlers/register-handler-fx
   :update-sign-in-time

@@ -32,7 +32,6 @@
          (.hide react/splash-screen))
        :component-did-mount
        (fn []
-         (notifications/request-permissions)
          (notifications/on-refresh-fcm-token)
          (notifications/on-notification))
        :component-will-unmount
