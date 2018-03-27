@@ -167,7 +167,7 @@
        (if editing?
          [my-profile-edit-toolbar]
          [my-profile-toolbar])
-       [react/scroll-view
+       [react/scroll-view {:keyboard-should-persist-taps :handled}
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
         [react/view action-button.styles/actions-list
