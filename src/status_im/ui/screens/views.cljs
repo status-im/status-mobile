@@ -39,6 +39,7 @@
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
+            [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
@@ -150,6 +151,7 @@
                         :login login
                         :recover recover
                         :network-settings network-settings
+                        :network-details network-details
                         :offline-messaging-settings offline-messaging-settings
                         :recent-recipients recent-recipients
                         :recipient-qr-code recipient-qr-code

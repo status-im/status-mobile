@@ -15,6 +15,16 @@
   [react/view (styles/network-icon connected? size)
    [vector-icons/icon :icons/network {:color (if connected? :white :gray)}]])
 
+(defn network-badge [& [{:keys [name connected?]}]]
+  [react/view styles/network-badge
+   [network-icon connected? 56]
+   [react/view {:padding-left 16}
+    [react/text {:style styles/badge-name-text}
+     (or name (i18n/label :t/new-network))]
+    (when connected?
+      [react/text {:style styles/badge-connected-text}
+       (i18n/label :t/connected)])]])
+
 (defn actions-view []
   [react/view action-button-styles/actions-list])
 
