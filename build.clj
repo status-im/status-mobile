@@ -1,5 +1,7 @@
 (require '[cljs.build.api :as api]
-         '[clojure.string :as cstr])
+         '[clojure.string :as string])
+
+;; clj build.clj help # Prints details about tasks
 
 ;;; Configuration.
 
@@ -165,7 +167,7 @@
       (println)
       (->> usage
            (map #(str "  " %))
-           (cstr/join "\n")
+           (string/join "\n")
            println)
       (println))))
 
@@ -215,7 +217,7 @@
     (ra/start-figwheel!
      {:figwheel-options (cond-> {:builds-to-start (if build-ids
                                                     (->> (.split build-ids ",")
-                                                         (map (comp keyword cstr/trim))
+                                                         (map (comp keyword string/trim))
                                                          vec)
                                                     [:android])}
                           port      (merge {:nrepl-port       (some-> port Long/parseLong)
