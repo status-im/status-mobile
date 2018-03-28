@@ -67,17 +67,17 @@ transaction_users['B_USER']['username'] = "Brief Organic Xenops"
 transaction_users['B_USER']['address'] = "3d672407a7e1250bbff85b7cfdb456f5015164db"
 transaction_users['B_USER']['public_key'] = "0x0406b17e5cdfadb2a05e84508b1a2916def6395e6295f57e92b85f915d40bca3" \
                                                    "f4a7e4c6d6b25afa840dd042fac83d3f856181d553f34f1c2b12878e774adde099"
-transaction_users['С_USER'] = dict()
-transaction_users['С_USER']['password'] = "qwerty"
-transaction_users['С_USER']['passphrase'] = "romance emerge transfer trial enemy average casino decline old bag mandate winner"
-transaction_users['С_USER']['username'] = "Speedy Occasional Lightningbug"
-transaction_users['С_USER']['address'] = "853bdd57e881ed09d045ceee53564a00e1da3cf9"
-transaction_users['С_USER']['public_key'] = "0x04aa3f3977b0c06ce04f4cdfd2ea5baf5560e18aba52324f6d4bf69bbd603b60" \
+transaction_users['C_USER'] = dict()
+transaction_users['C_USER']['password'] = "qwerty"
+transaction_users['C_USER']['passphrase'] = "romance emerge transfer trial enemy average casino decline old bag mandate winner"
+transaction_users['C_USER']['username'] = "Speedy Occasional Lightningbug"
+transaction_users['C_USER']['address'] = "853bdd57e881ed09d045ceee53564a00e1da3cf9"
+transaction_users['C_USER']['public_key'] = "0x04aa3f3977b0c06ce04f4cdfd2ea5baf5560e18aba52324f6d4bf69bbd603b60" \
                                                    "0e874ed483920d9613882e7345b70b1d95c6ca4ee8b18089da1d064c498355c944"
 transaction_users['D_USER'] = dict()
 transaction_users['D_USER']['password'] = "qwerty"
 transaction_users['D_USER']['passphrase'] = "grit half victory alarm code chicken drill worth valve rug clown guess"
-transaction_users['D_USER']['username'] = "Frilly Mediumdpringgreen Kingsnake"
+transaction_users['D_USER']['username'] = "Frilly Mediumspringgreen Kingsnake"
 transaction_users['D_USER']['address'] = "1bd914e370a63714ee144692002046c7e6d83348"
 transaction_users['D_USER']['public_key'] = "0x041aa2bbf1cc1253bf658a4a44289cdd0031f0038f8d085b1a43b69550e3467b" \
                                                    "c1f7963c35d0016d9c23d28960b984045c00bd9373b413b1d19aa4370261b8d084"

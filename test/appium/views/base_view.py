@@ -45,13 +45,13 @@ class DenyButton(BaseButton):
 class DeleteButton(BaseButton):
     def __init__(self, driver):
         super(DeleteButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Delete']")
+        self.locator = self.Locator.xpath_selector("//*[@text='DELETE']")
 
 
 class YesButton(BaseButton):
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Yes']")
+        self.locator = self.Locator.xpath_selector("//*[@text='YES']")
 
 
 class NoButton(BaseButton):
@@ -69,7 +69,7 @@ class OkButton(BaseButton):
 class ContinueButton(BaseButton):
     def __init__(self, driver):
         super(ContinueButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
+        self.locator = self.Locator.xpath_selector("//*[@text='CONTINUE']")
 
 
 class HomeButton(BaseButton):
@@ -128,12 +128,6 @@ class DoneButton(BaseButton):
             "//android.widget.TextView[@text='DONE']")
 
 
-class DeleteButton(BaseButton):
-    def __init__(self, driver):
-        super(DeleteButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.Button[@text='Delete']")
-
-
 class AppsButton(BaseButton):
     def __init__(self, driver):
         super(AppsButton, self).__init__(driver)
@@ -189,10 +183,10 @@ class BaseView(object):
         }
 
     def accept_agreements(self):
-        for i in self.ok_button, self.continue_button:
+        for button in self.ok_button, self.continue_button:
             try:
-                i.wait_for_element(4)
-                i.click()
+                button.wait_for_element(15)
+                button.click()
             except (NoSuchElementException, TimeoutException):
                 pass
 
@@ -202,7 +196,7 @@ class BaseView(object):
 
     def confirm(self):
         info("Tap 'Confirm' on native keyboard")
-        self.driver.keyevent(66)
+        self.driver.press_keycode(66)
 
     def send_as_keyevent(self, string):
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
@@ -216,7 +210,7 @@ class BaseView(object):
         for i in string:
             info("Tap '%s' on native keyboard" % i)
             time.sleep(1)
-            self.driver.keyevent(keys[i])
+            self.driver.press_keycode(keys[i])
 
     def find_full_text(self, text, wait_time=60):
         info("Looking for full text: '%s'" % text)

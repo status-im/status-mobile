@@ -62,6 +62,7 @@ class TestMessages(MultipleDeviceTestCase):
         device_2_chat.send_message_button.click()
         device_1_chat.wait_for_message_in_one_to_one_chat('%s %s' % (message_with_emoji, emoji_unicode_1), self.errors)
 
+        device_1_chat.chat_message_input.click()
         device_1_chat.send_as_keyevent(message_with_new_line)
         device_1_chat.send_message_button.click()
         device_2_chat.wait_for_message_in_one_to_one_chat(message_with_new_line, self.errors)
@@ -73,13 +74,13 @@ class TestMessages(MultipleDeviceTestCase):
         if device_1_chat.element_by_text(url_message, 'button').is_element_present():
             device_1_chat.element_by_text(url_message, 'button').click()
             web_view = device_1_chat.open_in_browser_button.click()
-            web_view.find_full_text('Browse, chat and make payments securely on the decentralized web.')
+            web_view.find_full_text('Status, the Ethereum discovery tool.')
             device_1_chat.back_button.click()
 
         device_1_chat.delete_chat(device_2_username[:25], self.errors)
         self.verify_no_errors()
 
-    @pytest.mark.pr
+    @pytest.mark.skip
     def test_group_chat_messages_and_delete_chat(self):
         self.create_drivers(3)
 
@@ -168,6 +169,7 @@ class TestMessages(MultipleDeviceTestCase):
         for message in messages_to_send_2:
             chat_2.chat_message_input.send_keys(message)
             chat_2.send_message_button.click()
+        chat_2.chat_message_input.click()
         chat_2.send_as_keyevent(message_with_new_line)
         chat_2.send_message_button.click()
         chat_1.wait_for_messages(users[1], messages_to_receive_2, self.errors)

@@ -62,7 +62,7 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction_view.sign_transaction_button.click()
         send_transaction_view.find_full_text('Wrong password', 20)
 
-    @pytest.mark.pr
+    @pytest.mark.skip
     def test_transaction_send_command_group_chat(self):
         recipient = transaction_users['A_USER']
         sign_in_view = SignInView(self.driver)
@@ -101,6 +101,7 @@ class TestTransaction(SingleDeviceTestCase):
         start_new_chat_view.open_d_app_button.click()
         auction_house = start_new_chat_view.auction_house_button.click()
         start_new_chat_view.open_button.click()
+
         auction_house.wait_for_d_aap_to_load()
         auction_house.toggle_navigation_button.click()
         auction_house.new_auction_button.click()
@@ -108,9 +109,12 @@ class TestTransaction(SingleDeviceTestCase):
         auction_name = time.strftime('%Y-%m-%d-%H-%M')
         auction_house.send_as_keyevent(auction_name)
         auction_house.register_name_button.click()
+
         send_transaction_view = home_view.get_send_transaction_view()
         send_transaction_view.sign_transaction(sender['password'])
+
         auction_house.find_full_text('You are the proud owner of the name: ' + auction_name, 120)
+
         api_requests.verify_balance_is_updated(initial_balance, address)
 
     @pytest.mark.pr
@@ -197,7 +201,7 @@ class TestTransaction(SingleDeviceTestCase):
 @pytest.mark.all
 class TestTransactions(MultipleDeviceTestCase):
 
-    @pytest.mark.pr
+    @pytest.mark.skip
     def test_send_eth_to_request_in_group_chat(self):
         recipient = transaction_users['E_USER']
         sender = transaction_users['F_USER']
@@ -246,6 +250,11 @@ class TestTransactions(MultipleDeviceTestCase):
         device_2_chat = device_2_home.get_chat_view()
         amount = device_1_chat.get_unique_amount()
         one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
+        try:
+            one_to_one_chat_device_2.wait_for_visibility_of_element(120)
+        except TimeoutException:
+            device_1_chat.chat_message_input.send_keys('ping')
+            device_1_chat.send_message_button.click()
         one_to_one_chat_device_2.click()
         device_1_chat.commands_button.click_until_presence_of_element(device_1_chat.request_command)
         device_1_chat.request_command.click()
@@ -288,6 +297,7 @@ class TestTransactions(MultipleDeviceTestCase):
         wallet_view_device_1.send_request_button.click()
         device_2_chat = device_2_home.get_chat_view()
         one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
+        one_to_one_chat_device_2.wait_for_visibility_of_element(120)
         one_to_one_chat_device_2.click()
         initial_balance_recipient = api_requests.get_balance(recipient['address'])
         request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')

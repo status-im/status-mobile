@@ -41,7 +41,7 @@ class OptionsButton(BaseButton):
 
         def __init__(self, driver):
             super(OptionsButton.UsernameInput, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+            self.locator = self.Locator.accessibility_id('username-input')
 
     class UserStatusInput(BaseEditBox):
 
@@ -72,7 +72,7 @@ class LogoutButton(BaseButton):
 
     def __init__(self, driver):
         super(LogoutButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Log out"]')
+        self.locator = self.Locator.accessibility_id('log-out-button')
 
     def click(self):
         self.scroll_to_element()
