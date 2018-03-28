@@ -11,8 +11,8 @@
             [status-im.data-store.local-storage :as local-storage]))
 
 (defn command-handler!
-  [_ [_
-      {:keys [command] :as params}
+  [_ [chat-id
+      params
       {:keys [result error]}]]
   (let [{:keys [returned]} result
         {handler-error :error} returned]
@@ -22,10 +22,10 @@
         (dispatch [:set-chat-ui-props {:validation-messages markup}]))
 
       result
-      (dispatch [:chat-send-message/send-command (assoc-in params [:command :handler-data] returned)])
+      (dispatch [:chat-send-message/send-command chat-id (assoc-in params [:command :handler-data] returned)])
 
       (not (or error handler-error))
-      (dispatch [:chat-send-message/send-command params])
+      (dispatch [:chat-send-message/send-command chat-id params])
 
       :else nil)))
 

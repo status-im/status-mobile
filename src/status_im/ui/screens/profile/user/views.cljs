@@ -149,7 +149,7 @@
           [profile.components/settings-item-separator])
         (when config/offline-inbox-enabled?
           [profile.components/settings-item
-           {:label-kw :t/offline-messaging-settings
+           {:label-kw :t/offline-messaging
             :action-fn #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
             :accessibility-label :offline-messages-settings-button}])
         [profile.components/settings-item-separator]

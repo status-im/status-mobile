@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.offline-messaging-settings.styles
-  (:require [status-im.ui.components.styles :as common])
+  (:require [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
-(def wnodes-list
-  {:background-color common/color-light-gray})
+(def wrapper
+  {:flex             1
+   :background-color :white})
 
 (def wnode-item-inner
   {:padding-horizontal 16})
@@ -17,14 +18,14 @@
    :android            {:height 56}})
 
 (defstyle wnode-item-name-text
-  {:color   common/color-black
+  {:color   colors/black
    :ios     {:font-size      17
              :letter-spacing -0.2
              :line-height    20}
    :android {:font-size 16}})
 
 (defstyle wnode-item-connected-text
-  {:color   common/color-gray4
+  {:color   colors/gray
    :ios     {:font-size      14
              :margin-top     6
              :letter-spacing -0.2}
@@ -36,7 +37,7 @@
    :height           40
    :border-radius    20
    :background-color (if connected?
-                       common/color-light-blue
-                       common/color-light-gray)
+                       colors/blue
+                       colors/gray-light)
    :align-items      :center
    :justify-content  :center})

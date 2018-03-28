@@ -14,7 +14,7 @@
 
 (handlers/register-handler-fx
   :connect-wnode
-  (fn [{:keys [db now]} [_ wnode]]
+  (fn [{:keys [db]} [_ wnode]]
     {:show-confirmation {:title               (i18n/label :t/close-app-title)
                          :content             (i18n/label :t/connect-wnode-content
                                                           {:name (get-in db [:inbox/wnodes wnode :name])})

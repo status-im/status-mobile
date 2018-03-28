@@ -1,18 +1,19 @@
 (ns status-im.ui.screens.network-settings.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as common]))
+  (:require [status-im.ui.components.colors :as colors]))
 
-(def networks-list
-  {:background-color common/color-light-gray})
+(def wrapper
+  {:flex             1
+   :background-color :white})
 
 (defstyle badge-name-text
-  {:color   common/color-black
+  {:color   colors/black
    :ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 16}})
 
 (defstyle badge-connected-text
-  {:color   common/color-gray4
+  {:color   colors/gray
    :ios     {:margin-top     5
              :font-size      14
              :letter-spacing -0.2}
@@ -32,18 +33,18 @@
   {:height           52
    :align-items      :center
    :justify-content  :center
-   :background-color common/color-light-blue
+   :background-color colors/blue
    :border-radius    8
    :ios              {:opacity 0.9}})
 
 (defstyle connect-button-label
-  {:color   common/color-white
+  {:color   colors/white
    :ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 14}})
 
 (defstyle connect-button-description
-  {:color   common/color-gray4
+  {:color   colors/gray
    :ios     {:margin-top     8
              :height         20
              :font-size      14
@@ -57,13 +58,13 @@
    :padding-top       16
    :padding-left      16
    :margin-horizontal 16
-   :background-color  "#eef2f5"
+   :background-color  colors/gray-lighter
    :ios               {:border-radius 9
                        :opacity       0.9}
    :android           {:border-radius 4}})
 
 (defstyle network-config-text
-  {:color   common/color-black
+  {:color   colors/black
    :ios     {:opacity        0.8
              :font-size      17
              :line-height    24
@@ -82,21 +83,21 @@
   {:height           52
    :align-items      :center
    :justify-content  :center
-   :background-color common/color-light-blue-transparent
+   :background-color colors/blue
    :border-radius    8
    :ios              {:width 343}
 
    :android          {:width 328}})
 
 (defstyle edit-button-label
-  {:color   common/color-light-blue
+  {:color   colors/blue
    :ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 14}})
 
 (defstyle edit-button-description
   {:text-align :center
-   :color      common/color-gray4
+   :color      colors/gray
    :ios        {:margin-top     8
                 :font-size      14
                 :letter-spacing -0.2}
@@ -107,7 +108,7 @@
   {:width            size
    :height           size
    :border-radius    (/ size 2)
-   :background-color (if connected? "#729ae6" "#eef2f5")
+   :background-color (if connected? colors/blue colors/gray-lighter)
    :align-items      :center :justify-content :center})
 
 (def network-badge
@@ -125,14 +126,14 @@
    :android            {:height 56}})
 
 (defstyle network-item-name-text
-  {:color   common/color-black
+  {:color   colors/black
    :ios     {:font-size      17
              :letter-spacing -0.2
              :line-height    20}
    :android {:font-size 16}})
 
 (defstyle network-item-connected-text
-  {:color   common/color-gray4
+  {:color   colors/gray
    :ios     {:font-size      14
              :margin-top     6
              :letter-spacing -0.2}
