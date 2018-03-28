@@ -89,6 +89,11 @@ node ('macos1') {
         '\niOS: ' + ipaUrl
     }
 
+    // Android for e2e
+    stage('Build (Android) for e2e testing') {
+      sh 'cd android && mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release.original.apk && ENVFILE=.env.e2e ./gradlew assembleRelease'
+    }
+
     stage('Upload apk for e2e tests') {
       if (env.CHANGE_ID != null){
       withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){

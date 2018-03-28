@@ -24,7 +24,7 @@
 
 (def console-chat-id "console")
 
-(def default-network "testnet_rpc")
+(def default-network config/default-network)
 
 (def default-wallet-transactions
   {:filters

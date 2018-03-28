@@ -34,6 +34,7 @@
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def compile-views-enabled? (enabled? (get-config :COMPILE_VIEWS_ENABLED 0)))
 (def mixpanel-token (get-config :MIXPANEL_TOKEN))
+(def default-network (get-config :DEFAULT_NETWORK))
 
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.001")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
