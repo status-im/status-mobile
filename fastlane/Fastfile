@@ -18,6 +18,10 @@ platform :ios do
     )
     slack(message: "New nightly build uploaded to iTunes Connect")
   end
+  desc "Remove inactive TestFlight users"
+  lane :clean do
+    clean_testflight_testers
+  end
 end
 
 
