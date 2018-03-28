@@ -106,13 +106,16 @@
 (spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
 (spec/def :navigation.screen-params/dapp-description map?)
 
+(spec/def :navigation.screen-params/usage-data vector?)
+
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
                                                                          :navigation.screen-params/profile-qr-viewer
                                                                          :navigation.screen-params/qr-scanner
                                                                          :navigation.screen-params/group-contacts
                                                                          :navigation.screen-params/edit-contact-group
-                                                                         :navigation.screen-params/dapp-description])))
+                                                                         :navigation.screen-params/dapp-description
+                                                                         :navigation.screen-params/usage-data])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 

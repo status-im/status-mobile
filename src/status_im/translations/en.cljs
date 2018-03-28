@@ -25,6 +25,8 @@
    :add                                  "Add"
    :yes                                  "Yes"
    :no                                   "No"
+   :on                                   "On"
+   :off                                  "Off"
 
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
@@ -47,6 +49,7 @@
    :sign-you-in                          "Signing you in…"
 
    :help-improve                         "Help improve Status\nby sharing usage patterns"
+   :help-improve?                        "Help improve Status?"
    :help-improve-description             "We collect anonymous data to help improve Status."
    :share-usage-data                     "Share usage"
    :dont-want-to-share                   "No, I don't want to share"

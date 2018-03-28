@@ -127,7 +127,8 @@
                                         :action-fn           #(handle-logout sharing-usage-data?)}]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
-  (letsubs [advanced? [:get :my-profile/advanced?]]
+  (letsubs [advanced?                     [:get :my-profile/advanced?]
+            {:keys [sharing-usage-data?]} [:get-current-account]]
     [react/view
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
                                  :style styles/advanced-button}
@@ -155,7 +156,13 @@
         [profile.components/settings-switch-item
          {:label-kw :t/dev-mode
           :value dev-mode?
-          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]])]))
+          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]
+        [profile.components/settings-item-separator]
+        [profile.components/settings-item
+         {:label-kw            :t/help-improve?
+          :value               (i18n/label (if sharing-usage-data? :on :off))
+          :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
+          :accessibility-label :help-improve}]])]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key sharing-usage-data?] :as current-account} [:get-current-account]

@@ -23,10 +23,14 @@
 
 ;; public fns
 
-(defn navigate-to-clean [db view-id]
-  (-> db
-      (assoc :navigation-stack (list))
-      (push-view view-id)))
+(defn navigate-to-clean
+  ([db view-id] (navigate-to-clean db view-id nil))
+  ([db view-id screen-params]
+   ;; TODO (jeluard) Unify all :navigate-to flavours. Maybe accept a map of parameters?
+   (let [db (cond-> db
+                    (seq screen-params)
+                    (assoc-in [:navigation/screen-params view-id] screen-params))]
+     (push-view db view-id))))
 
 (defmulti preload-data!
   (fn [db [_ view-id]] (or view-id (:view-id db))))
@@ -96,8 +100,8 @@
 
 (register-handler-db
   :navigate-to-clean
-  (fn [db [_ view-id]]
-    (navigate-to-clean db view-id)))
+  (fn [db [_ & params]]
+    (apply navigate-to db params)))
 
 (register-handler-db
   :navigate-to-tab

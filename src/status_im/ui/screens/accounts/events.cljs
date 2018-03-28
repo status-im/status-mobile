@@ -205,7 +205,7 @@
   :account-set-name
   (fn [{{:accounts/keys [create] :as db} :db} _]
     (-> {:db (assoc-in db [:accounts/create :show-welcome?] true)
-         :dispatch [:navigate-to-clean :usage-data]}
+         :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
         (account-update {:name (:name create)}))))
 
 (handlers/register-handler-fx
