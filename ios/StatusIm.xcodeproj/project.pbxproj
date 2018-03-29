@@ -31,14 +31,17 @@
 		213311F38CA74CE280FD09AD /* libRNI18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52F6ED6465184513A082652B /* libRNI18n.a */; };
 		22118DE1207A419FBFE7B62D /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48A32459B64E96843BB238 /* libRealmReact.a */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
+		3A8BF31C42291E324219071C /* InstabugCore.framework in Embed Instabug Framework */ = {isa = PBXBuildFile; fileRef = EA36FD18BC2ECACF0A8B83DE /* InstabugCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3E15DFEC1F6F4D7CAE088F49 /* libTcpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A4E93F6B154AEFA3485B45 /* libTcpSockets.a */; };
 		4C16DE0C1F89508700AA10DB /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */; };
+		4CA4DA1B206D105D006A98B0 /* libRNInstabug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3F1C121DDAE781005E4779 /* libRNInstabug.a */; };
 		4FFAE7B0414A463991039A2E /* libRNRandomBytes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C55F15EB4D4DAF9202A662 /* libRNRandomBytes.a */; };
 		5974D2035B8B47E0946B63B6 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F752F17B1E04216B1337A72 /* libRNFIRMessaging.a */; };
-		5F8585D411844E5981B94F40 /* libRNInstabug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC426A98043452BB6F9C134 /* libRNInstabug.a */; };
+		63AE4174241B852A045FAE1F /* InstabugCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA36FD18BC2ECACF0A8B83DE /* InstabugCore.framework */; };
 		81C6E6AE0AA739BE9D87C1D0 /* libPods-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8E55E6877F950B81C8D711C5 /* libPods-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 101A4045637A2ADF57D28EF5 /* libPods-StatusIm.a */; };
+		91446A820DA5E1C15C24D2A7 /* Instabug.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D72275B7ADF9FC3304DCE5 /* Instabug.framework */; };
 		925C1F471F7B73B20063DFA0 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925C1F401F7B73B20063DFA0 /* FirebaseCore.framework */; };
 		925C1F481F7B73B20063DFA0 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925C1F411F7B73B20063DFA0 /* FirebaseCoreDiagnostics.framework */; };
 		925C1F491F7B73B20063DFA0 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925C1F421F7B73B20063DFA0 /* FirebaseInstanceID.framework */; };
@@ -66,6 +69,7 @@
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
 		C93242561FE1C68C00FE7099 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C93242531FE1C68C00FE7099 /* libRCTAnimation.a */; };
 		CE4E31B31D8695250033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.framework */; };
+		DA0D1ABA19458751CC2840C3 /* Instabug.framework in Embed Instabug Framework */ = {isa = PBXBuildFile; fileRef = 22D72275B7ADF9FC3304DCE5 /* Instabug.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E0AD9E8F495A4907B65104BF /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BEE3436791D42248F853999 /* libRCTImageResizer.a */; };
 		F9238D6C1E5F055900C047B9 /* SF-UI-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */; };
 		FD4F213C3873473CB703B1D2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 674B3D9595A047AB8D518F4E /* libRNFS.a */; };
@@ -507,6 +511,18 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C5A3444E637B7B715148AD1B /* Embed Instabug Framework */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DA0D1ABA19458751CC2840C3 /* Instabug.framework in Embed Instabug Framework */,
+				3A8BF31C42291E324219071C /* InstabugCore.framework in Embed Instabug Framework */,
+			);
+			name = "Embed Instabug Framework";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -540,6 +556,7 @@
 		20A5C96E1D92716C002C4965 /* QBImagePicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QBImagePicker.framework; path = "../node_modules/react-native-image-crop-picker/ios/QBImagePicker/build/Debug-iphoneos/QBImagePicker.framework"; sourceTree = "<group>"; };
 		20B6B6831D92C42600CC5C6A /* RSKImageCropper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RSKImageCropper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		20B6B6861D92C42600CC5C6A /* QBImagePicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QBImagePicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		22D72275B7ADF9FC3304DCE5 /* Instabug.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Instabug.framework; path = "../node_modules/instabug-reactnative/ios/Instabug.framework"; sourceTree = "<group>"; };
 		2BEE3436791D42248F853999 /* libRCTImageResizer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTImageResizer.a; sourceTree = "<group>"; };
 		305F194186D848FDB07AF34C /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		38A44830EC5708E89387F641 /* Pods-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusIm.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
@@ -591,6 +608,7 @@
 		CE4E31B21D8695250033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.framework"; sourceTree = "<group>"; };
 		D489EE8D5F52DA10AC715727 /* Pods-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusImTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusImTests/Pods-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 		DF1CD4C3D1254774ACCAE4E8 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
+		EA36FD18BC2ECACF0A8B83DE /* InstabugCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InstabugCore.framework; path = "../node_modules/instabug-reactnative/ios/InstabugCore.framework"; sourceTree = "<group>"; };
 		F090E261B9854867A728CE4F /* RealmReact.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RealmReact.xcodeproj; path = "../node_modules/realm/react-native/ios/RealmReact.xcodeproj"; sourceTree = "<group>"; };
 		F3548417D8DA4362B6796A54 /* RNInstabug.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNInstabug.xcodeproj; path = "../node_modules/instabug-reactnative/ios/RNInstabug.xcodeproj"; sourceTree = "<group>"; };
 		F89A8F8005874B86B63C22E3 /* RNFIRMessaging.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFIRMessaging.xcodeproj; path = "../node_modules/react-native-fcm/ios/RNFIRMessaging.xcodeproj"; sourceTree = "<group>"; };
@@ -611,6 +629,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CA4DA1B206D105D006A98B0 /* libRNInstabug.a in Frameworks */,
 				98482A6F2065257B00263651 /* libReactNativeTestFairy.a in Frameworks */,
 				C93242561FE1C68C00FE7099 /* libRCTAnimation.a in Frameworks */,
 				4C16DE0C1F89508700AA10DB /* JavaScriptCore.framework in Frameworks */,
@@ -649,12 +668,13 @@
 				BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
 				3E15DFEC1F6F4D7CAE088F49 /* libTcpSockets.a in Frameworks */,
 				E0AD9E8F495A4907B65104BF /* libRCTImageResizer.a in Frameworks */,
-				5F8585D411844E5981B94F40 /* libRNInstabug.a in Frameworks */,
 				8E55E6877F950B81C8D711C5 /* libPods-StatusIm.a in Frameworks */,
 				925C1F491F7B73B20063DFA0 /* FirebaseInstanceID.framework in Frameworks */,
 				9EF0836B1F3B53AB00876A8F /* libReactNativeConfig.a in Frameworks */,
 				B957A49EB0DE44D9A31CAF2D /* libRNSVG.a in Frameworks */,
 				5974D2035B8B47E0946B63B6 /* libRNFIRMessaging.a in Frameworks */,
+				91446A820DA5E1C15C24D2A7 /* Instabug.framework in Frameworks */,
+				63AE4174241B852A045FAE1F /* InstabugCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1039,6 +1059,8 @@
 				4E586E1B0E544F64AA9F5BD1 /* libz.tbd */,
 				101A4045637A2ADF57D28EF5 /* libPods-StatusIm.a */,
 				FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */,
+				22D72275B7ADF9FC3304DCE5 /* Instabug.framework */,
+				EA36FD18BC2ECACF0A8B83DE /* InstabugCore.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1142,6 +1164,8 @@
 				9E71BA90038083A3D24E18E9 /* [CP] Embed Pods Frameworks */,
 				E883D1F9B22B8292CC879292 /* [CP] Copy Pods Resources */,
 				E3914A731DF919ED00EBB515 /* Run Script */,
+				C5A3444E637B7B715148AD1B /* Embed Instabug Framework */,
+				D286FF71BA61530E740B7C82 /* Strip Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1865,6 +1889,20 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		D286FF71BA61530E740B7C82 /* Strip Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Strip Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/InstabugCore.framework/strip-frameworks.sh\"\n";
+		};
 		E3914A731DF919ED00EBB515 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
@@ -2030,6 +2068,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/**",
 					"$(PROJECT_DIR)",
+					"../node_modules/instabug-reactnative/ios",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
@@ -2088,6 +2127,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/**",
 					"$(PROJECT_DIR)",
+					"../node_modules/instabug-reactnative/ios",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";

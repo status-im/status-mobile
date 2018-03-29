@@ -121,7 +121,7 @@ android {
     defaultConfig {
         applicationId "im.status.ethereum"
         minSdkVersion 18
-        targetSdkVersion 23
+        targetSdkVersion 26
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
@@ -198,7 +198,7 @@ dependencies {
     implementation project(':react-native-randombytes')
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:23.0.1"
+    implementation "com.android.support:appcompat-v7:26.1.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-i18n')
     implementation project(':react-native-camera')
@@ -210,6 +210,7 @@ dependencies {
     implementation project(':react-native-fcm')
     implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
     compile project(':react-native-testfairy')
+    implementation project(':instabug-reactnative')
 
     implementation 'status-im:function:0.0.1'
     implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])

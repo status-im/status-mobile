@@ -33,7 +33,7 @@
     "homoglyph-finder": "1.1.1",
     "https-browserify": "0.0.1",
     "identicon.js": "github:status-im/identicon.js",
-    "instabug-reactnative": "git+https://github.com/status-im/instabug-reactnative.git",
+    "instabug-reactnative": "2.8.1",
     "level-filesystem": "1.2.0",
     "nfc-react-native": "github:status-im/nfc-react-native",
     "os-browserify": "0.1.2",

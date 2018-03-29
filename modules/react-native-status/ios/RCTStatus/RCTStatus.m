@@ -3,7 +3,6 @@
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
 #import <Statusgo/Statusgo.h>
-@import Instabug;
 
 @interface NSDictionary (BVJSONString)
 -(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint;
@@ -223,9 +222,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
         [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
         [fileManager createFileAtPath:logUrl.path contents:nil attributes:dict];
     }
-#ifndef DEBUG
-    [Instabug addFileAttachmentWithURL:logUrl];
-#endif
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
                    {

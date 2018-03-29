@@ -11,6 +11,7 @@
 		206C9F401D474E910063E3E6 /* RCTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 206C9F3F1D474E910063E3E6 /* RCTStatus.m */; };
 		4C0AB2231F8A2ED700CFD175 /* Jail.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0AB2221F8A2ED700CFD175 /* Jail.m */; };
 		4C16DE661F8A171B00AA10DB /* TimerJSExport.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C16DE651F8A171B00AA10DB /* TimerJSExport.m */; };
+		9806BE77206D044D00548CC4 /* Instabug.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9806BE76206D044D00548CC4 /* Instabug.framework */; };
 		CE4E31B11D86951A0033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B01D86951A0033ED64 /* Statusgo.framework */; };
 /* End PBXBuildFile section */
 
@@ -36,7 +37,7 @@
 		4C0AB2221F8A2ED700CFD175 /* Jail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Jail.m; sourceTree = "<group>"; };
 		4C16DE641F8A170500AA10DB /* TimerJSExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimerJSExport.h; sourceTree = "<group>"; };
 		4C16DE651F8A171B00AA10DB /* TimerJSExport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimerJSExport.m; sourceTree = "<group>"; };
-		9E3F8AF21ED2CCBD0016D874 /* Instabug.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Instabug.framework; path = ../../../../ios/Pods/Instabug/Instabug.framework; sourceTree = "<group>"; };
+		9806BE76206D044D00548CC4 /* Instabug.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Instabug.framework; path = "../../../../node_modules/instabug-reactnative/ios/Instabug.framework"; sourceTree = "<group>"; };
 		CE4E31B01D86951A0033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Statusgo.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE4E31B11D86951A0033ED64 /* Statusgo.framework in Frameworks */,
+				9806BE77206D044D00548CC4 /* Instabug.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +88,7 @@
 		9E3F8AF11ED2CCBD0016D874 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9E3F8AF21ED2CCBD0016D874 /* Instabug.framework */,
+				9806BE76206D044D00548CC4 /* Instabug.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

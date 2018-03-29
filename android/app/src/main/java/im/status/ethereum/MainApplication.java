@@ -5,6 +5,7 @@ import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
+import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.horcrux.svg.SvgPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
@@ -15,7 +16,6 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
-import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
@@ -72,12 +72,14 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new PickerPackage(),
                     new TestFairyPackage(),
                     new WebViewBridgePackage(BuildConfig.DEBUG, callRPC),
-                    new ReactNativeConfigPackage()
+                    new ReactNativeConfigPackage(),
+                    new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN,MainApplication.this)
+                            .setInvocationEvent("shake")
+                            .setPrimaryColor("#1D82DC")
+                            .setFloatingEdge("left")
+                            .setFloatingButtonOffsetFromTop(250)
+                            .build()
                                                                                     ));
-
-            if (!BuildConfig.DEBUG) {
-                packages.add(new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e", MainApplication.this, "shake"));
-            }
 
             return packages;
         }

@@ -18,8 +18,6 @@
 #import "TestFairy.h"
 #import "RNFIRMessaging.h"
 
-@import Instabug;
-
 @implementation AppDelegate
 
 /* Modified version of RCTDefaultLogFunction that also directs all app logs to TestFairy. */
@@ -95,7 +93,6 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [SplashScreen show];
-  [Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
 
   [FIRApp configure];
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];

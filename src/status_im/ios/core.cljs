@@ -10,6 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.notifications :as notifications]
             [status-im.core :as core]
+            [status-im.utils.instabug :as instabug]
             [status-im.utils.snoopy :as snoopy]))
 
 (defn app-root []
@@ -42,4 +43,5 @@
 
 (defn init []
   (core/init app-root)
-  (snoopy/subscribe!))
+  (snoopy/subscribe!)
+  (instabug/init))
