@@ -438,6 +438,7 @@
    :receive-transaction                  "Receive transaction"
    :new-transaction                      "New Transaction"
    :transaction-history                  "Transaction History"
+   :new-contract                         "New Contract"
 
    ;; Wallet Send
    :wallet-choose-recipient              "Choose Recipient"

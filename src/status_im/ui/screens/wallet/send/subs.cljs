@@ -58,7 +58,9 @@
     (when-let [unsigned-transaction (get unsigned-transactions
                                          (:id send-transaction))]
       (merge send-transaction
-             unsigned-transaction))))
+             unsigned-transaction
+             {:gas       (or (:gas unsigned-transaction) (:gas send-transaction))
+              :gas-price (or (:gas-price unsigned-transaction) (:gas-price send-transaction))}))))
 
 (re-frame/reg-sub :wallet/edit
   :<- [:wallet]

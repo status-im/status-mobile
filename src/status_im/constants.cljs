@@ -26,6 +26,8 @@
 
 (def default-network config/default-network)
 
+(def contract-address "0x0000000000000000000000000000000000000000")
+
 (def default-wallet-transactions
   {:filters
    {:type [{:id :inbound   :label (i18n/label :t/incoming)  :checked? true}

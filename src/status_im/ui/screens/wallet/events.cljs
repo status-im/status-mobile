@@ -9,7 +9,8 @@
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
             [taoensso.timbre :as log]
-            status-im.ui.screens.wallet.request.events))
+            status-im.ui.screens.wallet.request.events
+            [status-im.utils.money :as money]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -83,6 +84,11 @@
   :update-gas-price
   (fn [{:keys [web3 success-event edit?]}]
     (ethereum/gas-price web3 #(re-frame/dispatch [success-event %2 edit?]))))
+
+(reg-fx
+  :update-estimated-gas
+  (fn [{:keys [web3 obj success-event]}]
+    (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
 
 ;; Handlers
 
@@ -219,6 +225,18 @@
   :wallet/update-gas-price-success
   (fn [db [_ price edit?]]
     (assoc-in db [:wallet (if edit? :edit :send-transaction) :gas-price] price)))
+
+(handlers/register-handler-fx
+  :wallet/update-estimated-gas
+  (fn [{:keys [db]} [_ obj]]
+    {:update-estimated-gas {:web3          (:web3 db)
+                            :obj           obj
+                            :success-event :wallet/update-estimated-gas-success}}))
+
+(handlers/register-handler-db
+  :wallet/update-estimated-gas-success
+  (fn [db [_ gas]]
+    (assoc-in db [:wallet :send-transaction :gas] (money/bignumber gas))))
 
 (handlers/register-handler-fx
   :wallet/show-error
