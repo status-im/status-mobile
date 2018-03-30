@@ -28,7 +28,7 @@
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
-            [status-im.constants :refer [console-chat-id]]
+            [status-im.constants :as constants]
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
@@ -107,14 +107,6 @@
   (fn [opts-seq]
     (doseq [opts opts-seq]
       (call-jail-function opts))))
-
-(re-frame/reg-fx
-  :http-post
-  (fn [{:keys [action data success-event-creator failure-event-creator timeout-ms]}]
-    (let [on-success #(re-frame/dispatch (success-event-creator %))
-          on-error   #(re-frame/dispatch (failure-event-creator %))
-          opts       {:timeout-ms timeout-ms}]
-      (http/post action data on-success on-error opts))))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -256,7 +248,7 @@
                inbox/wnode]
         :or [network (get app-db :network)
              wnode   (get app-db :inbox/wnode)]} [_ address]]
-    (let [console-contact (get contacts console-chat-id)]
+    (let [console-contact (get contacts constants/console-chat-id)]
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address
@@ -275,7 +267,7 @@
                      :network network
                      :inbox/wnode wnode)
         console-contact
-        (assoc :contacts/contacts {console-chat-id console-contact})))))
+        (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
 
 (handlers/register-handler-fx
   :initialize-account
@@ -329,25 +321,6 @@
   :get-fcm-token
   (fn [_ _]
     {::get-fcm-token-fx nil}))
-
-(defn- track [id event]
-  (let [anonid (ethereum/sha3 id)]
-    (doseq [{:keys [label properties]} (mixpanel/matching-events event mixpanel/event-by-trigger)]
-      (mixpanel/track anonid label properties))))
-
-(def hook-id :mixpanel-callback)
-
-(handlers/register-handler-fx
-  :register-mixpanel-tracking
-  (fn [_ [_ id]]
-    (re-frame/add-post-event-callback hook-id #(track id %))
-    nil))
-
-(handlers/register-handler-fx
-  :unregister-mixpanel-tracking
-  (fn []
-    (re-frame/remove-post-event-callback hook-id)
-    nil))
 
 ;; Because we send command to jail in params and command `:ref` is a lookup vector with
 ;; keyword in it (for example `["transactor" :command 51 "send"]`), we lose that keyword

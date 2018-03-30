@@ -9,23 +9,20 @@
 
 (defn post
   "Performs an HTTP POST request"
-  ([action data on-success]
-   (post action data on-success nil))
-  ([action data on-success on-error]
-   (post action data on-success on-error nil))
-  ([action data on-success on-error {:keys [timeout-ms]}]
-   (-> (rn-dependencies/fetch (str const/server-address action)
-                              (clj->js {:method  "POST"
-                                        :headers {:accept       "application/json"
-                                                  :content-type "application/json"}
-                                        :body    (.stringify js/JSON (clj->js data))
-                                        :timeout (or timeout-ms http-request-default-timeout-ms)}))
+  ([url data on-success]
+   (post url data on-success nil))
+  ([url data on-success on-error]
+   (post url data on-success on-error nil))
+  ([url data on-success on-error {:keys [timeout-ms headers]}]
+   (-> (rn-dependencies/fetch
+        url
+        (clj->js (merge {:method  "POST"
+                         :body    data
+                         :timeout (or timeout-ms http-request-default-timeout-ms)}
+                        (when headers
+                          {:headers headers}))))
        (.then (fn [response]
-                (.text response)))
-       (.then (fn [text]
-                (let [json (.parse js/JSON text)
-                      obj  (js->clj json :keywordize-keys true)]
-                  (on-success obj))))
+                (on-success response)))
        (.catch (or on-error
                    (fn [error]
                      (utils/show-popup "Error" (str error))))))))

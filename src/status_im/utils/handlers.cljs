@@ -3,6 +3,8 @@
             [clojure.string :as string]
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.mixpanel :as mixpanel]
             [taoensso.timbre :as log])
   (:require-macros status-im.utils.handlers))
 
@@ -81,6 +83,26 @@
          (throw (ex-info (check-spec-msg event-id new-db) {})))
        context))))
 
+(def track-mixpanel
+  "send an event to mixpanel for tracking"
+  (->interceptor
+   :id track-mixpanel
+   :after
+   (fn track-handler
+     [context]
+     (let [new-db             (get-coeffect context :db)
+           current-account-id (:accounts/current-account-id new-db)]
+       (when (get-in new-db [:accounts/accounts
+                             current-account-id
+                             :sharing-usage-data?])
+         (let [event    (get-coeffect context :event)
+               offline? (or (= :offline (:network-status new-db))
+                            (= :offline (:sync-state new-db)))
+               anon-id  (ethereum/sha3 current-account-id)]
+           (doseq [{:keys [label properties]}
+                   (mixpanel/matching-events event mixpanel/event-by-trigger)]
+             (mixpanel/track anon-id label properties offline?)))))
+     context)))
 
 (defn register-handler
   ([name handler] (register-handler name nil handler))
@@ -88,7 +110,10 @@
    (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
 
 (def default-interceptors
-  [debug-handlers-names (when js/goog.DEBUG check-spec) (re-frame/inject-cofx :now)])
+  [debug-handlers-names
+   (when js/goog.DEBUG check-spec)
+   (re-frame/inject-cofx :now)
+   track-mixpanel])
 
 (defn register-handler-db
   ([name handler] (register-handler-db name nil handler))
