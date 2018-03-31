@@ -87,3 +87,8 @@ class NetworkApi:
     def get_ethereum_price_in_usd(self) -> float:
         url = 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
         return float(requests.request('GET', url).json()['USD'])
+
+    def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:
+        url = 'http://offsite.chat:8099/ping/%s?count=%s&interval=%s' % (chat_name, messages_number, interval)
+        text = requests.request('GET', url).text
+        return [i.split(maxsplit=5)[-1].strip('*') for i in text.splitlines()]

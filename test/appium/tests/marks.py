@@ -6,6 +6,7 @@ testrail_case_id = pytest.mark.testrail_case_id
 all = pytest.mark.all
 chat = pytest.mark.chat
 chat_management = pytest.mark.chat_management
+message_reliability = pytest.mark.message_reliability
 transaction = pytest.mark.transaction
 wallet = pytest.mark.wallet
 skip = pytest.mark.skip

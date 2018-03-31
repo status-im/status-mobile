@@ -268,7 +268,7 @@ class TestOfflineMessages(MultipleDeviceTestCase):
 
     @marks.testrail_case_id(3420)
     def test_offline_messaging_1_1_chat(self):
-        self.create_drivers(2)
+        self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
         username_1 = sign_in_1.create_user()
@@ -302,7 +302,7 @@ class TestOfflineMessages(MultipleDeviceTestCase):
     @marks.testrail_case_id(3430)
     @marks.skip
     def test_offline_messaging_group_chat(self):
-        self.create_drivers(2)
+        self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
         username_1 = sign_in_1.create_user()

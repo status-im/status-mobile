@@ -1,9 +1,8 @@
 from _pytest.runner import runtestprotocol
 
 from support.test_rerun import should_rerun_test
-from tests import test_suite_data, debug
+from tests import test_suite_data
 import requests
-import re
 import pytest
 from datetime import datetime
 from os import environ
@@ -50,6 +49,18 @@ def pytest_addoption(parser):
                      action='store',
                      default=0,
                      help='How many times tests should be re-run if failed')
+    parser.addoption('--messages_number',
+                     action='store',
+                     default=20,
+                     help='Messages number')
+    parser.addoption('--message_wait_time',
+                     action='store',
+                     default=20,
+                     help='Max time to wait for a message to be received')
+    parser.addoption('--participants_number',
+                     action='store',
+                     default=5,
+                     help='Public chat participants number')
 
 
 def get_rerun_count():
@@ -140,3 +151,18 @@ def pytest_runtest_protocol(item, nextitem):
                 break  # rerun
         else:
             return True  # no need to rerun
+
+
+@pytest.fixture
+def messages_number():
+    return int(pytest.config.getoption('messages_number'))
+
+
+@pytest.fixture
+def message_wait_time():
+    return int(pytest.config.getoption('message_wait_time'))
+
+
+@pytest.fixture
+def participants_number():
+    return int(pytest.config.getoption('participants_number'))
