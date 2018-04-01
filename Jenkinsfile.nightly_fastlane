@@ -65,7 +65,8 @@ node ('macos1'){
         sh ('plutil -replace CFBundleVersion  -string ' + build_no + ' ios/StatusIm/Info.plist')
         sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
         sh ('security unlock-keychain -p ' + password + ' login.keychain')
-        sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive-release.plist'
+        sh 'xcodebuild -exportArchive -exportPath status_appstore -archivePath status.xcarchive -exportOptionsPlist ~/archive-release.plist'
+        sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
       }
     }
 
@@ -82,7 +83,8 @@ node ('macos1'){
       def buildInfo = server.upload(uploadSpec)
       apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
 
-      sh ('bundle exec fastlane android nightly')
+      //todo: handle version differently instead of exit 0
+      sh ('bundle exec fastlane android nightly || exit 0')
       sh ('echo ARTIFACT Android: ' + apkUrl)
     }
 
@@ -93,7 +95,8 @@ node ('macos1'){
         def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
         ipaUrl = 'https://i.diawi.com/' + hash
 
-        sh ('bundle exec fastlane ios nightly')
+        //todo: handle version differently instead of exit 0
+        sh ('bundle exec fastlane ios nightly || exit 0')
         sh ('echo ARTIFACT iOS: ' + ipaUrl)
       }
     }

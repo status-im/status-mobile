@@ -14,7 +14,7 @@ platform :ios do
   desc "Deploy a new internal build to iTunes Connect"
   lane :nightly do
     upload_to_testflight(
-      ipa: "status/StatusIm.ipa"
+      ipa: "status_appstore/StatusIm.ipa"
     )
     slack(message: "New nightly build uploaded to iTunes Connect")
   end
