@@ -31,6 +31,8 @@ node ('macos1'){
 
       checkout scm
 
+      sh 'git fetch --tags'
+
       sh 'rm -rf node_modules'
       sh 'cp .env.prod .env'
       sh 'lein deps'
