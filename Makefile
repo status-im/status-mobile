@@ -37,6 +37,7 @@ prepare: ##@prepare Install dependencies and prepare workspace
 	./re-natal enable-source-maps
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
+	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
 	cd ios && pod install && cd ..
 
 #----------------
