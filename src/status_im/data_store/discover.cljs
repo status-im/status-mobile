@@ -10,7 +10,7 @@
 ;; also deletes the oldest queries if the number of discovers stored is
 ;; above maximum-number-of-discoveries
 (re-frame/reg-fx
-  :data-store.discover/save-all
+  :data-store/save-all-discoveries
   (fn [[discovers maximum-number-of-discoveries]]
     (data-store/save-all (mapv #(dissoc % :tags) discovers))
     (data-store/delete :created-at :asc maximum-number-of-discoveries)))

@@ -1,5 +1,6 @@
 (ns status-im.data-store.realm.schemas.account.v22.core
   (:require [status-im.data-store.realm.schemas.account.v22.chat :as chat]
+            [status-im.data-store.realm.schemas.account.v22.transport :as transport]
             [status-im.data-store.realm.schemas.account.v1.chat-contact :as chat-contact]
             [status-im.data-store.realm.schemas.account.v19.contact :as contact]
             [status-im.data-store.realm.schemas.account.v20.discover :as discover]
@@ -18,6 +19,7 @@
 
 (def schema [chat/schema
              chat-contact/schema
+             transport/schema
              contact/schema
              discover/schema
              message/schema

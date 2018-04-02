@@ -1,47 +1,12 @@
 (ns status-im.ui.screens.group.events
-  (:require [status-im.protocol.core :as protocol]
-            [re-frame.core :refer [dispatch reg-fx reg-cofx inject-cofx]]
+  (:require [re-frame.core :refer [dispatch reg-fx reg-cofx inject-cofx]]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [status-im.ui.components.styles :refer [default-chat-color]]
-            [status-im.data-store.contact-groups :as groups]
             [clojure.string :as string]
             [status-im.utils.random :as random]
             [status-im.ui.screens.group.navigation]
             [status-im.utils.datetime :as datetime]
             [re-frame.core :as re-frame]))
-
-;;;; COFX
-
-(reg-cofx
-  ::get-all-contact-groups
-  (fn [coeffects _]
-    (let [groups (->> (groups/get-all)
-                      (map (fn [{:keys [group-id] :as group}]
-                             [group-id group]))
-                      (into {}))]
-      (assoc coeffects :all-groups groups))))
-
-;;;; FX
-
-(reg-fx
-  ::save-contact-group
-  (fn [new-group]
-    (groups/save new-group)))
-
-(reg-fx
-  ::save-contact-groups
-  (fn [new-groups]
-    (groups/save-all new-groups)))
-
-(reg-fx
-  ::save-contact-group-property
-  (fn [[contact-group-id property-name value]]
-    (groups/save-property contact-group-id property-name value)))
-
-(reg-fx
-  ::add-contacts-to-contact-group
-  (fn [[contact-group-id selected-contacts]]
-    (groups/add-contacts contact-group-id selected-contacts)))
 
 ;;;; Handlers
 
@@ -76,14 +41,14 @@
                      :order       (count contact-groups)
                      :timestamp   now
                      :contacts    selected-contacts'}]
-      {:db (update db :group/contact-groups merge {(:group-id new-group) new-group})
-       ::save-contact-group new-group})))
+      {:db                            (update db :group/contact-groups merge {(:group-id new-group) new-group})
+       :data-store/save-contact-group new-group})))
 
 (register-handler-fx
   ::update-contact-group
   (fn [{:keys [db]} [_ new-group]]
-    {:db (update db :group/contact-groups merge {(:group-id new-group) new-group})
-     ::save-contact-group new-group}))
+    {:db                            (update db :group/contact-groups merge {(:group-id new-group) new-group})
+     :data-store/save-contact-group new-group}))
 
 (defn update-pending-status [old-groups {:keys [group-id pending?] :as group}]
   (let [{old-pending :pending?
@@ -101,14 +66,14 @@
                            (remove #(identities (:group-id %)))
                            (map #(vector (:group-id %2) (assoc %2 :order %1)) (iterate inc old-groups-count))
                            (into {}))]
-      {:db (update db :group/contact-groups merge new-groups')
-       ::save-contact-groups (into [] (vals new-groups'))})))
+      {:db                             (update db :group/contact-groups merge new-groups')
+       :data-store/save-contact-groups (into [] (vals new-groups'))})))
 
 (register-handler-fx
   :load-contact-groups
-  [(inject-cofx ::get-all-contact-groups)]
-  (fn [{:keys [db all-groups]} _]
-    {:db (assoc db :group/contact-groups all-groups)}))
+  [(inject-cofx :data-store/get-all-contact-groups)]
+  (fn [{:keys [db all-contact-groups]} _]
+    {:db (assoc db :group/contact-groups all-contact-groups)}))
 
 (defn move-item [v from to]
   (if (< from to)
@@ -132,30 +97,37 @@
   :save-contact-group-order
   (fn [{{:group/keys [contact-groups groups-order] :as db} :db} _]
     (let [new-groups (mapv #(assoc (contact-groups (second %)) :order (first %))
-                            (map-indexed vector (reverse groups-order)))]
-      {:db (update db :group/contact-groups merge (map #(vector (:group-id %) %) new-groups))
-       ::save-contact-groups new-groups})))
+                           (map-indexed vector (reverse groups-order)))]
+      {:db                             (update db
+                                               :group/contact-groups
+                                               merge (map #(vector (:group-id %) %) new-groups))
+       :data-store/save-contact-groups new-groups})))
 
 (register-handler-fx
   :set-contact-group-name
   (fn [{{:keys [new-chat-name] :group/keys [contact-group-id] :as db} :db} _]
-    {:db (assoc-in db [:group/contact-groups contact-group-id :name] new-chat-name)
-     ::save-contact-group-property [contact-group-id :name new-chat-name]}))
+    {:db                                     (assoc-in db
+                                                       [:group/contact-groups contact-group-id :name]
+                                                       new-chat-name)
+     :data-store/save-contact-group-property [contact-group-id :name new-chat-name]}))
 
 (register-handler-fx
   :add-selected-contacts-to-group
   (fn [{{:group/keys [contact-groups contact-group-id selected-contacts] :as db} :db} _]
     (let [new-identities (mapv #(hash-map :identity %) selected-contacts)]
-      {:db (update-in db [:group/contact-groups contact-group-id :contacts] #(into [] (set (concat % new-identities))))
-       ::add-contacts-to-contact-group [contact-group-id selected-contacts]})))
+      {:db                                       (update-in db
+                                                            [:group/contact-groups contact-group-id :contacts]
+                                                            #(into [] (set (concat % new-identities))))
+       :data-store/add-contacts-to-contact-group [contact-group-id selected-contacts]})))
 
 (register-handler-fx
   :add-contacts-to-group
   (fn [{:keys [db]} [_ group-id contacts]]
     (let [new-identities (mapv #(hash-map :identity %) contacts)]
       (when (get-in db [:group/contact-groups group-id])
-        {:db (update-in db [:group/contact-groups group-id :contacts] #(into [] (set (concat % new-identities))))
-         ::add-contacts-to-contact-group [group-id contacts]}))))
+        {:db                                       (update-in db [:group/contact-groups group-id :contacts]
+                                                              #(into [] (set (concat % new-identities))))
+         :data-store/add-contacts-to-contact-group [group-id contacts]}))))
 
 (defn remove-contact-from-group [whisper-identity]
   (fn [contacts]
@@ -171,5 +143,5 @@
 (register-handler-fx
   :delete-contact-group
   (fn [{{:group/keys [contact-group-id] :as db} :db} _]
-    {:db (assoc-in db [:group/contact-groups contact-group-id :pending?] true)
-     ::save-contact-group-property [contact-group-id :pending? true]}))
+    {:db                                     (assoc-in db [:group/contact-groups contact-group-id :pending?] true)
+     :data-store/save-contact-group-property [contact-group-id :pending? true]}))

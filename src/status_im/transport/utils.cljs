@@ -1,4 +1,5 @@
-(ns status-im.protocol.web3.utils
+(ns ^{:doc "Utils for transport layer"}
+    status-im.transport.utils
   (:require [cljs-time.coerce :refer [to-long]]
             [cljs-time.core :refer [now]]
             [clojure.string :as string]
@@ -12,6 +13,19 @@
 
 (defn to-utf8 [s]
   (.toUtf8 dependencies/Web3.prototype (str s)))
+
+(defn sha3 [s]
+  (.sha3 dependencies/Web3.prototype s))
+
+(defn message-id
+  "Get a message-id"
+  [message]
+  (sha3 (pr-str message)))
+
+(defn get-topic
+  "Get the topic of a group chat or public chat from the chat-id"
+  [chat-id]
+  (subs (sha3 chat-id) 0 10))
 
 (defn shh [web3]
   (.-shh web3))

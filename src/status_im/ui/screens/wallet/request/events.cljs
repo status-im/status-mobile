@@ -9,11 +9,11 @@
 (handlers/register-handler-fx
   ::wallet-send-chat-request
   [re-frame/trim-v]
-  (fn [{{:contacts/keys [contacts] :as db} :db} [amount]]
-    (-> db
-        (input-events/select-chat-input-command
-         (assoc (get-in contacts chat-const/request-command-ref) :prefill [amount]) nil true)
-        (assoc :dispatch [:send-current-message]))))
+  (fn [{{:contacts/keys [contacts]} :db :as cofx} [amount]]
+    (handlers/merge-fx cofx
+                       {:dispatch [:send-current-message]}
+                       (input-events/select-chat-input-command
+                        (assoc (get-in contacts chat-const/request-command-ref) :prefill [amount]) nil true))))
 
 (handlers/register-handler-fx
   :wallet-send-request

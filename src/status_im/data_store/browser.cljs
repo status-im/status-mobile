@@ -1,23 +1,21 @@
 (ns status-im.data-store.browser
-  (:require [status-im.data-store.realm.browser :as data-store])
+  (:require [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]
+            [status-im.data-store.realm.browser :as data-store])
   (:refer-clojure :exclude [exists?]))
 
-(defn get-all
-  []
-  (data-store/get-all))
+(re-frame/reg-cofx
+  :data-store/all-browsers
+  (fn [cofx _]
+    (assoc cofx :all-stored-browsers (data-store/get-all))))
 
-(defn get-by-id
-  [id]
-  (data-store/get-by-id id))
+(re-frame/reg-fx
+  :data-store/save-browser
+  (fn [{:keys [browser-id] :as browser}]
+    (async/go (async/>! core/realm-queue #(data-store/save browser (data-store/exists? browser-id))))))
 
-(defn exists?
-  [browser-id]
-  (data-store/exists? browser-id))
-
-(defn save
-  [{:keys [browser-id] :as browser}]
-  (data-store/save browser (exists? browser-id)))
-
-(defn delete
-  [browser-id]
-  (data-store/delete browser-id))
+(re-frame/reg-fx
+  :data-store/remove-browser
+  (fn [browser-id]
+    (async/go (async/>! core/realm-queue #(data-store/delete browser-id)))))

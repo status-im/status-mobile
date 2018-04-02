@@ -27,11 +27,12 @@
 
 (handlers/register-handler-fx
   :profile/send-transaction
-  [(re-frame/inject-cofx :get-stored-chat) re-frame/trim-v]
-  (fn [{{:contacts/keys [contacts] :as db} :db :as cofx} [chat-id]]
-    (let [send-command (get-in contacts chat-const/send-command-ref)
-          fx (chat-events/start-chat chat-id true cofx)]
-      (merge fx (input-events/select-chat-input-command (:db fx) send-command nil true)))))
+  [(re-frame/inject-cofx :data-store/get-chat) re-frame/trim-v]
+  (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
+    (let [send-command (get-in contacts chat-const/send-command-ref)]
+      (handlers/merge-fx cofx
+                         (chat-events/start-chat chat-id {:navigation-replace? true})
+                         (input-events/select-chat-input-command send-command nil true)))))
 
 (defn get-current-account [{:accounts/keys [current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))
@@ -59,8 +60,8 @@
       name
       (get-in db [:accounts/accounts current-account-id :name]))))
 
-(defn clear-profile [fx]
-  (update fx :db dissoc :my-profile/profile :my-profile/default-name :my-profile/editing?))
+(defn clear-profile [{:keys [db] :as cofx}]
+  {:db (dissoc db :my-profile/profile :my-profile/default-name :my-profile/editing?)})
 
 (handlers/register-handler-fx
   :my-profile/start-editing-profile
@@ -69,16 +70,17 @@
 
 (handlers/register-handler-fx
   :my-profile/save-profile
-  (fn [{:keys [db now]} _]
+  (fn [{:keys [db now] :as cofx} _]
     (let [{:keys [photo-path]} (:my-profile/profile db)
           cleaned-name (clean-name db :my-profile/profile)
           cleaned-edit (merge {:name         cleaned-name
                                :last-updated now}
                               (if photo-path
                                 {:photo-path photo-path}))]
-      (-> (clear-profile {:db db})
-          (accounts-events/account-update cleaned-edit)
-          (update :dispatch-n concat [[:navigate-back]])))))
+      (handlers/merge-fx cofx
+                         {:dispatch [:navigate-back]}
+                         (clear-profile)
+                         (accounts-events/account-update cleaned-edit)))))
 
 (handlers/register-handler-fx
   :group-chat-profile/start-editing
@@ -107,6 +109,7 @@
 
 (handlers/register-handler-fx
   :my-profile/finish
-  (fn [{:keys [db]} _]
-    (-> {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-        (accounts-events/account-update {:seed-backed-up? true}))))
+  (fn [{:keys [db] :as cofx} _]
+    (handlers/merge-fx cofx
+                       {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
+                       (accounts-events/account-update {:seed-backed-up? true}))))

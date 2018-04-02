@@ -7,8 +7,7 @@
             [status-im.commands.utils :refer [reg-handler]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
-            [taoensso.timbre :as log]
-            [status-im.data-store.local-storage :as local-storage]))
+            [taoensso.timbre :as log]))
 
 (defn command-handler!
   [_ [chat-id
@@ -47,7 +46,7 @@
 
 (defn suggestions-events-handler!
   [{:keys [bot-db]} [bot-id [n & data] val]]
-  (log/debug "Suggestion event: " n (first data) val) 
+  (log/debug "Suggestion event: " n (first data) val)
   (case (keyword n)
     :set-command-argument
     (let [[index value move-to-next?] (first data)]
@@ -102,8 +101,9 @@
                    {:result  result
                     :chat-id chat-id}])))))
 
-(reg-handler :set-local-storage
-  (handlers/side-effect!
-    (fn [_ [{:keys [data chat-id]}]]
-      (local-storage/set-data {:chat-id chat-id
-                               :data    data}))))
+(handlers/register-handler-fx
+  :set-local-storage
+  [trim-v]
+  (fn [_ [{:keys [data chat-id]}]]
+    {:data-store/set-local-storage-data {:chat-id chat-id
+                                         :data    data}}))

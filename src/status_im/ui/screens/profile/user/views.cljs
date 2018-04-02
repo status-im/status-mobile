@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.protocol.core :as protocol]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.styles :as common.styles]
@@ -88,17 +87,10 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
-(defn- navigate-to-accounts [sharing-usage-data?]
-  ;; TODO(rasom): probably not the best place for this call
-  (protocol/stop-whisper!)
-  (re-frame/dispatch [:navigate-to :accounts])
-  (when sharing-usage-data?
-    (re-frame/dispatch [:unregister-mixpanel-tracking])))
-
-(defn- handle-logout [sharing-usage-data?]
+(defn- handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) #(navigate-to-accounts sharing-usage-data?)))
+                           (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -124,7 +116,7 @@
                                         :value               build/version
                                         :destructive?        true
                                         :hide-arrow?         true
-                                        :action-fn           #(handle-logout sharing-usage-data?)}]]))
+                                        :action-fn           #(handle-logout)}]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced?                     [:get :my-profile/advanced?]
@@ -165,7 +157,7 @@
           :accessibility-label :help-improve}]])]))
 
 (defview my-profile []
-  (letsubs [{:keys [public-key sharing-usage-data?] :as current-account} [:get-current-account]
+  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]]
     (let [shown-account (merge current-account changed-account)]
@@ -179,5 +171,5 @@
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account sharing-usage-data?]]
+         [my-profile-settings current-account]]
         [advanced shown-account]]])))

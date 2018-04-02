@@ -198,7 +198,7 @@
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
       [react/scroll-view (merge {:keyboard-should-persist-taps :always
-                                 :on-content-size-change       #(when @scroll
+                                 :on-content-size-change       #(when (and scroll @scroll)
                                                                   (.scrollToEnd @scroll))}
                                 (when-not modal?
                                   {:ref #(reset! scroll %)}))
@@ -214,7 +214,7 @@
                                                         (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
                                      :input-options {:default-value  (str (money/to-fixed (money/wei->ether amount)))
                                                      :max-length     21
-                                                     :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
+                                                     :on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])}}]
         [advanced-options advanced? transaction modal?]]]
       (if signing?

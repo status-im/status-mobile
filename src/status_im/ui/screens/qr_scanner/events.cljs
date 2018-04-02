@@ -22,11 +22,8 @@
 (handlers/register-handler-fx
   :set-qr-code
   (fn [{:keys [db]} [_ context data]]
-    (let [handler-event       (when-let [handler (get-in db [:qr-codes context])]
-                                [handler context data])
-          navigate-back-event (when (= :qr-scanner (:view-id db))
-                                [:navigate-back])]
-      {:dispatch-n [handler-event navigate-back-event]
-       :db (-> db
-               (update :qr-codes dissoc context)
-               (dissoc :current-qr-context))})))
+    (merge {:db (-> db
+                    (update :qr-codes dissoc context)
+                    (dissoc :current-qr-context))}
+           (when-let [handler (get-in db [:qr-codes context])]
+             {:dispatch [handler context data]}))))

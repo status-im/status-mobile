@@ -35,13 +35,11 @@
    [react/view style/action
     [vector-icons/icon :icons/dots-horizontal]]])
 
-(defview add-contact-bar []
-  (letsubs [chat-id          [:get-current-chat-id]
-            pending-contact? [:current-contact :pending?]]
-    (when (or (nil? pending-contact?) ; user not in contact list
-              pending-contact?)
+(defview add-contact-bar [contact-identity]
+  (letsubs [{:keys [pending?] :as contact} [:contact-by-identity contact-identity]]
+    (when (or pending? (not contact)) ;; contact is pending or not in contact list at all
       [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:add-contact chat-id])
+       {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
        [react/view style/add-contact
         [react/text {:style style/add-contact-text}
@@ -52,7 +50,7 @@
                         :options (actions/actions group-chat? chat-id public?)}))
 
 (defview chat-toolbar [public?]
-  (letsubs [{:keys [group-chat name chat-id]} [:get-current-chat]]
+  (letsubs [{:keys [group-chat name chat-id contacts]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
      [toolbar/platform-agnostic-toolbar {}
@@ -62,7 +60,7 @@
                          :icon-opts {:color               :black
                                      :accessibility-label :chat-menu-button}
                          :handler   #(on-options chat-id name group-chat public?)}]]]
-     (when-not (or public? group-chat) [add-contact-bar])]))
+     (when-not (or public? group-chat) [add-contact-bar (-> contacts first :identity)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 

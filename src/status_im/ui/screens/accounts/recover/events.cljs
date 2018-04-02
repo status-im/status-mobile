@@ -27,7 +27,6 @@
 
 (handlers/register-handler-fx
   :account-recovered
-  [(re-frame/inject-cofx :get-new-keypair!)]
   (fn [{:keys [db keypair]} [_ result password]]
     (let [data       (types/json->clj result)
           public-key (:pubkey data)
@@ -38,14 +37,15 @@
                    :address             address
                    :name                (gfycat/generate-gfy public-key)
                    :photo-path          (identicon/identicon public-key)
-                   :updates-public-key  public
-                   :updates-private-key private
+                   ;;TODO remove those
+                   :updates-public-key  "public"
+                   :updates-private-key "private"
                    :mnemonic            ""
                    :signed-up?          true
                    :signing-phrase      phrase
                    :settings            constants/default-account-settings}]
       (when-not (string/blank? public-key)
-        (-> db 
+        (-> db
             (accounts-events/add-account account)
             (assoc :dispatch [:login-account address password])
             (assoc :dispatch-later [{:ms 2000 :dispatch [:navigate-to :usage-data]}]))))))

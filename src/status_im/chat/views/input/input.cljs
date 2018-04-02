@@ -17,8 +17,7 @@
             [status-im.utils.utils :as utils]))
 
 (defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
-  (letsubs [input-text     [:chat :input-text]
-            command        [:selected-chat-command]
+  (letsubs [input-text     [:chat :input-text] 
             input-focused? [:get-current-chat-ui-prop :input-focused?]
             input-ref      (atom nil)]
     [react/text-input
@@ -49,10 +48,7 @@
                                              content-size)
                                     (set-layout-height-fn (.-height content-size)))
                                   (when (not= text input-text)
-                                    (re-frame/dispatch [:set-chat-input-text text])
-                                    (when command
-                                      (re-frame/dispatch [:load-chat-parameter-box (:command command)]))
-                                    (re-frame/dispatch [:update-input-data]))))
+                                    (re-frame/dispatch [:set-chat-input-text text]))))
       :on-content-size-change (when (and (not input-focused?)
                                          (not single-line-input?))
                                 #(let [s (.-contentSize (.-nativeEvent %))
@@ -120,8 +116,7 @@
         [react/text-input (merge {:ref                 #(re-frame/dispatch [:set-chat-ui-props {:seq-input-ref %}])
                                   :style               (style/seq-input-text command-width container-width)
                                   :default-value       (or seq-arg-input-text "")
-                                  :on-change-text      #(do (re-frame/dispatch [:set-chat-seq-arg-input-text %])
-                                                            (re-frame/dispatch [:load-chat-parameter-box (:command command)])
+                                  :on-change-text      #(do (re-frame/dispatch [:set-chat-seq-arg-input-text %]) 
                                                             (re-frame/dispatch [:set-chat-ui-props {:validation-messages nil}]))
                                   :placeholder         placeholder
                                   :accessibility-label :chat-request-input

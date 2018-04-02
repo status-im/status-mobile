@@ -17,7 +17,7 @@
    [toolbar/content-title ""]])
 
 (defn actions [{:keys [pending? whisper-identity dapp?]}]
-  (concat (if pending?
+  (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :icons/add-contact
               :action              #(re-frame/dispatch [:add-contact whisper-identity])
@@ -28,7 +28,7 @@
               :accessibility-label :in-contacts-button}])
           [{:label               (i18n/label :t/send-message)
             :icon                :icons/chats
-            :action              #(re-frame/dispatch [:start-chat whisper-identity {:navigation-replace? true}])
+            :action              #(re-frame/dispatch [:open-chat-with-contact {:whisper-identity whisper-identity}])
             :accessibility-label :start-conversation-button}]
           (when-not dapp?
             [{:label               (i18n/label :t/send-transaction)

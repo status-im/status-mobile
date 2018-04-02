@@ -8,15 +8,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [status-im.native-module.core :as status]
-            [status-im.data-store.local-storage :as local-storage]
             [status-im.bots.events :as bots-events]
             [taoensso.timbre :as log]))
-
-;; COFX
-(re-frame/reg-cofx
-  :get-local-storage-data
-  (fn [cofx]
-    (assoc cofx :get-local-storage-data local-storage/get-data)))
 
 ;; FX
 (re-frame/reg-fx
@@ -26,9 +19,9 @@
       (status/parse-jail
        jail-id jail-resource
        (fn [jail-response]
-         (let [converted (types/json->clj jail-response)] 
+         (let [converted (types/json->clj jail-response)]
            (re-frame/dispatch [::proceed-loading jail-id (if config/jsc-enabled?
-                                                           (update converted :result types/json->clj) 
+                                                           (update converted :result types/json->clj)
                                                            converted)])))))))
 
 (re-frame/reg-fx
@@ -79,7 +72,7 @@
                           (reduce conj
                                   (disj scopes-set scope)
                                   (map (partial conj (s/difference scope exclusive-match))
-                                       exclusive-match)) 
+                                       exclusive-match))
                           scopes-set)))
                     scopes-set
                     scopes-set))
@@ -138,7 +131,7 @@
 
 (handlers/register-handler-fx
   ::evaluate-commands-in-jail
-  [re-frame/trim-v (re-frame/inject-cofx :get-local-storage-data)]
+  [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
   (fn [cofx [commands-resource whisper-identity]]
     (evaluate-commands-in-jail cofx commands-resource whisper-identity)))
 

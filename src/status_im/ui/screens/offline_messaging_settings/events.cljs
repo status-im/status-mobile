@@ -2,15 +2,16 @@
   (:require [re-frame.core :refer [dispatch]]
             [status-im.utils.handlers :as handlers]
             [status-im.ui.screens.accounts.events :as accounts-events]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.transport.core :as transport]))
 
 (handlers/register-handler-fx
   ::save-wnode
-  (fn [{:keys [db now]} [_ wnode]]
-    (-> (accounts-events/account-update {:db db}
-                                        {:wnode wnode :last-updated now})
-     (merge {:dispatch    [:navigate-to-clean :accounts]
-             :stop-whisper nil}))))
+  (fn [{:keys [db now] :as cofx} [_ wnode]]
+    (handlers/merge-fx cofx
+                       {:dispatch [:navigate-to-clean :accounts]}
+                       (accounts-events/account-update {:wnode wnode :last-updated now})
+                       (transport/stop-whisper))))
 
 (handlers/register-handler-fx
   :connect-wnode

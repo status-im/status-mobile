@@ -93,10 +93,11 @@
 
 (defn message-datemark-groups
   "Transforms map of messages into sequence of `[datemark messages]` tuples, where
-  messages with particular datemark are sorted according to their `:clock-value` and
-  tuples themeselves are sorted according to the highest `:clock-value` in the messages."
+  messages with particular datemark are sorted according to their `:clock-values` and
+  tuples themeselves are sorted according to the highest `:clock-values` in the messages."
   [id->messages]
-  (let [datemark->messages (transduce (comp (map second)
+  (let [clock-sorter (juxt :from-clock-value :to-clock-value)
+        datemark->messages (transduce (comp (map second)
                                             (filter :show?)
                                             (map (fn [{:keys [timestamp] :as msg}]
                                                    (assoc msg :datemark (time/day-relative timestamp)))))
@@ -106,8 +107,9 @@
                                       id->messages)]
     (->> datemark->messages
          (map (fn [[datemark messages]]
-                [datemark (sort-by :clock-value > messages)]))
-         (sort-by (comp :clock-value first second) >))))
+                [datemark (->> messages (sort-by clock-sorter) reverse)]))
+         (sort-by (comp clock-sorter first second))
+         reverse)))
 
 (reg-sub
   :get-chat-message-datemark-groups

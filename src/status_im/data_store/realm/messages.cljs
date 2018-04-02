@@ -32,6 +32,12 @@
                       realm/js-object->clj)]
      (mapv transform-message messages))))
 
+(defn get-message-ids-by-chat-id
+  [chat-id]
+  (.map (realm/get-by-field @realm/account-realm :message :chat-id chat-id)
+        (fn [msg _ _]
+          (aget msg "message-id"))))
+
 (defn get-stored-message-ids
   []
   (let [chat-id->message-id (volatile! {})]
@@ -52,11 +58,12 @@
       (realm/page from (+ from number-of-messages))
       realm/js-object->clj))
 
-(defn get-last-message
-  [chat-id]
+(defn get-last-clock-value
+  [chat-id clock-prop]
   (-> (realm/get-by-field @realm/account-realm :message :chat-id chat-id)
-      (realm/sorted :clock-value :desc)
-      (realm/single-clj)))
+      (realm/sorted clock-prop :desc)
+      (realm/single-clj)
+      (get clock-prop)))
 
 (defn get-unviewed
   [current-public-key]
