@@ -89,7 +89,7 @@
    :margin-left         4})
 
 (def advanced-fees-text
-  {:color colors/white})
+  {:color            colors/white})
 
 (def advanced-fees-details-text
   {:color colors/white-lighter-transparent})
@@ -98,7 +98,24 @@
   {:flex-direction :row})
 
 (def transaction-fee-info
-  {:margin 15})
+  {:flex-direction   :row
+   :margin           15})
+
+(def transaction-fee-info-text-wrapper
+  {:flex-shrink      1})
+
+(def transaction-fee-info-icon
+  {:border-radius    25
+   :width            25
+   :height           25
+   :margin-right     15
+   :align-items      :center
+   :justify-content  :center
+   :background-color colors/blue-dark})
+
+(def transaction-fee-info-icon-text
+  {:color            colors/white
+   :font-size        14})
 
 (def transaction-fee-input
   {:keyboard-type          :numeric

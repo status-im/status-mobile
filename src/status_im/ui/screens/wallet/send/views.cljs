@@ -137,8 +137,11 @@
            [wallet.components/cartouche-secondary-text
             (i18n/label :t/gwei)]]]]
         [react/view styles/transaction-fee-info
-         [react/text {:style styles/advanced-fees-text}
-          (i18n/label :t/wallet-transaction-fee-details)]]
+         [react/view styles/transaction-fee-info-icon
+          [react/text {:style styles/transaction-fee-info-icon-text} "?"]]
+         [react/view styles/transaction-fee-info-text-wrapper
+          [react/text {:style styles/advanced-fees-text}
+            (i18n/label :t/wallet-transaction-fee-details)]]]
         [components/separator]
         [react/view styles/transaction-fee-block-wrapper
          [wallet.components/cartouche {:disabled? true}
