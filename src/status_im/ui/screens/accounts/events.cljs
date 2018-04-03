@@ -216,6 +216,11 @@
                   [:request-notifications]]}))
 
 (handlers/register-handler-fx
+  :account-set-input-text
+  (fn [{db :db} [_ input-key text]]
+    {:db (update db :accounts/create merge {input-key text :error nil})}))
+
+(handlers/register-handler-fx
   :update-sign-in-time
   (fn [{db :db now :now} _]
     (account-update {:db db} {:last-sign-in now})))
