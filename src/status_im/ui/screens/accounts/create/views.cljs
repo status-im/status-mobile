@@ -18,7 +18,7 @@
                       :input-placeholder (i18n/label :t/password-placeholder)
                       :input-description (i18n/label :t/password-description)}
    :confirm-password {:input-key         :password-confirm
-                      :input-label       (i18n/label :t/confirm)
+                      :input-label       (i18n/label :t/password-confirm)
                       :input-placeholder (i18n/label :t/password-placeholder2)
                       :input-description (i18n/label :t/password-description)}
    :account-creating nil
