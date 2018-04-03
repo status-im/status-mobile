@@ -43,7 +43,8 @@
      label]
     [react/view styles/profile-setting-spacing]
     [react/text {:style               styles/profile-setting-text
-                 :accessibility-label accessibility-label}
+                 :accessibility-label accessibility-label
+                 :selectable          true}
      value]]])
 
 (defn profile-info-contact-code-item [whisper-identity]

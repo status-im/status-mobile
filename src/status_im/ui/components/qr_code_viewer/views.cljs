@@ -13,7 +13,8 @@
   [react/view styles/footer
    [react/view styles/wallet-info
     [react/text {:style               (merge styles/hash-value-text style)
-                 :accessibility-label :address-text}
+                 :accessibility-label :address-text
+                 :selectable          true}
      value]]])
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style]} value hint legend]
