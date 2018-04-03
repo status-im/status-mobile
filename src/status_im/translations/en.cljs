@@ -38,6 +38,7 @@
    :already-have-account                 "I already have an account"
    :creating-your-account                "Creating your account on the blockchain. We can't touch it, no one can, except for you!"
    :password-placeholder                 "Type your password"
+   :password-confirm                     "Confirm password"
    :password-placeholder2                "Confirm your password"
    :name-placeholder                     "Enter your full name…"
    :password_error1                      "Password confirmation doesn't match password."
