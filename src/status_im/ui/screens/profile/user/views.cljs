@@ -111,12 +111,15 @@
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
-     [profile.components/settings-item {:label-kw            :t/logout
-                                        :accessibility-label :log-out-button
-                                        :value               build/version
-                                        :destructive?        true
-                                        :hide-arrow?         true
-                                        :action-fn           #(handle-logout)}]]))
+     [react/view styles/my-profile-settings-logout-wrapper
+       [react/view styles/my-profile-settings-logout
+         [profile.components/settings-item {:label-kw            :t/logout
+                                            :accessibility-label :log-out-button
+                                            :destructive?        true
+                                            :hide-arrow?         true
+                                            :action-fn           #(handle-logout)}]]
+       [react/view styles/my-profile-settings-logout-version
+         [react/text build/version]]]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced?                     [:get :my-profile/advanced?]
