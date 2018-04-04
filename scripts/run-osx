@@ -61,7 +61,7 @@ open -a /Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name 
 fi
 
 # Install deps, prepare for genymotion and figwheel
-lein deps && ./re-natal deps && ./re-natal use-android-device "${device_type}" && ./re-natal use-figwheel
+lein deps && npm install && ./re-natal use-android-device "${device_type}" && ./re-natal use-figwheel && npm install
 
 # open figwheel in new tab
 tab "lein figwheel-repl ${cljs_build}"

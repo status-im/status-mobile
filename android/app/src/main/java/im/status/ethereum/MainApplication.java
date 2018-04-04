@@ -16,7 +16,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
-import com.lwansbrough.RCTCamera.RCTCameraPackage;
+import org.reactnative.camera.RNCameraPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
 import es.tiarg.nfcreactnative.NfcReactNativePackage;
@@ -65,7 +65,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new RealmReactPackage(),
                     new RNI18nPackage(),
                     new RandomBytesPackage(),
-                    new RCTCameraPackage(),
+                    new RNCameraPackage(),
                     new RNFSPackage(),
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
