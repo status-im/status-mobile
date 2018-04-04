@@ -92,7 +92,7 @@
              (cons (random/id) (lazy-seq (rand-id-seq))))))))
 
 (re-frame/reg-cofx
- ::status-go-app-state-change
+ :status-go-app-state-change
  (fn [state]
    (status/app-state-change state)))
 
@@ -450,7 +450,7 @@
                 :background-timestamp background-timestamp
                 :online-timestamp     online-timestamp})
      (cond->
-      {::status-go-app-state-change new-state-str
+      {:status-go-app-state-change new-state-str
        :db (cond-> (assoc db :app-state/state new-state)
 
                    (= :active new-state)
