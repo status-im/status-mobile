@@ -18,6 +18,12 @@ platform :ios do
     )
     slack(message: "New nightly build uploaded to iTunes Connect")
   end
+  lane :release do
+    upload_to_testflight(
+      ipa: "status_appstore/StatusIm.ipa"
+    )
+    slack(message: "New release build uploaded to iTunes Connect")
+  end
   desc "Remove inactive TestFlight users"
   lane :clean do
     clean_testflight_testers
@@ -33,5 +39,12 @@ platform :android do
       apk: "android/app/build/outputs/apk/release/app-release.apk"
     )
     slack(message: "New nightly build uploaded to Google Play")
+  end
+  lane :release do
+    upload_to_play_store(
+      track: "alpha",
+      apk: "android/app/build/outputs/apk/release/app-release.apk"
+    )
+    slack(message: "New release build uploaded to Google Play")
   end
 end

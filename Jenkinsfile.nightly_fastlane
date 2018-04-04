@@ -60,7 +60,7 @@ node ('macos1'){
       withCredentials([string(credentialsId: 'jenkins_pass', variable: 'password')]) {
         sh ('git tag -d ' + latest_tag + ' || exit 0')
         sh ('git tag ' + latest_tag)
-        def build_no = sh(returnStdout: true, script: 'git rev-list --count 0.9.15').trim()
+        def build_no = sh(returnStdout: true, script: 'git rev-list --count HEAD').trim()
         sh ('plutil -replace CFBundleShortVersionString  -string ' + latest_tag + ' ios/StatusIm/Info.plist')
         sh ('plutil -replace CFBundleVersion  -string ' + build_no + ' ios/StatusIm/Info.plist')
         sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'

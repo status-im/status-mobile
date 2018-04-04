@@ -107,6 +107,10 @@ def getVersionCode = { ->
 
 def getVersionName = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("releaseVersion")) {
+            return project.releaseVersion
+        }
+
         exec {
             commandLine "git", "describe", "--tags", "--always", "--dirty=+"
             standardOutput = stdOut
