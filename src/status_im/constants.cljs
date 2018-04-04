@@ -100,6 +100,9 @@
                      :name    "Status mainnet mailserver"
                      :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}})
 
+;; TODO(oskarth): Determine if this is the correct topic or not
+(def inbox-topic "0xaabb11ee")
+>>>>>>> 438ffab1... update mailservers list
 (def inbox-password "status-offline-inbox")
 
 ;; Used to generate topic for contact discoveries
