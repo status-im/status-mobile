@@ -1,6 +1,7 @@
 (ns status-im.ui.components.common.common
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.i18n :as i18n]
+  (:require [reagent.core :as reagent]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.common.styles :as styles]
@@ -87,9 +88,15 @@
                   (assoc :accessibility-label accessibility-label))
      value]]))
 
-(defn image-contain
-  ([source] (image-contain nil source))
-  ([{:keys [style]} source]
-   [react/view {:style (merge styles/image-contain
-                              style)}
-    [react/image {:source source :resizeMode :contain :style styles/image-contain-image}]]))
+(defn image-contain [_ _]
+  (let [content-width (reagent/atom 0)]
+    (reagent/create-class
+      {:reagent-render
+       (fn [{:keys [container-style style width height]} source]
+         [react/view {:style     (merge styles/image-contain container-style)
+                      :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+          [react/image {:source      source
+                        :resize-mode :contain
+                        :style       (merge style
+                                            {:width  @content-width
+                                             :height (/ (* @content-width height) width)})}]])})))
