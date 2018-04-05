@@ -245,7 +245,8 @@
 
 (defn- photo [from photo-path]
   [react/view
-   [react/image {:source (if (string/starts-with? photo-path "contacts://")
+   [react/image {:source (if (and (not (string/blank? photo-path))
+                                  (string/starts-with? photo-path "contacts://"))
                            (->> (string/replace photo-path #"contacts://" "")
                                 (keyword)
                                 (get resources/contacts))
@@ -285,10 +286,10 @@
      content]]
    (when last-outgoing?
      [react/view style/delivery-status
-     (if (or (= (keyword message-type) :group-user-message)
-             group-chat)
-       [group-message-delivery-status message]
-       [message-delivery-status message])])])
+      (if (or (= (keyword message-type) :group-user-message)
+              group-chat)
+        [group-message-delivery-status message]
+        [message-delivery-status message])])])
 
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
