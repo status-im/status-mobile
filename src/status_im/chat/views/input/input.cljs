@@ -151,14 +151,16 @@
         [seq-input {:command-width   width
                     :container-width container-width}]]])))
 
-(defn commands-button []
-  [react/touchable-highlight
-   {:on-press            #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
-                              (re-frame/dispatch [:chat-input-focus :input-ref]))
-    :accessibility-label :chat-commands-button}
-   [react/view
-    [vi/icon :icons/input-commands {:container-style style/input-commands-icon
-                                    :color           :dark}]]])
+(defview commands-button []
+  (letsubs [commands-responses [:get-available-commands-responses]]
+    (when (seq commands-responses)
+      [react/touchable-highlight
+       {:on-press            #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
+                                  (re-frame/dispatch [:chat-input-focus :input-ref]))
+        :accessibility-label :chat-commands-button}
+       [react/view
+        [vi/icon :icons/input-commands {:container-style style/input-commands-icon
+                                        :color           :dark}]]])))
 
 (defview input-container []
   (letsubs [margin     [:chat-input-margin]
