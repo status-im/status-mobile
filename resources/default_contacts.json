@@ -78,7 +78,7 @@
         "description": "ESports for Everyone! A platform that lets players challenge the field and win rewards."
     },
 
-    "Ethlance":
+    "ethlance":
     {
         "name":
         {
@@ -92,6 +92,135 @@
         },
         "groups": ["dapps"],
         "description": "The future of work is now. Hire people or work yourself in return for ETH."
-    }
+    },
+
+    "cryptokitties":
+    {
+        "name":
+        {
+            "en": "CryptoKitties"
+        },
+        "photo-path": "contacts://cryptokitties",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://www.cryptokitties.co"
+        },
+        "groups": ["dapps"],
+        "description": "Collect and breed adorable digital cats."
+    },
+
+  "cryptopunks": {
+    "name" :  {"en" : "CryptoPunks"},
+    "description": "10,000 unique collectible punks",
+    "dapp-url": {"en" :"https://www.larvalabs.com/cryptopunks"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://cryptopunks"
+  },
+  "name-bazaar": {
+    "name" : {"en" : "Name Bazaar"},
+    "description": "ENS name marketplace",
+    "dapp-url": {"en": "https://namebazaar.io"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://name-bazaar"
+  },
+  "cent": {
+    "name" : {"en" : "Cent"},
+    "description": "Get wisdom, get money",
+    "dapp-url": {"en" : "https://beta.cent.co"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://cent"
+  },
+  "erc-dex": {
+    "name" : {"en" : "ERC dEX"},
+    "description": "Trustless trading has arrived on Ethereum",
+    "dapp-url": {"en" : "https://app.ercdex.com/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://erc-dex"
+  },
+  "oasis-direct": {
+    "name" : {"en" : "Oasis Direct"},
+    "description": "The first decentralized instant exchange",
+    "dapp-url": {"en" : "https://oasis.direct/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://oasis-direct"
+  },
+  "etherbots": {
+    "name" : {"en" : "Etherbots"},
+    "description": "Robot wars on the Ethereum Platform",
+    "dapp-url": {"en" : "https://etherbots.io/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://etherbots"
+  },
+  "peepeth": {
+    "name" : {"en" : "Peepeth"},
+    "description": "Blockchain-powered microblogging",
+    "dapp-url": {"en" : "http://peepeth.com/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://peepeth"
+  },
+  "hexel": {
+    "name" : {"en" : "Hexel"},
+    "description": "Create your own cryptocurrency",
+    "dapp-url": {"en" : "https://www.onhexel.com/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://hexel"
+  },
+  "kyber": {
+    "name" : {"en" : "Kyber"},
+    "description": "On-chain, instant and liquid platform for exchange and payment service",
+    "dapp-url": {"en" : "https://web3.kyber.network"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://kyber"
+  },
+  "bancor": {
+    "name" : {"en" : "Bancor"},
+    "description": "Bancor is a decentralized liquidity network",
+    "dapp-url": {"en" : "https://www.bancor.network/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://bancor"
+  },
+  "opensea": {
+    "name" : {"en" : "OpenSea"},
+    "description": "The largest decentralized marketplace for cryptogoods",
+    "dapp-url": {"en" : "https://opensea.io"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://opensea"
+  },
+  "decentraland": {
+    "name" : {"en" : "Decentraland"},
+    "description": "Decentraland is a virtual reality platform powered by the Ethereum blockchain.",
+    "dapp-url": {"en" : "https://market.decentraland.org/"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://decentraland"
+  },
+  "cryptocribs": {
+    "name" : {"en" : "CryptoCribs"},
+    "description": "Travel the globe. Pay in crypto.",
+    "dapp-url": {"en" : "https://cryptocribs.com"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://cryptocribs"
+  },
+  "cryptofighters": {
+    "name" : {"en" : "CryptoFighters"},
+    "description": "Collect train and fight digital fighters.",
+    "dapp-url": {"en" : "https://cryptofighters.io"},
+    "groups": ["dapps"],
+    "dapp?": true,
+    "photo-path": "contacts://cryptofighters"
+  }
 
 }

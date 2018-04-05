@@ -16,6 +16,23 @@
    :commiteth          (js/require "./resources/images/contacts/commiteth.png")
    :etherplay          (js/require "./resources/images/contacts/etherplay.png")
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
+
+   :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
+   :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
+   :cryptokitties      (js/require "./resources/images/contacts/cryptokitties.png")
+   :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")
+   :erc-dex            (js/require "./resources/images/contacts/erc-dex.png")
+   :cent               (js/require "./resources/images/contacts/cent.png")
+   :hexel              (js/require "./resources/images/contacts/hexel.png")
+   :peepeth            (js/require "./resources/images/contacts/peepeth.png")
+   :etherbots          (js/require "./resources/images/contacts/etherbots.png")
+   :opensea            (js/require "./resources/images/contacts/opensea.png")
+   :kyber              (js/require "./resources/images/contacts/kyber.png")
+   :bancor             (js/require "./resources/images/contacts/bancor.png")
+   :decentraland       (js/require "./resources/images/contacts/decentraland.png")
+   :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
+   :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
+
    :console            (js/require "./resources/images/contacts/console.png")})
 
 (def assets
