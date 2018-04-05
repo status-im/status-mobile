@@ -4,10 +4,11 @@
             [clojure.walk :as walk]
             [status-im.react-native.js-dependencies :as js-dependecies]))
 
+(def rn-camera (.-RNCamera js-dependecies/camera))
 (def default-camera (.-default js-dependecies/camera))
 
 (defn constants [t]
-  (-> js-dependecies/camera
+  (-> default-camera
       (object/get "constants")
       (object/get t)
       (js->clj)
@@ -18,7 +19,7 @@
 (def torch-modes (constants "TorchMode"))
 
 (defn set-torch [state]
-  (set! (.-torchMode default-camera) (get torch-modes state)))
+  (set! (.-torchMode rn-camera) (get torch-modes state)))
 
 (defn request-access-ios [then else]
   (-> (.checkVideoAuthorizationStatus default-camera)
@@ -26,7 +27,7 @@
       (.catch else)))
 
 (defn camera [props]
-  (reagent/create-element default-camera (clj->js (merge {:inverted true} props))))
+  (reagent/create-element rn-camera (clj->js (merge {:inverted true} props))))
 
 (defn get-qr-code-data [code]
   (.-data code))
