@@ -27,7 +27,7 @@
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
-            [status-im.constants :refer [console-chat-id]]
+            [status-im.constants :refer [console-chat-id] :as constants]
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
@@ -45,7 +45,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.datetime :as datetime]))
 
 ;;;; Helper fns
 
@@ -74,6 +75,11 @@
    (assoc coeffects :now (time/timestamp))))
 
 (re-frame/reg-cofx
+ :now-s
+ (fn [coeffects _]
+   (assoc coeffects :now-s (time/timestamp-seconds))))
+
+(re-frame/reg-cofx
  :random-id
  (fn [coeffects _]
    (assoc coeffects :random-id (random/id))))
@@ -84,6 +90,11 @@
    (assoc coeffects :random-id-seq
           ((fn rand-id-seq []
              (cons (random/id) (lazy-seq (rand-id-seq))))))))
+
+(re-frame/reg-cofx
+ :status-go-app-state-change
+ (fn [state]
+   (status/app-state-change state)))
 
 ;;;; FX
 
@@ -414,9 +425,49 @@
     (when after-stop {:dispatch-n [after-stop]})))
 
 (handlers/register-handler-fx
-  :app-state-change
-  (fn [_ [_ state]]
-    (status/app-state-change state)))
+ :app-state-change
+ [(re-frame.core/inject-cofx :now-s)]
+ (fn [{:keys [db now-s]} [_ new-state-str]]
+   (let [{:app-state/keys      [state background-timestamp]
+          :keys                [network-status]
+          :network-status/keys [offline-timestamp online-timestamp]} db
+         from      (if (and offline-timestamp
+                            (< offline-timestamp background-timestamp online-timestamp))
+                     offline-timestamp
+                     background-timestamp)
+         time-diff (if from (- now-s from) 0)
+
+         web3      (:web3 db)
+         new-state (keyword new-state-str)
+         online?   (= :online network-status)]
+     (log/info "App state change"
+               {:app-state            state
+                :new-app-state        new-state
+                :network-status       network-status
+                :time-diff            time-diff
+                :from                 from
+                :offline-timestamp    offline-timestamp
+                :background-timestamp background-timestamp
+                :online-timestamp     online-timestamp})
+     (cond->
+      {:status-go-app-state-change new-state-str
+       :db (cond-> (assoc db :app-state/state new-state)
+
+                   (= :active new-state)
+                   (assoc :app-state/active-timestamp (+ now-s 10))
+
+                   (and online? (= :background new-state))
+                   (assoc :app-state/background-timestamp now-s))}
+
+      (and (= :active new-state)
+           online?
+           (> time-diff constants/history-requesting-threshold-seconds))
+      (merge {:check-connection-later
+              {:timeout  1000
+               :callback (fn [connected?]
+                           (when connected?
+                             (let [from' (datetime/minute-before from)]
+                               (re-frame/dispatch [:initialize-offline-inbox web3 from' now-s]))))}})))))
 
 (handlers/register-handler-fx
   :request-permissions

@@ -111,6 +111,12 @@
 (defn timestamp []
   (inst-ms (js/Date.)))
 
+(defn timestamp-seconds []
+  (int (subs (str (timestamp)) 10 0)))
+
+(defn minute-before [timestamp-seconds]
+  (- timestamp-seconds 60))
+
 (defn format-date [format date]
   (let [local (plus (from-date date) time-zone-offset)]
     (unparse (formatter format) local)))

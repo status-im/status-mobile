@@ -107,3 +107,5 @@
 (def ^:const send-transaction-password-error-code  "2")
 (def ^:const send-transaction-timeout-error-code   "3")
 (def ^:const send-transaction-discarded-error-code "4")
+
+(def ^:const history-requesting-threshold-seconds 100)
