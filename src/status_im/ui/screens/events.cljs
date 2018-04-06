@@ -38,7 +38,6 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.random :as random]
             [status-im.utils.config :as config]
-            [status-im.utils.crypt :as crypt]
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
@@ -139,18 +138,6 @@
   (fn []
     (data-store/init)))
 
-(re-frame/reg-fx
-  ::initialize-crypt-fx
-  (fn []
-    (crypt/gen-random-bytes
-      1024
-      (fn [{:keys [error buffer]}]
-        (if error
-          (log/error "Failed to generate random bytes to initialize sjcl crypto")
-          (->> (.toString buffer "hex")
-               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
-
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
     #(status/start-node config)))
@@ -230,7 +217,6 @@
                                    [:load-accounts]
                                    [:initialize-views]
                                    [:listen-to-network-status]
-                                   [:initialize-crypt]
                                    [:initialize-geth]]}))
 
 (handlers/register-handler-fx
@@ -322,11 +308,6 @@
                          :address address
                          :photo-path photo-path
                          :name name))))}))
-
-(handlers/register-handler-fx
-  :initialize-crypt
-  (fn [_ _]
-    {::initialize-crypt-fx nil}))
 
 (handlers/register-handler-fx
   :initialize-geth

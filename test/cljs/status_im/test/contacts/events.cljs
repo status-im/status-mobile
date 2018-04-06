@@ -123,7 +123,6 @@
 
     (testing "watch-contact"
       (let [contact   {:public-key "public-key"
-                       :private-key "private-key"
                        :whisper-identity "whisper-identity"}
             actual-fx (-> {:db {:web3 "web3"}}
                           (contacts-events/watch-contact contact)
@@ -139,18 +138,13 @@
           (is (= "whisper-identity" (:whisper-identity actual-fx))))
 
         (testing "it adds the public key"
-          (is (= "public-key" (:public-key actual-fx))))
-
-        (testing "it adds the private key"
-          (is (= "private-key" (:private-key actual-fx))))))
+          (is (= "public-key" (:public-key actual-fx))))))
 
     (testing "send-contact-request"
       (let [contact    {:whisper-identity "contact-whisper-identity"}
             account    {:name "name"
                         :photo-path "photo-path"
-                        :status "status"
-                        :updates-public-key "updates-public-key"
-                        :updates-private-key "updates-private-key"}
+                        :status "status"}
             accounts   {"current-account-id" account}
             db         {:accounts/accounts accounts
                         :accounts/current-account-id "current-account-id"
@@ -182,9 +176,7 @@
         (testing "it adds the current-account information"
           (is (= account (select-keys actual-fx [:name
                                                  :photo-path
-                                                 :status
-                                                 :updates-public-key
-                                                 :updates-private-key]))))))
+                                                 :status]))))))
 
     (run-test-sync
 
@@ -291,13 +283,10 @@
                                :fcm-token "0xwhatever"})
         (def received-contact1 (merge new-contact
                                       (dissoc received-contact :profile-image)
-                                      {:public-key new-contact-public-key
-                                       :private-key ""}))
+                                      {:public-key new-contact-public-key}))
 
         (rf/dispatch [:contact-request-received {:from new-contact-public-key
-                                                 :payload {:contact received-contact
-                                                           :keypair {:public new-contact-public-key
-                                                                     :private ""}}}])
+                                                 :payload {:contact received-contact}}])
 
         (testing "it adds the new contact to the list of contacts"
           (is (= received-contact1

@@ -27,19 +27,15 @@
 
 (handlers/register-handler-fx
   :account-recovered
-  (fn [{:keys [db keypair]} [_ result password]]
+  (fn [{:keys [db]} [_ result password]]
     (let [data       (types/json->clj result)
           public-key (:pubkey data)
           address    (-> data :address utils.hex/normalize-hex)
           phrase     (signing-phrase/generate)
-          {:keys [public private]} keypair
           account {:public-key          public-key
                    :address             address
                    :name                (gfycat/generate-gfy public-key)
                    :photo-path          (identicon/identicon public-key)
-                   ;;TODO remove those
-                   :updates-public-key  "public"
-                   :updates-private-key "private"
                    :mnemonic            ""
                    :signed-up?          true
                    :signing-phrase      phrase

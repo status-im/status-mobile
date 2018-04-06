@@ -74,8 +74,6 @@
                               :name                (generate-gfy pubkey)
                               :status              status
                               :signed-up?          true
-                              :updates-public-key  "public"
-                              :updates-private-key "private"
                               :photo-path          (identicon pubkey)
                               :signing-phrase      signing-phrase
                               :mnemonic            mnemonic

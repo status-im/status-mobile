@@ -39,13 +39,9 @@
 
 (defn get-active-group-chats
   []
-  (map (fn [{:keys [chat-id public-key private-key public?]}]
-         (let [group {:group-id chat-id
-                      :public?  public?}]
-           (if (and public-key private-key)
-             (assoc group :keypair {:private private-key
-                                    :public  public-key})
-             group)))
+  (map (fn [{:keys [chat-id public?]}]
+         {:group-id chat-id
+          :public?  public?})
        (realm/js-object->clj (groups true))))
 
 (defn- get-by-id-obj

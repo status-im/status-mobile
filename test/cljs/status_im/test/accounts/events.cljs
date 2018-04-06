@@ -17,8 +17,6 @@
    :email               nil
    :signed-up?          true
    :name                "Sleepy Serene Leopardseal"
-   :updates-private-key "3849320857de8efe1e1ec57e08e92ed2bce196cb8763756ae4e6e7e011c1d857de0a115b3dc7eff066afe75a8794ea9905b"
-   :updates-public-key  "384975d68aec6426faacf8b4ba2c55d5a84b70a8a26eb616e06e9c9e63f95dfdf1c1c165773e1cdca2d198a0bc5386d8a6f2079414e073b4730c8f4745292a6cdfb3fa28143ad5937128643c6addf356b66962376dc8b12274d9abfb2e1c6447ac3"
    :photo-path          "photo"
    :debug?              false
    :signing-phrase      "baby atom base"
@@ -32,8 +30,6 @@
   {:address             account-id
    :signed-up?          true
    :name                "Disloyal Trusting Rainbowfish"
-   :updates-private-key "3849071831f581f5e2a4f095a53e0a697144b32ea6de9e92cc08936f2efa40d2f1702bdb131356df0930a3a0d301221f2b5"
-   :updates-public-key  "38453ecc298b8b35de00c85d3217f00aa7040a7d3053dbbf6831d03c750df40b27977906692b3b5d6fec8134706b2bf65900c61130047488520cb60080a59b118cb281f3aaf65ba704c7efde8f9357d2b22fe8110b38a4dd714c1c9e108a8b067fe"
    :photo-path          "new-account-photo"
    :status              "the future starts today, not tomorrow"
    :network             constants/default-network
@@ -84,14 +80,4 @@
             (rf/dispatch [:add-account new-account])
 
             (is (= {(:address account-from-realm) account-from-realm
-                    (:address new-account)        new-account'} @accounts))
-
-            (testing ":account-update-keys event"
-
-              (rf/dispatch [:account-update-keys])
-
-              (is (= {(:address account-from-realm) account-from-realm
-                      (:address new-account)        (assoc new-account'
-                                                           :updates-private-key "new private"
-                                                           :updates-public-key "new public")}
-                     (update @accounts (:address new-account) dissoc :last-updated)))))))))
+                    (:address new-account)        new-account'} @accounts)))))))

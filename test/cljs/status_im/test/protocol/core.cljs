@@ -50,11 +50,9 @@
 ;;     (.log js/console (str :post-error " " identity "\n" args))))
 
 ;; (defn id-specific-config
-;;   [id {:keys [private public]} contacts done]
+;;   [id contacts done]
 ;;   {:identity            id
 ;;    :callback            (make-callback id done)
-;;    :profile-keypair     {:public  public
-;;                          :private private}
 ;;    :contacts            contacts
 ;;    :post-error-callback (post-error-callback id)})
 
@@ -69,7 +67,6 @@
 ;;   (async done
 ;;          (let [timeout       30
 ;;                web3          (make-web3)
-;;                id1-keypair   (protocol/new-keypair!)
 ;;                common-config {:web3                        web3
 ;;                               :groups                      []
 ;;                               :ack-not-received-s-interval 125
@@ -80,7 +77,7 @@
 ;;                               :delivery-loop-ms-interval   500
 ;;                               :hashtags                    []
 ;;                               :pending-messages            []}
-;;                id1-config    (id-specific-config node/identity-1 id1-keypair [] done)]
+;;                id1-config    (id-specific-config node/identity-1 [] done)]
 ;;            (ensure-test-terminates! timeout done)
 ;;            (protocol/init-whisper! (merge common-config id1-config))
 ;;            (protocol/send-message!

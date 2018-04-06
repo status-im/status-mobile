@@ -2,7 +2,6 @@ package im.status.ethereum;
 
 import android.support.multidex.MultiDexApplication;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
-import com.bitgo.randombytes.RandomBytesPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
@@ -64,7 +63,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     statusPackage,
                     new RealmReactPackage(),
                     new RNI18nPackage(),
-                    new RandomBytesPackage(),
                     new RCTCameraPackage(),
                     new RNFSPackage(),
                     new ReactNativeDialogsPackage(),

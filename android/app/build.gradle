@@ -199,7 +199,6 @@ dependencies {
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
-    implementation project(':react-native-randombytes')
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:26.1.0"

@@ -14,7 +14,6 @@
 (def instabug               (js/require "instabug-reactnative"))
 (def nfc                    (js/require "nfc-react-native"))
 (def qr-code                (js/require "react-native-qrcode"))
-(def random-bytes           (js/require "react-native-randombytes"))
 (def react-native           (js/require "react-native"))
 (def realm                  (js/require "realm"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))

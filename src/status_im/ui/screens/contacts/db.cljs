@@ -12,7 +12,6 @@
 (spec/def :contact/whisper-identity :global/not-empty-string)
 (spec/def :contact/name :global/not-empty-string)
 (spec/def :contact/address (spec/nilable :global/address))
-(spec/def :contact/private-key (spec/nilable string?))
 (spec/def :contact/public-key (spec/nilable string?))
 (spec/def :contact/photo-path (spec/nilable string?))
 (spec/def :contact/status (spec/nilable string?))
@@ -42,7 +41,6 @@
     :req-un [:contact/name]
     :opt-un [:contact/whisper-identity
              :contact/address
-             :contact/private-key
              :contact/public-key
              :contact/photo-path
              :contact/status
