@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.schemas.account.v21.browser)
+(ns status-im.data-store.realm.schemas.account.v1.browser)
 
 (def schema {:name       :browser
              :primaryKey :browser-id

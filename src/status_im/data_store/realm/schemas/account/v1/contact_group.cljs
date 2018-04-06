@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.schemas.account.v5.contact-group
+(ns status-im.data-store.realm.schemas.account.v1.contact-group
   (:require [taoensso.timbre :as log]))
 
 (def schema {:name       :contact-group
@@ -10,6 +10,3 @@
                           :pending?         {:type :bool :default false}
                           :contacts         {:type       :list
                                              :objectType :group-contact}}})
-
-(defn migration [old-realm new-realm]
-  (log/debug "migrating group schema v5"))

@@ -1,6 +1,6 @@
 (ns status-im.data-store.core
   (:require status-im.data-store.chats
-            status-im.data-store.messages 
+            status-im.data-store.messages
             status-im.data-store.contacts
             status-im.data-store.transport
             status-im.data-store.browser

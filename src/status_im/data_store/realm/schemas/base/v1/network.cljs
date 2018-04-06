@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.schemas.base.v4.network
+(ns status-im.data-store.realm.schemas.base.v1.network
   (:require [taoensso.timbre :as log]))
 
 (def schema {:name       :network
@@ -10,6 +10,3 @@
                                     :optional true}
                           :rpc-url {:type     :string
                                     :optional true}}})
-
-(defn migration [old-realm new-realm]
-  (log/debug "migrating network schema v4"))

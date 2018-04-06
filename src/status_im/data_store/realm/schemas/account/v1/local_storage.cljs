@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.schemas.account.v8.local-storage)
+(ns status-im.data-store.realm.schemas.account.v1.local-storage)
 
 (def schema {:name       :local-storage
              :primaryKey :chat-id
