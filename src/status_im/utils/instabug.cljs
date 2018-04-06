@@ -25,4 +25,5 @@
 (defn init []
   (.startWithToken rn-dependencies/instabug
                    config/instabug-token
-                   (.. rn-dependencies/instabug -invocationEvent -shake)))
+                   (.. rn-dependencies/instabug -invocationEvent -shake))
+  (.setIntroMessageEnabled rn-dependencies/instabug false))
