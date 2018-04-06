@@ -92,10 +92,10 @@
   (let [content-width (reagent/atom 0)]
     (reagent/create-class
       {:reagent-render
-       (fn [{:keys [container-style style width height]} source]
+       (fn [{:keys [container-style style]} {:keys [image width height]}]
          [react/view {:style     (merge styles/image-contain container-style)
                       :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
-          [react/image {:source      source
+          [react/image {:source      image
                         :resize-mode :contain
                         :style       (merge style
                                             {:width  @content-width

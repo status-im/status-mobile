@@ -36,9 +36,7 @@
 
 (defn intro []
   [react/view {:style styles/intro-container}
-   [components.common/image-contain {:container-style styles/intro-image
-                                     :width           993
-                                     :height          933}
+   [components.common/image-contain {:container-style styles/intro-image}
     (:lock resources/ui)]
    [react/text {:style styles/intro-text}
     (i18n/label :t/your-data-belongs-to-you)]
