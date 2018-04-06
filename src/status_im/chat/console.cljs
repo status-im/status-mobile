@@ -24,9 +24,7 @@
    :unremovable? true
    :timestamp    (.getTime (js/Date.))
    :photo-path   (str "contacts://" constants/console-chat-id)
-   :contacts     [{:identity         constants/console-chat-id
-                   :text-color       "#FFFFFF"
-                   :background-color "#AB7967"}]
+   :contacts     [constants/console-chat-id]
    :last-to-clock-value   0
    :last-from-clock-value 0})
 
