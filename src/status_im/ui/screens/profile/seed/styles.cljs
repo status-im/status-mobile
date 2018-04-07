@@ -4,10 +4,11 @@
 (def intro-container
   {:flex              1
    :align-items       :center
+   :justify-content   :center
    :margin-horizontal 26})
 
 (def intro-image
-  {:padding-vertical 25})
+  {:padding-bottom 10})
 
 (def intro-text
   {:text-align     :center
@@ -26,8 +27,7 @@
 
 (def intro-button
   {:flex-direction :row
-   :margin-top     16
-   :margin-bottom  32})
+   :margin-top     16})
 
 (def six-words-container
   {:flex    1
