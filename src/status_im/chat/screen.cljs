@@ -56,10 +56,11 @@
      [toolbar/platform-agnostic-toolbar {}
       toolbar/nav-back-count
       [toolbar-content/toolbar-content-view]
-      [toolbar/actions [{:icon      :icons/options
-                         :icon-opts {:color               :black
-                                     :accessibility-label :chat-menu-button}
-                         :handler   #(on-options chat-id name group-chat public?)}]]]
+      (when (not= chat-id constants/console-chat-id)
+        [toolbar/actions [{:icon      :icons/options
+                           :icon-opts {:color               :black
+                                       :accessibility-label :chat-menu-button}
+                           :handler   #(on-options chat-id name group-chat public?)}]])]
      (when-not (or public? group-chat) [add-contact-bar (-> contacts first :identity)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
