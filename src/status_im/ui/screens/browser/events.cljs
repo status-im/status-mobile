@@ -29,7 +29,7 @@
 (defn add-browser-fx [{:keys [db now] :as cofx} browser]
   (let [new-browser (get-new-browser browser now)]
     {:db           (update-in db [:browser/browsers (:browser-id new-browser)] merge new-browser)
-     :save-browser new-browser}))
+     :data-store/save-browser new-browser}))
 
 (handlers/register-handler-fx
   :open-dapp-in-browser
