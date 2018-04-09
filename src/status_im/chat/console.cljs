@@ -18,18 +18,16 @@
    :content-type content-type})
 
 (def chat
-  {:chat-id      constants/console-chat-id
-   :name         (i18n/label :t/status-console)
-   :color        default-chat-color
-   :group-chat   false
-   :is-active    true
-   :unremovable? true
-   :timestamp    (.getTime (js/Date.))
-   :photo-path   (str "contacts://" constants/console-chat-id)
-   :contacts     [{:identity         constants/console-chat-id
-                   :text-color       "#FFFFFF"
-                   :background-color "#AB7967"}]
-   :last-clock-value   0})
+  {:chat-id          constants/console-chat-id
+   :name             (i18n/label :t/status-console)
+   :color            default-chat-color
+   :group-chat       false
+   :is-active        true
+   :unremovable?     true
+   :timestamp        (.getTime (js/Date.))
+   :photo-path       (str "contacts://" constants/console-chat-id)
+   :contacts         [constants/console-chat-id]
+   :last-clock-value 0})
 
 (def contact
   {:whisper-identity constants/console-chat-id

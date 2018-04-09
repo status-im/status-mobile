@@ -21,7 +21,7 @@
 (defrecord NewGroupKey [chat-id sym-key message]
   message/StatusMessage
   (send [this _ cofx]
-    (let [public-keys (map :identity (get-in cofx [:db :chats chat-id :contacts]))]
+    (let [public-keys (get-in cofx [:db :chats chat-id :contacts])]
       (protocol/multi-send-with-pubkey {:public-keys public-keys
                                         :chat-id     chat-id
                                         :payload     this}
@@ -32,6 +32,7 @@
                                               :sym-key    sym-key
                                               :on-success (fn [sym-key sym-key-id]
                                                             (re-frame/dispatch [::add-new-sym-key {:chat-id    chat-id
+                                                                                                   :signature  signature
                                                                                                    :sym-key    sym-key
                                                                                                    :sym-key-id sym-key-id
                                                                                                    :message    message}]))}}
@@ -80,20 +81,20 @@
     (handlers/merge-fx cofx
                        (init-chat-if-new chat-id)
                        (send-new-group-key this chat-id)))
-  (receive [this chat-id signature {:keys [now db] :as cofx}]
+  (receive [this chat-id signature {:keys [now db random-id] :as cofx}]
     (let [me (:current-public-key db)]
       ;; we have to check if we already have a chat, or it's a new one
       (if-let [{:keys [group-admin contacts] :as chat} (get-in db [:chats chat-id])]
         ;; update for existing group chat
-        (when (= signature group-admin) ;; make sure that admin is the one making changes
+        (when (and (= signature group-admin)  ;; make sure that admin is the one making changes
+                   (not= (set contacts) (set participants))) ;; make sure it's actually changing something
           (let [{:keys [removed added]} (participants-diff (set contacts) (set participants))
                 admin-name              (or (get-in cofx [db :contacts/contacts group-admin :name])
-                                            group-admin)
-                message-id              (transport.utils/message-id this)]
+                                            group-admin)]
             (if (removed me) ;; we were removed
               (handlers/merge-fx cofx
                                  (models.message/receive
-                                  (models.message/system-message chat-id message-id now
+                                  (models.message/system-message chat-id random-id now
                                                                  (str admin-name " " (i18n/label :t/removed-from-chat))))
                                  (models.chat/update-chat {:chat-id         chat-id
                                                            :removed-from-at now
@@ -101,7 +102,7 @@
                                  (transport/unsubscribe-from-chat chat-id))
               (handlers/merge-fx cofx
                                  (models.message/receive
-                                  (models.message/system-message chat-id message-id now
+                                  (models.message/system-message chat-id random-id now
                                                                  (prepare-system-message  admin-name
                                                                                           added
                                                                                           removed
@@ -119,15 +120,14 @@
                     :payload       this
                     :success-event [::unsubscribe-from-chat chat-id]}
                    cofx))
-  (receive [this chat-id signature {:keys [db now] :as cofx}]
-    (let [message-id               (transport.utils/message-id this)
-          me                       (:current-public-key db)
+  (receive [this chat-id signature {:keys [db now random-id] :as cofx}]
+    (let [me                       (:current-public-key db)
           participant-leaving-name (or (get-in db [:contacts/contacts signature :name])
                                        signature)]
-      (when-not (= me signature)
+      (when (get-in db [:chats chat-id]) ;; chat is present
         (handlers/merge-fx cofx
                            (models.message/receive
-                            (models.message/system-message chat-id message-id now
+                            (models.message/system-message chat-id random-id now
                                                            (str participant-leaving-name " " (i18n/label :t/left))))
                            (group/participants-removed chat-id #{signature})
                            (send-new-group-key nil chat-id))))))
@@ -160,8 +160,8 @@
 
 (handlers/register-handler-fx
   ::add-new-sym-key
-  [re-frame/trim-v]
-  (fn [{:keys [db] :as cofx} [{:keys [sym-key-id sym-key chat-id message]}]]
+  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
+  (fn [{:keys [db] :as cofx} [{:keys [sym-key-id sym-key chat-id signature message]}]]
     (let [{:keys [web3 current-public-key]} db
           fx {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
               :shh/add-filter {:web3       web3
@@ -175,5 +175,5 @@
                                                     (assoc :sym-key sym-key))}}]
       ;; if new sym-key is wrapping some message, call receive on it as well, if not just update the transport layer
       (if message
-        (handlers/merge-fx cofx fx (message/receive message chat-id chat-id))
+        (handlers/merge-fx cofx fx (message/receive message chat-id signature))
         fx))))

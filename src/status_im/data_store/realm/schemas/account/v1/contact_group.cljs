@@ -6,7 +6,8 @@
              :properties {:group-id         :string
                           :name             :string
                           :timestamp        :int
-                          :order            :int
-                          :pending?         {:type :bool :default false}
-                          :contacts         {:type       :list
-                                             :objectType :group-contact}}})
+                          :order            :int 
+                          :contacts         {:type    "string[]"}}})
+
+(defn migration [old-realm new-realm]
+  (log/debug "migrating group schema v1"))

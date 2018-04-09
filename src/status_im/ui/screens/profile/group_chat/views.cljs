@@ -38,12 +38,10 @@
 
 (defn actions [admin? chat-id]
   (concat
-   ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
-   ;; due to this bug - https://github.com/status-im/status-react/issues/3463
-   #_(when admin?
-       [{:label  (i18n/label :add-members)
-         :icon   :icons/add
-         :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
+   (when admin?
+     [{:label  (i18n/label :add-members)
+       :icon   :icons/add
+       :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close
      :action              #(utils/show-confirmation (i18n/label :t/clear-history-title)
@@ -64,16 +62,14 @@
      :action              #(utils/show-confirmation (i18n/label :t/leave-group-title)
                                                     (i18n/label :t/leave-group-confirmation)
                                                     (i18n/label :t/leave-group-action)
-                                                    (fn [] (re-frame/dispatch [:leave-group-chat])))
+                                                    (fn [] (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
      :accessibility-label :leave-chat-button}]))
 
 (defn contact-actions [contact]
   [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])
     :label  (i18n/label :t/view-profile)}
-   ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
-   ;; due to this bug - https://github.com/status-im/status-react/issues/3463
-   #_{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
-      :label  (i18n/label :t/remove-from-chat)}])
+   {:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
+    :label  (i18n/label :t/remove-from-chat)}])
 
 (defn render-contact [contact admin?]
   [react/view

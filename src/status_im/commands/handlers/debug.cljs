@@ -179,4 +179,4 @@
   ::load-commands
   [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
   (fn [cofx [contact]]
-    (loading-events/load-commands cofx {} contact)))
+    (loading-events/load-commands-for-bot cofx {} contact)))

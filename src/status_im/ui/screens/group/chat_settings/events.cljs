@@ -20,9 +20,7 @@
   :add-new-group-chat-participants
   [(re-frame/inject-cofx :random-id)]
   (fn [{{:keys [current-chat-id selected-participants] :as db} :db now :now message-id :random-id :as cofx} _]
-    (let [new-identities           (map #(hash-map :identity %) selected-participants)
-          participants             (concat (get-in db [:chats current-chat-id :contacts])
-                                           selected-participants)
+    (let [participants             (concat (get-in db [:chats current-chat-id :contacts]) selected-participants)
           contacts                 (:contacts/contacts db)
           added-participants-names (map #(get-in contacts [% :name]) selected-participants)]
       (handlers/merge-fx cofx
@@ -39,8 +37,7 @@
   :remove-group-chat-participants
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{{:keys [current-chat-id] :as db} :db now :now message-id :random-id :as cofx} [removed-participants]]
-    (let [participants               (remove #(removed-participants (:identity %))
-                                             (get-in db [:chats current-chat-id :contacts]))
+    (let [participants               (remove removed-participants (get-in db [:chats current-chat-id :contacts]))
           contacts                   (:contacts/contacts db)
           removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]
       (handlers/merge-fx cofx

@@ -13,11 +13,9 @@
 (spec/def :group/name :global/not-empty-string)
 (spec/def :group/timestamp int?)
 (spec/def :group/pending? boolean?)
-(spec/def :group/order int?)
+(spec/def :group/order int?) 
 
-(spec/def :group-contact/identity :global/not-empty-string)
-
-(spec/def :group/contact (allowed-keys :req-un [:group-contact/identity]))
+(spec/def :group/contact :global/not-empty-string)
 
 (spec/def :group/contacts (spec/nilable (spec/* :group/contact)))
 

@@ -7,10 +7,14 @@
             [status-im.chat.models :as models]
             [status-im.chat.console :as console]
             [status-im.chat.constants :as chat.constants]
+            [status-im.commands.events.loading :as events.loading]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.group.events :as group.events]
             [status-im.utils.handlers :as handlers]
-            [status-im.transport.message.core :as transport]
+            [status-im.utils.contacts :as utils.contacts]
+            [status-im.transport.core :as transport]
+            [status-im.transport.message.core :as transport.message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.message.v1.public-chat :as public-chat]
             [status-im.transport.message.v1.group-chat :as group-chat]
@@ -81,36 +85,57 @@
        :data-store/update-message (-> (get-in new-db msg-path) (select-keys [:message-id :user-statuses]))})))
 
 (defn init-console-chat
-  [{:keys [chats] :as db}]
-  (if (chats constants/console-chat-id)
-    {:db db}
-    {:db                      (-> db
-                                  (assoc :current-chat-id constants/console-chat-id)
-                                  (update :chats assoc constants/console-chat-id console/chat))
-     :dispatch                [:add-contacts [console/contact]]
-     :data-store/save-chat    console/chat
-     :data-store/save-contact console/contact}))
+  [{:keys [db] :as cofx}]
+  (when-not (get-in db [:chats constants/console-chat-id])
+    {:db                   (-> db
+                               (assoc :current-chat-id constants/console-chat-id)
+                               (update :chats assoc constants/console-chat-id console/chat))
+     :data-store/save-chat console/chat}))
 
-(handlers/register-handler-fx
-  :init-console-chat
-  (fn [{:keys [db]} _]
-    (init-console-chat db)))
+(defn- add-default-contacts
+  [{:keys [db default-contacts] :as cofx}]
+  (let [new-contacts      (-> {}
+                              (into (map (fn [[id props]]
+                                           (let [contact-id (name id)]
+                                             [contact-id {:whisper-identity contact-id
+                                                          :address          (utils.contacts/public-key->address contact-id)
+                                                          :name             (-> props :name :en)
+                                                          :photo-path       (:photo-path props)
+                                                          :public-key       (:public-key props)
+                                                          :unremovable?     (-> props :unremovable? boolean)
+                                                          :hide-contact?    (-> props :hide-contact? boolean)
+                                                          :pending?         (-> props :pending? boolean)
+                                                          :dapp?            (:dapp? props)
+                                                          :dapp-url         (-> props :dapp-url :en)
+                                                          :bot-url          (:bot-url props)
+                                                          :description      (:description props)}])))
+                                    default-contacts)
+                              (assoc constants/console-chat-id console/contact))
+        existing-contacts (:contacts/contacts db)
+        contacts-to-add   (select-keys new-contacts (set/difference (set (keys new-contacts))
+                                                                    (set (keys existing-contacts))))]
+    (handlers/merge-fx cofx
+                       {:db                       (update db :contacts/contacts merge contacts-to-add)
+                        :data-store/save-contacts (vals contacts-to-add)}
+                       (events.loading/load-commands))))
 
 (handlers/register-handler-fx
   :initialize-chats
-  [(re-frame/inject-cofx :data-store/all-chats)
+  [(re-frame/inject-cofx :get-default-contacts-and-groups)
+   (re-frame/inject-cofx :data-store/all-chats)
    (re-frame/inject-cofx :data-store/inactive-chat-ids)
    (re-frame/inject-cofx :data-store/get-messages)
    (re-frame/inject-cofx :data-store/unviewed-messages)
    (re-frame/inject-cofx :data-store/message-ids)
-   (re-frame/inject-cofx :data-store/get-unanswered-requests)]
+   (re-frame/inject-cofx :data-store/get-unanswered-requests)
+   (re-frame/inject-cofx :data-store/get-local-storage-data)]
   (fn [{:keys [db
                all-stored-chats
                inactive-chat-ids
                stored-unanswered-requests
                get-stored-messages
                stored-unviewed-messages
-               stored-message-ids]} _]
+               stored-message-ids] :as cofx} _]
     (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
                                               (assoc-in acc [chat-id message-id] request))
                                             {}
@@ -126,11 +151,13 @@
                                                                                   (-> chat-messages keys set))))))
                         {}
                         all-stored-chats)]
-      (-> db
-          (assoc :chats chats
-                 :deleted-chats inactive-chat-ids)
-          init-console-chat
-          (update :dispatch-n conj [:load-default-contacts!])))))
+      (handlers/merge-fx cofx
+                         {:db (assoc db
+                                     :chats chats
+                                     :deleted-chats inactive-chat-ids)}
+                         (init-console-chat)
+                         (group.events/add-default-groups)
+                         (add-default-contacts)))))
 
 (handlers/register-handler-fx
   :browse-link-from-message
@@ -147,7 +174,7 @@
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
   (when (and (seq message-ids)
              (not (models/bot-only-chat? db chat-id)))
-    (transport/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
+    (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
 ;;TODO (yenda) find a more elegant solution for system messages
 (defn- mark-messages-seen
@@ -254,11 +281,20 @@
   (fn [cofx [chat]]
     (models/update-chat chat cofx)))
 
+(defn- remove-transport [chat-id {:keys [db] :as cofx}]
+  (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])]
+    ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
+    (if (and group-chat (not public?))
+      (handlers/merge-fx cofx (transport.message/send (group-chat/GroupLeave.) chat-id))
+      (handlers/merge-fx cofx (transport/unsubscribe-from-chat chat-id)))))
+
 (handlers/register-handler-fx
   :remove-chat
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
-    (models/remove-chat chat-id cofx)))
+    (handlers/merge-fx cofx
+                       (models/remove-chat chat-id)
+                       (remove-transport chat-id))))
 
 (handlers/register-handler-fx
   :remove-chat-and-navigate-home
@@ -266,6 +302,7 @@
   (fn [cofx [chat-id]]
     (handlers/merge-fx cofx
                        (models/remove-chat chat-id)
+                       (remove-transport chat-id)
                        (navigation/replace-view :home))))
 
 (handlers/register-handler-fx
@@ -312,28 +349,16 @@
                          (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
                          (navigation/navigate-to-clean :home)
                          (navigate-to-chat random-id {})
-                         (transport/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
-
-(defn- broadcast-leave [{:keys [public? chat-id]} cofx]
-  (when-not public?
-    (transport/send (group-chat/GroupLeave.) chat-id cofx)))
-
-(handlers/register-handler-fx
-  :leave-group-chat
-  ;; stop listening to group here
-  (fn [{{:keys [current-chat-id chats] :as db} :db :as cofx} _]
-    (handlers/merge-fx cofx
-                       (models/remove-chat current-chat-id)
-                       (navigation/replace-view :home)
-                       (broadcast-leave (get chats current-chat-id)))))
+                         (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
 
 (handlers/register-handler-fx
   :leave-group-chat?
-  (fn [_ _]
+  [re-frame/trim-v]
+  (fn [_ [chat-id]]
     {:show-confirmation {:title               (i18n/label :t/leave-confirmation)
                          :content             (i18n/label :t/leave-group-chat-confirmation)
                          :confirm-button-text (i18n/label :t/leave)
-                         :on-accept           #(re-frame/dispatch [:leave-group-chat])}}))
+                         :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
 
 (handlers/register-handler-fx
   :show-profile

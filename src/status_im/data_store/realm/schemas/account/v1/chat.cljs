@@ -13,10 +13,7 @@
                                              :optional true}
                           :is-active        :bool
                           :timestamp        :int
-                          :contacts         {:type       :list
-                                             :objectType :chat-contact}
-                          :unremovable?     {:type     :bool
-                                             :default  false}
+                          :contacts         {:type     "string[]"}
                           :removed-at       {:type     :int
                                              :optional true}
                           :removed-from-at  {:type     :int

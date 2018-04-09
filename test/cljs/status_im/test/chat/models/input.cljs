@@ -8,19 +8,17 @@
                                       #{"0x1" :group-chats :anonymous :dapps} {:command {"command2" ["0x1" :command 4 "command2"]}}
                                       #{"0x2" :personal-chats :anonymous :dapps} {:command {"command3" ["0x2" :command 2 "command3"]}}
                                       #{"0x2" :group-chats :anonymous :dapps} {:response {"response1" ["0x2" :response 4 "response1"]}}}
-   :chats                            {"test1" {:contacts      [{:identity "0x1"}]
+   :chats                            {"test1" {:contacts      ["0x1"]
                                                :requests      nil
                                                :seq-arguments ["arg1" "arg2"]}
-                                      "test2" {:contacts   [{:identity "0x1"}
-                                                            {:identity "0x2"}]
+                                      "test2" {:contacts   ["0x1" "0x2"]
                                                :group-chat true
                                                :requests   {"id1" {:message-id "id1"
                                                                    :response   "response1"}}}
-                                      "test3" {:contacts [{:identity "0x1"}]
+                                      "test3" {:contacts ["0x1"]
                                                :requests {"id1" {:message-id "id1"
                                                                  :response   "request1"}}}
-                                      "test4" {:contacts       [{:identity "0x1"}
-                                                                {:identity "0x2"}]
+                                      "test4" {:contacts       ["0x1" "0x2"]
                                                :group-chat     true
                                                :requests       {"id2" {:message-id "id2"
                                                                        :response   "response1"}}

@@ -57,7 +57,7 @@
     "react-native-testfairy": "2.8.0",
     "react-native-udp": "2.2.1",
     "react-native-webview-bridge": "github:status-im/react-native-webview-bridge#feature/camera-permissions",
-    "realm": "2.0.7",
+    "realm": "2.3.3",
     "rn-snoopy": "github:status-im/rn-snoopy",
     "string_decoder": "0.10.31",
     "url": "0.10.3",

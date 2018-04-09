@@ -61,7 +61,7 @@
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id name group-chat public?)}]])]
-     (when-not (or public? group-chat) [add-contact-bar (-> contacts first :identity)])]))
+     (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
@@ -82,10 +82,10 @@
             timeout       (if platform/android? 50 0)]
     {:component-did-mount (fn [_]
                             (animation/start
-                             (animation/anim-sequence
-                              [(animation/anim-delay timeout)
-                               (animation/spring opacity {:toValue  1
-                                                          :duration duration})])))}
+                              (animation/anim-sequence
+                               [(animation/anim-delay timeout)
+                                (animation/spring opacity {:toValue  1
+                                                           :duration duration})])))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}

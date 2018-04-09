@@ -15,7 +15,7 @@
 
 (handlers/register-handler-fx
   :protocol/receive-whisper-message
-  [re-frame/trim-v]
+  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [cofx [js-error js-message chat-id]]
     (let [{:keys [payload sig]} (js->clj js-message :keywordize-keys true)
           status-message        (-> payload
