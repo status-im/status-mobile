@@ -22,12 +22,12 @@
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
    ;; TODO temporary removal before everything is fixed in group chats
-   #_[action-button/action-button
-      {:label               (i18n/label :t/start-group-chat)
-       :accessibility-label :start-group-chat-button
-       :icon                :icons/contacts
-       :icon-opts           {:color colors/blue}
-       :on-press            #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}]
+   [action-button/action-button
+    {:label               (i18n/label :t/start-group-chat)
+     :accessibility-label :start-group-chat-button
+     :icon                :icons/contacts
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}]
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)

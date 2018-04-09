@@ -82,35 +82,23 @@
       (realm/get-one-by-field :chat :chat-id chat-id)
       (object/get "contacts")))
 
-(defn- save-contacts
-  [identities contacts added-at]
-  (doseq [contact-identity identities]
-    (if-let [contact (.find contacts (fn [object _ _]
-                                       (= contact-identity (object/get object "identity"))))]
-      (doto contact
-        (aset "is-in-chat" true)
-        (aset "added-at" added-at))
-      (.push contacts (clj->js {:identity contact-identity
-                                :added-at added-at})))))
-
 (defn add-contacts
   [chat-id identities]
-  (let [contacts (get-contacts chat-id)
-        added-at (datetime/timestamp)]
+  (let [chat     (get-by-id-obj chat-id)
+        contacts (get-contacts chat-id)]
     (realm/write @realm/account-realm
-                 #(save-contacts identities contacts added-at))))
-
-(defn- delete-contacts
-  [identities contacts]
-  (doseq [contact-identity identities]
-    (when-let [contact (.find contacts (fn [object _ _]
-                                         (= contact-identity (object/get object "identity"))))]
-      (realm/delete @realm/account-realm contact))))
+                 #(aset group "contacts"
+                        (clj->js (into #{} (concat identities
+                                                   (realm/js-object->clj contacts))))))))
 
 (defn remove-contacts
   [chat-id identities]
-  (let [contacts (get-contacts chat-id)]
-    (delete-contacts identities contacts)))
+  (let [chat     (get-by-id-obj chat-id)
+        contacts (object/get chat "contacts")]
+    (realm/write @realm/account-realm
+                 #(aset chat "contacts"
+                        (clj->js (remove (into #{} identities)
+                                         (realm/js-object->clj contacts)))))))
 
 (defn save-property
   [chat-id property-name value]

@@ -8,5 +8,4 @@
                           :timestamp        :int
                           :order            :int
                           :pending?         {:type :bool :default false}
-                          :contacts         {:type       :list
-                                             :objectType :group-contact}}})
+                          :contacts         {:type     "string[]"}}})
