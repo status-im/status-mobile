@@ -78,7 +78,6 @@
                               (if photo-path
                                 {:photo-path photo-path}))]
       (handlers/merge-fx cofx
-                         {:dispatch [:navigate-back]}
                          (clear-profile)
                          (accounts-events/account-update cleaned-edit)))))
 
