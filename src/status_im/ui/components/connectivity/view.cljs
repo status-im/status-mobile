@@ -14,15 +14,16 @@
                                        :duration 250})))
 
 (defn error-view [_]
-  (let [offline?            (re-frame/subscribe [:offline?])
-        connection-problem? (re-frame/subscribe [:connection-problem?])
-        offline-opacity     (animation/create-value 0.0)
-        on-update           (fn [_ _]
-                              (animation/set-value offline-opacity 0)
-                              (when (or @offline? @connection-problem?)
-                                (start-error-animation offline-opacity)))
-        pending-contact?    (re-frame/subscribe [:current-contact :pending?])
-        view-id             (re-frame/subscribe [:get :view-id])]
+  (let [offline?              (re-frame/subscribe [:offline?])
+        connection-problem?   (re-frame/subscribe [:connection-problem?])
+        incompatible-message? (re-frame/subscribe [:incompatible-message-received?])
+        offline-opacity       (animation/create-value 0.0)
+        on-update             (fn [_ _]
+                                (animation/set-value offline-opacity 0)
+                                (when (or @incompatible-message? @offline? @connection-problem?)
+                                  (start-error-animation offline-opacity)))
+        pending-contact?      (re-frame/subscribe [:current-contact :pending?])
+        view-id               (re-frame/subscribe [:get :view-id])]
     (reagent/create-class
       {:component-did-mount
        on-update
@@ -31,11 +32,12 @@
        :display-name "connectivity-error-view"
        :reagent-render
        (fn [{:keys [top]}]
-         (when (or @offline? @connection-problem?)
-           (let [pending? (and @pending-contact? (= :chat @view-id))]
-             [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending?)}
-              [react/view
-               [react/text {:style styles/offline-text}
-                (i18n/label (if @connection-problem?
-                              :t/connection-problem
-                              :t/offline))]]])))})))
+         (when true (or @offline? @connection-problem? @incompatible-message?)
+               (let [pending? (and @pending-contact? (= :chat @view-id))]
+                 [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending? @incompatible-message?)}
+                  [react/view
+                   [react/text {:style styles/offline-text}
+                    (i18n/label (cond
+                                  @connection-problem?   :t/connection-problem
+                                  @incompatible-message? :t/incompatible-message
+                                  @offline?              :t/offline))]]])))})))

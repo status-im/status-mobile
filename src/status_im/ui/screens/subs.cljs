@@ -37,6 +37,7 @@
 (reg-sub :network-status :network-status)
 (reg-sub :peers-count :peers-count)
 (reg-sub :mailserver-status :mailserver-status)
+(reg-sub :incompatible-message-received? :incompatible-message-received)
 
 (reg-sub :offline?
   :<- [:network-status]

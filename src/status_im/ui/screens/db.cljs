@@ -68,6 +68,7 @@
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
+(spec/def ::incompatible-message-received (spec/nilable boolean?))
 (spec/def ::mailserver-status (spec/nilable keyword?))
 (spec/def ::peers-count (spec/nilable integer?))
 
@@ -187,6 +188,7 @@
                   ::network-status
                   ::mailserver-status
                   ::peers-count
+                  ::incompatible-message-received
                   ::sync-listening-started
                   ::sync-state
                   ::sync-data

@@ -27,6 +27,7 @@
    :no                                   "No"
    :on                                   "On"
    :off                                  "Off"
+   :incompatible-message                 "Your version of Status is outdated and was not able to process a message you received"
 
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
