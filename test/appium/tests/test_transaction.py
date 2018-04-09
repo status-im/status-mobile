@@ -199,8 +199,8 @@ class TestTransactions(MultipleDeviceTestCase):
 
     @pytest.mark.pr
     def test_send_eth_to_request_in_group_chat(self):
-        recipient = transaction_users['A_USER']
-        sender = transaction_users['B_USER']
+        recipient = transaction_users['E_USER']
+        sender = transaction_users['F_USER']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
@@ -228,8 +228,8 @@ class TestTransactions(MultipleDeviceTestCase):
 
     @pytest.mark.pr
     def test_send_eth_to_request_in_one_to_one_chat(self):
-        recipient = transaction_users['B_USER']
-        sender = transaction_users['A_USER']
+        recipient = transaction_users['C_USER']
+        sender = transaction_users['D_USER']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
@@ -262,8 +262,8 @@ class TestTransactions(MultipleDeviceTestCase):
 
     @pytest.mark.pr
     def test_send_eth_to_request_from_wallet(self):
-        recipient = transaction_users_wallet['B_USER']
-        sender = transaction_users_wallet['A_USER']
+        recipient = transaction_users_wallet['C_USER']
+        sender = transaction_users_wallet['D_USER']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):

@@ -67,6 +67,34 @@ transaction_users['B_USER']['username'] = "Brief Organic Xenops"
 transaction_users['B_USER']['address'] = "3d672407a7e1250bbff85b7cfdb456f5015164db"
 transaction_users['B_USER']['public_key'] = "0x0406b17e5cdfadb2a05e84508b1a2916def6395e6295f57e92b85f915d40bca3" \
                                                    "f4a7e4c6d6b25afa840dd042fac83d3f856181d553f34f1c2b12878e774adde099"
+transaction_users['С_USER'] = dict()
+transaction_users['С_USER']['password'] = "qwerty"
+transaction_users['С_USER']['passphrase'] = "romance emerge transfer trial enemy average casino decline old bag mandate winner"
+transaction_users['С_USER']['username'] = "Speedy Occasional Lightningbug"
+transaction_users['С_USER']['address'] = "853bdd57e881ed09d045ceee53564a00e1da3cf9"
+transaction_users['С_USER']['public_key'] = "0x04aa3f3977b0c06ce04f4cdfd2ea5baf5560e18aba52324f6d4bf69bbd603b60" \
+                                                   "0e874ed483920d9613882e7345b70b1d95c6ca4ee8b18089da1d064c498355c944"
+transaction_users['D_USER'] = dict()
+transaction_users['D_USER']['password'] = "qwerty"
+transaction_users['D_USER']['passphrase'] = "grit half victory alarm code chicken drill worth valve rug clown guess"
+transaction_users['D_USER']['username'] = "Frilly Mediumdpringgreen Kingsnake"
+transaction_users['D_USER']['address'] = "1bd914e370a63714ee144692002046c7e6d83348"
+transaction_users['D_USER']['public_key'] = "0x041aa2bbf1cc1253bf658a4a44289cdd0031f0038f8d085b1a43b69550e3467b" \
+                                                   "c1f7963c35d0016d9c23d28960b984045c00bd9373b413b1d19aa4370261b8d084"
+transaction_users['E_USER'] = dict()
+transaction_users['E_USER']['password'] = "qwerty"
+transaction_users['E_USER']['passphrase'] = "nose where inch arrive mango lift token hotel impact series open spray"
+transaction_users['E_USER']['username'] = "Informal Altruistic Tasmaniandevil"
+transaction_users['E_USER']['address'] = "f3ad2b2814702052e0b6ae016961c49b702c03a6"
+transaction_users['E_USER']['public_key'] = "0x0404a161053a628a1da23a3ba1696c145bd77b0be4d7c4089f8075e78b3b7f9f" \
+                                                   "553aafcbd0ec052f348dd692c6b6890a2e4d596002024ed0b78b2c21fe663369e8"
+transaction_users['F_USER'] = dict()
+transaction_users['F_USER']['password'] = "qwerty"
+transaction_users['F_USER']['passphrase'] = "exotic grit ticket medal alpha travel rapid hedgehog desert history security town"
+transaction_users['F_USER']['username'] = "Front Bronze Lemming"
+transaction_users['F_USER']['address'] = "08fee8015ec71d78b1855937988d5bf45892bc34"
+transaction_users['F_USER']['public_key'] = "0x0445284807c9fb9080cec6f1bd24f8d546c5c2c0dd2d06bdbf91d1af70507885" \
+                                                   "1b9ee0d3bb04736abd00f5a8dce2f20a579a437ee3bea9920eefba7fa46266f8df"
 
 transaction_users_wallet = dict()
 transaction_users_wallet['A_USER'] = dict()
@@ -84,6 +112,20 @@ transaction_users_wallet['B_USER']['username'] = "Muffled Purple Milksnake"
 transaction_users_wallet['B_USER']['address'] = "5261ceba31e3a7204b498b2dd20220a6057738d1"
 transaction_users_wallet['B_USER']['public_key'] = "0x04cd70746f3df6cae7b45c32c211bd7e9e95ed5a1ec470db8f3b1f244eed182" \
                                                    "1d4a2053d7671802c5f7ce5b81f5fc2016a8109e1bc83f151ceff21f08c0cdcc6e4"
+transaction_users_wallet['C_USER'] = dict()
+transaction_users_wallet['C_USER']['password'] = "new_unique_password"
+transaction_users_wallet['C_USER']['passphrase'] = "purchase ensure mistake crystal person similar shaft family shield clog risk market"
+transaction_users_wallet['C_USER']['username'] = "Light Milky Fawn"
+transaction_users_wallet['C_USER']['address'] = "4091ac456cd0f504952fd3f74426b5cbd00804ff"
+transaction_users_wallet['C_USER']['public_key'] = "0x04b82317a2721f3f65ef5ff73240310d5d7a623066521ecd89f9c72f886651e3" \
+                                                   "0c6c6dc22bc8ee82a938f15b919f0f0571280635ca78c009c242a259e1e29e9c58"
+transaction_users_wallet['D_USER'] = dict()
+transaction_users_wallet['D_USER']['password'] = "new_unique_password"
+transaction_users_wallet['D_USER']['passphrase'] = "night grit town donate length zoo meat collect vapor brush topic check"
+transaction_users_wallet['D_USER']['username'] = "Classic High Mutt"
+transaction_users_wallet['D_USER']['address'] = "7701bd9eab8c59a9ff51ca0b0e0b8e909cd3e9e2"
+transaction_users_wallet['D_USER']['public_key'] = "0x044b9b9325f18ee95e044237464a4d15cc4e5f47a63aee52e1dbfdb91de0ec1ac" \
+                                                   "4cddfaf4192d22aaad0d91cfaf746dca7c8404a726705dc54c3f3768fc7aa4ded"
 
 group_chat_users = dict()
 group_chat_users['A_USER'] = dict()
