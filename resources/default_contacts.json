@@ -92,6 +92,21 @@
         },
         "groups": ["dapps"],
         "description": "The future of work is now. Hire people or work yourself in return for ETH."
+    },
+
+    "Numa": {
+        "name": {
+            "en": "Numa"
+        },
+        "photo-path": "contacts://numa",
+        "dapp?": true,
+        "dapp-url": {
+            "en": "https://numaverse.com"
+        },
+        "groups": [
+            "dapps"
+        ],
+        "description": "A federated social network, built on Ethereum."
     }
 
 }

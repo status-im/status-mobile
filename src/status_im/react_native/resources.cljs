@@ -16,6 +16,7 @@
    :commiteth          (js/require "./resources/images/contacts/commiteth.png")
    :etherplay          (js/require "./resources/images/contacts/etherplay.png")
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
+   :numa               (js/require "./resources/images/contacts/numa.png")
    :console            (js/require "./resources/images/contacts/console.png")})
 
 (def assets
