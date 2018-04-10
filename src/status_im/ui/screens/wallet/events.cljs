@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.events
   (:require [re-frame.core :as re-frame :refer [dispatch reg-fx]]
+            [status-im.data-store.accounts :as accounts-store]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.navigation]
             [status-im.utils.ethereum.core :as ethereum]

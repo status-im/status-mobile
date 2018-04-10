@@ -38,6 +38,7 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
+            [status-im.ui.screens.wallet.onboarding.setup.views :as wallet.onboarding.setup]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
@@ -126,6 +127,7 @@
                         :browser browser
                         :open-dapp open-dapp
                         :dapp-description dapp-description
+                        :wallet-onboarding-setup wallet.onboarding.setup/screen
                         :wallet-send-transaction send-transaction
                         :wallet-transaction-sent transaction-sent
                         :wallet-request-transaction request-transaction

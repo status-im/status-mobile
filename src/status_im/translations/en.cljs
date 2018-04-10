@@ -158,6 +158,14 @@
    :word-n-description                   "In order to check if you have backed up your seed phrase correctly, enter the word #{{number}} above."
    :word-n                               "Word #{{number}}"
 
+   :wallet-onboarding-title              "Simple and secure cryptocurrency wallet"
+   :wallet-onboarding-description        "Send, receive, and store your cryptocurrency with the Status Wallet"
+   :wallet-onboarding-set-up             "Let’s get set up"
+   :wallet-set-up-title                  "Set up your wallet"
+   :wallet-set-up-signing-phrase         "This is your personal transaction phrase that you’ll use everytime you make a transaction. Make sure to write it down on a piece of paper, store it somewhere, and only confirm transactions when you see these three words."
+   :wallet-set-up-confirm-title          "Wrote it down?"
+   :wallet-set-up-confirm-description    "You won’t be able to see your 3-word transaction phrase again after this."
+
    ;;make_photo
    :image-source-title                   "Edit picture"
    :image-source-make-photo              "Capture"

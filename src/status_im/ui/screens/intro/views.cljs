@@ -18,9 +18,9 @@
     [react/text {:style styles/intro-text-description}
      (i18n/label :t/intro-text-description)]]
    [react/view styles/buttons-container
-    [components.common/button {:style    {:flex-direction :row}
-                               :on-press #(re-frame/dispatch [:navigate-to :create-account])
-                               :label    (i18n/label :t/create-account)}]
+    [components.common/button {:button-style {:flex-direction :row}
+                               :on-press     #(re-frame/dispatch [:navigate-to :create-account])
+                               :label        (i18n/label :t/create-account)}]
     [react/view styles/bottom-button-container
      [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
                                 :label       (i18n/label :t/already-have-account)
