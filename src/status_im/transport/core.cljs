@@ -8,7 +8,6 @@
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]
             [status-im.transport.inbox :as inbox]
-            [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.db :as transport.db]))
 
@@ -21,7 +20,7 @@
   (log/debug :init-whisper)
   (when-let [public-key (get-in db [:accounts/accounts current-account-id :public-key])]
     (let [sym-key-added-callback (fn [chat-id sym-key sym-key-id]
-                                   (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
+                                   (re-frame/dispatch [:sym-key-added {:chat-id    chat-id
                                                                         :sym-key    sym-key
                                                                         :sym-key-id sym-key-id}]))
           topic (transport.utils/get-topic constants/contact-discovery)]
@@ -34,24 +33,6 @@
                                                  :on-success sym-key-added-callback}}
                          (inbox/initialize-offline-inbox)))))
 
-;;TODO (yenda) remove once go implements persistence
-;;Since symkeys are not persisted, we restore them via add sym-keys,
-;;this is the callback that is called when a key has been restored for a particular chat.
-;;it saves the sym-key-id in app-db to send messages later
-;;and starts a filter to receive messages
-(handlers/register-handler-fx
-  ::sym-key-added
-  (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
-    (let [web3 (:web3 db)
-          {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
-      {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
-       :data-store.transport/save {:chat-id chat-id
-                                   :chat    (assoc chat :sym-key-id sym-key-id)}
-       :shh/add-filter {:web3       web3
-                        :sym-key-id sym-key-id
-                        :topic      topic
-                        :chat-id    chat-id}})))
-
 ;;TODO (yenda) uncomment and rework once go implements persistence
 #_(doseq [[chat-id {:keys [sym-key-id topic] :as chat}] transport]
     (when sym-key-id
@@ -61,13 +42,7 @@
                            (fn [js-error js-message]
                              (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
 
-(defn unsubscribe-from-chat
-  "Unsubscribe from chat on transport layer"
-  [chat-id {:keys [db]}]
-  (let [filter (get-in db [:transport/chats chat-id :filter])]
-    {:db                          (update db :transport/chats dissoc chat-id)
-     :data-store.transport/delete chat-id
-     :shh/remove-filter           filter}))
+(def unsubscribe-from-chat transport.utils/unsubscribe-from-chat)
 
 (defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters

@@ -9,7 +9,8 @@
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.mixpanel-events :as mixpanel-events]))
 
 (def base-url "http://api.mixpanel.com/")
 (def base-track-url (str base-url "track/"))
@@ -61,8 +62,8 @@
                     (recur (conj accumulator event))
                     accumulator))]
      (async/go
-       (doseq [batch (partition-all max-batch-size events)]
-         (async/<! (callback batch)))))))
+      (doseq [batch (partition-all max-batch-size events)]
+        (async/<! (callback batch)))))))
 
 (defn track
   "Track or accumulate an event"
@@ -75,20 +76,29 @@
     (when-not offline?
       (async/go (async/<! (drain-events-queue!))))))
 
+(def event-tag "events")
+
 ;; Mixpanel events definition
-(def events (reader/read-string (slurp/slurp "./src/status_im/utils/mixpanel_events.edn")))
-(def event-by-trigger (reduce-kv #(assoc %1 (:trigger %3) %3) {} events))
+(defn event->triggers [events]
+  (reduce (fn [m {:keys [trigger] :as event}]
+            (update-in m (conj trigger event-tag) conj event))
+          {}
+          events))
 
-(defn matches? [event trigger]
-  (cond (= 1 (count trigger))
-        (= (first event) (first trigger))
-        (= 2 (count trigger))
-        (and
-          (= (first event) (first trigger))
-          (= (second event) (second trigger)))
-        :else
-        (= event trigger)))
+(def event-by-trigger
+  (event->triggers mixpanel-events/events))
 
-(defn matching-events [event definitions]
-  (reduce-kv #(if (matches? event %2) (conj %1 %3) %1) [] definitions))
+(defn matching-events [[event-name first-arg :as event] triggers]
+  (let [cnt      (count event)
+        triggers (cond->
+                  (get-in triggers [event-name event-tag])
+
+                  (>= 2 cnt)
+                  (concat (get-in triggers [event-name first-arg event-tag]))
+
+                  (> 2 cnt)
+                  (concat (get-in triggers (conj [event] event-tag))))]
+    (filter (fn [{:keys [filter-fn]}]
+              (or (not filter-fn) (filter-fn {:event event})))
+             triggers)))
 

@@ -1,7 +1,6 @@
 (ns status-im.chat.models
   (:require [status-im.ui.components.styles :as styles]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.gfycat.core :as gfycat]))
 
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"

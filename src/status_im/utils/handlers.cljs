@@ -98,9 +98,12 @@
                offline? (or (= :offline (:network-status new-db))
                             (= :offline (:sync-state new-db)))
                anon-id  (ethereum/sha3 current-account-id)]
-           (doseq [{:keys [label properties]}
+           (doseq [{:keys [label properties data-fn]}
                    (mixpanel/matching-events event mixpanel/event-by-trigger)]
-             (mixpanel/track anon-id label properties offline?)))))
+             (let [properties' (cond-> properties
+                                       data-fn
+                                       (merge (data-fn event)))]
+              (mixpanel/track anon-id label properties' offline?))))))
      context)))
 
 (defn register-handler

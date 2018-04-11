@@ -43,7 +43,6 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.instabug :as inst]
-            [status-im.utils.mixpanel :as mixpanel]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]

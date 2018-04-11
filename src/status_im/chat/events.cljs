@@ -76,14 +76,18 @@
   (fn [db [{:keys [chat-id message-id]}]]
     (update-in db [:chats chat-id :messages message-id] assoc :appearing? false)))
 
+(defn- update-message-status
+  [{:keys [db]} [chat-id message-id user-id status]]
+  (let [msg-path [:chats chat-id :messages message-id]
+        new-db   (update-in db (conj msg-path :user-statuses) assoc user-id status)]
+    {:db                        new-db
+     :data-store/update-message (-> (get-in new-db msg-path)
+                                    (select-keys [:message-id :user-statuses]))}))
+
 (handlers/register-handler-fx
   :update-message-status
   [re-frame/trim-v]
-  (fn [{:keys [db]} [chat-id message-id user-id status]]
-    (let [msg-path [:chats chat-id :messages message-id]
-          new-db   (update-in db (conj msg-path :user-statuses) assoc user-id status)]
-      {:db                        new-db
-       :data-store/update-message (-> (get-in new-db msg-path) (select-keys [:message-id :user-statuses]))})))
+  update-message-status)
 
 (defn init-console-chat
   [{:keys [db] :as cofx}]

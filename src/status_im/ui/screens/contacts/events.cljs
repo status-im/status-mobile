@@ -13,7 +13,6 @@
             [status-im.ui.screens.group.events :as group.events]
             [status-im.chat.console :as console-chat]
             [status-im.chat.events :as chat.events]
-            [status-im.chat.models :as chat.models] 
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.contact :as message.v1.contact]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]))
