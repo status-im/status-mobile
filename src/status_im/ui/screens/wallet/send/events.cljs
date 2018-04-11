@@ -108,7 +108,7 @@
             transaction {:id         id
                          :from       from
                          :to         to
-                         :to-name    (when (= to constants/contract-address)
+                         :to-name    (when (nil? to)
                                        (i18n/label :t/new-contract))
                          :symbol     symbol
                          :value      (money/bignumber (or value 0))
