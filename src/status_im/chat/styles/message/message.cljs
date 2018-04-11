@@ -43,12 +43,12 @@
   [{:keys [outgoing] :as message}]
   (let [align     (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
-    (merge message-body-base
-           {:flex-direction direction
+    (assoc message-body-base
+            :flex-direction direction
             :width          260
             :padding-top    (message-padding-top message)
             :align-self     align
-            :align-items    align})))
+            :align-items    align)))
 
 (def selected-message
   {:margin-top  18
@@ -94,18 +94,29 @@
    :ios        {:font-size 14}})
 
 (defn text-message
-  [{:keys [outgoing group-chat incoming-group]}]
-  (merge style-message-text
-         {:margin-top (if incoming-group 4 0)}))
+  [{:keys [incoming-group]}]
+  (assoc style-message-text
+          :margin-top (if incoming-group 4 0)))
+
+(defn emoji-message
+  [{:keys [incoming-group]}]
+  (assoc style-message-text
+          :margin-top (if incoming-group 4 0)
+          :font-size      40
+          :line-height    50))
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat selected]}]
+  [{:keys [content-type]}]
   (merge {:padding         12
           :background-color styles/color-white
           :border-radius   8}
-         (when (= content-type constants/content-type-command)
-           {:padding-top    10
-            :padding-bottom 14})))
+          (when (= content-type constants/content-type-emoji)
+            {:background-color nil
+             :border-radius  0
+             :padding        0})
+          (when (= content-type constants/content-type-command)
+            {:padding-top    10
+             :padding-bottom 14})))
 
 (defstyle author
   {:color         styles/color-gray4
@@ -123,7 +134,7 @@
    :background-color styles/color-white})
 
 (def command-request-from-text
-  (merge style-sub-text {:margin-bottom 2}))
+  (assoc style-sub-text :margin-bottom 2))
 
 (defn command-request-image-touchable []
   {:position        :absolute
@@ -176,9 +187,9 @@
    :tint-color :#a9a9a9cc})
 
 (def command-text
-  (merge style-message-text
-         {:margin-top        8
-          :margin-horizontal 0}))
+  (assoc style-message-text
+          :margin-top        8
+          :margin-horizontal 0))
 
 (def audio-container
   {:flex-direction :row
