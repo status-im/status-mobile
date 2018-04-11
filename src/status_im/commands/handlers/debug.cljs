@@ -55,8 +55,7 @@
           (do (re-frame/dispatch [:update-contact! dapp])
               (respond {:type :ok
                         :text "The DApp or bot has been updated."}))
-          (do (re-frame/dispatch [:add-contacts [dapp]])
-              (re-frame/dispatch [:open-chat-with-contact dapp])
+          (do (re-frame/dispatch [:open-chat-with-contact dapp])
               (respond {:type :ok
                         :text "The DApp or bot has been added."}))))
       (respond {:type :error

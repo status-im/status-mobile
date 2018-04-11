@@ -289,20 +289,29 @@
       (handlers/merge-fx cofx (transport/unsubscribe-from-chat chat-id)))))
 
 (handlers/register-handler-fx
-  :remove-chat
+  :leave-chat-and-navigate-home
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
     (handlers/merge-fx cofx
                        (models/remove-chat chat-id)
+                       (navigation/replace-view :home)
                        (remove-transport chat-id))))
+
+(handlers/register-handler-fx
+  :leave-group-chat?
+  [re-frame/trim-v]
+  (fn [_ [chat-id]]
+    {:show-confirmation {:title               (i18n/label :t/leave-confirmation)
+                         :content             (i18n/label :t/leave-group-chat-confirmation)
+                         :confirm-button-text (i18n/label :t/leave)
+                         :on-accept           #(re-frame/dispatch [:leave-chat-and-navigate-home chat-id])}}))
 
 (handlers/register-handler-fx
   :remove-chat-and-navigate-home
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
     (handlers/merge-fx cofx
-                       (models/remove-chat chat-id)
-                       (remove-transport chat-id)
+                       (models/remove-chat chat-id) 
                        (navigation/replace-view :home))))
 
 (handlers/register-handler-fx
@@ -350,15 +359,6 @@
                          (navigation/navigate-to-clean :home)
                          (navigate-to-chat random-id {})
                          (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
-
-(handlers/register-handler-fx
-  :leave-group-chat?
-  [re-frame/trim-v]
-  (fn [_ [chat-id]]
-    {:show-confirmation {:title               (i18n/label :t/leave-confirmation)
-                         :content             (i18n/label :t/leave-group-chat-confirmation)
-                         :confirm-button-text (i18n/label :t/leave)
-                         :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
 
 (handlers/register-handler-fx
   :show-profile

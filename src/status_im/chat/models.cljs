@@ -100,9 +100,7 @@
   (let [{:keys [chat-id group-chat debug?]} (get-in db [:chats chat-id])]
     (cond-> {:db (-> db
                      (update :chats dissoc chat-id)
-                     (update :deleted-chats (fnil conj #{}) chat-id))}
-      (or group-chat debug?)
-      (assoc :data-store/delete-messages chat-id)
+                     (update :deleted-chats (fnil conj #{}) chat-id))} 
       debug?
       (assoc :data-store/delete-chat chat-id)
       (not debug?)
