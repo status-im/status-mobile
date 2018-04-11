@@ -1,102 +1,59 @@
 (ns status-im.test.protocol.core
-  (:require [cljs.test :refer-macros [deftest is testing run-tests
-                                      async use-fixtures]]
+  (:require [cljs.test :refer-macros [deftest is testing async ]]
             [cljs.nodejs :as nodejs]
+            re-frame.db
+            status-im.ui.screens.events
+            [re-frame.core :as rf]
             [cljs.core.async :as async]
-            ;;[status-im.protocol.web3.utils :as web3.utils]
+            [status-im.transport.utils :as transport.utils]
+            [day8.re-frame.test :refer-macros [run-test-async run-test-sync] :as rf-test]
             [status-im.test.protocol.node :as node]
-            [status-im.test.protocol.utils :as utils]
-            ;;[status-im.protocol.core :as protocol]
-            ))
+            [status-im.transport.message.v1.contact :as transport.contact]
+            [status-im.test.protocol.utils :as utils]))
 
 ;; NOTE(oskarth): All these tests are evaluated in NodeJS
 
-;; (nodejs/enable-util-print!)
+(nodejs/enable-util-print!)
 
-;; (def rpc-url "http://localhost:8645")
-;; (def Web3 (js/require "web3"))
-;; (defn make-web3 []
-;;   (Web3. (Web3.providers.HttpProvider. rpc-url)))
+(def contact-whisper-identity "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
+(def rpc-url (aget nodejs/process.env "WNODE_ADDRESS"))
 
-;; (defn setup []
-;;   (println "Setup...")
+(def Web3 (js/require "web3"))
+(defn make-web3 []
+  (Web3. (Web3.providers.HttpProvider. rpc-url)))
 
-;;   ;; NOTE(oskarth): If status-go has already been built correctly, comment this out
-;;   (println "Preparing environment...")
-;;   (node/prepare-env!)
+(defn create-keys [shh]
+  (let [keypair-promise (.newKeyPair shh)]
+    (.getPublicKey shh keypair-promise)))
 
-;;   (println "Start node...")
-;;   (node/start!)
+(deftest test-send-message!
+  (testing "send contact request & message"
+    (run-test-async
+      (let [web3          (make-web3)
+            shh  (transport.utils/shh web3)
+            from          (create-keys shh)]
+        (reset! re-frame.db/app-db {:web3 web3
+                                    :current-public-key from})
 
-;;   (println "Setup done"))
+        (rf/reg-fx :data-store/save-chat (constantly nil))
+        (rf/reg-fx :data-store/save-message (constantly nil))
+        (rf/reg-fx :data-store/save-contact (constantly nil))
+        (rf/reg-fx :data-store.transport/save (constantly nil))
+        (rf/reg-fx :data-store/update-message (constantly nil))
 
-;; (defn teardown []
-;;   (println "Teardown done"))
+        (rf/dispatch [:open-chat-with-contact {:whisper-identity contact-whisper-identity}])
+        (rf-test/wait-for [::transport.contact/send-new-sym-key]
+                          (rf/dispatch [:set-chat-input-text "test message"])
+                          (rf/dispatch [:send-current-message])
+                          (rf-test/wait-for [:update-message-status :protocol/send-status-message-error]
+                                            (is true)))))))
 
-;; (use-fixtures :once {:before setup :after teardown})
-
-;; (defn make-callback [identity done]
-;;   (fn [& args]
-;;     (is (contains? #{:sent :pending} (first args)))
-;;     (when (= (first args) :sent)
-;;       (protocol/reset-all-pending-messages!)
-;;       (protocol/stop-watching-all!)
-;;       (node/stop!)
-;;       (done)
-;;       (utils/exit!))))
-
-;; (defn post-error-callback [identity]
-;;   (fn [& args]
-;;     (.log js/console (str :post-error " " identity "\n" args))))
-
-;; (defn id-specific-config
-;;   [id contacts done]
-;;   {:identity            id
-;;    :callback            (make-callback id done)
-;;    :contacts            contacts
-;;    :post-error-callback (post-error-callback id)})
-
-;; (defn ensure-test-terminates! [timeout done]
-;;   (async/go (async/<! (async/timeout (* timeout 1000)))
-;;             (println "ERROR: Timeout of" timeout  "seconds reached - failing test.")
-;;             (is (= :terminate :indeterminate))
-;;             (done)))
-
-;; ;; TODO(oskarth): Fix this test, issue with private key not being persisted
-;; (deftest test-send-message!
-;;   (async done
-;;          (let [timeout       30
-;;                web3          (make-web3)
-;;                common-config {:web3                        web3
-;;                               :groups                      []
-;;                               :ack-not-received-s-interval 125
-;;                               :default-ttl                 120
-;;                               :send-online-s-interval      180
-;;                               :ttl-config                  {:public-group-message 2400}
-;;                               :max-attempts-number         3
-;;                               :delivery-loop-ms-interval   500
-;;                               :hashtags                    []
-;;                               :pending-messages            []}
-;;                id1-config    (id-specific-config node/identity-1 [] done)]
-;;            (ensure-test-terminates! timeout done)
-;;            (protocol/init-whisper! (merge common-config id1-config))
-;;            (protocol/send-message!
-;;             {:web3    web3
-;;              :message {:message-id "123"
-;;                        :from       node/identity-1
-;;                        :to         node/identity-2
-;;                        :payload    {:type         :message
-;;                                     :content-type "text/plain"
-;;                                     :content      "123"
-;;                                     :timestamp    1498723691404}}}))))
-
-;; #_(deftest test-whisper-version!
-;;     (testing "Whisper version supported"
-;;       (async done
-;;              (node/start!)
-;;              (let [web3 (make-web3)
-;;                    shh  (web3.utils/shh web3)]
-;;                (.version shh
-;;                          (fn [& args]
-;;                            (is (= "5.0" (second args)))
-;;                            (done)))))))
+(deftest test-whisper-version!
+  (testing "Whisper version supported"
+    (async done
+           (let [web3 (make-web3)
+                 shh  (transport.utils/shh web3)]
+             (.version shh
+                       (fn [& args]
+                         (is (= "6.0" (second args)))
+                         (done)))))))

@@ -28,9 +28,9 @@ class ChatNameEditBox(BaseEditBox):
         self.locator = self.Locator.accessibility_id('chat-name-input')
 
 
-class OpenDAapButton(BaseButton):
+class OpenDAppButton(BaseButton):
     def __init__(self, driver):
-        super(OpenDAapButton, self).__init__(driver)
+        super(OpenDAppButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('open-dapp-button')
 
 
@@ -66,7 +66,7 @@ class StartNewChatView(ContactsView):
         self.new_group_chat_button = NewGroupChatButton(self.driver)
         self.join_public_chat_button = JoinPublicChatButton(self.driver)
 
-        self.open_d_app_button = OpenDAapButton(self.driver)
+        self.open_d_app_button = OpenDAppButton(self.driver)
         self.open_button = OpenButton(self.driver)
 
         self.chat_name_editbox = ChatNameEditBox(self.driver)

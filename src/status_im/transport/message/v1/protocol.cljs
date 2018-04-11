@@ -89,7 +89,7 @@
   (send [this cofx chat-id])
   (receive [this cofx chat-id sig]))
 
-(defrecord Message [content content-type message-type to-clock-value timestamp]
+(defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
   (send [this chat-id cofx]
     (send {:chat-id       chat-id

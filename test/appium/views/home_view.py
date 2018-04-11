@@ -8,7 +8,7 @@ from views.base_view import BaseView
 class PlusButton(BaseButton):
     def __init__(self, driver):
         super(PlusButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='+']")
+        self.locator = self.Locator.accessibility_id("new-chat-button")
 
     def navigate(self):
         from views.start_new_chat_view import StartNewChatView
@@ -39,6 +39,7 @@ class ChatElement(BaseButton):
 
     @property
     def swipe_delete_button(self):
+
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
@@ -48,10 +49,16 @@ class ChatElement(BaseButton):
         return DeleteButton(self.driver, self.locator.value)
 
 
-class FirstChatElementTitle(BaseText):
+class ChatNameText(BaseText):
     def __init__(self, driver):
-        super(FirstChatElementTitle, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.widget.ScrollView//android.widget.TextView)[1]')
+        super(ChatNameText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-name-text')
+
+
+class ChatUrlText(BaseText):
+    def __init__(self, driver):
+        super(ChatUrlText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-url-text')
 
 
 class HomeView(BaseView):
@@ -60,7 +67,8 @@ class HomeView(BaseView):
 
         self.plus_button = PlusButton(self.driver)
         self.console_button = ConsoleButton(self.driver)
-        self.first_chat_element_title = FirstChatElementTitle(self.driver)
+        self.chat_name_text = ChatNameText(self.driver)
+        self.chat_url_text = ChatUrlText(self.driver)
 
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')
@@ -123,5 +131,11 @@ class HomeView(BaseView):
         x, y = location['x'], location['y']
         size = chat_element.find_element().size
         width, height = size['width'], size['height']
-        self.driver.swipe(start_x=x + width / 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+        counter = 0
+        while counter < 10:
+            self.driver.swipe(start_x=x + width / 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+            if chat_element.swipe_delete_button.is_element_present():
+                break
+            time.sleep(10)
+            counter += 1
         chat_element.swipe_delete_button.click()

@@ -1,6 +1,7 @@
 from tests import get_current_time
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
+import time
 
 
 class FirstAccountButton(BaseButton):
@@ -70,6 +71,13 @@ class NameInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Name']")
 
 
+class DonNotShare(BaseButton):
+
+    def __init__(self, driver):
+        super(DonNotShare, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE"]' % "'")
+
+
 class SignInView(BaseView):
 
     def __init__(self, driver):
@@ -87,8 +95,10 @@ class SignInView(BaseView):
         self.add_existing_account_button = AddExistingAccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.name_input = NameInput(self.driver)
+        self.do_not_share = DonNotShare(self.driver)
 
     def create_user(self):
+        time.sleep(30) # wait for "Shake to provide your feedback" popup to disappear, it's not possible to interact with the element
         self.create_account_button.click()
         self.password_input.set_value('qwerty1234')
         self.next_button.click()
@@ -97,11 +107,15 @@ class SignInView(BaseView):
         self.name_input.wait_for_element(45)
         self.name_input.set_value('user_%s' % get_current_time())
         self.next_button.click()
-        self.element_by_text("NO, I DON'T WANT TO SHARE").click()
+        self.do_not_share.wait_for_element(10)
+        self.do_not_share.click_until_presence_of_element(self.home_button)
 
     def recover_access(self, passphrase, password):
+        time.sleep(30) # wait for "Shake to provide your feedback" popup to disappear, it's not possible to interact with the element
         recover_access_view = self.i_have_account_button.click()
         recover_access_view.passphrase_input.set_value(passphrase)
         recover_access_view.password_input.click()
         recover_access_view.password_input.set_value(password)
         recover_access_view.sign_in_button.click()
+        self.do_not_share.wait_for_element(10)
+        self.do_not_share.click_until_presence_of_element(self.home_button)

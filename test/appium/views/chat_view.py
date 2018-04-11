@@ -14,15 +14,14 @@ class ChatMessageInput(BaseEditBox):
 class AddToContacts(BaseButton):
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Add to contacts']")
+        self.locator = self.Locator.accessibility_id('add-to-contacts-button')
 
 
 class UserNameText(BaseText):
     def __init__(self, driver):
         super(UserNameText, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="toolbar-back-button"]'
-                                        '//..//android.widget.TextView)[1]')
+            self.Locator.accessibility_id('chat-name-text')
 
 
 class TransactionPopupText(BaseText):
@@ -34,19 +33,19 @@ class TransactionPopupText(BaseText):
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='/send']")
+        self.locator = self.Locator.accessibility_id('send-payment-button')
 
 
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='/request']")
+        self.locator = self.Locator.accessibility_id('request-payment-button')
 
 
-class ChatOptions(BaseButton):
+class ChatMenuButton(BaseButton):
     def __init__(self, driver):
-        super(ChatOptions, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[2]')
+        super(ChatMenuButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-menu-button')
 
 
 class MembersButton(BaseButton):
@@ -72,8 +71,7 @@ class ChatSettings(BaseButton):
 class UserOptions(BaseButton):
     def __init__(self, driver):
         super(UserOptions, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//android.widget.ImageView[@content-desc="chat-icon"]'
-                                                   '/../..//android.view.View')
+        self.locator = self.Locator.accessibility_id('options')
 
 
 class RemoveButton(BaseButton):
@@ -85,15 +83,14 @@ class RemoveButton(BaseButton):
 class FirstRecipient(BaseButton):
     def __init__(self, driver):
         super(FirstRecipient, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Choose recipient']/.."
-                                                   "//android.widget.ImageView[@content-desc='chat-icon']")
+        self.locator = self.Locator.accessibility_id('contact-item')
 
 
 class MessageByUsername(BaseText):
     def __init__(self, driver, username):
         super(MessageByUsername, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="' + username + '"]'
-                                                   '/following-sibling::android.widget.TextView')
+        self.locator = self.Locator.xpath_selector(
+            '//*[@text="%s"]/following-sibling::android.widget.TextView' % username)
 
 
 class MoreUsersButton(BaseButton):
@@ -121,8 +118,7 @@ class OpenInBrowserButton(BaseButton):
 class CommandsButton(BaseButton):
     def __init__(self, driver):
         super(CommandsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            '//*[@content-desc="chat-message-input"]/..//android.view.ViewGroup[@content-desc="icon"]')
+        self.locator = self.Locator.accessibility_id('chat-commands-button')
 
 
 class ViewProfileButton(BaseButton):
@@ -143,7 +139,7 @@ class ChatView(BaseView):
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
 
-        self.chat_options = ChatOptions(self.driver)
+        self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
 

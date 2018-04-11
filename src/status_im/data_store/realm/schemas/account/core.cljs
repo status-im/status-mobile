@@ -7,3 +7,4 @@
 (def schemas [{:schema        v1/schema
                :schemaVersion 1
                :migration     v1/migration}])
+

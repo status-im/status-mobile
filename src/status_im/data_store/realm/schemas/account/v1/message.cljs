@@ -22,9 +22,7 @@
                                              :optional true}
                           :user-statuses    {:type       :list
                                              :objectType :user-status}
-                          :from-clock-value {:type    :int
-                                             :default 0}
-                          :to-clock-value   {:type    :int
+                          :clock-value      {:type    :int
                                              :default 0}
                           :show?            {:type    :bool
                                              :default true}}})

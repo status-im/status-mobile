@@ -87,6 +87,11 @@
                        {:from "a", :text "5", :clock-value 8})]
       (is (not (ordered-increasing-text? bad-thread))))))
 
+(deftest safe-timestamp
+  (testing "it caps the timestamp when a value too large is provided"
+    (is (< (clocks/receive js/Number.MAX_SAFE_INTEGER 0)
+           js/Number.MAX_SAFE_INTEGER))))
+
   ;; Debugging
 ;;(println "******************************************")
 ;;(println "A's POV :foo" (format-thread (thread a :foo)))

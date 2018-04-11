@@ -41,7 +41,7 @@ class TestSanity(SingleDeviceTestCase):
         if basic_user['password'] in str(home_view.logcat):
             pytest.fail('Password in logcat!!!', pytrace=False)
 
-    @pytest.mark.gorup_chat
+    @pytest.mark.group_chat
     def test_group_chat_members(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()

@@ -90,7 +90,7 @@
     (data-store/save (prepare-message (merge default-values
                                              message
                                              {:from      (or from "anonymous")
-                                              :timestamp (datetime/timestamp)})))))
+                                              :received-timestamp (datetime/timestamp)})))))
 
 (re-frame/reg-fx
   :data-store/save-message
