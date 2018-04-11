@@ -12,15 +12,29 @@
             [status-im.utils.utils :as utils])
   (:refer-clojure :exclude [exists?]))
 
-(defn- realm-version
-  [file-name]
-  (.schemaVersion rn-dependencies/realm file-name))
+(defn to-buffer [key]
+  (when key
+    (let [length (.-length key)
+          arr    (js/Uint8Array. length)]
+      (dotimes [i length]
+        (aset arr i (aget key i)))
+      (.-buffer arr))))
 
-(defn- open-realm
-  [options file-name]
-  (let [options (merge options {:path file-name})]
-    (when (cljs.core/exists? js/window)
-      (rn-dependencies/realm. (clj->js options)))))
+(defn realm-version
+  [file-name encryption-key]
+    (if encryption-key
+      (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
+      (.schemaVersion rn-dependencies/realm file-name)))
+
+(defn open-realm
+  [options file-name encryption-key]
+    (log/debug "Opening realm at " file-name "...")
+    (let [options-js (clj->js (assoc options :path file-name))]
+      (when encryption-key
+        (log/debug "Using encryption key...")
+        (set! (.-encryptionKey options-js) (to-buffer encryption-key)))
+      (when (cljs.core/exists? js/window)
+        (rn-dependencies/realm. options-js))))
 
 (defn- delete-realm
   [file-name]
@@ -30,38 +44,37 @@
   (when realm
     (.close realm)))
 
-(defn- migrate-realm [file-name schemas]
-  (let [current-version (realm-version file-name)]
+(defn migrate-realm [file-name schemas encryption-key]
+  (let [current-version (realm-version file-name encryption-key)]
     (doseq [schema schemas
             :when (> (:schemaVersion schema) current-version)
-            :let [migrated-realm (open-realm schema file-name)]]
+            :let [migrated-realm (open-realm schema file-name encryption-key)]]
       (close migrated-realm)))
-  (open-realm (last schemas) file-name))
+  (open-realm (last schemas) file-name encryption-key))
 
-(defn- reset-realm [file-name schemas]
+(defn reset-realm [file-name schemas encryption-key]
   (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
   (delete-realm file-name)
-  (open-realm (last schemas) file-name))
+  (open-realm (last schemas) file-name encryption-key))
 
-(defn- open-migrated-realm
-  [file-name schemas]
+(defn open-migrated-realm
+  [file-name schemas encryption-key]
   ;; TODO: remove for release 0.9.18
   ;; delete the realm file if its schema version is higher
   ;; than existing schema version (this means the previous
   ;; install has incompatible database schemas)
-  (if (> (realm-version file-name)
+  (if (> (realm-version file-name encryption-key)
          (apply max (map :schemaVersion base/schemas)))
-    (reset-realm file-name schemas)
-    (migrate-realm file-name schemas)))
+    (reset-realm file-name schemas encryption-key)
+    (migrate-realm file-name schemas encryption-key)))
 
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
 
 (def new-account-filename "new-account")
 
-(def base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas))
-
-(def account-realm (atom (open-migrated-realm new-account-filename account/schemas)))
+(def base-realm (atom nil))
+(def account-realm (atom nil))
 
 (def entity->schemas (merge (index-entity-schemas base/schemas)
                             (index-entity-schemas account/schemas)))
@@ -72,20 +85,29 @@
   (close @account-realm)
   (reset! account-realm nil))
 
-(defn reset-account []
+(defn open-base-realm [encryption-key]
+  (log/debug "Opening base realm... (first run)")
+  (when @base-realm
+    (close @base-realm))
+  (reset! base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas encryption-key))
+  (log/debug "Created @base-realm"))
+
+(defn reset-account-realm [encryption-key]
+  (log/debug "Resetting account realm...")
   (when @account-realm
     (close @account-realm))
-  (reset! account-realm (open-migrated-realm new-account-filename account/schemas))
-  (.write @account-realm #(.deleteAll @account-realm)))
+  (reset! account-realm (open-migrated-realm new-account-filename account/schemas encryption-key))
+  (.write @account-realm #(.deleteAll @account-realm))
+  (log/debug "Created @account-realm"))
 
-(defn move-file-handler [address err handler]
+(defn move-file-handler [address encryption-key err handler]
   (log/debug "Moved file with error: " err address)
   (if err
     (log/error "Error moving account realm: " (.-message err))
-    (reset! account-realm (open-migrated-realm address account/schemas)))
+    (reset! account-realm (open-migrated-realm address account/schemas encryption-key)))
   (handler err))
 
-(defn change-account [address new-account? handler]
+(defn change-account [address new-account? encryption-key handler]
   (let [path (.-path @account-realm)]
     (log/debug "closing account realm: " path)
     (close-account-realm)
@@ -93,9 +115,9 @@
     (if new-account?
       (let [new-path (string/replace path new-account-filename address)]
         (log/debug "Moving file " path " to " new-path)
-        (fs/move-file path new-path #(move-file-handler address % handler)))
+        (fs/move-file path new-path #(move-file-handler address encryption-key % handler)))
       (do
-        (reset! account-realm (open-migrated-realm address account/schemas))
+        (reset! account-realm (open-migrated-realm address account/schemas encryption-key))
         (handler nil)))))
 
 (declare realm-obj->clj)

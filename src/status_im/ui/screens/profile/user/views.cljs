@@ -16,6 +16,7 @@
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.build :as build]
             [status-im.utils.config :as config]
+            [status-im.utils.keychain :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -90,7 +91,9 @@
 (defn- handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
+                           (i18n/label :t/logout) #(keychain/get-encryption-key-then
+                                                     (fn [encryption-key]
+                                                        (re-frame/dispatch [:logout encryption-key])))))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]

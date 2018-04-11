@@ -63,7 +63,7 @@
                                  "JavaScriptCore"
                                  "OttoVM")
                                " jail initialized")]
-          (.initJail status init-js' #(do (re-frame/dispatch [:initialize-app])
+          (.initJail status init-js' #(do (re-frame/dispatch [:initialize-keychain])
                                           (log/debug log-message))))))))
 
 (defonce listener-initialized (atom false))

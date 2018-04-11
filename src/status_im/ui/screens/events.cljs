@@ -43,6 +43,7 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.instabug :as instabug]
+            [status-im.utils.keychain :as keychain]
             [status-im.utils.mixpanel :as mixpanel]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -126,12 +127,24 @@
 
 (re-frame/reg-fx
   ::init-store
-  (fn []
-    (data-store/init)))
+  (fn [encryption-key]
+    (data-store/init encryption-key)))
 
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
     #(status/start-node config)))
+
+(re-frame/reg-fx
+  ::initialize-keychain-fx
+  (fn []
+    (keychain/get-encryption-key-then
+      (fn [encryption-key]
+        (re-frame/dispatch [:initialize-app encryption-key])))))
+
+(re-frame/reg-fx
+  ::got-encryption-key-fx
+  (fn [{:keys [encryption-key callback]}]
+    (callback encryption-key)))
 
 (re-frame/reg-fx
   :initialize-geth-fx
@@ -201,10 +214,20 @@
     (assoc-in db path v)))
 
 (handlers/register-handler-fx
-  :initialize-app
+  :initialize-keychain
   (fn [_ _]
+    {::initialize-keychain-fx nil}))
+
+(handlers/register-handler-fx
+  :got-encryption-key
+  (fn [_ [_ opts]]
+    {::got-encryption-key-fx opts}))
+
+(handlers/register-handler-fx
+  :initialize-app
+  (fn [_ [_ encryption-key]]
     {::testfairy-alert            nil
-     :dispatch-n                  [[:initialize-db]
+     :dispatch-n                  [[:initialize-db encryption-key]
                                    [:load-accounts]
                                    [:initialize-views]
                                    [:listen-to-network-status]
@@ -212,11 +235,11 @@
 
 (handlers/register-handler-fx
   :logout
-  (fn [{:keys [db] :as cofx} _]
+  (fn [{:keys [db] :as cofx} [_ encryption-key]]
     (let [{:transport/keys [chats]} db
           sharing-usage-data? (get-in db [:account/account :sharing-usage-data?])]
       (handlers-macro/merge-fx cofx
-                         {:dispatch-n (concat [[:initialize-db]
+                         {:dispatch-n (concat [[:initialize-db encryption-key]
                                                [:load-accounts]
                                                [:listen-to-network-status]
                                                [:navigate-to :accounts]]
@@ -228,8 +251,9 @@
   :initialize-db
   (fn [{{:keys          [status-module-initialized? status-node-started?
                          network-status network]
-         :or {network (get app-db :network)}} :db} _]
-    {::init-store nil
+         :or {network (get app-db :network)}} :db}
+       [_ encryption-key]]
+    {::init-store encryption-key
      :db          (assoc app-db
                          :contacts/contacts {}
                          :network-status network-status

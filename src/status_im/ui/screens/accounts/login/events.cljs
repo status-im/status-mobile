@@ -7,6 +7,7 @@
             [status-im.data-store.core :as data-store]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
+            [status-im.utils.keychain :as keychain]
             [status-im.utils.utils :as utils]
             [status-im.constants :as constants]))
 
@@ -29,13 +30,16 @@
   (fn [[address]]
     ;; if we don't add delay when running app without status-go
     ;; "null is not an object (evaluating 'realm.schema')" error appears
-    (let [change-account-fn (fn [] (data-store/change-account address
-                                                              false
-                                                              #(dispatch [:change-account-handler % address])))]
-      (if config/stub-status-go?
-        (utils/set-timeout change-account-fn
-                           300)
-        (change-account-fn)))))
+    (keychain/get-encryption-key-then
+      (fn [encryption-key]
+        (let [change-account-fn (fn [] (data-store/change-account address
+                                                                  false
+                                                                  encryption-key
+                                                                  #(dispatch [:change-account-handler % address])))]
+          (if config/stub-status-go?
+            (utils/set-timeout change-account-fn
+                               300)
+            (change-account-fn)))))))
 
 ;;;; Handlers
 

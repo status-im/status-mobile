@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.desktop.main.tabs.profile.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.utils.keychain :as keychain]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.user.views :as profile]))
 
@@ -35,7 +36,9 @@
      [react/view
       [my-profile-info current-account]]
      [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])
+     [react/touchable-highlight {:on-press #(keychain/get-encryption-key-then
+                                              (fn [encryption-key]
+                                                (re-frame/dispatch [:logout encryption-key])))
                                  :style {:margin-top 60}}
       [react/view
        [react/text {:style {:color :red}} "Log out"]]]]))

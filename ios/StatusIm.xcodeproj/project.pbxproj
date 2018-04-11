@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -72,6 +71,7 @@
 		E0AD9E8F495A4907B65104BF /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BEE3436791D42248F853999 /* libRCTImageResizer.a */; };
 		F9238D6C1E5F055900C047B9 /* SF-UI-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */; };
 		FD4F213C3873473CB703B1D2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 674B3D9595A047AB8D518F4E /* libRNFS.a */; };
+		AB96C730942E49178F59AE6F /* libRNSecureRandom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1464A9A9E12F45068947C28F /* libRNSecureRandom.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -604,6 +604,8 @@
 		F89A8F8005874B86B63C22E3 /* RNFIRMessaging.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFIRMessaging.xcodeproj; path = "../node_modules/react-native-fcm/ios/RNFIRMessaging.xcodeproj"; sourceTree = "<group>"; };
 		F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Semibold.otf"; sourceTree = "<group>"; };
 		FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF409BB755B94FB1BBA01927 /* RNSecureRandom.xcodeproj */ = {isa = PBXFileReference; name = "RNSecureRandom.xcodeproj"; path = "../node_modules/react-native-securerandom/ios/RNSecureRandom.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		1464A9A9E12F45068947C28F /* libRNSecureRandom.a */ = {isa = PBXFileReference; name = "libRNSecureRandom.a"; path = "libRNSecureRandom.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -664,6 +666,7 @@
 				5974D2035B8B47E0946B63B6 /* libRNFIRMessaging.a in Frameworks */,
 				91446A820DA5E1C15C24D2A7 /* Instabug.framework in Frameworks */,
 				63AE4174241B852A045FAE1F /* InstabugCore.framework in Frameworks */,
+				AB96C730942E49178F59AE6F /* libRNSecureRandom.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -921,6 +924,7 @@
 				F3548417D8DA4362B6796A54 /* RNInstabug.xcodeproj */,
 				1E74DC52A1E449A2BA858B14 /* RNSVG.xcodeproj */,
 				F89A8F8005874B86B63C22E3 /* RNFIRMessaging.xcodeproj */,
+				AF409BB755B94FB1BBA01927 /* RNSecureRandom.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1161,7 +1165,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 830;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -1174,6 +1178,9 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
 								enabled = 1;
 							};
 							com.apple.Push = {
@@ -1972,6 +1979,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1995,6 +2003,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -2060,6 +2069,7 @@
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-testfairy/ios",
+					"$(SRCROOT)/../node_modules/react-native-securerandom/ios",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -2118,6 +2128,7 @@
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-testfairy/ios",
+					"$(SRCROOT)/../node_modules/react-native-securerandom/ios",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

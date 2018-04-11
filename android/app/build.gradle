@@ -208,11 +208,13 @@ dependencies {
     implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
+    implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-config')
     implementation project(':react-native-fcm')
     implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
     compile project(':react-native-testfairy')
+    implementation project(':react-native-keychain')
     implementation project(':instabug-reactnative')
 
     implementation 'status-im:function:0.0.1'
