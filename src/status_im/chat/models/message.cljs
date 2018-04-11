@@ -25,15 +25,23 @@
                                                                         contacts)]
     (:ref (get available-commands-responses response-name))))
 
+(defn- emoji-only-string?
+  [text]
+  (re-matches constants/regx-emoji text))
+
+(defn- prepare-message
+  [message chat-id current-chat?]
+  (cond-> (assoc message :appearing? true)
+    (not current-chat?) (assoc :appearing? false)
+    (emoji-only-string? (:content message)) (assoc :content-type constants/content-type-emoji)))
+
 (defn- add-message
-  [chat-id {:keys [message-id clock-value] :as message} current-chat? {:keys [db]}]
-  (let [prepared-message (cond-> (assoc message :appearing? true)
-                           (not current-chat?)
-                           (assoc :appearing? false))]
+  [chat-id {:keys [message-id clock-value content] :as message} current-chat? {:keys [db]}]
+  (let [prepared-message (prepare-message message chat-id current-chat?)]
     {:db                    (cond->
-                              (-> db
-                                  (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                  (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
+                                (-> db
+                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
+                                    (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
                               (not current-chat?)
                               (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
      :data-store/save-message prepared-message}))

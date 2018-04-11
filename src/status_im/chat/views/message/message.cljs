@@ -173,6 +173,11 @@
   [message-view message
    [react/text {:style (style/text-message message)} content]])
 
+(defn emoji-message
+  [{:keys [content] :as message}]
+  [message-view message
+   [react/text {:style (style/emoji-message message)} content]])
+
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
 (defmethod message-content constants/content-type-command-request
@@ -200,6 +205,10 @@
 (defmethod message-content constants/content-type-placeholder
   [wrapper message]
   [wrapper message [placeholder-message message]])
+
+(defmethod message-content constants/content-type-emoji
+  [wrapper message]
+  [wrapper message [emoji-message message]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]

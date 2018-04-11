@@ -107,11 +107,20 @@
   (merge style-message-text
          {:margin-top (if incoming-group 4 0)}))
 
+(defn emoji-message
+  [{:keys [incoming-group]}]
+  {:font-size 40
+   :color     styles/text1-color
+   :android   {:line-height 45}
+   :ios       {:line-height 46}
+   :margin-top (if incoming-group 4 0)})
+
 (defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
   (merge {:padding         12
-          :background-color styles/color-white
           :border-radius   8}
+         (when-not (= content-type constants/content-type-emoji)
+          {:background-color styles/color-white})
          (when (= content-type constants/content-type-command)
            {:padding-top    10
             :padding-bottom 14})))
