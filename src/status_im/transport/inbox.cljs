@@ -5,7 +5,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.transport.utils :as web3.utils]
             [status-im.utils.config :as config]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (defn- parse-json
   ;; NOTE(dmitryn) Expects JSON response like:
@@ -35,14 +36,18 @@
        (error-fn error)
        (success-fn result)))))
 
+(defn get-current-wnode-address [{:accounts/keys [current-account-id accounts] :as db}]
+  (let [network  (ethereum/network->chain-keyword (get db :network))
+        wnode-id (get-in accounts [current-account-id :settings :wnode network])]
+    (get-in db [:inbox/wnodes network wnode-id :address])))
+
 (defn initialize-offline-inbox
   "Initialises offline inbox by producing `::add-peer` effect if inboxing enabled in config,
   then the event chan is:
   add-peer -> fetch-peers -> check-peer-added -> mark-trusted-peer -> get-sym-key -> request-messages"
   [{:keys [db]}]
   (when config/offline-inbox-enabled?
-    (let [wnode-id (get db :inbox/wnode)
-          wnode    (get-in db [:inbox/wnodes wnode-id :address])]
+    (let [wnode (get-current-wnode-address db)]
       (log/info "offline inbox: initialize")
       {::add-peer {:wnode wnode}})))
 
@@ -90,10 +95,6 @@
                             (if-not err
                               (success-fn resp)
                               (error-fn err topic))))))))
-
-(defn get-wnode [db]
-  (let [wnode-id (get db :inbox/wnode)]
-    (get-in db [:inbox/wnodes wnode-id :address])))
 
 (re-frame/reg-fx
   ::add-peer
@@ -144,7 +145,7 @@
   ;; if not we dispatch a new fetch-peer event for later
   (fn [{:keys [db]} [_ peers retries]]
     (let [web3     (:web3 db)
-          wnode    (get-wnode db)]
+          wnode    (get-current-wnode-address db)]
       (log/info "offline inbox: fetch-peers response" peers)
       (if (registered-peer? peers wnode)
         {::mark-trusted-peer {:web3  web3
@@ -163,7 +164,7 @@
   ;; with add-peer
   (fn [{:keys [db]} [_ response]]
     (let [web3     (:web3 db)
-          wnode    (get-wnode db)
+          wnode    (get-current-wnode-address db)
           password (:inbox/password db)]
       (log/info "offline inbox: mark-trusted-peer response" wnode response)
       {:shh/generate-sym-key-from-password {:password   password
@@ -179,7 +180,7 @@
   (fn [{:keys [db]} [_ sym-key-id]]
     (log/info "offline inbox: get-sym-key response") sym-key-id
     (let [web3     (:web3 db)
-          wnode    (get-wnode db)
+          wnode    (get-current-wnode-address db)
           topics   (map #(:topic %) (vals (:transport/chats db)))
           to       nil
           from     nil]

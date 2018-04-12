@@ -38,7 +38,9 @@
 
 (def default-account-settings
   {:wallet {:visible-tokens {:testnet #{:STT}
-                             :mainnet #{:SNT}}}})
+                             :mainnet #{:SNT}}}
+   :wnode {:testnet "main"
+           :mainnet "main"}})
 
 (defn- transform-config [networks]
   (->> networks
@@ -87,19 +89,17 @@
    (merge testnet-networks
           (when config/mainnet-networks-enabled? mainnet-networks))))
 
-;; adamb's status-cluster enode
-(def default-wnode "main")
-
 (def default-wnodes
-  {"main"   {:id      "main"
-             :name    "Status mailserver A"
-             :address "enode://fa63a6cc730468c5456eab365b2a7a68a166845423c8c9acc363e5f8c4699ff6d954e7ec58f13ae49568600cff9899561b54f6fc2b9923136cd7104911f31cce@163.172.168.202:30303"}
-   "backup" {:id      "backup"
-             :name    "Status mailserver B"
-             :address "enode://90cbf961c87eb837adc1300a0a6722a57134d843f0028a976d35dff387f101a2754842b6b694e50a01093808f304440d4d968bcbc599259e895ff26e5a1a17cf@51.15.194.39:30303"}})
+  {:testnet {"main"   {:id      "main"
+                       :name    "Status testnet mailserver A"
+                       :address "enode://fa63a6cc730468c5456eab365b2a7a68a166845423c8c9acc363e5f8c4699ff6d954e7ec58f13ae49568600cff9899561b54f6fc2b9923136cd7104911f31cce@163.172.168.202:30303"}
+             "backup" {:id      "backup"
+                       :name    "Status testnet mailserver B"
+                       :address "enode://90cbf961c87eb837adc1300a0a6722a57134d843f0028a976d35dff387f101a2754842b6b694e50a01093808f304440d4d968bcbc599259e895ff26e5a1a17cf@51.15.194.39:30303"}}
+   :mainnet {"main" {:id      "main"
+                     :name    "Status mainnet mailserver"
+                     :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}})
 
-;; TODO(oskarth): Determine if this is the correct topic or not
-(def inbox-topic "0xaabb11ee")
 (def inbox-password "status-offline-inbox")
 
 ;; Used to generate topic for contact discoveries

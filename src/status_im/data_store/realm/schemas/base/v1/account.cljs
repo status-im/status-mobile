@@ -18,7 +18,6 @@
                           :network             :string
                           :networks            {:type       :list
                                                 :objectType :network}
-                          :wnode               :string
                           :settings            {:type :string}
                           :sharing-usage-data? {:type :bool :default false}
                           :dev-mode?           {:type :bool :default false}

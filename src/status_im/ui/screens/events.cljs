@@ -244,10 +244,8 @@
   (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
                network network-status view-id navigation-stack
                access-scope->commands-responses
-               status-module-initialized? status-node-started?
-               inbox/wnode]
-        :or [network (get app-db :network)
-             wnode   (get app-db :inbox/wnode)]} [_ address]]
+               status-module-initialized? status-node-started?]
+        :or [network (get app-db :network)]} [_ address]]
     (let [console-contact (get contacts constants/console-chat-id)]
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
@@ -264,8 +262,7 @@
                      :accounts/create create
                      :networks/networks networks
                      :network-status network-status
-                     :network network
-                     :inbox/wnode wnode)
+                     :network network)
         console-contact
         (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
 
@@ -278,7 +275,7 @@
                           [:load-contacts]
                           [:load-contact-groups]
                           [:initialize-chats]
-                          [:initialize-browsers] 
+                          [:initialize-browsers]
                           [:initialize-debugging {:address address}]
                           [:send-account-update-if-needed]
                           [:update-wallet]
