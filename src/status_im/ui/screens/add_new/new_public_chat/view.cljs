@@ -51,12 +51,12 @@
      [list/item-icon {:icon      :icons/forward
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats ["status" "openbounty" "ethereum"])
+(def default-public-chats ["status" "openbounty" "edcon" "ethereum"])
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
                   error [:get :public-group-topic-error]]
-    [react/view styles/group-container
+    [react/keyboard-avoiding-view styles/group-container
      [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/public-chat)]
