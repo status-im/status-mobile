@@ -51,7 +51,7 @@
      [list/item-icon {:icon      :icons/forward
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats ["status" "openbounty" "ethereum"])
+(def default-public-chats ["status" "openbounty" "edcon" "ethereum"])
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
