@@ -32,6 +32,7 @@
       :placeholder         (i18n/label :t/enter-12-words)
       :multiline           true
       :default-value       passphrase
+      :auto-correct        false
       :on-change-text      #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
       :error               error}]))
 
