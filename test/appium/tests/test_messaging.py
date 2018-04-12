@@ -80,7 +80,7 @@ class TestMessages(MultipleDeviceTestCase):
         device_1_chat.delete_chat(device_2_username[:25], self.errors)
         self.verify_no_errors()
 
-    @pytest.mark.skip
+    @pytest.mark.pr
     def test_group_chat_messages_and_delete_chat(self):
         self.create_drivers(3)
 

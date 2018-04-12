@@ -62,7 +62,7 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction_view.sign_transaction_button.click()
         send_transaction_view.find_full_text('Wrong password', 20)
 
-    @pytest.mark.skip
+    @pytest.mark.pr
     def test_transaction_send_command_group_chat(self):
         recipient = transaction_users['A_USER']
         sign_in_view = SignInView(self.driver)
@@ -201,7 +201,7 @@ class TestTransaction(SingleDeviceTestCase):
 @pytest.mark.all
 class TestTransactions(MultipleDeviceTestCase):
 
-    @pytest.mark.skip
+    @pytest.mark.pr
     def test_send_eth_to_request_in_group_chat(self):
         recipient = transaction_users['E_USER']
         sender = transaction_users['F_USER']
