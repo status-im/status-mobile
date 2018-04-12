@@ -70,4 +70,4 @@
   [re-frame/trim-v]
   (fn [{:keys [db]} [browser-id]]
     {:db (update-in db [:browser/browsers] dissoc browser-id)
-     :remove-browser browser-id}))
+     :data-store/remove-browser browser-id}))
