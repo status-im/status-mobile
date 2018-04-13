@@ -56,7 +56,7 @@
     "react-native-tcp": "3.3.0",
     "react-native-testfairy": "2.8.0",
     "react-native-udp": "2.2.1",
-    "react-native-webview-bridge": "github:status-im/react-native-webview-bridge#feature/camera-permissions",
+    "react-native-webview-bridge": "github:status-im/react-native-webview-bridge#fix-web3-injection",
     "realm": "2.3.3",
     "rn-snoopy": "github:status-im/rn-snoopy",
     "string_decoder": "0.10.31",
