@@ -22,21 +22,36 @@
     (when (cljs.core/exists? js/window)
       (rn-dependencies/realm. (clj->js options)))))
 
+(defn delete-realm
+  [file-name]
+  (.deleteFile rn-dependencies/realm (clj->js {:path file-name})))
+
 (defn close [realm]
   (when realm
     (.close realm)))
 
-(defn migrate [file-name schemas]
+(defn migrate-realm [file-name schemas]
   (let [current-version (realm-version file-name)]
     (doseq [schema schemas
             :when (> (:schemaVersion schema) current-version)
             :let [migrated-realm (open-realm schema file-name)]]
-      (close migrated-realm))))
+      (close migrated-realm)))
+  (open-realm (last schemas) file-name))
+
+(defn reset-realm [file-name schemas]
+  (delete-realm file-name)
+  (open-realm (last schemas) file-name))
 
 (defn open-migrated-realm
   [file-name schemas]
-  (migrate file-name schemas)
-  (open-realm (last schemas) file-name))
+  ;; TODO: remove for release 0.9.18
+  ;; delete the realm file if its schema version is higher
+  ;; than existing schema version (this means the previous
+  ;; install has incompatible database schemas)
+  (if (> (realm-version file-name)
+         (apply max (map :schemaVersion base/schemas)))
+    (reset-realm file-name schemas)
+    (migrate-realm file-name schemas)))
 
 (def new-account-filename "new-account")
 
@@ -88,25 +103,25 @@
   (.write realm f))
 
 
-(def transit-special-chars #{"~" "^" "`"})  
+(def transit-special-chars #{"~" "^" "`"})
 (def transit-escape-char "~")
 
 (defn to-be-escaped?
-  "Check if element is a string that begins 
+  "Check if element is a string that begins
    with a character recognized as special by Transit"
   [e]
   (and (string? e)
        (contains? transit-special-chars (first e))))
 
-(defn prepare-for-transit 
+(defn prepare-for-transit
   "Following Transit documentation, escape leading special characters
-  in strings by prepending a ~. This prepares for subsequent 
-  fetching from Realm where Transit is used for JSON parsing" 
+  in strings by prepending a ~. This prepares for subsequent
+  fetching from Realm where Transit is used for JSON parsing"
   [message]
   (let [walk-fn (fn [e]
                   (cond->> e
-                           (to-be-escaped? e) 
-                           (str transit-escape-char)))]
+                    (to-be-escaped? e)
+                    (str transit-escape-char)))]
     (walk/postwalk walk-fn message)))
 
 (defn create
