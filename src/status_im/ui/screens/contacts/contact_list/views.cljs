@@ -29,7 +29,7 @@
       (or (:name group) (i18n/label :t/contacts-group-new-chat)))]])
 
 (defview contacts-list-view [group edit?]
-  (letsubs [contacts [:all-added-group-contacts (:group-id group)]]
+  (letsubs [contacts [:get-all-added-group-contacts (:group-id group)]]
     [list/flat-list {:style                     styles/contacts-list
                      :data                      contacts
                      :key-fn                    :address

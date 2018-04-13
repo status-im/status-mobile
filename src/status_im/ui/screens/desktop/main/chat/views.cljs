@@ -13,10 +13,8 @@
             [status-im.ui.components.react :as react]))
 
 (views/defview toolbar-chat-view []
-  (views/letsubs [{:keys [name public? group-chat]} [:get-current-chat]
-                  chat-id [:get-current-chat-id]
-                  pending-contact? [:current-contact :pending?]
-                  public-key [:chat :public-key]]
+  (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat] 
+                  {:keys [pending?]}                                   [:get-current-chat-contact]]
     (let [chat-name (str
                       (if public? "#" "")
                       (if (string/blank? name)
@@ -31,7 +29,7 @@
           [icons/icon :icons/group-chat])
         [react/text {:style {:font-size 16 :color :black :font-weight "600"}}
          chat-name]]
-       (when pending-contact?
+       (when pending?
          [react/touchable-highlight
           {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
           [react/view {:style {:background-color :white :border-radius 6 :margin-top 3 :padding 4}}                                      ;style/add-contact
@@ -40,7 +38,7 @@
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
-                  incoming-name [:contact-name-by-identity from]]
+                  incoming-name   [:get-contact-name-by-identity from]]
     (if outgoing
       [react/text {:style message.style/author} (:name current-account)]
       (let [name (or incoming-name (gfycat/generate-gfy from))]
@@ -134,8 +132,8 @@
              [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 (views/defview chat-text-input []
-  (views/letsubs [input-text [:chat :input-text]
-                  inp-ref (atom nil)]
+  (views/letsubs [{:keys [input-text]} [:get-current-chat]
+                  inp-ref              (atom nil)]
     [react/view {:style {:height 90 :margin-horizontal 16  :background-color :white :border-radius 12}}
      [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16 :flex 1 :margin-bottom 16}}
       [react/view {:style {:flex 1}}

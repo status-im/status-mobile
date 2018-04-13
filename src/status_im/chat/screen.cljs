@@ -36,7 +36,7 @@
     [vector-icons/icon :icons/dots-horizontal]]])
 
 (defview add-contact-bar [contact-identity]
-  (letsubs [{:keys [pending?] :as contact} [:contact-by-identity contact-identity]]
+  (letsubs [{:keys [pending?] :as contact} [:get-contact-by-identity contact-identity]]
     (when (or pending? (not contact)) ;; contact is pending or not in contact list at all
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])

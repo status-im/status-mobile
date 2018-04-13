@@ -112,7 +112,7 @@
           [unviewed-indicator chat-id]]]]])))
 
 (defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
-  (letsubs [contact' [:contact-by-identity contact]]
+  (letsubs [contact' [:get-contact-by-identity contact]]
     [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
      [react/view styles/chat-container
       [react/view styles/chat-icon-container

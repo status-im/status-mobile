@@ -27,7 +27,7 @@
 
 (defview message-content-status []
   (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
-            members                                          [:current-chat-contacts]]
+            members                                          [:get-current-chat-contacts]]
     (let [{:keys [status]} (if group-id
                              {:status nil}
                              (first members))]
@@ -275,7 +275,7 @@
     (photo from photo-path)))
 
 (defview message-author-name [from message-username]
-  (letsubs [username    [:contact-name-by-identity from]]
+  (letsubs [username [:get-contact-name-by-identity from]]
     [react/text {:style style/message-author-name} (or username
                                                        message-username
                                                        (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined

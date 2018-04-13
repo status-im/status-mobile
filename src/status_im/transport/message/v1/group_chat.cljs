@@ -55,16 +55,16 @@
   (let [added-participants-names   (map #(get-in contacts [% :name] %) added-participants)
         removed-participants-names (map #(get-in contacts [% :name] %) removed-participants)]
     (cond
-      (and added-participants removed-participants)
+      (and (seq added-participants) (seq removed-participants))
       (str admin-name " "
            (i18n/label :t/invited) " " (apply str (interpose ", " added-participants-names))
            " and "
            (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names)))
 
-      added-participants
+      (seq added-participants)
       (str admin-name " " (i18n/label :t/invited) " " (apply str (interpose ", " added-participants-names)))
 
-      removed-participants
+      (seq removed-participants)
       (str admin-name " " (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names))))))
 
 (defn- init-chat-if-new [chat-id cofx]
@@ -89,7 +89,7 @@
         (when (and (= signature group-admin)  ;; make sure that admin is the one making changes
                    (not= (set contacts) (set participants))) ;; make sure it's actually changing something
           (let [{:keys [removed added]} (participants-diff (set contacts) (set participants))
-                admin-name              (or (get-in cofx [db :contacts/contacts group-admin :name])
+                admin-name              (or (get-in db [:contacts/contacts group-admin :name])
                                             group-admin)]
             (if (removed me) ;; we were removed
               (handlers/merge-fx cofx

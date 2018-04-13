@@ -16,13 +16,12 @@
                                       :duration 300})))))
 
 (defview send-button-view []
-  (letsubs [command-completion [:command-completion]
-            selected-command   [:selected-chat-command]
-            input-text         [:chat :input-text]
-            seq-arg-input-text [:chat :seq-argument-input-text]
-            spin-value         (animation/create-value 1)
-            on-update          (send-button-view-on-update {:spin-value         spin-value
-                                                            :command-completion command-completion})]
+  (letsubs [command-completion                      [:command-completion]
+            selected-command                        [:selected-chat-command]
+            {:keys [input-text seq-arg-input-text]} [:get-current-chat]
+            spin-value                              (animation/create-value 1)
+            on-update                               (send-button-view-on-update {:spin-value         spin-value
+                                                                                 :command-completion command-completion})]
     {:component-did-update on-update}
     (let [{:keys [hide-send-button sequential-params]} (:command selected-command)]
       (when (and (not (string/blank? input-text))
@@ -34,8 +33,8 @@
                                                    (when-not (string/blank? seq-arg-input-text)
                                                      (re-frame/dispatch [:send-seq-argument]))
                                                    (utils/set-timeout
-                                                     (fn [] (re-frame/dispatch [:chat-input-focus :seq-input-ref]))
-                                                     100))
+                                                    (fn [] (re-frame/dispatch [:chat-input-focus :seq-input-ref]))
+                                                    100))
                                                  (re-frame/dispatch [:send-current-message]))}
          (let [spin (.interpolate spin-value (clj->js {:inputRange  [0 1]
                                                        :outputRange ["0deg" "90deg"]}))]

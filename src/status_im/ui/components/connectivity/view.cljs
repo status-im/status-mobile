@@ -14,15 +14,15 @@
                                        :duration 250})))
 
 (defn error-view [_]
-  (let [offline?            (re-frame/subscribe [:offline?])
-        connection-problem? (re-frame/subscribe [:connection-problem?])
-        offline-opacity     (animation/create-value 0.0)
-        on-update           (fn [_ _]
-                              (animation/set-value offline-opacity 0)
-                              (when (or @offline? @connection-problem?)
-                                (start-error-animation offline-opacity)))
-        pending-contact?    (re-frame/subscribe [:current-contact :pending?])
-        view-id             (re-frame/subscribe [:get :view-id])]
+  (let [offline?             (re-frame/subscribe [:offline?])
+        connection-problem?  (re-frame/subscribe [:connection-problem?])
+        offline-opacity      (animation/create-value 0.0)
+        on-update            (fn [_ _]
+                               (animation/set-value offline-opacity 0)
+                               (when (or @offline? @connection-problem?)
+                                 (start-error-animation offline-opacity)))
+        current-chat-contact (re-frame/subscribe [:get-current-chat-contact])
+        view-id              (re-frame/subscribe [:get :view-id])]
     (reagent/create-class
       {:component-did-mount
        on-update
@@ -32,7 +32,7 @@
        :reagent-render
        (fn [{:keys [top]}]
          (when (or @offline? @connection-problem?)
-           (let [pending? (and @pending-contact? (= :chat @view-id))]
+           (let [pending? (and (:pending @current-chat-contact) (= :chat @view-id))]
              [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending?)}
               [react/view
                [react/text {:style styles/offline-text}

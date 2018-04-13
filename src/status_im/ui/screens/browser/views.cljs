@@ -16,7 +16,7 @@
             [status-im.i18n :as i18n]))
 
 (views/defview toolbar-content-dapp [contact-identity]
-  (views/letsubs [contact [:contact-by-identity contact-identity]]
+  (views/letsubs [contact [:get-contact-by-identity contact-identity]]
     [react/view
      [react/view styles/toolbar-content-dapp
       [chat-icon.screen/dapp-icon-browser contact 36]

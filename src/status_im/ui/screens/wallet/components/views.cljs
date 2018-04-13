@@ -99,7 +99,7 @@
    (or (ethereum/normalized-address address) (i18n/label :t/specify-recipient))])
 
 (views/defview recipient-contact [address name request?]
-  (views/letsubs [contact [:contact/by-address address]]
+  (views/letsubs [contact [:get-contact-by-address address]]
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon

@@ -82,7 +82,7 @@
      :inner-props         {:accessibility-label :member-name-text}}]])
 
 (defview chat-group-contacts-view [admin?]
-  (letsubs [contacts [:current-chat-contacts]]
+  (letsubs [contacts [:get-current-chat-contacts]]
     [react/view
      [list/flat-list {:data      contacts
                       :separator list/default-separator
@@ -95,11 +95,10 @@
    [chat-group-contacts-view admin?]])
 
 (defview group-chat-profile []
-  (letsubs [current-chat [:get-current-chat]
-            editing?     [:get :group-chat-profile/editing?]
-            changed-chat [:get :group-chat-profile/profile]
-            current-pk   [:get :current-public-key]
-            group-admin  [:chat :group-admin]]
+  (letsubs [{:keys [group-admin] :as current-chat} [:get-current-chat]
+            editing?                               [:get :group-chat-profile/editing?]
+            changed-chat                           [:get :group-chat-profile/profile]
+            current-pk                             [:get :current-public-key]]
     (let [shown-chat (merge current-chat changed-chat)
           admin?     (= current-pk group-admin)]
       [react/view profile.components.styles/profile

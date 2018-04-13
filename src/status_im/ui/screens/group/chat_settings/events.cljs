@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.chat.models.message :as models.message]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.transport.message.core :as transport]
             [status-im.utils.handlers :as handlers]))
@@ -11,10 +12,12 @@
 
 (handlers/register-handler-fx
   :show-group-chat-profile
-  (fn [{db :db} [_ chat-id]]
-    {:db (assoc db :new-chat-name (get-in db [:chats chat-id :name])
-                :group/group-type :chat-group)
-     :dispatch [:navigate-to :group-chat-profile]}))
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [chat-id]] 
+    {:db (-> db
+             (assoc :new-chat-name (get-in db [:chats chat-id :name])
+                    :group/group-type :chat-group)
+             (navigation/navigate-to :group-chat-profile))}))
 
 (handlers/register-handler-fx
   :add-new-group-chat-participants

@@ -84,13 +84,6 @@
   (fn [{:keys [messages]} [_ message-id]]
     (get messages message-id)))
 
-(reg-sub
-  :chat
-  :<- [:get-active-chats]
-  :<- [:get-current-chat-id]
-  (fn [[chats id] [_ k chat-id]]
-    (get-in chats [(or chat-id id) k])))
-
 (defn- partition-by-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
   It makes best effort to group them by day.
@@ -238,9 +231,9 @@
 
 (reg-sub
   :chat-input-placeholder
-  :<- [:chat :input-text]
+  :<- [:get-current-chat]
   :<- [:selected-chat-command]
-  (fn [[input-text command]]
+  (fn [[{:keys [input-text]} command]]
     (when (and (string/ends-with? (or input-text "") chat-constants/spacing-char)
                (not (get-in command [:command :sequential-params])))
       (let [input     (string/trim (or input-text ""))

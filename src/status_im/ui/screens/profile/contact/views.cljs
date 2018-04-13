@@ -57,8 +57,8 @@
    [profile-info-contact-code-item whisper-identity]])
 
 (defview profile []
-  (letsubs [identity        [:current-contact-identity]
-            maybe-contact   [:contact]]
+  (letsubs [identity        [:get-current-contact-identity]
+            maybe-contact   [:get-current-contact]]
     (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))]
       [react/view profile.components.styles/profile
        [status-bar/status-bar]

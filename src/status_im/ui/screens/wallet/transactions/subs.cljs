@@ -29,7 +29,7 @@
 
 (reg-sub :wallet.transactions/transactions
   :<- [:wallet]
-  :<- [:contacts/by-address]
+  :<- [:get-contacts-by-address]
   (fn [[wallet contacts]]
     (reduce (fn [acc [hash transaction]]
               (assoc acc hash (enrich-transaction transaction contacts)))
@@ -50,7 +50,7 @@
 
 (reg-sub :wallet/unsigned-transactions
   :<- [:wallet]
-  :<- [:contacts/by-address]
+  :<- [:get-contacts-by-address]
   (fn [[wallet contacts]]
     (map #(enrich-transaction % contacts) (vals (:transactions-unsigned wallet)))))
 

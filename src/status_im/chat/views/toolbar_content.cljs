@@ -60,16 +60,12 @@
             (i18n/label-pluralize cnt :t/members-active)))]])))
 
 (defview toolbar-content-view []
-  (letsubs [group-chat    [:chat :group-chat]
-            name          [:chat :name]
-            chat-id       [:chat :chat-id]
-            contacts      [:chat :contacts]
-            public?       [:chat :public?]
-            public-key    [:chat :public-key]
-            show-actions? [:get-current-chat-ui-prop :show-actions?]
-            accounts      [:get-accounts]
-            contact       [:get-in [:contacts/contacts @chat-id]]
-            sync-state    [:sync-state]]
+  (letsubs [{:keys [group-chat name chat-id
+                    contacts public? public-key]} [:get-current-chat]
+            show-actions?                         [:get-current-chat-ui-prop :show-actions?]
+            accounts                              [:get-accounts]
+            contact                               [:get-current-chat-contact] 
+            sync-state                            [:sync-state]]
     [react/view common.styles/flex
      [react/view (st/chat-name-view (or (empty? accounts)
                                         show-actions?))
