@@ -8,7 +8,8 @@
          com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
          com.taoensso/timbre         {:mvn/version "4.10.0"}
          hickory                     {:mvn/version "0.7.1"}
-         com.cognitect/transit-cljs  {:mvn/version "0.8.248"}}
+         com.cognitect/transit-cljs  {:mvn/version "0.8.248"}
+         day8.re-frame/async-flow-fx {:mvn/version "0.0.10"}}
 
  :aliases
  {:repl {:extra-deps

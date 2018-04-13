@@ -27,6 +27,7 @@
    :no                                   "No"
    :on                                   "On"
    :off                                  "Off"
+   :mailserver-connection-error          "Could not connect to mailserver"
 
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."

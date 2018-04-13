@@ -166,6 +166,8 @@
                   :node/after-stop
                   :inbox/wnodes
                   :inbox/password
+                  :inbox/sym-key-id
+                  :inbox/last-request
                   :browser/browsers
                   :browser/options
                   :new/open-dapp
