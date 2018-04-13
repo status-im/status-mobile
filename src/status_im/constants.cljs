@@ -38,7 +38,7 @@
            {:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 
 (def default-account-settings
-  {:wallet {:visible-tokens {:testnet #{:STT}
+  {:wallet {:visible-tokens {:testnet #{:STT :ATT}
                              :mainnet #{:SNT}}}
    :wnode {:testnet "main"
            :mainnet "main"}})
