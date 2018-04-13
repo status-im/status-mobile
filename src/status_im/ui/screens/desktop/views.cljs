@@ -9,6 +9,9 @@
             [status-im.ui.screens.accounts.recover.views :as recover.views]
             [status-im.ui.screens.accounts.views :as accounts.views]))
 
+
+(enable-console-print!)
+
 (views/defview main []
   (views/letsubs [view-id [:get :view-id]]
     (let [component (case view-id

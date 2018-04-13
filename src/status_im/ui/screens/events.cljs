@@ -289,7 +289,7 @@
                           [:send-account-update-if-needed]
                           [:update-wallet]
                           [:update-transactions]
-                          [:get-fcm-token]
+                          ;[:get-fcm-token]
                           [:update-sign-in-time]]
                    (seq events-after) (into events-after))}))
 

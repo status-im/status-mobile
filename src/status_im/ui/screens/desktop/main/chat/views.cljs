@@ -134,13 +134,11 @@
              [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 (views/defview chat-text-input []
-  (views/letsubs [input-text [:chat :input-text]
-                  inp-ref (atom nil)]
+  (views/letsubs [inp-ref (atom nil)]
     [react/view {:style {:height 90 :margin-horizontal 16  :background-color :white :border-radius 12}}
      [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16 :flex 1 :margin-bottom 16}}
       [react/view {:style {:flex 1}}
-       [react/text-input {:default-value  (or input-text "")
-                          :placeholder    "Type a message..."
+       [react/text-input {:placeholder    "Type a message..."
                           :auto-focus     true
                           :multiline      true
                           :blur-on-submit true
