@@ -9,6 +9,11 @@
     "android": {
       "host": "10.0.2.2",
       "modules": []
+    },
+    "desktop": {
+      "host": "localhost",
+      "modules": [
+      ]
     }
   },
   "modules": [
@@ -18,12 +23,10 @@
     "dismissKeyboard",
     "react-native-splash-screen",
     "react-native-status",
-    "react-native-camera",
     "react-native-qrcode",
     "identicon.js",
     "react-native-fs",
     "react-native-dialogs",
-    "react-native-image-resizer",
     "react-native-image-crop-picker",
     "react-native-securerandom",
     "react-native-webview-bridge",
@@ -31,8 +34,6 @@
     "homoglyph-finder",
     "web3",
     "chance",
-    "instabug-reactnative",
-    "nfc-react-native",
     "react-native-http-bridge",
     "emojilib",
     "react-native-config",
@@ -43,12 +44,11 @@
     "rn-snoopy/stream/filter",
     "rn-snoopy/stream/buffer",
     "react-native/Libraries/vendor/emitter/EventEmitter",
-    "react-native-background-timer",
-    "react-native-fetch-polyfill",
-    "react-native-testfairy"
+    "react-native-fetch-polyfill"
   ],
   "imageDirs": [
-    "resources/images"
+    "resources/images",
+    "resources/icons"
   ],
   "envRoots": {
     "dev": "env/dev",

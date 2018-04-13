@@ -18,6 +18,7 @@
       [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16}}
        [react/view {:style {:flex 1}}
         [react/text-input {:placeholder "Contact key"
+                           :flex 1
                            :on-change   (fn [e]
                                           (let [native-event (.-nativeEvent e)
                                                 text (.-text native-event)]
@@ -37,6 +38,7 @@
        [react/text "#"]
        [react/view {:style {:flex 1}}
         [react/text-input {:placeholder "topic"
+                           :flex 1
                            :on-change   (fn [e]
                                           (let [native-event (.-nativeEvent e)
                                                 text (.-text native-event)]

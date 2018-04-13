@@ -338,7 +338,7 @@
                          [:process-pending-messages]
                          [:update-wallet]
                          [:update-transactions]
-                         [:get-fcm-token]
+                         (if-not platform/desktop? [:get-fcm-token])
                          [:update-sign-in-time]
                          [:show-mainnet-is-default-alert]
                          (universal-links/stored-url-event cofx)]

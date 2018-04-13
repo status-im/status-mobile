@@ -5,7 +5,7 @@
   {:nrepl-port 7888
    :builds     [{:id           :desktop
                  :source-paths ["react-native/src" "src" "env/dev"]
-                 :compiler     {:output-to     "target/ios/desktop.js"
+                 :compiler     {:output-to     "target/dektop/app.js"
                                 :main          "env.desktop.main"
                                 :output-dir    "target/desktop"
                                 :npm-deps false

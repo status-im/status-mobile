@@ -36,7 +36,7 @@
 (def view (get-class "View"))
 (def safe-area-view (get-class "SafeAreaView"))
 
-(def status-bar (get-class "StatusBar"))
+(def status-bar (get-class "View"))
 
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
