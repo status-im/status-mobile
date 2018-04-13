@@ -57,7 +57,7 @@
      (if (= chat-id constants/console-chat-id)
        [toolbar/simple-toolbar name]
        [toolbar/platform-agnostic-toolbar {}
-        toolbar/nav-back-count
+        (toolbar/nav-back-count {:home? true})
         [toolbar-content/toolbar-content-view]
         [toolbar/actions [{:icon      :icons/options
                            :icon-opts {:color               :black

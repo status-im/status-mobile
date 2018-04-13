@@ -51,7 +51,11 @@
 
 (def default-nav-back [nav-button actions/default-back])
 
-(def nav-back-count [nav-button-with-count actions/default-back])
+(defn nav-back-count
+  ([]
+   [nav-button-with-count actions/default-back])
+  ([{:keys [home?]}]
+   [nav-button-with-count (if home? actions/home-back actions/default-back)]))
 
 (defn default-done
   "Renders a touchable icon on Android or a label or iOS."

@@ -80,7 +80,7 @@
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
-      toolbar.view/nav-back-count
+      (toolbar.view/nav-back-count)
       (if dapp?
         [toolbar-content-dapp contact unread-messages-number]
         [toolbar-content browser unread-messages-number])]

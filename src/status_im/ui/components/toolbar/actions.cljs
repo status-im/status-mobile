@@ -18,8 +18,13 @@
 
 (def default-handler #(re-frame/dispatch [:navigate-back]))
 
+(def home-handler #(re-frame/dispatch [:navigate-to-clean :home]))
+
 (def default-back
   (back default-handler))
+
+(def home-back
+  (back home-handler))
 
 (defn back-white [handler]
   {:icon                :icons/back

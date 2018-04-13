@@ -20,11 +20,15 @@
                        ;; in handlers
                        (let [stack      (subscribe [:get :navigation-stack])
                              result-box (subscribe [:get-current-chat-ui-prop :result-box])
-                             webview    (subscribe [:get :webview-bridge])]
+                             webview    (subscribe [:get :webview-bridge])
+                             view-id    (subscribe [:get :view-id])]
                          (cond
 
                            (and @webview (:can-go-back? @result-box))
                            (do (.goBack @webview) true)
+
+                           (#{:home :wallet :my-profile} view-id)
+                           (do (.exitApp react/back-handler))
 
                            (< 1 (count @stack))
                            (do (dispatch [:navigate-back]) true)
