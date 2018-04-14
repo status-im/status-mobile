@@ -21,6 +21,7 @@
 (def app-db {:current-public-key          nil
              :status-module-initialized?  (or platform/ios? js/goog.DEBUG)
              :keyboard-height             0
+             :tab-bar-visible?            true
              :accounts/accounts           {}
              :navigation-stack            '()
              :contacts/contacts           {}
@@ -64,6 +65,7 @@
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
+(spec/def ::tab-bar-visible? (spec/nilable boolean?))
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
@@ -184,6 +186,7 @@
                   ::status-node-started?
                   ::keyboard-height
                   ::keyboard-max-height
+                  ::tab-bar-visible?
                   ::network-status
                   ::mailserver-status
                   ::peers-count

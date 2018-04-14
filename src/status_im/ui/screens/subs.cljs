@@ -57,6 +57,10 @@
   (fn [sync-state]
     (#{:pending :in-progress} sync-state)))
 
+(reg-sub :tab-bar-visible?
+  (fn [db _]
+    (get db :tab-bar-visible?)))
+
 (reg-sub :get-screen-params
   (fn [db [_ view-id]]
     (get-in db [:navigation/screen-params (or view-id (:view-id db))])))

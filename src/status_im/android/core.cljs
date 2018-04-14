@@ -44,13 +44,16 @@
                        "keyboardDidShow"
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
+                           (dispatch [:hide-tab-bar])
                            (when-not (= h @keyboard-height)
                              (dispatch [:set :keyboard-height h])
                              (dispatch [:set :keyboard-max-height h])))))
          (.addListener react/keyboard
                        "keyboardDidHide"
-                       #(when-not (= 0 @keyboard-height)
-                          (dispatch [:set :keyboard-height 0])))
+                       (fn [_]
+                         (dispatch [:show-tab-bar])
+                         (when (zero? @keyboard-height)
+                           (dispatch [:set :keyboard-height 0]))))
          (.hide react/splash-screen)
          (.addEventListener react/app-state "change" app-state-change-handler))
        :component-did-mount

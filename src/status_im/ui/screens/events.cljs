@@ -400,3 +400,13 @@
   [re-frame/trim-v]
   (fn [db [item-id value]]
     (assoc-in db [:chat-animations item-id :delete-swiped] value)))
+
+(handlers/register-handler-db
+  :show-tab-bar
+  (fn [db _]
+    (assoc db :tab-bar-visible? true)))
+
+(handlers/register-handler-db
+  :hide-tab-bar
+  (fn [db _]
+    (assoc db :tab-bar-visible? false)))

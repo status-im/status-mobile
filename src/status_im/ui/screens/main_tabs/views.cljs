@@ -65,7 +65,8 @@
      ^{:key view-id} [tab view-id content (= view-id current-view-id) accessibility-label count-subscription])])
 
 (views/defview main-tabs []
-  (views/letsubs [view-id [:get :view-id]]
+  (views/letsubs [view-id          [:get :view-id]
+                  tab-bar-visible? [:tab-bar-visible?]]
     [react/view common.styles/flex
      [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
      [react/view common.styles/main-container
@@ -93,4 +94,5 @@
         {:component    profile.user/my-profile
          :views        :my-profile
          :current-view view-id}]]
-      [tabs view-id]]]))
+      (when tab-bar-visible?
+        [tabs view-id])]]))
