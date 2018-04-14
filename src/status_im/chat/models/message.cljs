@@ -166,7 +166,6 @@
 (defn- send
   [chat-id send-record {{:contacts/keys [contacts]} :db :as cofx}]
   (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
-    (print "=== send, fcm-token: " fcm-token " dapp?: " dapp?)
     (if dapp?
       (send-dapp-message! cofx chat-id send-record)
       ;(if fcm-token
