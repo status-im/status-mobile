@@ -118,6 +118,11 @@
   (transit/write writer o))
 
 (defn deserialize
-  "Deserializes a record implementing the StatusMessage protocol using the custom readers"
+  "Deserializes a record implementing the StatusMessage protocol using the custom readers
+  Returns nil if there is an error during deserialization (invalid transit for instance)"
   [o]
-  (try (transit/read reader o) (catch :default e nil)))
+  (try
+    (transit/read reader o)
+    (catch :default e nil)))
+
+(def unknown-message-type? transit/tagged-value?)
