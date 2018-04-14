@@ -151,7 +151,8 @@
   (fn [{db :db} _]
     {:db db
      :dispatch-n [[:navigate-to-clean :home]
-                  [:request-notifications]]}))
+                  ;[:request-notifications]
+                  ]}))
 
 (handlers/register-handler-fx
   :account-set-input-text
