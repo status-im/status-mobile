@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.protocol.core :as protocol]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.styles :as common.styles]
@@ -15,6 +14,7 @@
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im.utils.build :as build]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
@@ -48,11 +48,10 @@
     :action #(re-frame/dispatch [:my-profile/update-picture])}
    {:label  (i18n/label :t/image-source-make-photo)
     :action (fn []
-              (re-frame/dispatch [:request-permissions
-                                  [:camera :write-external-storage]
-                                  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
-                                  #(utils/show-popup (i18n/label :t/error)
-                                                     (i18n/label :t/camera-access-error))]))}])
+              (re-frame/dispatch [:request-permissions {:permissions [:camera :write-external-storage]
+                                                        :on-allowed  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
+                                                        :on-denied   #(utils/show-popup (i18n/label :t/error)
+                                                                                        (i18n/label :t/camera-access-error))}]))}])
 
 (defn qr-viewer-toolbar [label value]
   [toolbar/toolbar {}
@@ -88,49 +87,43 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
-(defn my-profile-settings [{:keys [seed-backed-up? mnemonic]}]
-  [react/view
-   [profile.components/settings-title (i18n/label :t/settings)]
-   [profile.components/settings-item {:label-kw :t/main-currency
-                                      :value "USD"
-                                      :active? false}]
-   [profile.components/settings-item-separator]
-   [profile.components/settings-item {:label-kw :t/notifications
-                                      :action-fn #(.openURL react/linking "app-settings://notification/status-im")}
-    :notifications-button]
-   [profile.components/settings-item-separator]
-   (when (and (not seed-backed-up?) (not (string/blank? mnemonic)))
-     [react/view
-      [profile.components/settings-item
-       {:label-kw     :t/backup-your-seed
-        :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
-        :icon-content [components.common/counter {:size 22} 1]}]
-      [profile.components/settings-item-separator]])])
-
-(defn navigate-to-accounts [sharing-usage-data?]
-  ;; TODO(rasom): probably not the best place for this call
-  (protocol/stop-whisper!)
-  (re-frame/dispatch [:navigate-to :accounts])
-  (when sharing-usage-data?
-    (re-frame/dispatch [:unregister-mixpanel-tracking])))
-
-(defn handle-logout [sharing-usage-data?]
+(defn- handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) #(navigate-to-accounts sharing-usage-data?)))
+                           (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
 
-(defn logout [sharing-usage-data?]
-  [react/view {}
-   [react/touchable-highlight
-    {:on-press            #(handle-logout sharing-usage-data?)
-     :accessibility-label :log-out-button}
-    [react/view profile.components.styles/settings-item
-     [react/text {:style styles/logout-text
-                  :font  (if platform/android? :medium :default)}
-      (i18n/label :t/logout)]]]])
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
+  (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
+    [react/view
+     [profile.components/settings-title (i18n/label :t/settings)]
+     [profile.components/settings-item {:label-kw :t/main-currency
+                                        :value    (i18n/label :usd-currency)
+                                        :active?  false}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw            :t/notifications
+                                        :accessibility-label :notifications-button
+                                        :action-fn           #(.openURL react/linking "app-settings://notification/status-im")}]
+     (when show-backup-seed?
+       [profile.components/settings-item-separator])
+     (when show-backup-seed?
+       [profile.components/settings-item
+        {:label-kw     :t/backup-your-seed
+         :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
+         :icon-content [components.common/counter {:size 22} 1]}])
+     [profile.components/settings-item-separator]
+     [react/view styles/my-profile-settings-logout-wrapper
+       [react/view styles/my-profile-settings-logout
+         [profile.components/settings-item {:label-kw            :t/logout
+                                            :accessibility-label :log-out-button
+                                            :destructive?        true
+                                            :hide-arrow?         true
+                                            :action-fn           #(handle-logout)}]]
+       [react/view styles/my-profile-settings-logout-version
+         [react/text build/version]]]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
-  (letsubs [advanced? [:get :my-profile/advanced?]]
+  (letsubs [advanced?                     [:get :my-profile/advanced?]
+            {:keys [sharing-usage-data?]} [:get-current-account]]
     [react/view
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
                                  :style styles/advanced-button}
@@ -151,17 +144,23 @@
           [profile.components/settings-item-separator])
         (when config/offline-inbox-enabled?
           [profile.components/settings-item
-           {:label-kw :t/offline-messaging-settings
+           {:label-kw :t/offline-messaging
             :action-fn #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
             :accessibility-label :offline-messages-settings-button}])
         [profile.components/settings-item-separator]
         [profile.components/settings-switch-item
          {:label-kw :t/dev-mode
           :value dev-mode?
-          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]])]))
+          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]
+        [profile.components/settings-item-separator]
+        [profile.components/settings-item
+         {:label-kw            :t/help-improve?
+          :value               (i18n/label (if sharing-usage-data? :on :off))
+          :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
+          :accessibility-label :help-improve}]])]))
 
 (defview my-profile []
-  (letsubs [{:keys [public-key sharing-usage-data?] :as current-account} [:get-current-account]
+  (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]]
     (let [shown-account (merge current-account changed-account)]
@@ -169,12 +168,11 @@
        (if editing?
          [my-profile-edit-toolbar]
          [my-profile-toolbar])
-       [react/scroll-view
+       [react/scroll-view {:keyboard-should-persist-taps :handled}
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account]]
-        [logout sharing-usage-data?]
         [advanced shown-account]]])))

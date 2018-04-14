@@ -9,8 +9,6 @@
             [status-im.core :as core]
             [status-im.ui.components.react :as react]))
 
-
-
 (defn app-root []
   (reagent/create-class
     {:reagent-render views/main}))

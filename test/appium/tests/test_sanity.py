@@ -41,7 +41,7 @@ class TestSanity(SingleDeviceTestCase):
         if basic_user['password'] in str(home_view.logcat):
             pytest.fail('Password in logcat!!!', pytrace=False)
 
-    @pytest.mark.gorup_chat
+    @pytest.mark.group_chat
     def test_group_chat_members(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -68,7 +68,7 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view.create_user()
         home_view = sign_in_view.get_home_view()
         start_new_chat_view = home_view.plus_button.click()
-        start_new_chat_view.add_new_contact.click()
+        start_new_chat_view.start_new_chat_button.click()
         contact_jarrad = home_view.element_by_text('Jarrad', 'button')
         contact_jarrad.scroll_to_element()
         contact_jarrad.click()
@@ -82,7 +82,7 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view.apps_button.click()
         sign_in_view.status_app_icon.scroll_to_element()
         sign_in_view.status_app_icon.click()
-        sign_in_view.ok_button_apk.click()
+        sign_in_view.ok_button.click()
         sign_in_view.first_account_button.click()
         sign_in_view.password_input.send_keys('qwerty1234')
         sign_in_view.sign_in_button.click()

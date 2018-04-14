@@ -1,10 +1,10 @@
 (ns status-im.chat.events.receive-message
   (:require [re-frame.core :as re-frame]
-            [taoensso.timbre :as log] 
-            [status-im.data-store.messages :as messages-store]
+            [taoensso.timbre :as log]
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.models.message :as message-model]
             [status-im.constants :as constants]
+            [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as random]))
 
@@ -14,7 +14,7 @@
   ::received-message
   message-model/receive-interceptors
   (fn [cofx [message]]
-    (message-model/receive cofx message)))
+    (message-model/receive message cofx)))
 
 (handlers/register-handler-fx
   :chat-received-message/add
@@ -39,7 +39,7 @@
                                                                        {:short-preview short-preview
                                                                         :preview       preview})])}])})
         ;; regular non command message, we can add it right away
-        (message-model/receive cofx message)))))
+        (message-model/receive message cofx)))))
 
 ;; TODO(alwx): refactor this when status-im.commands.handlers.jail is refactored
 (handlers/register-handler-fx
@@ -66,6 +66,7 @@
                                  :content      (str type ": " message)
                                  :content-type constants/content-type-log-message
                                  :outgoing     false
+                                 :clock-value  (utils.clocks/send 0)
                                  :chat-id      chat-id
                                  :from         chat-id
                                  :to           "me"}]))))
@@ -75,6 +76,7 @@
                              :content      (str content)
                              :content-type constants/text-content-type
                              :outgoing     false
+                             :clock-value  (utils.clocks/send 0)
                              :chat-id      chat-id
                              :from         chat-id
                              :to           "me"}])))))

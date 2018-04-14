@@ -74,26 +74,14 @@
    :font-size 16})
 
 (defstyle private-group-icon-container
-  {:width        16
+  {:width        20
    :height       12
-   :margin-right 6
-   :android      {:margin-top 4}
-   :ios          {:margin-top 2}})
-
-(def private-group-icon
-  {:width  16
-   :height 16})
+   :margin-right 6})
 
 (defstyle public-group-icon-container
-  {:width        16
+  {:width        20
    :height       12
-   :margin-right 6
-   :android      {:margin-top 4}
-   :ios          {:margin-top 2}})
-
-(def public-group-icon
-  {:width  16
-   :height 16})
+   :margin-right 6})
 
 (def last-message-container
   {:flex-shrink 1})
@@ -219,3 +207,16 @@
    :width           delete-button-width
    :justify-content :center
    :align-items     :center})
+
+(def action-button-container
+  {:position :absolute
+   :bottom   16
+   :right    16})
+
+(def action-button
+  {:width            56
+   :height           56
+   :background-color colors/blue
+   :border-radius    28
+   :align-items      :center
+   :justify-content  :center})

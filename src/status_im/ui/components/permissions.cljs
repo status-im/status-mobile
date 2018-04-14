@@ -16,16 +16,18 @@
     (and (= (count permission-vals) 1)
          (not= (first permission-vals) "denied"))))
 
-(defn request-permissions [permissions then else]
+(defn request-permissions [{:keys [permissions on-allowed on-denied]
+                            :or   {on-allowed #()
+                                   on-denied  #()}
+                            :as   options}]
   (if platform/android?
-    (letfn [(else-fn [] (when else (else)))]
-      (let [permissions (mapv #(get permissions-map %) permissions)]
-        (-> (.requestMultiple permissions-class (clj->js permissions))
-            (.then #(if (all-granted? (js->clj %))
-                      (then)
-                      (else-fn)))
-            (.catch else-fn))))
+    (let [permissions (mapv #(get permissions-map %) permissions)]
+      (-> (.requestMultiple permissions-class (clj->js permissions))
+          (.then #(if (all-granted? (js->clj %))
+                    (on-allowed)
+                    (on-denied)))
+          (.catch on-denied)))
 
     (if ((set permissions) :camera)
-      (camera/request-access-ios then else)
-      (then))))
+      (camera/request-access-ios on-allowed on-denied)
+      (on-allowed))))

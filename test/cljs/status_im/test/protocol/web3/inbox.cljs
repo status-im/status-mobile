@@ -1,6 +1,6 @@
 (ns status-im.test.protocol.web3.inbox
-  (:require [status-im.protocol.web3.inbox :as inbox]
-            [status-im.protocol.web3.utils :as utils]
+  (:require [status-im.transport.inbox :as inbox]
+            [status-im.transport.utils :as utils]
             [cljs.test :refer-macros [deftest is testing]]))
 
 

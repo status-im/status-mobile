@@ -1,12 +1,8 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as str]
             [goog.object :as object]
-            [status-im.ui.components.react :as rc]
-            [status-im.native-module.core :as status]
             [status-im.chat.constants :as const]
             [status-im.chat.models.commands :as commands-model]
-            [status-im.chat.views.input.validation-messages :refer [validation-message]] 
-            [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
             [taoensso.timbre :as log]))
 
@@ -203,28 +199,3 @@
                         [(keyword (get-in params [i :name])) value]))
          (remove #(nil? (first %)))
          (into {}))))
-
-(defn modified-db-after-change
-  "Returns the new db object that should be used after any input change."
-  [{:keys [current-chat-id] :as db}]
-  (let [command      (selected-chat-command db)
-        prev-command (get-in db [:chat-ui-props current-chat-id :prev-command])]
-    (if command
-      (cond-> db
-        ;; clear the bot db
-        (not= prev-command (-> command :command :name))
-        (assoc-in [:bot-db (or (:bot command) current-chat-id)] nil)
-        ;; clear the chat's validation messages
-        true
-        (assoc-in [:chat-ui-props current-chat-id :validation-messages] nil))
-      (-> db
-          ;; clear input metadata
-          (assoc-in [:chats current-chat-id :input-metadata] nil)
-          ;; clear
-          (update-in [:chat-ui-props current-chat-id]
-                     merge
-                     {:result-box          nil
-                      :validation-messages nil
-                      :prev-command        (-> command :command :name)})))))
-
-(defmulti validation-handler (fn [name] (keyword name)))

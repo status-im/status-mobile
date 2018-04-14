@@ -18,7 +18,6 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - GoogleToolboxForMac/NSData+zlib (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
-  - Instabug (7.2.6)
   - Protobuf (3.3.0)
   - React (0.53.3):
     - React/Core (= 0.53.3)
@@ -30,7 +29,6 @@ PODS:
 
 DEPENDENCIES:
   - FirebaseMessaging
-  - Instabug (~> 7.0)
   - React (from `../node_modules/react-native`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -49,12 +47,11 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
   FirebaseMessaging: 227406c05b0dc9290702d2e9f18ab5528f0c2cf2
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  Instabug: 49d4fbf1bf14e2f9074dfb7774ca5611bae993b4
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   React: fd20e9486c9d994fb6e40d6e67dbd29c7709889c
   react-native-background-timer: 10063c04bf85d7f8811dff8c74399f0aa715245f
   yoga: c7c8e64dbc2552b1ceac0b491ff03f5e5128b501
 
-PODFILE CHECKSUM: 2fb09df3e1ea33a8eef1757e72a6577bd5d547c1
+PODFILE CHECKSUM: 653ad2d673bf8aa8127325a078e07aedc8dbe463
 
 COCOAPODS: 1.3.1

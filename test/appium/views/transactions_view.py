@@ -56,18 +56,18 @@ class TransactionTable(BaseElement):
 class HistoryTab(BaseButton):
     def __init__(self, driver):
         super(HistoryTab, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='HISTORY']")
+        self.locator = self.Locator.accessibility_id('history-button')
 
 
 class UnsignedTab(BaseButton):
     def __init__(self, driver):
         super(UnsignedTab, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='UNSIGNED']")
+        self.locator = self.Locator.accessibility_id('unsigned-transactions-button')
 
     class SignButton(BaseButton):
         def __init__(self, driver):
             super(UnsignedTab.SignButton, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector("//*[@text='SIGN']")
+            self.locator = self.Locator.accessibility_id('sign-button')
 
 
 class TransactionsView(BaseView):

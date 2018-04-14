@@ -1,6 +1,7 @@
 (ns status-im.ui.components.common.common
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.i18n :as i18n]
+  (:require [reagent.core :as reagent]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.common.styles :as styles]
@@ -13,25 +14,15 @@
 
 (defn top-shadow []
   (when platform/android?
-    [react/linear-gradient
-     {:style  styles/gradient-bottom
-      :colors styles/gradient-top-colors}]))
+    [react/view]))
 
 (defn bottom-shadow []
   (when platform/android?
-    [react/linear-gradient
-     {:style  styles/gradient-top
-      :colors styles/gradient-bottom-colors}]))
+    [react/view]))
 
 (defn separator [style & [wrapper-style]]
   [react/view (merge styles/separator-wrapper wrapper-style)
    [react/view (merge styles/separator style)]])
-
-(defn form-spacer []
-  [react/view
-   [bottom-shadow]
-   [react/view styles/form-spacer]
-   [top-shadow]])
 
 (defn list-separator []
   [separator styles/list-separator])
@@ -90,14 +81,22 @@
 
 (defn counter
   ([value] (counter nil value))
-  ([{:keys [size] :or {size 18}} value]
+  ([{:keys [size accessibility-label] :or {size 18}} value]
    [react/view {:style (styles/counter-container size)}
-    [react/text {:style (styles/counter-label size)}
+    [react/text (cond-> {:style (styles/counter-label size)}
+                  accessibility-label
+                  (assoc :accessibility-label accessibility-label))
      value]]))
 
-(defn image-contain
-  ([source] (image-contain nil source))
-  ([{:keys [style]} source]
-   [react/view {:style (merge styles/image-contain
-                              style)}
-    [react/image {:source source :resizeMode :contain :style styles/image-contain-image}]]))
+(defn image-contain [_ _]
+  (let [content-width (reagent/atom 0)]
+    (reagent/create-class
+      {:reagent-render
+       (fn [{:keys [container-style style]} {:keys [image width height]}]
+         [react/view {:style     (merge styles/image-contain container-style)
+                      :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+          [react/image {:source      image
+                        :resize-mode :contain
+                        :style       (merge style
+                                            {:width  @content-width
+                                             :height (/ (* @content-width height) width)})}]])})))

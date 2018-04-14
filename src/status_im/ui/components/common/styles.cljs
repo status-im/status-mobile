@@ -164,12 +164,4 @@
    :color          colors/white})
 
 (def image-contain
-  {:flex-direction  :row
-   :flex            1
-   :align-items     :center
-   :justify-content :center
-   :flex-wrap       :wrap})
-
-(def image-contain-image
-  {:flex-direction :row
-   :flex           1})
+  {:align-self :stretch})

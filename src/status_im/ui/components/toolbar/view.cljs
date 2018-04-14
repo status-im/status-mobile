@@ -121,7 +121,7 @@
        {:key (str "action-" (or image icon))}))])
 
 (defn toolbar
-  ([props nav-item content-item] (toolbar props nav-item content-item [actions [{:image :blank}]]))
+  ([props nav-item content-item] (toolbar props nav-item content-item nil))
   ([{:keys [background-color style flat?]}
     nav-item
     content-item

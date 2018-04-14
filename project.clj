@@ -12,7 +12,7 @@
                  [hickory "0.7.1"]
                  [com.cognitect/transit-cljs "0.8.243"]]
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-re-frisk "0.5.5"]]
+            [lein-re-frisk "0.5.6"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
@@ -53,8 +53,8 @@
                                        :timeout          240000}}
              :figwheel [:dev
                         {:dependencies [[figwheel-sidecar "0.5.14"]
-                                        [re-frisk-remote "0.5.3"]
-                                        [re-frisk-sidecar "0.5.4"]
+                                        [re-frisk-remote "0.5.4"]
+                                        [re-frisk-sidecar "0.5.5"]
                                         [hawk "0.2.11"]]
                          :source-paths ["src" "env/dev" "react-native/src" "components/src"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
@@ -69,12 +69,13 @@
                                                         :preamble      ["js/hook-require.js"]
                                                         :target        :nodejs}}
                                         {:id           "protocol"
-                                         :source-paths ["src" "test/cljs"]
-                                         :compiler     {:main          status-im.test.protocol.runner
-                                                        :output-to     "target/test/test.js"
-                                                        :output-dir    "target/test"
-                                                        :optimizations :none
-                                                        :target        :nodejs}}
+                                         :source-paths ["components/src" "src" "test/cljs"]
+                                         :compiler     {:main             status-im.test.protocol.runner
+                                                        :output-to        "target/test/test.js"
+                                                        :output-dir       "target/test"
+                                                        :optimizations    :none
+                                                        :preamble         ["js/hook-require.js"]
+                                                        :target           :nodejs}}
                                         {:id           "env-dev-utils"
                                          :source-paths ["env/dev/env/utils.cljs" "test/env/dev"]
                                          :compiler     {:main          env.test.runner

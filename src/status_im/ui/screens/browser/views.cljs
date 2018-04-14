@@ -1,6 +1,8 @@
 (ns status-im.ui.screens.browser.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
+  (:require-macros [status-im.utils.slurp :refer [slurp]]
+                   [status-im.utils.views :as views])
+  (:require [cljs.reader :as reader]
+            [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -26,6 +28,9 @@
         (:name contact)]
        [react/text {:style styles/dapp-text}
         (i18n/label :t/dapp)]]]]))
+
+(def browser-config
+  (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
 
 (defn toolbar-content [{:keys [url] :as browser}]
   (let [url-text (atom nil)]
@@ -60,6 +65,10 @@
       (re-frame/dispatch [:update-browser (assoc browser :url url :name title)]))
     (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
 
+(defn get-inject-js [url]
+  (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
+    (get (:inject-js browser-config) domain-name)))
+
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
@@ -87,6 +96,7 @@
          :on-navigation-state-change            #(on-navigation-change % browser)
          :injected-on-start-loading-java-script (str js-res/web3
                                                      js-res/jquery
+                                                     (get-inject-js url)
                                                      (js-res/web3-init rpc-url))
          :injected-java-script                  (str js-res/webview-js extra-js)}]
        [react/view styles/background

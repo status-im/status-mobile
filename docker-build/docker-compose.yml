@@ -1,0 +1,15 @@
+version: '3'
+services:
+  adbd:
+    privileged: true
+    build:
+      context: $PWD
+      dockerfile: docker-build/Dockerfile
+    ports:
+      - 4567:4567
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+      - ../src:/build/src
+      - ../test:/build/test
+      - ../android/app/src/:/build/android/app/src
+

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.main-tabs.styles :as tabs.styles]))
 
 (defnstyle tab [active?]
@@ -9,10 +8,11 @@
    :height              tabs.styles/tab-height
    :justify-content     :center
    :align-items         :center
+   :padding-bottom      (if active? 0 1)
    :border-bottom-width (if active? 2 1)
    :border-bottom-color (if active?
-                          styles/color-blue4
-                          styles/color-gray10-transparent)})
+                          colors/blue
+                          colors/gray-transparent)})
 
 (def tabs-container
   {:flex-direction :row
@@ -23,15 +23,19 @@
    :android    {:font-size 14}
    :text-align :center
    :color      (if active?
-                 styles/color-blue4
-                 styles/color-black)})
+                 colors/blue
+                 colors/black)})
+
+(def transactions
+  {:flex             1
+   :background-color :white})
 
 (def tab-unsigned-transactions-count
   (merge (tab-title false)
-         {:color styles/color-gray10}))
+         {:color colors/gray}))
 
 (def forward
-  {:color styles/color-gray7})
+  {:color colors/gray})
 
 (def empty-text
   {:text-align        :center
@@ -53,10 +57,10 @@
    :font-size    17})
 
 (def tx-time
-  {:flex-grow  1
-   :font-size  14
-   :text-align :right
-   :color      styles/color-gray4})
+  {:flex-grow   1
+   :font-size   14
+   :text-align  :right
+   :color       colors/blue})
 
 (def address-row
   {:flex-direction :row
@@ -66,7 +70,7 @@
 
 (def address-item
   {:font-size 16
-   :color     styles/color-gray4})
+   :color     colors/gray})
 
 (def address-label
   (merge address-item
@@ -74,7 +78,7 @@
 
 (def address-contact
   (merge address-item
-         {:color        styles/color-black
+         {:color        colors/black
           :margin-right 5}))
 
 (def address-hash
@@ -87,14 +91,14 @@
    :padding-vertical 12})
 
 (def sign-all-view
-  {:flex             1
-   :flex-direction   :column
-   :justify-content  :center
-   :background-color styles/color-gray-transparent})
+  {:flex              1
+   :flex-direction    :column
+   :justify-content   :center
+   :background-color  colors/gray-transparent})
 
 (def sign-all-popup
   {:align-self        :flex-start
-   :background-color  styles/color-white
+   :background-color  colors/white
    :margin-horizontal 12
    :border-radius     8})
 
@@ -137,7 +141,7 @@
 (def details-item-label
   {:flex         1
    :margin-right 10
-   :color        styles/color-gray4
+   :color        colors/gray
    :font-size    14})
 
 (def details-item-value-wrapper
@@ -145,11 +149,11 @@
 
 (def details-item-value
   {:font-size 14
-   :color     styles/color-black})
+   :color     colors/black})
 
 (def details-item-extra-value
   {:font-size 14
-   :color     styles/color-gray4})
+   :color     colors/gray})
 
 (def details-header
   {:margin-horizontal 16
@@ -167,11 +171,11 @@
 
 (def details-header-value
   {:font-size 16
-   :color     styles/color-black})
+   :color     colors/black})
 
 (def details-header-date
   {:font-size 14
-   :color     styles/color-gray4})
+   :color     colors/gray})
 
 (def details-block
   {:margin-horizontal 16})
@@ -183,25 +187,25 @@
 
 (defn progress-bar-done [done]
   {:flex             done
-   :background-color styles/color-blue2})
+   :background-color colors/blue})
 
 (defn progress-bar-todo [todo]
   {:flex             todo
-   :background-color styles/color-blue2
+   :background-color colors/blue
    :opacity          0.30})
 
 (def details-confirmations-count
-  {:color           styles/color-black
+  {:color           colors/black
    :font-size       15
    :margin-vertical 2})
 
 (def details-confirmations-helper-text
-  {:color           styles/color-gray4
+  {:color           colors/gray
    :font-size       14
    :margin-vertical 2})
 
 (def details-separator
-  {:background-color styles/color-light-gray3
+  {:background-color colors/gray-light
    :height           1
    :margin-vertical  10})
 
@@ -212,11 +216,11 @@
    :width            4
    :height           4
    :border-radius    2
-   :background-color styles/color-cyan})
+   :background-color colors/cyan})
 
 (def filter-container
   {:flex 1})
 
-(def transacions-view
+(def transactions-view
   {:flex             1
    :background-color :white})

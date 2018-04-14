@@ -49,7 +49,7 @@
        [dapp-badge styles])
      [pending-contact-badge chat-id styles]]))
 
-(defn chat-icon-view-chat-list [chat-id group-chat name color online]
+(defn chat-icon-view-chat-list [chat-id group-chat name color online & [hide-dapp?]]
   [chat-icon-view chat-id group-chat name online
    {:container              styles/container-chat-list
     :online-view-wrapper    styles/online-view-wrapper
@@ -62,7 +62,8 @@
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text styles/default-chat-icon-text}
+   hide-dapp?])
 
 (defn chat-icon-view-action [chat-id group-chat name online]
   ^{:key chat-id}

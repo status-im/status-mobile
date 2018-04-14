@@ -1,11 +1,10 @@
 package im.status.ethereum;
 
 import android.support.multidex.MultiDexApplication;
-import com.BV.LinearGradient.LinearGradientPackage;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
-import com.bitgo.randombytes.RandomBytesPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
+import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.horcrux.svg.SvgPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
@@ -15,11 +14,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
-import com.github.yamill.orientation.OrientationPackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
-import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
 import es.tiarg.nfcreactnative.NfcReactNativePackage;
@@ -27,6 +23,7 @@ import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import im.status.ethereum.module.StatusPackage;
 import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
+import com.testfairy.react.TestFairyPackage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,23 +62,22 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new SplashScreenReactPackage(),
                     statusPackage,
                     new RealmReactPackage(),
-                    new VectorIconsPackage(),
                     new RNI18nPackage(),
-                    new RandomBytesPackage(),
-                    new LinearGradientPackage(),
                     new RCTCameraPackage(),
-                    new OrientationPackage(),
                     new RNFSPackage(),
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
+                    new TestFairyPackage(),
                     new WebViewBridgePackage(BuildConfig.DEBUG, callRPC),
-                    new ReactNativeConfigPackage()
+                    new ReactNativeConfigPackage(),
+                    new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN,MainApplication.this)
+                            .setInvocationEvent("shake")
+                            .setPrimaryColor("#1D82DC")
+                            .setFloatingEdge("left")
+                            .setFloatingButtonOffsetFromTop(250)
+                            .build()
                                                                                     ));
-
-            if (!BuildConfig.DEBUG) {
-                packages.add(new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e", MainApplication.this, "shake"));
-            }
 
             return packages;
         }

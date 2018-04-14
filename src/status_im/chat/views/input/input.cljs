@@ -17,8 +17,7 @@
             [status-im.utils.utils :as utils]))
 
 (defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
-  (letsubs [input-text     [:chat :input-text]
-            command        [:selected-chat-command]
+  (letsubs [input-text     [:chat :input-text] 
             input-focused? [:get-current-chat-ui-prop :input-focused?]
             input-ref      (atom nil)]
     [react/text-input
@@ -30,10 +29,9 @@
       :default-value          (or input-text "")
       :editable               true
       :blur-on-submit         false
-      :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused? true}])
-      :on-blur                (fn []
-                                (re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
-                                (re-frame/dispatch [:set-chat-input-text ""]))
+      :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
+                                                                        :messages-focused? false}])
+      :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
       :on-submit-editing      (fn [_]
                                 (if single-line-input?
                                   (re-frame/dispatch [:send-current-message])
@@ -49,10 +47,7 @@
                                              content-size)
                                     (set-layout-height-fn (.-height content-size)))
                                   (when (not= text input-text)
-                                    (re-frame/dispatch [:set-chat-input-text text])
-                                    (when command
-                                      (re-frame/dispatch [:load-chat-parameter-box (:command command)]))
-                                    (re-frame/dispatch [:update-input-data]))))
+                                    (re-frame/dispatch [:set-chat-input-text text]))))
       :on-content-size-change (when (and (not input-focused?)
                                          (not single-line-input?))
                                 #(let [s (.-contentSize (.-nativeEvent %))
@@ -120,8 +115,7 @@
         [react/text-input (merge {:ref                 #(re-frame/dispatch [:set-chat-ui-props {:seq-input-ref %}])
                                   :style               (style/seq-input-text command-width container-width)
                                   :default-value       (or seq-arg-input-text "")
-                                  :on-change-text      #(do (re-frame/dispatch [:set-chat-seq-arg-input-text %])
-                                                            (re-frame/dispatch [:load-chat-parameter-box (:command command)])
+                                  :on-change-text      #(do (re-frame/dispatch [:set-chat-seq-arg-input-text %]) 
                                                             (re-frame/dispatch [:set-chat-ui-props {:validation-messages nil}]))
                                   :placeholder         placeholder
                                   :accessibility-label :chat-request-input
@@ -156,13 +150,16 @@
         [seq-input {:command-width   width
                     :container-width container-width}]]])))
 
-(defn commands-button []
-  [react/touchable-highlight
-   {:on-press #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
-                   (re-frame/dispatch [:chat-input-focus :input-ref]))}
-   [react/view
-    [vi/icon :icons/input-commands {:container-style style/input-commands-icon
-                                    :color           :dark}]]])
+(defview commands-button []
+  (letsubs [commands-responses [:get-available-commands-responses]]
+    (when (seq commands-responses)
+      [react/touchable-highlight
+       {:on-press            #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
+                                  (re-frame/dispatch [:chat-input-focus :input-ref]))
+        :accessibility-label :chat-commands-button}
+       [react/view
+        [vi/icon :icons/input-commands {:container-style style/input-commands-icon
+                                        :color           :dark}]]])))
 
 (defview input-container []
   (letsubs [margin     [:chat-input-margin]

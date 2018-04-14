@@ -16,7 +16,6 @@ target 'StatusIm' do
   # use_frameworks!
 
   # Pods for StatusIm
-  pod 'Instabug', '~> 7.0'
   pod 'FirebaseMessaging'
 
   pod 'React', :path => '../node_modules/react-native'

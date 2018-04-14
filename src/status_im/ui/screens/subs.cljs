@@ -5,7 +5,6 @@
             status-im.ui.screens.accounts.subs
             status-im.ui.screens.home.subs
             status-im.ui.screens.group.chat-settings.subs
-            status-im.ui.screens.discover.subs
             status-im.ui.screens.contacts.subs
             status-im.ui.screens.group.subs
             status-im.ui.screens.wallet.subs

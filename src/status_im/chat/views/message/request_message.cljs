@@ -75,7 +75,7 @@
 
 (defview message-content-command-request
   [{:keys [message-id content] :as message}]
-  (letsubs [command             [:get-command (:content-command-ref content)]
+  (letsubs [command             [:get-command (:request-command-ref content)]
             answered?           [:is-request-answered? message-id]
             status-initialized? [:get :status-module-initialized?]] 
     (let [{:keys        [prefill prefill-bot-db prefillBotDb params preview]

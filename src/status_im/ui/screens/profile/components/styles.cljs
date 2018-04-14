@@ -61,8 +61,12 @@
    :ios       {:letter-spacing -0.2}
    :android   {:color colors/black}})
 
+(def settings-item-destructive
+  {:color colors/red})
+
 (def settings-item-value
-  {:flex-wrap     :nowrap
+  {:flex          1
+   :flex-wrap     :nowrap
    :text-align    :right
    :padding-right 10
    :font-size     15

@@ -24,8 +24,7 @@ class PlusButton(BaseButton):
 class PublicKeyEditBox(BaseEditBox):
     def __init__(self, driver):
         super(PublicKeyEditBox, self).__init__(driver)
-        self.locator = \
-            self.Locator.xpath_selector("//*[@text='Enter contact code']")
+        self.locator = self.Locator.accessibility_id('enter-contact-code-input')
 
 
 class ConfirmPublicKeyButton(BaseButton):

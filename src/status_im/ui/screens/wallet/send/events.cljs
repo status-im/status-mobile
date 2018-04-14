@@ -106,22 +106,31 @@
             transaction {:id         id
                          :from       from
                          :to         to
+                         :to-name    (when (= to constants/contract-address)
+                                       (i18n/label :t/new-contract))
                          :symbol     symbol
                          :value      (money/bignumber (or value 0))
                          :data       data
-                         :gas        (money/bignumber (money/to-decimal gas))
-                         :gas-price  (money/bignumber (money/to-decimal gasPrice))
+                         :gas        (when (seq gas)
+                                       (money/bignumber (money/to-decimal gas)))
+                         :gas-price  (when (seq gasPrice)
+                                       (money/bignumber (money/to-decimal gasPrice)))
                          :timestamp  now
                          :message-id message_id}
-            sending-from-chat? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
+            sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
             new-db (assoc-in db [:wallet :transactions-unsigned id] transaction)
             sending-db {:id         id
-                        :from-chat? sending-from-chat?}]
-        (if sending-from-chat?
-          ;;SENDING FROM CHAT
-          {:db       (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
-           :dispatch-n [[:update-wallet (map :symbol (tokens/tokens-for (ethereum/network->chain-keyword (:network db))))] [:navigate-to-modal :wallet-send-transaction-modal]]}
-          ;;SEND SCREEN WAITING SIGNAL
+                        :from-chat? sending-from-bot-or-dapp?}]
+        (if sending-from-bot-or-dapp?
+          ;;SENDING FROM BOT (CHAT) OR DAPP
+          {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
+           :dispatch-n [[:update-wallet (map :symbol (tokens/tokens-for (ethereum/network->chain-keyword (:network db))))]
+                        [:navigate-to-modal :wallet-send-transaction-modal]
+                        (when-not (seq gas)
+                          [:wallet/update-estimated-gas transaction])
+                        (when-not (seq gasPrice)
+                          [:wallet/update-gas-price])]}
+          ;;WALLET SEND SCREEN WAITING SIGNAL
           (let [{:keys [later? password]} (get-in db [:wallet :send-transaction])
                 new-db' (update-in new-db [:wallet :send-transaction] merge sending-db)] ; just update sending state as we are in wallet flow
             (if later?
@@ -181,14 +190,14 @@
       (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
         {:db db'}
         (merge
-         {:db (-> db'
-                  (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
-                  (update-in [:wallet :transactions-unsigned] dissoc id)
-                  (update-in [:wallet :send-transaction] merge clear-send-properties))}
-         (if modal?
-           {:dispatch       [:navigate-back]
-            :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]}
-           {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
+          {:db (-> db'
+                   (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
+                   (update-in [:wallet :transactions-unsigned] dissoc id)
+                   (update-in [:wallet :send-transaction] merge clear-send-properties))}
+          (if modal?
+            {:dispatch       [:navigate-back]
+             :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]}
+            {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]
@@ -199,7 +208,7 @@
   :wallet/sign-transaction
   (fn [{{:keys          [web3]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
-    (let [db'     (assoc-in db [:wallet :send-transaction :wrong-password?] false)
+    (let [db' (assoc-in db [:wallet :send-transaction :wrong-password?] false)
           network (:network db)
           {:keys [amount id password to symbol gas gas-price]} (get-in db [:wallet :send-transaction])]
       (if id
@@ -292,6 +301,6 @@
   :wallet.send/reset-gas-default
   (fn [{:keys [db]}]
     {:dispatch [:wallet/update-gas-price true]
-     :db (update-in db [:wallet :edit]
-                    assoc
-                    :gas (ethereum/estimate-gas (get-in db [:wallet :send-transaction :symbol])))}))
+     :db       (update-in db [:wallet :edit]
+                          assoc
+                          :gas (ethereum/estimate-gas (get-in db [:wallet :send-transaction :symbol])))}))

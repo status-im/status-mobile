@@ -62,7 +62,7 @@
 
 (defn day-relative [ms]
   (to-str ms
-          #(.format date-time-fmt %)
+          #(.format date-fmt %)
           #(label :t/datetime-yesterday)
           #(label :t/datetime-today)))
 

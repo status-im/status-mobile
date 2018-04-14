@@ -44,7 +44,7 @@
     (remove #(true? (:dapp? %)) contacts)))
 
 (defn filter-group-contacts [group-contacts contacts]
-  (let [group-contacts' (into #{} (map #(:identity %) group-contacts))]
+  (let [group-contacts' (into #{} group-contacts)]
     (filter #(group-contacts' (:whisper-identity %)) contacts)))
 
 (reg-sub :group-contacts
@@ -59,7 +59,7 @@
     (filter-group-contacts group-contacts contacts)))
 
 (defn filter-not-group-contacts [group-contacts contacts]
-  (let [group-contacts' (into #{} (map #(:identity %) group-contacts))]
+  (let [group-contacts' (into #{} group-contacts)]
     (remove #(group-contacts' (:whisper-identity %)) contacts)))
 
 (reg-sub :all-not-added-group-contacts
@@ -123,10 +123,7 @@
 
 (defn chat-contacts [[chat contacts] [_ fn]]
   (when chat
-    (let [current-participants (->> chat
-                                    :contacts
-                                    (map :identity)
-                                    set)]
+    (let [current-participants (-> chat :contacts set)]
       (fn #(current-participants (:whisper-identity %))
         (vals contacts)))))
 

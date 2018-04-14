@@ -11,11 +11,14 @@
 (def gray-icon "#6e777e") ;; Used for forward icon in accounts
 (def gray-light "#e8ebec") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
+(def gray-transparent "rgba(184, 193, 199, 0.5)") ;; Used for tabs
 (def gray-border "#ececf0")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
+(def blue-dark "#3147ac") ;; Used as secondary wallet color (icon background)
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
 (def red-light "#ffe5ea") ;; error tooltip
 (def text-light-gray "#212121") ;; Used for labels (home items)
+(def cyan "#7adcfb") ;; Used by wallet transaction filtering icon
 
 (defn alpha [hex opacity]
   (let [hex (string/replace hex #"#" "")

@@ -22,8 +22,9 @@
    [react/touchable-highlight
     {:on-press #(re-frame/dispatch [:group-chat-profile/start-editing])}
     [react/view
-     [react/text {:style      common.styles/label-action-text
-                  :uppercase? true}
+     [react/text {:style               common.styles/label-action-text
+                  :uppercase?          true
+                  :accessibility-label :edit-button}
       (i18n/label :t/edit)]]]])
 
 (defn group-chat-profile-edit-toolbar []
@@ -32,52 +33,53 @@
    [toolbar/content-title ""]
    [toolbar/default-done {:handler   #(re-frame/dispatch [:group-chat-profile/save-profile])
                           :icon      :icons/ok
-                          :icon-opts {:color colors/blue}}]])
+                          :icon-opts {:color               colors/blue
+                                      :accessibility-label :done-button}}]])
 
 (defn actions [admin? chat-id]
   (concat
-    ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
-    ;; due to this bug - https://github.com/status-im/status-react/issues/3463
-    #_(when admin?
-      [{:label  (i18n/label :add-members)
-        :icon   :icons/add
-        :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
-    [{:label  (i18n/label :t/clear-history)
-      :icon   :icons/close
-      :action #(utils/show-confirmation (i18n/label :t/clear-history-title)
-                                        (i18n/label :t/clear-group-history-confirmation)
-                                        (i18n/label :t/clear-history-action)
-                                        (fn [] (re-frame/dispatch [:clear-history])))}
-     {:label  (i18n/label :t/delete-chat)
-      :icon   :icons/delete
-      :action #(utils/show-confirmation (i18n/label :t/delete-chat-title)
-                                        (i18n/label :t/delete-group-chat-confirmation)
-                                        (i18n/label :t/delete)
-                                        (fn []              ;; TODO(goranjovic) - fix double dispatch after rebase agains group chat actions
-                                           (re-frame/dispatch [:remove-chat chat-id])
-                                           (re-frame/dispatch [:navigation-replace :home])))}
-     {:label  (i18n/label :t/leave-group)
-      :icon   :icons/arrow-left
-      :action #(utils/show-confirmation (i18n/label :t/leave-group-title)
-                                        (i18n/label :t/leave-group-confirmation)
-                                        (i18n/label :t/leave-group-action)
-                                        (fn [] (re-frame/dispatch [:leave-group-chat])))}]))
+   (when admin?
+     [{:label  (i18n/label :add-members)
+       :icon   :icons/add
+       :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
+   [{:label               (i18n/label :t/clear-history)
+     :icon                :icons/close
+     :action              #(utils/show-confirmation (i18n/label :t/clear-history-title)
+                                                    (i18n/label :t/clear-group-history-confirmation)
+                                                    (i18n/label :t/clear-history-action)
+                                                    (fn [] (re-frame/dispatch [:clear-history])))
+     :accessibility-label :clear-history-button}
+    {:label               (i18n/label :t/delete-chat)
+     :icon                :icons/delete
+     :action              #(utils/show-confirmation (i18n/label :t/delete-chat-title)
+                                                    (i18n/label :t/delete-group-chat-confirmation)
+                                                    (i18n/label :t/delete)
+                                                    (fn []
+                                                      (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
+     :accessibility-label :delete-chat-button}
+    {:label               (i18n/label :t/leave-group)
+     :icon                :icons/arrow-left
+     :action              #(utils/show-confirmation (i18n/label :t/leave-group-title)
+                                                    (i18n/label :t/leave-group-confirmation)
+                                                    (i18n/label :t/leave-group-action)
+                                                    (fn [] (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
+     :accessibility-label :leave-chat-button}]))
 
 (defn contact-actions [contact]
   [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])
     :label  (i18n/label :t/view-profile)}
-   ;; NOTE(goranjovic) - group chat participant removal has been temporarily disabled
-   ;; due to this bug - https://github.com/status-im/status-react/issues/3463
-   #_{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
+   {:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
     :label  (i18n/label :t/remove-from-chat)}])
 
 (defn render-contact [contact admin?]
   [react/view
    [contact/contact-view
-    {:contact        contact
-     :extend-options (contact-actions contact)
-     :extend-title   (:name contact)
-     :extended?      admin?}]])
+    {:contact             contact
+     :extend-options      (contact-actions contact)
+     :extend-title        (:name contact)
+     :extended?           admin?
+     :accessibility-label :member-item
+     :inner-props         {:accessibility-label :member-name-text}}]])
 
 (defview chat-group-contacts-view [admin?]
   (letsubs [contacts [:current-chat-contacts]]

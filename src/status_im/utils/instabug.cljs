@@ -1,5 +1,6 @@
 (ns status-im.utils.instabug
   (:require [taoensso.timbre :as log]
+            [status-im.utils.config :as config]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn log [str]
@@ -20,3 +21,8 @@
 
 (when-not js/goog.DEBUG
   (log/merge-config! {:appenders {:instabug (instabug-appender)}}))
+
+(defn init []
+  (.startWithToken rn-dependencies/instabug
+                   config/instabug-token
+                   (.. rn-dependencies/instabug -invocationEvent -shake)))

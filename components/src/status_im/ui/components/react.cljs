@@ -24,7 +24,6 @@
 (def native-modules (.-NativeModules js-dependencies/react-native))
 (def device-event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
 (def dismiss-keyboard! js-dependencies/dismiss-keyboard)
-(def orientation js-dependencies/orientation)
 (def back-handler (get-react-property "BackHandler"))
 
 (def splash-screen (.-SplashScreen native-modules))
@@ -43,22 +42,20 @@
 (def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
+(def refresh-control (get-class "RefreshControl"))
+
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image (get-class "Image"))
 (def switch (get-class "Switch"))
 (def check-box (get-class "CheckBox"))
 
-(def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
 (def touchable-highlight-class (get-class "TouchableHighlight"))
+(def touchable-without-feedback-class (get-class "TouchableWithoutFeedback"))
 (def touchable-opacity (get-class "TouchableOpacity"))
 (def activity-indicator (get-class "ActivityIndicator"))
 
 (def modal (get-class "Modal"))
-(def picker-class (get-class "Picker"))
-(def picker-item-class
-  (when-let [picker (get-react-property "Picker")]
-    (adapt-class (.-Item picker))))
 
 (def pan-responder (.-PanResponder js-dependencies/react-native))
 (def animated (.-Animated js-dependencies/react-native))
@@ -118,24 +115,16 @@
    (merge {:underlay-color :transparent} props)
    content])
 
+(defn touchable-without-feedback [props content]
+ [touchable-without-feedback-class
+  props
+  content])
+
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
 
-(def gradient (adapt-class (.-default js-dependencies/linear-gradient)))
-
-(defn linear-gradient [props]
-  [gradient props])
-
 (defn list-item [component]
   (reagent/as-element component))
-
-(defn picker
-  ([{:keys [style item-style selected on-change]} items]
-   [picker-class {:selectedValue selected :style style :itemStyle item-style :onValueChange on-change}
-    (for [{:keys [label value]} items]
-      ^{:key (str value)}
-      [picker-item-class
-       {:label (or label value) :value value}])]))
 
 ;; Image picker
 

@@ -21,6 +21,7 @@
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
+   ;; TODO temporary removal before everything is fixed in group chats
    [action-button/action-button
     {:label               (i18n/label :t/start-group-chat)
      :accessibility-label :start-group-chat-button

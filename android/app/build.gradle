@@ -107,6 +107,10 @@ def getVersionCode = { ->
 
 def getVersionName = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("releaseVersion")) {
+            return project.releaseVersion
+        }
+
         exec {
             commandLine "git", "describe", "--tags", "--always", "--dirty=+"
             standardOutput = stdOut
@@ -121,7 +125,7 @@ android {
     defaultConfig {
         applicationId "im.status.ethereum"
         minSdkVersion 18
-        targetSdkVersion 23
+        targetSdkVersion 26
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
@@ -195,24 +199,21 @@ dependencies {
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
-    implementation project(':react-native-randombytes')
     implementation project(':realm')
-    implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:23.0.1"
+    implementation "com.android.support:appcompat-v7:26.1.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-i18n')
-    implementation project(':react-native-linear-gradient')
     implementation project(':react-native-camera')
     implementation project(':react-native-status')
-    implementation project(':react-native-orientation')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-webview-bridge')
-    implementation 'testfairy:testfairy-android-sdk:1.+@aar'
     implementation project(':react-native-config')
     implementation project(':react-native-fcm')
     implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
+    compile project(':react-native-testfairy')
+    implementation project(':instabug-reactnative')
 
     implementation 'status-im:function:0.0.1'
     implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])

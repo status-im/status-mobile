@@ -25,9 +25,13 @@
    :add                                  "Add"
    :yes                                  "Yes"
    :no                                   "No"
+   :on                                   "On"
+   :off                                  "Off"
 
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
+
+   :status-console                       "Status Console"
 
    ;;sign in
    :intro-text                           "Status is an open source decentralized chat and Ethereum browser"
@@ -44,10 +48,11 @@
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
 
-   :help-improve                         "Help improve Status \n by sharing usage data"
-   :help-improve-description             "We strive to collect only what we need to understand how and where we can improve Status"
-   :share-usage-data                     "Share usage data"
-   :dont-want-to-share                   "No, i don't want to share"
+   :help-improve                         "Help improve Status\nby sharing usage patterns"
+   :help-improve?                        "Help improve Status?"
+   :help-improve-description             "We collect anonymous data to help improve Status."
+   :share-usage-data                     "Share usage"
+   :dont-want-to-share                   "No, I don't want to share"
 
    ;;drawer
    :switch-users                         "Switch users"
@@ -58,9 +63,9 @@
 
    ;;home
    :home                                 "Home"
-   :no-recent-chats                      "There are no recent Chats or DApps here yet. Use the “Plus” button to see the list of Dapps or discover people to chat with."
+   :no-recent-chats                      "There are no recent Chats or DApps here yet. Tap the “Plus” button to see the list of Dapps or discover people to chat with."
    :welcome-to-status                    "Welcome to Status"
-   :welcome-to-status-description        "Here you can chat with people in a secure private chat, browse and interact with DApps. Use the “Plus” icon above to explore Status"
+   :welcome-to-status-description        "Here you can securely chat with people, or browse and interact with DApps. Tap the “Plus” icon to begin."
 
    ;;chat
    :is-typing                            "is typing"
@@ -135,22 +140,22 @@
    :backup-your-seed                     "Backup your Seed Phrase"
 
    ;;seed
-   :your-data-belongs-to-you             "Your Data and Funds belong to you. We can’t help get it back if you loose it"
-   :your-data-belongs-to-you-description "This means Status can’t help you get it back if you lose it. You are in charge of the secuty of all your data"
+   :your-data-belongs-to-you             "If you lose your seed phrase you lose your data and funds"
+   :your-data-belongs-to-you-description "Status can’t help you recover your account if you lose your seed phrase. You are in charge of the security of your data, and backing up your seed phrase is the best safeguard."
    :ok-continue                          "Ok, continue"
-   :your-seed-phrase                     "Your Seed Phrase"
-   :your-seed-phrase-description         "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Copy it on paper and keep it in a secure place. You need it when you loose or reinstall your wallet."
+   :your-seed-phrase                     "Your seed phrase"
+   :your-seed-phrase-description         "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet."
    :enter-word                           "Enter word"
-   :check-your-seed                      "Check your Seed Phrase"
+   :check-your-seed                      "Check your seed phrase"
    :wrong-word                           "Wrong word"
    :are-you-sure?                        "Are you sure?"
    :are-you-sure-description             "You will not be able to see the whole seed phrase again"
    :you-are-all-set                      "You’re all set!"
-   :you-are-all-set-description          "Now if you loose your phone you can restore your account and wallet using the Seed Phrase and password"
+   :you-are-all-set-description          "Now if you lose your phone you can restore your account and wallet using the seed phrase and password."
    :ok-got-it                            "Ok, got it"
    :backup-seed-phrase                   "Backup Seed Phrase"
    :step-i-of-n                          "Step {{step}} of {{number}}"
-   :word-n-description                   "In order to check if have backed up your seed phrase correctly, enter the word #{{number}} above"
+   :word-n-description                   "In order to check if you have backed up your seed phrase correctly, enter the word #{{number}} above."
    :word-n                               "Word #{{number}}"
 
    ;;make_photo
@@ -210,9 +215,11 @@
    :search-chats                         "Search chats"
    :empty-topic                          "Empty topic"
    :topic-format                         "Wrong format [a-z0-9\\-]+"
+   :topic-name-error                     "A topic name can contain only following characters: a-z -"
    :public-group-topic                   "Topic"
    :set-a-topic                          "Set a topic"
    :empty-chat-description               "There are no messages \nin this chat yet"
+   :empty-chat-description-console       "Look under the hood! Console is a javascript runtime environment that exposes the whole web3 API. Type \"web3.\" to get started."
 
    ;;discover
    :discover                             "Discover"
@@ -437,6 +444,7 @@
    :receive-transaction                  "Receive transaction"
    :new-transaction                      "New Transaction"
    :transaction-history                  "Transaction History"
+   :new-contract                         "New Contract"
 
    ;; Wallet Send
    :wallet-choose-recipient              "Choose Recipient"
@@ -474,6 +482,7 @@
    :network                              "Network"
    :remove-network                       "Remove network"
    :network-settings                     "Network settings"
+   :offline-messaging                    "Offline messages"
    :offline-messaging-settings           "Offline messages settings"
    :edit-network-warning                 "Be careful, editing the network data may disable this network for you"
    :connecting-requires-login            "Connecting to another network requires login"

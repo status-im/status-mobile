@@ -147,7 +147,8 @@ function amountParameterBox(groupChat, params, context) {
                                 fontSize: 38,
                                 marginLeft: 8,
                                 color: "black"
-                            }
+                            },
+                            accessibilityLabel: "amount-text"
                         },
                         amount || "0.00"
                     ),
@@ -183,7 +184,8 @@ function amountParameterBox(groupChat, params, context) {
                         fontSize: 17,
                         color: "black",
                         paddingLeft: 16
-                    }
+                    },
+                    accessibilityLabel: "fee-text",
                 }, [status.components.subscribe(["calculatedFee"])]),
                 status.components.text({
                         style: {
@@ -206,7 +208,8 @@ function amountParameterBox(groupChat, params, context) {
                 style: {
                     marginLeft: 16,
                     marginRight: 16
-                }
+                },
+                accessibilityLabel: "adjust-fee-slider-button"
             }),
             status.components.view({
                 flexDirection: "row"

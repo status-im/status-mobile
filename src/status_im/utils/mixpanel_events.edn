@@ -1,6 +1,11 @@
 ;; This file is supposed to be edited by Chad.
 ;; Chad loves mixpanel. When Chad was a child he dreamed of being a mixpanel tamer.
 
+;; To add a new event definition, add a new map to this vector
+;; :label is a free string that is displayed in mixpanel
+;; :trigger is the re-frame style event that when matched will generate the emission of a mixpanel event
+;; :properties is a map of key / value pair that will be added to the mixpanel event to provide more context
+
 [;; Account creation
 
  {:label     "Account created"
@@ -15,6 +20,14 @@
 
  {:label      "Logout"
   :trigger    [:navigate-to :accounts]}
+
+ ; Push notification settings
+
+ {:label      "Granted push notifications"
+  :trigger    [:request-notifications-granted]}
+
+ {:label      "Denied push notifications"
+  :trigger    [:request-notifications-denied]}
 
  ;; Tab navigation
 
@@ -143,4 +156,39 @@
                 :type   :capture}}
  {:label      "Tap"
   :trigger    [:navigate-to :profile-qr-viewer]
-  :properties {:target :share-contact-code}}]
+  :properties {:target :share-contact-code}}
+ {:label      "Tap"
+  :trigger    [:set :my-profile/advanced? true]
+  :properties {:target :profile-advanced
+               :type :open}}
+ {:label      "Tap"
+  :trigger    [:set :my-profile/advanced? false]
+  :properties {:target :profile-advanced
+               :type :closed}}
+ {:label      "Tap"
+  :trigger    [:switch-dev-mode true]
+  :properties {:target :profile-dev-mode
+               :type :on}}
+ {:label      "Tap"
+  :trigger    [:switch-dev-mode false]
+  :properties {:target :profile-dev-mode
+               :type :off}}
+ {:label      "Tap"
+  :trigger    [:navigate-to :backup-seed]
+  :properties {:target :backup-your-seed-phrase}}
+ {:label      "Tap"
+  :trigger    [:set-in [:my-profile/seed :step] :12-words]
+  :properties {:target :seed-phrase
+               :type :welcome-ok}}
+ {:label      "Tap"
+  :trigger    [:my-profile/enter-two-random-words]
+  :properties {:target :seed-phrase
+               :type :step1-next}}
+ {:label      "Tap"
+  :trigger    [:my-profile/set-step :second-word]
+  :properties {:target :seed-phrase
+               :type :step2-next}}
+ {:label      "Tap"
+  :trigger    [:my-profile/finish]
+  :properties {:target :seed-phrase
+               :type :step3-done}}]

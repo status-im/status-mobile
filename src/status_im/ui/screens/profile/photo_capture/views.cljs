@@ -2,14 +2,14 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.camera :as camera]
-            [status-im.ui.components.icons.custom-icons :as custom-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.photo-capture.styles :as styles]
             [status-im.utils.image-processing :as image-processing]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.ui.components.icons.vector-icons :as icons]))
 
 (defn image-captured [data]
   (let [path       (.-path data)
@@ -30,18 +30,17 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/image-source-title)]]
      [camera/camera {:style         {:flex 1}
-                     :aspect        (:fill camera/aspects)
+                     :aspect        (:fill "Test")
                      :captureQuality "480p"
                      :captureTarget (:disk camera/capture-targets)
                      :type          "front"
                      :ref           #(reset! camera-ref %)}]
-     [react/view {:style {:padding 10}}
-      [react/touchable-highlight {:style    {:align-self "center"}
-                                  :on-press (fn []
-                                              (let [camera @camera-ref]
-                                                (-> (.capture camera)
-                                                    (.then image-captured)
-                                                    (.catch #(log/debug "Error capturing image: " %)))))}
-       [react/view
-        [custom-icons/ion-icon {:name  :md-camera
-                                :style {:font-size 36}}]]]]]))
+     [react/view styles/button-container
+      [react/view styles/button
+       [react/touchable-highlight {:on-press (fn []
+                                               (let [camera @camera-ref]
+                                                 (-> (.capture camera)
+                                                     (.then image-captured)
+                                                     (.catch #(log/debug "Error capturing image: " %)))))}
+        [react/view
+         [icons/icon :icons/camera {:color :white}]]]]]]))

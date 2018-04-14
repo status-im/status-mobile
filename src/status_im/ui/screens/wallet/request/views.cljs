@@ -58,14 +58,13 @@
 ;; Main screen
 
 (defn- qr-code [address chain-id]
-  (let [address (ethereum/normalized-address address)]
-    [qr-code-viewer/qr-code-viewer {:hint-style styles/hint :footer-style styles/footer}
-     (eip681/generate-uri address {:chain-id chain-id})
-     (i18n/label :t/request-qr-legend)
-     address]))
+  [qr-code-viewer/qr-code-viewer {:hint-style styles/hint :footer-style styles/footer}
+   (eip681/generate-uri address {:chain-id chain-id})
+   (i18n/label :t/request-qr-legend)
+   address])
 
 (views/defview request-transaction []
-  (views/letsubs [{:keys [address]} [:get-current-account]
+  (views/letsubs [address-hex       [:get-current-account-hex]
                   chain-id          [:get-network-id]]
     [comp/simple-screen
      [comp/toolbar {}
@@ -74,11 +73,11 @@
       [toolbar/actions [{:icon      :icons/share
                          :icon-opts {:color               :white
                                      :accessibility-label :share-button}
-                         :handler   #(list-selection/open-share {:message address})}]]]
+                         :handler   #(list-selection/open-share {:message address-hex})}]]]
      [react/view {:flex 1}
       [common/network-info {:text-color :white}]
       [react/scroll-view styles/request-wrapper
-       [qr-code address chain-id]
+       [qr-code address-hex chain-id]
        [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
                                :style               styles/send-request
                                :accessibility-label :sent-transaction-request-button}

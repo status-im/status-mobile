@@ -8,8 +8,9 @@
             [status-im.i18n :as i18n]
             [taoensso.timbre :as log]))
 
-(defn suggestion-item [{:keys [on-press name description last?]}]
-  [react/touchable-highlight {:on-press on-press}
+(defn suggestion-item [{:keys [on-press name description last? accessibility-label]}]
+  [react/touchable-highlight (cond-> {:on-press on-press}
+                               accessibility-label (assoc :accessibility-label accessibility-label))
    [react/view (style/item-suggestion-container last?)
     [react/text {:style style/item-suggestion-name}
      name]
@@ -26,7 +27,11 @@
        (when (seq commands)
          (for [[i {:keys [description] :as command}] (map-indexed vector commands)]
            ^{:key i}
-           [suggestion-item {:on-press    #(re-frame/dispatch [:select-chat-input-command command nil])
-                             :name        (commands-model/command-name command)
-                             :description description
-                             :last?       (= i (dec (count commands)))}]))]]]))
+           [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
+                             :name                (commands-model/command-name command)
+                             :description         description
+                             :last?               (= i (dec (count commands)))
+                             :accessibility-label (case (:name command)
+                                                    "send"    :send-payment-button
+                                                    "request" :request-payment-button
+                                                    nil)}]))]]]))

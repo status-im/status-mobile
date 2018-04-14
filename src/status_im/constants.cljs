@@ -6,15 +6,12 @@
 
 (def ethereum-rpc-url "http://localhost:8545")
 
-(def server-address "http://api.status.im/")
-;; (def server-address "http://10.0.3.2:3000/")
-;; (def server-address "http://localhost:3000/")
-
 (def text-content-type "text/plain")
 (def content-type-log-message "log-message")
 (def content-type-command "command")
 (def content-type-command-request "command-request")
 (def content-type-status "status")
+(def content-type-placeholder "placeholder")
 
 (def min-password-length 6)
 (def max-chat-name-length 20)
@@ -24,7 +21,11 @@
 
 (def console-chat-id "console")
 
-(def default-network "testnet_rpc")
+(def default-network config/default-network)
+
+(def contract-address "0x0000000000000000000000000000000000000000")
+
+(def system "system")
 
 (def default-wallet-transactions
   {:filters
@@ -80,6 +81,7 @@
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+
 (def default-networks
   (transform-config
    (merge testnet-networks
@@ -99,6 +101,9 @@
 ;; TODO(oskarth): Determine if this is the correct topic or not
 (def inbox-topic "0xaabb11ee")
 (def inbox-password "status-offline-inbox")
+
+;; Used to generate topic for contact discoveries
+(def contact-discovery "contact-discovery")
 
 (def ^:const send-transaction-no-error-code        "0")
 (def ^:const send-transaction-default-error-code   "1")

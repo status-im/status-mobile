@@ -4,7 +4,7 @@ import pytest
 import emoji
 
 from tests.base_test_case import MultipleDeviceTestCase
-from tests import group_chat_users
+from tests import group_chat_users, get_current_time
 from views.sign_in_view import SignInView
 
 unicode_text_message = '%s%s%s%s %s%s%s%s%s%s%s' % (chr(355), chr(275), chr(353), chr(539), chr(1084), chr(949),
@@ -62,6 +62,7 @@ class TestMessages(MultipleDeviceTestCase):
         device_2_chat.send_message_button.click()
         device_1_chat.wait_for_message_in_one_to_one_chat('%s %s' % (message_with_emoji, emoji_unicode_1), self.errors)
 
+        device_1_chat.chat_message_input.click()
         device_1_chat.send_as_keyevent(message_with_new_line)
         device_1_chat.send_message_button.click()
         device_2_chat.wait_for_message_in_one_to_one_chat(message_with_new_line, self.errors)
@@ -73,7 +74,7 @@ class TestMessages(MultipleDeviceTestCase):
         if device_1_chat.element_by_text(url_message, 'button').is_element_present():
             device_1_chat.element_by_text(url_message, 'button').click()
             web_view = device_1_chat.open_in_browser_button.click()
-            web_view.find_full_text('Browse, chat and make payments securely on the decentralized web.')
+            web_view.find_full_text('Status, the Ethereum discovery tool.')
             device_1_chat.back_button.click()
 
         device_1_chat.delete_chat(device_2_username[:25], self.errors)
@@ -106,7 +107,7 @@ class TestMessages(MultipleDeviceTestCase):
             home_1.add_contact(public_key)
             home_1.get_back_to_home_view()
 
-        chat_name = 'super_group_chat'
+        chat_name = 'a_chat_%s' % get_current_time()
         home_1.create_group_chat(sorted([username_2, username_3]), chat_name)
         chat_1 = home_1.get_chat_view()
         text_message = 'This is text message!'
@@ -117,27 +118,27 @@ class TestMessages(MultipleDeviceTestCase):
 
         chat_2, chat_3 = home_2.get_chat_view(), home_3.get_chat_view()
         for chat in chat_2, chat_3:
-            chat.wait_for_messages_by_user(username_1, text_message, self.errors)
+            chat.wait_for_messages(username_1, text_message, self.errors)
 
         chat_2.chat_message_input.send_keys(emoji.emojize(emoji_name))
         chat_2.send_message_button.click()
         for chat in chat_1, chat_3:
-            chat.wait_for_messages_by_user(username_2, emoji_unicode, self.errors)
+            chat.wait_for_messages(username_2, emoji_unicode, self.errors)
 
         message_with_emoji = 'message with emoji'
         chat_3.chat_message_input.send_keys(emoji.emojize('%s %s' % (message_with_emoji, emoji_name_1)))
         chat_3.send_message_button.click()
         for chat in chat_1, chat_2:
-            chat.wait_for_messages_by_user(username_3, '%s %s' % (message_with_emoji, emoji_unicode_1), self.errors)
+            chat.wait_for_messages(username_3, '%s %s' % (message_with_emoji, emoji_unicode_1), self.errors)
 
         chat_1.chat_message_input.send_keys(unicode_text_message)
         chat_1.send_message_button.click()
 
         for chat in chat_2, chat_3:
-            chat.wait_for_messages_by_user(username_1, unicode_text_message, self.errors)
+            chat.wait_for_messages(username_1, unicode_text_message, self.errors)
 
-        for chat in chat_1, chat_2, chat_3:
-            chat.delete_chat(chat_name, self.errors)
+        # for chat in chat_1, chat_2, chat_3:
+        #     chat.delete_chat(chat_name, self.errors)
 
         self.verify_no_errors()
 
@@ -160,7 +161,7 @@ class TestMessages(MultipleDeviceTestCase):
         for message in messages_to_send_1:
             chat_1.chat_message_input.send_keys(message)
             chat_1.send_message_button.click()
-        chat_2.wait_for_messages_by_user(users[0], messages_to_send_1, self.errors)
+        chat_2.wait_for_messages(users[0], messages_to_send_1, self.errors)
 
         message_with_emoji = 'message with emoji'
         messages_to_send_2 = [emoji.emojize(emoji_name), emoji.emojize('%s %s' % (message_with_emoji, emoji_name_1))]
@@ -168,9 +169,10 @@ class TestMessages(MultipleDeviceTestCase):
         for message in messages_to_send_2:
             chat_2.chat_message_input.send_keys(message)
             chat_2.send_message_button.click()
+        chat_2.chat_message_input.click()
         chat_2.send_as_keyevent(message_with_new_line)
         chat_2.send_message_button.click()
-        chat_1.wait_for_messages_by_user(users[1], messages_to_receive_2, self.errors)
+        chat_1.wait_for_messages(users[1], messages_to_receive_2, self.errors)
         for chat in chat_1, chat_2:
             chat.delete_chat(chat_name, self.errors)
         self.verify_no_errors()

@@ -1,11 +1,20 @@
 (ns status-im.data-store.messages
-  (:refer-clojure :exclude [exists?])
   (:require [cljs.reader :as reader]
+            [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.data-store.realm.core :as core]
             [status-im.data-store.realm.messages :as data-store]
             [status-im.utils.random :as random]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as datetime]))
+
+;; TODO janherich: define as cofx once debug handlers are refactored
+(defn get-log-messages
+  [chat-id]
+  (->> (data-store/get-by-chat-id chat-id 0 100)
+       (filter #(= (:content-type %) constants/content-type-log-message))
+       (map #(select-keys % [:content :timestamp]))))
 
 (defn- command-type?
   [type]
@@ -17,9 +26,10 @@
   {:outgoing       false
    :to             nil})
 
-(defn get-by-id
-  [message-id]
-  (data-store/get-by-id message-id))
+(re-frame/reg-cofx
+  :data-store/get-message
+  (fn [cofx _]
+    (assoc cofx :get-stored-message data-store/get-by-id)))
 
 (defn get-by-chat-id
   ([chat-id]
@@ -31,22 +41,25 @@
                   (update message :content reader/read-string)
                   message))))))
 
-(defn get-stored-message-ids
-  []
-  (data-store/get-stored-message-ids))
+(re-frame/reg-cofx
+  :data-store/get-messages
+  (fn [cofx _]
+    (assoc cofx :get-stored-messages get-by-chat-id)))
 
-(defn get-log-messages
-  [chat-id]
-  (->> (data-store/get-by-chat-id chat-id 0 100)
-       (filter #(= (:content-type %) constants/content-type-log-message))
-       (map #(select-keys % [:content :timestamp]))))
+(re-frame/reg-cofx
+  :data-store/message-ids
+  (fn [cofx _]
+    (assoc cofx :stored-message-ids (data-store/get-stored-message-ids))))
 
-(defn get-unviewed
-  [current-public-key]
-  (into {}
-        (map (fn [[chat-id user-statuses]]
-               [chat-id (into #{} (map :message-id) user-statuses)]))
-        (group-by :chat-id (data-store/get-unviewed current-public-key))))
+(re-frame/reg-cofx
+  :data-store/unviewed-messages
+  (fn [{:keys [db] :as cofx} _]
+    (assoc cofx
+           :stored-unviewed-messages
+           (into {}
+                 (map (fn [[chat-id user-statuses]]
+                        [chat-id (into #{} (map :message-id) user-statuses)]))
+                 (group-by :chat-id (data-store/get-unviewed (:current-public-key db)))))))
 
 (defn- prepare-content [content]
   (if (string? content)
@@ -77,12 +90,37 @@
     (data-store/save (prepare-message (merge default-values
                                              message
                                              {:from      (or from "anonymous")
-                                              :timestamp (datetime/timestamp)})))))
+                                              :received-timestamp (datetime/timestamp)})))))
+
+(re-frame/reg-fx
+  :data-store/save-message
+  (fn [message]
+    (async/go (async/>! core/realm-queue #(save message)))))
 
 (defn update-message
   [{:keys [message-id] :as message}]
   (when-let [{:keys [chat-id]} (data-store/get-by-id message-id)]
     (data-store/save (prepare-message (assoc message :chat-id chat-id)))))
 
-(defn delete-by-chat-id [chat-id]
-  (data-store/delete-by-chat-id chat-id))
+(re-frame/reg-fx
+  :data-store/update-message
+  (fn [message]
+    (async/go (async/>! core/realm-queue #(update-message message)))))
+
+(re-frame/reg-fx
+  :data-store/update-messages
+  (fn [messages]
+    (doseq [message messages]
+      (async/go (async/>! core/realm-queue #(update-message message))))))
+
+(re-frame/reg-fx
+  :data-store/delete-messages
+  (fn [chat-id]
+    (async/go (async/>! core/realm-queue #(data-store/delete-by-chat-id chat-id)))))
+
+(re-frame/reg-fx
+  :data-store/hide-messages
+  (fn [chat-id]
+    (async/go (async/>! core/realm-queue #(doseq [message-id (data-store/get-message-ids-by-chat-id chat-id)]
+                                            (data-store/save {:message-id message-id
+                                                              :show?      false}))))))

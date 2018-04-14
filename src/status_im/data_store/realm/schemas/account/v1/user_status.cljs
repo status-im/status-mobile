@@ -1,12 +1,12 @@
-(ns status-im.data-store.realm.schemas.account.v1.user-status
-  (:require [taoensso.timbre :as log]))
+(ns status-im.data-store.realm.schemas.account.v1.user-status)
 
 (def schema {:name       :user-status
-             :primaryKey :id
-             :properties {:id               "string"
-                          :whisper-identity {:type    "string"
-                                             :default ""}
-                          :status           "string"}})
-
-(defn migration [_ _]
-  (log/debug "migrating user-status schema"))
+             :primaryKey :status-id
+             :properties {;; Unfortunately, realm doesn't support composite primary keys,
+                          ;; so we have to keep separate `:status-id` property, which is just
+                          ;; `:message-id`-`:whisper-identity` concatenated
+                          :status-id        :string
+                          :message-id       :string
+                          :chat-id          :string
+                          :whisper-identity :string
+                          :status           :string}})

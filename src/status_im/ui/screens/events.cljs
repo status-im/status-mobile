@@ -1,16 +1,16 @@
 (ns status-im.ui.screens.events
   (:require status-im.bots.events
-            status-im.chat.handlers
+            status-im.chat.events
             status-im.commands.handlers.jail
             status-im.commands.events.loading
             status-im.commands.handlers.debug
             status-im.network.events
+            status-im.transport.handlers
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
             status-im.ui.screens.accounts.login.events
             status-im.ui.screens.accounts.recover.events
             status-im.ui.screens.contacts.events
-            status-im.ui.screens.discover.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.ui.screens.navigation
@@ -28,16 +28,16 @@
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
-            [status-im.constants :refer [console-chat-id]]
+            [status-im.constants :as constants]
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
+            [status-im.transport.core :as transport]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.datetime :as time]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.random :as random]
             [status-im.utils.config :as config]
-            [status-im.utils.crypt :as crypt]
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
@@ -51,7 +51,7 @@
 ;;;; Helper fns
 
 (defn- call-jail-function
-  [{:keys [chat-id function callback-events-creator] :as opts}]
+  [{:keys [chat-id function callback-event-creator] :as opts}]
   (let [path   [:functions function]
         params (select-keys opts [:parameters :context])]
     (status/call-jail
@@ -59,12 +59,11 @@
       :path    path
       :params  params
       :callback (fn [jail-response]
-                  (doseq [event (if callback-events-creator
-                                  (callback-events-creator jail-response)
-                                  [[:chat-received-message/bot-response
-                                    {:chat-id chat-id}
-                                    jail-response]])
-                          :when event]
+                  (when-let [event (if callback-event-creator
+                                     (callback-event-creator jail-response)
+                                     [:chat-received-message/bot-response
+                                      {:chat-id chat-id}
+                                      jail-response])]
                     (re-frame/dispatch event)))})))
 
 ;;;; COFX
@@ -90,15 +89,14 @@
 
 (re-frame/reg-fx
   :call-jail
-  (fn [{:keys [callback-events-creator] :as opts}]
+  (fn [{:keys [callback-event-creator] :as opts}]
     (status/call-jail
      (-> opts
-         (dissoc :callback-events-creator)
+         (dissoc :callback-event-creator)
          (assoc :callback
                 (fn [jail-response]
-                  (when callback-events-creator
-                    (doseq [event (callback-events-creator jail-response)]
-                      (re-frame/dispatch event)))))))))
+                  (when-let [event (callback-event-creator jail-response)]
+                    (re-frame/dispatch event))))))))
 
 (re-frame/reg-fx
   :call-jail-function
@@ -109,14 +107,6 @@
   (fn [opts-seq]
     (doseq [opts opts-seq]
       (call-jail-function opts))))
-
-(re-frame/reg-fx
-  :http-post
-  (fn [{:keys [action data success-event-creator failure-event-creator timeout-ms]}]
-    (let [on-success #(re-frame/dispatch (success-event-creator %))
-          on-error   #(re-frame/dispatch (failure-event-creator %))
-          opts       {:timeout-ms timeout-ms}]
-      (http/post action data on-success on-error opts))))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -140,18 +130,6 @@
   (fn []
     (data-store/init)))
 
-(re-frame/reg-fx
-  ::initialize-crypt-fx
-  (fn []
-    (crypt/gen-random-bytes
-      1024
-      (fn [{:keys [error buffer]}]
-        (if error
-          (log/error "Failed to generate random bytes to initialize sjcl crypto")
-          (->> (.toString buffer "hex")
-               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
-
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
     #(status/start-node config)))
@@ -163,25 +141,28 @@
     (status/should-move-to-internal-storage?
       (fn [should-move?]
         (if should-move?
-          (re-frame/dispatch [:request-permissions
-                              [:read-external-storage]
-                              #(move-to-internal-storage config)
-                              #()])
+          (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
+                                                    :on-allowed  #(move-to-internal-storage config)}])
           (status/start-node config))))))
 
 (re-frame/reg-fx
   ::status-module-initialized-fx
-  (fn []
+  (fn [_]
     (status/module-initialized!)))
 
 (re-frame/reg-fx
-  ::request-permissions-fx
-  (fn [[permissions then else]]
-    (permissions/request-permissions permissions then else)))
+  :request-permissions-fx
+  (fn [options]
+    (permissions/request-permissions options)))
+
+(re-frame/reg-fx
+  ::request-notifications-fx
+  (fn [_]
+    (notifications/request-permissions)))
 
 (re-frame/reg-fx
   ::testfairy-alert
-  (fn []
+  (fn [_]
     (when config/testfairy-enabled?
       (utils/show-popup
         (i18n/label :testfairy-title)
@@ -189,7 +170,7 @@
 
 (re-frame/reg-fx
   ::get-fcm-token-fx
-  (fn []
+  (fn [_]
     (notifications/get-fcm-token)))
 
 (re-frame/reg-fx
@@ -205,7 +186,8 @@
 
 (re-frame/reg-fx
   :close-application
-  (fn [] (status/close-application)))
+  (fn [_]
+    (status/close-application)))
 
 ;;;; Handlers
 
@@ -227,8 +209,21 @@
                                    [:load-accounts]
                                    [:initialize-views]
                                    [:listen-to-network-status]
-                                   [:initialize-crypt]
                                    [:initialize-geth]]}))
+
+(handlers/register-handler-fx
+  :logout
+  (fn [{:keys [db] :as cofx} _]
+    (let [{:transport/keys [chats] :keys [current-account-id]} db
+          sharing-usage-data? (get-in db [:accounts/accounts current-account-id :sharing-usage-data?])]
+      (handlers/merge-fx cofx
+                         {:dispatch-n (concat [[:initialize-db]
+                                               [:load-accounts]
+                                               [:listen-to-network-status]
+                                               [:navigate-to :accounts]]
+                                              (when sharing-usage-data?
+                                                [[:unregister-mixpanel-tracking]]))}
+                         (transport/stop-whisper)))))
 
 (handlers/register-handler-fx
   :initialize-db
@@ -253,7 +248,7 @@
                inbox/wnode]
         :or [network (get app-db :network)
              wnode   (get app-db :inbox/wnode)]} [_ address]]
-    (let [console-contact (get contacts console-chat-id)]
+    (let [console-contact (get contacts constants/console-chat-id)]
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address
@@ -272,19 +267,18 @@
                      :network network
                      :inbox/wnode wnode)
         console-contact
-        (assoc :contacts/contacts {console-chat-id console-contact})))))
+        (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
 
 (handlers/register-handler-fx
   :initialize-account
   (fn [_ [_ address events-after]]
     {:dispatch-n (cond-> [[:initialize-account-db address]
-                          [:load-processed-messages]
                           [:initialize-protocol address]
                           [:initialize-sync-listener]
-                          [:initialize-chats]
-                          [:initialize-browsers]
                           [:load-contacts]
                           [:load-contact-groups]
+                          [:initialize-chats]
+                          [:initialize-browsers] 
                           [:initialize-debugging {:address address}]
                           [:send-account-update-if-needed]
                           [:update-wallet]
@@ -308,11 +302,6 @@
                          :name name))))}))
 
 (handlers/register-handler-fx
-  :initialize-crypt
-  (fn [_ _]
-    {::initialize-crypt-fx nil}))
-
-(handlers/register-handler-fx
   :initialize-geth
   (fn [{db :db} _]
     (let [{:accounts/keys [current-account-id accounts]} db
@@ -332,25 +321,6 @@
   :get-fcm-token
   (fn [_ _]
     {::get-fcm-token-fx nil}))
-
-(defn- track [id event]
-  (let [anonid (ethereum/sha3 id)]
-    (doseq [{:keys [label properties]} (mixpanel/matching-events event mixpanel/event-by-trigger)]
-      (mixpanel/track anonid label properties))))
-
-(def hook-id :mixpanel-callback)
-
-(handlers/register-handler-fx
-  :register-mixpanel-tracking
-  (fn [_ [_ id]]
-    (re-frame/add-post-event-callback hook-id #(track id %))
-    nil))
-
-(handlers/register-handler-fx
-  :unregister-mixpanel-tracking
-  (fn []
-    (re-frame/remove-post-event-callback hook-id)
-    nil))
 
 ;; Because we send command to jail in params and command `:ref` is a lookup vector with
 ;; keyword in it (for example `["transactor" :command 51 "send"]`), we lose that keyword
@@ -418,8 +388,13 @@
 
 (handlers/register-handler-fx
   :request-permissions
-  (fn [_ [_ permissions then else]]
-    {::request-permissions-fx [permissions then else]}))
+  (fn [_ [_ options]]
+    {:request-permissions-fx options}))
+
+(handlers/register-handler-fx
+  :request-notifications
+  (fn [_ _]
+    {::request-notifications-fx {}}))
 
 (handlers/register-handler-db
   :set-swipe-position

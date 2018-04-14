@@ -87,6 +87,9 @@
 (defn gas-price [web3 cb]
   (.getGasPrice (.-eth web3) cb))
 
+(defn estimate-gas-web3 [web3 obj cb]
+  (.estimateGas (.-eth web3) obj cb))
+
 (defn estimate-gas [symbol]
   (if (tokens/ethereum? symbol)
     default-transaction-gas

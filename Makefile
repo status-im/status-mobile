@@ -1,4 +1,4 @@
-.PHONY: react-native test
+.PHONY: react-native test setup
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -37,6 +37,7 @@ prepare: ##@prepare Install dependencies and prepare workspace
 	./re-natal enable-source-maps
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
+	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
 	cd ios && pod install && cd ..
 
 #----------------
@@ -129,18 +130,23 @@ geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545
 	build/bin/geth attach http://localhost:8545
 
-android-ports: ##@other Add reverse proxy to Android Device/Simulator
-	adb reverse tcp:8081 tcp:8081
-	adb reverse tcp:3449 tcp:3449
-	adb reverse tcp:4567 tcp:4567
+android-ports-avd: ##@other Add reverse proxy to Android Device/Simulator
+	adb -e reverse tcp:8081 tcp:8081
+	adb -e reverse tcp:3449 tcp:3449
+	adb -e reverse tcp:4567 tcp:4567
+
+android-ports-real: ##@other Add reverse proxy to Android Device/Simulator
+	adb -d reverse tcp:8081 tcp:8081
+	adb -d reverse tcp:3449 tcp:3449
+	adb -d reverse tcp:4567 tcp:4567
+
 
 startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	if [[ "$(SYSTEM)" == "android" ]]; then\
-	  ${MAKE} prepare && ${MAKE} android-ports; \
-	else \
-	  ${MAKE} prepare-ios; \
-	fi
+	case "$(SYSTEM)" in \
+	  "android") ${MAKE} prepare && ${MAKE} android-ports-$(DEVICE);; \
+	  "ios")      ${MAKE} prepare-ios;; \
+	esac
 	${MAKE} dev-$(SYSTEM)-$(DEVICE)
 	${MAKE} -j2 react-native repl-$(SYSTEM)

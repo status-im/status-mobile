@@ -39,12 +39,19 @@
   {:flex-grow      1
    :flex-direction :column})
 
-(defstyle logout-text
-  (merge profile.components.styles/settings-item-text
-         {:color colors/red}))
-
 (defstyle my-profile-info-container
   {:background-color colors/white})
+
+(defstyle my-profile-settings-logout-wrapper
+  {:flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
+
+(defstyle my-profile-settings-logout
+  {:min-width       "50%"})
+
+(defstyle my-profile-settings-logout-version
+  {:padding-horizontal 16})
 
 (def advanced-button
   {:margin-top    16

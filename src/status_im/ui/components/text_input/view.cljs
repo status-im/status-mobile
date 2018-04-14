@@ -4,12 +4,12 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.tooltip.views :as tooltip]))
 
-(defn text-input-with-label [{:keys [label error style height] :as props}]
+(defn text-input-with-label [{:keys [label error style height container] :as props}]
   [react/view
    (when label
      [react/text {:style styles/label}
       label])
-   [react/view {:style (styles/input-container height)}
+   [react/view {:style (merge (styles/input-container height) container)}
     [react/text-input
      (merge
        {:style                  (merge styles/input style)

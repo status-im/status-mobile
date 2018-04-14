@@ -8,15 +8,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [status-im.native-module.core :as status]
-            [status-im.data-store.local-storage :as local-storage]
             [status-im.bots.events :as bots-events]
             [taoensso.timbre :as log]))
-
-;; COFX
-(re-frame/reg-cofx
-  :get-local-storage-data
-  (fn [cofx]
-    (assoc cofx :get-local-storage-data local-storage/get-data)))
 
 ;; FX
 (re-frame/reg-fx
@@ -26,9 +19,9 @@
       (status/parse-jail
        jail-id jail-resource
        (fn [jail-response]
-         (let [converted (types/json->clj jail-response)] 
+         (let [converted (types/json->clj jail-response)]
            (re-frame/dispatch [::proceed-loading jail-id (if config/jsc-enabled?
-                                                           (update converted :result types/json->clj) 
+                                                           (update converted :result types/json->clj)
                                                            converted)])))))))
 
 (re-frame/reg-fx
@@ -53,23 +46,31 @@
     {::evaluate-jail-n [{:jail-id       whisper-identity
                          :jail-resource commands-snippet}]}))
 
+(defn load-commands-for-bot
+  "This function takes coeffects, effects, bot contact and adds effects
+  for loading all commands/responses/subscriptions."
+  [cofx fx {:keys [whisper-identity bot-url]}]
+  (if-let [commands-resource (js-resources/get-resource bot-url)]
+    (merge-with into fx (evaluate-commands-in-jail cofx commands-resource whisper-identity))
+    (update fx :http-get-n conj {:url                   bot-url
+                                 :response-validator    valid-network-resource?
+                                 :success-event-creator (fn [commands-resource]
+                                                          [::evaluate-commands-in-jail commands-resource whisper-identity])
+                                 :failure-event-creator (fn [error-response]
+                                                          [::proceed-loading whisper-identity {:error error-response}])})))
+
 (defn load-commands
-  "This function takes coeffects, effects and contact and adds effects
-  for loading all commands/responses/subscriptions.
+  "This function takes coeffects and produces effects
+  for loading all commands/responses/subscriptions for existing bot contacts.
 
   It's currently working only for bots, eq we are not evaluating
   dapp resources in jail at all."
-  [cofx fx {:keys [whisper-identity bot-url]}]
-  (if bot-url
-    (if-let [commands-resource (js-resources/get-resource bot-url)]
-      (merge-with into fx (evaluate-commands-in-jail cofx commands-resource whisper-identity))
-      (update fx :http-get-n conj {:url                   bot-url
-                                   :response-validator    valid-network-resource?
-                                   :success-event-creator (fn [commands-resource]
-                                                            [::evaluate-commands-in-jail commands-resource whisper-identity])
-                                   :failure-event-creator (fn [error-response]
-                                                            [::proceed-loading whisper-identity {:error error-response}])}))
-    fx))
+  [{:keys [db] :as cofx}]
+  (transduce (comp (map second)
+                   (filter :bot-url))
+             (completing (partial load-commands-for-bot cofx))
+             {}
+             (:contacts/contacts db)))
 
 (defn- add-exclusive-choices [initial-scope exclusive-choices]
   (reduce (fn [scopes-set exclusive-choices]
@@ -79,7 +80,7 @@
                           (reduce conj
                                   (disj scopes-set scope)
                                   (map (partial conj (s/difference scope exclusive-match))
-                                       exclusive-match)) 
+                                       exclusive-match))
                           scopes-set)))
                     scopes-set
                     scopes-set))
@@ -138,7 +139,7 @@
 
 (handlers/register-handler-fx
   ::evaluate-commands-in-jail
-  [re-frame/trim-v (re-frame/inject-cofx :get-local-storage-data)]
+  [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
   (fn [cofx [commands-resource whisper-identity]]
     (evaluate-commands-in-jail cofx commands-resource whisper-identity)))
 

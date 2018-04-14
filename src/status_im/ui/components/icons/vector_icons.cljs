@@ -58,7 +58,8 @@
             :icons/wnode               (js/require "./resources/icons/wnode.svg")
             :icons/refresh             (js/require "./resources/icons/refresh.svg")
             :icons/newchat             (js/require "./resources/icons/newchat.svg")
-            :icons/logo                (js/require "./resources/icons/logo.svg")})
+            :icons/logo                (js/require "./resources/icons/logo.svg")
+            :icons/camera              (js/require "./resources/icons/camera.svg")})
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

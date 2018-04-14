@@ -114,19 +114,15 @@
 
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
-            transactions-loading?     [:wallet.transactions/transactions-loading?]
-            error-message?            [:wallet.transactions/error-message?]
             filter-data               [:wallet.transactions/filters]]
     [react/view components.styles/flex
-     (when error-message?
-       (re-frame/dispatch [:wallet/show-error]))
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :key-fn          :hash
                          :render-fn       render-transaction
                          :empty-component [react/text {:style styles/empty-text}
                                            (i18n/label :t/transactions-history-empty)]
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
-                         :refreshing      (boolean transactions-loading?)}]]))
+                         :refreshing      false}]]))
 
 (defview unsigned-list []
   (letsubs [transactions [:wallet.transactions/unsigned-transactions-list]]
@@ -174,7 +170,7 @@
        (i18n/label :t/transactions-filter-select-all)]]
      [react/view {:style (merge {:background-color :white} components.styles/flex)}
       [list/section-list {:sections (wrap-filter-data filter-data)
-                          :key-fn   :id}]]]))
+                          :key-fn   (comp str :id)}]]]))
 
 (defn history-tab [active?]
   [react/text {:force-uppercase?    true
@@ -215,7 +211,7 @@
 (defview transactions []
   (letsubs [current-tab                 [:get :view-id]
             filter-data                 [:wallet.transactions/filters]]
-    [react/view styles/transacions-view
+    [react/view styles/transactions-view
      [status-bar/status-bar]
      [toolbar-view current-tab filter-data]
      [tabs current-tab]
@@ -234,7 +230,6 @@
         (money/wei->str token amount)
         (->> amount (money/wei-> token) money/to-fixed str))
       "...")))
-
 
 (defn details-header [{:keys [value date type symbol]}]
   [react/view {:style styles/details-header}

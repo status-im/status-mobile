@@ -1,9 +1,15 @@
 (ns status-im.data-store.local-storage
-  (:require [status-im.data-store.realm.local-storage :as data-store]))
+  (:require [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]
+            [status-im.data-store.realm.local-storage :as data-store]))
 
+(re-frame/reg-cofx
+  :data-store/get-local-storage-data
+  (fn [cofx _]
+    (assoc cofx :get-local-storage-data (comp :data data-store/get-by-chat-id))))
 
-(defn get-data [chat-id]
-  (:data (data-store/get-by-chat-id chat-id)))
-
-(defn set-data [local-storage]
-  (data-store/save local-storage))
+(re-frame/reg-fx
+  :data-store/set-local-storage-data
+  (fn [data]
+    (async/go (async/>! core/realm-queue #(data-store/save data)))))

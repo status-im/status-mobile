@@ -3,7 +3,6 @@
 (def fs (js/require "fs"))
 (def child-process (js/require "child_process"))
 (def process (js/require "process"))
-(def sleep (.-sleep (js/require "sleep")))
 
 (def exist? (.-existsSync fs))
 

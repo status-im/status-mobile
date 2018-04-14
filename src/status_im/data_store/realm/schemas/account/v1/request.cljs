@@ -1,13 +1,8 @@
-(ns status-im.data-store.realm.schemas.account.v1.request
-  (:require [taoensso.timbre :as log]))
+(ns status-im.data-store.realm.schemas.account.v1.request)
 
 (def schema {:name       :request
              :properties {:message-id :string
                           :chat-id    :string
-                          :type       :string
+                          :response   :string
                           :status     {:type    :string
-                                       :default "open"}
-                          :added      :date}})
-
-(defn migration [_ _]
-  (log/debug "migrating request schema"))
+                                       :default "open"}}})

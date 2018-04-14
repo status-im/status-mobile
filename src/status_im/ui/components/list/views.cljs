@@ -102,7 +102,7 @@
 
 (defn- wrap-key-fn [f]
   (fn [data index]
-    {:post [(string? %)]}
+    {:post [(some? %)]}
     (f data index)))
 
 (def default-separator [react/view styles/separator])

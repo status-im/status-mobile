@@ -11,14 +11,15 @@
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn- contact-inner-view
-  ([{:keys [info style] {:keys [whisper-identity name dapp?] :as contact} :contact}]
+  ([{:keys [info style props] {:keys [whisper-identity name dapp?] :as contact} :contact}]
    [react/view (merge styles/contact-inner-container style)
     [react/view
      [chat-icon/contact-icon-contacts-tab contact]]
     [react/view styles/info-container
-     [react/text (cond-> {:style           styles/name-text
+     [react/text (merge {:style           styles/name-text
                           :number-of-lines 1}
-                   dapp? (assoc :accessibility-label :dapp-name))
+                        (when dapp? {:accessibility-label :dapp-name})
+                        props)
       (if (pos? (count (:name contact)))
         (i18n/get-contact-translated whisper-identity :name name)
         ;;TODO is this correct behaviour?
@@ -27,20 +28,22 @@
        [react/text {:style styles/info-text}
         info])]]))
 
-(defn contact-view [{:keys [style contact extended? on-press extend-options extend-title info show-forward? accessibility-label]
-                     :or {accessibility-label :contact-item}}]
+(defn contact-view [{:keys [style contact extended? on-press extend-options extend-title info show-forward?
+                            accessibility-label inner-props]
+                     :or   {accessibility-label :contact-item}}]
   [react/touchable-highlight (merge {:accessibility-label accessibility-label}
                                     (when-not extended?
                                       {:on-press (when on-press #(on-press contact))}))
     [react/view styles/contact-container
-     [contact-inner-view {:contact contact :info info :style style}]
+     [contact-inner-view {:contact contact :info info :style style :props inner-props}]
      (when show-forward?
        [react/view styles/forward-btn
         [vector-icons/icon :icons/forward]])
      (when (and extended? (not (empty? extend-options)))
        [react/view styles/more-btn-container
-        [react/touchable-highlight {:on-press #(list-selection/show {:options extend-options
-                                                                     :title   extend-title})}
+        [react/touchable-highlight {:on-press            #(list-selection/show {:options extend-options
+                                                                                :title   extend-title})
+                                    :accessibility-label :menu-option}
          [react/view styles/more-btn
           [vector-icons/icon :icons/options {:accessibility-label :options}]]]])]])
 

@@ -5,6 +5,3 @@
              :properties {:identity   "string"
                           :is-in-chat {:type    "bool"
                                        :default true}}})
-
-(defn migration [_ _]
-  (log/debug "migrating chat-contact schema"))

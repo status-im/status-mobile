@@ -1,6 +1,5 @@
 (ns status-im.data-store.realm.schemas.account.v1.chat
-  (:require [taoensso.timbre :as log]
-            [status-im.ui.components.styles :refer [default-chat-color]]))
+  (:require [status-im.ui.components.styles :refer [default-chat-color]]))
 
 (def schema {:name       :chat
              :primaryKey :chat-id
@@ -14,8 +13,7 @@
                                              :optional true}
                           :is-active        :bool
                           :timestamp        :int
-                          :contacts         {:type       :list
-                                             :objectType :chat-contact}
+                          :contacts         {:type     "string[]"}
                           :removed-at       {:type     :int
                                              :optional true}
                           :removed-from-at  {:type     :int
@@ -24,17 +22,11 @@
                                              :optional true}
                           :updated-at       {:type     :int
                                              :optional true}
-                          :last-message-id  :string
                           :message-overhead {:type    :int
                                              :default 0}
-                          :public-key       {:type     :string
-                                             :optional true}
-                          :private-key      {:type     :string
-                                             :optional true}
-                          :pending-contact? {:type    :bool
-                                             :default false}
                           :contact-info     {:type     :string
-                                             :optional true}}})
-
-(defn migration [_ _]
-  (log/debug "migrating chat schema"))
+                                             :optional true}
+                          :debug?           {:type    :bool
+                                             :default false}
+                          :public?          {:type    :bool
+                                             :default false}}})

@@ -13,7 +13,22 @@
             "Dentacoin",
             "Augur",
             "Ethlance",
-            "Commiteth"
+            "Commiteth",
+            "cryptokitties",
+            "cryptopunks",
+            "name-bazaar",
+            "cent",
+            "erc-dex",
+            "oasis-direct",
+            "etherbots",
+            "peepeth",
+            "hexel",
+            "kyber",
+            "bancor",
+            "opensea",
+            "decentraland",
+            "cryptocribs",
+            "cryptofighters"
         ]
     },
     "state-of-dapps":
@@ -26,9 +41,7 @@
         [
             "flight-delays-suck",
             "FirstBlood",
-            "auction-house",
-            "gnosis",
-            "mkr-market"
+            "auction-house"
         ]
     }
 }

@@ -5,6 +5,7 @@
             [status-im.native-module.core :as status]
             [taoensso.timbre :as log]
             [status-im.utils.config :as config]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [goog.object :as object]))
 
 (when js/goog.DEBUG
@@ -14,4 +15,6 @@
   (log/set-level! config/log-level)
   (error-handler/register-exception-handler!)
   (status/init-jail)
+  (when config/testfairy-enabled?
+    (.begin js-dependencies/testfairy config/testfairy-token))
   (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root)))

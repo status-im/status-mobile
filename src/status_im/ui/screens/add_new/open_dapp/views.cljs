@@ -4,6 +4,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.action-button.action-button :as action-button]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
@@ -46,7 +47,7 @@
                       :keyboardShouldPersistTaps :always}]]))
 
 (views/defview dapp-description []
-  (views/letsubs [{:keys [name dapp-url] :as dapp} [:get-screen-params]]
+  (views/letsubs [{:keys [name dapp-url description] :as dapp} [:get-screen-params]]
     [react/keyboard-avoiding-view styles/main-container
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar]
@@ -60,6 +61,7 @@
      [react/view {:margin-top 24}
       [action-button/action-button {:label               (i18n/label :t/open)
                                     :icon                :icons/address
+                                    :icon-opts           {:color colors/blue}
                                     :accessibility-label :open-dapp-button
                                     :on-press            #(do
                                                             (re-frame/dispatch [:navigate-to-clean :home])
@@ -68,7 +70,8 @@
      [react/view styles/description-container
       [react/text {:style styles/gray-label}
        (i18n/label :t/description)]
-      [react/text {:style (merge styles/black-label {:padding-top 18})}]
+      [react/text {:style (merge styles/black-label {:padding-top 18})}
+       description]
       [components/separator {:margin-top 15}]
       [react/text {:style (merge styles/gray-label {:padding-top 18})}
        (i18n/label :t/url)]

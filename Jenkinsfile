@@ -28,6 +28,7 @@ node ('macos1') {
       slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
       checkout scm
+      sh 'git rebase origin/develop'
 
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
@@ -86,6 +87,11 @@ node ('macos1') {
       slackSend color: c, message: 'Branch: ' + BRANCH_NAME +
         '\nAndroid: ' + apkUrl +
         '\niOS: ' + ipaUrl
+    }
+
+    // Android for e2e
+    stage('Build (Android) for e2e testing') {
+      sh 'cd android && mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release.original.apk && ENVFILE=.env.e2e ./gradlew assembleRelease'
     }
 
     stage('Upload apk for e2e tests') {

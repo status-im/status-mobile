@@ -5,12 +5,12 @@ class ToggleNavigationButton(BaseButton):
 
     def __init__(self, driver):
         super(ToggleNavigationButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Toggle navigation ')
+        self.locator = self.Locator.xpath_selector("//*[@text='Toggle navigation ']")
 
     class NewAuctionButton(BaseButton):
         def __init__(self, driver):
             super(ToggleNavigationButton.NewAuctionButton, self).__init__(driver)
-            self.locator = self.Locator.accessibility_id('New Auction')
+            self.locator = self.Locator.xpath_selector("//*[@text='New Auction']")
 
 
 class ReserveAssetName(BaseElement):
@@ -20,13 +20,20 @@ class ReserveAssetName(BaseElement):
         def __init__(self, driver):
             super(ReserveAssetName.NameToReserveInput, self).__init__(driver)
             self.locator = self.Locator.xpath_selector(
-                '(//android.widget.EditText[@content-desc="eg MyFamousWallet.eth"])[1]')
+                '(//*[@text="Name To Reserve:"])[2]')
 
     class RegisterNameButton(BaseButton):
 
         def __init__(self, driver):
             super(ReserveAssetName.RegisterNameButton, self).__init__(driver)
-            self.locator = self.Locator.accessibility_id('Register Name')
+            self.locator = self.Locator.xpath_selector('//*[@text="Register Name"]')
+
+
+class AssetContract(BaseElement):
+
+    def __init__(self, driver):
+        super(AssetContract, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Asset contract"]')
 
 
 class AuctionHouseWebView(BaseWebView):
@@ -40,3 +47,4 @@ class AuctionHouseWebView(BaseWebView):
 
         self.name_to_reserve_input = ReserveAssetName.NameToReserveInput(self.driver)
         self.register_name_button = ReserveAssetName.RegisterNameButton(self.driver)
+        self.asset_contract = AssetContract(self.driver)

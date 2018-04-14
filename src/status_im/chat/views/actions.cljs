@@ -16,7 +16,7 @@
 
 (defn- delete-chat [chat-id group?]
   {:label  (i18n/label :t/delete-chat)
-   :action #(re-frame/dispatch [:delete-chat? chat-id group?])})
+   :action #(re-frame/dispatch [:remove-chat-and-navigate-home? chat-id group?])})
 
 (defn- leave-group-chat [chat-id public?]
   {:label  (i18n/label (if public? :t/leave-public-chat :t/leave-group-chat))

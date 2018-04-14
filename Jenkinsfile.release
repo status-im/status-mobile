@@ -31,6 +31,8 @@ node ('macos1'){
 
       checkout scm
 
+      sh 'git fetch --tags'
+
       sh 'rm -rf node_modules'
       sh 'cp .env.prod .env'
       sh 'lein deps'
@@ -78,7 +80,7 @@ node ('macos1'){
       withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
         def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
         sh 'sleep 10'
-        def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()  
+        def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
         ipaUrl = 'https://i.diawi.com/' + hash
 
         sh ('echo ARTIFACT iOS: ' + ipaUrl)

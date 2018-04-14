@@ -3,6 +3,7 @@
   (:require [cljs.spec.alpha :as spec]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
+            status-im.transport.db
             status-im.ui.screens.accounts.db
             status-im.ui.screens.contacts.db
             status-im.ui.screens.qr-scanner.db
@@ -10,7 +11,6 @@
             status-im.chat.specs
             status-im.commands.specs
             status-im.ui.screens.profile.db
-            status-im.ui.screens.discover.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
             status-im.ui.screens.browser.db
@@ -46,6 +46,7 @@
              :inbox/topic                constants/inbox-topic
              :inbox/password             constants/inbox-password
              :my-profile/editing?        false
+             :transport/chats            {}
              :desktop/desktop            {:tab-view-id :home}})
 
 ;;;;GLOBAL
@@ -64,8 +65,6 @@
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
-;;:unknown - not used
-(spec/def ::orientation (spec/nilable keyword?))
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
@@ -109,13 +108,16 @@
 (spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
 (spec/def :navigation.screen-params/dapp-description map?)
 
+(spec/def :navigation.screen-params/usage-data vector?)
+
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
                                                                          :navigation.screen-params/profile-qr-viewer
                                                                          :navigation.screen-params/qr-scanner
                                                                          :navigation.screen-params/group-contacts
                                                                          :navigation.screen-params/edit-contact-group
-                                                                         :navigation.screen-params/dapp-description])))
+                                                                         :navigation.screen-params/dapp-description
+                                                                         :navigation.screen-params/usage-data])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 
@@ -168,6 +170,8 @@
                   :browser/options
                   :new/open-dapp
                   :navigation/screen-params
+                  :transport/chats
+                  :transport/discovery-filter
                   :desktop/desktop]
                  :opt-un
                  [::current-public-key
@@ -180,7 +184,6 @@
                   ::status-node-started?
                   ::keyboard-height
                   ::keyboard-max-height
-                  ::orientation
                   ::network-status
                   ::mailserver-status
                   ::peers-count
@@ -211,6 +214,7 @@
                   :chat/selected-participants
                   :chat/chat-loaded-callbacks
                   :chat/public-group-topic
+                  :chat/public-group-topic-error
                   :chat/messages
                   :chat/not-loaded-message-ids
                   :chat/last-clock-value

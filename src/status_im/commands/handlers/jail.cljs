@@ -5,15 +5,13 @@
             [status-im.utils.utils :refer [show-popup]]
             [status-im.utils.types :as types]
             [status-im.commands.utils :refer [reg-handler]]
-            [status-im.ui.components.react :as r]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
-            [taoensso.timbre :as log]
-            [status-im.data-store.local-storage :as local-storage]))
+            [taoensso.timbre :as log]))
 
 (defn command-handler!
   [_ [chat-id
-      {:keys [command] :as params}
+      params
       {:keys [result error]}]]
   (let [{:keys [returned]} result
         {handler-error :error} returned]
@@ -23,9 +21,7 @@
         (dispatch [:set-chat-ui-props {:validation-messages markup}]))
 
       result
-      (let [command' (assoc command :handler-data returned)
-            params'  (assoc params :command command')] 
-        (dispatch [:chat-send-message/send-command chat-id params']))
+      (dispatch [:chat-send-message/send-command chat-id (assoc-in params [:command :handler-data] returned)])
 
       (not (or error handler-error))
       (dispatch [:chat-send-message/send-command chat-id params])
@@ -35,7 +31,7 @@
 (defn suggestions-handler!
   [{:keys [chats] :as db}
    [{:keys [chat-id bot-id default-db command parameter-index result]}]]
-  (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
+  (let [{:keys [markup] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
         current-input (get-in chats [chat-id :input-text])
         path (if command
@@ -49,8 +45,8 @@
                                    :db  default-db}])))))
 
 (defn suggestions-events-handler!
-  [{:keys [bot-db] :as db} [bot-id [n & data :as ev] val]]
-  (log/debug "Suggestion event: " n (first data) val) 
+  [{:keys [bot-db]} [bot-id [n & data] val]]
+  (log/debug "Suggestion event: " n (first data) val)
   (case (keyword n)
     :set-command-argument
     (let [[index value move-to-next?] (first data)]
@@ -105,8 +101,9 @@
                    {:result  result
                     :chat-id chat-id}])))))
 
-(reg-handler :set-local-storage
-  (handlers/side-effect!
-    (fn [_ [{:keys [data chat-id]}]]
-      (local-storage/set-data {:chat-id chat-id
-                               :data    data}))))
+(handlers/register-handler-fx
+  :set-local-storage
+  [trim-v]
+  (fn [_ [{:keys [data chat-id]}]]
+    {:data-store/set-local-storage-data {:chat-id chat-id
+                                         :data    data}}))

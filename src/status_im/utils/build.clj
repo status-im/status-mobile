@@ -1,5 +1,6 @@
 (ns status-im.utils.build
   (:require [cljs.analyzer :as analyzer]
+            [clojure.string :as string]
             [clojure.java.shell :as shell]))
 
 ;; Some warnings are unavoidable due to dependencies. For example, reagent 0.6.0
@@ -20,4 +21,4 @@
       (System/exit 1))))
 
 (defmacro git-short-version []
-  (:out (shell/sh "bash" "-c" "git describe --always")))
+  (string/replace (:out (shell/sh "bash" "-c" "git describe --always")) "\n" ""))
