@@ -164,9 +164,14 @@
 
 (defn text-message
   [{:keys [content] :as message}]
+  (let [parsed-text (cached-parse-text content :browse-link-from-message)]
+    [message-view message
+      [react/text {:style (style/text-message message)} parsed-text]]))
+
+(defn emoji-message
+  [{:keys [content] :as message}]
   [message-view message
-   (let [parsed-text (cached-parse-text content :browse-link-from-message)]
-     [react/text {:style (style/text-message message)} parsed-text])])
+    [react/text {:style (style/emoji-message message)} content]])
 
 (defn placeholder-message
   [{:keys [content] :as message}]
@@ -200,6 +205,10 @@
 (defmethod message-content constants/content-type-placeholder
   [wrapper message]
   [wrapper message [placeholder-message message]])
+
+(defmethod message-content constants/content-type-emoji
+  [wrapper message]
+  [wrapper message [emoji-message message]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]

@@ -12,6 +12,14 @@
             [status-im.i18n :as i18n]
             [status-im.constants :as const]))
 
+;; lodash's emoji regex, more info: https://medium.com/reactnative/emojis-in-javascript-f693d0eb79fb
+(def regx-emoji #"^((?:[\u2700-\u27bf]|[\u2600-\u26ff]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?(?:\u200d(?:[^\ud800-\udfff]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff]|[\ufe00-\ufe0f])?)*)+$")
+
+(defn- contains-only-emoji? [text]
+  (let [length-threshold 20] ;; Emoji symbols require 4 bytes and JS evaluates their length as 2 characters (`"💩".length === 2`). The threshold of 20 equals 10 emoji.
+    (when (and (not= text nil) (<= (.-length text) length-threshold))
+      (not= (re-matches regx-emoji text) nil))))
+
 (reg-sub :get-chats :chats)
 
 (reg-sub :get-current-chat-id :current-chat-id)
@@ -169,11 +177,18 @@
                        (conj prepared-messages {:type :datemark
                                                 :value datemark}))))))))
 
+(defn messages-emoji
+  "Change content-type if the message consists only of emoji symbols"
+  [messages]
+  (map (fn [message]
+    (if (contains-only-emoji? (:content message)) (assoc message :content-type "emoji") message))
+      messages))
+
 (reg-sub
   :get-current-chat-messages
   :<- [:get-current-chat]
   (fn [{:keys [messages]}]
-    (-> messages message-datemark-groups messages-stream)))
+    (-> messages message-datemark-groups messages-stream messages-emoji)))
 
 (reg-sub
   :get-commands-for-chat
