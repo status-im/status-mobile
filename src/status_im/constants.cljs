@@ -41,7 +41,8 @@
   {:wallet {:visible-tokens {:testnet #{:STT}
                              :mainnet #{:SNT}}}
    :wnode {:testnet "main"
-           :mainnet "main"}})
+           :mainnet "main"
+           :rinkeby "main"}})
 
 (defn- transform-config [networks]
   (->> networks
@@ -99,7 +100,11 @@
                        :address "enode://90cbf961c87eb837adc1300a0a6722a57134d843f0028a976d35dff387f101a2754842b6b694e50a01093808f304440d4d968bcbc599259e895ff26e5a1a17cf@51.15.194.39:30303"}}
    :mainnet {"main" {:id      "main"
                      :name    "Status mainnet mailserver"
-                     :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}})
+                     :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}
+   :rinkeby {"main" {:id     "main"
+                      :name   "Status mailserver"
+                      :address "enode://43829580446ad138386dadb7fa50b6bd4d99f7c28659a0bc08115f8c0380005922a340962496f6af756a42b94a1522baa38a694fa27de59c3a73d4e08d5dbb31@206.189.6.48:30504"}}
+})
 
 (def inbox-password "status-offline-inbox")
 
