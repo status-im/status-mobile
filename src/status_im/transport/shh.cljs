@@ -85,8 +85,8 @@
       (doseq [{:keys [sym-key-id topic]} recipients]
         (post-message {:web3            web3
                        :whisper-message (assoc whisper-message
-                                               :symKeyID sym-key-id
-                                               :topic    topic)
+                                               :topic topic
+                                               :symKeyID sym-key-id)
                        :on-success      (if success-event
                                           #(re-frame/dispatch success-event)
                                           #(log/debug :shh/post-success))
