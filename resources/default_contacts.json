@@ -19,17 +19,6 @@
         "bot-url": "local://demo-bot"
     },
 
-    "0x0428c9d6c1aaaa8369a7c63819684f30e34396dc0907d49afeac85a0a774ccb919b3482097d992e66bcc538e7a0c6acf874c77748f396f53c0a102e10d1a37765b":
-    {
-        "name":
-        {
-            "en": "Jarrad"
-        },
-        "photo-path": "contacts://jarrad",
-        "public-key": "0x0428c9d6c1aaaa8369a7c63819684f30e34396dc0907d49afeac85a0a774ccb919b3482097d992e66bcc538e7a0c6acf874c77748f396f53c0a102e10d1a37765b",
-        "dapp?": false
-    },
-
     "auction-house":
     {
         "name":

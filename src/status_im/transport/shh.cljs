@@ -82,11 +82,11 @@
         :or {error-event :protocol/send-status-message-error}}]
     (let [whisper-message (update message :payload (comp transport.utils/from-utf8
                                                          transit/serialize))]
-      (doseq [{:keys [sym-key-id pub-key topic]} recipients]
+      (doseq [{:keys [sym-key-id topic]} recipients]
         (post-message {:web3            web3
-                       :whisper-message (cond-> (assoc whisper-message :topic topic)
-                                          sym-key-id (assoc :symKeyID sym-key-id)
-                                          pub-key (assoc :pubKey pub-key))
+                       :whisper-message (assoc whisper-message
+                                               :topic topic
+                                               :symKeyID sym-key-id)
                        :on-success      (if success-event
                                           #(re-frame/dispatch success-event)
                                           #(log/debug :shh/post-success))

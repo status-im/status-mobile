@@ -63,17 +63,11 @@
 
 (defn- prepare-recipients [public-keys db]
   (map (fn [public-key]
-         (if-let [{:keys [topic sym-key-id]} (get-in db [:transport/chats public-key])]
-           {:topic      topic
-            :sym-key-id sym-key-id}
-           {:topic   (transport.utils/get-topic constants/contact-discovery)
-            :pub-key public-key}))
+         (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id]))
        public-keys))
 
 (defn multi-send-with-pubkey
-  "Sends payload to multiple participants selected by `:public-keys` key.
-  If there is already established symmetric key with the participant, uses that (for efficiency),
-  if not, uses asymetric encryption."
+  "Sends payload to multiple participants selected by `:public-keys` key. "
   [{:keys [payload public-keys success-event]} {:keys [db] :as cofx}]
   (let [{:keys [current-public-key web3]} db
         recipients                        (prepare-recipients public-keys db)]
