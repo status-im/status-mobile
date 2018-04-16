@@ -41,7 +41,8 @@
   {:wallet {:visible-tokens {:testnet #{:STT :ATT}
                              :mainnet #{:SNT}}}
    :wnode {:testnet "main"
-           :mainnet "main"}})
+           :mainnet "main"
+           :rinkeby "main"}})
 
 (defn- transform-config [networks]
   (->> networks
@@ -75,11 +76,11 @@
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4"}}}
    "rinkeby"     {:id     "rinkeby",
-                  :name   "Rinkeby",
+                  :name   "Rinkeby with discovery",
                   :config {:NetworkId (ethereum/chain-keyword->chain-id :rinkeby)
                            :DataDir   "/ethereum/rinkeby"}}
    "rinkeby_rpc" {:id     "rinkeby_rpc",
-                  :name   "Rinkeby with upstream RPC",
+                  :name   "Rinkeby with upstream RPC and discovery",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
@@ -99,7 +100,14 @@
                        :address "enode://90cbf961c87eb837adc1300a0a6722a57134d843f0028a976d35dff387f101a2754842b6b694e50a01093808f304440d4d968bcbc599259e895ff26e5a1a17cf@51.15.194.39:30303"}}
    :mainnet {"main" {:id      "main"
                      :name    "Status mainnet mailserver"
-                     :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}})
+                     :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}
+   :rinkeby {"main" {:id     "main"
+                      :name   "Status mailserver A"
+                      :address "enode://43829580446ad138386dadb7fa50b6bd4d99f7c28659a0bc08115f8c0380005922a340962496f6af756a42b94a1522baa38a694fa27de59c3a73d4e08d5dbb31@206.189.6.48:30504"}
+             "backup" {:id      "backup"
+                       :name    "Status mailserver B"
+                       :address "enode://70a2004e78399075f566033c42e9a0b1d43c683d4742755bb5457d03191be66a1b48c2b4fb259696839f28646a5828a1958b900860e27897f984ad0fc8482404@206.189.56.154:30504"}}
+})
 
 (def inbox-password "status-offline-inbox")
 
