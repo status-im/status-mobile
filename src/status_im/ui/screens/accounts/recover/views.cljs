@@ -20,10 +20,7 @@
   (letsubs [error [:get-in [:accounts/recover :passphrase-error]]
             input-ref (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    ;; NOTE(dmitryn) Doesn't work on Android without setTimeout
-                                    (js/setTimeout
-                                      #(.hideView js-dependencies/testfairy @input-ref)
-                                      100)))}
+                                    (.hideView js-dependencies/testfairy @input-ref)))}
     [text-input/text-input-with-label
      {:style               components.styles/flex
       :height              92
