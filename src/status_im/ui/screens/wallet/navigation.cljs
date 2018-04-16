@@ -6,7 +6,7 @@
 
 (defmethod navigation/preload-data! :wallet
   [db _]
-  (re-frame/dispatch [:update-wallet (map :symbol (tokens/tokens-for (ethereum/network->chain-keyword (:network db))))])
+  (re-frame/dispatch [:update-wallet])
   (assoc-in db [:wallet :current-tab] 0))
 
 (defmethod navigation/preload-data! :transactions-history

@@ -91,30 +91,31 @@
     (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
 
 ;; Handlers
-
 (handlers/register-handler-fx
   :update-wallet
-  (fn [{{:keys [web3 accounts/current-account-id network network-status] :as db} :db} [_ symbols]]
-    (when (not= network-status :offline)
-      {:get-balance {:web3          web3
-                     :account-id    current-account-id
-                     :success-event :update-balance-success
-                     :error-event   :update-balance-fail}
-       :get-tokens-balance {:web3          web3
-                            :account-id    current-account-id
-                            :symbols       symbols
-                            :chain         (ethereum/network->chain-keyword network)
-                            :success-event :update-token-balance-success
-                            :error-event   :update-token-balance-fail}
-       :get-prices  {:from          "ETH"
-                     :to            "USD"
-                     :success-event :update-prices-success
-                     :error-event   :update-prices-fail}
-       :db          (-> db
-                        (clear-error-message :prices-update)
-                        (clear-error-message :balance-update)
-                        (assoc-in [:wallet :balance-loading?] true)
-                        (assoc :prices-loading? true))})))
+  (fn [{{:keys [web3 accounts/current-account-id network network-status] :as db} :db} _]
+    (let [chain   (ethereum/network->chain-keyword network)
+          symbols (get-in db [:accounts/accounts current-account-id :settings :wallet :visible-tokens chain])]
+      (when (not= network-status :offline)
+        {:get-balance {:web3          web3
+                       :account-id    current-account-id
+                       :success-event :update-balance-success
+                       :error-event   :update-balance-fail}
+         :get-tokens-balance {:web3          web3
+                              :account-id    current-account-id
+                              :symbols       symbols
+                              :chain         chain
+                              :success-event :update-token-balance-success
+                              :error-event   :update-token-balance-fail}
+         :get-prices  {:from          "ETH"
+                       :to            "USD"
+                       :success-event :update-prices-success
+                       :error-event   :update-prices-fail}
+         :db          (-> db
+                          (clear-error-message :prices-update)
+                          (clear-error-message :balance-update)
+                          (assoc-in [:wallet :balance-loading?] true)
+                          (assoc :prices-loading? true))}))))
 
 (handlers/register-handler-fx
   :update-transactions
