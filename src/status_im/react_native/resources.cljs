@@ -22,6 +22,7 @@
    :cryptokitties      (js/require "./resources/images/contacts/cryptokitties.png")
    :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")
    :erc-dex            (js/require "./resources/images/contacts/erc-dex.png")
+   :ddex               (js/require "./resources/images/contacts/ddex.png")
    :cent               (js/require "./resources/images/contacts/cent.png")
    :hexel              (js/require "./resources/images/contacts/hexel.png")
    :peepeth            (js/require "./resources/images/contacts/peepeth.png")
