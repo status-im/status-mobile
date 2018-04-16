@@ -124,7 +124,7 @@
         (if sending-from-bot-or-dapp?
           ;;SENDING FROM BOT (CHAT) OR DAPP
           {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
-           :dispatch-n [[:update-wallet (map :symbol (tokens/tokens-for (ethereum/network->chain-keyword (:network db))))]
+           :dispatch-n [[:update-wallet]
                         [:navigate-to-modal :wallet-send-transaction-modal]
                         (when-not (seq gas)
                           [:wallet/update-estimated-gas transaction])

@@ -23,7 +23,7 @@
 
 (defview manage-assets []
   (letsubs [network        [:network]
-            visible-tokens [:wallet.settings/visible-tokens]]
+            visible-tokens [:wallet/visible-tokens-symbols]]
     [react/view (merge components.styles/flex {:background-color :white})
      [status-bar/status-bar {:type :modal-wallet}]
      [toolbar/toolbar #_{} {:style wallet.styles/toolbar}

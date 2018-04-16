@@ -63,37 +63,31 @@
                   :number-of-lines 1}
       (clojure.core/name symbol)]]]])
 
-(defn current-tokens [visible-tokens network]
-  (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network))))
 
-(defn- asset-section [network balance visible-tokens]
-  (let [tokens (current-tokens visible-tokens network)
-        assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] tokens))]
-    [react/view styles/asset-section
-     [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
-     [list/flat-list
-      {:default-separator? true
-       :scroll-enabled     false
-       :key-fn             (comp str :symbol)
-       :data               assets
-       :render-fn          render-asset}]]))
+
+(defn- asset-section [assets]
+  [react/view styles/asset-section
+   [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
+   [list/flat-list
+    {:default-separator? true
+     :scroll-enabled     false
+     :key-fn             (comp str :symbol)
+     :data               assets
+     :render-fn          render-asset}]])
 
 (views/defview wallet []
-  (views/letsubs [network         [:network]
-                  balance         [:balance]
-                  visible-tokens  [:wallet.settings/visible-tokens]
+  (views/letsubs [assets          [:wallet/visible-assets-with-amount]
                   portfolio-value [:portfolio-value]]
-    (let [symbols (map :symbol (current-tokens visible-tokens network))]
-      [react/view styles/main-section
-       [toolbar-view]
-       [react/scroll-view {:content-container-style styles/scrollable-section
-                           :refresh-control
-                           (reagent/as-element
-                             [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet symbols])
-                                                     :tint-color :white
-                                                     :refreshing false}])}
-        [react/view {:style styles/scroll-top}] ;; Hack to allow different colors for top / bottom scroll view]
-        [total-section portfolio-value]
-        [list/action-list actions
-         {:container-style styles/action-section}]
-        [asset-section network balance visible-tokens]]])))
+    [react/view styles/main-section
+     [toolbar-view]
+     [react/scroll-view {:content-container-style styles/scrollable-section
+                         :refresh-control
+                         (reagent/as-element
+                          [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
+                                                  :tint-color :white
+                                                  :refreshing false}])}
+      [react/view {:style styles/scroll-top}] ;; Hack to allow different colors for top / bottom scroll view]
+      [total-section portfolio-value]
+      [list/action-list actions
+       {:container-style styles/action-section}]
+      [asset-section assets]]]))
