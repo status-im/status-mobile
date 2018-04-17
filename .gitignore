@@ -108,3 +108,7 @@ fastlane/README.md
 # Clj
 
 .cpcache/
+
+# emacs
+.dir-locals.el
+
