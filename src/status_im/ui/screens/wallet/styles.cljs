@@ -111,7 +111,7 @@
 ;; Actions section
 
 (def action-section
-  {:flex 1
+  {:flex 0
    :background-color colors/blue})
 
 (def action
