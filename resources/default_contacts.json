@@ -110,7 +110,7 @@
     },
     "ddex": {
         "name" : {"en" : "DDEX "},
-        "description": "The most user-friendly decentralized exchange for Ethereum and ERC-20 tokens. ",
+        "description": "A user-friendly decentralized exchange for Ether and ERC-20 tokens.",
         "dapp-url": {"en" : "https://ddex.io"},
         "dapp?": true,
         "photo-path": "contacts://ddex"
