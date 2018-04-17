@@ -1,7 +1,8 @@
 (ns status-im.utils.build
   (:require [cljs.analyzer :as analyzer]
             [clojure.string :as string]
-            [clojure.java.shell :as shell]))
+            [clojure.java.shell :as shell]
+            [clojure.java.io :as io]))
 
 ;; Some warnings are unavoidable due to dependencies. For example, reagent 0.6.0
 ;; has a warning in its util.cljs namespace. Adjust this as is necessary and
@@ -21,4 +22,10 @@
       (System/exit 1))))
 
 (defmacro git-short-version []
-  (string/replace (:out (shell/sh "bash" "-c" "git describe --always")) "\n" ""))
+  (let [version-file-path ".version"
+        version-file      (io/file version-file-path)]
+    (if (.exists version-file)
+      (string/trim (slurp version-file-path))
+      (-> (shell/sh "bash" "-c" "git describe --always")
+          :out
+          (string/replace "\n" "")))))
