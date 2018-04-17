@@ -17,7 +17,7 @@
 (defview choose-contact-view [{title      :title
                                arg-index  :index
                                bot-db-key :bot-db-key}]
-  (letsubs [contacts [:get-people-in-current-chat]]
+  (letsubs [contacts [:get-current-chat-contacts]]
     [react/view
      [react/text {:style {:font-size      14
                           :color          "rgb(147, 155, 161)"

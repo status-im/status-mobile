@@ -70,7 +70,7 @@
      [toggle-list contacts group-toggle-contact]]))
 
 (defview add-participants-toggle-list []
-  (letsubs [contacts                [:get-all-contacts-not-in-current-chat]
+  (letsubs [contacts                [:get-all-people-contacts-not-in-current-chat]
             {:keys [name]}          [:get-current-chat]
             selected-contacts-count [:selected-participants-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
