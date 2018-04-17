@@ -179,9 +179,12 @@ class TestTransaction(SingleDeviceTestCase):
     @pytest.mark.pr
     def test_send_eth_from_wallet_sign_now(self):
         sender = transaction_users_wallet['A_USER']
+        recipient = transaction_users_wallet['B_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
         home_view = sign_in_view.get_home_view()
+        home_view.add_contact(recipient['public_key'])
+        home_view.get_back_to_home_view()
         wallet_view = home_view.wallet_button.click()
         send_transaction = wallet_view.send_button.click()
         send_transaction.amount_edit_box.click()
@@ -189,7 +192,7 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.recent_recipients_button.click()
-        recent_recipient = send_transaction.element_by_text('Jarrad')
+        recent_recipient = send_transaction.element_by_text(recipient['username'])
         send_transaction.recent_recipients_button.click_until_presence_of_element(recent_recipient)
         recent_recipient.click()
         send_transaction.sign_transaction_button.click()
