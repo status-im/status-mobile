@@ -64,7 +64,7 @@
                  :method  "admin_peers"
                  :params  []}
         payload (.stringify js/JSON (clj->js args))]
-    (status/call-web3 payload (response-handler error-fn success-fn))))
+    (status/call-web3-private payload (response-handler error-fn success-fn))))
 
 (defn registered-peer? [peers enode]
   (let [peer-ids (into #{} (map :id) peers)

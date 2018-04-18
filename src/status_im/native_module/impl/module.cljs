@@ -120,17 +120,17 @@
   (when status
     (call-module #(.login status address password on-result))))
 
-(defn complete-transactions
+(defn approve-sign-requests
   [hashes password callback]
-  (log/debug :complete-transactions (boolean status) hashes)
+  (log/debug :approve-sign-requests (boolean status) hashes)
   (when status
-    (call-module #(.completeTransactions status (types/clj->json hashes) password callback))))
+    (call-module #(.approveSignRequests status (types/clj->json hashes) password callback))))
 
-(defn discard-transaction
+(defn discard-sign-request
   [id]
-  (log/debug :discard-transaction id)
+  (log/debug :discard-sign-request id)
   (when status
-    (call-module #(.discardTransaction status id))))
+    (call-module #(.discardSignRequest status id))))
 
 (defn- append-catalog-init [js]
     (str js "\n" "var catalog = JSON.stringify(_status_catalog); catalog;"))
@@ -230,6 +230,10 @@
   (when status
     (call-module #(.sendWeb3Request status payload callback))))
 
+(defn call-web3-private [payload callback]
+  (when status
+    (call-module #(.sendWeb3PrivateRequest status payload callback))))
+
 (defn close-application []
   (.closeApplication status))
 
@@ -254,10 +258,10 @@
     (recover-account passphrase password callback))
   (-login [this address password callback]
     (login address password callback))
-  (-complete-transactions [this hashes password callback]
-    (complete-transactions hashes password callback))
-  (-discard-transaction [this id]
-    (discard-transaction id))
+  (-approve-sign-requests [this hashes password callback]
+    (approve-sign-requests hashes password callback))
+  (-discard-sign-request [this id]
+    (discard-sign-request id))
   (-parse-jail [this chat-id file callback]
     (parse-jail chat-id file callback))
   (-call-jail [this params]
@@ -266,6 +270,8 @@
     (call-function! params))
   (-call-web3 [this payload callback]
     (call-web3 payload callback))
+  (-call-web3-private [this payload callback]
+    (call-web3-private payload callback))
   (-notify-users [this {:keys [message payload tokens] :as m} callback]
     (notify-users m callback))
   (-add-peer [this enode callback]

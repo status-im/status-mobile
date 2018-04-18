@@ -20,7 +20,7 @@
 (re-frame/reg-fx
   ::accept-transaction
   (fn [{:keys [password id on-completed]}]
-    (status/complete-transactions (list id) password on-completed)))
+    (status/approve-sign-requests (list id) password on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
   (.sendTransaction (.-eth web3)
@@ -52,7 +52,7 @@
 (re-frame/reg-fx
   :discard-transaction
   (fn [id]
-    (status/discard-transaction id)))
+    (status/discard-sign-request id)))
 
 ;;Helper functions
 
@@ -95,10 +95,12 @@
 
 ;;TRANSACTION QUEUED signal from status-go
 (handlers/register-handler-fx
-  :transaction-queued
+  :sign-request-queued
   [(re-frame/inject-cofx :now)]
-  (fn [{:keys [db now]} [_ {:keys [id message_id args] :as transaction}]]
-    (if (transaction-valid? transaction)
+  (fn [{:keys [db now]} [_ {:keys [id message_id method args]}]]
+    (cond
+
+      (= method constants/web3-send-transaction)
       ;;NOTE(goranjovic): the transactions started from chat using /send command
       ;; are only in ether, so this parameter defaults to ETH
       (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args
@@ -120,6 +122,7 @@
             sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
             new-db (assoc-in db [:wallet :transactions-unsigned id] transaction)
             sending-db {:id         id
+                        :method     method
                         :from-chat? sending-from-bot-or-dapp?}]
         (if sending-from-bot-or-dapp?
           ;;SENDING FROM BOT (CHAT) OR DAPP
@@ -143,17 +146,25 @@
                ::accept-transaction {:id           id
                                      :password     password
                                      :on-completed on-transactions-completed}}))))
-      {:discard-transaction id})))
+
+      (= method constants/web3-personal-sign)
+
+      (let [{:keys [data]} args]
+        {:db (-> db
+                 (assoc-in [:wallet :transactions-unsigned id] {:data data :id id})
+                 (assoc-in [:wallet :send-transaction] {:id id :method method}))
+         :dispatch [:navigate-to-modal :wallet-sign-message-modal]}))))
 
 (defn this-transaction-signing? [id signing-id view-id modal]
   (and (= signing-id id)
        (or (= view-id :wallet-send-transaction)
-           (= modal :wallet-send-transaction-modal))))
+           (= modal :wallet-send-transaction-modal)
+           (= modal :wallet-sign-message-modal))))
 
 ;;TRANSACTION FAILED signal from status-go
 (handlers/register-handler-fx
-  :transaction-failed
-  (fn [{{:keys [view-id modal] :as db} :db} [_ {:keys [id error_code error_message]}]]
+  :sign-request-failed
+  (fn [{{:keys [view-id modal] :as db} :db} [_ {:keys [id method error_code error_message]}]]
     (let [send-transaction (get-in db [:wallet :send-transaction])]
       (case error_code
 
@@ -163,11 +174,12 @@
 
         ;;NO ERROR, DISCARDED, TIMEOUT or DEFAULT ERROR
         (if (this-transaction-signing? id (:id send-transaction) view-id modal)
-          {:db                      (-> db
-                                        (update-in [:wallet :transactions-unsigned] dissoc id)
-                                        (update-in [:wallet :send-transaction] merge clear-send-properties))
-           :dispatch                [:navigate-back]
-           ::show-transaction-error error_message}
+          (cond-> {:db                      (-> db
+                                                (update-in [:wallet :transactions-unsigned] dissoc id)
+                                                (update-in [:wallet :send-transaction] merge clear-send-properties))
+                   :dispatch                [:navigate-back]}
+            (= method constants/web3-send-transaction)
+            (assoc ::show-transaction-error error_message))
           {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))
 
 (defn prepare-unconfirmed-transaction [db now hash id]
@@ -186,6 +198,7 @@
   ::transaction-completed
   (fn [{db :db now :now} [_ {:keys [id response]} modal?]]
     (let [{:keys [hash error]} response
+          {:keys [method]} (get-in db [:wallet :send-transaction])
           db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
       (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
         {:db db'}
@@ -195,8 +208,9 @@
                    (update-in [:wallet :transactions-unsigned] dissoc id)
                    (update-in [:wallet :send-transaction] merge clear-send-properties))}
           (if modal?
-            {:dispatch       [:navigate-back]
-             :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]}
+            (cond-> {:dispatch [:navigate-back]}
+                    (= method constants/web3-send-transaction)
+                    (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
             {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
@@ -231,8 +245,7 @@
 
 (handlers/register-handler-fx
   :wallet/sign-transaction-modal
-  (fn [{{:keys          [web3]
-         :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
+  (fn [{db :db} _]
     (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
       {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
        ::accept-transaction {:id           id

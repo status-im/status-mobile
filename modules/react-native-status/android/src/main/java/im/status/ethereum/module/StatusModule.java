@@ -487,8 +487,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void completeTransactions(final String hashes, final String password, final Callback callback) {
-        Log.d(TAG, "completeTransactions");
+    public void approveSignRequests(final String hashes, final String password, final Callback callback) {
+        Log.d(TAG, "approveSignRequests");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -497,7 +497,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.CompleteTransactions(hashes, password);
+                String res = Statusgo.ApproveSignRequests(hashes, password);
                 callback.invoke(res);
             }
         };
@@ -507,8 +507,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
 
     @ReactMethod
-    public void discardTransaction(final String id) {
-        Log.d(TAG, "discardTransaction");
+    public void discardSignRequest(final String id) {
+        Log.d(TAG, "discardSignRequest");
         if (!checkAvailability()) {
             return;
         }
@@ -516,7 +516,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                Statusgo.DiscardTransaction(id);
+                Statusgo.DiscardSignRequest(id);
             }
         };
 
@@ -688,6 +688,19 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String res = Statusgo.CallRPC(payload);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void sendWeb3PrivateRequest(final String payload, final Callback callback) {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.CallPrivateRPC(payload);
                 callback.invoke(res);
             }
         };

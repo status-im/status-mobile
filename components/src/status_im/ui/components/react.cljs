@@ -235,6 +235,7 @@
                               :wallet-transaction-sent-modal
                               :wallet-send-transaction-request
                               :wallet-transaction-fee
+                              :wallet-sign-message-modal
                               :contact-code)      styles/color-blue4
                              (:qr-viewer
                               :recipient-qr-code) "#2f3031"

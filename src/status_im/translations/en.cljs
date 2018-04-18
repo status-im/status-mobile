@@ -401,6 +401,8 @@
    :wallet-total-value                   "Total value"
    :wallet-settings                      "Wallet settings"
    :wallet-manage-assets                 "Manage Assets"
+   :sign-message                         "Sign Message"
+   :signing-message-phrase-description   "Sign the message by entering your password. Make sure that the words above match your secret signing phrase"
    :signing-phrase-description           "Sign the transaction by entering your password. Make sure that the words above match your secret signing phrase"
    :wallet-insufficient-funds            "Insufficient funds"
    :receive                              "Receive"
