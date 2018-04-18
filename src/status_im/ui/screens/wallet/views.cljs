@@ -80,8 +80,7 @@
                   portfolio-value [:portfolio-value]]
     [react/view styles/main-section
      [toolbar-view]
-     [react/scroll-view {:content-container-style styles/scrollable-section
-                         :refresh-control
+     [react/scroll-view {:refresh-control
                          (reagent/as-element
                           [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
                                                   :tint-color :white

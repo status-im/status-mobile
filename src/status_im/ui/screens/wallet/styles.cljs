@@ -68,11 +68,6 @@
 (def main-section
   {:flex 1})
 
-(def scrollable-section
-  {:flex             1
-   :zIndex           1
-   :background-color colors/white})
-
 (def scroll-top
   (let [height (:height (react/get-dimensions "window"))]
     {:background-color colors/blue
@@ -111,8 +106,7 @@
 ;; Actions section
 
 (def action-section
-  {:flex 1
-   :background-color colors/blue})
+  {:background-color colors/blue})
 
 (def action
   {:background-color colors/white-transparent
