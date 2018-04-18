@@ -9,7 +9,8 @@
             [goog.string :as gstr]
             [cognitect.transit :as transit]
             [clojure.walk :as walk]
-            [status-im.react-native.js-dependencies :as rn-dependencies])
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.utils.utils :as utils])
   (:refer-clojure :exclude [exists?]))
 
 (defn realm-version
@@ -39,6 +40,7 @@
   (open-realm (last schemas) file-name))
 
 (defn reset-realm [file-name schemas]
+  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
   (delete-realm file-name)
   (open-realm (last schemas) file-name))
 
