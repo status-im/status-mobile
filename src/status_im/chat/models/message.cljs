@@ -25,15 +25,15 @@
                                                                         contacts)]
     (:ref (get available-commands-responses response-name))))
 
-(defn- emoji-only-string?
-  [text]
-  (re-matches constants/regx-emoji text))
+(defn- emoji-only-content?
+  [content]
+  (and (string? content) (re-matches constants/regx-emoji content)))
 
 (defn- prepare-message
-  [message chat-id current-chat?]
+  [{:keys [content] :as message} chat-id current-chat?]
   (cond-> (assoc message :appearing? true)
     (not current-chat?) (assoc :appearing? false)
-    (emoji-only-string? (:content message)) (assoc :content-type constants/content-type-emoji)))
+    (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
 
 (defn- add-message
   [chat-id {:keys [message-id clock-value content] :as message} current-chat? {:keys [db]}]
@@ -118,7 +118,7 @@
   [{:keys [db get-stored-message]} {:keys [chat-id from message-id] :as message}]
   (let [{:keys [chats deleted-chats current-public-key]} db
         {:keys [messages not-loaded-message-ids]}        (get chats chat-id)]
-    (when (not= from current-public-key) 
+    (when (not= from current-public-key)
       (not (or (get messages message-id)
                (get not-loaded-message-ids message-id)
                (and (get deleted-chats chat-id)
