@@ -12,35 +12,13 @@
         (realm/fix-map->vec :contacts)
         (assoc :last-clock-value  (or last-clock-value 0)))))
 
-(defn get-all-active
+(defn get-all
   []
   (map normalize-chat
-       (-> (realm/get-by-field @realm/account-realm :chat :is-active true)
+       (-> @realm/account-realm
+           (realm/get-all :chat)
            (realm/sorted :timestamp :desc)
            realm/js-object->clj)))
-
-(defn get-inactive-ids
-  []
-  (-> (realm/get-by-field @realm/account-realm :chat :is-active false)
-      (.map (fn [chat _ _]
-              (aget chat "chat-id")))
-      realm/js-object->clj
-      set))
-
-(defn- groups
-  [active?]
-  (-> @realm/account-realm
-      (realm/get-all :chat)
-      (realm/sorted :timestamp :desc)
-      (realm/filtered (str "group-chat = true && is-active = "
-                           (if active? "true" "false")))))
-
-(defn get-active-group-chats
-  []
-  (map (fn [{:keys [chat-id public?]}]
-         {:group-id chat-id
-          :public?  public?})
-       (realm/js-object->clj (groups true))))
 
 (defn- get-by-id-obj
   [chat-id]
@@ -72,7 +50,7 @@
                  (fn []
                    (doto chat
                      (aset "is-active" false)
-                     (aset "removed-at" (datetime/timestamp))))))) 
+                     (aset "removed-at" (datetime/timestamp)))))))
 
 (defn add-contacts
   [chat-id identities]

@@ -81,9 +81,7 @@
 (re-frame/reg-cofx
  :random-id-seq
  (fn [coeffects _]
-   (assoc coeffects :random-id-seq
-          ((fn rand-id-seq []
-             (cons (random/id) (lazy-seq (rand-id-seq))))))))
+   (assoc coeffects :random-id-seq (repeatedly random/id))))
 
 ;;;; FX
 

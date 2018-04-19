@@ -195,7 +195,6 @@
                   :qr/qr-modal
                   :qr/current-qr-context
                   :chat/chats
-                  :chat/deleted-chats
                   :chat/current-chat-id
                   :chat/chat-id
                   :chat/new-chat

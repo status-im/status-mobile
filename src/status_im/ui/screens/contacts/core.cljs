@@ -22,7 +22,7 @@
       (handlers/merge-fx cofx
                          {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
                           :data-store/save-contact contact-props}
-                         (chat.models/add-chat public-key chat-props)))))
+                         (chat.models/upsert-chat chat-props)))))
 
 (defn receive-contact-request-confirmation
   [public-key {:keys [name profile-image address fcm-token]}
@@ -59,6 +59,6 @@
             (if (chats public-key)
               (handlers/merge-fx cofx
                                  (update-contact contact)
-                                 (chat.models/update-chat {:chat-id chat-id
+                                 (chat.models/upsert-chat {:chat-id chat-id
                                                            :name    name}))
               (update-contact contact cofx))))))))

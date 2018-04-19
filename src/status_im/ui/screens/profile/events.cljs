@@ -27,7 +27,7 @@
 
 (handlers/register-handler-fx
   :profile/send-transaction
-  [(re-frame/inject-cofx :data-store/get-chat) re-frame/trim-v]
+  [re-frame/trim-v]
   (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
     (let [send-command (get-in contacts chat-const/send-command-ref)]
       (handlers/merge-fx cofx
