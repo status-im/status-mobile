@@ -123,7 +123,7 @@
                                           :hide-arrow?         true
                                           :action-fn           #(handle-logout)}]]
       [react/view styles/my-profile-settings-logout-version
-       [react/text build/version]]]]))
+       [react/text @(re-frame/subscribe [:get-app-version])]]]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced?                     [:get :my-profile/advanced?]

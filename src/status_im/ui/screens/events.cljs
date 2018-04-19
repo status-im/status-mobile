@@ -302,6 +302,7 @@
  (fn [_ [_ address events-after]]
    {:dispatch-n (cond-> [[:initialize-account-db address]
                          [:initialize-protocol address]
+                         [:fetch-web3-node-version]
                          [:initialize-sync-listener]
                          [:load-contacts]
                          [:load-contact-groups]
@@ -339,6 +340,20 @@
          network-config   (or (get-in networks [network :config])
                               (get-in default-networks [default-network :config]))]
      {:initialize-geth-fx network-config})))
+
+(handlers/register-handler-fx
+ :fetch-web3-node-version-callback
+ (fn [{:keys [db]} [_ resp]]
+   (when-let [git-commit (nth (re-find #"-([0-9a-f]{7,})/" resp) 1)]
+    {:db (assoc db :web3-node-version git-commit)})))
+
+(handlers/register-handler-fx
+ :fetch-web3-node-version
+ (fn [{{:keys [web3] :as db} :db} _]
+   (.. web3 -version (getNode (fn [err resp]
+    (when-not err
+     (re-frame/dispatch [:fetch-web3-node-version-callback resp])))))
+   nil))
 
 (handlers/register-handler-fx
  :webview-geo-permissions-granted

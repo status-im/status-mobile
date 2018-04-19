@@ -57,6 +57,7 @@
 (spec/def ::rpc-url (spec/nilable string?))
 ;;object? doesn't work
 (spec/def ::web3 (spec/nilable any?))
+(spec/def ::web3-node-version (spec/nilable string?))
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
 (spec/def ::status-module-initialized? (spec/nilable boolean?))
@@ -186,6 +187,7 @@
                  ::was-modal?
                  ::rpc-url
                  ::web3
+                 ::web3-node-version
                  ::webview-bridge
                  ::status-module-initialized?
                  ::status-node-started?
