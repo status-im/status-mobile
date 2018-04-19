@@ -1,7 +1,6 @@
 (ns status-im.chat.subs
   (:require [clojure.string :as string]
             [re-frame.core :refer [reg-sub subscribe]]
-            [status-im.constants :as constants]
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.commands :as commands-model]
@@ -52,18 +51,19 @@
       platform/ios? kb-height
       :default 0)))
 
-(defn active-chats [dev-mode?]
-  (fn [[_ chat]]
-    (and (:is-active chat)
-         (or dev-mode?
-             (not= const/console-chat-id (:chat-id chat))))))
+(defn- active-chat? [dev-mode? [_ chat]]
+  (and (:is-active chat)
+       (or dev-mode?
+           (not= const/console-chat-id (:chat-id chat)))))
+
+(defn active-chats [[chats {:keys [dev-mode?]}]]
+  (into {} (filter (partial active-chat? dev-mode?) chats)))
 
 (reg-sub
   :get-active-chats
   :<- [:get-chats]
   :<- [:get-current-account]
-  (fn [[chats {:keys [dev-mode?]}]]
-    (into {} (filter (active-chats dev-mode?) chats))))
+  active-chats)
 
 (reg-sub
   :get-chat

@@ -1,5 +1,6 @@
 (ns status-im.test.chat.subs
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.constants :as const]
             [status-im.chat.subs :as s]))
 
 (deftest test-message-datemark-groups
@@ -134,3 +135,21 @@
         (is (:last-in-group? actual-m2))
         (is (:last-in-group? actual-m3))
         (is (not (:last-in-group? actual-m4)))))))
+
+(deftest active-chats-test
+  (let [active-chat-1 {:is-active true :chat-id 1}
+        active-chat-2 {:is-active true :chat-id 2}
+        console       {:is-active true :chat-id const/console-chat-id}
+        chats         {1 active-chat-1
+                       2 active-chat-2
+                       3 {:is-active false :chat-id 3}
+                       const/console-chat-id console}]
+    (testing "in normal it returns only chats with is-active, without console"
+      (is (= {1 active-chat-1
+              2 active-chat-2}
+             (s/active-chats [chats {:dev-mode? false}]))))
+    (testing "in dev-mode it returns only chats with is-active, keeping console"
+      (is (= {1 active-chat-1
+              2 active-chat-2
+              const/console-chat-id console}
+             (s/active-chats [chats {:dev-mode? true}]))))))

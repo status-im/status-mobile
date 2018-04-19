@@ -94,9 +94,9 @@
             (if (removed me) ;; we were removed
               (handlers/merge-fx cofx
                                  (models.message/receive
-                                  (models.message/system-message chat-id random-id now
-                                                                 (str admin-name " " (i18n/label :t/removed-from-chat))))
-                                 (models.chat/update-chat {:chat-id         chat-id
+                                   (models.message/system-message chat-id random-id now
+                                                                  (str admin-name " " (i18n/label :t/removed-from-chat))))
+                                 (models.chat/upsert-chat {:chat-id         chat-id
                                                            :removed-from-at now
                                                            :is-active       false})
                                  (transport/unsubscribe-from-chat chat-id))

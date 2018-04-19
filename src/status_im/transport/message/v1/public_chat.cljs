@@ -6,18 +6,22 @@
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]))
 
+(defn- has-already-joined? [chat-id {:keys [db]}]
+  (get-in db [:transport/chats chat-id]))
+
 (defn join-public-chat
   "Function producing all protocol level effects necessary for joining public chat identified by chat-id"
   [chat-id {:keys [db] :as cofx}]
-  (let [on-success (fn [sym-key sym-key-id]
-                     (re-frame/dispatch [::add-new-sym-key {:chat-id    chat-id
-                                                            :sym-key    sym-key
-                                                            :sym-key-id sym-key-id}]))]
-    (handlers/merge-fx cofx
-                       {:shh/generate-sym-key-from-password {:web3       (:web3 db)
-                                                             :password   chat-id
-                                                             :on-success on-success}}
-                       (protocol/init-chat chat-id))))
+  (when-not (has-already-joined? chat-id cofx)
+    (let [on-success (fn [sym-key sym-key-id]
+                       (re-frame/dispatch [::add-new-sym-key {:chat-id    chat-id
+                                                              :sym-key    sym-key
+                                                              :sym-key-id sym-key-id}]))]
+      (handlers/merge-fx cofx
+                         {:shh/generate-sym-key-from-password {:web3       (:web3 db)
+                                                               :password   chat-id
+                                                               :on-success on-success}}
+                         (protocol/init-chat chat-id)))))
 
 (handlers/register-handler-fx
   ::add-new-sym-key
