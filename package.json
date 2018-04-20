@@ -63,6 +63,6 @@
     "rn-snoopy": "github:status-im/rn-snoopy",
     "string_decoder": "0.10.31",
     "url": "0.10.3",
-    "web3": "github:status-im/web3.js#experiment/filter"
+    "web3": "github:status-im/web3.js#feature/shhext"
   }
 }

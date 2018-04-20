@@ -109,4 +109,4 @@
            :payload this}
           cofx))
   (receive [this chat-id signature cofx]
-    (chat/receive-seen chat-id signature (:message-ids this) cofx)))
+    (chat/receive-seen chat-id signature this cofx)))

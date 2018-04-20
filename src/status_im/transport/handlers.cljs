@@ -18,20 +18,25 @@
             [status-im.transport.message.v1.group-chat :as v1.group-chat]
             [status-im.data-store.transport :as transport-store]))
 
-(defn receive-message [cofx chat-id message]
-  (let [{:keys [payload sig]} message
+(defn receive-message [cofx chat-id js-message]
+  (let [{:keys [payload sig]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
                            transport.utils/to-utf8
-                           transit/deserialize)]
+                           transit/deserialize
+                           (assoc :js-obj js-message))]
     (when (and sig status-message)
       (message/receive status-message (or chat-id sig) sig cofx))))
+
+(defn- js-array->list [array]
+  (for [i (range (.-length array))]
+    (aget array i)))
 
 (defn receive-whisper-messages [cofx [js-error js-messages chat-id]]
   (handlers-macro/merge-effects
    cofx
    (fn [message temp-cofx]
      (receive-message temp-cofx chat-id message))
-   (js->clj js-messages :keywordize-keys true)))
+   (js-array->list js-messages)))
 
 (handlers/register-handler-fx
  :protocol/receive-whisper-message
@@ -155,3 +160,17 @@
      (if message
        (handlers-macro/merge-fx cofx fx (message/receive message chat-id signature))
        fx))))
+
+(re-frame/reg-fx
+ ;; TODO(rasom): confirmMessagesProcessed should be called after :data-store/tx
+ ;; effect, so this effect should be rewritten/removed
+ :confirm-message-processed
+ (fn [messages]
+   (let [{:keys [web3]} (first messages)
+         js-messages (->> messages
+                          (keep :js-obj)
+                          (apply array))]
+     (when (pos? (.-length js-messages))
+       (.. web3
+           -shh
+           (confirmMessagesProcessed js-messages (fn [_ _])))))))

@@ -92,15 +92,20 @@
                                                                         (not (chat-model/bot-only-chat? db chat-id))
                                                                         (not (= constants/system from)))))))
 
+(defn confirm-messages-processed [js-obj {{:keys [web3]} :db}]
+  {:confirm-message-processed [{:web3   web3
+                                :js-obj js-obj}]})
+
 (defn receive
-  [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
+  [{:keys [chat-id message-id js-obj] :as message} {:keys [now] :as cofx}]
   (handlers-macro/merge-fx cofx
                            (chat-model/upsert-chat {:chat-id chat-id
                                                     ;; We activate a chat again on new messages
                                                     :is-active true
                                                     :timestamp now})
                            (add-received-message message)
-                           (requests-events/add-request chat-id message-id)))
+                           (requests-events/add-request chat-id message-id)
+                           (confirm-messages-processed js-obj)))
 
 (defn system-message [chat-id message-id timestamp content]
   {:message-id   message-id

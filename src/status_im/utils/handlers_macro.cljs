@@ -9,7 +9,8 @@
 
 (def ^:private mergable-keys
   #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
-    :shh/add-new-sym-keys :call-jail :shh/get-new-sym-keys})
+    :shh/add-new-sym-keys :call-jail :shh/get-new-sym-keys
+    :confirm-message-processed})
 
 (defn safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
