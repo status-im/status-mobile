@@ -12,7 +12,7 @@
                  [hickory "0.7.1"]
                  [com.cognitect/transit-cljs "0.8.243"]]
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-re-frisk "0.5.7"]]
+            [lein-re-frisk "0.5.8"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
@@ -54,7 +54,7 @@
              :figwheel [:dev
                         {:dependencies [[figwheel-sidecar "0.5.14"]
                                         [re-frisk-remote "0.5.5"]
-                                        [re-frisk-sidecar "0.5.6"]
+                                        [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]
                                         [hawk "0.2.11"]]
                          :source-paths ["src" "env/dev" "react-native/src" "components/src"]}]
