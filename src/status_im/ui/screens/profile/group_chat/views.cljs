@@ -79,7 +79,8 @@
      :extend-title        (:name contact)
      :extended?           admin?
      :accessibility-label :member-item
-     :inner-props         {:accessibility-label :member-name-text}}]])
+     :inner-props         {:accessibility-label :member-name-text}
+     :on-press            #(re-frame/dispatch [:show-profile (:whisper-identity contact)])}]])
 
 (defview chat-group-contacts-view [admin?]
   (letsubs [contacts [:get-current-chat-contacts]]
