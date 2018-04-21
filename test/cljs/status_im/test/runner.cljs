@@ -2,6 +2,7 @@
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.chat.events]
             [status-im.test.contacts.events]
+            [status-im.test.contacts.subs]
             [status-im.test.accounts.events]
             [status-im.test.data-store.realm.core]
             [status-im.test.wallet.transactions.subs]
@@ -43,6 +44,7 @@
  'status-im.test.chat.models
  'status-im.test.accounts.events
  'status-im.test.contacts.events
+ 'status-im.test.contacts.subs
  'status-im.test.profile.events
  'status-im.test.data-store.realm.core
  'status-im.test.bots.events

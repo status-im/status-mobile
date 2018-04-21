@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.identicon :as identicon]))
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.contacts :as utils.contacts]))
 
 (reg-sub :get-current-contact-identity :contacts/identity)
 
@@ -91,9 +92,22 @@
   :<- [:query-current-chat-contacts remove]
   identity)
 
+(defn get-all-contacts-in-group-chat [chat-contact-ids group-admin-id contacts current-account]
+  (let [participant-set         (into #{} (filter identity) (conj chat-contact-ids group-admin-id))
+        current-account-contact (-> current-account
+                                    (select-keys [:name :photo-path :public-key])
+                                    (clojure.set/rename-keys {:public-key :whisper-identity}))
+        all-contacts            (assoc contacts (:whisper-identity current-account-contact) current-account-contact)]
+    (map #(or (get all-contacts %)
+              (utils.contacts/whisper-id->new-contact %))
+         participant-set)))
+
 (reg-sub :get-current-chat-contacts
-  :<- [:query-current-chat-contacts filter]
-  identity)
+  :<- [:get-current-chat]
+  :<- [:get-contacts]
+  :<- [:get-current-account]
+  (fn [[{:keys [contacts group-admin]} all-contacts current-account]]
+    (get-all-contacts-in-group-chat contacts group-admin all-contacts current-account)))
 
 (reg-sub :get-contacts-by-chat
   (fn [[_ _ chat-id] _]
