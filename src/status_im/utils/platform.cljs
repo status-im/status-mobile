@@ -17,6 +17,7 @@
 
 (def android? (= os "android"))
 (def ios? (= os "ios"))
+(def desktop? (= os "desktop"))
 (def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
 (def platform-specific

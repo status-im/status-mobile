@@ -1,6 +1,6 @@
 (ns status-im.react-native.js-dependencies)
 
-(def camera                 #js {})
+(def camera                 #js {:constants {:Aspect "Portrait"}})
 (def config                 (js/require "react-native-config"))
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})
