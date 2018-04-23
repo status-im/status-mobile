@@ -22,13 +22,17 @@
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
-             ["with-profile" "prod" "cljsbuild" "once" "android"]]
+             ["with-profile" "prod" "cljsbuild" "once" "android"]
+             ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "prod-build-android" ^{:doc "Recompile code for Android with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
             "prod-build-ios"     ^{:doc "Recompile code for iOS with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]]
+            "prod-build-desktop"     ^{:doc "Recompile code for desktop with prod profile."}
+             ["do" "clean"
+              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
@@ -108,6 +112,19 @@
                                       :compiler         {:output-to          "index.android.js"
                                                          :main               "env.android.main"
                                                          :output-dir         "target/android-prod"
+                                                         :static-fns         true
+                                                         :optimize-constants true
+                                                         :optimizations      :simple
+                                                         :closure-defines    {"goog.DEBUG" false}
+                                                         :parallel-build     false
+                                                         :elide-asserts      true
+                                                         :language-in        :ecmascript5}
+                                      :warning-handlers [status-im.utils.build/warning-handler]}
+                                     :desktop
+                                     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+                                      :compiler         {:output-to          "index.desktop.js"
+                                                         :main               "env.desktop.main"
+                                                         :output-dir         "target/desktop-prod"
                                                          :static-fns         true
                                                          :optimize-constants true
                                                          :optimizations      :simple

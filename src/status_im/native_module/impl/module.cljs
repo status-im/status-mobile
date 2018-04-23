@@ -17,7 +17,7 @@
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
 ;; this flag helps to handle this
-(defonce module-initialized? (atom (or p/ios? js/goog.DEBUG)))
+(defonce module-initialized? (atom (or p/ios? js/goog.DEBUG p/desktop?)))
 
 ;; array of calls to StatusModule
 (defonce calls (atom []))

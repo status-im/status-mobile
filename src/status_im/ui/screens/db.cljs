@@ -19,7 +19,7 @@
 
 ;; initial state of app-db
 (def app-db {:current-public-key          nil
-             :status-module-initialized?  (or platform/ios? js/goog.DEBUG)
+             :status-module-initialized?  (or platform/ios? js/goog.DEBUG platform/desktop?)
              :keyboard-height             0
              :tab-bar-visible?            true
              :navigation-stack            '()
