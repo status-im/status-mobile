@@ -5,6 +5,7 @@
             [status-im.ui.components.react :as react]
 
             [status-im.i18n :as i18n]
+            [status-im.chat.views.photos :as photos]
             [status-im.chat.styles.screen :as st]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
@@ -60,17 +61,19 @@
             (i18n/label-pluralize cnt :t/members-active)))]])))
 
 (defview toolbar-content-view []
-  (letsubs [{:keys [group-chat name chat-id
-                    contacts public? public-key]} [:get-current-chat]
+  (letsubs [{:keys [group-chat name contacts
+                    public? chat-id]}             [:get-current-chat]
             show-actions?                         [:get-current-chat-ui-prop :show-actions?]
             accounts                              [:get-accounts]
-            contact                               [:get-current-chat-contact] 
+            contact                               [:get-current-chat-contact]
             sync-state                            [:sync-state]]
-    [react/view common.styles/flex
+    [react/view {:style st/toolbar-container}
+
+     [react/view (when-not group-chat [photos/member-photo chat-id])]
      [react/view (st/chat-name-view (or (empty? accounts)
                                         show-actions?))
       (let [chat-name (if (string/blank? name)
-                        (generate-gfy public-key)
+                        (generate-gfy chat-id)
                         (or (i18n/get-contact-translated chat-id :name name)
                             (i18n/label :t/chat-name)))]
         [react/text {:style               st/chat-name-text

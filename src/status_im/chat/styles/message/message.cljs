@@ -1,10 +1,10 @@
 (ns status-im.chat.styles.message.message
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.styles :as styles]
+            [status-im.chat.styles.photos :as photos]
             [status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]))
 
-(def photo-size 36)
 
 (defstyle style-message-text
   {:font-size 15
@@ -48,13 +48,18 @@
             :align-self     align
             :align-items    align})))
 
-(def message-timestamp
-  {:margin-left     5
-   :margin-right    5
-   :margin-bottom   -2
-   :color           colors/gray
-   :opacity         0.5
-   :align-self      :flex-end})
+(defn message-timestamp [justify-timestamp?]
+  (merge {:color      colors/gray
+          :font-size  10
+          :align-self :flex-end
+          :opacity    0.5}
+         (when justify-timestamp? {:position :absolute
+                                   :bottom   10
+                                   :right    12})))
+
+(def message-timestamp-placeholder
+  (assoc (message-timestamp false)
+         :color styles/color-white))
 
 (def selected-message
   {:margin-top  18
@@ -83,13 +88,8 @@
    :padding-right 22})
 
 (def message-author
-  {:width      photo-size
+  {:width      photos/photo-size
    :align-self :flex-end})
-
-(def photo
-  {:border-radius (/ photo-size 2)
-   :width         photo-size
-   :height        photo-size})
 
 (def delivery-view
   {:flex-direction :row
@@ -136,8 +136,10 @@
 
 (defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
-  (merge {:padding         12
-          :border-radius   8}
+  (merge {:padding-top        6
+          :padding-horizontal 12
+          :padding-bottom     8
+          :border-radius      8}
          (when-not (= content-type constants/content-type-emoji)
           {:background-color styles/color-white})
          (when (= content-type constants/content-type-command)

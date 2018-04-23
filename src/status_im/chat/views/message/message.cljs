@@ -13,6 +13,7 @@
             [status-im.chat.styles.message.message :as style]
             [status-im.chat.styles.message.command-pill :as pill-style]
             [status-im.chat.views.message.request-message :as request-message]
+            [status-im.chat.views.photos :as photos]
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.utils.core :as utils]
@@ -22,8 +23,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]
-            [status-im.chat.events.console :as console]
-            [status-im.react-native.resources :as resources]))
+            [status-im.chat.events.console :as console]))
 
 (def window-width (:width (react/get-dimensions "window")))
 
@@ -81,10 +81,14 @@
                       :font  :default}
           (or preview (str params))])])))
 
+(defview message-timestamp [t justify-timestamp?]
+  [react/text {:style (style/message-timestamp justify-timestamp?)} t])
+
 (defn message-view
-  [{:keys [group-chat] :as message} content]
+  [{:keys [timestamp-str] :as message} content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
-   content])
+   content
+   [message-timestamp timestamp-str justify-timestamp?]])
 
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
@@ -162,18 +166,22 @@
                                           (autolink string event-on-press)))
                                  text-seq))))
 
+; We can't use CSS as nested Text element don't accept margins nor padding
+; so we pad the invisible placeholder with some spaces to avoid having too
+; close to the text.
+(defn timestamp-with-padding [t]
+  (str "   " t))
+
 (def cached-parse-text (memoize parse-text))
 
 (defn text-message
-  [{:keys [content] :as message}]
+  [{:keys [content timestamp-str] :as message}]
   [message-view message
    (let [parsed-text (cached-parse-text content :browse-link-from-message)]
-     [react/text {:style (style/text-message message)} parsed-text])])
-
-(defn placeholder-message
-  [{:keys [content] :as message}]
-  [message-view message
-   [react/text {:style (style/text-message message)} content]])
+     [react/text {:style (style/text-message message)}
+      parsed-text
+      [react/text {:style style/message-timestamp-placeholder} (timestamp-with-padding timestamp-str)]])
+   {:justify-timestamp? true}])
 
 (defn emoji-message
   [{:keys [content] :as message}]
@@ -203,10 +211,6 @@
   [wrapper message]
   [wrapper message
    [message-view message [message-content-command message]]])
-
-(defmethod message-content constants/content-type-placeholder
-  [wrapper message]
-  [wrapper message [placeholder-message message]])
 
 (defmethod message-content constants/content-type-emoji
   [wrapper message]
@@ -293,29 +297,6 @@
           (when outgoing
             [text-status status]))))))
 
-(defn- photo [from photo-path]
-  [react/view
-   [react/image {:source (if (and (not (string/blank? photo-path))
-                                  (string/starts-with? photo-path "contacts://"))
-                           (->> (string/replace photo-path #"contacts://" "")
-                                (keyword)
-                                (get resources/contacts))
-                           {:uri photo-path})
-                 :style  style/photo}]])
-
-(defview member-photo [from]
-  (letsubs [photo-path [:get-photo-path from]]
-    (photo from  (if (string/blank? photo-path)
-                   (identicon/identicon from)
-                   photo-path))))
-
-(defview my-photo [from]
-  (letsubs [{:keys [photo-path]} [:get-current-account]]
-    (photo from photo-path)))
-
-(defview message-timestamp [t]
-  [react/text {:style style/message-timestamp} t])
-
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
     [react/text {:style style/message-author-name} (or username
@@ -323,21 +304,21 @@
                                                        (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn message-body
-  [{:keys [timestamp-str last-in-group? first-in-group? from outgoing username] :as message} content]
+  [{:keys [last-in-group? first-in-group? group-chat from outgoing username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
-    (when (not outgoing)
+    (when (and (not outgoing)
+               group-chat)
       [react/view style/message-author
        (when last-in-group?
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
           [react/view
-           [member-photo from]]])])
+           [photos/member-photo from]]])])
     [react/view (style/group-message-view outgoing)
      (when first-in-group?
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}
-       content
-       [message-timestamp timestamp-str]]]]
+       content]]]
    [react/view style/delivery-status
     [message-delivery-status message]]])
 
