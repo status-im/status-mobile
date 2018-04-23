@@ -56,9 +56,9 @@
          :placeholder-text-color components.styles/color-gray4
          :on-change-text         #(re-frame/dispatch [:wallet.send/set-password %])
          :style                  styles/password
-         :accessibility-label    :enter-password-input}]]]
-     (when wrong-password?
-       [tooltip/tooltip (i18n/label :t/wrong-password)])]))
+         :accessibility-label    :enter-password-input}]
+       (when wrong-password?
+         [tooltip/tooltip (i18n/label :t/wrong-password)])]]]))
 
 ;; "Cancel" and "Sign Transaction >" buttons, signing with password
 (defview signing-buttons [cancel-handler sign-handler & [sign-label]]
