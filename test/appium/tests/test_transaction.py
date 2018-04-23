@@ -2,7 +2,15 @@ from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests import transaction_users, api_requests, get_current_time, transaction_users_wallet, marks
 from selenium.common.exceptions import TimeoutException
 
+import time
+
+import pytest
+from selenium.common.exceptions import TimeoutException
+
+from tests import transaction_users, api_requests, get_current_time, transaction_users_wallet
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
+from views.web_views.base_web_view import BaseWebView
 
 
 @marks.all
@@ -102,8 +110,25 @@ class TestTransaction(SingleDeviceTestCase):
 
         api_requests.verify_balance_is_updated(initial_balance, address)
 
-    @marks.pr
-    @marks.testrail_case_id(3406)
+    @pytest.mark.transactions
+    @pytest.mark.testrail_case_id(3422)
+    def test_open_transaction_on_etherscan(self):
+        user = transaction_users['A_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(user['passphrase'], user['password'])
+        home_view = sign_in_view.get_home_view()
+        wallet_view = home_view.wallet_button.click()
+        transactions_view = wallet_view.transactions_button.click()
+        transaction_details = transactions_view.transactions_table.get_first_transaction().click()
+        transaction_hash = transaction_details.get_transaction_hash()
+        transaction_details.options_button.click()
+        transaction_details.open_transaction_on_etherscan_button.click()
+        base_web_view = BaseWebView(self.driver)
+        base_web_view.web_view_browser.click()
+        base_web_view.always_button.click()
+        base_web_view.find_text_part(transaction_hash)
+
+    @pytest.mark.pr
     def test_send_stt_from_wallet_via_enter_recipient_address(self):
         sender = transaction_users_wallet['A_USER']
         recipient = transaction_users_wallet['B_USER']

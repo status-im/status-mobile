@@ -34,6 +34,17 @@ class BrowserNextPageButton(BaseButton):
         self.locator = self.Locator.accessibility_id('next-page-button')
 
 
+class WebViewBrowserButton(BaseButton):
+    def __init__(self, driver):
+        super(WebViewBrowserButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('WebView Browser Tester')
+
+
+class AlwaysButton(BaseButton):
+    def __init__(self, driver):
+        super(AlwaysButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('ALWAYS')
+
 
 class BaseWebView(BaseView):
 
@@ -47,6 +58,9 @@ class BaseWebView(BaseView):
         self.back_to_home_button = BackToHomeButton(self.driver)
         self.browser_previous_page_button = BrowserPreviousPageButton(self.driver)
         self.browser_next_page_button = BrowserNextPageButton(self.driver)
+
+        self.web_view_browser = WebViewBrowserButton(self.driver)
+        self.always_button = AlwaysButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0

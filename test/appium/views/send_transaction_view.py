@@ -1,5 +1,5 @@
-from views.base_element import BaseButton, BaseEditBox
-from views.base_view import BaseView
+from views.base_element import BaseElement, BaseButton, BaseEditBox
+from views.base_view import BaseView, OkButton
 
 
 class FirstRecipient(BaseButton):
@@ -86,6 +86,16 @@ class STTButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Status Test Token']")
 
 
+class ErrorDialog(BaseView):
+    def __init__(self, driver):
+        super(ErrorDialog, self).__init__(driver)
+        self.ok_button = OkButton(driver)
+
+    def wait_for_error_message(self, error_message, wait_time=30):
+        element = self.element_by_text_part(error_message)
+        return element.wait_for_element(wait_time)
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -105,6 +115,8 @@ class SendTransactionView(BaseView):
 
         self.select_asset_button = SelectAssetButton(self.driver)
         self.stt_button = STTButton(self.driver)
+
+        self.error_dialog = ErrorDialog(self.driver)
 
     def sign_transaction(self, sender_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
