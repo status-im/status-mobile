@@ -23,7 +23,7 @@
   ([view-id {:keys [db]} screen-params]
    ;; TODO (jeluard) Unify all :navigate-to flavours. Maybe accept a map of parameters?
 
-   (let [db (cond-> db
+   (let [db (cond-> (assoc db :navigation-stack (list))
               (seq screen-params)
               (assoc-in [:navigation/screen-params view-id] screen-params))]
      {:db (push-view db view-id)})))
@@ -97,8 +97,8 @@
 
 (handlers/register-handler-fx
   :navigate-to-clean
-  (fn [{:keys [db]} [_ & params]]
-    {:db (apply navigate-to db params)}))
+  (fn [cofx [_ view-id params]]
+    (navigate-to-clean view-id cofx params)))
 
 (handlers/register-handler-fx
   :navigate-to-tab
