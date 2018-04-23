@@ -91,11 +91,20 @@
                                              message
                                              {:from      (or from "anonymous")
                                               :received-timestamp (datetime/timestamp)})))))
+(defn delete
+  [message-id]
+  (when (data-store/exists? message-id)
+    (data-store/delete message-id)))
 
 (re-frame/reg-fx
   :data-store/save-message
   (fn [message]
     (async/go (async/>! core/realm-queue #(save message)))))
+
+(re-frame/reg-fx
+  :data-store/delete-message
+  (fn [message-id]
+    (async/go (async/>! core/realm-queue #(delete message-id)))))
 
 (defn update-message
   [{:keys [message-id] :as message}]

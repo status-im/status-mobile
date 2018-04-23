@@ -277,6 +277,7 @@
                           [:initialize-browsers]
                           [:initialize-debugging {:address address}]
                           [:send-account-update-if-needed]
+                          [:process-pending-messages]
                           [:update-wallet]
                           [:update-transactions]
                           [:get-fcm-token]
@@ -356,6 +357,8 @@
                         "node.stopped"       [:status-node-stopped]
                         "module.initialized" [:status-module-initialized]
                         "jail.signal"        (handle-jail-signal event)
+                        "envelope.sent"      [:signals/envelope-status (:hash event) :sent]
+                        "envelope.expired"   [:signals/envelope-status (:hash event) :not-sent]
                         (log/debug "Event " type " not handled"))]
       (when to-dispatch
         {:dispatch to-dispatch}))))

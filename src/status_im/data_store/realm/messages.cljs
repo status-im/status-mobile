@@ -70,6 +70,12 @@
   [message]
   (realm/save @realm/account-realm :message message true))
 
+(defn delete
+  [message-id]
+  (let [current-realm @realm/account-realm]
+    (when-let [message (realm/get-by-field current-realm :message :message-id message-id)]
+      (realm/delete current-realm message))))
+
 (defn delete-by-chat-id
   [chat-id]
   (let [current-realm @realm/account-realm]

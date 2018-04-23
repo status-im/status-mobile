@@ -99,6 +99,10 @@
    :status-seen                          "Seen"
    :status-delivered                     "Delivered"
    :status-failed                        "Failed"
+   :status-not-sent                      "Not sent. Tap for options"
+   :message-not-sent                     "Message not sent"
+   :resend-message                       "Resend"
+   :delete-message                       "Delete message"
 
    ;;datetime
    :datetime-ago-format                  "{{number}} {{time-intervals}} {{ago}}"

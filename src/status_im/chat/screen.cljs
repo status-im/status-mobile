@@ -12,6 +12,7 @@
             [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :as actions]
             [status-im.chat.views.bottom-info :as bottom-info]
+            [status-im.chat.views.message.options :as message-options]
             [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.message.message :as message]
             [status-im.chat.views.input.input :as input]
@@ -123,6 +124,7 @@
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
+            show-message-options? [:get-current-chat-ui-prop :show-message-options?]
             current-view      [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
@@ -140,4 +142,6 @@
       [input/container {:text-empty? (string/blank? input-text)}]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
+      (when show-message-options?
+        [message-options/view])
       [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))

@@ -5,6 +5,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.commands.utils :as commands.utils]
             [status-im.chat.models.commands :as models.commands]
             [status-im.chat.models.message :as models.message]
@@ -251,9 +253,30 @@
                          :font  :default}
              (str "+ " (- delivery-statuses-count 3))])]]))))
 
+(defn message-activity-indicator []
+  [react/view style/message-activity-indicator
+   [react/activity-indicator {:animating true}]])
+
+(defn message-not-sent-text [chat-id message-id]
+  [react/touchable-highlight {:on-press (fn [] (if platform/ios?
+                                                 (action-sheet/show {:title   (i18n/label :message-not-sent)
+                                                                     :options [{:label  (i18n/label :resend-message)
+                                                                                :action #(re-frame/dispatch [:resend-message chat-id message-id])}
+                                                                               {:label        (i18n/label :delete-message)
+                                                                                :destructive? true
+                                                                                :action       #(re-frame/dispatch [:delete-message chat-id message-id])}]})
+                                                 (re-frame/dispatch
+                                                   [:show-message-options {:chat-id    chat-id
+                                                                           :message-id message-id}])))}
+   [react/view style/not-sent-view
+    [react/text {:style style/not-sent-text}
+     (i18n/message-status-label :not-sent)]
+    [react/view style/not-sent-icon
+     [vector-icons/icon :icons/warning {:color colors/red}]]]])
+
 (defn message-delivery-status
-  [{:keys [chat-id current-public-key user-statuses content]}]
-  (let [outgoing-status (or (get user-statuses current-public-key) :sending)
+  [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
+  (let [outgoing-status (or (get user-statuses current-public-key) :not-sent)
         delivery-status (get user-statuses chat-id)
         status          (cond (and (= constants/console-chat-id chat-id)
                                    (not (console/commands-with-delivery-status (:command content))))
@@ -261,7 +284,14 @@
 
                               :else
                               (or delivery-status outgoing-status))]
-    [text-status status]))
+    (case outgoing-status
+      :sending  [message-activity-indicator]
+      :not-sent [message-not-sent-text chat-id message-id]
+      (when last-outgoing?
+        (if (= message-type :group-user-message)
+          [group-message-delivery-status message]
+          (when outgoing
+            [text-status status]))))))
 
 (defn- photo [from photo-path]
   [react/view
@@ -293,7 +323,7 @@
                                                        (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn message-body
-  [{:keys [timestamp-str last-outgoing? last-in-group? message-type first-in-group? from outgoing group-chat username] :as message} content]
+  [{:keys [timestamp-str last-in-group? first-in-group? from outgoing username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
     (when (not outgoing)
@@ -308,11 +338,8 @@
      [react/view {:style (style/timestamp-content-wrapper message)}
        content
        [message-timestamp timestamp-str]]]]
-   (when last-outgoing?
-     [react/view style/delivery-status
-      (if (= message-type :group-user-message)
-        [group-message-delivery-status message]
-        [message-delivery-status message])])])
+   [react/view style/delivery-status
+    [message-delivery-status message]]])
 
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]

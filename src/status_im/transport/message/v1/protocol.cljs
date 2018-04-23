@@ -94,11 +94,9 @@
   (send [this chat-id cofx]
     (send {:chat-id       chat-id
            :payload       this
-           :success-event [:update-message-status
+           :success-event [:transport/set-message-envelope-hash
                            chat-id
-                           (transport.utils/message-id this)
-                           (get-in cofx [:db :current-public-key])
-                           :sent]}
+                           (transport.utils/message-id this)]}
           cofx))
   (receive [this chat-id signature cofx]
     {:dispatch [:chat-received-message/add (assoc (into {} this)
