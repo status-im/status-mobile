@@ -108,5 +108,4 @@
 
 (defn bot-only-chat? [db chat-id]
   (let [{:keys [group-chat contacts]} (get-in db [:chats chat-id])]
-    (and (not group-chat)
-         (get-in db [:contacts/contacts (:identity (first contacts)) :dapp?]))))
+    (and (not group-chat) (get-in db [:contacts/contacts (first contacts) :dapp?]))))
