@@ -42,8 +42,7 @@
 (def console-commands->fx
   {"faucet"
    (fn [{:keys [db random-id] :as cofx} {:keys [params]}]
-     (let [{:accounts/keys [accounts current-account-id]} db
-           current-address (get-in accounts [current-account-id :address])
+     (let [current-address (get-in db [:account/account :address])
            faucet-url (faucet-base-url->url (:url params))]
        {:http-get {:url (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]

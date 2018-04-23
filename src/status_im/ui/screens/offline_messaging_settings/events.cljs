@@ -10,12 +10,11 @@
 (handlers/register-handler-fx
   ::save-wnode
   (fn [{:keys [db now] :as cofx} [_ wnode]]
-    (let [{:accounts/keys [current-account-id accounts]} db
-          network                                        (ethereum/network->chain-keyword (:network db))
-          settings                                       (get-in accounts [current-account-id :settings])]
+    (let [network  (ethereum/network->chain-keyword (:network db))
+          settings (get-in db [:account/account :settings])]
       (handlers-macro/merge-fx cofx
-                         {:dispatch [:logout]}
-                         (accounts-events/update-settings (assoc-in settings [:wnode network] wnode))))))
+                               {:dispatch [:logout]}
+                               (accounts-events/update-settings (assoc-in settings [:wnode network] wnode))))))
 
 (handlers/register-handler-fx
   :connect-wnode

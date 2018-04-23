@@ -110,10 +110,9 @@
                              (rest command-args)
                              seq-arguments))})))
   ([{:keys [chats current-chat-id access-scope->commands-responses]
-     :contacts/keys [contacts]
-     :accounts/keys [accounts current-account-id] :as db}]
+     :contacts/keys [contacts] :as db}]
    (let [chat (get chats current-chat-id)
-         account (get accounts current-account-id)]
+         account (:account/account db)]
      (selected-chat-command chat
                             (commands-model/commands-responses :command
                                                                access-scope->commands-responses

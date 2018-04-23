@@ -68,16 +68,17 @@
 ;; jail function in each participant's jail
 (defn call-on-message-input-change
   "Calls bot's `on-message-input-change` function"
-  [{:keys [current-chat-id current-account-id chats local-storage] :as db}]
-  (let [chat-text (string/trim (or (get-in chats [current-chat-id :input-text]) ""))
-        {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])]
+  [{:keys [current-chat-id chats local-storage] :as db}]
+  (let [chat-text       (string/trim (or (get-in chats [current-chat-id :input-text]) ""))
+        {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])
+        address         (get-in db [:account/account :address])]
     (cond-> {:db db}
       (and dapp? (not (string/blank? chat-text)))
       (assoc :call-jail-function {:chat-id    current-chat-id
                                   :function   :on-message-input-change
                                   :parameters {:message chat-text}
                                   :context    {:data (get local-storage current-chat-id)
-                                               :from current-account-id}}))))
+                                               :from address}}))))
 
 (defn set-chat-input-metadata
   "Set input metadata for active chat. Takes db and metadata and returns updated db."
@@ -121,7 +122,7 @@
 
 (defn load-chat-parameter-box
   "Returns fx for loading chat parameter box for active chat"
-  [{:keys [current-chat-id bot-db] :accounts/keys [current-account-id] :as db}
+  [{:keys [current-chat-id bot-db] :as db}
    {:keys [name scope-bitmask type bot owner-id] :as command}]
   (let [parameter-index (input-model/argument-position db)]
     (when (and command (> parameter-index -1))
@@ -137,11 +138,12 @@
                         rest)
             seq-arg (get-in db [:chats current-chat-id :seq-argument-input-text])
             to      (get-in db [:contacts/contacts current-chat-id :address])
+            from    (get-in db [:account/account :address])
             params  {:parameters {:args    args
                                   :bot-db  bot-db
                                   :seq-arg seq-arg}
                      :context    {:data data
-                                  :from current-account-id
+                                  :from from
                                   :to   to}}]
         {:call-jail {:jail-id owner-id
                      :path    path
@@ -330,18 +332,19 @@
   ::send-command
   message-model/send-interceptors
   (fn [{:keys [db] :as cofx} [command-message]]
-    (let [{:keys [current-public-key current-chat-id] :accounts/keys [current-account-id]} db
-          new-db (-> (model/set-chat-ui-props db {:sending-in-progress? false})
-                     (clear-seq-arguments)
-                     (set-chat-input-metadata nil)
-                     (set-chat-input-text nil))]
+    (let [{:keys [current-chat-id current-public-key]} db
+          new-db  (-> (model/set-chat-ui-props db {:sending-in-progress? false})
+                      (clear-seq-arguments)
+                      (set-chat-input-metadata nil)
+                      (set-chat-input-text nil))
+          address (get-in db [:account/account :address])]
       (merge {:db new-db}
              (message-model/process-command (assoc cofx :db new-db)
                                             {:message  (get-in db [:chats current-chat-id :input-text])
                                              :command  command-message
                                              :chat-id  current-chat-id
                                              :identity current-public-key
-                                             :address  current-account-id})))))
+                                             :address  address})))))
 
 (defn command-complete?
   [chat-command]

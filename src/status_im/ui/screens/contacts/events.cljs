@@ -40,8 +40,8 @@
                                   (assoc-in [:contacts/new-identity] ""))
      :data-store/save-contact new-contact}))
 
-(defn- own-info [{:accounts/keys [accounts current-account-id] :as db}]
-  (let [{:keys [name photo-path address]} (get accounts current-account-id)
+(defn- own-info [db]
+  (let [{:keys [name photo-path address]} (:account/account db)
         fcm-token (get-in db [:notifications :fcm-token])]
     {:name          name
      :profile-image photo-path
@@ -82,8 +82,8 @@
 (handlers/register-handler-fx
   :set-contact-identity-from-qr
   [(re-frame/inject-cofx :random-id)]
-  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db :as cofx} [_ _ contact-identity]]
-    (let [current-account (get accounts current-account-id)
+  (fn [{:keys [db] :as cofx} [_ _ contact-identity]]
+    (let [current-account (:account/account db)
           fx              {:db (assoc db :contacts/new-identity contact-identity)}]
       (if (new-chat.db/validate-pub-key contact-identity current-account)
         fx

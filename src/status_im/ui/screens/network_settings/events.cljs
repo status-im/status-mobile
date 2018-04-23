@@ -43,10 +43,11 @@
           chats           (:transport/chats db)]
       (if (utils/network-with-upstream-rpc? networks current-network)
         (handlers-macro/merge-fx cofx
-                           {:dispatch               [:navigate-to-clean :accounts]}
-                           (transport/stop-whisper)
-                           (accounts-events/account-update {:network      network
-                                                            :last-updated now}))
+                                 {:dispatch-n            [[:load-accounts]
+                                                          [:navigate-to-clean :accounts]]}
+                                 (transport/stop-whisper)
+                                 (accounts-events/account-update {:network      network
+                                                                  :last-updated now}))
         {:show-confirmation {:title               (i18n/label :t/close-app-title)
                              :content             (i18n/label :t/close-app-content)
                              :confirm-button-text (i18n/label :t/close-app-button)

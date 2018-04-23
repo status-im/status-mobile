@@ -35,8 +35,8 @@
                          (chat-events/start-chat chat-id {:navigation-replace? true})
                          (input-events/select-chat-input-command send-command nil true)))))
 
-(defn get-current-account [{:accounts/keys [current-account-id] :as db}]
-  (get-in db [:accounts/accounts current-account-id]))
+(defn get-current-account [db]
+  (:account/account db))
 
 (defn valid-name? [name]
   (spec/valid? :profile/name name))
@@ -55,11 +55,11 @@
       {:db (assoc-in db [:my-profile/profile :photo-path] (str "data:image/jpeg;base64," base64-image))}
       {:open-image-picker this-event})))
 
-(defn clean-name [{:accounts/keys [current-account-id] :as db} edit-view]
+(defn clean-name [db edit-view]
   (let [name (get-in db [edit-view :name])]
     (if (valid-name? name)
       name
-      (get-in db [:accounts/accounts current-account-id :name]))))
+      (get-in db [:account/account :name]))))
 
 (defn clear-profile [{:keys [db] :as cofx}]
   {:db (dissoc db :my-profile/profile :my-profile/default-name :my-profile/editing?)})

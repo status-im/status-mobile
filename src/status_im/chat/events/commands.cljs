@@ -20,7 +20,7 @@
 
 (defn request-command-message-data
   "Requests command message data from jail"
-  [{:accounts/keys [current-account-id] :contacts/keys [contacts] :as db}
+  [{:contacts/keys [contacts] :as db}
    {{:keys [command command-scope-bitmask bot params type]} :content
     :keys [chat-id group-id] :as message}
    {:keys [data-type] :as opts}]
@@ -31,8 +31,9 @@
                          [command command-scope-bitmask]
                          data-type]
             to          (get-in contacts [chat-id :address])
+            address     (get-in db [:account/account :address])
             jail-params {:parameters params
-                         :context    (generate-context current-account-id chat-id (models.message/group-message? message) to)}]
+                         :context    (generate-context address chat-id (models.message/group-message? message) to)}]
         {:db        db
          :call-jail {:jail-id                bot
                      :path                   path

@@ -36,9 +36,9 @@
        (error-fn error)
        (success-fn result)))))
 
-(defn get-current-wnode-address [{:accounts/keys [current-account-id accounts] :as db}]
+(defn get-current-wnode-address [db]
   (let [network  (ethereum/network->chain-keyword (get db :network))
-        wnode-id (get-in accounts [current-account-id :settings :wnode network])]
+        wnode-id (get-in db [:account/account :settings :wnode network])]
     (get-in db [:inbox/wnodes network wnode-id :address])))
 
 (defn initialize-offline-inbox

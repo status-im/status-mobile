@@ -51,9 +51,6 @@
   (chat-model/upsert-chat {:chat-id chat-id
                            :timestamp now} cofx))
 
-(defn- get-current-account [{:accounts/keys [accounts current-account-id]}]
-  (get accounts current-account-id))
-
 (defn- send-message-seen [chat-id message-id send-seen? cofx]
   (when send-seen?
     (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
@@ -66,7 +63,7 @@
                 view-id
                 access-scope->commands-responses]
          :contacts/keys [contacts]}               db
-        {:keys [public-key] :as current-account}  (get-current-account db)
+        {:keys [public-key] :as current-account}  (:account/account db)
         current-chat?                             (and (= :chat view-id) (= current-chat-id chat-id))
         {:keys [last-clock-value] :as chat}       (get-in db [:chats chat-id])
         request-command                           (:request-command content)
@@ -157,7 +154,7 @@
     (receive message cofx)))
 
 (defn- send-dapp-message!
-  [{{:accounts/keys [current-account-id] :as db} :db :as cofx} chat-id {:keys [content-type] :as message}]
+  [{:keys [db] :as cofx} chat-id {:keys [content-type] :as message}]
   (if (= content-type constants/content-type-command)
     (when-let [text-message (get-in message [:content :handler-data :text-message])]
       (handle-message-from-bot cofx {:message text-message
@@ -167,7 +164,7 @@
                             :function   :on-message-send
                             :parameters {:message (:content message)}
                             :context    {:data data
-                                         :from current-account-id}}})))
+                                         :from (get-in db [:account/account :address])}}})))
 
 (defn- send
   [chat-id message-id send-record {{:contacts/keys [contacts] :keys [network-status current-public-key]} :db :as cofx}]
@@ -307,8 +304,7 @@
       (merge {:dispatch-n dn} (dissoc fx :dispatch-n) (dissoc command :dispatch-n)))))
 
 (defn invoke-command-handlers
-  [{{:accounts/keys [accounts current-account-id]
-     :contacts/keys [contacts]} :db}
+  [{{:contacts/keys [contacts] :as db} :db}
    {{:keys [command params id]} :command
     :keys [chat-id address]
     :as orig-params}]
@@ -321,7 +317,7 @@
         jail-params  {:parameters params
                       :context    (cond-> {:from            address
                                            :to              to
-                                           :current-account (get accounts current-account-id)
+                                           :current-account (get db :account/account)
                                            :message-id      id}
                                     (:async-handler command)
                                     (assoc :orig-params orig-params))}]

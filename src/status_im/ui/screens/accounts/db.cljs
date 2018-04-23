@@ -42,12 +42,11 @@
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 
-;;id of logged in account
-(spec/def :accounts/current-account-id (spec/nilable string?))
-
 ;;used during creating account
 (spec/def :accounts/create (spec/nilable map?))
 ;;used during recovering account
 (spec/def :accounts/recover (spec/nilable map?))
 ;;used during logging
 (spec/def :accounts/login (spec/nilable map?))
+;;logged in account
+(spec/def :account/account (spec/nilable :accounts/account))

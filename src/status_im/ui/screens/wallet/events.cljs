@@ -93,16 +93,17 @@
 ;; Handlers
 (handlers/register-handler-fx
   :update-wallet
-  (fn [{{:keys [web3 accounts/current-account-id network network-status] :as db} :db} _]
+  (fn [{{:keys [web3 account/account network network-status] :as db} :db} _]
     (let [chain   (ethereum/network->chain-keyword network)
-          symbols (get-in db [:accounts/accounts current-account-id :settings :wallet :visible-tokens chain])]
+          address (:address account)
+          symbols (get-in account [:settings :wallet :visible-tokens chain])]
       (when (not= network-status :offline)
         {:get-balance {:web3          web3
-                       :account-id    current-account-id
+                       :account-id    address
                        :success-event :update-balance-success
                        :error-event   :update-balance-fail}
          :get-tokens-balance {:web3          web3
-                              :account-id    current-account-id
+                              :account-id    address
                               :symbols       symbols
                               :chain         chain
                               :success-event :update-token-balance-success
@@ -119,9 +120,9 @@
 
 (handlers/register-handler-fx
   :update-transactions
-  (fn [{{:keys [accounts/current-account-id network network-status] :as db} :db} _]
+  (fn [{{:keys [network network-status] :as db} :db} _]
     (when (not= network-status :offline)
-      {:get-transactions {:account-id    current-account-id
+      {:get-transactions {:account-id    (get-in db [:account/account :address])
                           :network       network
                           :success-event :update-transactions-success
                           :error-event   :update-transactions-fail}

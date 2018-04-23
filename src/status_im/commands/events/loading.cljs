@@ -157,7 +157,7 @@
         (cond-> {:db (add-jail-result db jail-id result)
                  :call-jail-function {:chat-id jail-id
                                       :function :init :context
-                                      {:from (:accounts/current-account-id db)}}}
+                                      {:from (get-in db [:account/account :address])}}}
           (seq jail-loaded-events)
           (-> (assoc :dispatch-n jail-loaded-events)
               (update-in [:db :contacts/contacts jail-id] dissoc :jail-loaded-events)))))))

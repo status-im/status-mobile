@@ -19,7 +19,7 @@
   - (optionally) initializing offline inboxing"
   [current-account-id {:keys [db web3] :as cofx}]
   (log/debug :init-whisper)
-  (when-let [public-key (get-in db [:accounts/accounts current-account-id :public-key])]
+  (when-let [public-key (get-in db [:account/account :public-key])]
     (let [sym-key-added-callback (fn [chat-id sym-key sym-key-id]
                                    (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
                                                                         :sym-key    sym-key

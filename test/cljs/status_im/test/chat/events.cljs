@@ -21,8 +21,7 @@
       (is (not fx))))
 
   (testing "initialising console without existing account and console chat not initialisated"
-    (let [fresh-db {:chats {}
-                    :accounts/current-account-id nil}
+    (let [fresh-db {:chats {}}
           {:keys [db dispatch-n]} (chat-events/init-console-chat {:db fresh-db})]
       (is (= (:current-chat-id db)
              (:chat-id console-chat/chat)))
@@ -30,8 +29,7 @@
              const/console-chat-id))))
 
   (testing "initialising console with existing account and console chat not initialisated"
-    (let [fresh-db {:chats {}
-                    :accounts/current-account-id (:whisper-identity contact)}
+    (let [fresh-db {:chats {}}
           {:keys [db dispatch-n]} (chat-events/init-console-chat {:db fresh-db})]
       (is (= (:current-chat-id db)
              (:chat-id console-chat/chat)))

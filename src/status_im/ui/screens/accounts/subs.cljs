@@ -13,19 +13,13 @@
   (fn [db]
     (:accounts/accounts db)))
 
-(reg-sub :get-current-account-id
-  (fn [db]
-    (:accounts/current-account-id db)))
-
 (reg-sub :get-current-account
-  :<- [:get-current-account-id]
-  :<- [:get-accounts]
-  (fn [[account-id accounts]]
-    (some-> accounts (get account-id))))
+  (fn [db]
+    (:account/account db)))
 
 (reg-sub :get-current-account-hex
-  :<- [:get-current-account-id]
-  (fn [address]
+  :<- [:get-current-account]
+  (fn [{:keys [address]}]
     (ethereum/normalized-address address)))
 
 (reg-sub

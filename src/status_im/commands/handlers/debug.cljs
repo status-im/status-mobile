@@ -91,8 +91,8 @@
             :text "Command has been executed."}))
 
 (defn switch-node
-  [{:accounts/keys [current-account-id]} {:keys [url]}]
-  (re-frame/dispatch [:initialize-protocol current-account-id url])
+  [{:keys [account/account]} {:keys [url]}]
+  (re-frame/dispatch [:initialize-protocol (:address account) url])
   (respond {:type :ok
             :text "You've successfully switched the node."}))
 

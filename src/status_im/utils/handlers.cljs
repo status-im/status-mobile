@@ -91,10 +91,8 @@
    (fn track-handler
      [context]
      (let [new-db             (get-coeffect context :db)
-           current-account-id (:accounts/current-account-id new-db)]
-       (when (get-in new-db [:accounts/accounts
-                             current-account-id
-                             :sharing-usage-data?])
+           current-account-id (get-in new-db [:account/account :address])]
+       (when (get-in new-db [:account/account :sharing-usage-data?])
          (let [event    (get-coeffect context :event)
                offline? (or (= :offline (:network-status new-db))
                             (= :offline (:sync-state new-db)))

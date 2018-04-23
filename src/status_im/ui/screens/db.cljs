@@ -22,7 +22,6 @@
              :status-module-initialized?  (or platform/ios? js/goog.DEBUG)
              :keyboard-height             0
              :tab-bar-visible?            true
-             :accounts/accounts           {}
              :navigation-stack            '()
              :contacts/contacts           {}
              :qr-codes                    {}
@@ -151,9 +150,9 @@
                   :group/groups-order
                   :accounts/accounts
                   :accounts/create
-                  :accounts/current-account-id
                   :accounts/recover
                   :accounts/login
+                  :account/account
                   :my-profile/profile
                   :my-profile/default-name
                   :my-profile/editing?

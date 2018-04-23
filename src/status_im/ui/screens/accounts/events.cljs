@@ -106,11 +106,9 @@
       {:db           (assoc-in db [:accounts/accounts id] new-account)
        :data-store/save-account new-account})))
 
-(defn update-settings [settings {:keys [db] :as cofx}]
-  (let [{:accounts/keys [current-account-id accounts]} db
-        new-account                                    (-> (get accounts current-account-id)
-                                                           (assoc :settings settings))]
-    {:db                      (assoc-in db [:accounts/accounts current-account-id] new-account)
+(defn update-settings [settings {{:keys [account/account] :as db} :db :as cofx}]
+  (let [new-account (assoc account :settings settings)]
+    {:db                      (assoc db :account/account new-account)
      :data-store/save-account new-account}))
 
 (defn account-update
@@ -118,10 +116,10 @@
   Optionally, one can specify event to be dispatched after fields are persisted."
   ([new-account-fields cofx]
    (account-update new-account-fields nil cofx))
-  ([new-account-fields after-update-event {{:accounts/keys [accounts current-account-id] :as db} :db :as cofx}]
-   (let [current-account (get accounts current-account-id)
+  ([new-account-fields after-update-event {:keys [db] :as cofx}]
+   (let [current-account (:account/account db)
          new-account     (merge current-account new-account-fields)
-         fx              {:db                      (assoc-in db [:accounts/accounts current-account-id] new-account)
+         fx              {:db                      (assoc db :account/account new-account)
                           :data-store/save-account (assoc new-account :after-update-event after-update-event)}
          {:keys [name photo-path]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
@@ -130,8 +128,8 @@
 
 (handlers/register-handler-fx
   :send-account-update-if-needed
-  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db now :now :as cofx} _]
-    (let [{:keys [last-updated]} (get accounts current-account-id)
+  (fn [{:keys [db now] :as cofx} _]
+    (let [{:keys [last-updated]} (:account/account db)
           needs-update?          (> (- now last-updated) time/week)]
       (log/info "Need to send account-update: " needs-update?)
       (when needs-update?

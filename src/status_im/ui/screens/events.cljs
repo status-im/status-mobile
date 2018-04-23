@@ -213,8 +213,8 @@
 (handlers/register-handler-fx
   :logout
   (fn [{:keys [db] :as cofx} _]
-    (let [{:transport/keys [chats] :keys [current-account-id]} db
-          sharing-usage-data? (get-in db [:accounts/accounts current-account-id :sharing-usage-data?])]
+    (let [{:transport/keys [chats]} db
+          sharing-usage-data? (get-in db [:account/account :sharing-usage-data?])]
       (handlers-macro/merge-fx cofx
                          {:dispatch-n (concat [[:initialize-db]
                                                [:load-accounts]
@@ -231,7 +231,6 @@
          :or {network (get app-db :network)}} :db} _]
     {::init-store nil
      :db          (assoc app-db
-                         :accounts/current-account-id nil
                          :contacts/contacts {}
                          :network-status network-status
                          :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
@@ -244,22 +243,19 @@
                network network-status view-id navigation-stack
                access-scope->commands-responses
                status-module-initialized? status-node-started?]
-        :or [network (get app-db :network)]} [_ address]]
-    (let [console-contact (get contacts constants/console-chat-id)]
+        :or   [network (get app-db :network)]} [_ address]]
+    (let [console-contact (get contacts constants/console-chat-id)
+          current-account (accounts address)]
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
-                     :accounts/current-account-id address
-                     ;; TODO (yenda) bad, this is derived data and shouldn't be stored in the db
-                     ;; the cost of retrieving public key from db with a function taking using
-                     ;; current-account-id is negligeable
-                     :current-public-key (:public-key (accounts address))
+                     :current-public-key (:public-key current-account)
                      :view-id view-id
                      :navigation-stack navigation-stack
                      :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                      :status-node-started? status-node-started?
-                     :accounts/accounts accounts
                      :accounts/create create
                      :networks/networks networks
+                     :account/account current-account
                      :network-status network-status
                      :network network)
         console-contact
@@ -301,10 +297,9 @@
 (handlers/register-handler-fx
   :initialize-geth
   (fn [{db :db} _]
-    (let [{:accounts/keys [current-account-id accounts]} db
-          default-networks (:networks/networks db)
+    (let [default-networks (:networks/networks db)
           default-network  (:network db)
-          {:keys [network networks]} (get accounts current-account-id)
+          {:keys [network networks]} (:account/account db)
           network-config   (or (get-in networks [network :config])
                                (get-in default-networks [default-network :config]))]
       {:initialize-geth-fx network-config})))
