@@ -7,7 +7,7 @@
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.commands :as commands-model]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]))
@@ -73,7 +73,7 @@
         command-request?                          (and (= content-type constants/content-type-command-request)
                                                        request-command)
         new-timestamp                             (or timestamp now)]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (add-message chat-id
                                     (cond-> (assoc message
                                                    :timestamp        new-timestamp
@@ -95,7 +95,7 @@
 
 (defn receive
   [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
-  (handlers/merge-fx cofx
+  (handlers-macro/merge-fx cofx
                      (chat-model/upsert-chat {:chat-id chat-id
                                               ; We activate a chat again on new messages
                                               :is-active true
@@ -175,7 +175,7 @@
     (if dapp?
       (send-dapp-message! cofx chat-id send-record)
       (if fcm-token
-        (handlers/merge-fx cofx
+        (handlers-macro/merge-fx cofx
                            {:send-notification {:message "message"
                                                 :payload {:title "Status" :body "You have a new message"}
                                                 :tokens [fcm-token]}}
@@ -208,7 +208,7 @@
 (defn- upsert-and-send [{:keys [chat-id] :as message} {:keys [now] :as cofx}]
   (let [send-record     (protocol/map->Message (select-keys message transport-keys))
         message-with-id (assoc message :message-id (transport.utils/message-id send-record))]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (chat-model/upsert-chat {:chat-id chat-id
                                                 :timestamp now})
                        (add-message chat-id message-with-id true)
@@ -267,7 +267,7 @@
         ; We send commands to deleted chats as well, i.e. signed later transactions
         chat    (or (get chats chat-id) {:chat-id chat-id})
         request (:request handler-data)]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (upsert-and-send (prepare-command-message current-public-key chat now request content))
                        (add-console-responses command handler-data)
                        (requests-events/request-answered chat-id to-message))))

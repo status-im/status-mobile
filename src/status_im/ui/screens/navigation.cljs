@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.navigation
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 ;; private helper fns
 
@@ -103,7 +104,7 @@
   :navigate-to-tab
   (re-frame/enrich preload-data!)
   (fn [{:keys [db] :as cofx} [_ view-id]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db (-> db
                                 (assoc :prev-tab-view-id (:view-id db))
                                 (assoc :prev-view-id (:view-id db)))}

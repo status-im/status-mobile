@@ -12,6 +12,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.group.events :as group.events]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
@@ -114,7 +115,7 @@
         existing-contacts (:contacts/contacts db)
         contacts-to-add   (select-keys new-contacts (set/difference (set (keys new-contacts))
                                                                     (set (keys existing-contacts))))]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db                       (update db :contacts/contacts merge contacts-to-add)
                         :data-store/save-contacts (vals contacts-to-add)}
                        (events.loading/load-commands))))
@@ -149,7 +150,7 @@
                                                                                   (-> chat-messages keys set))))))
                         {}
                         all-stored-chats)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (assoc db :chats chats)}
                          (init-console-chat)
                          (group.events/add-default-groups)
@@ -192,7 +193,7 @@
                                          (get-in db messages-path))]
     (when (or (seq unseen-messages-ids)
               (seq unseen-system-messages-ids))
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (-> (reduce (fn [new-db message-id]
                                             (assoc-in new-db (into messages-path [message-id :user-statuses me]) :seen))
                                           db
@@ -210,7 +211,7 @@
 (defn- preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [chat-id {:keys [db] :as cofx}]
-  (handlers/merge-fx cofx
+  (handlers-macro/merge-fx cofx
                      {:db (-> (assoc db :current-chat-id chat-id)
                               (models/set-chat-ui-props {:validation-messages nil}))}
                      (fire-off-chat-loaded-event chat-id)
@@ -229,10 +230,10 @@
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   [chat-id {:keys [navigation-replace?]} {:keys [db] :as cofx}]
   (if navigation-replace?
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (navigation/replace-view :chat)
                        (preload-chat-data chat-id))
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        ;; TODO janherich - refactor `navigate-to` so it can be used with `merge-fx` macro
                        {:db (navigation/navigate-to db :chat)}
                        (preload-chat-data chat-id))))
@@ -248,7 +249,7 @@
   [chat-id opts {:keys [db] :as cofx}]
   ; don't allow to open chat with yourself
   (when (not= (:current-public-key db) chat-id)
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (models/upsert-chat {:chat-id chat-id
                                             :is-active true})
                        (navigate-to-chat chat-id opts))))
@@ -270,14 +271,14 @@
   (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])]
     ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
     (if (and group-chat (not public?))
-      (handlers/merge-fx cofx (transport.message/send (group-chat/GroupLeave.) chat-id))
-      (handlers/merge-fx cofx (transport/unsubscribe-from-chat chat-id)))))
+      (handlers-macro/merge-fx cofx (transport.message/send (group-chat/GroupLeave.) chat-id))
+      (handlers-macro/merge-fx cofx (transport/unsubscribe-from-chat chat-id)))))
 
 (handlers/register-handler-fx
   :leave-chat-and-navigate-home
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (models/remove-chat chat-id)
                        (navigation/replace-view :home)
                        (remove-transport chat-id))))
@@ -295,7 +296,7 @@
   :remove-chat-and-navigate-home
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (models/remove-chat chat-id)
                        (navigation/replace-view :home))))
 
@@ -312,7 +313,7 @@
   :create-new-public-chat
   [re-frame/trim-v]
   (fn [{:keys [db now] :as cofx} [topic]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (models/add-public-chat topic)
                        (navigation/navigate-to-clean :home)
                        (navigate-to-chat topic {})
@@ -334,7 +335,7 @@
                               (group-name-from-contacts selected-contacts
                                                         (:contacts/contacts db)
                                                         (:username db)))]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (assoc db :group/selected-contacts #{})}
                          (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
                          (navigation/navigate-to-clean :home)
@@ -345,6 +346,6 @@
   :show-profile
   [re-frame/trim-v]
   (fn [{:keys [db] :as cofx} [identity]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db (assoc db :contacts/identity identity)}
                        (navigation/navigate-forget :profile))))

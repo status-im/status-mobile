@@ -40,6 +40,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.instabug :as inst]
             [status-im.utils.mixpanel :as mixpanel]
@@ -214,7 +215,7 @@
   (fn [{:keys [db] :as cofx} _]
     (let [{:transport/keys [chats] :keys [current-account-id]} db
           sharing-usage-data? (get-in db [:accounts/accounts current-account-id :sharing-usage-data?])]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:dispatch-n (concat [[:initialize-db]
                                                [:load-accounts]
                                                [:listen-to-network-status]

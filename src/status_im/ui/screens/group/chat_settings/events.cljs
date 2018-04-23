@@ -5,7 +5,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.transport.message.core :as transport]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 
 ;;;; Handlers
@@ -26,7 +27,7 @@
     (let [participants             (concat (get-in db [:chats current-chat-id :contacts]) selected-participants)
           contacts                 (:contacts/contacts db)
           added-participants-names (map #(get-in contacts [% :name]) selected-participants)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (-> db
                                   (assoc-in [:chats current-chat-id :contacts] participants)
                                   (assoc :selected-participants #{}))
@@ -43,7 +44,7 @@
     (let [participants               (remove removed-participants (get-in db [:chats current-chat-id :contacts]))
           contacts                   (:contacts/contacts db)
           removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (assoc-in db [:chats current-chat-id :contacts] participants)
                           :data-store/remove-chat-contacts [current-chat-id removed-participants]}
                          (models.message/receive

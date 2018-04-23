@@ -7,6 +7,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.ethereum.core :as utils]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.web3-provider :as web3-provider]
             [status-im.transport.core :as transport]))
 
@@ -37,7 +38,7 @@
    (re-frame/inject-cofx ::get-web3)
    (re-frame/inject-cofx :data-store/transport)]
   (fn [{:data-store/keys [transport] :keys [db web3] :as cofx} [current-account-id ethereum-rpc-url]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db (assoc db
                                    :web3 web3
                                    :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url)

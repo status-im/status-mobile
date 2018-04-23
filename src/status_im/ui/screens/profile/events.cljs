@@ -8,6 +8,7 @@
             [status-im.chat.events :as chat-events]
             [status-im.chat.events.input :as input-events]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.image-processing :refer [img->base64]]
             [taoensso.timbre :as log]))
 
@@ -30,7 +31,7 @@
   [re-frame/trim-v]
   (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
     (let [send-command (get-in contacts chat-const/send-command-ref)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          (chat-events/start-chat chat-id {:navigation-replace? true})
                          (input-events/select-chat-input-command send-command nil true)))))
 
@@ -77,7 +78,7 @@
                                :last-updated now}
                               (if photo-path
                                 {:photo-path photo-path}))]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          (clear-profile)
                          (accounts-events/account-update cleaned-edit)))))
 
@@ -109,6 +110,6 @@
 (handlers/register-handler-fx
   :my-profile/finish
   (fn [{:keys [db] :as cofx} _]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
                        (accounts-events/account-update {:seed-backed-up? true}))))
