@@ -8,6 +8,7 @@
             [clojure.string :as str]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.statuses :as statuses]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
@@ -124,7 +125,7 @@
                           :data-store/save-account (assoc new-account :after-update-event after-update-event)}
          {:keys [name photo-path]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
-       (handlers/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
+       (handlers-macro/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
        fx))))
 
 (handlers/register-handler-fx
@@ -141,7 +142,7 @@
 (handlers/register-handler-fx
   :account-set-name
   (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db       (assoc-in db [:accounts/create :show-welcome?] true)
                         :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
                        (account-update {:name (:name create)}))))

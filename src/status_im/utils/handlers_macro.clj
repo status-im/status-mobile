@@ -1,4 +1,4 @@
-(ns status-im.utils.handlers)
+(ns status-im.utils.handlers-macro)
 
 (defmacro merge-fx*
   "This macro is called recursively from merge-fx

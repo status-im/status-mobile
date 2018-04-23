@@ -7,7 +7,7 @@
             [status-im.i18n :as i18n]
             [goog.string :as gstring]
             goog.string.format
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 ;;;; Helper fns
 
@@ -59,8 +59,8 @@
    "debug"
    (fn [{:keys [db random-id now] :as cofx} {:keys [params]}]
      (let [debug? (= "On" (:mode params))]
-       (handlers/merge-fx cofx
-                          {:dispatch-n (if debug?
+       (handlers-macro/merge-fx cofx
+                                {:dispatch-n (if debug?
                                          [[:initialize-debugging {:force-start? true}]
                                           [:chat-received-message/add
                                            (console-chat/console-message
@@ -68,7 +68,7 @@
                                              :content (i18n/label :t/debug-enabled)
                                              :content-type constants/text-content-type})]]
                                          [[:stop-debugging]])}
-                          (accounts-events/account-update {:debug? debug?
+                                (accounts-events/account-update {:debug? debug?
                                                            :last-updated now}))))})
 
 (def commands-names (set (keys console-commands->fx)))

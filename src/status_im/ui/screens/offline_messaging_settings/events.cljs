@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.offline-messaging-settings.events
   (:require [re-frame.core :refer [dispatch]]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.events :as accounts-events]
             [status-im.i18n :as i18n]
             [status-im.transport.core :as transport]
@@ -12,7 +13,7 @@
     (let [{:accounts/keys [current-account-id accounts]} db
           network                                        (ethereum/network->chain-keyword (:network db))
           settings                                       (get-in accounts [current-account-id :settings])]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:dispatch [:logout]}
                          (accounts-events/update-settings (assoc-in settings [:wnode network] wnode))))))
 
