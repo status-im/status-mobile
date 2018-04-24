@@ -11,7 +11,9 @@
             [cljs.reader :as reader]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.shh :as shh]
-            [status-im.transport.filters :as filters]))
+            [status-im.transport.filters :as filters]
+            [status-im.utils.utils :as utils]
+            [status-im.i18n :as i18n]))
 
 (handlers/register-handler-fx
   :protocol/receive-whisper-message
@@ -21,7 +23,11 @@
           status-message        (-> payload
                                     transport.utils/to-utf8
                                     transit/deserialize)]
-      (when (and sig status-message)
+      (if (and sig status-message)
+        (if (transit/unknown-message-type? status-message)
+          (do (log/error :incompatible-message-received status-message)
+              (utils/show-popup (i18n/label :t/error)
+                                (i18n/label :t/incompatible-message))))
         (message/receive status-message (or chat-id sig) sig cofx)))))
 
 (handlers/register-handler-fx

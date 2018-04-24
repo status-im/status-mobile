@@ -98,8 +98,8 @@
                                      (v1.contact/ContactRequest. name profile-image address fcm-token))
                               "c3" (fn [[name profile-image address fcm-token]]
                                      (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
-                              "c4" (fn [[content content-type message-type clock-value timestamp]]
-                                     (v1.protocol/Message. content content-type message-type clock-value timestamp))
+                              #_"c4" #_(fn [[content content-type message-type clock-value timestamp]]
+                                         (v1.protocol/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image]]
@@ -118,6 +118,11 @@
   (transit/write writer o))
 
 (defn deserialize
-  "Deserializes a record implementing the StatusMessage protocol using the custom readers"
+  "Deserializes a record implementing the StatusMessage protocol using the custom readers
+  Returns nil if there is an error during deserialization (invalid transit for instance)"
   [o]
-  (try (transit/read reader o) (catch :default e nil)))
+  (try
+    (transit/read reader o)
+    (catch :default e nil)))
+
+(def unknown-message-type? transit/tagged-value?)
