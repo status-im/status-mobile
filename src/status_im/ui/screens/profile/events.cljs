@@ -4,10 +4,11 @@
             [status-im.ui.components.react :refer [show-image-picker]]
             [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.navigation]
-            [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.chat.events :as chat-events]
             [status-im.chat.events.input :as input-events]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.image-processing :refer [img->base64]]
             [taoensso.timbre :as log]))
 
@@ -30,7 +31,7 @@
   [(re-frame/inject-cofx :data-store/get-chat) re-frame/trim-v]
   (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
     (let [send-command (get-in contacts chat-const/send-command-ref)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          (chat-events/start-chat chat-id {:navigation-replace? true})
                          (input-events/select-chat-input-command send-command nil true)))))
 
@@ -69,17 +70,17 @@
     {:db (assoc db :my-profile/editing? true)}))
 
 (handlers/register-handler-fx
-  :my-profile/save-profile
-  (fn [{:keys [db now] :as cofx} _]
+ :my-profile/save-profile
+ (fn [{:keys [db now] :as cofx} _]
     (let [{:keys [photo-path]} (:my-profile/profile db)
           cleaned-name (clean-name db :my-profile/profile)
           cleaned-edit (merge {:name         cleaned-name
                                :last-updated now}
                               (if photo-path
                                 {:photo-path photo-path}))]
-      (handlers/merge-fx cofx
-                         (clear-profile)
-                         (accounts-events/account-update cleaned-edit)))))
+      (handlers-macro/merge-fx cofx
+                               (clear-profile)
+                               (accounts.utils/account-update cleaned-edit)))))
 
 (handlers/register-handler-fx
   :group-chat-profile/start-editing
@@ -107,8 +108,8 @@
     {:db (update db :my-profile/seed assoc :step step :error nil :word nil)}))
 
 (handlers/register-handler-fx
-  :my-profile/finish
-  (fn [{:keys [db] :as cofx} _]
-    (handlers/merge-fx cofx
-                       {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                       (accounts-events/account-update {:seed-backed-up? true}))))
+ :my-profile/finish
+ (fn [{:keys [db] :as cofx} _]
+    (handlers-macro/merge-fx cofx
+                             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
+                             (accounts.utils/account-update {:seed-backed-up? true}))))

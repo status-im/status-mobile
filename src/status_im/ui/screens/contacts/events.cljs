@@ -3,6 +3,7 @@
             [cljs.reader :as reader]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts] 
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
@@ -12,7 +13,6 @@
             [status-im.ui.screens.group.events :as group.events]
             [status-im.chat.console :as console-chat]
             [status-im.chat.events :as chat.events]
-            [status-im.chat.models :as chat.models] 
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.contact :as message.v1.contact]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]))
@@ -62,12 +62,12 @@
 
 (defn add-contact [whisper-id {:keys [db] :as cofx}]
   (let [contact (build-contact whisper-id cofx)]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (add-new-contact contact)
                        (send-contact-request contact))))
 
 (defn add-contact-and-open-chat [whisper-id cofx]
-  (handlers/merge-fx cofx
+  (handlers-macro/merge-fx cofx
                      (navigation/navigate-to-clean :home)
                      (add-contact whisper-id)
                      (chat.events/start-chat whisper-id {})))
@@ -86,7 +86,7 @@
           fx              {:db (assoc db :contacts/new-identity contact-identity)}]
       (if (new-chat.db/validate-pub-key contact-identity current-account)
         fx
-        (handlers/merge-fx cofx
+        (handlers-macro/merge-fx cofx
                            fx
                            (add-contact-and-open-chat contact-identity))))))
 
@@ -118,7 +118,7 @@
   :open-chat-with-contact
   [(re-frame/inject-cofx :random-id)]
   (fn [{:keys [db] :as cofx} [_ {:keys [whisper-identity] :as contact}]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (navigation/navigate-to-clean :home)
                        (add-contact whisper-identity)
                        (chat.events/start-chat whisper-identity {}))))

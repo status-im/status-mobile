@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.db :as wallet-db]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.chat.constants :as chat-const]
             [status-im.chat.events.input :as input-events]
             [status-im.utils.money :as money]))
@@ -10,7 +11,7 @@
   ::wallet-send-chat-request
   [re-frame/trim-v]
   (fn [{{:contacts/keys [contacts]} :db :as cofx} [amount]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:dispatch [:send-current-message]}
                        (input-events/select-chat-input-command
                         (assoc (get-in contacts chat-const/request-command-ref) :prefill [amount]) nil true))))

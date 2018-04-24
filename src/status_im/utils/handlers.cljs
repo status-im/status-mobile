@@ -5,8 +5,7 @@
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.mixpanel :as mixpanel]
-            [taoensso.timbre :as log])
-  (:require-macros status-im.utils.handlers))
+            [taoensso.timbre :as log]))
 
 (def pre-event-callback (atom nil))
 
@@ -99,9 +98,12 @@
                offline? (or (= :offline (:network-status new-db))
                             (= :offline (:sync-state new-db)))
                anon-id  (ethereum/sha3 current-account-id)]
-           (doseq [{:keys [label properties]}
+           (doseq [{:keys [label properties data-fn]}
                    (mixpanel/matching-events event mixpanel/event-by-trigger)]
-             (mixpanel/track anon-id label properties offline?)))))
+             (let [properties' (cond-> properties
+                                       data-fn
+                                       (merge (data-fn event)))]
+              (mixpanel/track anon-id label properties' offline?))))))
      context)))
 
 (defn register-handler
@@ -137,17 +139,3 @@
        (remove (fn [{:keys [dapp? pending?]}]
                  (or pending? dapp?)))
        (map :whisper-identity)))
-
-(defn update-db [cofx fx]
-  (if-let [db (:db fx)]
-    (assoc cofx :db db)
-    cofx))
-
-(defn safe-merge [fx new-fx]
-  (if (:merging-fx-with-common-keys fx)
-    fx
-    (let [common-keys (clojure.set/intersection (into #{} (keys fx))
-                                                (into #{} (keys new-fx)))]
-      (if (empty? (disj common-keys :db))
-        (merge fx new-fx)
-        {:merging-fx-with-common-keys common-keys}))))

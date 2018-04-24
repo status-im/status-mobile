@@ -7,7 +7,7 @@
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.commands :as commands-model]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]))
@@ -73,7 +73,7 @@
         command-request?                          (and (= content-type constants/content-type-command-request)
                                                        request-command)
         new-timestamp                             (or timestamp now)]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (add-message chat-id
                                     (cond-> (assoc message
                                                    :timestamp        new-timestamp
@@ -95,7 +95,7 @@
 
 (defn receive
   [{:keys [chat-id message-id] :as message} cofx]
-  (handlers/merge-fx cofx
+  (handlers-macro/merge-fx cofx
                      (prepare-chat chat-id)
                      (add-received-message message)
                      (requests-events/add-request chat-id message-id)))
@@ -173,7 +173,7 @@
     (if dapp?
       (send-dapp-message! cofx chat-id send-record)
       (if fcm-token
-        (handlers/merge-fx cofx
+        (handlers-macro/merge-fx cofx
                            {:send-notification {:message "message"
                                                 :payload {:title "Status" :body "You have a new message"}
                                                 :tokens [fcm-token]}}
@@ -206,7 +206,7 @@
 (defn- upsert-and-send [{:keys [chat-id] :as message} cofx]
   (let [send-record     (protocol/map->Message (select-keys message transport-keys))
         message-with-id (assoc message :message-id (transport.utils/message-id send-record))]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (chat-model/upsert-chat {:chat-id chat-id})
                        (add-message chat-id message-with-id true)
                        (send chat-id send-record))))
@@ -262,7 +262,7 @@
   [{{:keys [current-public-key chats] :as db} :db :keys [now] :as cofx} params]
   (let [{{:keys [handler-data to-message command] :as content} :command chat-id :chat-id} params
         request (:request handler-data)]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (upsert-and-send (prepare-command-message current-public-key (get chats chat-id) now request content))
                        (add-console-responses command handler-data)
                        (requests-events/request-answered chat-id to-message))))

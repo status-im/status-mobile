@@ -5,7 +5,6 @@
             [status-im.chat.core :as chat]
             [status-im.transport.message-cache :as message-cache]
             [status-im.transport.db :as transport.db]
-            [status-im.transport.core :as transport]
             [status-im.transport.message.core :as message]
             [status-im.transport.utils :as transport.utils]))
 
@@ -98,7 +97,8 @@
                            chat-id
                            (transport.utils/message-id this)
                            (get-in cofx [:db :current-public-key])
-                           :sent]}
+                           :sent
+                           message-type]}
           cofx))
   (receive [this chat-id signature cofx]
     {:dispatch [:chat-received-message/add (assoc (into {} this)

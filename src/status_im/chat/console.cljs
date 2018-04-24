@@ -3,8 +3,7 @@
             [status-im.utils.random :as random]
             [status-im.constants :as constants]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.i18n :as i18n]
-            [clojure.string :as string]))
+            [status-im.i18n :as i18n]))
 
 (defn console-message [{:keys [message-id content content-type]
                         :or   {message-id (random/id)}}]
