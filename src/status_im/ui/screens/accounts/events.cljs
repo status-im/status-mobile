@@ -14,10 +14,10 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.hex :as utils.hex]
             [status-im.constants :as constants]
-            [status-im.transport.message.v1.contact :as message.contact]
             [status-im.transport.message.core :as transport]
             status-im.ui.screens.accounts.create.navigation
-            [status-im.chat.models :as chat.models]))
+            [status-im.chat.models :as chat.models]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]))
 
 ;;;; COFX
 
@@ -111,21 +111,6 @@
     {:db                      (assoc db :account/account new-account)
      :data-store/save-account new-account}))
 
-(defn account-update
-  "Takes effects (containing :db) + new account fields, adds all effects necessary for account update.
-  Optionally, one can specify event to be dispatched after fields are persisted."
-  ([new-account-fields cofx]
-   (account-update new-account-fields nil cofx))
-  ([new-account-fields after-update-event {:keys [db] :as cofx}]
-   (let [current-account (:account/account db)
-         new-account     (merge current-account new-account-fields)
-         fx              {:db                      (assoc db :account/account new-account)
-                          :data-store/save-account (assoc new-account :after-update-event after-update-event)}
-         {:keys [name photo-path]} new-account]
-     (if (or (:name new-account-fields) (:photo-path new-account-fields))
-       (handlers-macro/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
-       fx))))
-
 (handlers/register-handler-fx
   :send-account-update-if-needed
   (fn [{:keys [db now] :as cofx} _]
@@ -135,7 +120,7 @@
       (when needs-update?
         ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
         ;; account with network update when last update was more then week ago
-        (account-update nil cofx)))))
+        (accounts.utils/account-update nil cofx)))))
 
 (handlers/register-handler-fx
   :account-set-name
@@ -143,7 +128,7 @@
     (handlers-macro/merge-fx cofx
                        {:db       (assoc-in db [:accounts/create :show-welcome?] true)
                         :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
-                       (account-update {:name (:name create)}))))
+                       (accounts.utils/account-update {:name (:name create)}))))
 
 (handlers/register-handler-fx
   :account-finalized
@@ -160,7 +145,7 @@
 (handlers/register-handler-fx
   :update-sign-in-time
   (fn [{db :db now :now :as cofx} _]
-    (account-update {:last-sign-in now} cofx)))
+    (accounts.utils/account-update {:last-sign-in now} cofx)))
 
 (handlers/register-handler-fx
   :reset-account-creation
@@ -170,4 +155,4 @@
 (handlers/register-handler-fx
   :switch-dev-mode
   (fn [cofx [_ dev-mode]]
-    (account-update {:dev-mode? dev-mode} cofx)))
+    (accounts.utils/account-update {:dev-mode? dev-mode} cofx)))

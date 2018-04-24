@@ -5,6 +5,14 @@
             [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]))
 
+(defn unsubscribe-from-chat
+  "Unsubscribe from chat on transport layer"
+  [chat-id {:keys [db]}]
+  (let [filter (get-in db [:transport/chats chat-id :filter])]
+    {:db                          (update db :transport/chats dissoc chat-id)
+     :data-store.transport/delete chat-id
+     :shh/remove-filter           filter}))
+
 (defn from-utf8 [s]
   (.fromUtf8 dependencies/Web3.prototype s))
 

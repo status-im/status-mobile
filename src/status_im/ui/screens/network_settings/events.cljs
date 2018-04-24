@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [dispatch dispatch-sync after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as utils]
             [status-im.transport.core :as transport]))
@@ -30,10 +30,10 @@
 (handlers/register-handler-fx
   ::save-network
   (fn [{:keys [db now] :as cofx} [_ network]]
-    (handlers-macro/merge-fx cofx 
-                       (accounts-events/account-update {:network      network
-                                                        :last-updated now}
-                                                       [::close-application]))))
+    (handlers-macro/merge-fx cofx
+                             (accounts.utils/account-update {:network      network
+                                                             :last-updated now}
+                                                            [::close-application]))))
 
 (handlers/register-handler-fx
   :connect-network
@@ -46,8 +46,8 @@
                                  {:dispatch-n            [[:load-accounts]
                                                           [:navigate-to-clean :accounts]]}
                                  (transport/stop-whisper)
-                                 (accounts-events/account-update {:network      network
-                                                                  :last-updated now}))
+                                 (accounts.utils/account-update {:network      network
+                                                                 :last-updated now}))
         {:show-confirmation {:title               (i18n/label :t/close-app-title)
                              :content             (i18n/label :t/close-app-content)
                              :confirm-button-text (i18n/label :t/close-app-button)

@@ -4,7 +4,7 @@
             [status-im.ui.components.react :refer [show-image-picker]]
             [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.navigation]
-            [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.chat.events :as chat-events]
             [status-im.chat.events.input :as input-events]
             [status-im.utils.handlers :as handlers]
@@ -80,7 +80,7 @@
                                 {:photo-path photo-path}))]
       (handlers-macro/merge-fx cofx
                          (clear-profile)
-                         (accounts-events/account-update cleaned-edit)))))
+                         (accounts.utils/account-update cleaned-edit)))))
 
 (handlers/register-handler-fx
   :group-chat-profile/start-editing
@@ -112,4 +112,4 @@
   (fn [{:keys [db] :as cofx} _]
     (handlers-macro/merge-fx cofx
                        {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                       (accounts-events/account-update {:seed-backed-up? true}))))
+                       (accounts.utils/account-update {:seed-backed-up? true}))))

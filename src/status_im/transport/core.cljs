@@ -10,7 +10,8 @@
             [status-im.transport.inbox :as inbox]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.transport.db :as transport.db]))
+            [status-im.transport.db :as transport.db]
+            [status-im.transport.utils :as transport.utils]))
 
 (defn init-whisper
   "Initialises whisper protocol by:
@@ -61,13 +62,7 @@
                            (fn [js-error js-message]
                              (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
 
-(defn unsubscribe-from-chat
-  "Unsubscribe from chat on transport layer"
-  [chat-id {:keys [db]}]
-  (let [filter (get-in db [:transport/chats chat-id :filter])]
-    {:db                          (update db :transport/chats dissoc chat-id)
-     :data-store.transport/delete chat-id
-     :shh/remove-filter           filter}))
+(def unsubscribe-from-chat transport.utils/unsubscribe-from-chat)
 
 (defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters

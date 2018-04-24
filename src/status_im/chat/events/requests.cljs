@@ -1,7 +1,6 @@
 (ns status-im.chat.events.requests
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.constants :as constants]))
 
 ;; Functions
 

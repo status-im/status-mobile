@@ -2,7 +2,7 @@
   (:require [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.chat.console :as console-chat]
-            [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.ui.screens.accounts.utils :as account.utils]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [goog.string :as gstring]
@@ -67,7 +67,7 @@
                                              :content (i18n/label :t/debug-enabled)
                                              :content-type constants/text-content-type})]]
                                          [[:stop-debugging]])}
-                          (accounts-events/account-update {:debug? debug?
+                          (account.utils/account-update {:debug? debug?
                                                            :last-updated now}))))})
 
 (def commands-names (set (keys console-commands->fx)))
