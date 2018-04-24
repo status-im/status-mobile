@@ -2,23 +2,19 @@
   (:require [status-im.data-store.realm.core :as realm])
   (:refer-clojure :exclude [exists?]))
 
-(defn get-all
-  []
-  (-> @realm/account-realm
-      (realm/get-all :contact)
-      (realm/sorted :name :asc)))
-
 (defn get-all-as-list
   []
-  (realm/js-object->clj (get-all)))
+  (realm/all-clj (realm/get-all @realm/account-realm :contact) :contact))
 
 (defn get-by-id
   [whisper-identity]
-  (realm/get-one-by-field @realm/account-realm :contact :whisper-identity whisper-identity))
+  (realm/single (realm/get-by-field @realm/account-realm :contact :whisper-identity whisper-identity)))
 
 (defn get-by-id-cljs
   [whisper-identity]
-  (realm/get-one-by-field-clj @realm/account-realm :contact :whisper-identity whisper-identity))
+  (-> @realm/account-realm
+      (realm/get-by-field :contact :whisper-identity whisper-identity)
+      (realm/single-clj :contact)))
 
 (defn save
   [contact update?]

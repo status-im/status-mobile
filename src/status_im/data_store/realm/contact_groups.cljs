@@ -3,14 +3,9 @@
             [status-im.data-store.realm.core :as realm])
   (:refer-clojure :exclude [exists?]))
 
-(defn get-all
-  []
-  (-> @realm/account-realm
-      (realm/get-all :contact-group)))
-
 (defn get-all-as-list
   []
-  (realm/js-object->clj (get-all)))
+  (realm/all-clj (realm/get-all @realm/account-realm :contact-group) :contact-group))
 
 (defn save
   [group update?]
@@ -21,7 +16,8 @@
   (realm/write @realm/account-realm
                (fn []
                  (-> @realm/account-realm
-                     (realm/get-one-by-field :contact-group :group-id group-id)
+                     (realm/get-by-field :contact-group :group-id group-id)
+                     realm/single
                      (aset (name property-name) value)))))
 
 (defn exists?
@@ -30,12 +26,14 @@
 
 (defn delete
   [group-id]
-  (when-let [group (realm/get-one-by-field @realm/account-realm :contact-group :group-id group-id)]
+  (when-let [group (-> @realm/account-realm
+                       (realm/get-by-field :contact-group :group-id group-id)
+                       realm/single)]
     (realm/delete @realm/account-realm group)))
 
 (defn- get-by-id-obj
   [group-id]
-  (realm/get-one-by-field @realm/account-realm :contact-group :group-id group-id))
+  (realm/single (realm/get-by-field @realm/account-realm :contact-group :group-id group-id)))
 
 (defn add-contacts
   [group-id identities]
@@ -44,4 +42,4 @@
     (realm/write @realm/account-realm
                  #(aset group "contacts"
                         (clj->js (into #{} (concat identities
-                                                   (realm/js-object->clj contacts))))))))
+                                                   (realm/list->clj contacts))))))))

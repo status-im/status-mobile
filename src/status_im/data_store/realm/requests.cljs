@@ -5,7 +5,7 @@
   []
   (-> @realm/account-realm
       (realm/get-by-field :request :status "open")
-      realm/js-object->clj))
+      (realm/all-clj :request)))
 
 (defn save
   [request]

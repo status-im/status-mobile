@@ -5,15 +5,11 @@
             [status-im.data-store.realm.contact-groups :as data-store])
   (:refer-clojure :exclude [exists?]))
 
-(defn- normalize-contacts
-  [item]
-  (update item :contacts vals))
-
 (re-frame/reg-cofx
   :data-store/get-all-contact-groups
   (fn [cofx _]
     (assoc cofx :all-contact-groups (into {}
-                                          (map (comp (juxt :group-id identity) normalize-contacts))
+                                          (map (juxt :group-id identity))
                                           (data-store/get-all-as-list)))))
 
 (re-frame/reg-fx

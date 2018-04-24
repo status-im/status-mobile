@@ -7,10 +7,8 @@
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-chat [{:keys [chat-id] :as chat}]
-  (let [last-clock-value   (messages/get-last-clock-value chat-id)]
-    (-> chat
-        (realm/fix-map->vec :contacts)
-        (assoc :last-clock-value  (or last-clock-value 0)))))
+  (let [last-clock-value (messages/get-last-clock-value chat-id)] 
+    (assoc chat :last-clock-value  (or last-clock-value 0))))
 
 (defn get-all
   []
@@ -18,16 +16,17 @@
        (-> @realm/account-realm
            (realm/get-all :chat)
            (realm/sorted :timestamp :desc)
-           realm/js-object->clj)))
+           (realm/all-clj :chat))))
 
 (defn- get-by-id-obj
   [chat-id]
-  (realm/get-one-by-field @realm/account-realm :chat :chat-id chat-id))
+  (realm/single (realm/get-by-field @realm/account-realm :chat :chat-id chat-id)))
 
 (defn get-by-id
   [chat-id]
   (-> @realm/account-realm
-      (realm/get-one-by-field-clj :chat :chat-id chat-id)
+      (realm/get-by-field :chat :chat-id chat-id)
+      (realm/single-clj :chat)
       normalize-chat))
 
 (defn save
@@ -59,7 +58,7 @@
     (realm/write @realm/account-realm
                  #(aset chat "contacts"
                         (clj->js (into #{} (concat identities
-                                                   (realm/js-object->clj contacts))))))))
+                                                   (realm/list->clj contacts))))))))
 
 (defn remove-contacts
   [chat-id identities]
@@ -68,17 +67,18 @@
     (realm/write @realm/account-realm
                  #(aset chat "contacts"
                         (clj->js (remove (into #{} identities)
-                                         (realm/js-object->clj contacts)))))))
+                                         (realm/list->clj contacts)))))))
 
 (defn save-property
   [chat-id property-name value]
   (realm/write @realm/account-realm
                (fn []
                  (-> @realm/account-realm
-                     (realm/get-one-by-field :chat :chat-id chat-id)
+                     (realm/get-by-field :chat :chat-id chat-id)
+                     realm/single
                      (aset (name property-name) value)))))
 
 (defn get-property
   [chat-id property]
-  (when-let [chat (realm/get-one-by-field @realm/account-realm :chat :chat-id chat-id)]
+  (when-let [chat (realm/single (realm/get-by-field @realm/account-realm :chat :chat-id chat-id))]
     (object/get chat (name property))))
