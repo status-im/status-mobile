@@ -6,6 +6,7 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.instabug :as instabug]
             [status-im.utils.mixpanel :as mixpanel]
+            [cljs.core.async :as async]
             [taoensso.timbre :as log]))
 
 (def pre-event-callback (atom nil))
@@ -91,14 +92,17 @@
    (fn track-handler
      [context]
      (let [new-db             (get-coeffect context :db)
-           current-account-id (get-in new-db [:account/account :address])]
-       (when (get-in new-db [:account/account :sharing-usage-data?])
+           current-account-id (get-in new-db [:account/account :address])
+           [event-name]       (get-coeffect context :event)]
+       (when (or
+              (mixpanel/force-tracking? event-name)
+              (get-in new-db [:account/account :sharing-usage-data?]))
          (let [event    (get-coeffect context :event)
                offline? (or (= :offline (:network-status new-db))
                             (= :offline (:sync-state new-db)))
                anon-id  (ethereum/sha3 current-account-id)]
            (doseq [{:keys [label properties]}
-                   (mixpanel/matching-events event mixpanel/event-by-trigger)]
+                   (mixpanel/matching-events new-db event mixpanel/event-by-trigger)]
              (mixpanel/track anon-id label properties offline?))
            (when (= :send-current-message (first event))
              (instabug/maybe-show-survey new-db)))))
@@ -137,3 +141,8 @@
        (remove (fn [{:keys [dapp? pending?]}]
                  (or pending? dapp?)))
        (map :whisper-identity)))
+
+(re-frame.core/reg-fx
+ :drain-mixpanel-events
+ (fn []
+   (async/go (async/<! (mixpanel/drain-events-queue!)))))

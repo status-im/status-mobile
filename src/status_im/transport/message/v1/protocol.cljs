@@ -95,7 +95,8 @@
            :payload       this
            :success-event [:transport/set-message-envelope-hash
                            chat-id
-                           (transport.utils/message-id this)]}
+                           (transport.utils/message-id this)
+                           message-type]}
           cofx))
   (receive [this chat-id signature cofx]
     {:dispatch [:chat-received-message/add (assoc (into {} this)

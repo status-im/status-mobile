@@ -23,11 +23,15 @@
    {::listen-to-network-status [#(re-frame/dispatch [::update-connection-status %])
                                 #(re-frame/dispatch [::update-network-status %])]}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  ::update-connection-status
  [re-frame/trim-v]
- (fn [db [is-connected?]]
-   (assoc db :network-status (if is-connected? :online :offline))))
+ (fn [{:keys [db]} [is-connected?]]
+   (cond->
+    {:db (assoc db :network-status (if is-connected? :online :offline))}
+
+    is-connected?
+    (assoc :drain-mixpanel-events nil))))
 
 (handlers/register-handler-fx
  ::update-network-status

@@ -10,7 +10,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.utils.mixpanel-events :as mixpanel-events]))
+            [status-im.utils.mixpanel-events :as mixpanel-events]
+            [status-im.utils.config :as config]))
 
 (def base-url "http://api.mixpanel.com/")
 (def base-track-url (str base-url "track/"))
@@ -102,7 +103,7 @@
 (def event-by-trigger
   (event->triggers mixpanel-events/events))
 
-(defn matching-events [[event-name first-arg :as event] triggers]
+(defn matching-events [db [event-name first-arg :as event] triggers]
   (let [cnt      (count event)
         triggers (cond->
                   ;; first we get all events which are triggered by event name
@@ -122,6 +123,17 @@
                   ;; will match only with [:e-name :p1 :p2 :p3] event
                   (> cnt 2)
                   (concat (get-in triggers (conj event event-tag))))]
-    (filter (fn [{:keys [filter-fn]}]
-              (or (not filter-fn) (filter-fn {:event event})))
-            triggers)))
+    (->> triggers
+
+         (filter (fn [{:keys [filter-fn]}]
+                   (or (not filter-fn) (filter-fn db event))))
+
+         (map (fn [{:keys [data-fn] :as trigger}]
+                (if data-fn
+                  (update trigger :properties merge (data-fn db event))
+                  trigger))))))
+
+(defn force-tracking? [event-name]
+  (and config/force-sr-ratio-tracking
+       (contains? #{:signals/envelope-status :chat-received-message/add}
+                  event-name)))

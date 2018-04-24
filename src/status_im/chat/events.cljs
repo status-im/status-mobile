@@ -95,7 +95,8 @@
 (handlers/register-handler-fx
   :transport/set-message-envelope-hash
   [re-frame/trim-v]
-  (fn [{:keys [db]} [chat-id message-id envelope-hash]]
+  ;; message-type is used for tracking
+  (fn [{:keys [db]} [chat-id message-id message-type envelope-hash]]
     {:db (assoc-in db [:transport/message-envelopes envelope-hash] {:chat-id    chat-id
                                                                     :message-id message-id})}))
 
