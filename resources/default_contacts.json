@@ -108,6 +108,13 @@
         "dapp?": true,
         "photo-path": "contacts://name-bazaar"
     },
+    "ddex": {
+        "name" : {"en" : "DDEX "},
+        "description": "A user-friendly decentralized exchange for Ether and ERC-20 tokens.",
+        "dapp-url": {"en" : "https://ddex.io"},
+        "dapp?": true,
+        "photo-path": "contacts://ddex"
+    },
     "cent": {
         "name" : {"en" : "Cent"},
         "description": "Get wisdom, get money",
