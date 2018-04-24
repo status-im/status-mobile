@@ -64,7 +64,7 @@
     (:postponed :pending)   (transaction-icon :icons/arrow-right components.styles/color-gray4-transparent components.styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted] :as transaction}]
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol] :as transaction}]
   (let [[label contact address
          contact-accessibility-label
          address-accessibility-label] (if (inbound? type)
@@ -84,7 +84,7 @@
            (->> value (money/wei-> :eth) money/to-fixed str)]
           " "
           [react/text {:accessibility-label :currency-text}
-           (clojure.string/upper-case (name :eth))]]
+           (clojure.string/upper-case (name symbol))]]
          [react/text {:style styles/tx-time}
           time-formatted]]
         [react/view {:style styles/address-row}
@@ -220,25 +220,21 @@
         :unsigned-transactions unsigned-list
         react/view)]]))
 
-(defn- pretty-print-asset [symbol amount & [with-currency?]]
-  (let [token (case symbol
-                ;; TODO (jeluard) Format tokens amount once tokens history is supported
-                :ETH :eth
-                (throw (str "Unknown asset symbol: " symbol)))]
-    (if amount
-      (if with-currency?
-        (money/wei->str token amount)
-        (->> amount (money/wei-> token) money/to-fixed str))
-      "...")))
+(defn- pretty-print-asset [symbol amount token]
+  (if amount
+    (if (= :ETH symbol)
+      (->> amount (money/wei-> :eth) money/to-fixed str)
+      (-> amount (money/token->unit (:decimals token)) money/to-fixed str))
+    "..."))
 
-(defn details-header [{:keys [value date type symbol]}]
+(defn details-header [{:keys [value date type symbol token]}]
   [react/view {:style styles/details-header}
    [react/view {:style styles/details-header-icon}
     [list/item-icon (transaction-type->icon type)]]
    [react/view {:style styles/details-header-infos}
     [react/text {:style styles/details-header-value}
      [react/text {:accessibility-label :amount-text}
-      (pretty-print-asset symbol value)]
+      (pretty-print-asset symbol value token)]
      " "
      [react/text {:accessibility-label :currency-text}
       (clojure.string/upper-case (name symbol))]]
@@ -271,7 +267,7 @@
       [react/text {:style styles/details-item-label} (i18n/label label)]
       [react/view {:style styles/details-item-value-wrapper}
        [react/text (merge {:style styles/details-item-value} props)
-        (str value)]
+        (str (or value "-"))]
        [react/text (merge {:style styles/details-item-extra-value} extra-props)
         (str extra-value)]]])))
 

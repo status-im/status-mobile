@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [taoensso.timbre :as log]))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 
@@ -95,3 +96,31 @@
     default-transaction-gas
     ;; TODO(jeluard) Rely on estimateGas call
     (.times default-transaction-gas 5)))
+
+(defn handle-error [error]
+  (log/info (.stringify js/JSON error)))
+
+(defn get-block-number [web3 cb]
+  (.getBlockNumber (.-eth web3)
+                   (fn [error result]
+                     (if (seq error)
+                       (handle-error error)
+                       (cb result)))))
+
+(defn get-block-info [web3 number cb]
+  (.getBlock (.-eth web3) number (fn [error result]
+                                   (if (seq error)
+                                     (handle-error error)
+                                     (cb (js->clj result :keywordize-keys true))))))
+
+(defn get-transaction [web3 number cb]
+  (.getTransaction (.-eth web3) number (fn [error result]
+                                         (if (seq error)
+                                           (handle-error error)
+                                           (cb (js->clj result :keywordize-keys true))))))
+
+(defn get-transaction-receipt [web3 number cb]
+  (.getTransactionReceipt (.-eth web3) number (fn [error result]
+                                                (if (seq error)
+                                                  (handle-error error)
+                                                  (cb (js->clj result :keywordize-keys true))))))

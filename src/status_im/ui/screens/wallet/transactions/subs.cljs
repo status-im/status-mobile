@@ -128,8 +128,8 @@
                  {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
              (when transaction
                (merge transaction
-                      {:gas-price-eth  (money/wei->str :eth gas-price)
-                       :gas-price-gwei (money/wei->str :gwei gas-price)
+                      {:gas-price-eth  (if gas-price (money/wei->str :eth gas-price) "-")
+                       :gas-price-gwei (if gas-price (money/wei->str :gwei gas-price) "-")
                        :date           (datetime/timestamp->long-date timestamp)}
                       (if (= type :unsigned)
                         {:block     (i18n/label :not-applicable)
