@@ -105,9 +105,35 @@ node ('macos1'){
     throw e
   }
 
+  stage('Run status-nightly-publish-link job') {
+    build job: 'status-react/status-nightly-publish-link', parameters: [[$class: 'StringParameterValue', name: 'APK_URL', value: apkUrl], [$class: 'StringParameterValue', name: 'IOS_URL', value: ipaUrl]]
+  }
+
+  stage('Build (Android) for e2e tests') {
+    sh 'cd android && mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release.original.apk && ENVFILE=.env.e2e ./gradlew assembleRelease'
+  }
+
+  stage('Upload apk for e2e tests') {
+    withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){
+      apk_name = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
+      sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
+    }
+    withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+      def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+      sh 'sleep 10'
+      def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
+      testApkUrl = 'https://i.diawi.com/' + hash
+
+      sh ('echo ARTIFACT Android for e2e tests: ' + testApkUrl)
+    }
+  }
+
   stage('Slack Notification') {
     def c = (testPassed ? 'good' : 'warning' )
-    slackSend color: c, message: 'Nightly build (develop) \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl
-    build job: 'status-react/status-nightly-publish-link', parameters: [[$class: 'StringParameterValue', name: 'APK_URL', value: apkUrl], [$class: 'StringParameterValue', name: 'IOS_URL', value: ipaUrl]]
+    slackSend color: c, message: 'Nightly build (develop) \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl + '\n Android for e2e: ' + testApkUrl
+  }
+
+  stage('Run extended e2e tests') {
+    build job: 'status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + apk_name)], wait: false
   }
 }

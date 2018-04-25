@@ -1,14 +1,11 @@
 from tests import test_suite_data, SingleTestData
 import requests
-import re
 import pytest
 from datetime import datetime
 from os import environ
 from io import BytesIO
 from sauceclient import SauceClient
 from support.github_test_report import GithubHtmlReport
-
-storage = 'http://artifacts.status.im:8081/artifactory/nightlies-local/'
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
@@ -18,22 +15,10 @@ sauce = SauceClient(sauce_username, sauce_access_key)
 github_report = GithubHtmlReport(sauce_username, sauce_access_key)
 
 
-def get_latest_apk():
-    raw_data = requests.request('GET', storage).text
-    dates = re.findall("\d{2}-[a-zA-Z]{3}-\d{4} \d{2}:\d{2}", raw_data)
-    dates.sort(key=lambda date: datetime.strptime(date, "%d-%b-%Y %H:%M"), reverse=True)
-    return re.findall('>(.*k)</a>\s*%s' % dates[0], raw_data)[0]
-
-
-latest_nightly_apk = dict()
-latest_nightly_apk['name'] = get_latest_apk()
-latest_nightly_apk['url'] = storage + latest_nightly_apk['name']
-
-
 def pytest_addoption(parser):
     parser.addoption("--build",
                      action="store",
-                     default=datetime.now().strftime('%Y-%m-%d-%H-%M'),  # 'build_' + latest_nightly_apk['name'],
+                     default=datetime.now().strftime('%Y-%m-%d-%H-%M'),
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
