@@ -71,6 +71,7 @@
 
 (views/defview browser []
   (views/letsubs [webview (atom nil)
+                  {:keys [address]} [:get-current-account]
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
@@ -97,7 +98,7 @@
          :injected-on-start-loading-java-script (str js-res/web3
                                                      js-res/jquery
                                                      (get-inject-js url)
-                                                     (js-res/web3-init rpc-url))
+                                                     (js-res/web3-init rpc-url address))
          :injected-java-script                  (str js-res/webview-js extra-js)}]
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])

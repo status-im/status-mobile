@@ -114,5 +114,6 @@ if (typeof web3 === "undefined") {
     if (protocol == "https:" || protocol == "http:") {
         console.log("StatusHttpProvider");
         web3 = new Web3(new StatusHttpProvider(address));
+        web3.eth.defaultAccount = currentAccountAddress;
     }
 }
