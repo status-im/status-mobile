@@ -381,8 +381,8 @@
        :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}
       {:name     "Aragon Test Token"
        :symbol   :ATT
-       :decimals 8
-       :address  "0xfff28fb56b2a53597c55e1a767c906f339335025"}
+       :decimals 1
+       :address  "0x00a8e52df8f4f1f4b67bded9ae6090b35489a973"}
       {:name     "Handy Test Token"
        :symbol   :HND
        :decimals 18
