@@ -20,12 +20,10 @@
    :height      16})
 
 (defn message-padding-top
-  [{:keys [first-in-date? same-author? same-direction?]}]
-  (cond
-    first-in-date?  20
-    same-author?    8
-    same-direction? 16
-    :else           24))
+  [{:keys [first-in-group?]}]
+  (if first-in-group?
+    8
+    4))
 
 (def message-empty-spacing
   {:height 16})
@@ -50,6 +48,14 @@
             :align-self     align
             :align-items    align})))
 
+(def message-timestamp
+  {:margin-left     5
+   :margin-right    5
+   :margin-bottom   -2
+   :color           colors/gray
+   :opacity         0.5
+   :align-self      :flex-end})
+
 (def selected-message
   {:margin-top  18
    :margin-left 40
@@ -59,6 +65,9 @@
 (defn group-message-wrapper [message]
   (merge {:flex-direction :column}
          (last-message-padding message)))
+
+(defn timestamp-content-wrapper [{:keys [outgoing]}]
+  {:flex-direction (if outgoing :row-reverse :row)})
 
 (defn group-message-view
   [outgoing]
@@ -71,11 +80,11 @@
 
 (def delivery-status
   {:align-self    :flex-end
-   :padding-right 56})
+   :padding-right 22})
 
 (def message-author
   {:width      photo-size
-   :align-self :flex-start})
+   :align-self :flex-end})
 
 (def photo
   {:border-radius (/ photo-size 2)
@@ -98,11 +107,20 @@
   (merge style-message-text
          {:margin-top (if incoming-group 4 0)}))
 
+(defn emoji-message
+  [{:keys [incoming-group]}]
+  {:font-size 40
+   :color     styles/text1-color
+   :android   {:line-height 45}
+   :ios       {:line-height 46}
+   :margin-top (if incoming-group 4 0)})
+
 (defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
   (merge {:padding         12
-          :background-color styles/color-white
           :border-radius   8}
+         (when-not (= content-type constants/content-type-emoji)
+          {:background-color styles/color-white})
          (when (= content-type constants/content-type-command)
            {:padding-top    10
             :padding-bottom 14})))

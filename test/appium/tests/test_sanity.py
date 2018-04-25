@@ -67,11 +67,14 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         home_view = sign_in_view.get_home_view()
+        contact_user = basic_user
+        home_view.add_contact(contact_user['public_key'])
+        home_view.get_back_to_home_view()
         start_new_chat_view = home_view.plus_button.click()
         start_new_chat_view.start_new_chat_button.click()
-        contact_jarrad = home_view.element_by_text('Jarrad', 'button')
-        contact_jarrad.scroll_to_element()
-        contact_jarrad.click()
+        contact_name = home_view.element_by_text(contact_user['username'], 'button')
+        contact_name.scroll_to_element()
+        contact_name.click()
         chat_view = home_view.get_chat_view()
 
         commands = '/request', '/send'
@@ -86,12 +89,12 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view.first_account_button.click()
         sign_in_view.password_input.send_keys('qwerty1234')
         sign_in_view.sign_in_button.click()
-        contact_jarrad.wait_for_element(30)
-        contact_jarrad.click()
+        contact_name.wait_for_element(30)
+        contact_name.click()
         for command in commands:
             chat_view.find_full_text(command, 2)
         chat_view.back_button.click()
-        home_view.create_group_chat(['Jarrad'])
+        home_view.create_group_chat([contact_user['username']])
 
     @pytest.mark.sign_in
     @pytest.mark.parametrize("input_text,outcome",

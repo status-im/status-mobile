@@ -20,7 +20,7 @@
 
 (def all
   {:mainnet
-   (resolve-icons
+   (resolve-icons :mainnet
      [{:symbol   :EOS
        :name     "EOS"
        :address  "0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0"
@@ -374,11 +374,35 @@
        :address  "0x2e071D2966Aa7D8dECB1005885bA1977D6038A65"
        :decimals 16}])
    :testnet
-   (resolve-icons
+   (resolve-icons :testnet
      [{:name     "Status Test Token"
        :symbol   :STT
        :decimals 18
-       :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}])})
+       :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}
+      {:name     "Aragon Test Token"
+       :symbol   :ATT
+       :decimals 8
+       :address  "0xfff28fb56b2a53597c55e1a767c906f339335025"}
+      {:name     "Handy Test Token"
+       :symbol   :HND
+       :decimals 18
+       :address  "0x9e47fb3049f0d9c953f5428ce2e6c3a8321780bf"}
+      {:name     "Lucky XS Test"
+       :symbol   :LXS
+       :decimals 18
+       :address  "0xf29d2dc0687d7d49f57d4a731ac8bfb6edc23473"}
+      {:name     "Adi Test Token"
+       :symbol   :ADI
+       :decimals 18
+       :address  "0xd2a816110c1177478c7e644ae4853d8e80aaec35"}
+      {:name     "Wagner Test Token"
+       :symbol   :WGN
+       :decimals 18
+       :address  "0x65c69bc258afa0906683f42e576b272a95c203dd"}
+      {:name     "Modest Test Token"
+       :symbol   :MDS
+       :decimals 18
+       :address  "0x972b0570d9cd8b7c41aa8349f707ec7356daa825"}])})
 
 (defn tokens-for [chain]
   (get all chain))

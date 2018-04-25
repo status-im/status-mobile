@@ -53,14 +53,15 @@
   (letsubs [{:keys [group-chat name chat-id contacts]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
-     [toolbar/platform-agnostic-toolbar {}
-      toolbar/nav-back-count
-      [toolbar-content/toolbar-content-view]
-      (when (not= chat-id constants/console-chat-id)
+     (if (= chat-id constants/console-chat-id)
+       [toolbar/simple-toolbar name]
+       [toolbar/platform-agnostic-toolbar {}
+        toolbar/nav-back-count
+        [toolbar-content/toolbar-content-view]
         [toolbar/actions [{:icon      :icons/options
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
-                           :handler   #(on-options chat-id name group-chat public?)}]])]
+                           :handler   #(on-options chat-id name group-chat public?)}]]])
      (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))

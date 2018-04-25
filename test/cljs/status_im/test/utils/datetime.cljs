@@ -4,7 +4,7 @@
             [cljs-time.core :as t]))
 
 (defn match [name symbols]
-  (is (identical? (.-dateTimeSymbols_ (d/mk-fmt name d/short-date-format))
+  (is (identical? (.-dateTimeSymbols_ (d/mk-fmt name d/medium-date-format))
                   symbols)))
 
 (deftest date-time-formatter-test
@@ -23,29 +23,30 @@
 
 (deftest to-short-str-today-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+                d/time-fmt (d/mk-fmt "us" d/short-time-format)
                 d/time-zone-offset (t/period :hours 0)]
-   (is (= (d/to-short-str epoch-plus-3d) "00:00"))))
+   (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
 
 (deftest to-short-str-before-yesterday-us-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (d/mk-fmt "us" d/short-date-format)]
+                d/date-fmt (d/mk-fmt "us" d/medium-date-format)]
     (is (= (d/to-short-str epoch) "Jan 1, 1970"))))
 
 (deftest to-short-str-before-yesterday-nb-test
   (with-redefs [d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (d/mk-fmt "nb-NO" d/short-date-format)
+                d/date-fmt (d/mk-fmt "nb-NO" d/medium-date-format)
                 t/*ms-fn* (constantly epoch-plus-3d)]
     (is (= (d/to-short-str epoch) "1. jan. 1970"))))
 
 (deftest day-relative-before-yesterday-us-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (d/mk-fmt "us" d/short-date-time-format)]
+                d/date-fmt (d/mk-fmt "us" d/medium-date-time-format)]
     (is (= (d/day-relative epoch) "Jan 1, 1970, 12:00:00 AM"))))
 
 (deftest day-relative-before-yesterday-nb-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (d/mk-fmt "nb-NO" d/short-date-time-format)]
+                d/date-fmt (d/mk-fmt "nb-NO" d/medium-date-time-format)]
     (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))

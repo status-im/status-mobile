@@ -81,9 +81,7 @@
 (re-frame/reg-cofx
  :random-id-seq
  (fn [coeffects _]
-   (assoc coeffects :random-id-seq
-          ((fn rand-id-seq []
-             (cons (random/id) (lazy-seq (rand-id-seq))))))))
+   (assoc coeffects :random-id-seq (repeatedly random/id))))
 
 ;;;; FX
 
@@ -351,8 +349,8 @@
     (inst/log (str "Signal event: " event-str))
     (let [{:keys [type event]} (types/json->clj event-str)
           to-dispatch (case type
-                        "transaction.queued" [:transaction-queued event]
-                        "transaction.failed" [:transaction-failed event]
+                        "sign-request.queued" [:sign-request-queued event]
+                        "sign-request.failed" [:sign-request-failed event]
                         "node.started"       [:status-node-started]
                         "node.stopped"       [:status-node-stopped]
                         "module.initialized" [:status-module-initialized]

@@ -8,7 +8,10 @@
             [status-im.test.wallet.transactions.views]
             [status-im.test.profile.events]
             [status-im.test.bots.events]
+            [status-im.test.chat.models]
             [status-im.test.chat.models.input]
+            [status-im.test.chat.models.message]
+            [status-im.test.chat.subs]
             [status-im.test.chat.views.message]
             [status-im.test.i18n]
             [status-im.test.protocol.web3.inbox]
@@ -37,6 +40,8 @@
 (doo-tests
  'status-im.test.utils.async
  'status-im.test.chat.events
+ 'status-im.test.chat.subs
+ 'status-im.test.chat.models
  'status-im.test.accounts.events
  'status-im.test.contacts.events
  'status-im.test.profile.events
@@ -45,6 +50,7 @@
  'status-im.test.wallet.transactions.subs
  'status-im.test.wallet.transactions.views
  'status-im.test.chat.models.input
+ 'status-im.test.chat.models.message
  'status-im.test.chat.views.message
  'status-im.test.i18n
  'status-im.test.protocol.web3.inbox

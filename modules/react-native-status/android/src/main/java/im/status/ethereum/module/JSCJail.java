@@ -102,7 +102,7 @@ class JSCJail implements Jail {
 
         JSFunction web3sendAsync = new JSFunction(context, "web3sendAsync") {
             public void web3sendAsync(final String payload, final JSValue callback) {
-                Thread thread = new Thread() {
+                Runnable r = new Runnable() {
                     @Override
                     public void run() {
                         String result = Statusgo.CallRPC(payload);
@@ -110,7 +110,7 @@ class JSCJail implements Jail {
                     }
                 };
 
-                thread.start();
+                StatusThreadPoolExecutor.getInstance().execute(r);
             }
         };
         context.property("web3sendAsync", web3sendAsync);

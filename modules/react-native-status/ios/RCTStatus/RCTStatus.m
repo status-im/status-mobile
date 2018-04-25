@@ -323,26 +323,26 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Complete Transactions
-//////////////////////////////////////////////////////////////////// completeTransactions
-RCT_EXPORT_METHOD(completeTransactions:(NSString *)hashes
+#pragma mark - Approve Sign Requests
+//////////////////////////////////////////////////////////////////// approveSignRequests
+RCT_EXPORT_METHOD(approveSignRequests:(NSString *)hashes
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"CompleteTransactions() method called");
+    NSLog(@"ApproveSignRequests() method called");
 #endif
-    char * result = CompleteTransactions((char *) [hashes UTF8String], (char *) [password UTF8String]);
+    char * result = ApproveSignRequests((char *) [hashes UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Discard Transaction
-//////////////////////////////////////////////////////////////////// discardTransaction
-RCT_EXPORT_METHOD(discardTransaction:(NSString *)id) {
+#pragma mark - Discard Sign Request
+//////////////////////////////////////////////////////////////////// discardSignRequest
+RCT_EXPORT_METHOD(discardSignRequest:(NSString *)id) {
 #if DEBUG
-    NSLog(@"DiscardTransaction() method called");
+    NSLog(@"DiscardSignRequest() method called");
 #endif
-    DiscardTransaction((char *) [id UTF8String]);
+    DiscardSignRequest((char *) [id UTF8String]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -390,6 +390,16 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         char * result = CallRPC((char *) [payload UTF8String]);
+        dispatch_async( dispatch_get_main_queue(), ^{
+            callback(@[[NSString stringWithUTF8String: result]]);
+        });
+    });
+}
+
+RCT_EXPORT_METHOD(sendWeb3PrivateRequest:(NSString *)payload
+                  callback:(RCTResponseSenderBlock)callback) {
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        char * result = CallPrivateRPC((char *) [payload UTF8String]);
         dispatch_async( dispatch_get_main_queue(), ^{
             callback(@[[NSString stringWithUTF8String: result]]);
         });

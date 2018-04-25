@@ -110,5 +110,5 @@
     (.round bn decimals)))
 
 (defn sufficient-funds? [amount balance]
-  (when balance
+  (when (and amount balance)
     (.greaterThanOrEqualTo balance amount)))

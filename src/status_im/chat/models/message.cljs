@@ -13,8 +13,9 @@
             [status-im.transport.message.v1.protocol :as protocol]))
 
 (def receive-interceptors
-  [(re-frame/inject-cofx :data-store/get-message) (re-frame/inject-cofx :data-store/get-chat)
-   (re-frame/inject-cofx :random-id) re-frame/trim-v])
+  [(re-frame/inject-cofx :data-store/get-message)
+   (re-frame/inject-cofx :random-id)
+   re-frame/trim-v])
 
 (defn- lookup-response-ref
   [access-scope->commands-responses account chat contacts response-name]
@@ -25,23 +26,30 @@
                                                                         contacts)]
     (:ref (get available-commands-responses response-name))))
 
+(defn- emoji-only-content?
+  [content]
+  (and (string? content) (re-matches constants/regx-emoji content)))
+
+(defn- prepare-message
+  [{:keys [content] :as message} chat-id current-chat?]
+  (cond-> (assoc message :appearing? true)
+    (not current-chat?) (assoc :appearing? false)
+    (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
+
 (defn- add-message
-  [chat-id {:keys [message-id clock-value] :as message} current-chat? {:keys [db]}]
-  (let [prepared-message (cond-> (assoc message :appearing? true)
-                           (not current-chat?)
-                           (assoc :appearing? false))]
+  [chat-id {:keys [message-id clock-value content] :as message} current-chat? {:keys [db]}]
+  (let [prepared-message (prepare-message message chat-id current-chat?)]
     {:db                    (cond->
-                              (-> db
-                                  (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                  (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
+                                (-> db
+                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
+                                    (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
                               (not current-chat?)
                               (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
      :data-store/save-message prepared-message}))
 
-(defn- prepare-chat [chat-id {:keys [db] :as cofx}]
-  (if (get-in db [:chats chat-id])
-    (chat-model/upsert-chat {:chat-id chat-id} cofx)
-    (chat-model/add-chat chat-id cofx)))
+(defn- prepare-chat [chat-id {:keys [db now] :as cofx}]
+  (chat-model/upsert-chat {:chat-id chat-id
+                           :timestamp now} cofx))
 
 (defn- get-current-account [{:accounts/keys [accounts current-account-id]}]
   (get accounts current-account-id))
@@ -86,9 +94,12 @@
                                                                   (not (= constants/system from)))))))
 
 (defn receive
-  [{:keys [chat-id message-id] :as message} cofx]
+  [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
   (handlers/merge-fx cofx
-                     (prepare-chat chat-id)
+                     (chat-model/upsert-chat {:chat-id chat-id
+                                              ; We activate a chat again on new messages
+                                              :is-active true
+                                              :timestamp now})
                      (add-received-message message)
                      (requests-events/add-request chat-id message-id)))
 
@@ -107,14 +118,12 @@
   (#{:group-user-message :public-group-user-message} message-type))
 
 (defn add-to-chat?
-  [{:keys [db get-stored-message]} {:keys [chat-id from message-id] :as message}]
-  (let [{:keys [chats deleted-chats current-public-key]} db
-        {:keys [messages not-loaded-message-ids]}        (get chats chat-id)]
-    (when (not= from current-public-key) 
+  [{:keys [db]} {:keys [chat-id from message-id] :as message}]
+  (let [{:keys [chats current-public-key]} db
+        {:keys [messages not-loaded-message-ids]} (get chats chat-id)]
+    (when (not= from current-public-key)
       (not (or (get messages message-id)
-               (get not-loaded-message-ids message-id)
-               (and (get deleted-chats chat-id)
-                    (get-stored-message message-id)))))))
+               (get not-loaded-message-ids message-id))))))
 
 (defn message-seen-by? [message user-pk]
   (= :seen (get-in message [:user-statuses user-pk])))
@@ -122,8 +131,9 @@
 ;;;; Send message
 
 (def send-interceptors
-  [(re-frame/inject-cofx :random-id) (re-frame/inject-cofx :random-id-seq)
-   (re-frame/inject-cofx :data-store/get-chat) re-frame/trim-v])
+  [(re-frame/inject-cofx :random-id)
+   (re-frame/inject-cofx :random-id-seq)
+   re-frame/trim-v])
 
 (defn- handle-message-from-bot [{:keys [random-id] :as cofx} {:keys [message chat-id]}]
   (when-let [message (cond
@@ -195,11 +205,12 @@
 
 (def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp])
 
-(defn- upsert-and-send [{:keys [chat-id] :as message} cofx]
+(defn- upsert-and-send [{:keys [chat-id] :as message} {:keys [now] :as cofx}]
   (let [send-record     (protocol/map->Message (select-keys message transport-keys))
         message-with-id (assoc message :message-id (transport.utils/message-id send-record))]
     (handlers/merge-fx cofx
-                       (chat-model/upsert-chat {:chat-id chat-id})
+                       (chat-model/upsert-chat {:chat-id chat-id
+                                                :timestamp now})
                        (add-message chat-id message-with-id true)
                        (send chat-id send-record))))
 
@@ -208,7 +219,7 @@
 
 (defn- prepare-command-message
   [identity
-   {:keys [last-clock-value chat-id] :as chat}
+   {:keys [chat-id last-clock-value] :as chat}
    now
    {request-params  :params
     request-command :command
@@ -253,9 +264,11 @@
 (defn send-command
   [{{:keys [current-public-key chats] :as db} :db :keys [now] :as cofx} params]
   (let [{{:keys [handler-data to-message command] :as content} :command chat-id :chat-id} params
+        ; We send commands to deleted chats as well, i.e. signed later transactions
+        chat    (or (get chats chat-id) {:chat-id chat-id})
         request (:request handler-data)]
     (handlers/merge-fx cofx
-                       (upsert-and-send (prepare-command-message current-public-key (get chats chat-id) now request content))
+                       (upsert-and-send (prepare-command-message current-public-key chat now request content))
                        (add-console-responses command handler-data)
                        (requests-events/request-answered chat-id to-message))))
 

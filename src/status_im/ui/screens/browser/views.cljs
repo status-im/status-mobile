@@ -33,7 +33,7 @@
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
 
 (defn toolbar-content [{:keys [url] :as browser}]
-  (let [url-text (atom nil)]
+  (let [url-text (atom url)]
     [react/view
      [react/view (styles/toolbar-content false)
       [react/text-input {:on-change-text    #(reset! url-text %)

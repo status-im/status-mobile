@@ -27,6 +27,7 @@ import com.testfairy.TestFairy;
 import com.instabug.library.Instabug;
 
 import java.util.Properties;
+import im.status.ethereum.module.StatusThreadPoolExecutor;
 
 public class MainActivity extends ReactActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
@@ -40,6 +41,7 @@ public class MainActivity extends ReactActivity
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(final Thread thread, final Throwable t) {
+                // High priority, so don't use StatusThreadPoolExecutor
                 new Thread() {
                     @Override
                     public void run() {
@@ -150,14 +152,14 @@ public class MainActivity extends ReactActivity
             dialog.show();
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 System.loadLibrary("status-logs");
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @Override

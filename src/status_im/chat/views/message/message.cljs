@@ -173,6 +173,11 @@
   [message-view message
    [react/text {:style (style/text-message message)} content]])
 
+(defn emoji-message
+  [{:keys [content] :as message}]
+  [message-view message
+   [react/text {:style (style/emoji-message message)} content]])
+
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
 (defmethod message-content constants/content-type-command-request
@@ -200,6 +205,10 @@
 (defmethod message-content constants/content-type-placeholder
   [wrapper message]
   [wrapper message [placeholder-message message]])
+
+(defmethod message-content constants/content-type-emoji
+  [wrapper message]
+  [wrapper message [emoji-message message]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]
@@ -274,6 +283,9 @@
   (letsubs [{:keys [photo-path]} [:get-current-account]]
     (photo from photo-path)))
 
+(defview message-timestamp [t]
+  [react/text {:style style/message-timestamp} t])
+
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
     [react/text {:style style/message-author-name} (or username
@@ -281,20 +293,21 @@
                                                        (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn message-body
-  [{:keys [last-outgoing? last-by-same-author? message-type same-author? from outgoing group-chat username] :as message} content]
+  [{:keys [timestamp-str last-outgoing? last-in-group? message-type first-in-group? from outgoing group-chat username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
-    [react/view style/message-author
-     (when last-by-same-author?
-       (if outgoing
-         [my-photo from]
+    (when (not outgoing)
+      [react/view style/message-author
+       (when last-in-group?
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
           [react/view
-           [member-photo from]]]))]
+           [member-photo from]]])])
     [react/view (style/group-message-view outgoing)
-     (when-not same-author?
+     (when first-in-group?
        [message-author-name from username])
-     content]]
+     [react/view {:style (style/timestamp-content-wrapper message)}
+       content
+       [message-timestamp timestamp-str]]]]
    (when last-outgoing?
      [react/view style/delivery-status
       (if (= message-type :group-user-message)
