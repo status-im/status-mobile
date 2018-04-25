@@ -129,7 +129,7 @@
                   (assoc % :text (string/trim text))
                   %)))
               ; Move next url's leading space to tail
-              (#(let [next-obj (nth parsed-words (+ idx 1) nil)]
+              (#(let [next-obj (nth parsed (+ idx 1) nil)]
                 (if next-obj
                   (let [{:keys [text url?]}  %
                         next-text            (get next-obj :text)
