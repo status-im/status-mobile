@@ -1,5 +1,6 @@
 (ns status-im.utils.ethereum.tokens
-  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons]]))
+  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons]])
+  (:require [clojure.string :as string]))
 
 (defn- asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})
@@ -406,6 +407,11 @@
 
 (defn tokens-for [chain]
   (get all chain))
+
+(defn sorted-tokens-for [chain]
+  (->> (tokens-for chain)
+       (sort #(compare (string/lower-case (:name %1))
+                       (string/lower-case (:name %2))))))
 
 (defn symbol->token [chain symbol]
   (some #(when (= symbol (:symbol %)) %) (tokens-for chain)))
