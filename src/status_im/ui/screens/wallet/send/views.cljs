@@ -29,7 +29,7 @@
     (i18n/label :t/sign-later-title)
     (i18n/label :t/sign-later-text)
     #(re-frame/dispatch (if from-chat?
-                          [:navigate-back]
+                          [:sign-later-from-chat]
                           [:wallet/sign-transaction true]))))
 
 (defview sign-panel [message?]

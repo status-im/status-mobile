@@ -40,8 +40,12 @@
 
 (re-frame/reg-fx
   ::show-transaction-moved
-  (fn []
-    (utils/show-popup (i18n/label :t/transaction-moved-title) (i18n/label :t/transaction-moved-text))))
+  (fn [modal?]
+    (utils/show-popup
+      (i18n/label :t/transaction-moved-title)
+      (i18n/label :t/transaction-moved-text)
+      (when modal?
+        #(re-frame/dispatch [:navigate-back])))))
 
 (re-frame/reg-fx
   ::show-transaction-error
@@ -93,6 +97,11 @@
     (doseq [result results]
       (dispatch-transaction-completed result))))
 
+(handlers/register-handler-fx
+  :sign-later-from-chat
+  (fn [_ _]
+    {::show-transaction-moved  true}))
+
 ;;TRANSACTION QUEUED signal from status-go
 (handlers/register-handler-fx
   :sign-request-queued
@@ -140,7 +149,7 @@
               ;;SIGN LATER
               {:db                      (assoc-in new-db' [:wallet :send-transaction :waiting-signal?] false)
                :dispatch                [:navigate-back]
-               ::show-transaction-moved nil}
+               ::show-transaction-moved false}
               ;;SIGN NOW
               {:db                  new-db'
                ::accept-transaction {:id           id
