@@ -105,7 +105,7 @@ repl-android: ##@repl Start REPL for Android
 # Run
 # -------------
 run-android: ##@run Run Android build
-	react-native run-android
+	react-native run-android --appIdSuffix debug
 
 run-ios: ##@run Run iOS build
 	react-native run-ios

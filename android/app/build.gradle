@@ -164,7 +164,9 @@ android {
     }
     buildTypes {
         debug {
+            applicationIdSuffix ".debug"
             versionNameSuffix "-SNAPSHOT"
+            resValue "string", "build_config_package", "im.status.ethereum"
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
