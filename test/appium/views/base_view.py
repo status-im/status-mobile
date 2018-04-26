@@ -202,15 +202,19 @@ class BaseView(object):
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
 
                 ',': 55, '-': 69, '+': 81, '.': 56, '/': 76, '\\': 73, ';': 74, ' ': 62,
-                '[': 71, ']': 72, '=': 70, '\n': 66,
+                '[': 71, ']': 72, '=': 70, '\n': 66, '_': [69, 5],
 
                 'a': 29, 'b': 30, 'c': 31, 'd': 32, 'e': 33, 'f': 34, 'g': 35, 'h': 36, 'i': 37, 'j': 38,
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
+        time.sleep(3)
         for i in string:
             info("Tap '%s' on native keyboard" % i)
-            time.sleep(1)
-            self.driver.press_keycode(keys[i])
+            if type(keys[i]) is list:
+                keycode, metastate = keys[i][0], keys[i][1]
+            else:
+                keycode, metastate = keys[i], None
+            self.driver.press_keycode(keycode=keycode, metastate=metastate)
 
     def find_full_text(self, text, wait_time=60):
         info("Looking for full text: '%s'" % text)

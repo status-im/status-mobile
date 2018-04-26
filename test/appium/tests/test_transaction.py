@@ -178,8 +178,8 @@ class TestTransaction(SingleDeviceTestCase):
 
     @pytest.mark.pr
     def test_send_eth_from_wallet_sign_now(self):
-        sender = transaction_users_wallet['A_USER']
-        recipient = transaction_users_wallet['B_USER']
+        sender = transaction_users['F_USER']
+        recipient = transaction_users['E_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
         home_view = sign_in_view.get_home_view()
