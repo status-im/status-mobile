@@ -208,8 +208,8 @@ class BaseView(object):
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
         time.sleep(3)
+        info("Enter '%s' using native keyboard" % string)
         for i in string:
-            info("Tap '%s' on native keyboard" % i)
             if type(keys[i]) is list:
                 keycode, metastate = keys[i][0], keys[i][1]
             else:

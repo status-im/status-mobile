@@ -4,7 +4,7 @@ import pytest
 import emoji
 
 from tests.base_test_case import MultipleDeviceTestCase
-from tests import group_chat_users, get_current_time
+from tests import group_chat_users, get_current_time, marks
 from views.sign_in_view import SignInView
 
 unicode_text_message = '%s%s%s%s %s%s%s%s%s%s%s' % (chr(355), chr(275), chr(353), chr(539), chr(1084), chr(949),
@@ -17,11 +17,12 @@ emoji_unicode_1 = emoji.EMOJI_UNICODE[emoji_name_1]
 message_with_new_line = 'message' '\n' 'with new line'
 
 
-@pytest.mark.all
-@pytest.mark.chat
+@marks.all
+@marks.chat
 class TestMessages(MultipleDeviceTestCase):
 
-    @pytest.mark.pr
+    @marks.pr
+    @marks.testrail_case_id(3390)
     def test_one_to_one_chat_messages(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -77,7 +78,8 @@ class TestMessages(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
-    @pytest.mark.pr
+    @marks.pr
+    @marks.testrail_case_id(3391)
     def test_group_chat_messages_and_delete_chat(self):
         self.create_drivers(3)
 
@@ -139,7 +141,8 @@ class TestMessages(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
-    @pytest.mark.pr
+    @marks.pr
+    @marks.testrail_case_id(3392)
     def test_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

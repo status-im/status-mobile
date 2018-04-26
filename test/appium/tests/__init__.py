@@ -24,7 +24,8 @@ def info(text: str):
 
 
 class SingleTestData(object):
-    def __init__(self, name, steps=list(), jobs=list(), error=None):
+    def __init__(self, name, steps=list(), jobs=list(), error=None, testrail_case_id=None):
+        self.testrail_case_id = testrail_case_id
         self.name = name
         self.steps = steps
         self.jobs = jobs

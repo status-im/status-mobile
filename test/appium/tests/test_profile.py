@@ -3,14 +3,14 @@ import emoji
 import pytest
 import time
 from tests.base_test_case import SingleDeviceTestCase
-from tests import basic_user
+from tests import basic_user, marks
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.all
+@marks.all
 class TestProfileView(SingleDeviceTestCase):
 
-    @pytest.mark.testrail_case_id(3395)
+    @marks.testrail_case_id(3395)
     def test_qr_code_and_its_value(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -27,12 +27,12 @@ class TestProfileView(SingleDeviceTestCase):
         wallet_view.qr_code_image.wait_for_element()
         key_value = wallet_view.address_text.text
         key_value_from_qr = wallet_view.get_text_from_qr()
-        if key_value_from_qr != "ethereum:%s'" % key_value:
+        if key_value not in key_value_from_qr:
             self.errors.append(
                 "Wallet QR code value '%s' doesn't match wallet address '%s'" % (key_value_from_qr, key_value))
         self.verify_no_errors()
 
-    @pytest.mark.pr
+    @marks.pr
     @pytest.mark.testrail_case_id(3396)
     def test_contact_profile_view(self):
         sign_in_view = SignInView(self.driver)
@@ -51,7 +51,8 @@ class TestProfileView(SingleDeviceTestCase):
         chat_view.profile_send_transaction.click()
         assert chat_view.chat_message_input.text.strip() == '/send'
 
-    @pytest.mark.pr
+    @marks.pr
+    @marks.testrail_case_id(3397)
     def test_network_switch(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -100,7 +101,7 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view.logout_button.click()
         profile_view.confirm_logout_button.click()
         recover_access_view = sign_in_view.add_existing_account_button.click()
-        recover_access_view.passphrase_input.set_value(' '.join(seed_phrase.values()))
+        recover_access_view.passphrase_input.set_value(' '.join(seed_phrase[key] for key in sorted(seed_phrase)))
         recover_access_view.password_input.set_value('qwerty1234')
         recover_access_view.sign_in_button.click()
         sign_in_view.do_not_share.click()
