@@ -28,7 +28,7 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
-        profile_view.logout_button.click()
+        profile_view.logout()
         recover_access_view = sign_in_view.add_existing_account_button.click()
         recover_access_view.passphrase_input.send_keys(basic_user['passphrase'])
         recover_access_view.password_input.send_keys(basic_user['password'])

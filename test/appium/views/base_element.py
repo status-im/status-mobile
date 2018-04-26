@@ -25,6 +25,15 @@ class BaseElement(object):
         def accessibility_id(locator, value):
             return locator(MobileBy.ACCESSIBILITY_ID, value)
 
+        @classmethod
+        def text_selector(locator, text):
+            return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]')
+
+        @classmethod
+        def text_part_selector(locator, text):
+            return BaseElement.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
+
+
         def __str__(self, *args, **kwargs):
             return "%s:%s" % (self.by, self.value)
 

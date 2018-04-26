@@ -22,15 +22,13 @@ message_with_new_line = 'message' '\n' 'with new line'
 class TestMessages(MultipleDeviceTestCase):
 
     @pytest.mark.pr
-    def test_one_to_one_chat_messages_and_delete_chat(self):
+    def test_one_to_one_chat_messages(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for sign_in in device_1, device_2:
             sign_in.create_user()
         device_1_home, device_2_home = device_1.get_home_view(), device_2.get_home_view()
         device_2_public_key = device_2_home.get_public_key()
-        device_2_profile = device_2_home.get_profile_view()
-        device_2_username = device_2_profile.username_text.text
         device_1_home.add_contact(device_2_public_key)
         device_1_chat = device_1_home.get_chat_view()
 
@@ -77,7 +75,6 @@ class TestMessages(MultipleDeviceTestCase):
             web_view.find_full_text('Status, the Ethereum discovery tool.')
             device_1_chat.back_button.click()
 
-        device_1_chat.delete_chat(device_2_username[:25], self.errors)
         self.verify_no_errors()
 
     @pytest.mark.pr

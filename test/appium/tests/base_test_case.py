@@ -8,7 +8,7 @@ from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
 from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads
+from tests import test_suite_data, start_threads, api_requests
 from views.base_view import BaseView
 
 
@@ -195,4 +195,12 @@ environments = {'local': LocalMultipleDeviceTestCase,
 
 class MultipleDeviceTestCase(environments[pytest.config.getoption('env')]):
 
-    pass
+    def setup_method(self, method):
+        super(MultipleDeviceTestCase, self).setup_method(method)
+        self.senders = dict()
+
+    def teardown_method(self, method):
+        for user in self.senders:
+            api_requests.faucet(address=self.senders[user]['address'])
+        super(MultipleDeviceTestCase, self).teardown_method(method)
+

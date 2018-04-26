@@ -90,6 +90,13 @@ class HomeView(BaseView):
         one_to_one_chat = self.get_chat_view()
         one_to_one_chat.chat_message_input.wait_for_element(60)
 
+    def start_1_1_chat(self, username):
+        start_new_chat = self.plus_button.click()
+        start_new_chat.start_new_chat_button.click()
+        self.element_by_text(username).click()
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
+
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         start_new_chat = self.plus_button.click()
         start_new_chat.new_group_chat_button.click()

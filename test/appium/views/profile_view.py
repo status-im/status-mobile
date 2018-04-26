@@ -1,5 +1,4 @@
 import time
-
 from tests import info
 from tests.base_test_case import AbstractTestCase
 from views.base_element import BaseText, BaseButton, BaseEditBox, BaseElement
@@ -75,6 +74,21 @@ class LogoutButton(BaseButton):
     def __init__(self, driver):
         super(LogoutButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('log-out-button')
+
+
+class LogoutDialog(BaseView):
+    def __init__(self, driver):
+        super(LogoutDialog, self).__init__(driver)
+        self.logout_button = LogoutDialog.LogoutButton(driver)
+
+    class LogoutButton(BaseButton):
+        def __init__(self, driver):
+            super(LogoutDialog.LogoutButton, self).__init__(driver)
+            self.locator = self.Locator.text_selector('LOG OUT')
+
+        def navigate(self):
+            from views.sign_in_view import SignInView
+            return SignInView(self.driver)
 
 
 class ConfirmLogoutButton(BaseButton):
@@ -227,6 +241,7 @@ class ProfileView(BaseView):
         self.network_settings_button = NetworkSettingsButton(self.driver)
         self.connect_button = NetworkSettingsButton.ConnectButton(self.driver)
         self.logout_button = LogoutButton(self.driver)
+        self.logout_dialog = LogoutDialog(self.driver)
         self.confirm_logout_button = ConfirmLogoutButton(self.driver)
 
         # new design
@@ -279,3 +294,8 @@ class ProfileView(BaseView):
             self.confirm_button.click()
         else:
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
+
+    def logout(self):
+        self.logout_button.click()
+        return self.logout_dialog.logout_button.click()
+

@@ -120,5 +120,9 @@ class SignInView(BaseView):
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
 
+    def sign_in(self, password):
+        self.password_input.set_value(password)
+        self.sign_in_button.click()
+
     def click_account_by_position(self, position: int):
         self.account_button.find_elements()[position].click()

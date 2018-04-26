@@ -1,7 +1,7 @@
 import time
 from selenium.common.exceptions import TimeoutException
 from tests import info
-from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView
 
 
@@ -140,6 +140,12 @@ class ViewProfileButton(BaseButton):
         self.locator = self.Locator.xpath_selector('//*[@text="View profile"]')
 
 
+class NoMessagesInChatText(BaseText):
+    def __init__(self, driver):
+        super(NoMessagesInChatText, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('There are no messages')
+
+
 class ProfileSendMessageButton(BaseButton):
     def __init__(self, driver):
         super(ProfileSendMessageButton, self).__init__(driver)
@@ -159,6 +165,7 @@ class ChatView(BaseView):
         self.chat_message_input = ChatMessageInput(self.driver)
         self.add_to_contacts = AddToContacts(self.driver)
         self.user_name_text = UserNameText(self.driver)
+        self.no_messages_in_chat = NoMessagesInChatText(self.driver)
 
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
@@ -244,3 +251,40 @@ class ChatView(BaseView):
         if not HomeView(self.driver).plus_button.is_element_present() or \
                 self.element_by_text(chat_name).is_element_present():
             errors.append('Chat was not deleted')
+
+    def send_transaction_in_1_1_chat(self, amount, password):
+        self.commands_button.click()
+        self.send_command.click()
+        self.send_as_keyevent(amount)
+        self.send_message_button.click()
+
+        send_transaction_view = self.get_send_transaction_view()
+        self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+        send_transaction_view.sign_transaction(password)
+        send_transaction_view.find_full_text(amount)
+        try:
+            self.find_full_text('Sent', 10)
+        except TimeoutException:
+            try:
+                self.find_full_text('Delivered', 10)
+            except TimeoutException:
+                self.find_full_text('Seen', 3)
+
+    def send_transaction_in_group_chat(self, amount, password, recipient):
+        self.commands_button.click()
+        self.send_command.click()
+        self.find_full_text(recipient['username']).click()
+        self.send_as_keyevent(amount)
+        self.send_message_button.click()
+
+        send_transaction_view = self.get_send_transaction_view()
+        self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+        send_transaction_view.sign_transaction(password)
+        send_transaction_view.find_full_text(amount)
+        self.find_full_text('to  ' + recipient['username'], 10)
+
+    def request_transaction_in_1_1_chat(self, amount):
+        self.commands_button.click()
+        self.request_command.click()
+        self.send_as_keyevent(amount)
+        self.send_message_button.click()

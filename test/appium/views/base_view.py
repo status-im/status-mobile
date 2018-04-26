@@ -231,13 +231,13 @@ class BaseView(object):
     def element_by_text(self, text, element_type='button'):
         info("Looking for an element by text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
-        element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
+        element.locator = element.Locator.text_selector(text)
         return element
 
     def element_by_text_part(self, text, element_type='base'):
         info("Looking for an element by text part: '%s'" % text)
         element = self.element_types[element_type](self.driver)
-        element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
+        element.locator = element.Locator.text_part_selector(text)
         return element
 
     def element_starts_with_text(self, text, element_type='base'):

@@ -21,22 +21,13 @@ class TestTransaction(SingleDeviceTestCase):
         sender_address = home_view.public_key_to_address(sender_public_key)
         home_view.home_button.click()
         api_requests.get_donate(sender_address)
-        initial_balance_recipient = api_requests.get_balance(recipient['address'])
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_with_user(recipient['username']).click()
-        chat_view.commands_button.click()
-        chat_view.send_command.click()
-        chat_view.send_as_keyevent(transaction_amount)
+        initial_balance_recipient = api_requests.get_balance(recipient['address'])
+        chat_view.send_transaction_in_1_1_chat(transaction_amount, 'qwerty1234')
         send_transaction_view = chat_view.get_send_transaction_view()
-        chat_view.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
-        send_transaction_view.sign_transaction('qwerty1234')
-        send_transaction_view.find_full_text(transaction_amount)
-        try:
-            chat_view.find_full_text('Sent', 10)
-        except TimeoutException:
-            chat_view.find_full_text('Delivered', 10)
-        api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
         send_transaction_view.back_button.click()
+        api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
         wallet_view = home_view.wallet_button.click()
         transactions_view = wallet_view.transactions_button.click()
         transactions_view.transactions_table.find_transaction(amount=transaction_amount)
@@ -73,21 +64,13 @@ class TestTransaction(SingleDeviceTestCase):
         sender_address = home_view.public_key_to_address(sender_public_key)
         home_view.home_button.click()
         api_requests.get_donate(sender_address)
-        initial_balance_recipient = api_requests.get_balance(recipient['address'])
         home_view.add_contact(recipient['public_key'])
         home_view.get_back_to_home_view()
         home_view.create_group_chat([recipient['username']], 'trg_%s' % get_current_time())
         chat_view = home_view.get_chat_view()
-        chat_view.commands_button.click()
-        chat_view.send_command.click()
-        chat_view.first_recipient_button.click()
-        chat_view.send_as_keyevent(transaction_amount)
-        send_transaction_view = chat_view.get_send_transaction_view()
-        chat_view.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
-        send_transaction_view.sign_transaction('qwerty1234')
-        send_transaction_view.find_full_text(transaction_amount)
-        chat_view.find_full_text('to  ' + recipient['username'], 10)
-        api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
+        initial_recipient_balance = api_requests.get_balance(recipient['address'])
+        chat_view.send_transaction_in_group_chat(transaction_amount, 'qwerty1234', recipient)
+        api_requests.verify_balance_is_updated(initial_recipient_balance, recipient['address'])
 
     @pytest.mark.pr
     def test_send_transaction_from_daap(self):
@@ -203,15 +186,11 @@ class TestTransaction(SingleDeviceTestCase):
 
 @pytest.mark.all
 class TestTransactions(MultipleDeviceTestCase):
-    senders = dict()
-    senders['c_user'] = transaction_users_wallet['C_USER']
-    senders['d_user'] = transaction_users['D_USER']
-    senders['f_user'] = transaction_users['F_USER']
 
     @pytest.mark.pr
     def test_send_eth_to_request_in_group_chat(self):
         recipient = transaction_users['E_USER']
-        sender = self.senders['f_user']
+        sender = self.senders['f_user'] = transaction_users['F_USER']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
@@ -240,7 +219,7 @@ class TestTransactions(MultipleDeviceTestCase):
     @pytest.mark.pr
     def test_send_eth_to_request_in_one_to_one_chat(self):
         recipient = transaction_users['C_USER']
-        sender = self.senders['d_user']
+        sender = self.senders['d_user'] = transaction_users['D_USER']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
@@ -279,7 +258,7 @@ class TestTransactions(MultipleDeviceTestCase):
     @pytest.mark.pr
     def test_send_eth_to_request_from_wallet(self):
         recipient = transaction_users_wallet['D_USER']
-        sender = self.senders['c_user']
+        sender = self.senders['c_user'] = transaction_users['C_USER']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         for user_details in (recipient, device_1), (sender, device_2):
@@ -311,7 +290,3 @@ class TestTransactions(MultipleDeviceTestCase):
         device_2_chat.send_eth_to_request(request_button, sender['password'])
         api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
 
-    def teardown_method(self, method):
-        for user in self.senders:
-            api_requests.faucet(address=self.senders[user]['address'])
-        super(TestTransactions, self).teardown_method(method)

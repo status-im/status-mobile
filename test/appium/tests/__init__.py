@@ -96,6 +96,22 @@ transaction_users['F_USER']['address'] = "08fee8015ec71d78b1855937988d5bf45892bc
 transaction_users['F_USER']['public_key'] = "0x0445284807c9fb9080cec6f1bd24f8d546c5c2c0dd2d06bdbf91d1af70507885" \
                                                    "1b9ee0d3bb04736abd00f5a8dce2f20a579a437ee3bea9920eefba7fa46266f8df"
 
+transaction_users['G_USER'] = dict()
+transaction_users['G_USER']['password'] = 'qwerty'
+transaction_users['G_USER']['passphrase'] = 'sorry assume clutch category grace lift text drift ankle tenant price inside'
+transaction_users['G_USER']['username'] = 'Corny Jumpy Argusfish'
+transaction_users['G_USER']['address'] = '0xcd22ac97164257fa832104b94286e0d839a42cfc'
+transaction_users['G_USER']['public_key'] = '0x04e53b6e5c602208d34b436fec90d4b85d171e5583d4371be57c7994a247e4ab3333c8ea2' \
+                                            '42978d80dda9a0279c90050f4d33ea83b1bb71b7b1297a68e769be9b7'
+
+transaction_users['H_USER'] = dict()
+transaction_users['H_USER']['password'] = 'qwerty'
+transaction_users['H_USER']['passphrase'] = 'expect attract panther inhale essence illegal muffin power cabbage correct market gun'
+transaction_users['H_USER']['username'] = 'Marvelous Round Argali'
+transaction_users['H_USER']['address'] = '0xbbb5bf58c92bd48e27fa508ed544da8472bbb26c'
+transaction_users['H_USER']['public_key'] = '0x04862eb3a2f08bb0469380a0ea8deb06f1c9af57e839cc7e783edd209058b72a0049596a' \
+                                            '16faba47f53b629958b435d19857b949fb3bb4a8cfc8f577cbac96609d'
+
 transaction_users_wallet = dict()
 transaction_users_wallet['A_USER'] = dict()
 transaction_users_wallet['A_USER']['password'] = "new_unique_password"
