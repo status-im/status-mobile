@@ -1945,6 +1945,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 064351D2FD901F8B6C9AE2A5 /* Pods-StatusImTests.debug.xcconfig */;
 			buildSettings = {
+				BUNDLE_ID_SUFFIX = .debug;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1991,6 +1992,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D489EE8D5F52DA10AC715727 /* Pods-StatusImTests.release.xcconfig */;
 			buildSettings = {
+				BUNDLE_ID_SUFFIX = "";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
@@ -2034,10 +2036,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ACA66A8F16CD2FE21F38738B /* Pods-StatusIm.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				BUNDLE_ID_SUFFIX = .debug;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CUSTOM_PRODUCT_NAME = "Status Debug";
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2093,10 +2097,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 38A44830EC5708E89387F641 /* Pods-StatusIm.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				BUNDLE_ID_SUFFIX = "";
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CUSTOM_PRODUCT_NAME = Status;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
 				FRAMEWORK_SEARCH_PATHS = (
