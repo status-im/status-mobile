@@ -203,10 +203,13 @@
       (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
         {:db db'}
         (merge
-          {:db (-> db'
-                   (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
-                   (update-in [:wallet :transactions-unsigned] dissoc id)
-                   (update-in [:wallet :send-transaction] merge clear-send-properties))}
+          {:db (cond-> db'
+                       (= method constants/web3-send-transaction)
+                       (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
+                       true
+                       (update-in [:wallet :transactions-unsigned] dissoc id)
+                       true
+                       (update-in [:wallet :send-transaction] merge clear-send-properties))}
           (if modal?
             (cond-> {:dispatch [:navigate-back]}
                     (= method constants/web3-send-transaction)
