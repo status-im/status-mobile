@@ -288,7 +288,7 @@
 
                               :else
                               (or delivery-status outgoing-status))]
-    (case outgoing-status
+    (case status
       :sending  [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]
       (when last-outgoing?
