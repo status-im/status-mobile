@@ -30,29 +30,17 @@
   (when realm
     (.close realm)))
 
-(defn- migrate-realm [file-name schemas]
+(defn- migrate [file-name schemas]
   (let [current-version (realm-version file-name)]
     (doseq [schema schemas
             :when (> (:schemaVersion schema) current-version)
             :let [migrated-realm (open-realm schema file-name)]]
-      (close migrated-realm)))
-  (open-realm (last schemas) file-name))
-
-(defn- reset-realm [file-name schemas]
-  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
-  (delete-realm file-name)
-  (open-realm (last schemas) file-name))
+      (close migrated-realm))))
 
 (defn- open-migrated-realm
   [file-name schemas]
-  ;; TODO: remove for release 0.9.18
-  ;; delete the realm file if its schema version is higher
-  ;; than existing schema version (this means the previous
-  ;; install has incompatible database schemas)
-  (if (> (realm-version file-name)
-         (apply max (map :schemaVersion base/schemas)))
-    (reset-realm file-name schemas)
-    (migrate-realm file-name schemas)))
+  (migrate file-name schemas)
+  (open-realm (last schemas) file-name))
 
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
