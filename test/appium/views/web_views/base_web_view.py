@@ -22,6 +22,19 @@ class BackToHomeButton(BaseButton):
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
 
+class BrowserPreviousPageButton(BaseButton):
+    def __init__(self, driver):
+        super(BrowserPreviousPageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('previou-page-button')
+
+
+class BrowserNextPageButton(BaseButton):
+    def __init__(self, driver):
+        super(BrowserNextPageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('next-page-button')
+
+
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -32,6 +45,8 @@ class BaseWebView(BaseView):
 
         self.web_link_edit_box = WebLinkEditBox(self.driver)
         self.back_to_home_button = BackToHomeButton(self.driver)
+        self.browser_previous_page_button = BrowserPreviousPageButton(self.driver)
+        self.browser_next_page_button = BrowserNextPageButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0
