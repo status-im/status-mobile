@@ -41,7 +41,7 @@
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
-            [status-im.utils.instabug :as inst]
+            [status-im.utils.instabug :as instabug]
             [status-im.utils.mixpanel :as mixpanel]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -346,7 +346,7 @@
   :signal-event
   (fn [_ [_ event-str]]
     (log/debug :event-str event-str)
-    (inst/log (str "Signal event: " event-str))
+    (instabug/log (str "Signal event: " event-str))
     (let [{:keys [type event]} (types/json->clj event-str)
           to-dispatch (case type
                         "sign-request.queued" [:sign-request-queued event]
