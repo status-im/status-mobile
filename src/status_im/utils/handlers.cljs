@@ -4,6 +4,7 @@
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.instabug :as instabug]
             [status-im.utils.mixpanel :as mixpanel]
             [taoensso.timbre :as log]))
 
@@ -100,7 +101,9 @@
                anon-id  (ethereum/sha3 current-account-id)]
            (doseq [{:keys [label properties]}
                    (mixpanel/matching-events event mixpanel/event-by-trigger)]
-             (mixpanel/track anon-id label properties offline?)))))
+             (mixpanel/track anon-id label properties offline?))
+           (when (= :send-current-message (first event))
+             (instabug/maybe-show-survey new-db)))))
      context)))
 
 (defn register-handler
