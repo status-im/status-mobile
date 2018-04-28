@@ -2,7 +2,7 @@ import json
 import hmac
 import os
 from hashlib import md5
-from tests import SingleTestData
+from support.test_data import SingleTestData
 
 
 class BaseTestReport:
@@ -28,24 +28,34 @@ class BaseTestReport:
 
     def save_test(self, test):
         file_path = self.get_test_report_file_path(test.name)
-        json.dump(test.__dict__, open(file_path, 'w'))
+        test_dict = {
+            'testrail_case_id': test.testrail_case_id,
+            'name': test.name,
+            'testruns': list()
+        }
+        for testrun in test.testruns:
+            test_dict['testruns'].append(testrun.__dict__)
+        json.dump(test_dict, open(file_path, 'w'))
 
     def get_all_tests(self):
         tests = list()
         file_list = [f for f in os.listdir(self.TEST_REPORT_DIR)]
         for file_name in file_list:
             file_path = os.path.join(self.TEST_REPORT_DIR, file_name)
-            test_dict = json.load(open(file_path))
-            tests.append(SingleTestData(name=test_dict['name'], steps=test_dict['steps'],
-                                        jobs=test_dict['jobs'], error=test_dict['error'],
-                                        testrail_case_id=test_dict['testrail_case_id']))
+            test_data = json.load(open(file_path))
+            testruns = list()
+            for testrun_data in test_data['testruns']:
+                testruns.append(SingleTestData.TestRunData(
+                    steps=testrun_data['steps'], jobs=testrun_data['jobs'], error=testrun_data['error']))
+            tests.append(SingleTestData(name=test_data['name'], testruns=testruns,
+                                        testrail_case_id=test_data['testrail_case_id']))
         return tests
 
     def get_failed_tests(self):
         tests = self.get_all_tests()
         failed = list()
         for test in tests:
-            if test.error is not None:
+            if not self.is_test_successful(test):
                 failed.append(test)
         return failed
 
@@ -53,7 +63,7 @@ class BaseTestReport:
         tests = self.get_all_tests()
         passed = list()
         for test in tests:
-            if test.error is None:
+            if self.is_test_successful(test):
                 passed.append(test)
         return passed
 
@@ -61,3 +71,8 @@ class BaseTestReport:
         token = hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
                          bytes(job_id, 'latin-1'), md5).hexdigest()
         return "https://saucelabs.com/jobs/%s?auth=%s" % (job_id, token)
+
+    @staticmethod
+    def is_test_successful(test):
+        # Test passed if last testrun has passed
+        return test.testruns[-1].error is None

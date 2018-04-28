@@ -62,11 +62,12 @@ class TestrailReport(BaseTestReport):
             test_steps = "# Steps: \n"
             devices = str()
             method = 'add_result_for_case/%s/%s' % (self.run_id, test.testrail_case_id)
-            for step in test.steps:
+            last_testrun = test.testruns[-1]
+            for step in last_testrun.steps:
                 test_steps += step + "\n"
-            for i, device in enumerate(test.jobs):
+            for i, device in enumerate(last_testrun.jobs):
                 devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(device))
-            data = {'status_id': self.outcomes['undefined_fail'] if test.error else self.outcomes['passed'],
-                    'comment': '%s' % ('# Error: \n %s \n' % test.error) + devices + test_steps if test.error
+            data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
+                    'comment': '%s' % ('# Error: \n %s \n' % last_testrun.error) + devices + test_steps if last_testrun.error
                     else devices + test_steps}
             self.post(method, data=data)

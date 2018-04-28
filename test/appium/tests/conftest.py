@@ -1,5 +1,9 @@
-from tests import test_suite_data, SingleTestData
+from _pytest.runner import runtestprotocol
+
+from support.test_rerun import should_rerun_test
+from tests import test_suite_data, debug
 import requests
+import re
 import pytest
 from datetime import datetime
 from os import environ
@@ -42,6 +46,14 @@ def pytest_addoption(parser):
                      action='store',
                      default=False,
                      help='boolean; For running extended test suite against nightly build')
+    parser.addoption('--rerun_count',
+                     action='store',
+                     default=0,
+                     help='How many times tests should be re-run if failed')
+
+
+def get_rerun_count():
+    return int(pytest.config.getoption('rerun_count'))
 
 
 def is_master(config):
@@ -95,13 +107,13 @@ def pytest_unconfigure(config):
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
-    is_sauce_env = pytest.config.getoption('env') == 'sauce'
-    current_test = test_suite_data.current_test
     if report.when == 'call':
+        is_sauce_env = pytest.config.getoption('env') == 'sauce'
+        current_test = test_suite_data.current_test
         if report.failed:
-            current_test.error = report.longreprtext
+            current_test.testruns[-1].error = report.longreprtext
         if is_sauce_env:
-            update_sauce_jobs(current_test.name, current_test.jobs, report.passed)
+            update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
         github_report.save_test(current_test)
 
 
@@ -116,4 +128,15 @@ def get_testrail_case_id(obj):
 
 
 def pytest_runtest_setup(item):
-    test_suite_data.add_test(SingleTestData(item.name, testrail_case_id=get_testrail_case_id(item)))
+    test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
+    test_suite_data.current_test.create_new_testrun()
+
+
+def pytest_runtest_protocol(item, nextitem):
+    for i in range(get_rerun_count()):
+        reports = runtestprotocol(item, nextitem=nextitem)
+        for report in reports:
+            if report.failed and should_rerun_test(report.longreprtext):
+                break  # rerun
+        else:
+            return True  # no need to rerun

@@ -121,7 +121,7 @@ class SingleDeviceTestCase(AbstractTestCase):
                                                capabilities[self.environment]['capabilities'])
                 self.driver.implicitly_wait(self.implicitly_wait)
                 BaseView(self.driver).accept_agreements()
-                test_suite_data.current_test.jobs.append(self.driver.session_id)
+                test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
                 break
             except WebDriverException:
                 counter += 1
@@ -146,7 +146,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
             self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
             BaseView(self.drivers[driver]).accept_agreements()
-            test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
+            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -174,7 +174,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         for driver in range(quantity):
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
             BaseView(self.drivers[driver]).accept_agreements()
-            test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
+            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:

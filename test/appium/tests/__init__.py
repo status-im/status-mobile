@@ -2,6 +2,8 @@ import asyncio
 import logging
 from datetime import datetime
 
+from support.test_data import TestSuiteData
+
 
 @asyncio.coroutine
 def start_threads(quantity: int, func: type, returns: dict, *args):
@@ -20,27 +22,11 @@ def get_current_time():
 def info(text: str):
     if "Base" not in text:
         logging.info(text)
-        test_suite_data.current_test.steps.append(text)
+        test_suite_data.current_test.testruns[-1].steps.append(text)
 
 
-class SingleTestData(object):
-    def __init__(self, name, steps=list(), jobs=list(), error=None, testrail_case_id=None):
-        self.testrail_case_id = testrail_case_id
-        self.name = name
-        self.steps = steps
-        self.jobs = jobs
-        self.error = error
-
-
-class TestSuiteData(object):
-    def __init__(self):
-        self.apk_name = None
-        self.current_test = None
-        self.tests = list()
-
-    def add_test(self, test):
-        self.tests.append(test)
-        self.current_test = test
+def debug(text: str):
+        logging.debug(text)
 
 
 test_suite_data = TestSuiteData()
