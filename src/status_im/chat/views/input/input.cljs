@@ -30,7 +30,7 @@
       :editable               true
       :blur-on-submit         false
       :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
-                                                                        :messages-focused? false}])
+                                                                       :messages-focused? false}])
       :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
       :on-submit-editing      (fn [_]
                                 (if single-line-input?
