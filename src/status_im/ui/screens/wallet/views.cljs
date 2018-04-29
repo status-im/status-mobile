@@ -49,21 +49,24 @@
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [{:keys [symbol icon decimals amount]}]
-  [react/view
-   [list/item
-    [list/item-image icon]
-    [react/view {:style styles/asset-item-value-container}
-     [react/text {:style               styles/asset-item-value
-                  :number-of-lines     1
-                  :ellipsize-mode      :tail
-                  :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
-      (wallet.utils/format-amount amount decimals)]
-     [react/text {:style           styles/asset-item-currency
-                  :uppercase?      true
-                  :number-of-lines 1}
-      (clojure.core/name symbol)]]]])
-
-
+  (let [asset-value (re-frame/subscribe [:asset-value symbol :USD])]
+    [react/view {:style styles/asset-item-container}
+     [list/item
+      [list/item-image icon]
+      [react/view {:style styles/asset-item-value-container}
+       [react/text {:style               styles/asset-item-value
+                    :number-of-lines     1
+                    :ellipsize-mode      :tail
+                    :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
+        (wallet.utils/format-amount amount decimals)]
+       [react/text {:style           styles/asset-item-currency
+                    :uppercase?      true
+                    :number-of-lines 1}
+        (clojure.core/name symbol)]]
+      [react/text {:style           styles/asset-item-price
+                   :uppercase?      true
+                   :number-of-lines 1}
+       (if @asset-value (str "$" @asset-value) "...")]]]))
 
 (defn- asset-section [assets]
   [react/view styles/asset-section
@@ -77,7 +80,7 @@
 
 (views/defview wallet []
   (views/letsubs [assets          [:wallet/visible-assets-with-amount]
-                  portfolio-value [:portfolio-value]]
+                  portfolio-value [:portfolio-value :USD]]
     [react/view styles/main-section
      [toolbar-view]
      [react/scroll-view {:refresh-control

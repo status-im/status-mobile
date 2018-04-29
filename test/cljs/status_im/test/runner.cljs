@@ -5,6 +5,7 @@
             [status-im.test.contacts.subs]
             [status-im.test.accounts.events]
             [status-im.test.data-store.realm.core]
+            [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
             [status-im.test.profile.events]
@@ -27,7 +28,8 @@
             [status-im.test.utils.transducers]
             [status-im.test.utils.async]
             [status-im.test.utils.datetime]
-            [status-im.test.utils.mixpanel]))
+            [status-im.test.utils.mixpanel]
+            [status-im.test.utils.prices]))
 
 (enable-console-print!)
 
@@ -48,6 +50,7 @@
  'status-im.test.profile.events
  'status-im.test.data-store.realm.core
  'status-im.test.bots.events
+ 'status-im.test.wallet.subs
  'status-im.test.wallet.transactions.subs
  'status-im.test.wallet.transactions.views
  'status-im.test.chat.models.input
@@ -65,4 +68,5 @@
  'status-im.test.utils.signing-phrase.core
  'status-im.test.utils.transducers
  'status-im.test.utils.datetime
- 'status-im.test.utils.mixpanel)
+ 'status-im.test.utils.mixpanel
+ 'status-im.test.utils.prices)

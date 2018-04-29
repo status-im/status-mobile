@@ -13,23 +13,49 @@
   (fn [wallet]
     (:balance wallet)))
 
-(re-frame/reg-sub :price
+(re-frame/reg-sub :prices
   (fn [db]
-    (get-in db [:prices :price])))
+    (:prices db)))
+
+(re-frame/reg-sub :price
+  :<- [:prices]
+  (fn [prices [_ fsym tsym]]
+    (get-in prices [fsym tsym :price])))
 
 (re-frame/reg-sub :last-day
-  (fn [db]
-    (get-in db [:prices :last-day])))
+  :<- [:prices]
+  (fn [prices [_ fsym tsym]]
+    (get-in prices [fsym tsym :last-day])))
+
+(re-frame/reg-sub :asset-value
+  (fn [[_ fsym tsym]]
+    [(re-frame/subscribe [:balance])
+     (re-frame/subscribe [:price fsym tsym])])
+  (fn [[balance price] [_ fsym tsym]]
+    (when (and balance price)
+      (-> (money/wei->ether (get balance fsym))
+          (money/eth->fiat price)
+          (money/with-precision 2)
+          str))))
+
+(defn- get-balance-total-value [balance prices currency]
+  (->> balance
+       (reduce-kv (fn [acc symbol value]
+                    (if-let [price (get-in prices [symbol currency :price])]
+                      (+ acc (-> (money/wei->ether value)
+                                 (money/eth->fiat price)
+                                 .toNumber))
+                      acc)) 0)))
 
 (re-frame/reg-sub :portfolio-value
   :<- [:balance]
-  :<- [:price]
-  (fn [[balance price]]
-    (if (and balance price)
-      (-> (money/wei->ether (get balance :ETH)) ;; TODO(jeluard) Modify to consider tokens
-          (money/eth->usd price)
-          (money/with-precision 2)
-          str)
+  :<- [:prices]
+  (fn [[balance prices] [_ currency]]
+    (if (and balance prices)
+      (let [balance-total-value (get-balance-total-value balance prices currency)]
+        (-> balance-total-value
+            (money/with-precision 2)
+            str))
       "...")))
 
 (re-frame/reg-sub :prices-loading?

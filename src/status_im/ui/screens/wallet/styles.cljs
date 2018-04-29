@@ -134,6 +134,12 @@
    :margin-left 16
    :color       colors/gray})
 
+(def asset-item-container
+  {:flex            1
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between})
+
 (def asset-item-value-container
   {:flex           1
    :flex-direction :row
@@ -145,6 +151,11 @@
    :color     colors/black})
 
 (def asset-item-currency
+  {:font-size   16
+   :color       colors/gray
+   :margin-left 6})
+
+(def asset-item-price
   {:font-size   16
    :color       colors/gray
    :margin-left 6})
