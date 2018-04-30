@@ -41,7 +41,7 @@
    :creating-your-account                "Creating your account on the blockchain. We can't touch it, no one can, except for you!"
    :password-placeholder                 "Type your password"
    :password-placeholder2                "Confirm your password"
-   :name-placeholder                     "Enter your full name…"
+   :name-placeholder                     "Display name"
    :password_error1                      "Password confirmation doesn't match password."
    :password-description                 "You'll need this password to open the app, confirm transactions and whenever you need to regain access on a new device or install."
    :name-description                     "This will be the name everybody who uses Status will see. You can change it later."
