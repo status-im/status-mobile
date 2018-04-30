@@ -43,8 +43,11 @@
 
 (reg-sub :all-dapp-with-url-contacts
   :<- [:all-added-contacts]
-  (fn [contacts]
-    (filter #(and (:dapp? %) (:dapp-url %)) contacts)))
+  :<- [:get-current-account]
+  (fn [[contacts {:keys [dev-mode?]}]]
+    (filter #(and (:dapp? %) (:dapp-url %) (or dev-mode?
+                                               (not= "simple-dapp" (:whisper-identity %))))
+            contacts)))
 
 (reg-sub :get-people-in-current-chat
   :<- [:get-current-chat-contacts]

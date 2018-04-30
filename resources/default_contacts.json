@@ -191,6 +191,11 @@
         "dapp-url": {"en" : "https://cryptofighters.io"},
         "dapp?": true,
         "photo-path": "contacts://cryptofighters"
+    },
+    "simple-dapp": {
+        "name" : {"en" : "Simple Dapp"},
+        "description": "Request test assets and test basic web3 functionality.",
+        "dapp-url": {"en" : "https://status-im.github.io/dapp/"},
+        "dapp?": true
     }
-
 }
