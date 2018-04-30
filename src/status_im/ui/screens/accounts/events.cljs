@@ -156,3 +156,8 @@
  :switch-dev-mode
  (fn [cofx [_ dev-mode]]
    (accounts.utils/account-update {:dev-mode? dev-mode} cofx)))
+
+(handlers/register-handler-fx
+ :wallet-set-up-passed
+ (fn [cofx]
+   (accounts.utils/account-update {:wallet-set-up-passed? true} cofx)))

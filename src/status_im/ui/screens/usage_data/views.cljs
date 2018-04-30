@@ -22,9 +22,9 @@
       [react/text {:style styles/help-improve-text-description}
        (i18n/label :t/help-improve-description)]]
      [react/view styles/buttons-container
-      [components.common/button {:style    {:flex-direction :row}
-                                 :on-press #(re-frame/dispatch [:help-improve-handler true next])
-                                 :label    (i18n/label :t/share-usage-data)}]
+      [components.common/button {:button-style {:flex-direction :row}
+                                 :on-press     #(re-frame/dispatch [:help-improve-handler true next])
+                                 :label        (i18n/label :t/share-usage-data)}]
       [react/view styles/bottom-button-container
        [components.common/button {:on-press    #(re-frame/dispatch [:help-improve-handler false next])
                                   :label       (i18n/label :t/dont-want-to-share)

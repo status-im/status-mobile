@@ -33,6 +33,7 @@
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction send-transaction-request]]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.ui.screens.wallet.onboarding.setup.views :as wallet.onboarding.setup]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
@@ -123,6 +124,7 @@
     :browser browser
     :open-dapp open-dapp
     :dapp-description dapp-description
+    :wallet-onboarding-setup wallet.onboarding.setup/screen
     :wallet-send-transaction send-transaction
     :wallet-transaction-sent transaction-sent
     :wallet-request-transaction request-transaction

@@ -45,4 +45,6 @@
    :welcome-image   (js/require "./resources/images/ui/welcome-image.png")
    :lock            {:image  (js/require "./resources/images/ui/lock.png")
                      :width  993
-                     :height 933}})
+                     :height 933}
+   :wallet-welcome  (js/require "./resources/images/ui/wallet-welcome.png")
+   :wallet-setup    (js/require "./resources/images/ui/wallet-setup.png")})
