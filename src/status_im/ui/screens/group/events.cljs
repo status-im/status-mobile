@@ -3,7 +3,8 @@
             [re-frame.core :as re-frame]
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.handlers :as handlers]
-            [status-im.ui.screens.group.navigation]))
+            [status-im.ui.screens.group.navigation]
+            [status-im.data-store.contact-groups :as contact-groups-store]))
 
 ;;;; COFX
 
@@ -45,8 +46,8 @@
                      :order       (count contact-groups)
                      :timestamp   now
                      :contacts    selected-contacts}]
-      {:db                            (assoc-in db [:group/contact-groups group-id] new-group)
-       :data-store/save-contact-group new-group})))
+      {:db            (assoc-in db [:group/contact-groups group-id] new-group)
+       :data-store/tx [(contact-groups-store/save-contact-group-tx new-group)]})))
 
 (defn add-default-groups
   [{:keys [db now default-groups]}]
@@ -62,8 +63,8 @@
         existing-groups (:group/contact-groups db)
         groups-to-add   (select-keys new-groups (set/difference (set (keys new-groups))
                                                                 (set (keys existing-groups))))]
-    {:db                             (update db :group/contact-groups merge groups-to-add)
-     :data-store/save-contact-groups (vals groups-to-add)}))
+    {:db            (update db :group/contact-groups merge groups-to-add)
+     :data-store/tx [(contact-groups-store/save-contact-groups-tx (vals groups-to-add))]}))
 
 (handlers/register-handler-fx
   :load-contact-groups
@@ -74,18 +75,18 @@
 (handlers/register-handler-fx
   :set-contact-group-name
   (fn [{{:keys [new-chat-name] :group/keys [contact-group-id] :as db} :db} _]
-    {:db                                     (assoc-in db
-                                                       [:group/contact-groups contact-group-id :name]
-                                                       new-chat-name)
-     :data-store/save-contact-group-property [contact-group-id :name new-chat-name]}))
+    {:db            (assoc-in db [:group/contact-groups contact-group-id :name] new-chat-name)
+     :data-store/tx [(contact-groups-store/save-contact-group-tx {:group-id contact-group-id
+                                                                  :name     new-chat-name})]}))
 
 (handlers/register-handler-fx
   :add-selected-contacts-to-group
   (fn [{{:group/keys [contact-groups contact-group-id selected-contacts] :as db} :db} _]
-    {:db                                       (update-in db
-                                                          [:group/contact-groups contact-group-id :contacts]
-                                                          #(into [] (set (concat % selected-contacts))))
-     :data-store/add-contacts-to-contact-group [contact-group-id selected-contacts]}))
+    {:db            (update-in db
+                               [:group/contact-groups contact-group-id :contacts]
+                               #(into [] (set (concat % selected-contacts))))
+     :data-store/tx [(contact-groups-store/add-contacts-to-contact-group-tx
+                      contact-group-id selected-contacts)]}))
 
 (handlers/register-handler-fx
   :remove-contact-from-group
@@ -94,5 +95,5 @@
     (let [group (-> db
                     (get-in [:group/contact-groups group-id])
                     (update :contacts (partial remove #(= whisper-identity %))))]
-      {:db                            (assoc-in db [:group/contact-groups group-id] group)
-       :data-store/save-contact-group group})))
+      {:db            (assoc-in db [:group/contact-groups group-id] group)
+       :data-store/tx [(contact-groups-store/save-contact-group-tx group)]})))

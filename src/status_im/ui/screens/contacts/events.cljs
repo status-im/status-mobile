@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.contacts :as utils.contacts] 
+            [status-im.utils.contacts :as utils.contacts]
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat.core]
@@ -13,17 +13,18 @@
             [status-im.ui.screens.group.events :as group.events]
             [status-im.chat.console :as console-chat]
             [status-im.chat.events :as chat.events]
-            [status-im.chat.models :as chat.models] 
+            [status-im.chat.models :as chat.models]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.contact :as message.v1.contact]
-            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]))
+            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.data-store.contacts :as contacts-store]))
 
 ;;;; Handlers
 
 (defn- update-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (when (get-in db [:contacts/contacts whisper-identity])
-    {:db                      (update-in db [:contacts/contacts whisper-identity] merge contact)
-     :data-store/save-contact contact}))
+    {:db            (update-in db [:contacts/contacts whisper-identity] merge contact)
+     :data-store/tx [(contacts-store/save-contact-tx contact)]}))
 
 (handlers/register-handler-fx
   :load-contacts
@@ -35,10 +36,10 @@
 
 (defn- add-new-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (let [new-contact (assoc contact :pending? false)]
-    {:db                      (-> db
-                                  (update-in [:contacts/contacts whisper-identity] merge new-contact)
-                                  (assoc-in [:contacts/new-identity] ""))
-     :data-store/save-contact new-contact}))
+    {:db            (-> db
+                        (update-in [:contacts/contacts whisper-identity] merge new-contact)
+                        (assoc-in [:contacts/new-identity] ""))
+     :data-store/tx [(contacts-store/save-contact-tx new-contact)]}))
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:account/account db)
@@ -103,8 +104,8 @@
   :remove-contact
   (fn [{:keys [db]} [_ whisper-identity]]
     (when-let [contact (get-in db [:contacts/contacts whisper-identity])]
-      {:db                        (update db :contacts/contacts dissoc whisper-identity)
-       :data-store/delete-contact contact})))
+      {:db            (update db :contacts/contacts dissoc whisper-identity)
+       :data-store/tx [(contacts-store/delete-contact-tx whisper-identity)]})))
 
 (handlers/register-handler-db
   :open-contact-toggle-list

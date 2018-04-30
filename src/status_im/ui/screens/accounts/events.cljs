@@ -17,6 +17,7 @@
             [status-im.transport.message.core :as transport]
             status-im.ui.screens.accounts.create.navigation
             [status-im.chat.models :as chat.models]
+            [status-im.data-store.accounts :as accounts-store]
             [status-im.ui.screens.accounts.utils :as accounts.utils]))
 
 ;;;; COFX
@@ -55,8 +56,8 @@
                                 :network  network
                                 :networks networks
                                 :address  address)]
-    {:db           (assoc-in db [:accounts/accounts address] enriched-account)
-     :data-store/save-account enriched-account}))
+    {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
+     :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
 ;; TODO(janherich) we have this handler here only because of the tests, refactor/improve tests ASAP
 (handlers/register-handler-fx
@@ -103,13 +104,13 @@
   (fn [{{:accounts/keys [accounts] :networks/keys [networks] :as db} :db} [_ id]]
     (let [current-account (get accounts id)
           new-account (assoc current-account :networks networks)]
-      {:db           (assoc-in db [:accounts/accounts id] new-account)
-       :data-store/save-account new-account})))
+      {:db                 (assoc-in db [:accounts/accounts id] new-account)
+       :data-store/base-tx [(accounts-store/save-account-tx new-account)]})))
 
 (defn update-settings [settings {{:keys [account/account] :as db} :db :as cofx}]
   (let [new-account (assoc account :settings settings)]
-    {:db                      (assoc db :account/account new-account)
-     :data-store/save-account new-account}))
+    {:db                 (assoc db :account/account new-account)
+     :data-store/base-tx [(accounts-store/save-account-tx new-account)]}))
 
 (handlers/register-handler-fx
   :send-account-update-if-needed

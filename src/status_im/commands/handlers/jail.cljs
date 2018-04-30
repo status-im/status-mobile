@@ -7,6 +7,7 @@
             [status-im.commands.utils :refer [reg-handler]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
+            [status-im.data-store.local-storage :as local-storage-store]
             [taoensso.timbre :as log]))
 
 (defn command-handler!
@@ -105,5 +106,5 @@
   :set-local-storage
   [trim-v]
   (fn [_ [{:keys [data chat-id]}]]
-    {:data-store/set-local-storage-data {:chat-id chat-id
-                                         :data    data}}))
+    {:data-store/tx [(local-storage-store/set-local-storage-data-tx {:chat-id chat-id
+                                                                     :data    data})]}))
