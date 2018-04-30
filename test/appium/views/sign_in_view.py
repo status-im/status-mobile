@@ -97,11 +97,11 @@ class SignInView(BaseView):
         self.name_input = NameInput(self.driver)
         self.do_not_share = DonNotShare(self.driver)
 
-    def create_user(self):
+    def create_user(self, password: str = 'qwerty1234'):
         self.create_account_button.click()
-        self.password_input.set_value('qwerty1234')
+        self.password_input.set_value(password)
         self.next_button.click()
-        self.confirm_password_input.set_value('qwerty1234')
+        self.confirm_password_input.set_value(password)
         self.next_button.click()
         self.name_input.wait_for_element(45)
         self.name_input.set_value('user_%s' % get_current_time())

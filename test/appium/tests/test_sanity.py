@@ -117,13 +117,8 @@ class TestSanity(SingleDeviceTestCase):
     def test_password_logcat(self):
         password = 'qwerty1234'
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_account_button.click()
-        sign_in_view.password_input.send_keys(password)
-        sign_in_view.next_button.click()
-        sign_in_view.confirm_password_input.send_keys(password)
-        sign_in_view.next_button.click()
-        sign_in_view.find_full_text(
-            "Creating your account on the blockchain. We can't touch it, no one can, except for you!")
+        sign_in_view.create_user(password=password)
+        sign_in_view.home_button.wait_for_visibility_of_element()
         if password in str(sign_in_view.logcat):
             pytest.fail('Password in logcat!!!', pytrace=False)
 

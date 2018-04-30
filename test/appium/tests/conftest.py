@@ -33,11 +33,11 @@ latest_nightly_apk['url'] = storage + latest_nightly_apk['name']
 def pytest_addoption(parser):
     parser.addoption("--build",
                      action="store",
-                     default='build_' + latest_nightly_apk['name'],
+                     default=datetime.now().strftime('%Y-%m-%d-%H-%M'),  # 'build_' + latest_nightly_apk['name'],
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
-                     default=latest_nightly_apk['url'],
+                     default=None,
                      help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',

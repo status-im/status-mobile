@@ -46,11 +46,15 @@ def verify_balance_is_updated(initial_balance, recipient_address, wait_time=240)
             return
 
 
+def faucet(address):
+    return requests.request('GET', 'http://51.15.45.169:3001/donate/0x%s' % address).json()
+
+
 def get_donate(address, wait_time=300):
     initial_balance = get_balance(address)
     counter = 0
     if initial_balance < 1000000000000000000:
-        response = requests.request('GET', 'http://51.15.45.169:3001/donate/0x%s' % address).json()
+        response = faucet(address)
         while True:
             if counter >= wait_time:
                 pytest.fail("Donation was not received during %s seconds!" % wait_time)

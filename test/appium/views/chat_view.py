@@ -166,7 +166,7 @@ class ChatView(BaseView):
 
     def wait_for_message_in_one_to_one_chat(self, expected_message: str, errors: list):
         try:
-            self.find_full_text(expected_message, wait_time=20)
+            self.wait_for_element_starts_with_text(expected_message, wait_time=20)
         except TimeoutException:
             errors.append('Message with text "%s" was not received' % expected_message)
 
@@ -189,7 +189,7 @@ class ChatView(BaseView):
         received_messages = list()
         while repeat <= wait_time:
             for message in expected_messages:
-                if self.element_by_text(message, 'text').is_element_present(1):
+                if self.element_starts_with_text(message, 'text').is_element_present(1):
                     received_messages.append(message)
             if not set(expected_messages) - set(received_messages):
                 break

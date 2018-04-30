@@ -240,6 +240,18 @@ class BaseView(object):
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element
 
+    def element_starts_with_text(self, text, element_type='base'):
+        info("Looking for full text: '%s'" % text)
+        element = self.element_types[element_type](self.driver)
+        element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
+        return element
+
+    def wait_for_element_starts_with_text(self, text, wait_time=60):
+        info("Looking for full text: '%s'" % text)
+        element = BaseElement(self.driver)
+        element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
+        return element.wait_for_element(wait_time)
+
     def get_home_view(self):
         from views.home_view import HomeView
         return HomeView(self.driver)
