@@ -41,3 +41,5 @@
 
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.002")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
+
+(def group-chats-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED)))

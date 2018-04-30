@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.utils.config :as config]
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.colors :as colors]
@@ -21,13 +22,14 @@
      :icon-opts           {:color colors/blue}
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
-   ;; TODO temporary removal before everything is fixed in group chats
-   [action-button/action-button
-    {:label               (i18n/label :t/start-group-chat)
-     :accessibility-label :start-group-chat-button
-     :icon                :icons/contacts
-     :icon-opts           {:color colors/blue}
-     :on-press            #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}]
+   ;; Hide behind flag (false by default), till everything is fixed in group chats
+   (when config/group-chats-enabled?
+     [action-button/action-button
+      {:label               (i18n/label :t/start-group-chat)
+       :accessibility-label :start-group-chat-button
+       :icon                :icons/contacts
+       :icon-opts           {:color colors/blue}
+       :on-press            #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}])
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)
