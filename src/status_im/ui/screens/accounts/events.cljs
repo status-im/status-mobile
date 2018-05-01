@@ -126,14 +126,14 @@
   :account-set-name
   (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
     (handlers-macro/merge-fx cofx
-                       {:db       (assoc-in db [:accounts/create :show-welcome?] true)
+                       {:db       db
                         :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
                        (accounts.utils/account-update {:name (:name create)}))))
 
 (handlers/register-handler-fx
   :account-finalized
   (fn [{db :db} _]
-    {:db db
+    {:db (assoc db :accounts/create {:show-welcome? true})
      :dispatch-n [[:navigate-to-clean :home]
                   [:request-notifications]]}))
 
