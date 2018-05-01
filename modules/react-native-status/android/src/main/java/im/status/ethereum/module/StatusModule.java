@@ -122,11 +122,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         try {
             logFile.setReadable(true);
             File parent = logFile.getParentFile();
+            if (!parent.canWrite()) {
+                return null;
+            }
             if (!parent.exists()) {
                 parent.mkdirs();
             }
             logFile.createNewFile();
-            logFile.setReadable(true);
+            logFile.setWritable(true);
+            Log.d(TAG, "Can write " + logFile.canWrite());
             Uri gethLogUri = Uri.fromFile(logFile);
             try {
                 Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
@@ -136,7 +140,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
 
             String gethLogFilePath = logFile.getAbsolutePath();
-            Log.d("ExtDirLog", gethLogFilePath);
+            Log.d(TAG, gethLogFilePath);
 
             return gethLogFilePath;
         } catch (Exception e) {
@@ -215,7 +219,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             String gethLogFilePath = prepareLogsFile();
             boolean logsEnabled = (gethLogFilePath != null) && !TextUtils.isEmpty(this.logLevel);
             String dataDir = root + customConfig.get("DataDir");
-            jsonConfig.put("LogEnabled", logsEnabled);
+            jsonConfig.put("LogEnabled", (gethLogFilePath != null && logsEnabled));
             jsonConfig.put("LogFile", gethLogFilePath);
             jsonConfig.put("LogLevel", TextUtils.isEmpty(this.logLevel) ? "ERROR" : this.logLevel.toUpperCase());
             jsonConfig.put("DataDir", dataDir);
