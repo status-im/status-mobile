@@ -147,8 +147,9 @@
                                  :on-change-text      #(reset! content %)
                                  :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
-         [button/button {:disabled? (string/blank? @content)
-                         :on-press  #(re-frame/dispatch [:wallet/fill-request-from-url @content])}
+         [button/button {:disabled?    (string/blank? @content)
+                         :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content])
+                         :fit-to-text? false}
           (i18n/label :t/done)]]]])))
 
 (defn recipient-qr-code []
