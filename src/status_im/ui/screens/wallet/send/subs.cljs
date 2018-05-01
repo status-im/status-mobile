@@ -3,13 +3,6 @@
             [status-im.utils.money :as money]
             [status-im.utils.hex :as utils.hex]))
 
-(re-frame/reg-sub :wallet.sent/close-transaction-screen-event
-  :<- [:get :navigation-stack]
-  (fn [navigation-stack]
-    (case (second navigation-stack)
-      :wallet-send-transaction [:navigate-to-clean :wallet]
-      [:navigate-back])))
-
 (re-frame/reg-sub ::send-transaction
   :<- [:wallet]
   (fn [wallet]

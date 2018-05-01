@@ -10,7 +10,8 @@
 
 (spec/def :wallet/send (spec/keys :req-un [:wallet.send/recipient]))
 
-(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction :wallet/request-transaction]))
+(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction :wallet/request-transaction
+                                             :wallet/transactions-queue]))
 
 ;; Placeholder namespace for wallet specs, which are a WIP depending on data
 ;; model we decide on for balances, prices, etc.
