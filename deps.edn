@@ -15,7 +15,7 @@
          {;; Figwheel ClojureScript REPL
           com.cemerick/piggieback {:mvn/version "0.2.2"
                                    :exclusions  [com.google.javascript/closure-compiler]}
-          figwheel-sidecar        {:mvn/version "0.5.14"
+          figwheel-sidecar        {:mvn/version "0.5.16-SNAPSHOT"
                                    :exclusions  [com.google.javascript/closure-compiler]}
           re-frisk-remote         {:mvn/version "0.5.3"}
           re-frisk-sidecar        {:mvn/version "0.5.4"}

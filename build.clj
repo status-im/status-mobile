@@ -12,6 +12,7 @@
      :compiler         {:output-to     "target/ios/app.js"
                         :main          "env.ios.main"
                         :output-dir    "target/ios"
+                        :npm-deps false
                         :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
@@ -19,6 +20,7 @@
      :compiler         {:output-to     "target/android/app.js"
                         :main          "env.android.main"
                         :output-dir    "target/android"
+                        :npm-deps false
                         :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}}
 
