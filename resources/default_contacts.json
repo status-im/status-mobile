@@ -197,5 +197,12 @@
         "description": "Request test assets and test basic web3 functionality.",
         "dapp-url": {"en" : "https://status-im.github.io/dapp/"},
         "dapp?": true
+    },
+    "wand-x": {
+        "name" :       {"en" : "WandX"},
+        "description": "Decentralized trade in ERC20 Token Baskets",
+        "dapp-url":    {"en" : "https://exchange.wandx.co"},
+        "dapp?":       true,
+        "photo-path":  "contacts://wand-x"
     }
 }
