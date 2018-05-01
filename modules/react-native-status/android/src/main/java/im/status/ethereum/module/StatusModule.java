@@ -1,6 +1,8 @@
 package im.status.ethereum.module;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.*;
 import android.view.WindowManager;
@@ -727,5 +729,24 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void appStateChange(final String type) {
         Log.d(TAG, "AppStateChange: " + type);
         Statusgo.AppStateChange(type);
+    }
+
+    private static String uniqueID = null;
+    private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+
+    @ReactMethod
+    public void getDeviceUUID(final Callback callback) {
+        if (uniqueID == null) {
+            SharedPreferences sharedPrefs = this.getReactApplicationContext().getSharedPreferences(
+                    PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+            if (uniqueID == null) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.commit();
+            }
+        }
+        callback.invoke(uniqueID);
     }
 }

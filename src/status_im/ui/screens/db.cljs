@@ -132,6 +132,10 @@
 
 (spec/def ::message-envelopes (spec/nilable map?))
 
+;;;;UUID
+
+(spec/def ::device-UUID (spec/nilable string?))
+
 (spec/def ::db (allowed-keys
                  :opt
                  [:contacts/contacts
@@ -235,4 +239,5 @@
                   :wallet/wallet-selected-asset
                   :prices/prices
                   :prices/prices-loading?
-                  :notifications/notifications]))
+                  :notifications/notifications
+                  ::device-UUID]))

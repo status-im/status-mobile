@@ -100,3 +100,6 @@
 
 (defn app-state-change [state]
   (module-interface/-app-state-change rns-module state))
+
+(defn get-device-UUID [callback]
+  (module-interface/-get-device-UUID rns-module callback))

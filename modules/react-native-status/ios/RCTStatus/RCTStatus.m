@@ -426,6 +426,15 @@ RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
     AppStateChange((char *) [type UTF8String]);
 }
 
+RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"getDeviceUUID() method called");
+#endif
+    NSString* Identifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    
+    callback(@[Identifier]);
+}
+
 + (void)signalEvent:(const char *) signal
 {
     if(!signal){

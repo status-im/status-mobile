@@ -12,7 +12,8 @@
             [status-im.utils.async :as async-util :refer [timeout]]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.native-module.module :as module]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [clojure.string :as string]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
@@ -243,6 +244,13 @@
 (defn app-state-change [state]
   (.appStateChange status state))
 
+(defn get-device-UUID [callback]
+  (call-module
+   #(.getDeviceUUID
+     status
+     (fn [UUID]
+       (callback (string/upper-case UUID))))))
+
 (defrecord ReactNativeStatus []
   module/IReactNativeStatus
   ;; status-go calls
@@ -293,4 +301,6 @@
   (-connection-change [this data]
    (connection-change data))
   (-app-state-change [this state]
-   (app-state-change state)))
+   (app-state-change state))
+  (-get-device-UUID [this callback]
+   (get-device-UUID callback)))

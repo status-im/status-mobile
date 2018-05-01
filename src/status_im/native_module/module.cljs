@@ -23,5 +23,6 @@
   (-add-peer [this enode callback])
   (-close-application [this])
   (-connection-change [this data])
-  (-app-state-change [this state]))
+  (-app-state-change [this state])
+  (-get-device-UUID [this callback]))
 

@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.instabug :as instabug]
             [status-im.utils.mixpanel :as mixpanel]
             [cljs.core.async :as async]
@@ -92,7 +91,6 @@
    (fn track-handler
      [context]
      (let [new-db             (get-coeffect context :db)
-           current-account-id (get-in new-db [:account/account :address])
            [event-name]       (get-coeffect context :event)]
        (when (or
               (mixpanel/force-tracking? event-name)
@@ -100,7 +98,7 @@
          (let [event    (get-coeffect context :event)
                offline? (or (= :offline (:network-status new-db))
                             (= :offline (:sync-state new-db)))
-               anon-id  (ethereum/sha3 current-account-id)]
+               anon-id  (:device-UUID new-db)]
            (doseq [{:keys [label properties]}
                    (mixpanel/matching-events new-db event mixpanel/event-by-trigger)]
              (mixpanel/track anon-id label properties offline?))

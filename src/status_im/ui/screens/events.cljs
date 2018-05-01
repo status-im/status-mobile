@@ -181,6 +181,11 @@
         (i18n/label :testfairy-message)))))
 
 (re-frame/reg-fx
+ ::init-device-UUID
+ (fn []
+   (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
+
+(re-frame/reg-fx
   ::get-fcm-token-fx
   (fn [_]
     (notifications/get-fcm-token)))
@@ -224,14 +229,15 @@
     {::got-encryption-key-fx opts}))
 
 (handlers/register-handler-fx
-  :initialize-app
-  (fn [_ [_ encryption-key]]
-    {::testfairy-alert            nil
-     :dispatch-n                  [[:initialize-db encryption-key]
-                                   [:load-accounts]
-                                   [:initialize-views]
-                                   [:listen-to-network-status]
-                                   [:initialize-geth]]}))
+ :initialize-app
+ (fn [_ [_ encryption-key]]
+   {::init-device-UUID nil
+    ::testfairy-alert  nil
+    :dispatch-n        [[:initialize-db encryption-key]
+                        [:load-accounts]
+                        [:initialize-views]
+                        [:listen-to-network-status]
+                        [:initialize-geth]]}))
 
 (handlers/register-handler-fx
   :logout
