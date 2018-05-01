@@ -95,13 +95,14 @@
                                                     (fn [encryption-key]
                                                       (re-frame/dispatch [:logout encryption-key])))))
 
-(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
-     [profile.components/settings-item {:label-kw :t/main-currency
-                                        :value    (i18n/label :usd-currency)
-                                        :active?  false}]
+     [profile.components/settings-item {:label-kw            :t/main-currency
+                                        :value               (:code currency)
+                                        :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
+                                        :accessibility-label :currency-button}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
@@ -165,7 +166,8 @@
 (defview my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
-            changed-account [:get :my-profile/profile]]
+            changed-account [:get :my-profile/profile]
+            currency        [:wallet/currency]]
     (let [shown-account (merge current-account changed-account)]
       [react/view profile.components.styles/profile
        (if editing?
@@ -177,5 +179,5 @@
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account]]
+         [my-profile-settings current-account currency]]
         [advanced shown-account]]])))

@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.wallet.subs
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.money :as money]
+            [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.money :as money]))
 
 (re-frame/reg-sub :wallet
                   (fn [db]
@@ -50,9 +51,14 @@
 (re-frame/reg-sub :portfolio-value
                   :<- [:balance]
                   :<- [:prices]
-                  (fn [[balance prices] [_ currency]]
+                  :<- [:wallet/currency]
+                  (fn [[balance prices currency] [_ currency-code]]
                     (if (and balance prices)
-                      (let [balance-total-value (get-balance-total-value balance prices currency)]
+                      (let [balance-total-value
+                            (get-balance-total-value balance
+                                                     prices
+                                                     (or currency-code
+                                                         (-> currency :code keyword)))]
                         (-> balance-total-value
                             (money/with-precision 2)
                             str))
@@ -97,3 +103,8 @@
                   :<- [:wallet/visible-assets]
                   (fn [[balance visible-assets]]
                     (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
+
+(re-frame/reg-sub :wallet/currency
+                  :<- [:wallet.settings/currency]
+                  (fn [currency-id]
+                    (get constants/currencies currency-id)))

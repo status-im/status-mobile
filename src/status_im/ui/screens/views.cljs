@@ -41,6 +41,7 @@
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
+            [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
@@ -153,6 +154,7 @@
                         :network-settings network-settings
                         :network-details network-details
                         :offline-messaging-settings offline-messaging-settings
+                        :currency-settings currency-settings
                         :recent-recipients recent-recipients
                         :recipient-qr-code recipient-qr-code
                         :contact-code contact-code

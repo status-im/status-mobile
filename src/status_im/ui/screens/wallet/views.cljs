@@ -22,16 +22,16 @@
       :options   [{:label  (i18n/label :t/wallet-manage-assets)
                    :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
 
-(defn- total-section [usd-value]
+(defn- total-section [value currency]
   [react/view styles/section
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style               styles/total-balance-value
                   :accessibility-label :total-amount-value-text}
-      usd-value]
+      value]
      [react/text {:style               styles/total-balance-currency
                   :accessibility-label :total-amount-currency-text}
-      (i18n/label :t/usd-currency)]]
+      (:code currency)]]
     [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
 
 (def actions
@@ -48,27 +48,28 @@
     :icon                :icons/transaction-history
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
-(defn- render-asset [{:keys [symbol icon decimals amount]}]
-  (let [asset-value (re-frame/subscribe [:asset-value symbol :USD])]
-    [react/view {:style styles/asset-item-container}
-     [list/item
-      [list/item-image icon]
-      [react/view {:style styles/asset-item-value-container}
-       [react/text {:style               styles/asset-item-value
-                    :number-of-lines     1
-                    :ellipsize-mode      :tail
-                    :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
-        (wallet.utils/format-amount amount decimals)]
-       [react/text {:style           styles/asset-item-currency
+(defn- render-asset [currency]
+  (fn [{:keys [symbol icon decimals amount]}]
+   (let [asset-value (re-frame/subscribe [:asset-value symbol (-> currency :code keyword)])]
+     [react/view {:style styles/asset-item-container}
+      [list/item
+       [list/item-image icon]
+       [react/view {:style styles/asset-item-value-container}
+        [react/text {:style               styles/asset-item-value
+                     :number-of-lines     1
+                     :ellipsize-mode      :tail
+                     :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
+         (wallet.utils/format-amount amount decimals)]
+        [react/text {:style           styles/asset-item-currency
+                     :uppercase?      true
+                     :number-of-lines 1}
+         (clojure.core/name symbol)]]
+       [react/text {:style           styles/asset-item-price
                     :uppercase?      true
                     :number-of-lines 1}
-        (clojure.core/name symbol)]]
-      [react/text {:style           styles/asset-item-price
-                   :uppercase?      true
-                   :number-of-lines 1}
-       (if @asset-value (str "$" @asset-value) "...")]]]))
+        (if @asset-value (str (:symbol currency) @asset-value) "...")]]])))
 
-(defn- asset-section [assets]
+(defn- asset-section [assets currency]
   [react/view styles/asset-section
    [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
    [list/flat-list
@@ -76,11 +77,12 @@
      :scroll-enabled     false
      :key-fn             (comp str :symbol)
      :data               assets
-     :render-fn          render-asset}]])
+     :render-fn          (render-asset currency)}]])
 
 (views/defview wallet []
   (views/letsubs [assets          [:wallet/visible-assets-with-amount]
-                  portfolio-value [:portfolio-value :USD]]
+                  currency        [:wallet/currency]
+                  portfolio-value [:portfolio-value]]
     [react/view styles/main-section
      [toolbar-view]
      [react/scroll-view {:refresh-control
@@ -89,7 +91,7 @@
                                                   :tint-color :white
                                                   :refreshing false}])}
       [react/view {:style styles/scroll-top}] ;; Hack to allow different colors for top / bottom scroll view]
-      [total-section portfolio-value]
+      [total-section portfolio-value currency]
       [list/action-list actions
        {:container-style styles/action-section}]
-      [asset-section assets]]]))
+      [asset-section assets currency]]]))

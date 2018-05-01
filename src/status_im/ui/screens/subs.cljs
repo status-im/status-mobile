@@ -13,6 +13,7 @@
             status-im.ui.screens.wallet.transactions.subs
             status-im.ui.screens.network-settings.subs
             status-im.ui.screens.offline-messaging-settings.subs
+            status-im.ui.screens.currency-settings.subs
             status-im.ui.screens.browser.subs
             status-im.bots.subs
             status-im.ui.screens.add-new.new-chat.subs

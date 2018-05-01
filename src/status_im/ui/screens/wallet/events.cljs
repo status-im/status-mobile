@@ -10,7 +10,8 @@
             [status-im.utils.transactions :as transactions]
             [taoensso.timbre :as log]
             status-im.ui.screens.wallet.request.events
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.constants :as constants]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -100,11 +101,12 @@
 ;; Handlers
 (handlers/register-handler-fx
  :update-wallet
- (fn [{{:keys [web3 account/account network network-status] :as db} :db} _]
-   (let [chain    (ethereum/network->chain-keyword network)
-         mainnet? (= :mainnet chain)
-         address  (:address account)
-         symbols  (get-in account [:settings :wallet :visible-tokens chain])]
+ (fn [{{:keys [web3 account/account network network-status] {:keys [address settings]} :account/account :as db} :db} _]
+   (let [chain       (ethereum/network->chain-keyword network)
+         mainnet?    (= :mainnet chain)
+         symbols     (get-in settings [:wallet :visible-tokens chain])
+         currency-id (or (get-in settings [:wallet :currency]) :usd)
+         currency    (get constants/currencies currency-id)]
      (when (not= network-status :offline)
        {:get-balance {:web3          web3
                       :account-id    address
@@ -117,7 +119,7 @@
                              :success-event :update-token-balance-success
                              :error-event   :update-token-balance-fail}
         :get-prices  {:from          (if mainnet? (conj symbols "ETH") ["ETH"])
-                      :to            ["USD"]
+                      :to            [(:code currency)]
                       :success-event :update-prices-success
                       :error-event   :update-prices-fail}
         :db          (-> db
