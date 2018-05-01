@@ -10,7 +10,7 @@
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
-                 [com.cognitect/transit-cljs "0.8.243"]]
+                 [com.cognitect/transit-cljs "0.8.248"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
@@ -59,7 +59,7 @@
                                         [hawk "0.2.11"]]
                          :source-paths ["src" "env/dev" "react-native/src" "components/src"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
-                        :plugins      [[lein-doo "0.1.7"]]
+                        :plugins      [[lein-doo "0.1.9"]]
                         :cljsbuild    {:builds
                                        [{:id           "test"
                                          :source-paths ["components/src" "src" "test/cljs"]
