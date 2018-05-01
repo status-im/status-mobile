@@ -29,7 +29,7 @@
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
-            [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal]]
+            [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal sign-message-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction send-transaction-request]]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
@@ -182,6 +182,7 @@
                                :wallet-settings-assets wallet-settings/manage-assets
                                :wallet-send-transaction-modal send-transaction-modal
                                :wallet-transaction-sent-modal transaction-sent-modal
+                               :wallet-sign-message-modal sign-message-modal
                                :wallet-transaction-fee wallet.send/transaction-fee
                                [react/view [react/text (str "Unknown modal view: " modal-view)]])]
                [react/main-screen-modal-view modal-view

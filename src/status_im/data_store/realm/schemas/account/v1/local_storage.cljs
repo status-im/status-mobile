@@ -2,6 +2,6 @@
 
 (def schema {:name       :local-storage
              :primaryKey :chat-id
-             :properties {:chat-id "string"
-                          :data    {:type    "string"
+             :properties {:chat-id :string
+                          :data    {:type    :string
                                     :default "{}"}}})

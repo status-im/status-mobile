@@ -9,6 +9,7 @@
             [taoensso.timbre :as log]
             [status-im.transport.inbox :as inbox]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.db :as transport.db]))
 
 (defn init-whisper
@@ -24,7 +25,7 @@
                                                                         :sym-key    sym-key
                                                                         :sym-key-id sym-key-id}]))
           topic (transport.utils/get-topic constants/contact-discovery)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:shh/add-discovery-filter {:web3           web3
                                                      :private-key-id public-key
                                                      :topic topic}

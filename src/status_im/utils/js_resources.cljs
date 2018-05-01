@@ -37,8 +37,9 @@
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "node_modules/web3/dist/web3.min.js")
                "}"))
-(defn web3-init [provider-address]
+(defn web3-init [provider-address current-account-address]
   (str "var providerAddress = \"" provider-address "\";"
+       "var currentAccountAddress = \"" current-account-address "\";"
        (slurp "resources/js/web3_init.js")))
 
 (defn local-storage-data [data]

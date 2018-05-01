@@ -1,10 +1,10 @@
 (ns status-im.chat.styles.message.message
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.styles :as styles]
+            [status-im.chat.styles.photos :as photos]
             [status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]))
 
-(def photo-size 36)
 
 (defstyle style-message-text
   {:font-size 15
@@ -20,12 +20,10 @@
    :height      16})
 
 (defn message-padding-top
-  [{:keys [first-in-date? same-author? same-direction?]}]
-  (cond
-    first-in-date?  20
-    same-author?    8
-    same-direction? 16
-    :else           24))
+  [{:keys [first-in-group?]}]
+  (if first-in-group?
+    8
+    4))
 
 (def message-empty-spacing
   {:height 16})
@@ -50,6 +48,19 @@
             :align-self     align
             :align-items    align})))
 
+(defn message-timestamp [justify-timestamp?]
+  (merge {:color      colors/gray
+          :font-size  10
+          :align-self :flex-end
+          :opacity    0.5}
+         (when justify-timestamp? {:position :absolute
+                                   :bottom   10
+                                   :right    12})))
+
+(def message-timestamp-placeholder
+  (assoc (message-timestamp false)
+         :color styles/color-white))
+
 (def selected-message
   {:margin-top  18
    :margin-left 40
@@ -59,6 +70,9 @@
 (defn group-message-wrapper [message]
   (merge {:flex-direction :column}
          (last-message-padding message)))
+
+(defn timestamp-content-wrapper [{:keys [outgoing]}]
+  {:flex-direction (if outgoing :row-reverse :row)})
 
 (defn group-message-view
   [outgoing]
@@ -71,16 +85,11 @@
 
 (def delivery-status
   {:align-self    :flex-end
-   :padding-right 56})
+   :padding-right 22})
 
 (def message-author
-  {:width      photo-size
-   :align-self :flex-start})
-
-(def photo
-  {:border-radius (/ photo-size 2)
-   :width         photo-size
-   :height        photo-size})
+  {:width      photos/photo-size
+   :align-self :flex-end})
 
 (def delivery-view
   {:flex-direction :row
@@ -93,16 +102,46 @@
    :android    {:font-size 13}
    :ios        {:font-size 14}})
 
+(def not-sent-view
+  (assoc delivery-view :opacity       1
+                       :margin-bottom 2
+                       :padding-top   2))
+
+(def not-sent-text
+  (assoc delivery-text  :color       styles/color-red
+                        :opacity     1
+                        :font-size   12
+                        :text-align  :right
+                        :padding-top 4))
+
+(def not-sent-icon
+  {:padding-top  3
+   :padding-left 3})
+
+(def message-activity-indicator
+  {:padding-top 4})
+
 (defn text-message
   [{:keys [outgoing group-chat incoming-group]}]
   (merge style-message-text
          {:margin-top (if incoming-group 4 0)}))
 
+(defn emoji-message
+  [{:keys [incoming-group]}]
+  {:font-size 40
+   :color     styles/text1-color
+   :android   {:line-height 45}
+   :ios       {:line-height 46}
+   :margin-top (if incoming-group 4 0)})
+
 (defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
-  (merge {:padding         12
-          :background-color styles/color-white
-          :border-radius   8}
+  (merge {:padding-top        6
+          :padding-horizontal 12
+          :padding-bottom     8
+          :border-radius      8}
+         (when-not (= content-type constants/content-type-emoji)
+          {:background-color styles/color-white})
          (when (= content-type constants/content-type-command)
            {:padding-top    10
             :padding-bottom 14})))

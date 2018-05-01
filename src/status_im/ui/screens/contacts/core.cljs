@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.contacts.core
-  (:require [re-frame.core :as re-frame] [status-im.utils.handlers :as handlers]
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.chat.models :as chat.models]
             [status-im.constants :as constants]))
@@ -19,10 +20,10 @@
           chat-props    {:name         name
                          :chat-id      public-key
                          :contact-info (prn-str contact-props)}]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
                           :data-store/save-contact contact-props}
-                         (chat.models/add-chat public-key chat-props)))))
+                         (chat.models/upsert-chat chat-props)))))
 
 (defn receive-contact-request-confirmation
   [public-key {:keys [name profile-image address fcm-token]}
@@ -36,7 +37,7 @@
                          :fcm-token        fcm-token}
           chat-props    {:name    name
                          :chat-id public-key}]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
                           :data-store/save-contact contact-props}
                          (chat.models/upsert-chat chat-props)))))
@@ -57,8 +58,8 @@
                          :photo-path       profile-image
                          :last-updated     now}]
             (if (chats public-key)
-              (handlers/merge-fx cofx
+              (handlers-macro/merge-fx cofx
                                  (update-contact contact)
-                                 (chat.models/update-chat {:chat-id chat-id
+                                 (chat.models/upsert-chat {:chat-id chat-id
                                                            :name    name}))
               (update-contact contact cofx))))))))

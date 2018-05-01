@@ -50,6 +50,11 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                 jscEnabled = true;
             }
 
+            boolean webViewDebugEnabled = false;
+            if (BuildConfig.DEBUG_WEBVIEW == "1") {
+                webViewDebugEnabled = true;
+            }
+
             StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled, BuildConfig.LOG_LEVEL_STATUS_GO);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
@@ -69,7 +74,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ImageResizerPackage(),
                     new PickerPackage(),
                     new TestFairyPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG, callRPC),
+                    new WebViewBridgePackage(webViewDebugEnabled, callRPC),
                     new ReactNativeConfigPackage(),
                     new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN,MainApplication.this)
                             .setInvocationEvent("shake")

@@ -356,20 +356,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 doStartNode(config);
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
     public void stopNode() {
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "stopNode");
@@ -377,7 +377,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
@@ -390,7 +390,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         jail.reset();
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 String result = Statusgo.Login(address, password);
@@ -399,7 +399,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
@@ -410,7 +410,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 String res = Statusgo.CreateAccount(password);
@@ -419,7 +419,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
@@ -430,7 +430,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
                 @Override
                 public void run() {
                     String res = Statusgo.NotifyUsers(message, payloadJSON, tokensJSON);
@@ -439,7 +439,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 }
             };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
@@ -450,7 +450,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
                 @Override
                 public void run() {
                     String res = Statusgo.AddPeer(enode);
@@ -459,7 +459,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 }
             };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
 
@@ -470,7 +470,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 String res = Statusgo.RecoverAccount(password, passphrase);
@@ -479,7 +479,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     private String createIdentifier() {
@@ -487,40 +487,40 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void completeTransactions(final String hashes, final String password, final Callback callback) {
-        Log.d(TAG, "completeTransactions");
+    public void approveSignRequests(final String hashes, final String password, final Callback callback) {
+        Log.d(TAG, "approveSignRequests");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.CompleteTransactions(hashes, password);
+                String res = Statusgo.ApproveSignRequests(hashes, password);
                 callback.invoke(res);
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
 
     @ReactMethod
-    public void discardTransaction(final String id) {
-        Log.d(TAG, "discardTransaction");
+    public void discardSignRequest(final String id) {
+        Log.d(TAG, "discardSignRequest");
         if (!checkAvailability()) {
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
-                Statusgo.DiscardTransaction(id);
+                Statusgo.DiscardSignRequest(id);
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     // Jail
@@ -533,7 +533,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 jail.initJail(js);
@@ -542,7 +542,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
@@ -684,7 +684,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void sendWeb3Request(final String payload, final Callback callback) {
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 String res = Statusgo.CallRPC(payload);
@@ -692,7 +692,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void sendWeb3PrivateRequest(final String payload, final Callback callback) {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.CallPrivateRPC(payload);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod

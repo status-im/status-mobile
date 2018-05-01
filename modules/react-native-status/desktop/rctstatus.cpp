@@ -84,7 +84,7 @@ void RCTStatus::parseJail(QString chatId, QString js, double callbackId) {
 void RCTStatus::callJail(QString chatId, QString path, QString params, double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::callJail with param chatId: " << chatId << " path: " << path << " params: " << params <<  " and callback id: " << callbackId;
- 
+
     const char* result = Call(chatId.toUtf8().data(), path.toUtf8().data(), params.toUtf8().data());
     qDebug() << "RCTStatus::callJail callJail result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
@@ -110,9 +110,8 @@ void RCTStatus::startNode(QString configString) {
     QString dataDir = configJSON["DataDir"].toString();
 
     QString networkDir = "./" + dataDir;
-    int dev = 0;
 
-    char *configChars = GenerateConfig(networkDir.toUtf8().data(), networkId, dev);
+    char *configChars = GenerateConfig(networkDir.toUtf8().data(), networkId);
     qDebug() << "RCTStatus::startNode GenerateConfig result: " << configChars;
 
     jsonDoc = QJsonDocument::fromJson(QString(configChars).toUtf8(), &jsonError);
@@ -123,7 +122,7 @@ void RCTStatus::startNode(QString configString) {
     qDebug() << " RCTStatus::startNode GenerateConfig configString: " << jsonDoc.toVariant().toMap();
     QVariantMap generatedConfig = jsonDoc.toVariant().toMap();
     generatedConfig["KeyStoreDir"] = newKeystoreUrl;
-    generatedConfig["LogEnabled"] = "1";
+    generatedConfig["LogEnabled"] = true;
     generatedConfig["LogFile"] = networkDir + "/geth.log";
     //generatedConfig["LogLevel"] = "DEBUG";
 
@@ -162,11 +161,11 @@ void RCTStatus::createAccount(QString password, double callbackId) {
 }
 
 
-void RCTStatus::notify(QString token, double callbackId) {
+void RCTStatus::notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::notify with param callbackId: " << callbackId;
-    const char* result = Notify(token.toUtf8().data());
-    qDebug() << "RCTStatus::notify Notify result: " << result;
+    qDebug() << "call of RCTStatus::notifyUsers with param callbackId: " << callbackId;
+    const char* result = NotifyUsers(token.toUtf8().data(), payloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
+    qDebug() << "RCTStatus::notifyUsers Notify result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
@@ -198,17 +197,17 @@ void RCTStatus::login(QString address, QString password, double callbackId) {
 }
 
 
-void RCTStatus::completeTransactions(QString hashes, QString password, double callbackId) {
+void RCTStatus::approveSignRequests(QString hashes, QString password, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::completeTransactions with param callbackId: " << callbackId;
-    const char* result = CompleteTransactions(hashes.toUtf8().data(), password.toUtf8().data());
-    qDebug() << "RCTStatus::completeTransactions CompleteTransactions result: " << result;
+    qDebug() << "call of RCTStatus::approveSignRequests with param callbackId: " << callbackId;
+    const char* result = ApproveSignRequests(hashes.toUtf8().data(), password.toUtf8().data());
+    qDebug() << "RCTStatus::approveSignRequests CompleteTransactions result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
-void RCTStatus::discardTransaction(QString id) {
-    qDebug() << "call of RCTStatus::discardTransaction with id: " << id;
-    DiscardTransaction(id.toUtf8().data());
+void RCTStatus::discardSignRequest(QString id) {
+    qDebug() << "call of RCTStatus::discardSignRequest with id: " << id;
+    DiscardSignRequest(id.toUtf8().data());
 }
 
 void RCTStatus::setAdjustResize() {
@@ -237,6 +236,14 @@ void RCTStatus::sendWeb3Request(QString payload, double callbackId) {
     qDebug() << "call of RCTStatus::sendWeb3Request with param callbackId: " << callbackId;
     const char* result = CallRPC(payload.toUtf8().data());
     qDebug() << "RCTStatus::sendWeb3Request CallRPC result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+}
+
+void RCTStatus::sendWeb3PrivateRequest(QString payload, double callbackId) {
+    Q_D(RCTStatus);
+    qDebug() << "call of RCTStatus::sendWeb3PrivateRequest with param callbackId: " << callbackId;
+    const char* result = CallPrivateRPC(payload.toUtf8().data());
+    qDebug() << "RCTStatus::sendWeb3PrivateRequest CallPrivateRPC result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 

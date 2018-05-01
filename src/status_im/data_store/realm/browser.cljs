@@ -7,7 +7,7 @@
   (-> @realm/account-realm
       (realm/get-all :browser)
       (realm/sorted :timestamp :desc)
-      (realm/js-object->clj)))
+      (realm/all-clj :browser)))
 
 (defn save
   [browser update?]
@@ -15,7 +15,7 @@
 
 (defn delete
   [browser-id]
-  (when-let [browser (realm/get-one-by-field @realm/account-realm :browser :browser-id browser-id)]
+  (when-let [browser (realm/single (realm/get-by-field @realm/account-realm :browser :browser-id browser-id))]
     (realm/delete @realm/account-realm browser)))
 
 (defn exists?
@@ -25,4 +25,5 @@
 (defn get-by-id
   [browser-id]
   (-> @realm/account-realm
-      (realm/get-one-by-field-clj :browser :browser-id browser-id)))
+      (realm/get-by-field :browser :browser-id browser-id)
+      (realm/single-clj :browser)))

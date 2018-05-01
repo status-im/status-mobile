@@ -9,7 +9,8 @@
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.mixpanel-events :as mixpanel-events]))
 
 (def base-url "http://api.mixpanel.com/")
 (def base-track-url (str base-url "track/"))
@@ -61,8 +62,8 @@
                     (recur (conj accumulator event))
                     accumulator))]
      (async/go
-       (doseq [batch (partition-all max-batch-size events)]
-         (async/<! (callback batch)))))))
+      (doseq [batch (partition-all max-batch-size events)]
+        (async/<! (callback batch)))))))
 
 (defn track
   "Track or accumulate an event"
@@ -75,20 +76,52 @@
     (when-not offline?
       (async/go (async/<! (drain-events-queue!))))))
 
+(def event-tag "events")
+
 ;; Mixpanel events definition
-(def events (reader/read-string (slurp/slurp "./src/status_im/utils/mixpanel_events.edn")))
-(def event-by-trigger (reduce-kv #(assoc %1 (:trigger %3) %3) {} events))
+(defn event->triggers
+  "Transform definitions vector into map which will be used for matching later
 
-(defn matches? [event trigger]
-  (cond (= 1 (count trigger))
-        (= (first event) (first trigger))
-        (= 2 (count trigger))
-        (and
-          (= (first event) (first trigger))
-          (= (second event) (second trigger)))
-        :else
-        (= event trigger)))
+  [{:trigger [:en1]}
+   {:trigger [:en1 :p1]}
+   {:trigger [:en2 :p1]}
+   {:trigger [:en3 :p1 :p2 :p3]}]
 
-(defn matching-events [event definitions]
-  (reduce-kv #(if (matches? event %2) (conj %1 %3) %1) [] definitions))
+   will be transformed into
 
+   {:en1 {events ({:trigger [:en1]})
+          :p1      {events ({:trigger [:en1 :p1]})}}
+    :en2 {:p1 {events ({:trigger [:en2 :p1]})}}
+    :en3 {:p1 {:p2 {:p3 {events ({:trigger [:en3 :p1 :p2 :p3]})}}}}}"
+  [events]
+  (reduce (fn [m {:keys [trigger] :as event}]
+            (update-in m (conj trigger event-tag) conj event))
+          {}
+          events))
+
+(def event-by-trigger
+  (event->triggers mixpanel-events/events))
+
+(defn matching-events [[event-name first-arg :as event] triggers]
+  (let [cnt      (count event)
+        triggers (cond->
+                  ;; first we get all events which are triggered by event name
+                  ;; (the case when :trigger contains only one element)
+                  ;; {:trigger [:only-event-name-here]}
+                  (get-in triggers [event-name event-tag])
+
+                  ;; when event contains two or more elements we are trying
+                  ;; to match by first two elements of :trigger
+                  ;; {:trigger [:event-name :one-parameter]}
+                  (>= cnt 2)
+                  (concat (get-in triggers [event-name first-arg event-tag]))
+
+                  ;; also if event contains more than one parameter (more than
+                  ;; two elements) we are trying to match it with equal :trigger
+                  ;; {:trigger [:e-name :p1 :p2 :p3]}
+                  ;; will match only with [:e-name :p1 :p2 :p3] event
+                  (> cnt 2)
+                  (concat (get-in triggers (conj event event-tag))))]
+    (filter (fn [{:keys [filter-fn]}]
+              (or (not filter-fn) (filter-fn {:event event})))
+            triggers)))

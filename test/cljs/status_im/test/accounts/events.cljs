@@ -23,7 +23,6 @@
    :status              "be the hero of your own journey"
    :network             constants/default-network
    :networks            constants/default-networks
-   :wnode               constants/default-wnode
    :public-key          "0x049b3a8c04f2c5bccda91c1f5e6434ae72957e93a31c0301b4563eda1d6ce419f63c503ebaee143115f96c1f04f232a7a22ca0454e9ee3d579ad1f870315b151d0"})
 
 (def new-account
@@ -34,7 +33,6 @@
    :status              "the future starts today, not tomorrow"
    :network             constants/default-network
    :networks            constants/default-networks
-   :wnode               constants/default-wnode
    :signing-phrase      "long loan limo"
    :public-key          "0x04f5722fba79eb36d73263417531007f43d13af76c6233573a8e3e60f667710611feba0785d751b50609bfc0b7cef35448875c5392c0a91948c95798a0ce600847"})
 

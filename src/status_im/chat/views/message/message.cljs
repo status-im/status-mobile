@@ -5,12 +5,15 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.commands.utils :as commands.utils]
             [status-im.chat.models.commands :as models.commands]
             [status-im.chat.models.message :as models.message]
             [status-im.chat.styles.message.message :as style]
             [status-im.chat.styles.message.command-pill :as pill-style]
             [status-im.chat.views.message.request-message :as request-message]
+            [status-im.chat.views.photos :as photos]
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.utils.core :as utils]
@@ -20,14 +23,13 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]
-            [status-im.chat.events.console :as console]
-            [status-im.react-native.resources :as resources]))
+            [status-im.chat.events.console :as console]))
 
 (def window-width (:width (react/get-dimensions "window")))
 
 (defview message-content-status []
   (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
-            members                                          [:current-chat-contacts]]
+            members                                          [:get-current-chat-contacts]]
     (let [{:keys [status]} (if group-id
                              {:status nil}
                              (first members))]
@@ -79,10 +81,14 @@
                       :font  :default}
           (or preview (str params))])])))
 
+(defview message-timestamp [t justify-timestamp?]
+  [react/text {:style (style/message-timestamp justify-timestamp?)} t])
+
 (defn message-view
-  [{:keys [group-chat] :as message} content]
+  [{:keys [timestamp-str] :as message} content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
-   content])
+   content
+   [message-timestamp timestamp-str justify-timestamp?]])
 
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
@@ -160,18 +166,27 @@
                                           (autolink string event-on-press)))
                                  text-seq))))
 
+; We can't use CSS as nested Text element don't accept margins nor padding
+; so we pad the invisible placeholder with some spaces to avoid having too
+; close to the text.
+(defn timestamp-with-padding [t]
+  (str "   " t))
+
 (def cached-parse-text (memoize parse-text))
 
 (defn text-message
-  [{:keys [content] :as message}]
+  [{:keys [content timestamp-str] :as message}]
   [message-view message
    (let [parsed-text (cached-parse-text content :browse-link-from-message)]
-     [react/text {:style (style/text-message message)} parsed-text])])
+     [react/text {:style (style/text-message message)}
+      parsed-text
+      [react/text {:style style/message-timestamp-placeholder} (timestamp-with-padding timestamp-str)]])
+   {:justify-timestamp? true}])
 
-(defn placeholder-message
+(defn emoji-message
   [{:keys [content] :as message}]
   [message-view message
-   [react/text {:style (style/text-message message)} content]])
+   [react/text {:style (style/emoji-message message)} content]])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
@@ -197,9 +212,9 @@
   [wrapper message
    [message-view message [message-content-command message]]])
 
-(defmethod message-content constants/content-type-placeholder
+(defmethod message-content constants/content-type-emoji
   [wrapper message]
-  [wrapper message [placeholder-message message]])
+  [wrapper message [emoji-message message]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]
@@ -242,9 +257,30 @@
                          :font  :default}
              (str "+ " (- delivery-statuses-count 3))])]]))))
 
+(defn message-activity-indicator []
+  [react/view style/message-activity-indicator
+   [react/activity-indicator {:animating true}]])
+
+(defn message-not-sent-text [chat-id message-id]
+  [react/touchable-highlight {:on-press (fn [] (if platform/ios?
+                                                 (action-sheet/show {:title   (i18n/label :message-not-sent)
+                                                                     :options [{:label  (i18n/label :resend-message)
+                                                                                :action #(re-frame/dispatch [:resend-message chat-id message-id])}
+                                                                               {:label        (i18n/label :delete-message)
+                                                                                :destructive? true
+                                                                                :action       #(re-frame/dispatch [:delete-message chat-id message-id])}]})
+                                                 (re-frame/dispatch
+                                                   [:show-message-options {:chat-id    chat-id
+                                                                           :message-id message-id}])))}
+   [react/view style/not-sent-view
+    [react/text {:style style/not-sent-text}
+     (i18n/message-status-label :not-sent)]
+    [react/view style/not-sent-icon
+     [vector-icons/icon :icons/warning {:color colors/red}]]]])
+
 (defn message-delivery-status
-  [{:keys [chat-id current-public-key user-statuses content]}]
-  (let [outgoing-status (or (get user-statuses current-public-key) :sending)
+  [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
+  (let [outgoing-status (or (get user-statuses current-public-key) :not-sent)
         delivery-status (get user-statuses chat-id)
         status          (cond (and (= constants/console-chat-id chat-id)
                                    (not (console/commands-with-delivery-status (:command content))))
@@ -252,54 +288,39 @@
 
                               :else
                               (or delivery-status outgoing-status))]
-    [text-status status]))
-
-(defn- photo [from photo-path]
-  [react/view
-   [react/image {:source (if (and (not (string/blank? photo-path))
-                                  (string/starts-with? photo-path "contacts://"))
-                           (->> (string/replace photo-path #"contacts://" "")
-                                (keyword)
-                                (get resources/contacts))
-                           {:uri photo-path})
-                 :style  style/photo}]])
-
-(defview member-photo [from]
-  (letsubs [photo-path [:get-photo-path from]]
-    (photo from  (if (string/blank? photo-path)
-                   (identicon/identicon from)
-                   photo-path))))
-
-(defview my-photo [from]
-  (letsubs [{:keys [photo-path]} [:get-current-account]]
-    (photo from photo-path)))
+    (case status
+      :sending  [message-activity-indicator]
+      :not-sent [message-not-sent-text chat-id message-id]
+      (when last-outgoing?
+        (if (= message-type :group-user-message)
+          [group-message-delivery-status message]
+          (when outgoing
+            [text-status status]))))))
 
 (defview message-author-name [from message-username]
-  (letsubs [username    [:contact-name-by-identity from]]
+  (letsubs [username [:get-contact-name-by-identity from]]
     [react/text {:style style/message-author-name} (or username
                                                        message-username
                                                        (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn message-body
-  [{:keys [last-outgoing? last-by-same-author? message-type same-author? from outgoing group-chat username] :as message} content]
+  [{:keys [last-in-group? first-in-group? group-chat from outgoing username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
-    [react/view style/message-author
-     (when last-by-same-author?
-       (if outgoing
-         [my-photo from]
+    (when (and (not outgoing)
+               group-chat)
+      [react/view style/message-author
+       (when last-in-group?
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
           [react/view
-           [member-photo from]]]))]
+           [photos/member-photo from]]])])
     [react/view (style/group-message-view outgoing)
-     (when-not same-author?
+     (when first-in-group?
        [message-author-name from username])
-     content]]
-   (when last-outgoing?
-     [react/view style/delivery-status
-      (if (= message-type :group-user-message)
-        [group-message-delivery-status message]
-        [message-delivery-status message])])])
+     [react/view {:style (style/timestamp-content-wrapper message)}
+       content]]]
+   [react/view style/delivery-status
+    [message-delivery-status message]]])
 
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]

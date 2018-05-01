@@ -40,6 +40,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.instabug :as inst]
             [status-im.utils.mixpanel :as mixpanel]
@@ -81,9 +82,7 @@
 (re-frame/reg-cofx
  :random-id-seq
  (fn [coeffects _]
-   (assoc coeffects :random-id-seq
-          ((fn rand-id-seq []
-             (cons (random/id) (lazy-seq (rand-id-seq))))))))
+   (assoc coeffects :random-id-seq (repeatedly random/id))))
 
 ;;;; FX
 
@@ -216,7 +215,7 @@
   (fn [{:keys [db] :as cofx} _]
     (let [{:transport/keys [chats] :keys [current-account-id]} db
           sharing-usage-data? (get-in db [:accounts/accounts current-account-id :sharing-usage-data?])]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:dispatch-n (concat [[:initialize-db]
                                                [:load-accounts]
                                                [:listen-to-network-status]
@@ -244,10 +243,8 @@
   (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
                network network-status view-id navigation-stack
                access-scope->commands-responses
-               status-module-initialized? status-node-started?
-               inbox/wnode]
-        :or [network (get app-db :network)
-             wnode   (get app-db :inbox/wnode)]} [_ address]]
+               status-module-initialized? status-node-started?]
+        :or [network (get app-db :network)]} [_ address]]
     (let [console-contact (get contacts constants/console-chat-id)]
       (cond-> (assoc app-db
                      :access-scope->commands-responses access-scope->commands-responses
@@ -264,8 +261,7 @@
                      :accounts/create create
                      :networks/networks networks
                      :network-status network-status
-                     :network network
-                     :inbox/wnode wnode)
+                     :network network)
         console-contact
         (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
 
@@ -278,9 +274,10 @@
                           [:load-contacts]
                           [:load-contact-groups]
                           [:initialize-chats]
-                          [:initialize-browsers] 
+                          [:initialize-browsers]
                           [:initialize-debugging {:address address}]
                           [:send-account-update-if-needed]
+                          [:process-pending-messages]
                           [:update-wallet]
                           [:update-transactions]
                           ;[:get-fcm-token]
@@ -354,12 +351,14 @@
     (inst/log (str "Signal event: " event-str))
     (let [{:keys [type event]} (types/json->clj event-str)
           to-dispatch (case type
-                        "transaction.queued" [:transaction-queued event]
-                        "transaction.failed" [:transaction-failed event]
+                        "sign-request.queued" [:sign-request-queued event]
+                        "sign-request.failed" [:sign-request-failed event]
                         "node.started"       [:status-node-started]
                         "node.stopped"       [:status-node-stopped]
                         "module.initialized" [:status-module-initialized]
                         "jail.signal"        (handle-jail-signal event)
+                        "envelope.sent"      [:signals/envelope-status (:hash event) :sent]
+                        "envelope.expired"   [:signals/envelope-status (:hash event) :not-sent]
                         (log/debug "Event " type " not handled"))]
       (when to-dispatch
         {:dispatch to-dispatch}))))

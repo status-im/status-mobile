@@ -81,7 +81,7 @@
 
 (re-frame/reg-sub :wallet.send/unsigned-transaction
   :<- [::unsigned-transaction]
-  :<- [:contacts/by-address]
+  :<- [:get-contacts-by-address]
   :<- [:balance]
   (fn [[{:keys [value to symbol] :as transaction} contacts balance]]
     (when transaction

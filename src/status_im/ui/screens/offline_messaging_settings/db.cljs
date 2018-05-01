@@ -11,7 +11,5 @@
 (spec/def :wnode/id ::not-blank-string)
 (spec/def :wnode/wnode (allowed-keys :req-un [:wnode/address :wnode/name :wnode/id]))
 
-(spec/def :inbox/topic ::not-blank-string)
 (spec/def :inbox/password ::not-blank-string)
-(spec/def :inbox/wnode ::not-blank-string)
-(spec/def :inbox/wnodes (spec/nilable (spec/map-of :wnode/id :wnode/wnode)))
+(spec/def :inbox/wnodes (spec/nilable (spec/map-of keyword? (spec/map-of :wnode/id :wnode/wnode))))

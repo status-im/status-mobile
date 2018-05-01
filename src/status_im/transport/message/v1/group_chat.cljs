@@ -3,6 +3,7 @@
   (:require [clojure.set :as set]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.core :as message]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.group.core :as group]
@@ -27,7 +28,7 @@
                                         :payload     this}
                                        cofx)))
   (receive [this _ signature {:keys [db] :as cofx}]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:shh/add-new-sym-key {:web3       (:web3 db)
                                               :sym-key    sym-key
                                               :on-success (fn [sym-key sym-key-id]
@@ -55,16 +56,16 @@
   (let [added-participants-names   (map #(get-in contacts [% :name] %) added-participants)
         removed-participants-names (map #(get-in contacts [% :name] %) removed-participants)]
     (cond
-      (and added-participants removed-participants)
+      (and (seq added-participants) (seq removed-participants))
       (str admin-name " "
            (i18n/label :t/invited) " " (apply str (interpose ", " added-participants-names))
            " and "
            (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names)))
 
-      added-participants
+      (seq added-participants)
       (str admin-name " " (i18n/label :t/invited) " " (apply str (interpose ", " added-participants-names)))
 
-      removed-participants
+      (seq removed-participants)
       (str admin-name " " (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names))))))
 
 (defn- init-chat-if-new [chat-id cofx]
@@ -78,7 +79,7 @@
 (defrecord GroupAdminUpdate [chat-name participants]
   message/StatusMessage
   (send [this chat-id cofx]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (init-chat-if-new chat-id)
                        (send-new-group-key this chat-id)))
   (receive [this chat-id signature {:keys [now db random-id] :as cofx}]
@@ -89,18 +90,18 @@
         (when (and (= signature group-admin)  ;; make sure that admin is the one making changes
                    (not= (set contacts) (set participants))) ;; make sure it's actually changing something
           (let [{:keys [removed added]} (participants-diff (set contacts) (set participants))
-                admin-name              (or (get-in cofx [db :contacts/contacts group-admin :name])
+                admin-name              (or (get-in db [:contacts/contacts group-admin :name])
                                             group-admin)]
             (if (removed me) ;; we were removed
-              (handlers/merge-fx cofx
+              (handlers-macro/merge-fx cofx
                                  (models.message/receive
-                                  (models.message/system-message chat-id random-id now
-                                                                 (str admin-name " " (i18n/label :t/removed-from-chat))))
-                                 (models.chat/update-chat {:chat-id         chat-id
+                                   (models.message/system-message chat-id random-id now
+                                                                  (str admin-name " " (i18n/label :t/removed-from-chat))))
+                                 (models.chat/upsert-chat {:chat-id         chat-id
                                                            :removed-from-at now
                                                            :is-active       false})
                                  (transport/unsubscribe-from-chat chat-id))
-              (handlers/merge-fx cofx
+              (handlers-macro/merge-fx cofx
                                  (models.message/receive
                                   (models.message/system-message chat-id random-id now
                                                                  (prepare-system-message  admin-name
@@ -125,7 +126,7 @@
           participant-leaving-name (or (get-in db [:contacts/contacts signature :name])
                                        signature)]
       (when (get-in db [:chats chat-id]) ;; chat is present
-        (handlers/merge-fx cofx
+        (handlers-macro/merge-fx cofx
                            (models.message/receive
                             (models.message/system-message chat-id random-id now
                                                            (str participant-leaving-name " " (i18n/label :t/left))))
@@ -145,7 +146,7 @@
   ;; some async operations
   (fn [{:keys [db] :as cofx} [{:keys [chat-id message sym-key sym-key-id]}]]
     (let [{:keys [web3]} db]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db             (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
                           :shh/add-filter {:web3       web3
                                            :sym-key-id sym-key-id
@@ -175,5 +176,5 @@
                                                     (assoc :sym-key sym-key))}}]
       ;; if new sym-key is wrapping some message, call receive on it as well, if not just update the transport layer
       (if message
-        (handlers/merge-fx cofx fx (message/receive message chat-id signature))
+        (handlers-macro/merge-fx cofx fx (message/receive message chat-id signature))
         fx))))

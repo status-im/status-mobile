@@ -8,23 +8,14 @@
 (re-frame/reg-cofx
   :data-store/all-chats
   (fn [cofx _]
-    (assoc cofx :all-stored-chats (data-store/get-all-active))))
-
-(re-frame/reg-cofx
-  :data-store/inactive-chat-ids
-  (fn [cofx _]
-    (assoc cofx :inactive-chat-ids (data-store/get-inactive-ids))))
-
-(re-frame/reg-cofx
-  :data-store/get-chat
-  (fn [cofx _]
-    (assoc cofx :get-stored-chat data-store/get-by-id)))
+    (assoc cofx :all-stored-chats (data-store/get-all))))
 
 (re-frame/reg-fx
   :data-store/save-chat
   (fn [{:keys [chat-id] :as chat}]
     (async/go (async/>! core/realm-queue #(data-store/save chat (data-store/exists? chat-id))))))
 
+; Only used in debug mode
 (re-frame/reg-fx
   :data-store/delete-chat
   (fn [chat-id]

@@ -8,6 +8,7 @@
             [clojure.string :as str]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.statuses :as statuses]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
@@ -49,11 +50,10 @@
 
 (defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:keys [network inbox/wnode] :networks/keys [networks] :as db} {:keys [address] :as account}]
+  [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
   (let [enriched-account (assoc account
                                 :network  network
                                 :networks networks
-                                :wnode    wnode
                                 :address  address)]
     {:db           (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/save-account enriched-account}))
@@ -106,10 +106,11 @@
       {:db           (assoc-in db [:accounts/accounts id] new-account)
        :data-store/save-account new-account})))
 
-(defn update-wallet-settings [{:accounts/keys [current-account-id accounts] :as db} settings]
-  (let [new-account (-> (get accounts current-account-id)
-                        (assoc :settings settings))]
-    {:db           (assoc-in db [:accounts/accounts current-account-id] new-account)
+(defn update-settings [settings {:keys [db] :as cofx}]
+  (let [{:accounts/keys [current-account-id accounts]} db
+        new-account                                    (-> (get accounts current-account-id)
+                                                           (assoc :settings settings))]
+    {:db                      (assoc-in db [:accounts/accounts current-account-id] new-account)
      :data-store/save-account new-account}))
 
 (defn account-update
@@ -124,7 +125,7 @@
                           :data-store/save-account (assoc new-account :after-update-event after-update-event)}
          {:keys [name photo-path]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
-       (handlers/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
+       (handlers-macro/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
        fx))))
 
 (handlers/register-handler-fx
@@ -141,7 +142,7 @@
 (handlers/register-handler-fx
   :account-set-name
   (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db       (assoc-in db [:accounts/create :show-welcome?] true)
                         :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
                        (account-update {:name (:name create)}))))

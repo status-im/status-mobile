@@ -1,48 +1,70 @@
 (ns status-im.data-store.realm.core
-  (:require [status-im.utils.types :refer [to-string]]
+  (:require [goog.object :as object]
+            [goog.string :as gstr]
+            [clojure.string :as string]
             [status-im.data-store.realm.schemas.account.core :as account]
             [status-im.data-store.realm.schemas.base.core :as base]
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
             [status-im.utils.async :as utils.async]
-            [clojure.string :as str]
-            [goog.string :as gstr]
             [cognitect.transit :as transit]
-            [clojure.walk :as walk]
-            [status-im.react-native.js-dependencies :as rn-dependencies])
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.utils.utils :as utils])
   (:refer-clojure :exclude [exists?]))
 
-(defn realm-version
+(defn- realm-version
   [file-name]
   (.schemaVersion rn-dependencies/realm file-name))
 
-(defn open-realm
+(defn- open-realm
   [options file-name]
   (let [options (merge options {:path file-name})]
     (when (cljs.core/exists? js/window)
       (rn-dependencies/realm. (clj->js options)))))
 
-(defn close [realm]
+(defn- delete-realm
+  [file-name]
+  (.deleteFile rn-dependencies/realm (clj->js {:path file-name})))
+
+(defn- close [realm]
   (when realm
     (.close realm)))
 
-(defn migrate [file-name schemas]
+(defn- migrate-realm [file-name schemas]
   (let [current-version (realm-version file-name)]
     (doseq [schema schemas
             :when (> (:schemaVersion schema) current-version)
             :let [migrated-realm (open-realm schema file-name)]]
-      (close migrated-realm))))
-
-(defn open-migrated-realm
-  [file-name schemas]
-  (migrate file-name schemas)
+      (close migrated-realm)))
   (open-realm (last schemas) file-name))
+
+(defn- reset-realm [file-name schemas]
+  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
+  (delete-realm file-name)
+  (open-realm (last schemas) file-name))
+
+(defn- open-migrated-realm
+  [file-name schemas]
+  ;; TODO: remove for release 0.9.18
+  ;; delete the realm file if its schema version is higher
+  ;; than existing schema version (this means the previous
+  ;; install has incompatible database schemas)
+  (if (> (realm-version file-name)
+         (apply max (map :schemaVersion base/schemas)))
+    (reset-realm file-name schemas)
+    (migrate-realm file-name schemas)))
+
+(defn- index-entity-schemas [all-schemas]
+  (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
 
 (def new-account-filename "new-account")
 
 (def base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas))
 
 (def account-realm (atom (open-migrated-realm new-account-filename account/schemas)))
+
+(def entity->schemas (merge (index-entity-schemas base/schemas)
+                            (index-entity-schemas account/schemas)))
 
 (def realm-queue (utils.async/task-queue 2000))
 
@@ -69,51 +91,25 @@
     (close-account-realm)
     (log/debug "is new account? " new-account?)
     (if new-account?
-      (let [new-path (str/replace path new-account-filename address)]
+      (let [new-path (string/replace path new-account-filename address)]
         (log/debug "Moving file " path " to " new-path)
         (fs/move-file path new-path #(move-file-handler address % handler)))
       (do
         (reset! account-realm (open-migrated-realm address account/schemas))
         (handler nil)))))
 
+(declare realm-obj->clj)
+
 ;; realm functions
-
-(defn and-query [queries]
-  (str/join " and " queries))
-
-(defn or-query [queries]
-  (str/join " or " queries))
 
 (defn write [realm f]
   (.write realm f))
-
-
-(def transit-special-chars #{"~" "^" "`"})  
-(def transit-escape-char "~")
-
-(defn to-be-escaped?
-  "Check if element is a string that begins 
-   with a character recognized as special by Transit"
-  [e]
-  (and (string? e)
-       (contains? transit-special-chars (first e))))
-
-(defn prepare-for-transit 
-  "Following Transit documentation, escape leading special characters
-  in strings by prepending a ~. This prepares for subsequent 
-  fetching from Realm where Transit is used for JSON parsing" 
-  [message]
-  (let [walk-fn (fn [e]
-                  (cond->> e
-                           (to-be-escaped? e) 
-                           (str transit-escape-char)))]
-    (walk/postwalk walk-fn message)))
 
 (defn create
   ([realm schema-name obj]
    (create realm schema-name obj false))
   ([realm schema-name obj update?]
-   (.create realm (to-string schema-name) (clj->js (prepare-for-transit obj)) update?)))
+   (.create realm (name schema-name) (clj->js obj) update?)))
 
 (defn save
   ([realm schema-name obj]
@@ -132,15 +128,12 @@
   (write realm #(.delete realm obj)))
 
 (defn get-all [realm schema-name]
-  (.objects realm (to-string schema-name)))
+  (.objects realm (name schema-name)))
 
 (defn sorted [results field-name order]
-  (.sorted results (to-string field-name) (if (= order :asc)
-                                            false
-                                            true)))
-
-(defn get-count [objs]
-  (.-length objs))
+  (.sorted results (name field-name) (if (= order :asc)
+                                       false
+                                       true)))
 
 (defn page [results from to]
   (js/Array.prototype.slice.call results from to))
@@ -148,88 +141,83 @@
 (defn filtered [results filter-query]
   (.filtered results filter-query))
 
-(def map->vec
-  (comp vec vals))
-
 (def reader (transit/reader :json))
 (def writer (transit/writer :json))
 
 (defn serialize [o] (transit/write writer o))
 (defn deserialize [o] (try (transit/read reader o) (catch :default e nil)))
 
-(defn- internal-convert [js-object]
-  (->> js-object
-       (.stringify js/JSON)
-       deserialize
-       walk/keywordize-keys))
+(defn- realm-list->clj-coll [realm-list coll map-fn]
+  (when realm-list
+    (into coll (map map-fn) (range 0 (.-length realm-list)))))
 
-(defn js-object->clj
-  "Converts any js type/object into a map recursively
-  Performs 5 times better than iterating over the object keys
-  and that would require special care for collections"
-  [js-object]
-  (let [o (internal-convert js-object)]
-    (if (map? o) (map->vec o) o)))
+(defn- list->clj [realm-list]
+  (realm-list->clj-coll realm-list [] #(object/get realm-list %)))
 
-(defn fix-map->vec
-  "Takes a map m and a keyword k
-  Updates the value in k, a map representing a list, into a vector
-  example: {:0 0 :1 1} -> [0 1]"
-  [m k]
-  (update m k map->vec))
+(defn- object-list->clj [realm-object-list entity-name]
+  (let [primary-key (-> entity->schemas (get entity-name) :primaryKey name)]
+    (realm-list->clj-coll realm-object-list
+                          {}
+                          #(let [realm-obj (object/get realm-object-list %)]
+                             [(object/get realm-obj primary-key) (realm-obj->clj realm-obj entity-name)]))))
 
-(defn fix-map
-  "Takes a map m, a keyword k and an id id
-  Updates the value in k, a map representing a list, into a map using
-  the id extracted from the value as a key
-  example: {:0 {:id 1 :a 2} :1 {:id 2 :a 2}} -> {1 {:id 1 :a 2} 2 {:id 2 :a 2}}"
-  [m k id]
-  (update m k #(reduce (fn [acc [_ v]]
-                         (assoc acc (get v id) v))
-                       {}
-                       %)))
+(defn- realm-obj->clj [realm-obj entity-name]
+  (when realm-obj
+    (let [{:keys [primaryKey properties]} (get entity->schemas entity-name)]
+      (into {}
+            (map (fn [[prop-name {:keys [type objectType]}]]
+                   (let [prop-value (object/get realm-obj (name prop-name))]
+                     [prop-name (case type
+                                  "string[]" (list->clj prop-value)
+                                  :list (object-list->clj prop-value objectType)
+                                  prop-value)])))
+            properties))))
 
-(defn single [result]
-  (aget result 0))
+(defn single
+  "Takes realm results, returns the first one"
+  [result]
+  (object/get result 0))
 
-(defn single-clj [results]
-  (some-> results single internal-convert))
+(defn single-clj
+  "Takes realm results and schema name, returns the first result converted to cljs datastructure"
+  [results schema-name]
+  (-> results single (realm-obj->clj schema-name)))
 
-(defn- get-schema-by-name [opts]
-  (->> opts
-       (mapv (fn [{:keys [name] :as schema}]
-               [(keyword name) schema]))
-       (into {})))
+(defn all-clj
+  "Takes realm results and schema name, returns results as converted cljs datastructures in vector"
+  [results schema-name]
+  (realm-list->clj-coll results [] #(realm-obj->clj (object/get results %) schema-name)))
 
 (defn- field-type [realm schema-name field]
-  (let [schema-by-name (get-schema-by-name (js->clj (.-schema realm) :keywordize-keys true))
-        field-def      (get-in schema-by-name [schema-name :properties field])]
-    (if (map? field-def)
-      (:type field-def)
-      field-def)))
+  (let [field-def (get-in entity->schemas [schema-name :properties field])]
+    (or (:type field-def) field-def)))
 
 (defmulti to-query (fn [_ _ operator _ _] operator))
 
 (defmethod to-query :eq [schema schema-name _ field value]
-  (let [value         (to-string value)
-        field-type    (field-type schema schema-name field)
+  (let [field-type    (field-type schema schema-name field)
         escaped-value (when value (gstr/escapeString (str value)))
         query         (str (name field) "=" (if (= "string" (name field-type))
                                               (str "\"" escaped-value "\"")
                                               value))]
     query))
 
-(defn get-by-field [realm schema-name field value]
+(defn get-by-field
+  "Selects objects from realm identified by schema-name based on value of field"
+  [realm schema-name field value]
   (let [q (to-query realm schema-name :eq field value)]
     (.filtered (.objects realm (name schema-name)) q)))
 
-(defn get-one-by-field [realm schema-name field value]
-  (single (get-by-field realm schema-name field value)))
+(defn- and-query [queries]
+  (string/join " and " queries))
 
-(defn get-one-by-field-clj [realm schema-name field value]
-  (single-clj (get-by-field realm schema-name field value)))
+(defn- or-query [queries]
+  (string/join " or " queries))
 
-(defn get-by-fields [realm schema-name op fields]
+(defn get-by-fields
+  "Selects objects from realm identified by schema name based on field values
+  combined by `:and`/`:or` operator"
+  [realm schema-name op fields]
   (let [queries (map (fn [[k v]]
                        (to-query realm schema-name :eq k v))
                      fields)]
@@ -238,5 +226,8 @@
                  :and (and-query queries)
                  :or (or-query queries)))))
 
-(defn exists? [realm schema-name fields]
+(defn exists?
+  "Returns true if object/s identified by schema-name and field values (`:and`)
+  exists in realm"
+  [realm schema-name fields]
   (pos? (.-length (get-by-fields realm schema-name :and fields))))

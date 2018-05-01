@@ -63,10 +63,7 @@
   (letsubs [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))
             ref (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    ;; NOTE(dmitryn) Doesn't work on Android without setTimeout
-                                    (js/setTimeout
-                                      #(.hideView js-dependencies/testfairy @ref)
-                                      100)))}
+                                    (.hideView js-dependencies/testfairy @ref)))}
     [react/view {:style styles/twelve-words-container}
      [react/text {:style styles/twelve-words-label}
       (i18n/label :t/your-seed-phrase)]
@@ -84,11 +81,15 @@
         :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
 
 (defview input [error]
-  [text-input/text-input-with-label
-   {:placeholder    (i18n/label :t/enter-word)
-    :auto-focus     true
-    :on-change-text #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
-    :error          error}])
+  (letsubs [ref (reagent/atom nil)]
+    {:component-did-mount (fn [_] (when config/testfairy-enabled?
+                                    (.hideView js-dependencies/testfairy @ref)))}
+    [text-input/text-input-with-label
+     {:placeholder    (i18n/label :t/enter-word)
+      :ref            (partial reset! ref)
+      :auto-focus     true
+      :on-change-text #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
+      :error          error}]))
 
 (defn enter-word [step [idx word] error entered-word]
   ^{:key word}

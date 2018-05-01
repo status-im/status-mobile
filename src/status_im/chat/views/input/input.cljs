@@ -17,9 +17,9 @@
             [status-im.utils.utils :as utils]))
 
 (defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
-  (letsubs [input-text     [:chat :input-text] 
-            input-focused? [:get-current-chat-ui-prop :input-focused?]
-            input-ref      (atom nil)]
+  (letsubs [{:keys [input-text]} [:get-current-chat] 
+            input-focused?       [:get-current-chat-ui-prop :input-focused?]
+            input-ref            (atom nil)]
     [react/text-input
      {:ref                    #(when %
                                  (re-frame/dispatch [:set-chat-ui-props {:input-ref %}])
@@ -64,7 +64,7 @@
       :auto-capitalize        :sentences}]))
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
-  (letsubs [input-text [:chat :input-text]]
+  (letsubs [{:keys [input-text]} [:get-current-chat]]
     [react/text {:style     style/invisible-input-text
                  :on-layout #(let [w (-> (.-nativeEvent %)
                                          (.-layout)
@@ -73,7 +73,7 @@
      (or input-text "")]))
 
 (defview invisible-input-height [{:keys [set-layout-height-fn container-width]}]
-  (letsubs [input-text [:chat :input-text]]
+  (letsubs [{:keys [input-text]} [:get-current-chat]]
     [react/text {:style     (style/invisible-input-text-height container-width)
                  :on-layout #(let [h (-> (.-nativeEvent %)
                                          (.-layout)
@@ -107,9 +107,9 @@
     nil))
 
 (defview seq-input [{:keys [command-width container-width]}]
-  (letsubs [command            [:selected-chat-command]
-            arg-pos            [:current-chat-argument-position]
-            seq-arg-input-text [:chat :seq-argument-input-text]]
+  (letsubs [command                      [:selected-chat-command]
+            arg-pos                      [:current-chat-argument-position]
+            {:keys [seq-arg-input-text]} [:get-current-chat]]
     (when (get-in command [:command :sequential-params])
       (let [{:keys [placeholder type]} (get-in command [:command :params arg-pos])]
         [react/text-input (merge {:ref                 #(re-frame/dispatch [:set-chat-ui-props {:seq-input-ref %}])
@@ -162,9 +162,9 @@
                                         :color           :dark}]]])))
 
 (defview input-container []
-  (letsubs [margin     [:chat-input-margin]
-            input-text [:chat :input-text]
-            result-box [:get-current-chat-ui-prop :result-box]]
+  (letsubs [margin               [:chat-input-margin]
+            {:keys [input-text]} [:get-current-chat]
+            result-box           [:get-current-chat-ui-prop :result-box]]
     (let [single-line-input? (:singleLineInput result-box)]
       [react/view {:style     (style/root margin)
                    :on-layout #(let [h (-> (.-nativeEvent %)

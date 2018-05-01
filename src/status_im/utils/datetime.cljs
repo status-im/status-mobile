@@ -32,21 +32,23 @@
           loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
-;; Closure does not have an enum for datetime formats
-(def short-date-time-format 10)
-(def short-date-format 2)
+(def medium-date-time-format (.-MEDIUM_DATETIME goog.i18n.DateTimeFormat.Format))
+(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format))
+(def short-time-format (.-SHORT_TIME goog.i18n.DateTimeFormat.Format))
 
 (defn mk-fmt [locale format]
   (goog.i18n.DateTimeFormat. format (locale-symbols locale)))
 
 (def date-time-fmt
-  (mk-fmt status-im.i18n/locale short-date-time-format))
+  (mk-fmt status-im.i18n/locale medium-date-time-format))
 (def date-fmt
-  (mk-fmt status-im.i18n/locale short-date-format))
+  (mk-fmt status-im.i18n/locale medium-date-format))
+(def time-fmt
+  (mk-fmt status-im.i18n/locale short-time-format))
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date (from-long ms)
-        local (plus date time-zone-offset)
+        local (plus date time-zone-offset) ; this is wrong, it uses the current timezone offset, regardless of DST
         today (t/today-at-midnight)
         yesterday (plus today (days -1))]
     (cond
@@ -58,7 +60,7 @@
   (to-str ms
           #(.format date-fmt %)
           #(label :t/datetime-yesterday)
-          #(unparse (formatters :hour-minute) %)))
+          #(.format time-fmt %)))
 
 (defn day-relative [ms]
   (to-str ms
@@ -72,9 +74,9 @@
                                     (plus time-zone-offset))))
 
 (defn timestamp->time [ms]
-  (unparse (formatter "HH:mm") (-> ms
-                                   from-long
-                                   (plus time-zone-offset))))
+  (.format time-fmt (-> ms
+                        from-long
+                        (plus time-zone-offset))))
 
 (defn timestamp->date-key [ms]
   (keyword (unparse (formatter "YYYYMMDD") (-> ms

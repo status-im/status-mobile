@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.network-settings.events
   (:require [re-frame.core :refer [dispatch dispatch-sync after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.events :as accounts-events]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as utils]
@@ -29,7 +30,7 @@
 (handlers/register-handler-fx
   ::save-network
   (fn [{:keys [db now] :as cofx} [_ network]]
-    (handlers/merge-fx cofx 
+    (handlers-macro/merge-fx cofx 
                        (accounts-events/account-update {:network      network
                                                         :last-updated now}
                                                        [::close-application]))))
@@ -41,7 +42,7 @@
           networks        (:networks/networks db)
           chats           (:transport/chats db)]
       (if (utils/network-with-upstream-rpc? networks current-network)
-        (handlers/merge-fx cofx
+        (handlers-macro/merge-fx cofx
                            {:dispatch               [:navigate-to-clean :accounts]}
                            (transport/stop-whisper)
                            (accounts-events/account-update {:network      network

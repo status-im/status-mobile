@@ -30,7 +30,7 @@
 (defn bignumber [n]
   (when n
     (try
-      (dependencies/Web3.prototype.toBigNumber (str n))
+      (dependencies/Web3.prototype.toBigNumber (normalize (str n)))
       (catch :default err nil))))
 
 (defn valid? [bn]
@@ -110,5 +110,5 @@
     (.round bn decimals)))
 
 (defn sufficient-funds? [amount balance]
-  (when balance
+  (when (and amount balance)
     (.greaterThanOrEqualTo balance amount)))

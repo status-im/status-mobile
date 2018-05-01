@@ -98,7 +98,6 @@ class SignInView(BaseView):
         self.do_not_share = DonNotShare(self.driver)
 
     def create_user(self):
-        time.sleep(30) # wait for "Shake to provide your feedback" popup to disappear, it's not possible to interact with the element
         self.create_account_button.click()
         self.password_input.set_value('qwerty1234')
         self.next_button.click()
@@ -111,11 +110,11 @@ class SignInView(BaseView):
         self.do_not_share.click_until_presence_of_element(self.home_button)
 
     def recover_access(self, passphrase, password):
-        time.sleep(30) # wait for "Shake to provide your feedback" popup to disappear, it's not possible to interact with the element
         recover_access_view = self.i_have_account_button.click()
-        recover_access_view.passphrase_input.set_value(passphrase)
+        recover_access_view.passphrase_input.click()
+        recover_access_view.send_as_keyevent(passphrase)
         recover_access_view.password_input.click()
-        recover_access_view.password_input.set_value(password)
+        recover_access_view.send_as_keyevent(password)
         recover_access_view.sign_in_button.click()
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)

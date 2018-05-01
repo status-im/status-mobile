@@ -211,7 +211,11 @@ function loadApp(platform, devHost, onLoadCb) {
                 // This is needed because of RN packager
                 // seriously React packager? why.
                 var googreq = goog.require;
-
+                // NOTE: :closure-defines is not working with RN
+                goog.global.CLOSURE_UNCOMPILED_DEFINES = {
+                    "re_frame.trace.trace_enabled_QMARK_":true,
+                    "day8.re_frame.tracing.trace_enabled_QMARK_": true
+                };
                 googreq(`env.${platform}.main`);
             });
         });

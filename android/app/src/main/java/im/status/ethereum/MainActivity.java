@@ -24,8 +24,10 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
+import com.instabug.library.Instabug;
 
 import java.util.Properties;
+import im.status.ethereum.module.StatusThreadPoolExecutor;
 
 public class MainActivity extends ReactActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
@@ -39,6 +41,7 @@ public class MainActivity extends ReactActivity
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(final Thread thread, final Throwable t) {
+                // High priority, so don't use StatusThreadPoolExecutor
                 new Thread() {
                     @Override
                     public void run() {
@@ -112,6 +115,7 @@ public class MainActivity extends ReactActivity
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
 
+        Instabug.setIntroMessageEnabled(false);
         if(BuildConfig.TESTFAIRY_ENABLED == "1") {
             TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
         }
@@ -148,14 +152,14 @@ public class MainActivity extends ReactActivity
             dialog.show();
         }
 
-        Thread thread = new Thread() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 System.loadLibrary("status-logs");
             }
         };
 
-        thread.start();
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @Override

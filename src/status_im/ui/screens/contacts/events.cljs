@@ -3,6 +3,7 @@
             [cljs.reader :as reader]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts] 
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
@@ -62,12 +63,12 @@
 
 (defn add-contact [whisper-id {:keys [db] :as cofx}]
   (let [contact (build-contact whisper-id cofx)]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (add-new-contact contact)
                        (send-contact-request contact))))
 
 (defn add-contact-and-open-chat [whisper-id cofx]
-  (handlers/merge-fx cofx
+  (handlers-macro/merge-fx cofx
                      (navigation/navigate-to-clean :home)
                      (add-contact whisper-id)
                      (chat.events/start-chat whisper-id {})))
@@ -80,13 +81,13 @@
 
 (handlers/register-handler-fx
   :set-contact-identity-from-qr
-  [(re-frame/inject-cofx :random-id) (re-frame/inject-cofx :data-store/get-chat)]
+  [(re-frame/inject-cofx :random-id)]
   (fn [{{:accounts/keys [accounts current-account-id] :as db} :db :as cofx} [_ _ contact-identity]]
     (let [current-account (get accounts current-account-id)
           fx              {:db (assoc db :contacts/new-identity contact-identity)}]
       (if (new-chat.db/validate-pub-key contact-identity current-account)
         fx
-        (handlers/merge-fx cofx
+        (handlers-macro/merge-fx cofx
                            fx
                            (add-contact-and-open-chat contact-identity))))))
 
@@ -118,14 +119,14 @@
   :open-chat-with-contact
   [(re-frame/inject-cofx :random-id)]
   (fn [{:keys [db] :as cofx} [_ {:keys [whisper-identity] :as contact}]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        (navigation/navigate-to-clean :home)
                        (add-contact whisper-identity)
                        (chat.events/start-chat whisper-identity {}))))
 
 (handlers/register-handler-fx
   :add-contact-handler
-  [(re-frame/inject-cofx :random-id) (re-frame/inject-cofx :data-store/get-chat)]
+  [(re-frame/inject-cofx :random-id)]
   (fn [{{:contacts/keys [new-identity] :as db} :db :as cofx} _]
     (when (seq new-identity)
       (add-contact-and-open-chat new-identity cofx))))

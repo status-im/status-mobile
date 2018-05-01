@@ -2,7 +2,6 @@
   (:require [cljs.spec.alpha :as s]))
 
 (s/def :chat/chats (s/nilable map?))                              ; {id (string) chat (map)} active chats on chat's tab
-(s/def :chat/deleted-chats (s/nilable set?))                      ; set of deleted chat ids
 (s/def :chat/current-chat-id (s/nilable string?))                 ; current or last opened chat-id
 (s/def :chat/chat-id (s/nilable string?))                         ; what is the difference ? ^
 (s/def :chat/new-chat-name (s/nilable string?))                   ; we have name in the new-chat why do we need this field

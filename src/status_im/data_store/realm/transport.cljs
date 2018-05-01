@@ -4,8 +4,7 @@
 
 (defn get-all
   []
-  (-> (realm/get-all @realm/account-realm :transport)
-      realm/js-object->clj))
+  (realm/all-clj (realm/get-all @realm/account-realm :transport) :transport))
 
 (defn exists?
   [chat-id]
@@ -17,5 +16,5 @@
 
 (defn delete
   [chat-id]
-  (when-let [chat (realm/get-by-field @realm/account-realm :transport :chat-id chat-id)]
+  (when-let [chat (realm/single (realm/get-by-field @realm/account-realm :transport :chat-id chat-id))]
     (realm/delete @realm/account-realm chat)))

@@ -18,14 +18,14 @@
                         :friction 6
                         :tension  40}))))
 
-(defn- overlay [{:keys [on-click-outside]} items]
+(defn overlay [{:keys [on-click-outside]} items]
   [react/view styles/bottom-info-overlay
    [react/touchable-highlight {:on-press on-click-outside
                                :style    styles/overlay-highlight}
     [react/view nil]]
    items])
 
-(defn- container [height & _]
+(defn container [height & _]
   (let [anim-value    (anim/create-value 1)
         context       {:to-value height
                        :val      anim-value}

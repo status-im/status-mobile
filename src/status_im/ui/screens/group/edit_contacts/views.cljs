@@ -36,7 +36,7 @@
       :label               (i18n/label :t/remove-from-group)}]))
 
 (defview contacts-list-view [group-id]
-  (letsubs [contacts [:all-added-group-contacts group-id]]
+  (letsubs [contacts [:get-all-added-group-contacts group-id]]
     [contacts-list
      contacts
      true

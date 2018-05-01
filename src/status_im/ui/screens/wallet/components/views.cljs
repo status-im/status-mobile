@@ -37,7 +37,7 @@
     :request :wallet.request/set-symbol
     (throw (str "Unknown type: " k))))
 
-(defn- render-token [{:keys [symbol name icon decimals]} balance type]
+(defn- render-token [{:keys [symbol name icon decimals amount]} type]
   [list/touchable-item  #(do (re-frame/dispatch [(type->handler type) symbol])
                              (re-frame/dispatch [:navigate-back]))
    [react/view
@@ -49,19 +49,17 @@
         name]
        [react/text {:force-uppercase? true}
         (clojure.core/name symbol)]]
-      [list/item-secondary (wallet.utils/format-amount (symbol balance) decimals)]]]]])
+      [list/item-secondary (wallet.utils/format-amount amount decimals)]]]]])
 
 (views/defview assets [type]
-  (views/letsubs [network        [:network]
-                  visible-tokens [:wallet.settings/visible-tokens]
-                  balance        [:balance]]
+  (views/letsubs [assets [:wallet/visible-assets-with-amount]]
     [components/simple-screen
      [components/toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
       [list/flat-list {:default-separator? true
-                       :data               (concat [tokens/ethereum] (wallet/current-tokens visible-tokens network))
+                       :data               assets
                        :key-fn             (comp str :symbol)
-                       :render-fn          #(render-token % balance type)}]]]))
+                       :render-fn          #(render-token % type)}]]]))
 
 (defn send-assets []
   [assets :send])
@@ -99,7 +97,7 @@
    (or (ethereum/normalized-address address) (i18n/label :t/specify-recipient))])
 
 (views/defview recipient-contact [address name request?]
-  (views/letsubs [contact [:contact/by-address address]]
+  (views/letsubs [contact [:get-contact-by-address address]]
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon

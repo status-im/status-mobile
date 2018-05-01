@@ -2,19 +2,23 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.chat.models.message :as models.message]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.transport.message.core :as transport]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 
 ;;;; Handlers
 
 (handlers/register-handler-fx
   :show-group-chat-profile
-  (fn [{db :db} [_ chat-id]]
-    {:db (assoc db :new-chat-name (get-in db [:chats chat-id :name])
-                :group/group-type :chat-group)
-     :dispatch [:navigate-to :group-chat-profile]}))
+  [re-frame/trim-v]
+  (fn [{:keys [db] :as cofx} [chat-id]] 
+    {:db (-> db
+             (assoc :new-chat-name (get-in db [:chats chat-id :name])
+                    :group/group-type :chat-group)
+             (navigation/navigate-to :group-chat-profile))}))
 
 (handlers/register-handler-fx
   :add-new-group-chat-participants
@@ -23,7 +27,7 @@
     (let [participants             (concat (get-in db [:chats current-chat-id :contacts]) selected-participants)
           contacts                 (:contacts/contacts db)
           added-participants-names (map #(get-in contacts [% :name]) selected-participants)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (-> db
                                   (assoc-in [:chats current-chat-id :contacts] participants)
                                   (assoc :selected-participants #{}))
@@ -40,7 +44,7 @@
     (let [participants               (remove removed-participants (get-in db [:chats current-chat-id :contacts]))
           contacts                   (:contacts/contacts db)
           removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]
-      (handlers/merge-fx cofx
+      (handlers-macro/merge-fx cofx
                          {:db (assoc-in db [:chats current-chat-id :contacts] participants)
                           :data-store/remove-chat-contacts [current-chat-id removed-participants]}
                          (models.message/receive

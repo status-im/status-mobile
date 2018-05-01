@@ -12,6 +12,7 @@
             [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :as actions]
             [status-im.chat.views.bottom-info :as bottom-info]
+            [status-im.chat.views.message.options :as message-options]
             [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.message.message :as message]
             [status-im.chat.views.input.input :as input]
@@ -36,7 +37,7 @@
     [vector-icons/icon :icons/dots-horizontal]]])
 
 (defview add-contact-bar [contact-identity]
-  (letsubs [{:keys [pending?] :as contact} [:contact-by-identity contact-identity]]
+  (letsubs [{:keys [pending?] :as contact} [:get-contact-by-identity contact-identity]]
     (when (or pending? (not contact)) ;; contact is pending or not in contact list at all
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
@@ -53,14 +54,15 @@
   (letsubs [{:keys [group-chat name chat-id contacts]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
-     [toolbar/platform-agnostic-toolbar {}
-      toolbar/nav-back-count
-      [toolbar-content/toolbar-content-view]
-      (when (not= chat-id constants/console-chat-id)
+     (if (= chat-id constants/console-chat-id)
+       [toolbar/simple-toolbar name]
+       [toolbar/platform-agnostic-toolbar {}
+        toolbar/nav-back-count
+        [toolbar-content/toolbar-content-view]
         [toolbar/actions [{:icon      :icons/options
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
-                           :handler   #(on-options chat-id name group-chat public?)}]])]
+                           :handler   #(on-options chat-id name group-chat public?)}]]])
      (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
@@ -122,6 +124,7 @@
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
+            show-message-options? [:get-current-chat-ui-prop :show-message-options?]
             current-view      [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
@@ -139,4 +142,6 @@
       [input/container {:text-empty? (string/blank? input-text)}]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
+      (when show-message-options?
+        [message-options/view])
       [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))

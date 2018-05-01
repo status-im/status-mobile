@@ -41,10 +41,10 @@ class AbstractTestCase:
         updated_capabilities = list()
         raw_out = re.split(r'[\r\\n]+', str(subprocess.check_output(['adb', 'devices'])).rstrip())
         for line in raw_out[1:]:
-            serial = re.findall(r"([\d.\d:]*\d+)", line)
+            serial = re.findall(r"(([\d.\d:]*\d+)|\bemulator-\d+)", line)
             if serial:
                 capabilities = self.capabilities_local
-                capabilities['udid'] = serial[0]
+                capabilities['udid'] = serial[0][0]
                 updated_capabilities.append(capabilities)
         return updated_capabilities
 

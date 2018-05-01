@@ -7,7 +7,7 @@
 
 (def datemark
   {:opacity          0.5
-   :margin-top       20
+   :margin-top       16
    :height           20})
 
 (def datemark-text

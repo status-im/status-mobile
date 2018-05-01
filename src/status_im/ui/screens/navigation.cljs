@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.navigation
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 ;; private helper fns
 
@@ -22,7 +23,7 @@
   ([view-id {:keys [db]} screen-params]
    ;; TODO (jeluard) Unify all :navigate-to flavours. Maybe accept a map of parameters?
 
-   (let [db (cond-> db
+   (let [db (cond-> (assoc db :navigation-stack (list))
               (seq screen-params)
               (assoc-in [:navigation/screen-params view-id] screen-params))]
      {:db (push-view db view-id)})))
@@ -96,14 +97,14 @@
 
 (handlers/register-handler-fx
   :navigate-to-clean
-  (fn [{:keys [db]} [_ & params]]
-    {:db (apply navigate-to db params)}))
+  (fn [cofx [_ view-id params]]
+    (navigate-to-clean view-id cofx params)))
 
 (handlers/register-handler-fx
   :navigate-to-tab
   (re-frame/enrich preload-data!)
   (fn [{:keys [db] :as cofx} [_ view-id]]
-    (handlers/merge-fx cofx
+    (handlers-macro/merge-fx cofx
                        {:db (-> db
                                 (assoc :prev-tab-view-id (:view-id db))
                                 (assoc :prev-view-id (:view-id db)))}

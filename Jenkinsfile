@@ -90,7 +90,7 @@ node ('macos1') {
     }
 
     // Android for e2e
-    stage('Build (Android) for e2e testing') {
+    stage('Build (Android) for e2e tests') {
       sh 'cd android && mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release.original.apk && ENVFILE=.env.e2e ./gradlew assembleRelease'
     }
 
@@ -99,6 +99,14 @@ node ('macos1') {
       withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){
         def apk_name = env.CHANGE_ID + '.apk'
         sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
+      }
+      withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+        def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+        sh 'sleep 10'
+        def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
+        apkUrl = 'https://i.diawi.com/' + hash
+
+        sh ('echo ARTIFACT Android for e2e tests: ' + apkUrl)
       }
      }
     }
