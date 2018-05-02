@@ -71,6 +71,7 @@
       (i18n/label :t/cancel)]
      [button/button {:style               (wallet.styles/button-container sign-enabled?)
                      :on-press            sign-handler
+                     :disabled?           (not sign-enabled?)
                      :accessibility-label :sign-transaction-button}
       (i18n/label (or sign-label :t/transactions-sign-transaction))
       [vector-icons/icon :icons/forward {:color :white}]]]))
