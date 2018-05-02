@@ -11,7 +11,7 @@
 
 (def survey-triggers
   [{:event :send-current-message :count 4  :token "UqtvIKgVDUTo4l_sDS-fwA"}
-   {:event :send-current-message :count 29 :token "Hr9Dk3krPK7PPxuDbHAmXg"}])
+   {:event :send-current-message :count 5 :token "Hr9Dk3krPK7PPxuDbHAmXg"}])
 
 ;; 2018-05-07 12:00:00
 (def survey-enabled-timestamp 1525694400000)
