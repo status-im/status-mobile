@@ -126,13 +126,14 @@
         [react/view {:flex-direction :row}
          [wallet.components/cartouche {}
           (i18n/label :t/gas-limit)
-          [react/text-input (merge styles/transaction-fee-input
-                                   {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-gas %])
-                                    :default-value       (str (money/to-fixed gas))
-                                    :accessibility-label :gas-limit-input})]]
+          [react/view styles/gas-input-wrapper
+           [react/text-input (merge styles/transaction-fee-input
+                                    {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-gas %])
+                                     :default-value       (str (money/to-fixed gas))
+                                     :accessibility-label :gas-limit-input})]]]
          [wallet.components/cartouche {}
           (i18n/label :t/gas-price)
-          [react/view styles/advanced-options-wrapper
+          [react/view styles/gas-input-wrapper
            [react/text-input (merge styles/transaction-fee-input
                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-gas-price (money/->wei :gwei %)])
                                      :default-value       (str (money/to-fixed (money/wei-> :gwei gas-price)))

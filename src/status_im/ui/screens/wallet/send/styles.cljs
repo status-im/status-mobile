@@ -74,9 +74,10 @@
   {:margin-top    24
    :margin-bottom 16})
 
-(def advanced-options-wrapper
-  {:align-items    :center
-   :flex-direction :row})
+(def gas-input-wrapper
+  {:align-items     :center
+   :justify-content :space-between
+   :flex-direction  :row})
 
 (def advanced-options-text-wrapper
   {:flex            1
