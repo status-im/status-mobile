@@ -91,7 +91,8 @@
                                       :signing?        false
                                       :wrong-password? false
                                       :waiting-signal? false
-                                      :from-chat?      false})
+                                      :from-chat?      false
+                                      :password        nil})
 
 (defn on-transactions-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]
@@ -290,7 +291,8 @@
   (fn [{:keys [db]} _]
     {:db (update-in db [:wallet :send-transaction] assoc
                     :signing? false
-                    :wrong-password? false)}))
+                    :wrong-password? false
+                    :password nil)}))
 
 (handlers/register-handler-fx
   :wallet.send/set-password
