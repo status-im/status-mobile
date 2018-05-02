@@ -9,10 +9,10 @@
   Optionally, one can specify event to be dispatched after fields are persisted."
   ([new-account-fields cofx]
    (account-update new-account-fields nil cofx))
-  ([new-account-fields after-update-event {{:accounts/keys [accounts current-account-id] :as db} :db :as cofx}]
-   (let [current-account (get accounts current-account-id)
+  ([new-account-fields after-update-event {:keys [db] :as cofx}]
+   (let [current-account (:account/account db)
          new-account     (merge current-account new-account-fields)
-         fx              {:db                      (assoc-in db [:accounts/accounts current-account-id] new-account)
+         fx              {:db                      (assoc db :account/account new-account)
                           :data-store/save-account (assoc new-account :after-update-event after-update-event)}
          {:keys [name photo-path]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
