@@ -40,18 +40,17 @@
   (open-realm (last schemas) file-name))
 
 (defn reset-realm [file-name schemas]
-  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
+  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts older then `0.9.17` is not possible")
   (delete-realm file-name)
   (open-realm (last schemas) file-name))
 
 (defn open-migrated-realm
   [file-name schemas]
   ;; TODO: remove for release 0.9.18
-  ;; delete the realm file if its schema version is higher
-  ;; than existing schema version (this means the previous
-  ;; install has incompatible database schemas)
-  (if (> (realm-version file-name)
-         (apply max (map :schemaVersion base/schemas)))
+  ;; delete the realm file if its schema version is lower
+  ;; than existing schema version - dirty hotfix for `0.9.17` -> `0.9.18` upgrade
+  (if (< (realm-version file-name)
+         (apply max :schemaVersion base/schemas))
     (reset-realm file-name schemas)
     (migrate-realm file-name schemas)))
 
