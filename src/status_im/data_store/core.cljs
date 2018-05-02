@@ -15,8 +15,7 @@
 (defn init [encryption-key]
   (when-not @core/base-realm
     (core/open-base-realm encryption-key))
-  (core/reset-account-realm encryption-key)
-  (core/reset-account))
+  (core/reset-account-realm encryption-key))
 
 (defn change-account [address new-account? encryption-key handler]
   (core/change-account address new-account? encryption-key handler))
