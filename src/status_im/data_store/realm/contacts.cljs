@@ -22,8 +22,9 @@
 
 (defn delete
   [{:keys [whisper-identity]}]
-  (realm/delete @realm/account-realm (get-by-id whisper-identity)))
+  (realm/write @realm/account-realm
+               #(realm/delete @realm/account-realm (get-by-id whisper-identity))))
 
 (defn exists?
   [whisper-identity]
-  (realm/exists? @realm/account-realm :contact {:whisper-identity whisper-identity}))
+  (realm/exists? @realm/account-realm :contact :whisper-identity whisper-identity))

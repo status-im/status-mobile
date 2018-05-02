@@ -13,7 +13,7 @@
                                                    {:name contact-name}}}}
           response      (chat/upsert-chat chat-props cofx)
           actual-chat   (get-in response [:db :chats chat-id])
-          store-chat-fx (:data-store/save-chat response)]
+          store-chat-fx (:data-store/tx response)]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
       (testing "it adds the extra props"
@@ -37,7 +37,7 @@
                                                 :name "old-name"}}}}
           response      (chat/upsert-chat chat-props cofx)
           actual-chat   (get-in response [:db :chats chat-id])
-          store-chat-fx (:data-store/save-chat response)]
+          store-chat-fx (:data-store/tx response)]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
       (testing "it adds the extra props"
@@ -66,7 +66,7 @@
         admin "admin"
         participants ["a"]
         fx (chat/add-group-chat chat-id chat-name admin participants {})
-        store-fx   (:data-store/save-chat fx)
+        store-fx   (:data-store/tx fx)
         group-chat (get-in fx [:db :chats chat-id])]
     (testing "it saves the chat in the database"
       (is store-fx))
@@ -86,7 +86,7 @@
 (deftest add-public-chat
   (let [topic "topic"
         fx (chat/add-public-chat topic {})
-        store-fx   (:data-store/save-chat fx)
+        store-fx   (:data-store/tx fx)
         chat (get-in fx [:db :chats topic])]
     (testing "it saves the chat in the database"
       (is store-fx))

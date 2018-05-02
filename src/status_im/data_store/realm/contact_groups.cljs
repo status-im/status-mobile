@@ -22,14 +22,14 @@
 
 (defn exists?
   [group-id]
-  (realm/exists? @realm/account-realm :contact-group {:group-id group-id}))
+  (realm/exists? @realm/account-realm :contact-group :group-id group-id))
 
 (defn delete
   [group-id]
   (when-let [group (-> @realm/account-realm
                        (realm/get-by-field :contact-group :group-id group-id)
                        realm/single)]
-    (realm/delete @realm/account-realm group)))
+    (realm/write @realm/account-realm #(realm/delete @realm/account-realm group))))
 
 (defn- get-by-id-obj
   [group-id]

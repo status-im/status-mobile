@@ -20,6 +20,8 @@
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.message.v1.public-chat :as public-chat]
             [status-im.transport.message.v1.group-chat :as group-chat]
+            [status-im.data-store.chats :as chats-store]
+            [status-im.data-store.messages :as messages-store]
             status-im.chat.events.commands
             status-im.chat.events.requests
             status-im.chat.events.send-message
@@ -89,13 +91,15 @@
  (fn [{:keys [db]} [chat-id message-id user-id status]]
    (let [msg-path [:chats chat-id :messages message-id]
          new-db   (update-in db (conj msg-path :user-statuses) assoc user-id status)]
-     {:db                        new-db
-      :data-store/update-message (-> (get-in new-db msg-path) (select-keys [:message-id :user-statuses]))})))
+     {:db            new-db
+      :data-store/tx [(messages-store/update-message-tx
+                       (-> (get-in new-db msg-path)
+                           (select-keys [:message-id :user-statuses])))]})))
 
 (handlers/register-handler-fx
  :transport/set-message-envelope-hash
  [re-frame/trim-v]
-  ;; message-type is used for tracking
+ ;; message-type is used for tracking
  (fn [{:keys [db]} [chat-id message-id message-type envelope-hash]]
    {:db (assoc-in db [:transport/message-envelopes envelope-hash] {:chat-id    chat-id
                                                                    :message-id message-id})}))
@@ -125,19 +129,20 @@
          updated-messages (map (fn [{:keys [from] :as message}]
                                  (assoc-in message [:user-statuses from] :not-sent))
                                pending-messages)]
-     {:data-store/update-messages updated-messages
-      :db (reduce (fn [m {:keys [chat-id message-id from]}]
-                    (assoc-in m [:chats chat-id :messages message-id :user-statuses from] :not-sent))
-                  db
-                  pending-messages)})))
+     {:data-store/tx [(messages-store/update-messages-tx updated-messages)]
+      :db            (reduce (fn [m {:keys [chat-id message-id from]}]
+                               (assoc-in m [:chats chat-id :messages message-id
+                                            :user-statuses from] :not-sent))
+                             db
+                             pending-messages)})))
 
 (defn init-console-chat
   [{:keys [db] :as cofx}]
   (when-not (get-in db [:chats constants/console-chat-id])
-    {:db                   (-> db
-                               (assoc :current-chat-id constants/console-chat-id)
-                               (update :chats assoc constants/console-chat-id console/chat))
-     :data-store/save-chat console/chat}))
+    {:db            (-> db
+                        (assoc :current-chat-id constants/console-chat-id)
+                        (update :chats assoc constants/console-chat-id console/chat))
+     :data-store/tx [(chats-store/save-chat-tx console/chat)]}))
 
 (defn- add-default-contacts
   [{:keys [db default-contacts] :as cofx}]
@@ -209,10 +214,11 @@
 
 (defn- persist-seen-messages
   [chat-id unseen-messages-ids {:keys [db]}]
-  {:data-store/update-messages (map (fn [message-id]
-                                      (-> (get-in db [:chats chat-id :messages message-id])
-                                          (select-keys [:message-id :user-statuses])))
-                                    unseen-messages-ids)})
+  {:data-store/tx [(messages-store/update-messages-tx
+                    (map (fn [message-id]
+                           (-> (get-in db [:chats chat-id :messages message-id])
+                               (select-keys [:message-id :user-statuses])))
+                         unseen-messages-ids))]})
 
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
   (when (and (not (get-in db [:chats chat-id :public?]))
@@ -281,7 +287,7 @@
                              (navigation/replace-view :chat)
                              (preload-chat-data chat-id))
     (handlers-macro/merge-fx cofx
-                       ;; TODO janherich - refactor `navigate-to` so it can be used with `merge-fx` macro
+                             ;; TODO janherich - refactor `navigate-to` so it can be used with `merge-fx` macro
                              {:db (navigation/navigate-to db :chat)}
                              (preload-chat-data chat-id))))
 
@@ -294,7 +300,7 @@
 (defn start-chat
   "Start a chat, making sure it exists"
   [chat-id opts {:keys [db] :as cofx}]
-  ; don't allow to open chat with yourself
+  ;; don't allow to open chat with yourself
   (when (not= (:current-public-key db) chat-id)
     (handlers-macro/merge-fx cofx
                              (models/upsert-chat {:chat-id chat-id

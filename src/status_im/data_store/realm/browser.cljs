@@ -16,11 +16,11 @@
 (defn delete
   [browser-id]
   (when-let [browser (realm/single (realm/get-by-field @realm/account-realm :browser :browser-id browser-id))]
-    (realm/delete @realm/account-realm browser)))
+    (realm/write @realm/account-realm #(realm/delete @realm/account-realm browser))))
 
 (defn exists?
   [browser-id]
-  (realm/exists? @realm/account-realm :browser {:browser-id browser-id}))
+  (realm/exists? @realm/account-realm :browser :browser-id browser-id))
 
 (defn get-by-id
   [browser-id]

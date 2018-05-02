@@ -24,7 +24,9 @@
   The next forms are functions applying effects and returning a map of effects.
   The macro ensures that updates to db are passed from function to function within the cofx :db key and
   that only a :merging-fx-with-common-keys effect is returned if some functions are trying
-  to produce the same effects (excepted :db effect)"
+  to produce the same effects (excepted :db, :data-source/tx and :data-source/base-tx effects).
+  :data-source/tx and :data-source/base-tx effects are handled specially and their results
+  (list of transactions) are compacted to one transactions list (for each effect). "
   {:added "1.0"}
   [cofx & forms]
   (let [form (first forms)]

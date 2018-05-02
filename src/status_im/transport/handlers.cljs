@@ -15,7 +15,8 @@
             [status-im.transport.message.core :as message]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.v1.contact :as v1.contact]
-            [status-im.transport.message.v1.group-chat :as v1.group-chat]))
+            [status-im.transport.message.v1.group-chat :as v1.group-chat]
+            [status-im.data-store.transport :as transport-store]))
 
 (handlers/register-handler-fx
  :protocol/receive-whisper-message
@@ -54,8 +55,8 @@
                                                 :sym-key-id sym-key-id
                                                 :topic      topic
                                                 :chat-id    chat-id}
-                               :data-store.transport/save {:chat-id chat-id
-                                                           :chat    chat-transport-info}}
+                               :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
+                                                                                    :chat    chat-transport-info})]}
                               (message/send (v1.contact/NewContactKey. sym-key topic message)
                                             chat-id)))))
 
@@ -73,8 +74,8 @@
                                                 :sym-key-id sym-key-id
                                                 :topic      topic
                                                 :chat-id    chat-id}
-                               :data-store.transport/save {:chat-id chat-id
-                                                           :chat    chat-transport-info}}
+                               :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
+                                                                                    :chat    chat-transport-info})]}
                               (message/receive message chat-id chat-id)))))
 
 #_(handlers/register-handler-fx
@@ -110,11 +111,12 @@
                                                 :sym-key-id sym-key-id
                                                 :topic      (transport.utils/get-topic chat-id)
                                                 :chat-id    chat-id}
-                               :data-store.transport/save {:chat-id chat-id
-                                                           :chat (-> (get-in db [:transport/chats chat-id])
-                                                                     (assoc :sym-key-id sym-key-id)
-                                                                     ;;TODO (yenda) remove once go implements persistence
-                                                                     (assoc :sym-key sym-key))}}
+                               :data-store/tx  [(transport-store/save-transport-tx
+                                                 {:chat-id chat-id
+                                                  :chat    (-> (get-in db [:transport/chats chat-id])
+                                                               (assoc :sym-key-id sym-key-id)
+                                                               ;;TODO (yenda) remove once go implements persistence
+                                                               (assoc :sym-key sym-key))})]}
                               (message/send (v1.group-chat/NewGroupKey. chat-id sym-key message) chat-id)))))
 
 (handlers/register-handler-fx
@@ -127,11 +129,12 @@
                               :sym-key-id sym-key-id
                               :topic      (transport.utils/get-topic chat-id)
                               :chat-id    chat-id}
-             :data-store.transport/save {:chat-id chat-id
-                                         :chat (-> (get-in db [:transport/chats chat-id])
-                                                   (assoc :sym-key-id sym-key-id)
-                                                   ;;TODO (yenda) remove once go implements persistence
-                                                   (assoc :sym-key sym-key))}}]
+             :data-store/tx  [(transport-store/save-transport-tx
+                               {:chat-id chat-id
+                                :chat    (-> (get-in db [:transport/chats chat-id])
+                                             (assoc :sym-key-id sym-key-id)
+                                             ;;TODO (yenda) remove once go implements persistence
+                                             (assoc :sym-key sym-key))})]}]
      ;; if new sym-key is wrapping some message, call receive on it as well, if not just update the transport layer
      (if message
        (handlers-macro/merge-fx cofx fx (message/receive message chat-id signature))
