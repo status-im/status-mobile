@@ -1,14 +1,13 @@
 from tests import get_current_time
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
-import time
 
 
-class FirstAccountButton(BaseButton):
+class AccountButton(BaseButton):
 
     def __init__(self, driver):
-        super(FirstAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.ScrollView//android.widget.TextView")
+        super(AccountButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[contains(@text,'0x')]")
 
 
 class PasswordInput(BaseEditBox):
@@ -44,7 +43,8 @@ class RecoverAccessButton(BaseButton):
 class CreateAccountButton(BaseButton):
     def __init__(self, driver):
         super(CreateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='CREATE ACCOUNT']")
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='CREATE ACCOUNT' or @text='CREATE NEW ACCOUNT']")
 
 
 class IHaveAccountButton(RecoverAccessButton):
@@ -68,7 +68,7 @@ class ConfirmPasswordInput(BaseEditBox):
 class NameInput(BaseEditBox):
     def __init__(self, driver):
         super(NameInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Name']")
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
 class DonNotShare(BaseButton):
@@ -84,7 +84,7 @@ class SignInView(BaseView):
         super(SignInView, self).__init__(driver)
         self.driver = driver
 
-        self.first_account_button = FirstAccountButton(self.driver)
+        self.account_button = AccountButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.sign_in_button = SignInButton(self.driver)
         self.recover_access_button = RecoverAccessButton(self.driver)
@@ -104,7 +104,7 @@ class SignInView(BaseView):
         self.confirm_password_input.set_value(password)
         self.next_button.click()
         self.name_input.wait_for_element(45)
-        self.name_input.set_value('user_%s' % get_current_time())
+        self.name_input.send_keys('user_%s' % get_current_time())
         self.next_button.click()
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
@@ -118,3 +118,6 @@ class SignInView(BaseView):
         recover_access_view.sign_in_button.click()
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
+
+    def click_account_by_position(self, position: int):
+        self.account_button.find_elements()[position].click()

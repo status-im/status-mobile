@@ -42,6 +42,25 @@ class RequestCommand(BaseButton):
         self.locator = self.Locator.accessibility_id('request-payment-button')
 
 
+class DebugCommand(BaseButton):
+    def __init__(self, driver):
+        super(DebugCommand, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[contains(@text,'Starts/stops')]/preceding-sibling::*[@text='/debug']")
+
+
+class DebugOnCommand(BaseButton):
+    def __init__(self, driver):
+        super(DebugOnCommand, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='On']")
+
+
+class DebugOffCommand(BaseButton):
+    def __init__(self, driver):
+        super(DebugOffCommand, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Off']")
+
+
 class ChatMenuButton(BaseButton):
     def __init__(self, driver):
         super(ChatMenuButton, self).__init__(driver)
@@ -99,12 +118,6 @@ class MoreUsersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
-class UserProfileDetails(BaseButton):
-    def __init__(self, driver):
-        super(UserProfileDetails, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Profile']")
-
-
 class OpenInBrowserButton(BaseButton):
     def __init__(self, driver):
         super(OpenInBrowserButton, self).__init__(driver)
@@ -127,6 +140,18 @@ class ViewProfileButton(BaseButton):
         self.locator = self.Locator.xpath_selector('//*[@text="View profile"]')
 
 
+class ProfileSendMessageButton(BaseButton):
+    def __init__(self, driver):
+        super(ProfileSendMessageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('start-conversation-button')
+
+
+class ProfileSendTransactionButton(BaseButton):
+    def __init__(self, driver):
+        super(ProfileSendTransactionButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('send-transaction-button')
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -138,6 +163,9 @@ class ChatView(BaseView):
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
+        self.debug_command = DebugCommand(self.driver)
+        self.debug_on_command = DebugOnCommand(self.driver)
+        self.debug_off_command = DebugOffCommand(self.driver)
 
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
@@ -151,9 +179,11 @@ class ChatView(BaseView):
 
         self.first_recipient_button = FirstRecipient(self.driver)
 
-        self.user_profile_details = UserProfileDetails(self.driver)
-
         self.open_in_browser_button = OpenInBrowserButton(self.driver)
+
+        # Contact's profile
+        self.profile_send_message = ProfileSendMessageButton(self.driver)
+        self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
 
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')

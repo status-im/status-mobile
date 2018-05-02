@@ -25,7 +25,7 @@ class BackButton(BaseButton):
 class AllowButton(BaseButton):
     def __init__(self, driver):
         super(AllowButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Allow']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Allow' or @text='ALLOW']")
 
     def click(self):
         try:
@@ -290,3 +290,24 @@ class BaseView(object):
     def public_key_to_address(self, public_key):
         raw_public_key = bytearray.fromhex(public_key.replace('0x04', ''))
         return datatypes.PublicKey(raw_public_key).to_address()[2:]
+
+    def get_back_to_home_view(self):
+        counter = 0
+        while not self.home_button.is_element_displayed(2):
+            try:
+                if counter >= 5:
+                    return
+                self.back_button.click()
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+
+    def relogin(self):
+        self.get_back_to_home_view()
+        profile_view = self.profile_button.click()
+        profile_view.logout_button.click()
+        profile_view.confirm_logout_button.click()
+        sign_in_view = self.get_sign_in_view()
+        sign_in_view.click_account_by_position(0)
+        sign_in_view.password_input.send_keys('qwerty1234')
+        sign_in_view.sign_in_button.click()
+        sign_in_view.home_button.wait_for_visibility_of_element()

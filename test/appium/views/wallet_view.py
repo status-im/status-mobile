@@ -98,6 +98,18 @@ class DoneButton(BaseButton):
         self.locator = self.Locator.accessibility_id('done-button')
 
 
+class QRCodeImage(BaseButton):
+    def __init__(self, driver):
+        super(QRCodeImage, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('qr-code-image')
+
+
+class AddressText(BaseButton):
+    def __init__(self, driver):
+        super(AddressText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('address-text')
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -116,6 +128,9 @@ class WalletView(BaseView):
         self.manage_assets_button = ManageAssetsButton(self.driver)
         self.stt_check_box = STTCheckBox(self.driver)
         self.done_button = DoneButton(self.driver)
+
+        self.qr_code_image = QRCodeImage(self.driver)
+        self.address_text = AddressText(self.driver)
 
     def get_usd_total_value(self):
         return float(self.usd_total_value.text)
