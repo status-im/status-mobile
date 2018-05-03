@@ -131,7 +131,9 @@
   ([realm schema-name obj]
    (create realm schema-name obj false))
   ([realm schema-name obj update?]
-   (.create realm (name schema-name) (clj->js obj) update?)))
+   (let [obj-to-save (select-keys obj (keys (get-in entity->schemas
+                                                    [schema-name :properties])))]
+     (.create realm (name schema-name) (clj->js obj-to-save) update?))))
 
 (defn save
   ([realm schema-name obj]
