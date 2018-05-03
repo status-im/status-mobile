@@ -10,7 +10,7 @@
 ;; (see mixpanel_events.edn for list of trackable events)
 
 (def survey-triggers
-  [{:event :send-current-message :count 4  :token "UqtvIKgVDUTo4l_sDS-fwA"}
+  [{:event :send-current-message :count 4  :token "mXqUhHomDz7Ao6gOmQ2klg"}
    {:event :send-current-message :count 5 :token "Hr9Dk3krPK7PPxuDbHAmXg"}])
 
 ;; 2018-05-07 12:00:00
