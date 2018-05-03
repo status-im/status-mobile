@@ -133,21 +133,8 @@
   ([realm schema-name obj update?]
    (.create realm (name schema-name) (clj->js obj) update?)))
 
-(defn save
-  ([realm schema-name obj]
-   (save realm schema-name obj false))
-  ([realm schema-name obj update?]
-   (write realm #(create realm schema-name obj update?))))
-
-(defn save-all
-  ([realm schema-name objs]
-   (save-all realm schema-name objs false))
-  ([realm schema-name objs update?]
-   (write realm (fn []
-                  (mapv #(save realm schema-name % update?) objs)))))
-
 (defn delete [realm obj]
-  (write realm #(.delete realm obj)))
+  (.delete realm obj))
 
 (defn get-all [realm schema-name]
   (.objects realm (name schema-name)))
@@ -249,7 +236,6 @@
                  :or (or-query queries)))))
 
 (defn exists?
-  "Returns true if object/s identified by schema-name and field values (`:and`)
-  exists in realm"
-  [realm schema-name fields]
-  (pos? (.-length (get-by-fields realm schema-name :and fields))))
+  "Returns true if object/s identified by schema-name and field and value"
+  [realm schema-name field value]
+  (pos? (.-length (get-by-field realm schema-name field value))))

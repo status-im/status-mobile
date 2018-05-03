@@ -13,7 +13,7 @@
                                                    {:name contact-name}}}}
           response      (chat/upsert-chat chat-props cofx)
           actual-chat   (get-in response [:db :chats chat-id])
-          store-chat-fx (:data-store/save-chat response)]
+          store-chat-tx (:data-store/tx response)]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
       (testing "it adds the extra props"
@@ -27,7 +27,7 @@
       (testing "it adds the contact-id to the contact field"
         (is (= chat-id (-> actual-chat :contacts first))))
       (testing "it adds the fx to store a chat"
-        (is store-chat-fx))))
+        (is store-chat-tx))))
   (testing "upserting an existing chat"
     (let [chat-id        "some-chat-id"
           chat-props     {:chat-id chat-id
@@ -37,7 +37,7 @@
                                                 :name "old-name"}}}}
           response      (chat/upsert-chat chat-props cofx)
           actual-chat   (get-in response [:db :chats chat-id])
-          store-chat-fx (:data-store/save-chat response)]
+          store-chat-tx (:data-store/tx response)]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
       (testing "it adds the extra props"
@@ -45,7 +45,7 @@
       (testing "it updates existins props"
         (is (= "new-name" (:name actual-chat))))
       (testing "it adds the fx to store a chat"
-        (is store-chat-fx))))
+        (is store-chat-tx))))
   (testing "upserting a deleted chat"
     (let [chat-id        "some-chat-id"
           contact-name   "contact-name"
@@ -66,10 +66,10 @@
         admin "admin"
         participants ["a"]
         fx (chat/add-group-chat chat-id chat-name admin participants {})
-        store-fx   (:data-store/save-chat fx)
+        store-tx   (:data-store/tx fx)
         group-chat (get-in fx [:db :chats chat-id])]
     (testing "it saves the chat in the database"
-      (is store-fx))
+      (is store-tx))
     (testing "it sets the name"
       (is (= chat-name (:name group-chat))))
     (testing "it sets the admin"
@@ -86,10 +86,10 @@
 (deftest add-public-chat
   (let [topic "topic"
         fx (chat/add-public-chat topic {})
-        store-fx   (:data-store/save-chat fx)
+        store-tx   (:data-store/tx fx)
         chat (get-in fx [:db :chats topic])]
     (testing "it saves the chat in the database"
-      (is store-fx))
+      (is store-tx))
     (testing "it sets the name"
       (is (= topic (:name chat))))
     (testing "it sets the participants"

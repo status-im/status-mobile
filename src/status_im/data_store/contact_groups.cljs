@@ -1,34 +1,35 @@
 (ns status-im.data-store.contact-groups
-  (:require [cljs.core.async :as async]
+  (:require [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]
-            [status-im.data-store.realm.contact-groups :as data-store])
-  (:refer-clojure :exclude [exists?]))
+            [status-im.data-store.realm.core :as core]))
 
 (re-frame/reg-cofx
   :data-store/get-all-contact-groups
   (fn [cofx _]
     (assoc cofx :all-contact-groups (into {}
                                           (map (juxt :group-id identity))
-                                          (data-store/get-all-as-list)))))
+                                          (-> @core/account-realm
+                                              (core/get-all :contact-group)
+                                              (core/all-clj :contact-group))))))
 
-(re-frame/reg-fx
-  :data-store/save-contact-group
-  (fn [{:keys [group-id] :as group}]
-    (async/go (async/>! core/realm-queue #(data-store/save group (data-store/exists? group-id))))))
+(defn save-contact-group-tx
+  "Returns tx function for saving contact group"
+  [{:keys [group-id] :as group}]
+  (fn [realm]
+    (core/create realm :contact-group group (core/exists? realm :contact-group :group-id group-id))))
 
-(re-frame/reg-fx
-  :data-store/save-contact-groups
-  (fn [groups]
-    (doseq [{:keys [group-id] :as group} groups]
-      (async/go (async/>! core/realm-queue #(data-store/save group (data-store/exists? group-id)))))))
+(defn save-contact-groups-tx
+  "Returns tx function for saving contact groups"
+  [groups]
+  (fn [realm]
+    (doseq [group groups]
+      ((save-contact-group-tx group) realm))))
 
-(re-frame/reg-fx
-  :data-store/save-contact-group-property
-  (fn [[group-id property-name value]]
-    (async/go (async/>! core/realm-queue #(data-store/save-property group-id property-name value)))))
-
-(re-frame/reg-fx
-  :data-store/add-contacts-to-contact-group
-  (fn [[group-id contacts]]
-    (async/go (async/>! core/realm-queue #(data-store/add-contacts group-id contacts)))))
+(defn add-contacts-to-contact-group-tx
+  "Returns tx function for adding contacts to contact group"
+  [group-id contacts]
+  (fn [realm]
+    (let [group             (core/single (core/get-by-field realm :contact-group :group-id group-id))
+          existing-contacts (object/get group "contacts")]
+      (aset group "contacts" (clj->js (into #{} (concat contacts
+                                                        (core/list->clj existing-contacts))))))))

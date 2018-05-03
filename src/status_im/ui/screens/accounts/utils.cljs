@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.accounts.utils
   (:require [status-im.transport.message.core :as transport]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.transport.message.v1.contact :as message.contact]))
+            [status-im.transport.message.v1.contact :as message.contact]
+            [status-im.data-store.accounts :as accounts-store]))
 
 
 (defn account-update
@@ -12,8 +13,9 @@
   ([new-account-fields after-update-event {:keys [db] :as cofx}]
    (let [current-account (:account/account db)
          new-account     (merge current-account new-account-fields)
-         fx              {:db                      (assoc db :account/account new-account)
-                          :data-store/save-account (assoc new-account :after-update-event after-update-event)}
+         fx              {:db                 (assoc db :account/account new-account)
+                          :data-store/base-tx [(accounts-store/save-account-tx
+                                                (assoc new-account :after-update-event after-update-event))]}
          {:keys [name photo-path]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
        (handlers-macro/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))

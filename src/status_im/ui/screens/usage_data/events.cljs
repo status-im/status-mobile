@@ -4,6 +4,6 @@
 
 (handlers/register-handler-fx
   :help-improve-handler
-  (fn [{db :db} [_ yes? next]]
-    (merge (accounts.utils/account-update {:sharing-usage-data? yes?} {:db db})
+  (fn [cofx [_ yes? next]]
+    (merge (accounts.utils/account-update {:sharing-usage-data? yes?} cofx)
            {:dispatch (or next [:navigate-to-clean :home])})))

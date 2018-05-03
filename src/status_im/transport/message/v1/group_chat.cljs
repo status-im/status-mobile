@@ -31,10 +31,10 @@
                                               :sym-key    sym-key
                                               :on-success (fn [sym-key sym-key-id]
                                                             (re-frame/dispatch [:group/add-new-sym-key {:chat-id    chat-id
-                                                                                                   :signature  signature
-                                                                                                   :sym-key    sym-key
-                                                                                                   :sym-key-id sym-key-id
-                                                                                                   :message    message}]))}}
+                                                                                                        :signature  signature
+                                                                                                        :sym-key    sym-key
+                                                                                                        :sym-key-id sym-key-id
+                                                                                                        :message    message}]))}}
                        (protocol/init-chat chat-id))))
 
 (defn- user-is-group-admin? [chat-id cofx]
@@ -46,9 +46,9 @@
     {:shh/get-new-sym-key {:web3 (get-in cofx [:db :web3])
                            :on-success (fn [sym-key sym-key-id]
                                          (re-frame/dispatch [:group/send-new-sym-key {:chat-id    chat-id
-                                                                                 :sym-key    sym-key
-                                                                                 :sym-key-id sym-key-id
-                                                                                 :message    message}]))}}))
+                                                                                      :sym-key    sym-key
+                                                                                      :sym-key-id sym-key-id
+                                                                                      :message    message}]))}}))
 
 (defn- prepare-system-message [admin-name added-participants removed-participants contacts]
   (let [added-participants-names   (map #(get-in contacts [% :name] %) added-participants)
@@ -93,8 +93,8 @@
             (if (removed me) ;; we were removed
               (handlers-macro/merge-fx cofx
                                  (models.message/receive
-                                   (models.message/system-message chat-id random-id now
-                                                                  (str admin-name " " (i18n/label :t/removed-from-chat))))
+                                  (models.message/system-message chat-id random-id now
+                                                                 (str admin-name " " (i18n/label :t/removed-from-chat))))
                                  (models.chat/upsert-chat {:chat-id         chat-id
                                                            :removed-from-at now
                                                            :is-active       false})
@@ -130,4 +130,3 @@
                                                            (str participant-leaving-name " " (i18n/label :t/left))))
                            (group/participants-removed chat-id #{signature})
                            (send-new-group-key nil chat-id))))))
-

@@ -1,20 +1,9 @@
 (ns status-im.data-store.messages
   (:require [cljs.reader :as reader]
-            [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
-            [status-im.data-store.realm.messages :as data-store]
-            [status-im.utils.random :as random]
-            [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as datetime]))
-
-;; TODO janherich: define as cofx once debug handlers are refactored
-(defn get-log-messages
-  [chat-id]
-  (->> (data-store/get-by-chat-id chat-id 0 100)
-       (filter #(= (:content-type %) constants/content-type-log-message))
-       (map #(select-keys % [:content :timestamp]))))
+            [status-im.utils.core :as utils]))
 
 (defn- command-type?
   [type]
@@ -22,24 +11,35 @@
    #{constants/content-type-command constants/content-type-command-request}
    type))
 
-(def default-values
-  {:outgoing       false
-   :to             nil})
+(defn- transform-message [{:keys [content-type] :as message}]
+  (cond-> (-> message
+              (update :message-type keyword)
+              (update :user-statuses (partial into {}
+                                              (map (fn [[_ {:keys [whisper-identity status]}]]
+                                                     [whisper-identity (keyword status)])))))
+    (command-type? content-type)
+    (update :content reader/read-string)))
 
-(re-frame/reg-cofx
-  :data-store/get-message
-  (fn [cofx _]
-    (assoc cofx :get-stored-message data-store/get-by-id)))
-
-(defn get-by-chat-id
+(defn- get-by-chat-id
   ([chat-id]
    (get-by-chat-id chat-id 0))
   ([chat-id from]
-   (->> (data-store/get-by-chat-id chat-id from constants/default-number-of-messages)
-        (keep (fn [{:keys [content-type preview] :as message}]
-                (if (command-type? content-type)
-                  (update message :content reader/read-string)
-                  message))))))
+   (let [messages (-> (core/get-by-field @core/account-realm :message :chat-id chat-id)
+                      (core/sorted :timestamp :desc)
+                      (core/page from (+ from constants/default-number-of-messages))
+                      (core/all-clj :message))]
+     (map transform-message messages))))
+
+;; TODO janherich: define as cofx once debug handlers are refactored
+(defn get-log-messages
+  [chat-id]
+  (->> (get-by-chat-id chat-id 0)
+       (filter #(= (:content-type %) constants/content-type-log-message))
+       (map #(select-keys % [:content :timestamp]))))
+
+(def default-values
+  {:outgoing       false
+   :to             nil})
 
 (re-frame/reg-cofx
   :data-store/get-messages
@@ -49,7 +49,16 @@
 (re-frame/reg-cofx
   :data-store/message-ids
   (fn [cofx _]
-    (assoc cofx :stored-message-ids (data-store/get-stored-message-ids))))
+    (assoc cofx :stored-message-ids (let [chat-id->message-id (volatile! {})]
+                                      (-> @core/account-realm
+                                          (.objects "message")
+                                          (.map (fn [msg _ _]
+                                                  (vswap! chat-id->message-id
+                                                          #(update %
+                                                                   (aget msg "chat-id")
+                                                                   (fnil conj #{})
+                                                                   (aget msg "message-id"))))))
+                                      @chat-id->message-id))))
 
 (re-frame/reg-cofx
   :data-store/unviewed-messages
@@ -59,7 +68,11 @@
            (into {}
                  (map (fn [[chat-id user-statuses]]
                         [chat-id (into #{} (map :message-id) user-statuses)]))
-                 (group-by :chat-id (data-store/get-unviewed (:current-public-key db)))))))
+                 (group-by :chat-id (-> @core/account-realm
+                                        (core/get-by-fields :user-status
+                                                            :and {:whisper-identity (:current-public-key db)
+                                                                  :status           :received})
+                                        (core/all-clj :user-status)))))))
 
 (defn- prepare-content [content]
   (if (string? content)
@@ -84,52 +97,48 @@
       prepare-statuses
       (utils/update-if-present :content prepare-content)))
 
-(defn save
-  [{:keys [message-id content from] :as message}]
-  (when-not (data-store/exists? message-id)
-    (data-store/save (prepare-message (merge default-values
-                                             message
-                                             {:from      (or from "anonymous")
-                                              :received-timestamp (datetime/timestamp)})))))
-(defn delete
+(defn save-message-tx
+  "Returns tx function for saving message"
+  [{:keys [message-id from] :as message}]
+  (fn [realm]
+    (when-not (core/exists? realm :message :message-id message-id)
+      (core/create realm
+                   :message
+                   (prepare-message (merge default-values message {:from (or from "anonymous")}))))))
+
+(defn delete-message-tx
+  "Returns tx function for deleting message"
   [message-id]
-  (when (data-store/exists? message-id)
-    (data-store/delete message-id)))
+  (fn [realm]
+    (when-let [message (core/single (core/get-by-field realm :message :message-id message-id))]
+      (core/delete realm message))))
 
-(re-frame/reg-fx
-  :data-store/save-message
-  (fn [message]
-    (async/go (async/>! core/realm-queue #(save message)))))
-
-(re-frame/reg-fx
-  :data-store/delete-message
-  (fn [message-id]
-    (async/go (async/>! core/realm-queue #(delete message-id)))))
-
-(defn update-message
+(defn update-message-tx
+  "Returns tx function for updating message"
   [{:keys [message-id] :as message}]
-  (when-let [{:keys [chat-id]} (data-store/get-by-id message-id)]
-    (data-store/save (prepare-message (assoc message :chat-id chat-id)))))
+  (fn [realm]
+    (when-let [{:keys [chat-id] :as loaded} (some-> (core/get-by-field realm :message :message-id message-id)
+                                                    (core/single-clj :message))]
+      (core/create realm :message (prepare-message (assoc message :chat-id chat-id)) true))))
 
-(re-frame/reg-fx
-  :data-store/update-message
-  (fn [message]
-    (async/go (async/>! core/realm-queue #(update-message message)))))
-
-(re-frame/reg-fx
-  :data-store/update-messages
-  (fn [messages]
+(defn update-messages-tx
+  "Returns tx function for updating messages"
+  [messages]
+  (fn [realm]
     (doseq [message messages]
-      (async/go (async/>! core/realm-queue #(update-message message))))))
+      ((update-message-tx message) realm))))
 
-(re-frame/reg-fx
-  :data-store/delete-messages
-  (fn [chat-id]
-    (async/go (async/>! core/realm-queue #(data-store/delete-by-chat-id chat-id)))))
+(defn delete-messages-tx
+  "Returns tx function for deleting messages with user statuses for given chat-id"
+  [chat-id]
+  (fn [realm]
+    (core/delete realm (core/get-by-field realm :message :chat-id chat-id))
+    (core/delete realm (core/get-by-field realm :user-status :chat-id chat-id))))
 
-(re-frame/reg-fx
-  :data-store/hide-messages
-  (fn [chat-id]
-    (async/go (async/>! core/realm-queue #(doseq [message-id (data-store/get-message-ids-by-chat-id chat-id)]
-                                            (data-store/save {:message-id message-id
-                                                              :show?      false}))))))
+(defn hide-messages-tx
+  "Returns tx function for hiding messages for given chat-id"
+  [chat-id]
+  (fn [realm]
+    (.map (core/get-by-field realm :message :chat-id chat-id)
+          (fn [msg _ _]
+            (aset msg "show?" false)))))

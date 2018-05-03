@@ -6,7 +6,9 @@
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.transport.message.core :as transport]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.handlers-macro :as handlers-macro] 
+            [status-im.data-store.chats :as chats-store]
+            [status-im.data-store.messages :as messages-store]))
 
 
 ;;;; Handlers
@@ -14,7 +16,7 @@
 (handlers/register-handler-fx
   :show-group-chat-profile
   [re-frame/trim-v]
-  (fn [{:keys [db] :as cofx} [chat-id]] 
+  (fn [{:keys [db] :as cofx} [chat-id]]
     {:db (-> db
              (assoc :new-chat-name (get-in db [:chats chat-id :name])
                     :group/group-type :chat-group)
@@ -28,10 +30,10 @@
           contacts                 (:contacts/contacts db)
           added-participants-names (map #(get-in contacts [% :name]) selected-participants)]
       (handlers-macro/merge-fx cofx
-                         {:db (-> db
-                                  (assoc-in [:chats current-chat-id :contacts] participants)
-                                  (assoc :selected-participants #{}))
-                          :data-store/add-chat-contacts (select-keys db [:current-chat-id :selected-participants])}
+                         {:db            (-> db
+                                             (assoc-in [:chats current-chat-id :contacts] participants)
+                                             (assoc :selected-participants #{}))
+                          :data-store/tx [(chats-store/add-chat-contacts-tx current-chat-id selected-participants)]}
                          (models.message/receive
                           (models.message/system-message current-chat-id message-id now
                                                          (str "You've added " (apply str (interpose ", " added-participants-names)))))
@@ -45,8 +47,8 @@
           contacts                   (:contacts/contacts db)
           removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]
       (handlers-macro/merge-fx cofx
-                         {:db (assoc-in db [:chats current-chat-id :contacts] participants)
-                          :data-store/remove-chat-contacts [current-chat-id removed-participants]}
+                         {:db            (assoc-in db [:chats current-chat-id :contacts] participants)
+                          :data-store/tx [(chats-store/remove-chat-contacts-tx current-chat-id removed-participants)]}
                          (models.message/receive
                           (models.message/system-message current-chat-id message-id now
                                                          (str "You've removed " (apply str (interpose ", " removed-participants-names)))))
@@ -56,13 +58,14 @@
   :set-group-chat-name
   (fn [{{:keys [current-chat-id] :as db} :db} [_ new-chat-name]]
     {:db                            (assoc-in db [:chats current-chat-id :name] new-chat-name)
-     :data-store/save-chat-property [current-chat-id :name new-chat-name]}))
+     :data-store/tx [(chats-store/save-chat-tx {:chat-id current-chat-id
+                                                :name    new-chat-name})]}))
 
 (handlers/register-handler-fx
   :clear-history
   (fn [{{:keys [current-chat-id] :as db} :db} _]
-    {:db                       (assoc-in db [:chats current-chat-id :messages] {})
-     :data-store/hide-messages current-chat-id}))
+    {:db            (assoc-in db [:chats current-chat-id :messages] {})
+     :data-store/tx [(messages-store/hide-messages-tx current-chat-id)]}))
 
 (handlers/register-handler-fx
   :clear-history?
