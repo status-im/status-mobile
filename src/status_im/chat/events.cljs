@@ -212,7 +212,8 @@
                                     unseen-messages-ids)})
 
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
-  (when (and (seq message-ids)
+  (when (and (not (get-in db [:chats chat-id :public?]))
+             (seq message-ids)
              (not (models/bot-only-chat? db chat-id)))
     (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
@@ -237,13 +238,13 @@
     (when (or (seq unseen-messages-ids)
               (seq unseen-system-messages-ids))
       (handlers-macro/merge-fx cofx
-                         {:db (-> (reduce (fn [new-db message-id]
-                                            (assoc-in new-db (into messages-path [message-id :user-statuses me]) :seen))
-                                          db
-                                          (into unseen-messages-ids unseen-system-messages-ids))
-                                  (update-in [:chats chat-id :unviewed-messages] set/difference unseen-messages-ids unseen-system-messages-ids))}
-                         (persist-seen-messages chat-id (into unseen-messages-ids unseen-system-messages-ids))
-                         (send-messages-seen chat-id unseen-messages-ids)))))
+                               {:db (-> (reduce (fn [new-db message-id]
+                                                  (assoc-in new-db (into messages-path [message-id :user-statuses me]) :seen))
+                                                db
+                                                (into unseen-messages-ids unseen-system-messages-ids))
+                                        (update-in [:chats chat-id :unviewed-messages] set/difference unseen-messages-ids unseen-system-messages-ids))}
+                               (persist-seen-messages chat-id (into unseen-messages-ids unseen-system-messages-ids))
+                               (send-messages-seen chat-id unseen-messages-ids)))))
 
 (defn- fire-off-chat-loaded-event
   [chat-id {:keys [db]}]

@@ -65,7 +65,8 @@
          :contacts/keys [contacts]}               db
         {:keys [public-key] :as current-account}  (:account/account db)
         current-chat?                             (and (= :chat view-id) (= current-chat-id chat-id))
-        {:keys [last-clock-value] :as chat}       (get-in db [:chats chat-id])
+        {:keys [last-clock-value
+                public?] :as chat}                (get-in db [:chats chat-id])
         request-command                           (:request-command content)
         command-request?                          (and (= content-type constants/content-type-command-request)
                                                        request-command)
@@ -86,6 +87,7 @@
                                                                      current-account chat contacts request-command)))
                                     current-chat?)
                        (send-message-seen chat-id message-id (and public-key
+                                                                  (not public?)
                                                                   current-chat?
                                                                   (not (chat-model/bot-only-chat? db chat-id))
                                                                   (not (= constants/system from)))))))
