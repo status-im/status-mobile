@@ -13,7 +13,8 @@
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.transport.utils :as transport.utils]))
 
 ;;;; FX
 
@@ -158,11 +159,13 @@
 
       (= method constants/web3-personal-sign)
 
-      (let [{:keys [data]} args]
-        {:db (-> db
-                 (assoc-in [:wallet :transactions-unsigned id] {:data data :id id})
-                 (assoc-in [:wallet :send-transaction] {:id id :method method}))
-         :dispatch [:navigate-to-modal :wallet-sign-message-modal]}))))
+      (let [{:keys [data]} args
+            data' (transport.utils/to-utf8 data)]
+        (when data'
+          {:db (-> db
+                   (assoc-in [:wallet :transactions-unsigned id] {:data data' :id id})
+                   (assoc-in [:wallet :send-transaction] {:id id :method method}))
+           :dispatch [:navigate-to-modal :wallet-sign-message-modal]})))))
 
 (defn this-transaction-signing? [id signing-id view-id modal]
   (and (= signing-id id)

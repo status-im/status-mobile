@@ -273,7 +273,7 @@
          (i18n/label :t/message)
          [components/amount-input {:disabled?     true
                                    :input-options {:multiline     true
-                                                   :default-value (transport.utils/to-utf8 data)}}]]]]
+                                                   :default-value data}}]]]]
       [signing-buttons
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
        #(re-frame/dispatch [:wallet/sign-transaction-modal])
