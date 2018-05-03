@@ -20,4 +20,9 @@
                     nil])
          (message/parse-url "Status - https://github.com/status-im/status-react a Mobile Ethereum Operating System")))
   (is (= (lazy-seq [{:text "Browse, chat and make payments securely on the decentralized web." :url? false} nil])
-         (message/parse-url "Browse, chat and make payments securely on the decentralized web."))))
+         (message/parse-url "Browse, chat and make payments securely on the decentralized web.")))
+  (is (= (lazy-seq [{:text "web3.eth.blockNumber" :url? false} nil])
+         (message/parse-url "web3.eth.blockNumber")))
+  (is (= (lazy-seq [{:text "" :url? false}
+                    {:text "www.web3.com" :url? true}])
+         (message/parse-url "www.web3.com"))))

@@ -96,7 +96,7 @@
 
 (def regx-styled (re-pattern (string/join "|" (map first replacements))))
 
-(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+(def regx-url #"(?i)(?:^|\s)(?!web3\.)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
 
 (defn- parse-str-regx [string regx matched-fn unmatched-fn]
   (if (string? string)
@@ -118,12 +118,34 @@
     (str string)))
 
 (defn parse-url [string]
-  (parse-str-regx string
-                  regx-url
-                  (fn [text-seq]
-                    (map (fn [[text]] {:text text :url? true}) text-seq))
-                  (fn [text-seq]
-                    (map (fn [text] {:text text :url? false}) text-seq))))
+  (let [parsed (parse-str-regx string
+                                     regx-url
+                                     (fn [text-seq]
+                                       (map (fn [[text]] {:text text :url? true}) text-seq))
+                                     (fn [text-seq]
+                                       (map (fn [text] {:text text :url? false}) text-seq)))]
+    (map-indexed              
+      (fn [idx obj]
+        (when obj 
+          (-> obj
+              ; Trim url leading space
+              (#(let [{:keys [text url?]}  %
+                      empty-head           (re-find #"^\s+" text)]
+                (if (and url? empty-head)
+                  (assoc % :text (string/trim text))
+                  %)))
+              ; Move next url's leading space to tail
+              (#(let [next-obj (nth parsed (+ idx 1) nil)]
+                (if next-obj
+                  (let [{:keys [text url?]}  %
+                        next-text            (get next-obj :text)
+                        next-url?            (get next-obj :url?)
+                        next-empty-head      (re-find #"^\s+" next-text)]
+                    (if (and (not url?) next-url? next-empty-head)
+                      (assoc % :text (str text next-empty-head))
+                      %))
+                  %))))))
+      parsed)))
 
 (defn- autolink [string event-on-press]
   (->> (parse-url string)
