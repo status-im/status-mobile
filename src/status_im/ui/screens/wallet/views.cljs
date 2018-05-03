@@ -50,24 +50,24 @@
 
 (defn- render-asset [currency]
   (fn [{:keys [symbol icon decimals amount]}]
-   (let [asset-value (re-frame/subscribe [:asset-value symbol (-> currency :code keyword)])]
-     [react/view {:style styles/asset-item-container}
-      [list/item
-       [list/item-image icon]
-       [react/view {:style styles/asset-item-value-container}
-        [react/text {:style               styles/asset-item-value
-                     :number-of-lines     1
-                     :ellipsize-mode      :tail
-                     :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
-         (wallet.utils/format-amount amount decimals)]
-        [react/text {:style           styles/asset-item-currency
+    (let [asset-value (re-frame/subscribe [:asset-value symbol (-> currency :code keyword)])]
+      [react/view {:style styles/asset-item-container}
+       [list/item
+        [list/item-image icon]
+        [react/view {:style styles/asset-item-value-container}
+         [react/text {:style               styles/asset-item-value
+                      :number-of-lines     1
+                      :ellipsize-mode      :tail
+                      :accessibility-label (str (-> symbol name clojure.string/lower-case) "-asset-value-text")}
+          (wallet.utils/format-amount amount decimals)]
+         [react/text {:style           styles/asset-item-currency
+                      :uppercase?      true
+                      :number-of-lines 1}
+          (clojure.core/name symbol)]]
+        [react/text {:style           styles/asset-item-price
                      :uppercase?      true
                      :number-of-lines 1}
-         (clojure.core/name symbol)]]
-       [react/text {:style           styles/asset-item-price
-                    :uppercase?      true
-                    :number-of-lines 1}
-        (if @asset-value (str (:symbol currency) @asset-value) "...")]]])))
+         (if @asset-value (str (:symbol currency) @asset-value) "...")]]])))
 
 (defn- asset-section [assets currency]
   [react/view styles/asset-section

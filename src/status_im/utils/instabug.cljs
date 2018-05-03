@@ -5,40 +5,18 @@
 
 (def instabug rn-dependencies/instabug)
 
+(defn- prepare-event-name [event {:keys [target]}]
+  (str event " " target))
+
 ;; `event` is an event name, e.g. "Tap"
 ;; `properties` is a map of event details or nil, e.g. {:target :send-current-message}
-;; (see mixpanel_events.edn for list of trackable events)
-
-(def survey-triggers
-  [{:event :send-current-message :count 4  :token "UqtvIKgVDUTo4l_sDS-fwA"}
-   {:event :send-current-message :count 29 :token "Hr9Dk3krPK7PPxuDbHAmXg"}])
-
-;; 2018-05-07 12:00:00
-(def survey-enabled-timestamp 1525694400000)
-
-(defn maybe-show-survey [db]
-  (when config/instabug-surveys-enabled?
-    (let [sent-messages (->> db
-                             :chats
-                             (filter (fn [[chat-name _]] (not= "console" chat-name)))
-                             (map second)
-                             (mapcat (comp vals :messages))
-                             (filter :outgoing))
-          sent-messages-count (count sent-messages)
-          sent-messages-after-ts-count (->> sent-messages
-                                            (filter #(> (:ts %) survey-enabled-timestamp))
-                                            count)
-          {:keys [token]} (first (filter (fn [{:keys [count]}]
-                                           (or
-                                            (= count sent-messages-count)
-                                            (= count sent-messages-after-ts-count)))
-                                         survey-triggers))]
-      (when token
-        (.showSurveyWithToken instabug token)))))
-
+;; (see status-im.utils.mixpanel-events for list of trackable events)
 (defn track [event properties]
-  ;; NOTE(dmitryn) disabled until Instabug fix User Events
-  #_(.logUserEventWithNameAndParams instabug event properties))
+  (when (= event "Tap")
+    (let [event-name (prepare-event-name event properties)]
+      (try
+        (.logUserEventWithName instabug event-name)
+        (catch :default _ nil)))))
 
 (defn log [str]
   (if js/goog.DEBUG

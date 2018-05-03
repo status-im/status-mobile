@@ -101,9 +101,8 @@
                anon-id  (:device-UUID new-db)]
            (doseq [{:keys [label properties]}
                    (mixpanel/matching-events new-db event mixpanel/event-by-trigger)]
-             (mixpanel/track anon-id label properties offline?))
-           (when (= :send-current-message (first event))
-             (instabug/maybe-show-survey new-db)))))
+             (mixpanel/track anon-id label properties offline?)
+             (instabug/track label properties)))))
      context)))
 
 (defn register-handler
