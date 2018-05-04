@@ -167,13 +167,17 @@
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
-            currency        [:wallet/currency]]
+            currency        [:wallet/currency]
+            scroll          (atom nil)]
     (let [shown-account (merge current-account changed-account)]
       [react/view profile.components.styles/profile
        (if editing?
          [my-profile-edit-toolbar]
          [my-profile-toolbar])
-       [react/scroll-view {:keyboard-should-persist-taps :handled}
+       [react/scroll-view {:ref                          #(reset! scroll %)
+                           :keyboard-should-persist-taps :handled
+                           :on-content-size-change       #(when (and scroll @scroll)
+                                                            (.scrollToEnd @scroll))}
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
         [react/view action-button.styles/actions-list

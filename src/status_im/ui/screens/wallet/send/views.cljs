@@ -178,9 +178,11 @@
      [react/text {:style styles/advanced-fees-details-text}
       (str (money/to-fixed gas) " * " (money/to-fixed (money/wei-> :gwei gas-price)) (i18n/label :t/gwei))]]]])
 
-(defn- advanced-options [advanced? transaction modal?]
+(defn- advanced-options [advanced? transaction modal? scroll]
   [react/view {:style styles/advanced-wrapper}
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])}
+   [react/touchable-highlight {:on-press (fn []
+                                           (re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])
+                                           (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 350)))}
     [react/view {:style styles/advanced-button-wrapper}
      [react/view {:style               styles/advanced-button
                   :accessibility-label :advanced-button}
@@ -205,11 +207,10 @@
       (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
-      [react/scroll-view (merge {:keyboard-should-persist-taps :always
-                                 :on-content-size-change       #(when (and scroll @scroll)
-                                                                  (.scrollToEnd @scroll))}
-                                (when-not modal?
-                                  {:ref #(reset! scroll %)}))
+      [react/scroll-view {:keyboard-should-persist-taps :always
+                          :ref                           #(reset! scroll %)
+                          :on-content-size-change        #(when (and (not modal?) scroll @scroll)
+                                                            (.scrollToEnd @scroll))}
        [react/view styles/send-transaction-form
         [components/recipient-selector {:disabled? modal?
                                         :address   to
@@ -224,7 +225,7 @@
                                                      :max-length     21
                                                      :on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text (update-amount-fn timeout)}}]
-        [advanced-options advanced? transaction modal?]]]
+        [advanced-options advanced? transaction modal? scroll]]]
       (if signing?
         [signing-buttons
          #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
