@@ -68,10 +68,11 @@
 (def footer
   {:flex-direction   :row
    :justify-content  :center
-   :padding-top      22})
+   :padding-top      17})
 
 (def wallet-info
-  {:align-items    :center
+  {:flex-grow      1
+   :align-items    :center
    :padding-bottom 20})
 
 (def hash-value-type
@@ -80,6 +81,7 @@
 
 (def hash-value-text
   {:color             colors/black
+   :align-self        :stretch
    :margin-horizontal 60
    :text-align        :center
    :font-size         15
