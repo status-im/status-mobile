@@ -19,15 +19,15 @@
 
 ;; TODO(pacamara) Symptomatic fix, root cause is react-native onLayout returning
 ;; inconsistent height values, more investigation needed
-(defn android-blank-line-extra-height [input-text] 
+(defn android-blank-line-extra-height [input-text]
   (if (and platform/android? input-text (string/ends-with? input-text "\n"))
     (/ style/min-input-height 2)
     0))
 
 (defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
-  (letsubs [{:keys [input-text]} [:get-current-chat] 
-            input-focused?       [:get-current-chat-ui-prop :input-focused?]
-            input-ref            (atom nil)]
+  (letsubs [{:keys [input-text]} [:get-current-chat]
+            input-focused? [:get-current-chat-ui-prop :input-focused?]
+            input-ref      (atom nil)]
     [react/text-input
      {:ref                    #(when %
                                  (re-frame/dispatch [:set-chat-ui-props {:input-ref %}])
@@ -38,7 +38,7 @@
       :editable               true
       :blur-on-submit         false
       :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
-                                                                        :messages-focused? false}])
+                                                                       :messages-focused? false}])
       :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
       :on-submit-editing      (fn [_]
                                 (if single-line-input?
@@ -49,7 +49,7 @@
                                 (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
       :on-change              (fn [e]
                                 (let [native-event (.-nativeEvent e)
-                                      text (.-text native-event)
+                                      text         (.-text native-event)
                                       content-size (.. native-event -contentSize)]
                                   (when (and (not single-line-input?)
                                              content-size)
@@ -63,8 +63,8 @@
                                        h (.-height s)]
                                    (set-container-width-fn w)
                                    (set-layout-height-fn h)))
-      :on-selection-change    #(let [s (-> (.-nativeEvent %)
-                                           (.-selection))
+      :on-selection-change    #(let [s   (-> (.-nativeEvent %)
+                                             (.-selection))
                                      end (.-end s)]
                                  (re-frame/dispatch [:update-text-selection end]))
       :style                  (style/input-view height single-line-input?)
@@ -94,8 +94,8 @@
   (fn [_]
     (let [to-value (if @placeholder 1 0)]
       (animation/start
-        (animation/timing opacity-value {:toValue  to-value
-                                         :duration 300})))))
+       (animation/timing opacity-value {:toValue  to-value
+                                        :duration 300})))))
 
 (defview input-helper [{:keys [width]}]
   (letsubs [placeholder   [:chat-input-placeholder]
@@ -116,15 +116,15 @@
     nil))
 
 (defview seq-input [{:keys [command-width container-width]}]
-  (letsubs [command                      [:selected-chat-command]
-            arg-pos                      [:current-chat-argument-position]
+  (letsubs [command [:selected-chat-command]
+            arg-pos [:current-chat-argument-position]
             {:keys [seq-arg-input-text]} [:get-current-chat]]
     (when (get-in command [:command :sequential-params])
       (let [{:keys [placeholder type]} (get-in command [:command :params arg-pos])]
         [react/text-input (merge {:ref                 #(re-frame/dispatch [:set-chat-ui-props {:seq-input-ref %}])
                                   :style               (style/seq-input-text command-width container-width)
                                   :default-value       (or seq-arg-input-text "")
-                                  :on-change-text      #(do (re-frame/dispatch [:set-chat-seq-arg-input-text %]) 
+                                  :on-change-text      #(do (re-frame/dispatch [:set-chat-seq-arg-input-text %])
                                                             (re-frame/dispatch [:set-chat-ui-props {:validation-messages nil}]))
                                   :placeholder         placeholder
                                   :accessibility-label :chat-request-input
@@ -135,8 +135,8 @@
                                                                        (get-in command [:command :hide-send-button]))
                                                            (re-frame/dispatch [:send-seq-argument]))
                                                          (utils/set-timeout
-                                                           #(re-frame/dispatch [:chat-input-focus :seq-input-ref])
-                                                           100))}
+                                                          #(re-frame/dispatch [:chat-input-focus :seq-input-ref])
+                                                          100))}
                                  (get-options type))]))))
 
 (defview input-view [{:keys [single-line-input?]}]
@@ -171,9 +171,9 @@
                                         :color           :dark}]]])))
 
 (defview input-container []
-  (letsubs [margin               [:chat-input-margin]
+  (letsubs [margin     [:chat-input-margin]
             {:keys [input-text]} [:get-current-chat]
-            result-box           [:get-current-chat-ui-prop :result-box]]
+            result-box [:get-current-chat-ui-prop :result-box]]
     (let [single-line-input? (:singleLineInput result-box)]
       [react/view {:style     (style/root margin)
                    :on-layout #(let [h (-> (.-nativeEvent %)

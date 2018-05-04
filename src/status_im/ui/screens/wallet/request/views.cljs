@@ -27,7 +27,7 @@
 (views/defview send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [{:keys [to to-name whisper-identity]} [:wallet.send/transaction]
-                  {:keys [amount amount-error]}         [:wallet.request/transaction]
+                  {:keys [amount amount-error]} [:wallet.request/transaction]
                   scroll (atom nil)]
     [comp/simple-screen {:avoid-keyboard? true}
      [comp/toolbar (i18n/label :t/new-request)]
@@ -47,7 +47,7 @@
                                                      :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
       [bottom-buttons/bottom-buttons styles/bottom-buttons
-       nil ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
+       nil                                                  ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
        [button/button {:disabled?           (not (and to amount))
                        :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount])
                        :text-style          {:padding-horizontal 0}
@@ -64,8 +64,8 @@
    address])
 
 (views/defview request-transaction []
-  (views/letsubs [address-hex       [:get-current-account-hex]
-                  chain-id          [:get-network-id]]
+  (views/letsubs [address-hex [:get-current-account-hex]
+                  chain-id    [:get-network-id]]
     [comp/simple-screen
      [comp/toolbar {}
       comp/default-action

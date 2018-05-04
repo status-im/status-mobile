@@ -61,14 +61,14 @@
 
 (defview twelve-words [{:keys [mnemonic]}]
   (letsubs [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))
-            ref (reagent/atom nil)]
+            ref          (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
                                     (.hideView js-dependencies/testfairy @ref)))}
     [react/view {:style styles/twelve-words-container}
      [react/text {:style styles/twelve-words-label}
       (i18n/label :t/your-seed-phrase)]
      [react/view {:style styles/twelve-words-columns
-                  :ref (partial reset! ref)}
+                  :ref   (partial reset! ref)}
       [six-words (subvec mnemonic-vec 0 6)]
       [react/view {:style styles/twelve-words-columns-separator}]
       [six-words (subvec mnemonic-vec 6 12)]]
@@ -117,9 +117,9 @@
 
                          :else
                          (utils/show-question
-                           (i18n/label :t/are-you-sure?)
-                           (i18n/label :t/are-you-sure-description)
-                           #(re-frame/dispatch [:my-profile/finish]))))}]]])
+                          (i18n/label :t/are-you-sure?)
+                          (i18n/label :t/are-you-sure-description)
+                          #(re-frame/dispatch [:my-profile/finish]))))}]]])
 
 (defn finish []
   [react/view {:style styles/finish-container}

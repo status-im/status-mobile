@@ -12,7 +12,7 @@
    :background-color component.styles/chat-background})
 
 (def toolbar-container
-  {:flex 1
+  {:flex           1
    :flex-direction :row})
 
 (def messages-container

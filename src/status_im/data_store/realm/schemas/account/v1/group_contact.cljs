@@ -2,4 +2,4 @@
   (:require [taoensso.timbre :as log]))
 
 (def schema {:name       :group-contact
-             :properties {:identity   "string"}})
+             :properties {:identity "string"}})

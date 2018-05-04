@@ -14,11 +14,11 @@
 (defn save-property
   [group-id property-name value]
   (realm/write @realm/account-realm
-               (fn []
-                 (-> @realm/account-realm
-                     (realm/get-by-field :contact-group :group-id group-id)
-                     realm/single
-                     (aset (name property-name) value)))))
+    (fn []
+      (-> @realm/account-realm
+          (realm/get-by-field :contact-group :group-id group-id)
+          realm/single
+          (aset (name property-name) value)))))
 
 (defn exists?
   [group-id]
@@ -40,6 +40,6 @@
   (let [group    (get-by-id-obj group-id)
         contacts (object/get group "contacts")]
     (realm/write @realm/account-realm
-                 #(aset group "contacts"
-                        (clj->js (into #{} (concat identities
-                                                   (realm/list->clj contacts))))))))
+      #(aset group "contacts"
+             (clj->js (into #{} (concat identities
+                                        (realm/list->clj contacts))))))))

@@ -28,7 +28,7 @@
 
 (defn add-browser-fx [{:keys [db now] :as cofx} browser]
   (let [new-browser (get-new-browser browser now)]
-    {:db           (update-in db [:browser/browsers (:browser-id new-browser)] merge new-browser)
+    {:db                      (update-in db [:browser/browsers (:browser-id new-browser)] merge new-browser)
      :data-store/save-browser new-browser}))
 
 (handlers/register-handler-fx
@@ -69,5 +69,5 @@
   :remove-browser
   [re-frame/trim-v]
   (fn [{:keys [db]} [browser-id]]
-    {:db (update-in db [:browser/browsers] dissoc browser-id)
+    {:db                        (update-in db [:browser/browsers] dissoc browser-id)
      :data-store/remove-browser browser-id}))

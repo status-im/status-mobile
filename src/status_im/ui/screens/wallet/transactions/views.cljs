@@ -19,10 +19,10 @@
 
 (defn history-action [filter?]
   (cond->
-      {:icon      :icons/filter
-       :icon-opts {:accessibility-label :filters-button}
-       :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
-    filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
+   {:icon      :icons/filter
+    :icon-opts {:accessibility-label :filters-button}
+    :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
+   filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- all-checked? [filter-data]
   (and (every? :checked? (:type filter-data))
@@ -33,9 +33,9 @@
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case current-tab
-     :transactions-history  [toolbar/actions [(history-action (not (all-checked? filter-data)))]]
+     :transactions-history [toolbar/actions [(history-action (not (all-checked? filter-data)))]]
      :unsigned-transactions nil
-     nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
+     nil)])                                                 ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
 
 
 (defn action-buttons [{:keys [id] :as transaction}]
@@ -58,10 +58,10 @@
 
 (defn- transaction-type->icon [k]
   (case k
-    :unsigned               (transaction-icon :icons/dots-horizontal components.styles/color-gray4-transparent components.styles/color-gray7)
-    :inbound                (transaction-icon :icons/arrow-left components.styles/color-green-3-light components.styles/color-green-3)
-    :outbound               (transaction-icon :icons/arrow-right components.styles/color-blue4-transparent components.styles/color-blue4)
-    (:postponed :pending)   (transaction-icon :icons/arrow-right components.styles/color-gray4-transparent components.styles/color-gray7)
+    :unsigned (transaction-icon :icons/dots-horizontal components.styles/color-gray4-transparent components.styles/color-gray7)
+    :inbound (transaction-icon :icons/arrow-left components.styles/color-green-3-light components.styles/color-green-3)
+    :outbound (transaction-icon :icons/arrow-right components.styles/color-blue4-transparent components.styles/color-blue4)
+    (:postponed :pending) (transaction-icon :icons/arrow-right components.styles/color-gray4-transparent components.styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
 (defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted] :as transaction}]
@@ -70,7 +70,7 @@
          address-accessibility-label] (if (inbound? type)
                                         [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
                                         [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
-        unsigned?                     (unsigned? type)]
+        unsigned? (unsigned? type)]
     [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
      [react/view {:accessibility-label (if unsigned? :unsigned-transaction-item :transaction-item)}
       [list/item
@@ -152,10 +152,10 @@
      label]]])
 
 (defn- wrap-filter-data [m]
-  [{:title      (i18n/label :t/transactions-filter-type)
-    :key        :type
-    :render-fn  render-item-filter
-    :data       (:type m)}])
+  [{:title     (i18n/label :t/transactions-filter-type)
+    :key       :type
+    :render-fn render-item-filter
+    :data      (:type m)}])
 
 (defview filter-history []
   (letsubs [filter-data [:wallet.transactions/filters]]
@@ -209,8 +209,8 @@
      ^{:key view-id} [tab view-id content (= view-id current-view-id)])])
 
 (defview transactions []
-  (letsubs [current-tab                 [:get :view-id]
-            filter-data                 [:wallet.transactions/filters]]
+  (letsubs [current-tab [:get :view-id]
+            filter-data [:wallet.transactions/filters]]
     [react/view styles/transactions-view
      [status-bar/status-bar]
      [toolbar-view current-tab filter-data]
@@ -261,9 +261,9 @@
   ([label props-value]
    (details-list-row label props-value nil))
   ([label props-value extra-props-value]
-   (let [[props value]             (if (string? props-value)
-                                     [nil props-value]
-                                     props-value)
+   (let [[props value] (if (string? props-value)
+                         [nil props-value]
+                         props-value)
          [extra-props extra-value] (if (string? extra-props-value)
                                      [nil extra-props-value]
                                      extra-props-value)]
@@ -307,8 +307,8 @@
 
 (defview transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
-            confirmations                           [:wallet.transactions.details/confirmations]
-            confirmations-progress                  [:wallet.transactions.details/confirmations-progress]]
+            confirmations          [:wallet.transactions.details/confirmations]
+            confirmations-progress [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}

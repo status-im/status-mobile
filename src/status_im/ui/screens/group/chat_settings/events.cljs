@@ -14,7 +14,7 @@
 (handlers/register-handler-fx
   :show-group-chat-profile
   [re-frame/trim-v]
-  (fn [{:keys [db] :as cofx} [chat-id]] 
+  (fn [{:keys [db] :as cofx} [chat-id]]
     {:db (-> db
              (assoc :new-chat-name (get-in db [:chats chat-id :name])
                     :group/group-type :chat-group)
@@ -28,14 +28,14 @@
           contacts                 (:contacts/contacts db)
           added-participants-names (map #(get-in contacts [% :name]) selected-participants)]
       (handlers-macro/merge-fx cofx
-                         {:db (-> db
-                                  (assoc-in [:chats current-chat-id :contacts] participants)
-                                  (assoc :selected-participants #{}))
-                          :data-store/add-chat-contacts (select-keys db [:current-chat-id :selected-participants])}
-                         (models.message/receive
-                          (models.message/system-message current-chat-id message-id now
-                                                         (str "You've added " (apply str (interpose ", " added-participants-names)))))
-                         (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
+                               {:db                           (-> db
+                                                                  (assoc-in [:chats current-chat-id :contacts] participants)
+                                                                  (assoc :selected-participants #{}))
+                                :data-store/add-chat-contacts (select-keys db [:current-chat-id :selected-participants])}
+                               (models.message/receive
+                                (models.message/system-message current-chat-id message-id now
+                                                               (str "You've added " (apply str (interpose ", " added-participants-names)))))
+                               (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
 
 (handlers/register-handler-fx
   :remove-group-chat-participants
@@ -45,12 +45,12 @@
           contacts                   (:contacts/contacts db)
           removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]
       (handlers-macro/merge-fx cofx
-                         {:db (assoc-in db [:chats current-chat-id :contacts] participants)
-                          :data-store/remove-chat-contacts [current-chat-id removed-participants]}
-                         (models.message/receive
-                          (models.message/system-message current-chat-id message-id now
-                                                         (str "You've removed " (apply str (interpose ", " removed-participants-names)))))
-                         (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
+                               {:db                              (assoc-in db [:chats current-chat-id :contacts] participants)
+                                :data-store/remove-chat-contacts [current-chat-id removed-participants]}
+                               (models.message/receive
+                                (models.message/system-message current-chat-id message-id now
+                                                               (str "You've removed " (apply str (interpose ", " removed-participants-names)))))
+                               (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
 
 (handlers/register-handler-fx
   :set-group-chat-name

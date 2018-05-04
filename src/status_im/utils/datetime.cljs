@@ -29,7 +29,7 @@
   (if-let [loc (get goog.i18n (str "DateTimeSymbols_" locale-name))]
     loc
     (let [name-first (s/replace (or locale-name "") #"-.*$" "")
-          loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
+          loc        (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
 (def medium-date-time-format (.-MEDIUM_DATETIME goog.i18n.DateTimeFormat.Format))
@@ -47,9 +47,9 @@
   (mk-fmt status-im.i18n/locale short-time-format))
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
-  (let [date (from-long ms)
-        local (plus date time-zone-offset) ; this is wrong, it uses the current timezone offset, regardless of DST
-        today (t/today-at-midnight)
+  (let [date      (from-long ms)
+        local     (plus date time-zone-offset)              ; this is wrong, it uses the current timezone offset, regardless of DST
+        today     (t/today-at-midnight)
         yesterday (plus today (days -1))]
     (cond
       (before? date yesterday) (old-fmt-fn local)
@@ -91,8 +91,8 @@
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]
-    (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
-                                   :number diff
+    (label :t/datetime-ago-format {:ago            (label :t/datetime-ago)
+                                   :number         diff
                                    :time-intervals name})))
 
 (defn time-ago [time]

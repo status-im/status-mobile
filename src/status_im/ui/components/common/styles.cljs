@@ -110,14 +110,14 @@
 
 (defn logo-container [size shadow?]
   (merge
-    {:width            size
-     :height           size
-     :border-radius    size
-     :background-color colors/blue
-     :align-items      :center
-     :justify-content  :center}
-    (when shadow?
-      logo-shaddow)))
+   {:width            size
+    :height           size
+    :border-radius    size
+    :background-color colors/blue
+    :align-items      :center
+    :justify-content  :center}
+   (when shadow?
+     logo-shaddow)))
 
 (defn logo [icon-size]
   {:color  :white
@@ -136,12 +136,12 @@
 
 (defn button [style background?]
   (merge
-    {:padding-vertical   12
-     :padding-horizontal 42
-     :border-radius      8}
-    style
-    (when background?
-      {:background-color (colors/alpha colors/blue 0.1)})))
+   {:padding-vertical   12
+    :padding-horizontal 42
+    :border-radius      8}
+   style
+   (when background?
+     {:background-color (colors/alpha colors/blue 0.1)})))
 
 (def button-label
   {:font-size      15

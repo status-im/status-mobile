@@ -8,7 +8,7 @@
 (handlers/register-handler-fx
   :scan-qr-code
   (fn [{:keys [db]} [_ identifier handler]]
-    {:db (assoc-in db [:qr-codes identifier] handler)
+    {:db                     (assoc-in db [:qr-codes identifier] handler)
      :request-permissions-fx {:permissions [:camera]
                               :on-allowed  #(re-frame/dispatch [:navigate-to :qr-scanner {:current-qr-context identifier}])
                               :on-denied   #(utils/show-popup (i18n/label :t/error)

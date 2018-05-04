@@ -15,22 +15,22 @@
 (defn- create-new-chat
   [chat-id {:keys [db now]}]
   (let [name (get-in db [:contacts/contacts chat-id :name])]
-    {:chat-id            chat-id
-     :name               (or name (gfycat/generate-gfy chat-id))
-     :color              styles/default-chat-color
-     :group-chat         false
-     :is-active          true
-     :timestamp          now
-     :contacts           [chat-id]
-     :last-clock-value   0}))
+    {:chat-id          chat-id
+     :name             (or name (gfycat/generate-gfy chat-id))
+     :color            styles/default-chat-color
+     :group-chat       false
+     :is-active        true
+     :timestamp        now
+     :contacts         [chat-id]
+     :last-clock-value 0}))
 
 (defn upsert-chat
   "Upsert chat when not deleted"
   [{:keys [chat-id] :as chat-props} {:keys [db] :as cofx}]
   (let [chat (merge
-               (or (get (:chats db) chat-id)
-                 (create-new-chat chat-id cofx))
-               chat-props)]
+              (or (get (:chats db) chat-id)
+                  (create-new-chat chat-id cofx))
+              chat-props)]
 
     (if (:is-active chat)
       {:db                   (update-in db [:chats chat-id] merge chat)
@@ -41,12 +41,12 @@
 (defn add-public-chat
   "Adds new public group chat to db & realm"
   [topic cofx]
-  (upsert-chat {:chat-id          topic
-                :is-active        true
-                :name             topic
-                :group-chat       true
-                :contacts         []
-                :public?          true} cofx))
+  (upsert-chat {:chat-id    topic
+                :is-active  true
+                :name       topic
+                :group-chat true
+                :contacts   []
+                :public?    true} cofx))
 
 (defn add-group-chat
   "Adds new private group chat to db & realm"

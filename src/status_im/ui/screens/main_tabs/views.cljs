@@ -54,8 +54,8 @@
      (cond-> {:style    common.styles/flex
               :disabled active?
               :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
-       accessibility-label
-       (assoc :accessibility-label accessibility-label))
+             accessibility-label
+             (assoc :accessibility-label accessibility-label))
      [react/view
       [content active? count]]]))
 

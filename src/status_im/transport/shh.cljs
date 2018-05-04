@@ -1,5 +1,5 @@
 (ns ^{:doc "Whisper API and events for managing keys and posting messages"}
-    status-im.transport.shh
+status-im.transport.shh
   (:require [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.transport.utils :as transport.utils]
@@ -61,7 +61,7 @@
 (re-frame/reg-fx
   :shh/post
   (fn [{:keys [web3 message success-event error-event]
-        :or {error-event :protocol/send-status-message-error}}]
+        :or   {error-event :protocol/send-status-message-error}}]
     (post-message {:web3            web3
                    :whisper-message (update message :payload (comp transport.utils/from-utf8
                                                                    transit/serialize))
@@ -79,14 +79,14 @@
 (re-frame/reg-fx
   :shh/multi-post
   (fn [{:keys [web3 message recipients success-event error-event]
-        :or {error-event :protocol/send-status-message-error}}]
+        :or   {error-event :protocol/send-status-message-error}}]
     (let [whisper-message (update message :payload (comp transport.utils/from-utf8
                                                          transit/serialize))]
       (doseq [{:keys [sym-key-id topic]} recipients]
         (post-message {:web3            web3
                        :whisper-message (assoc whisper-message
-                                               :topic topic
-                                               :symKeyID sym-key-id)
+                                          :topic topic
+                                          :symKeyID sym-key-id)
                        :on-success      (if success-event
                                           #(re-frame/dispatch success-event)
                                           #(log/debug :shh/post-success))
@@ -165,5 +165,5 @@
                                                                  :sym-key-id sym-key-id
                                                                  :on-success (fn [sym-key]
                                                                                (on-success sym-key sym-key-id))
-                                                                 :on-error log-error}))
+                                                                 :on-error   log-error}))
                                      :on-error   log-error})))

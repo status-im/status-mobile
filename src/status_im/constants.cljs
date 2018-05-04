@@ -28,18 +28,17 @@
 
 (def default-wallet-transactions
   {:filters
-   {:type [{:id :inbound   :label (i18n/label :t/incoming)  :checked? true}
-           {:id :outbound  :label (i18n/label :t/outgoing)  :checked? true}
-           {:id :pending   :label (i18n/label :t/pending)   :checked? true}
+   {:type [{:id :inbound :label (i18n/label :t/incoming) :checked? true}
+           {:id :outbound :label (i18n/label :t/outgoing) :checked? true}
+           {:id :pending :label (i18n/label :t/pending) :checked? true}
            ;; TODO(jeluard) Restore once we support postponing transaction
-           #_
-           {:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
+           #_{:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 
 (def default-account-settings
   {:wallet {:visible-tokens {:testnet #{:STT :ATT}
                              :mainnet #{:SNT}}}
-   :wnode {:testnet "main"
-           :mainnet "main"}})
+   :wnode  {:testnet "main"
+            :mainnet "main"}})
 
 (defn- transform-config [networks]
   (->> networks
@@ -104,10 +103,10 @@
 ;; Used to generate topic for contact discoveries
 (def contact-discovery "contact-discovery")
 
-(def ^:const send-transaction-no-error-code        "0")
-(def ^:const send-transaction-default-error-code   "1")
-(def ^:const send-transaction-password-error-code  "2")
-(def ^:const send-transaction-timeout-error-code   "3")
+(def ^:const send-transaction-no-error-code "0")
+(def ^:const send-transaction-default-error-code "1")
+(def ^:const send-transaction-password-error-code "2")
+(def ^:const send-transaction-timeout-error-code "3")
 (def ^:const send-transaction-discarded-error-code "4")
 
 (def ^:const web3-send-transaction "eth_sendTransaction")

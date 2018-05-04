@@ -22,8 +22,8 @@
 (defstyle status-bar-main
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
-   :android (create-status-bar-style {:translucent?     true
-                                      :bar-style        "dark-content"})})
+   :android (create-status-bar-style {:translucent? true
+                                      :bar-style    "dark-content"})})
 
 (def view-main
   (create-view-style {:background-color colors/white}))
@@ -31,7 +31,7 @@
 ;; :transparent
 (defstyle status-bar-transparent
   {:ios     (create-status-bar-style {:background-color styles/color-transparent})
-   :android (create-status-bar-style {:translucent?     true})})
+   :android (create-status-bar-style {:translucent? true})})
 
 (def view-transparent
   (create-view-style {:background-color styles/color-transparent}))
@@ -83,7 +83,7 @@
 ;; :wallet HOME
 (defstyle status-bar-wallet-tab
   {:ios     (create-status-bar-style {:background-color colors/blue})
-   :android (create-status-bar-style {:translucent?     true})})
+   :android (create-status-bar-style {:translucent? true})})
 
 (def view-wallet-tab
   (create-view-style {:background-color styles/color-blue4}))
@@ -91,7 +91,7 @@
 ;; :wallet
 (defstyle status-bar-wallet
   {:ios     (create-status-bar-style {:background-color colors/blue})
-   :android (create-status-bar-style {:translucent?     true})})
+   :android (create-status-bar-style {:translucent? true})})
 
 (def view-wallet
   (create-view-style {:background-color styles/color-blue4
@@ -101,8 +101,8 @@
 (defstyle status-bar-default
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
-   :android (create-status-bar-style {:translucent?     true
-                                      :bar-style        "dark-content"})})
+   :android (create-status-bar-style {:translucent? true
+                                      :bar-style    "dark-content"})})
 
 (defstyle view-default
   (create-view-style {:background-color colors/white

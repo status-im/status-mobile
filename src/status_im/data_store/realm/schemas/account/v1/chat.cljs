@@ -13,7 +13,7 @@
                                              :optional true}
                           :is-active        :bool
                           :timestamp        :int
-                          :contacts         {:type     "string[]"}
+                          :contacts         {:type "string[]"}
                           :removed-at       {:type     :int
                                              :optional true}
                           :removed-from-at  {:type     :int

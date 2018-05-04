@@ -6,9 +6,9 @@
   (:refer-clojure :exclude [exists?]))
 
 (re-frame/reg-cofx
-  :data-store/get-all-contacts
-  (fn [coeffects _]
-    (assoc coeffects :all-contacts (data-store/get-all-as-list))))
+ :data-store/get-all-contacts
+ (fn [coeffects _]
+   (assoc coeffects :all-contacts (data-store/get-all-as-list))))
 
 (defn- get-by-id
   [whisper-identity]

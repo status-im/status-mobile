@@ -13,9 +13,9 @@
 
 ;;;; COFX
 (re-frame/reg-cofx
-  ::get-web3
-  (fn [coeffects _]
-    (assoc coeffects :web3 (web3-provider/make-web3))))
+ ::get-web3
+ (fn [coeffects _]
+   (assoc coeffects :web3 (web3-provider/make-web3))))
 
 (re-frame/reg-fx
   ::web3-get-syncing
@@ -39,11 +39,11 @@
    (re-frame/inject-cofx :data-store/transport)]
   (fn [{:data-store/keys [transport] :keys [db web3] :as cofx} [current-account-id ethereum-rpc-url]]
     (handlers-macro/merge-fx cofx
-                       {:db (assoc db
-                                   :web3 web3
-                                   :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url)
-                                   :transport/chats transport)}
-                       (transport/init-whisper current-account-id))))
+                             {:db (assoc db
+                                    :web3 web3
+                                    :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url)
+                                    :transport/chats transport)}
+                             (transport/init-whisper current-account-id))))
 
 ;;; NODE SYNC STATE
 
@@ -63,10 +63,10 @@
                               :done
                               :synced))]
       (cond-> db
-        (when (and (not= sync-data state) (= :in-progress new-state)))
-        (assoc :sync-data state)
-        (when (not= sync-state new-state))
-        (assoc :sync-state new-state)))))
+              (when (and (not= sync-data state) (= :in-progress new-state)))
+              (assoc :sync-data state)
+              (when (not= sync-state new-state))
+              (assoc :sync-state new-state)))))
 
 (handlers/register-handler-fx
   :check-sync

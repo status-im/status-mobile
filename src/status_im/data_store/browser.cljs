@@ -6,9 +6,9 @@
   (:refer-clojure :exclude [exists?]))
 
 (re-frame/reg-cofx
-  :data-store/all-browsers
-  (fn [cofx _]
-    (assoc cofx :all-stored-browsers (data-store/get-all))))
+ :data-store/all-browsers
+ (fn [cofx _]
+   (assoc cofx :all-stored-browsers (data-store/get-all))))
 
 (re-frame/reg-fx
   :data-store/save-browser

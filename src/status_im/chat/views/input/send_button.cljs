@@ -12,16 +12,16 @@
   (fn [_]
     (let [to-spin-value (if (some #{:complete :no-command} [@command-completion]) 1 0)]
       (animation/start
-        (animation/timing spin-value {:toValue  to-spin-value
-                                      :duration 300})))))
+       (animation/timing spin-value {:toValue  to-spin-value
+                                     :duration 300})))))
 
 (defview send-button-view []
-  (letsubs [command-completion                      [:command-completion]
-            selected-command                        [:selected-chat-command]
+  (letsubs [command-completion [:command-completion]
+            selected-command   [:selected-chat-command]
             {:keys [input-text seq-arg-input-text]} [:get-current-chat]
-            spin-value                              (animation/create-value 1)
-            on-update                               (send-button-view-on-update {:spin-value         spin-value
-                                                                                 :command-completion command-completion})]
+            spin-value         (animation/create-value 1)
+            on-update          (send-button-view-on-update {:spin-value         spin-value
+                                                            :command-completion command-completion})]
     {:component-did-update on-update}
     (let [{:keys [hide-send-button sequential-params]} (:command selected-command)]
       (when (and (not (string/blank? input-text))

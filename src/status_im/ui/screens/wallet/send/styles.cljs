@@ -8,10 +8,10 @@
    :padding-bottom 60})
 
 (defn animated-sign-panel [bottom-value]
-  {:position           :absolute
-   :left               12
-   :right              12
-   :bottom             bottom-value})
+  {:position :absolute
+   :left     12
+   :right    12
+   :bottom   bottom-value})
 
 (defn sign-panel [opacity-value]
   {:opacity            opacity-value
@@ -90,7 +90,7 @@
    :margin-left         4})
 
 (def advanced-fees-text
-  {:color            colors/white})
+  {:color colors/white})
 
 (def advanced-fees-details-text
   {:color colors/white-lighter-transparent})
@@ -99,11 +99,11 @@
   {:flex-direction :row})
 
 (def transaction-fee-info
-  {:flex-direction   :row
-   :margin           15})
+  {:flex-direction :row
+   :margin         15})
 
 (def transaction-fee-info-text-wrapper
-  {:flex-shrink      1})
+  {:flex-shrink 1})
 
 (def transaction-fee-info-icon
   {:border-radius    25
@@ -115,8 +115,8 @@
    :background-color colors/blue-dark})
 
 (def transaction-fee-info-icon-text
-  {:color            colors/white
-   :font-size        14})
+  {:color     colors/white
+   :font-size 14})
 
 (def transaction-fee-input
   {:keyboard-type          :numeric

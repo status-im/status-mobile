@@ -48,7 +48,7 @@
    :align-items     :center})
 
 (defstyle my-profile-settings-logout
-  {:min-width       "50%"})
+  {:min-width "50%"})
 
 (defstyle my-profile-settings-logout-version
   {:padding-horizontal 16})

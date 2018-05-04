@@ -22,14 +22,14 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
-  ::get-signing-phrase
-  (fn [coeffects _]
-    (assoc coeffects :signing-phrase (signing-phrase/generate))))
+ ::get-signing-phrase
+ (fn [coeffects _]
+   (assoc coeffects :signing-phrase (signing-phrase/generate))))
 
 (re-frame/reg-cofx
-  ::get-status
-  (fn [coeffects _]
-    (assoc coeffects :status (rand-nth statuses/data))))
+ ::get-status
+ (fn [coeffects _]
+   (assoc coeffects :status (rand-nth statuses/data))))
 
 ;;;; FX
 
@@ -45,17 +45,17 @@
 (handlers/register-handler-fx
   :create-account
   (fn [{{:accounts/keys [create] :as db} :db} _]
-    {:db (update db :accounts/create assoc :step :account-creating :error nil)
+    {:db              (update db :accounts/create assoc :step :account-creating :error nil)
      ::create-account (:password create)}))
 
 (defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
   [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
   (let [enriched-account (assoc account
-                                :network  network
-                                :networks networks
-                                :address  address)]
-    {:db           (assoc-in db [:accounts/accounts address] enriched-account)
+                           :network network
+                           :networks networks
+                           :address address)]
+    {:db                      (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/save-account enriched-account}))
 
 ;; TODO(janherich) we have this handler here only because of the tests, refactor/improve tests ASAP
@@ -69,15 +69,15 @@
   [re-frame/trim-v (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
   (fn [{:keys [signing-phrase status db] :as cofx} [{:keys [pubkey address mnemonic]} password]]
     (let [normalized-address (utils.hex/normalize-hex address)
-          account            {:public-key          pubkey
-                              :address             normalized-address
-                              :name                (generate-gfy pubkey)
-                              :status              status
-                              :signed-up?          true
-                              :photo-path          (identicon pubkey)
-                              :signing-phrase      signing-phrase
-                              :mnemonic            mnemonic
-                              :settings            constants/default-account-settings}]
+          account            {:public-key     pubkey
+                              :address        normalized-address
+                              :name           (generate-gfy pubkey)
+                              :status         status
+                              :signed-up?     true
+                              :photo-path     (identicon pubkey)
+                              :signing-phrase signing-phrase
+                              :mnemonic       mnemonic
+                              :settings       constants/default-account-settings}]
       (log/debug "account-created")
       (when-not (str/blank? pubkey)
         (-> (add-account db account)
@@ -92,7 +92,7 @@
                                [address account]))
                         (into {}))
           ;;workaround for realm bug, migrating account v4
-          events (mapv #(when (empty? (:networks %)) [:account-update-networks (:address %)]) (vals accounts))]
+          events   (mapv #(when (empty? (:networks %)) [:account-update-networks (:address %)]) (vals accounts))]
       (merge
        {:db (assoc db :accounts/accounts accounts)}
        (when-not (empty? events)
@@ -102,8 +102,8 @@
   :account-update-networks
   (fn [{{:accounts/keys [accounts] :networks/keys [networks] :as db} :db} [_ id]]
     (let [current-account (get accounts id)
-          new-account (assoc current-account :networks networks)]
-      {:db           (assoc-in db [:accounts/accounts id] new-account)
+          new-account     (assoc current-account :networks networks)]
+      {:db                      (assoc-in db [:accounts/accounts id] new-account)
        :data-store/save-account new-account})))
 
 (defn update-settings [settings {{:keys [account/account] :as db} :db :as cofx}]
@@ -115,7 +115,7 @@
   :send-account-update-if-needed
   (fn [{:keys [db now] :as cofx} _]
     (let [{:keys [last-updated]} (:account/account db)
-          needs-update?          (> (- now last-updated) time/week)]
+          needs-update? (> (- now last-updated) time/week)]
       (log/info "Need to send account-update: " needs-update?)
       (when needs-update?
         ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
@@ -126,14 +126,14 @@
   :account-set-name
   (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
     (handlers-macro/merge-fx cofx
-                       {:db       db
-                        :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
-                       (accounts.utils/account-update {:name (:name create)}))))
+                             {:db       db
+                              :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
+                             (accounts.utils/account-update {:name (:name create)}))))
 
 (handlers/register-handler-fx
   :account-finalized
   (fn [{db :db} _]
-    {:db (assoc db :accounts/create {:show-welcome? true})
+    {:db         (assoc db :accounts/create {:show-welcome? true})
      :dispatch-n [[:navigate-to-clean :home]
                   [:request-notifications]]}))
 

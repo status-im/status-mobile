@@ -43,10 +43,10 @@
   ::show-transaction-moved
   (fn [modal?]
     (utils/show-popup
-      (i18n/label :t/transaction-moved-title)
-      (i18n/label :t/transaction-moved-text)
-      (when modal?
-        #(re-frame/dispatch [:navigate-back])))))
+     (i18n/label :t/transaction-moved-title)
+     (i18n/label :t/transaction-moved-text)
+     (when modal?
+       #(re-frame/dispatch [:navigate-back])))))
 
 (re-frame/reg-fx
   ::show-transaction-error
@@ -102,7 +102,7 @@
 (handlers/register-handler-fx
   :sign-later-from-chat
   (fn [_ _]
-    {::show-transaction-moved  true}))
+    {::show-transaction-moved true}))
 
 ;;TRANSACTION QUEUED signal from status-go
 (handlers/register-handler-fx
@@ -116,25 +116,25 @@
       ;; are only in ether, so this parameter defaults to ETH
       (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args
             ;;TODO (andrey) revisit this map later (this map from old transactions, idk if we need all these fields)
-            transaction {:id         id
-                         :from       from
-                         :to         to
-                         :to-name    (when (nil? to)
-                                       (i18n/label :t/new-contract))
-                         :symbol     symbol
-                         :value      (money/bignumber (or value 0))
-                         :data       data
-                         :gas        (when (seq gas)
-                                       (money/bignumber (money/to-decimal gas)))
-                         :gas-price  (when (seq gasPrice)
-                                       (money/bignumber (money/to-decimal gasPrice)))
-                         :timestamp  now
-                         :message-id message_id}
+            transaction               {:id         id
+                                       :from       from
+                                       :to         to
+                                       :to-name    (when (nil? to)
+                                                     (i18n/label :t/new-contract))
+                                       :symbol     symbol
+                                       :value      (money/bignumber (or value 0))
+                                       :data       data
+                                       :gas        (when (seq gas)
+                                                     (money/bignumber (money/to-decimal gas)))
+                                       :gas-price  (when (seq gasPrice)
+                                                     (money/bignumber (money/to-decimal gasPrice)))
+                                       :timestamp  now
+                                       :message-id message_id}
             sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
-            new-db (assoc-in db [:wallet :transactions-unsigned id] transaction)
-            sending-db {:id         id
-                        :method     method
-                        :from-chat? sending-from-bot-or-dapp?}]
+            new-db                    (assoc-in db [:wallet :transactions-unsigned id] transaction)
+            sending-db                {:id         id
+                                       :method     method
+                                       :from-chat? sending-from-bot-or-dapp?}]
         (if sending-from-bot-or-dapp?
           ;;SENDING FROM BOT (CHAT) OR DAPP
           {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
@@ -163,9 +163,9 @@
       (let [{:keys [data]} args
             data' (transport.utils/to-utf8 data)]
         (when data'
-          {:db (-> db
-                   (assoc-in [:wallet :transactions-unsigned id] {:data data' :id id})
-                   (assoc-in [:wallet :send-transaction] {:id id :method method}))
+          {:db       (-> db
+                         (assoc-in [:wallet :transactions-unsigned id] {:data data' :id id})
+                         (assoc-in [:wallet :send-transaction] {:id id :method method}))
            :dispatch [:navigate-to-modal :wallet-sign-message-modal]})))))
 
 (defn this-transaction-signing? [id signing-id view-id modal]
@@ -187,12 +187,12 @@
 
         ;;NO ERROR, DISCARDED, TIMEOUT or DEFAULT ERROR
         (if (this-transaction-signing? id (:id send-transaction) view-id modal)
-          (cond-> {:db                      (-> db
-                                                (update-in [:wallet :transactions-unsigned] dissoc id)
-                                                (update-in [:wallet :send-transaction] merge clear-send-properties))
-                   :dispatch                [:navigate-back]}
-            (= method constants/web3-send-transaction)
-            (assoc ::show-transaction-error error_message))
+          (cond-> {:db       (-> db
+                                 (update-in [:wallet :transactions-unsigned] dissoc id)
+                                 (update-in [:wallet :send-transaction] merge clear-send-properties))
+                   :dispatch [:navigate-back]}
+                  (= method constants/web3-send-transaction)
+                  (assoc ::show-transaction-error error_message))
           {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))
 
 (defn prepare-unconfirmed-transaction [db now hash id]
@@ -216,18 +216,18 @@
       (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
         {:db db'}
         (merge
-          {:db (cond-> db'
-                       (= method constants/web3-send-transaction)
-                       (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
-                       true
-                       (update-in [:wallet :transactions-unsigned] dissoc id)
-                       true
-                       (update-in [:wallet :send-transaction] merge clear-send-properties))}
-          (if modal?
-            (cond-> {:dispatch [:navigate-back]}
-                    (= method constants/web3-send-transaction)
-                    (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
-            {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
+         {:db (cond-> db'
+                      (= method constants/web3-send-transaction)
+                      (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
+                      true
+                      (update-in [:wallet :transactions-unsigned] dissoc id)
+                      true
+                      (update-in [:wallet :send-transaction] merge clear-send-properties))}
+         (if modal?
+           (cond-> {:dispatch [:navigate-back]}
+                   (= method constants/web3-send-transaction)
+                   (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
+           {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]
@@ -237,7 +237,7 @@
 (handlers/register-handler-fx
   :wallet/sign-transaction
   (fn [{{:keys [web3] :as db} :db} [_ later?]]
-    (let [db' (assoc-in db [:wallet :send-transaction :wrong-password?] false)
+    (let [db'     (assoc-in db [:wallet :send-transaction :wrong-password?] false)
           network (:network db)
           {:keys [amount id password to symbol gas gas-price]} (get-in db [:wallet :send-transaction])]
       (if id

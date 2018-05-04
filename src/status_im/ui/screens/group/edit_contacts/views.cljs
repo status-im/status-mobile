@@ -29,9 +29,9 @@
 
 (defn contact-extended-options [group-id]
   (fn [item]
-    [{:action               #(re-frame/dispatch [:remove-contact-from-group
-                                                 (:whisper-identity item)
-                                                 group-id])
+    [{:action              #(re-frame/dispatch [:remove-contact-from-group
+                                                (:whisper-identity item)
+                                                group-id])
       :accessibility-label :remove-button
       :label               (i18n/label :t/remove-from-group)}]))
 

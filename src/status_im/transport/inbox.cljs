@@ -1,5 +1,5 @@
 (ns ^{:doc "Offline inboxing events and API"}
-    status-im.transport.inbox
+status-im.transport.inbox
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.handlers :as handlers]
@@ -46,15 +46,15 @@
 
 (defn initialize-offline-inbox-flow []
   {:first-dispatch [:inbox/get-sym-key]
-   :rules [{:when :seen-both?
-            :events [:inbox/get-sym-key-success :inbox/connection-success]
-            :dispatch [:inbox/request-messages]}]})
+   :rules          [{:when     :seen-both?
+                     :events   [:inbox/get-sym-key-success :inbox/connection-success]
+                     :dispatch [:inbox/request-messages]}]})
 
 (defn recover-offline-inbox-flow []
   {:first-dispatch [:inbox/fetch-peers]
-   :rules [{:when     :seen?
-            :events   :inbox/connection-success
-            :dispatch [:inbox/request-messages]}]})
+   :rules          [{:when     :seen?
+                     :events   :inbox/connection-success
+                     :dispatch [:inbox/request-messages]}]})
 
 (defn initialize-offline-inbox
   "Initialises offline inbox if inboxing enabled in config"
@@ -174,8 +174,8 @@
   ;; We check if the wnode is part of the peers list
   ;; if not we dispatch a new fetch-peer event for later
   (fn [{:keys [db]} [_ peers retries]]
-    (let [web3     (:web3 db)
-          wnode    (get-current-wnode-address db)]
+    (let [web3  (:web3 db)
+          wnode (get-current-wnode-address db)]
       (log/info "offline inbox: fetch-peers response" peers)
       (if (registered-peer? peers wnode)
         {::mark-trusted-peer {:web3  web3
@@ -216,11 +216,11 @@
 (handlers/register-handler-fx
   :inbox/request-messages
   (fn [{:keys [db now]} [_ {:keys [from topics]}]]
-    (let [web3     (:web3 db)
-          wnode    (get-current-wnode-address db)
-          topics   (or topics
-                       (map #(:topic %) (vals (:transport/chats db))))
-          from     (or from (:inbox/last-request db) nil)
+    (let [web3       (:web3 db)
+          wnode      (get-current-wnode-address db)
+          topics     (or topics
+                         (map #(:topic %) (vals (:transport/chats db))))
+          from       (or from (:inbox/last-request db) nil)
           sym-key-id (:inbox/sym-key-id db)]
       {::request-messages {:wnode      wnode
                            :topics     topics
@@ -229,4 +229,4 @@
                            ;;:from       from
                            :sym-key-id sym-key-id
                            :web3       web3}
-       :db (assoc db :inbox/last-request (quot now 1000))})))
+       :db                (assoc db :inbox/last-request (quot now 1000))})))

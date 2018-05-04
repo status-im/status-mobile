@@ -7,7 +7,7 @@
 
 (defn profile-badge [{:keys [name]}]
   [react/view {:margin-vertical 10}
-   [react/text {:style {:font-weight :bold}
+   [react/text {:style           {:font-weight :bold}
                 :number-of-lines 1}
     name]])
 
@@ -37,8 +37,8 @@
       [my-profile-info current-account]]
      [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
      [react/touchable-highlight {:on-press #(keychain/get-encryption-key-then
-                                              (fn [encryption-key]
-                                                (re-frame/dispatch [:logout encryption-key])))
-                                 :style {:margin-top 60}}
+                                             (fn [encryption-key]
+                                               (re-frame/dispatch [:logout encryption-key])))
+                                 :style    {:margin-top 60}}
       [react/view
        [react/text {:style {:color :red}} "Log out"]]]]))

@@ -67,35 +67,35 @@
 
 (defn subscribe! []
   (when config/rn-bridge-threshold-warnings-enabled?
-   (let [emitter (js-dependencies/EventEmmiter.)
-         events  (.stream snoopy emitter)]
-     (threshold-warnings
-      {:filter-fn         (constantly true)
-       :label             "all messages"
-       :threshold-message "too many calls to bridge, something suspicious is happening"
-       :tick?             false
-       :print-events?     false
-       :threshold         400
-       :events            events})
+    (let [emitter (js-dependencies/EventEmmiter.)
+          events  (.stream snoopy emitter)]
+      (threshold-warnings
+       {:filter-fn         (constantly true)
+        :label             "all messages"
+        :threshold-message "too many calls to bridge, something suspicious is happening"
+        :tick?             false
+        :print-events?     false
+        :threshold         400
+        :events            events})
 
-     (threshold-warnings
-      {:filter-fn         timer-filter
-       :label             "timer"
-       :threshold-message "too many setTimeout/setInterval calls"
-       :tick?             false
-       :print-events?     false
-       :threshold         70
-       :events            events})
+      (threshold-warnings
+       {:filter-fn         timer-filter
+        :label             "timer"
+        :threshold-message "too many setTimeout/setInterval calls"
+        :tick?             false
+        :print-events?     false
+        :threshold         70
+        :events            events})
 
-     (threshold-warnings
-      {:filter-fn         ui-manager-filter
-       :label             "timer"
-       :threshold-message (str "too many calls to UIManager, most likely during navigation. "
-                               "Please consider preloading of screens or lazy loading of some components")
-       :tick?             false
-       :print-events?     false
-       ;; todo(rasom): revisit this number when/if
-       ;; https://github.com/status-im/status-react/pull/2849 will be merged
-       :threshold         200
-       :events            events}))))
+      (threshold-warnings
+       {:filter-fn         ui-manager-filter
+        :label             "timer"
+        :threshold-message (str "too many calls to UIManager, most likely during navigation. "
+                                "Please consider preloading of screens or lazy loading of some components")
+        :tick?             false
+        :print-events?     false
+        ;; todo(rasom): revisit this number when/if
+        ;; https://github.com/status-im/status-react/pull/2849 will be merged
+        :threshold         200
+        :events            events}))))
 

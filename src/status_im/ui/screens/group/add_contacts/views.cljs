@@ -42,9 +42,9 @@
                     :keyboardShouldPersistTaps :always}]])
 
 (defview contact-toggle-list []
-  (letsubs [contacts [:all-added-people-contacts]
+  (letsubs [contacts                [:all-added-people-contacts]
             selected-contacts-count [:selected-contacts-count]
-            group-type [:get-group-type]]
+            group-type              [:get-group-type]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
      [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
@@ -56,8 +56,8 @@
      [toggle-list contacts group-toggle-contact]]))
 
 (defview add-contacts-toggle-list []
-  (letsubs [contacts [:all-group-not-added-contacts]
-            group [:get-contact-group]
+  (letsubs [contacts                [:all-group-not-added-contacts]
+            group                   [:get-contact-group]
             selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
@@ -71,7 +71,7 @@
 
 (defview add-participants-toggle-list []
   (letsubs [contacts                [:get-all-contacts-not-in-current-chat]
-            {:keys [name]}          [:get-current-chat]
+            {:keys [name]} [:get-current-chat]
             selected-contacts-count [:selected-participants-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]

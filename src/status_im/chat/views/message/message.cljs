@@ -29,7 +29,7 @@
 
 (defview message-content-status []
   (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
-            members                                          [:get-current-chat-contacts]]
+            members [:get-current-chat-contacts]]
     (let [{:keys [status]} (if group-id
                              {:status nil}
                              (first members))]
@@ -50,7 +50,7 @@
 (defn message-content-audio [_]
   [react/view style/audio-container
    [react/view style/play-view
-    [react/image {:style  style/play-image}]]
+    [react/image {:style style/play-image}]]
    [react/view style/track-container
     [react/view style/track]
     [react/view style/track-mark]
@@ -103,17 +103,17 @@
     (let [unmatched-text (as-> (->> (string/split string regx)
                                     (remove nil?)
                                     vec) $
-                           (if (zero? (count $))
-                             [nil]
-                             (unmatched-fn $)))
+                               (if (zero? (count $))
+                                 [nil]
+                                 (unmatched-fn $)))
           matched-text   (as-> (->> string
                                     (re-seq regx)
                                     matched-fn
                                     vec) $
-                           (if (> (count unmatched-text)
-                                  (count $))
-                             (conj $ nil)
-                             $))]
+                               (if (> (count unmatched-text)
+                                      (count $))
+                                 (conj $ nil)
+                                 $))]
       (mapcat vector unmatched-text matched-text))
     (str string)))
 
@@ -231,7 +231,7 @@
 
 (defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
   (letsubs [{participants :contacts} [:get-current-chat]
-            contacts                 [:get-contacts]]
+            contacts [:get-contacts]]
     (let [outgoing-status         (or (get user-statuses current-public-key) :sending)
           delivery-statuses       (dissoc user-statuses current-public-key)
           delivery-statuses-count (count delivery-statuses)
@@ -270,8 +270,8 @@
                                                                                 :destructive? true
                                                                                 :action       #(re-frame/dispatch [:delete-message chat-id message-id])}]})
                                                  (re-frame/dispatch
-                                                   [:show-message-options {:chat-id    chat-id
-                                                                           :message-id message-id}])))}
+                                                  [:show-message-options {:chat-id    chat-id
+                                                                          :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/message-status-label :not-sent)]
@@ -289,7 +289,7 @@
                               :else
                               (or delivery-status outgoing-status))]
     (case status
-      :sending  [message-activity-indicator]
+      :sending [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]
       (when last-outgoing?
         (if (= message-type :group-user-message)
@@ -318,7 +318,7 @@
      (when first-in-group?
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}
-       content]]]
+      content]]]
    [react/view style/delivery-status
     [message-delivery-status message]]])
 
@@ -327,11 +327,11 @@
     (let [to-value @to-value]
       (when (pos? to-value)
         (animation/start
-          (animation/timing val {:toValue  to-value
-                                 :duration 250})
-          (fn [arg]
-            (when (.-finished arg)
-              (callback))))))))
+         (animation/timing val {:toValue  to-value
+                                :duration 250})
+         (fn [arg]
+           (when (.-finished arg)
+             (callback))))))))
 
 (defn message-container [message & children]
   (if (:appearing? message)
@@ -343,28 +343,28 @@
                          :callback anim-callback}
           on-update     (message-container-animation-logic context)]
       (reagent/create-class
-        {:component-did-update
-         on-update
-         :display-name
-         "message-container"
-         :reagent-render
-         (fn [_ & children]
-           @layout-height
-           [react/animated-view {:style (style/message-animated-container anim-value)}
-            (into [react/view {:style    (style/message-container window-width)
-                               :onLayout (fn [event]
-                                           (let [height (.. event -nativeEvent -layout -height)]
-                                             (reset! layout-height height)))}]
-                  children)])}))
+       {:component-did-update
+        on-update
+        :display-name
+        "message-container"
+        :reagent-render
+        (fn [_ & children]
+          @layout-height
+          [react/animated-view {:style (style/message-animated-container anim-value)}
+           (into [react/view {:style    (style/message-container window-width)
+                              :onLayout (fn [event]
+                                          (let [height (.. event -nativeEvent -layout -height)]
+                                            (reset! layout-height height)))}]
+                 children)])}))
     (into [react/view] children)))
 
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
   [message-container message
-  [react/touchable-highlight {:on-press      (fn [_]
-                                               (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
-                                               (react/dismiss-keyboard!))
-                              :on-long-press #(when (= content-type constants/text-content-type)
-                                                (list-selection/share content (i18n/label :t/message)))}
+   [react/touchable-highlight {:on-press      (fn [_]
+                                                (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                                                (react/dismiss-keyboard!))
+                               :on-long-press #(when (= content-type constants/text-content-type)
+                                                 (list-selection/share content (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message

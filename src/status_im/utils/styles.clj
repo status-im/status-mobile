@@ -16,7 +16,7 @@
      ~body))
 
 (defn body [style]
-  `(let [style#            ~style
+  `(let [style#             ~style
          common#            (dissoc style# :android :ios)
          platform#          (keyword status-im.utils.platform/os)
          platform-specific# (get style# platform#)]
@@ -42,8 +42,8 @@
      :height 20}"
   [style-name style]
   (wrap-first-time
-    `(def ~style-name
-       ~(body style))))
+   `(def ~style-name
+      ~(body style))))
 
 (defmacro defnstyle
   "Defines style function.
@@ -63,6 +63,6 @@
      :height 5}"
   [style-name params style]
   (wrap-first-time
-    `(defn ~style-name
-       [~@params]
-       ~(body style))))
+   `(defn ~style-name
+      [~@params]
+      ~(body style))))

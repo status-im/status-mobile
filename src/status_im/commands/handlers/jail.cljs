@@ -33,11 +33,11 @@
    [{:keys [chat-id bot-id default-db command parameter-index result]}]]
   (let [{:keys [markup] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
-        current-input (get-in chats [chat-id :input-text])
-        path (if command
-               [:chats chat-id :parameter-boxes (:name command) parameter-index]
-               (when-not (string/blank? current-input)
-                 [:chats chat-id :parameter-boxes :message]))]
+        current-input    (get-in chats [chat-id :input-text])
+        path             (if command
+                           [:chats chat-id :parameter-boxes (:name command) parameter-index]
+                           (when-not (string/blank? current-input)
+                             [:chats chat-id :parameter-boxes :message]))]
     (when (and contains-markup? path (not= (get-in db path) markup))
       (dispatch [:set-in path returned])
       (when default-db
@@ -94,12 +94,12 @@
 (reg-handler
   :show-suggestions-from-jail
   (handlers/side-effect!
-    (fn [_ [_ {:keys [chat-id markup]}]]
-      (let [markup' (types/json->clj markup)
-            result  (assoc-in {} [:result :returned :markup] markup')]
-        (dispatch [:suggestions-handler
-                   {:result  result
-                    :chat-id chat-id}])))))
+   (fn [_ [_ {:keys [chat-id markup]}]]
+     (let [markup' (types/json->clj markup)
+           result  (assoc-in {} [:result :returned :markup] markup')]
+       (dispatch [:suggestions-handler
+                  {:result  result
+                   :chat-id chat-id}])))))
 
 (handlers/register-handler-fx
   :set-local-storage

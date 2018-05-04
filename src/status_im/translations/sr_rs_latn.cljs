@@ -68,10 +68,10 @@
 (defn cyr->lat [cyr]
   (cond
     (string? cyr) (string/join
-                    (map #(get letter-pairs (str %) (str %)) cyr))
-    (map? cyr)    (into {}
-                        (map (fn [[k v]] [k (cyr->lat v)]) cyr))
-    :else          nil))
+                   (map #(get letter-pairs (str %) (str %)) cyr))
+    (map? cyr) (into {}
+                     (map (fn [[k v]] [k (cyr->lat v)]) cyr))
+    :else nil))
 
 (def translations
   (cyr->lat sr-rs-cyrl/translations))

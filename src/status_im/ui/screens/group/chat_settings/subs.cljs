@@ -3,10 +3,10 @@
             [status-im.constants :refer [max-chat-name-length]]))
 
 (reg-sub
-  :selected-participant
-  (fn [db]
-    (let [identity (first (:selected-participants db))]
-      (get-in db [:contacts/contacts identity]))))
+ :selected-participant
+ (fn [db]
+   (let [identity (first (:selected-participants db))]
+     (get-in db [:contacts/contacts identity]))))
 
 (defn get-chat-name-validation-messages [chat-name]
   (filter some?
@@ -16,18 +16,18 @@
                   "Chat name is too long"))))
 
 (reg-sub
-  :new-chat-name
-  (fn [db]
-    (:new-chat-name db)))
+ :new-chat-name
+ (fn [db]
+   (:new-chat-name db)))
 
 (reg-sub
-  :new-chat-name-validation-messages
-  :<- [:new-chat-name]
-  (fn [chat-name]
-    (get-chat-name-validation-messages chat-name)))
+ :new-chat-name-validation-messages
+ :<- [:new-chat-name]
+ (fn [chat-name]
+   (get-chat-name-validation-messages chat-name)))
 
 (reg-sub
-  :new-chat-name-valid?
-  :<- [:new-chat-name]
-  (fn [chat-name]
-    (zero? (count (get-chat-name-validation-messages chat-name)))))
+ :new-chat-name-valid?
+ :<- [:new-chat-name]
+ (fn [chat-name]
+   (zero? (count (get-chat-name-validation-messages chat-name)))))

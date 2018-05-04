@@ -5,9 +5,9 @@
             [status-im.data-store.realm.local-storage :as data-store]))
 
 (re-frame/reg-cofx
-  :data-store/get-local-storage-data
-  (fn [cofx _]
-    (assoc cofx :get-local-storage-data (comp :data data-store/get-by-chat-id))))
+ :data-store/get-local-storage-data
+ (fn [cofx _]
+   (assoc cofx :get-local-storage-data (comp :data data-store/get-by-chat-id))))
 
 (re-frame/reg-fx
   :data-store/set-local-storage-data

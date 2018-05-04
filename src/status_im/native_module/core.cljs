@@ -15,10 +15,10 @@
 (def adjust-pan 32)
 
 #_(defn- wrap-and-print-callback [name callback]
-   (fn [& args]
-     (println :callback name (str args))
-     (log/debug :callback name args)
-     (apply callback args)))
+    (fn [& args]
+      (println :callback name (str args))
+      (log/debug :callback name args)
+      (apply callback args)))
 
 (defn init-jail []
   (module-interface/-init-jail rns-module))

@@ -26,8 +26,8 @@
           name]]]])))
 
 (views/defview offline-messaging-settings []
-  (views/letsubs [current-wnode  [:settings/current-wnode]
-                  wnodes         [:settings/network-wnodes]]
+  (views/letsubs [current-wnode [:settings/current-wnode]
+                  wnodes        [:settings/network-wnodes]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/offline-messaging-settings)]

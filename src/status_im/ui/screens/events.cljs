@@ -57,9 +57,9 @@
   (let [path   [:functions function]
         params (select-keys opts [:parameters :context])]
     (status/call-jail
-     {:jail-id chat-id
-      :path    path
-      :params  params
+     {:jail-id  chat-id
+      :path     path
+      :params   params
       :callback (fn [jail-response]
                   (when-let [event (if callback-event-creator
                                      (callback-event-creator jail-response)
@@ -132,14 +132,14 @@
 
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
-    #(status/start-node config)))
+   #(status/start-node config)))
 
 (re-frame/reg-fx
   ::initialize-keychain-fx
   (fn []
     (keychain/get-encryption-key-then
-      (fn [encryption-key]
-        (re-frame/dispatch [:initialize-app encryption-key])))))
+     (fn [encryption-key]
+       (re-frame/dispatch [:initialize-app encryption-key])))))
 
 (re-frame/reg-fx
   ::got-encryption-key-fx
@@ -151,11 +151,11 @@
   (fn [config]
     ;;TODO get rid of this, because we don't need this anymore
     (status/should-move-to-internal-storage?
-      (fn [should-move?]
-        (if should-move?
-          (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
-                                                    :on-allowed  #(move-to-internal-storage config)}])
-          (status/start-node config))))))
+     (fn [should-move?]
+       (if should-move?
+         (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
+                                                   :on-allowed  #(move-to-internal-storage config)}])
+         (status/start-node config))))))
 
 (re-frame/reg-fx
   ::status-module-initialized-fx
@@ -177,13 +177,13 @@
   (fn [_]
     (when config/testfairy-enabled?
       (utils/show-popup
-        (i18n/label :testfairy-title)
-        (i18n/label :testfairy-message)))))
+       (i18n/label :testfairy-title)
+       (i18n/label :testfairy-message)))))
 
 (re-frame/reg-fx
- ::init-device-UUID
- (fn []
-   (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
+  ::init-device-UUID
+  (fn []
+    (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
 
 (re-frame/reg-fx
   ::get-fcm-token-fx
@@ -229,15 +229,15 @@
     {::got-encryption-key-fx opts}))
 
 (handlers/register-handler-fx
- :initialize-app
- (fn [_ [_ encryption-key]]
-   {::init-device-UUID nil
-    ::testfairy-alert  nil
-    :dispatch-n        [[:initialize-db encryption-key]
-                        [:load-accounts]
-                        [:initialize-views]
-                        [:listen-to-network-status]
-                        [:initialize-geth]]}))
+  :initialize-app
+  (fn [_ [_ encryption-key]]
+    {::init-device-UUID nil
+     ::testfairy-alert  nil
+     :dispatch-n        [[:initialize-db encryption-key]
+                         [:load-accounts]
+                         [:initialize-views]
+                         [:listen-to-network-status]
+                         [:initialize-geth]]}))
 
 (handlers/register-handler-fx
   :logout
@@ -245,27 +245,27 @@
     (let [{:transport/keys [chats]} db
           sharing-usage-data? (get-in db [:account/account :sharing-usage-data?])]
       (handlers-macro/merge-fx cofx
-                         {:dispatch-n (concat [[:initialize-db encryption-key]
-                                               [:load-accounts]
-                                               [:listen-to-network-status]
-                                               [:navigate-to :accounts]]
-                                              (when sharing-usage-data?
-                                                [[:unregister-mixpanel-tracking]]))}
-                         (transport/stop-whisper)))))
+                               {:dispatch-n (concat [[:initialize-db encryption-key]
+                                                     [:load-accounts]
+                                                     [:listen-to-network-status]
+                                                     [:navigate-to :accounts]]
+                                                    (when sharing-usage-data?
+                                                      [[:unregister-mixpanel-tracking]]))}
+                               (transport/stop-whisper)))))
 
 (handlers/register-handler-fx
   :initialize-db
-  (fn [{{:keys          [status-module-initialized? status-node-started?
-                         network-status network]
-         :or {network (get app-db :network)}} :db}
+  (fn [{{:keys [status-module-initialized? status-node-started?
+                network-status network]
+         :or   {network (get app-db :network)}} :db}
        [_ encryption-key]]
     {::init-store encryption-key
      :db          (assoc app-db
-                         :contacts/contacts {}
-                         :network-status network-status
-                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                         :status-node-started? status-node-started?
-                         :network network)}))
+                    :contacts/contacts {}
+                    :network-status network-status
+                    :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                    :status-node-started? status-node-started?
+                    :network network)}))
 
 (handlers/register-handler-db
   :initialize-account-db
@@ -277,19 +277,19 @@
     (let [console-contact (get contacts constants/console-chat-id)
           current-account (accounts address)]
       (cond-> (assoc app-db
-                     :access-scope->commands-responses access-scope->commands-responses
-                     :current-public-key (:public-key current-account)
-                     :view-id view-id
-                     :navigation-stack navigation-stack
-                     :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                     :status-node-started? status-node-started?
-                     :accounts/create create
-                     :networks/networks networks
-                     :account/account current-account
-                     :network-status network-status
-                     :network network)
-        console-contact
-        (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
+                :access-scope->commands-responses access-scope->commands-responses
+                :current-public-key (:public-key current-account)
+                :view-id view-id
+                :navigation-stack navigation-stack
+                :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                :status-node-started? status-node-started?
+                :accounts/create create
+                :networks/networks networks
+                :account/account current-account
+                :network-status network-status
+                :network network)
+              console-contact
+              (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
 
 (handlers/register-handler-fx
   :initialize-account
@@ -308,7 +308,7 @@
                           [:update-transactions]
                           [:get-fcm-token]
                           [:update-sign-in-time]]
-                   (seq events-after) (into events-after))}))
+                         (seq events-after) (into events-after))}))
 
 (handlers/register-handler-fx
   :initialize-views
@@ -356,17 +356,17 @@
 (defn handle-jail-signal [{:keys [chat_id data]}]
   (let [{:keys [event data]} (types/json->clj data)]
     (case event
-      "local-storage"    [:set-local-storage {:chat-id chat_id
-                                              :data    data}]
+      "local-storage" [:set-local-storage {:chat-id chat_id
+                                           :data    data}]
       "show-suggestions" [:show-suggestions-from-jail {:chat-id chat_id
                                                        :markup  data}]
-      "send-message"     [:chat-send-message/from-jail {:chat-id chat_id
-                                                        :message data}]
-      "handler-result"   (let [orig-params (:origParams data)]
-                           ;; TODO(janherich): figure out and fix chat_id from event
-                           [:command-handler! (:chat-id orig-params)
-                            (restore-command-ref-keyword orig-params)
-                            {:result {:returned (dissoc data :origParams)}}])
+      "send-message" [:chat-send-message/from-jail {:chat-id chat_id
+                                                    :message data}]
+      "handler-result" (let [orig-params (:origParams data)]
+                         ;; TODO(janherich): figure out and fix chat_id from event
+                         [:command-handler! (:chat-id orig-params)
+                          (restore-command-ref-keyword orig-params)
+                          {:result {:returned (dissoc data :origParams)}}])
       (log/debug "Unknown jail signal " event))))
 
 (handlers/register-handler-fx
@@ -378,12 +378,12 @@
           to-dispatch (case type
                         "sign-request.queued" [:sign-request-queued event]
                         "sign-request.failed" [:sign-request-failed event]
-                        "node.started"       [:status-node-started]
-                        "node.stopped"       [:status-node-stopped]
+                        "node.started" [:status-node-started]
+                        "node.stopped" [:status-node-stopped]
                         "module.initialized" [:status-module-initialized]
-                        "jail.signal"        (handle-jail-signal event)
-                        "envelope.sent"      [:signals/envelope-status (:hash event) :sent]
-                        "envelope.expired"   [:signals/envelope-status (:hash event) :not-sent]
+                        "jail.signal" (handle-jail-signal event)
+                        "envelope.sent" [:signals/envelope-status (:hash event) :sent]
+                        "envelope.expired" [:signals/envelope-status (:hash event) :not-sent]
                         (log/debug "Event " type " not handled"))]
       (when to-dispatch
         {:dispatch to-dispatch}))))

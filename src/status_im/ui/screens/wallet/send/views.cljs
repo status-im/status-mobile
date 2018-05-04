@@ -26,18 +26,18 @@
 (defn sign-later-popup
   [from-chat?]
   (utils/show-question
-    (i18n/label :t/sign-later-title)
-    (i18n/label :t/sign-later-text)
-    #(re-frame/dispatch (if from-chat?
-                          [:sign-later-from-chat]
-                          [:wallet/sign-transaction true]))))
+   (i18n/label :t/sign-later-title)
+   (i18n/label :t/sign-later-text)
+   #(re-frame/dispatch (if from-chat?
+                         [:sign-later-from-chat]
+                         [:wallet/sign-transaction true]))))
 
 (defview sign-panel [message?]
-  (letsubs [account [:get-current-account]
+  (letsubs [account         [:get-current-account]
             wrong-password? [:wallet.send/wrong-password?]
-            signing-phrase (:signing-phrase @account)
-            bottom-value (animation/create-value -250)
-            opacity-value (animation/create-value 0)]
+            signing-phrase  (:signing-phrase @account)
+            bottom-value    (animation/create-value -250)
+            opacity-value   (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
      [react/animated-view {:style (styles/sign-panel opacity-value)}
@@ -78,9 +78,9 @@
 
 (defn- sign-enabled? [amount-error to amount]
   (and
-    (nil? amount-error)
-    (not (nil? to)) (not= to "")
-    (not (nil? amount))))
+   (nil? amount-error)
+   (not (nil? to)) (not= to "")
+   (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
 (defn- sign-buttons [amount-error to amount sufficient-funds? sign-later-handler modal?]
@@ -118,7 +118,7 @@
 (defview transaction-fee []
   (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
             edit [:wallet/edit]]
-    (let [gas (or (:gas edit) (:gas transaction))
+    (let [gas       (or (:gas edit) (:gas transaction))
           gas-price (or (:gas-price edit) (:gas-price transaction))]
       [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
        [toolbar true act/close-white
@@ -233,8 +233,8 @@
          sufficient-funds?
          (if modal?
            (if from-chat?
-               #(sign-later-popup true)
-               #(re-frame/dispatch [:navigate-back]))
+             #(sign-later-popup true)
+             #(re-frame/dispatch [:navigate-back]))
            #(sign-later-popup false))
          modal?])
       (when signing?
@@ -243,16 +243,16 @@
 
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
-            symbol [:wallet.send/symbol]
-            advanced? [:wallet.send/advanced?]
-            scroll (atom nil)]
+            symbol      [:wallet.send/symbol]
+            advanced?   [:wallet.send/advanced?]
+            scroll      (atom nil)]
     [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]))
 
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
-            symbol [:wallet.send/symbol]
-            advanced? [:wallet.send/advanced?]
-            scroll (atom nil)]
+            symbol      [:wallet.send/symbol]
+            advanced?   [:wallet.send/advanced?]
+            scroll      (atom nil)]
     (if transaction
       [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]
       [react/view wallet.styles/wallet-modal-container

@@ -19,15 +19,15 @@
   [input-ch output-ch flush-time]
   (async/go-loop [acc []
                   flush? false]
-    (if flush?
-      (do (async/put! output-ch acc)
-          (recur [] false))
-      (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
-        (if (= ch input-ch)
-          (if v
-            (recur (conj acc v) (and (seq acc) flush?))
-            (async/close! output-ch))
-          (recur acc (seq acc)))))))
+                 (if flush?
+                   (do (async/put! output-ch acc)
+                       (recur [] false))
+                   (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
+                     (if (= ch input-ch)
+                       (if v
+                         (recur (conj acc v) (and (seq acc) flush?))
+                         (async/close! output-ch))
+                       (recur acc (seq acc)))))))
 
 (defn task-queue
   "Creates `core.async` channel which will process 0 arg functions put there in serial fashon.
@@ -37,6 +37,6 @@
   [& args]
   (let [task-queue (apply async/chan args)]
     (async/go-loop [task-fn (async/<! task-queue)]
-      (task-fn)
-      (recur (async/<! task-queue)))
+                   (task-fn)
+                   (recur (async/<! task-queue)))
     task-queue))

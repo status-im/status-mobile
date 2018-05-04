@@ -88,7 +88,7 @@
                           [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
                                                   :tint-color :white
                                                   :refreshing false}])}
-      [react/view {:style styles/scroll-top}] ;; Hack to allow different colors for top / bottom scroll view]
+      [react/view {:style styles/scroll-top}]               ;; Hack to allow different colors for top / bottom scroll view]
       [total-section portfolio-value]
       [list/action-list actions
        {:container-style styles/action-section}]

@@ -51,9 +51,9 @@
    :height             52})
 
 (def settings-item-text-wrapper
-  {:flex             1
-   :flex-direction   :row
-   :justify-content  :space-between})
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between})
 
 (defstyle settings-item-text
   {:flex-wrap :nowrap
@@ -73,11 +73,11 @@
    :color         colors/gray})
 
 (defstyle settings-title
-  {:color         colors/gray
-   :margin-left   16
-   :margin-top    18
-   :font-size     14
-   :ios           {:letter-spacing -0.2}})
+  {:color       colors/gray
+   :margin-left 16
+   :margin-top  18
+   :font-size   14
+   :ios         {:letter-spacing -0.2}})
 
 ;; shared profile styles
 

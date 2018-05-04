@@ -16,9 +16,9 @@
    :elevation        2})
 
 (def input-container
-  {:flex-direction   :row
-   :align-items      :flex-end
-   :padding-left     14})
+  {:flex-direction :row
+   :align-items    :flex-end
+   :padding-left   14})
 
 (def input-root
   {:padding-top    padding-vertical
@@ -26,10 +26,10 @@
    :flex           1})
 
 (defn input-animated [content-height]
-  {:align-items      :flex-start
-   :flex-direction   :row
-   :flex-grow        1
-   :height           (min (max min-input-height content-height) max-input-height)})
+  {:align-items    :flex-start
+   :flex-direction :row
+   :flex-grow      1
+   :height         (min (max min-input-height content-height) max-input-height)})
 
 (defnstyle input-view [content-height single-line-input?]
   {:flex           1
@@ -90,9 +90,9 @@
                          :left        left}})
 
 (def input-commands-icon
-  {:margin        14
-   :height        24
-   :width         24})
+  {:margin 14
+   :height 24
+   :width  24})
 
 (def input-clear-container
   {:width       24

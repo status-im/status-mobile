@@ -43,7 +43,7 @@
                :accessibility-label accessibility-label}
    (case sync-state
      :in-progress (in-progress-text state)
-     :synced      (i18n/label :t/sync-synced)
+     :synced (i18n/label :t/sync-synced)
      online-text)])
 
 (defn- group-last-activity [{:keys [contacts sync-state public?]}]
@@ -62,11 +62,11 @@
 
 (defview toolbar-content-view []
   (letsubs [{:keys [group-chat name contacts
-                    public? chat-id]}             [:get-current-chat]
-            show-actions?                         [:get-current-chat-ui-prop :show-actions?]
-            accounts                              [:get-accounts]
-            contact                               [:get-current-chat-contact]
-            sync-state                            [:sync-state]]
+                    public? chat-id]} [:get-current-chat]
+            show-actions? [:get-current-chat-ui-prop :show-actions?]
+            accounts      [:get-accounts]
+            contact       [:get-current-chat-contact]
+            sync-state    [:sync-state]]
     [react/view {:style st/toolbar-container}
 
      [react/view (when-not group-chat [photos/member-photo chat-id])]

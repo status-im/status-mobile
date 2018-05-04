@@ -9,9 +9,9 @@
   (data-store/get-by-address address))
 
 (re-frame/reg-cofx
-  :data-store/get-all-accounts
-  (fn [coeffects _]
-    (assoc coeffects :all-accounts (data-store/get-all-as-list))))
+ :data-store/get-all-accounts
+ (fn [coeffects _]
+   (assoc coeffects :all-accounts (data-store/get-all-as-list))))
 
 (re-frame/reg-fx
   :data-store/save-account

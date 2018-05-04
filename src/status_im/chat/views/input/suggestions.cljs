@@ -10,7 +10,7 @@
 
 (defn suggestion-item [{:keys [on-press name description last? accessibility-label]}]
   [react/touchable-highlight (cond-> {:on-press on-press}
-                               accessibility-label (assoc :accessibility-label accessibility-label))
+                                     accessibility-label (assoc :accessibility-label accessibility-label))
    [react/view (style/item-suggestion-container last?)
     [react/text {:style style/item-suggestion-name}
      name]
@@ -32,6 +32,6 @@
                              :description         description
                              :last?               (= i (dec (count commands)))
                              :accessibility-label (case (:name command)
-                                                    "send"    :send-payment-button
+                                                    "send" :send-payment-button
                                                     "request" :request-payment-button
                                                     nil)}]))]]]))

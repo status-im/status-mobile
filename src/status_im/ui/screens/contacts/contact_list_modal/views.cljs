@@ -42,10 +42,10 @@
 
 
 (defview contact-list-modal []
-  (letsubs [contacts [:all-added-people-contacts]
+  (letsubs [contacts      [:all-added-people-contacts]
             click-handler [:get :contacts/click-handler]
-            action [:get :contacts/click-action]
-            params [:get :contacts/click-params]]
+            action        [:get :contacts/click-action]
+            params        [:get :contacts/click-params]]
     [react/view {:flex 1 :background-color :white}
      [status-bar {:type :modal-white}]
      [toolbar/simple-toolbar (i18n/label :t/contacts)]

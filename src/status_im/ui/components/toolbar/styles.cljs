@@ -36,9 +36,9 @@
   {:color          colors/black
    :letter-spacing -0.2
    :font-size      17
-   :ios            {:text-align     :center}
-   :android        {:text-align     :left
-                    :margin-left    22}})
+   :ios            {:text-align :center}
+   :android        {:text-align  :left
+                    :margin-left 22}})
 
 (def toolbar-actions
   {:flex           0

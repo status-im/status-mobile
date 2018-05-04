@@ -43,8 +43,8 @@
           chats           (:transport/chats db)]
       (if (utils/network-with-upstream-rpc? networks current-network)
         (handlers-macro/merge-fx cofx
-                                 {:dispatch-n            [[:load-accounts]
-                                                          [:navigate-to-clean :accounts]]}
+                                 {:dispatch-n [[:load-accounts]
+                                               [:navigate-to-clean :accounts]]}
                                  (transport/stop-whisper)
                                  (accounts.utils/account-update {:network      network
                                                                  :last-updated now}))

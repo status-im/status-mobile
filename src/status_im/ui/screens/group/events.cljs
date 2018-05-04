@@ -8,11 +8,11 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
-  :get-default-contacts-and-groups
-  (fn [coeffects _]
-    (assoc coeffects
-           :default-contacts js-res/default-contacts
-           :default-groups js-res/default-contact-groups)))
+ :get-default-contacts-and-groups
+ (fn [coeffects _]
+   (assoc coeffects
+     :default-contacts js-res/default-contacts
+     :default-groups js-res/default-contact-groups)))
 
 ;;;; Handlers
 
@@ -40,11 +40,11 @@
   :create-new-contact-group
   [re-frame/trim-v (re-frame/inject-cofx :now) (re-frame/inject-cofx :random-id)]
   (fn [{{:group/keys [contact-groups selected-contacts] :as db} :db group-id :random-id now :now} [group-name]]
-    (let [new-group {:group-id    group-id
-                     :name        group-name
-                     :order       (count contact-groups)
-                     :timestamp   now
-                     :contacts    selected-contacts}]
+    (let [new-group {:group-id  group-id
+                     :name      group-name
+                     :order     (count contact-groups)
+                     :timestamp now
+                     :contacts  selected-contacts}]
       {:db                            (assoc-in db [:group/contact-groups group-id] new-group)
        :data-store/save-contact-group new-group})))
 

@@ -82,8 +82,8 @@
                                                  group-chat public?
                                                  public-key]}]
   (letsubs [last-message [:get-last-message chat-id]]
-    (let [name (or (i18n/get-contact-translated chat-id :name name)
-                   (gfycat/generate-gfy public-key))
+    (let [name       (or (i18n/get-contact-translated chat-id :name name)
+                         (gfycat/generate-gfy public-key))
           hide-dapp? (= chat-id const/console-chat-id)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
        [react/view styles/chat-container

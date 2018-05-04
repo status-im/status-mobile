@@ -6,11 +6,11 @@
   (:refer-clojure :exclude [exists?]))
 
 (re-frame/reg-cofx
-  :data-store/get-all-contact-groups
-  (fn [cofx _]
-    (assoc cofx :all-contact-groups (into {}
-                                          (map (juxt :group-id identity))
-                                          (data-store/get-all-as-list)))))
+ :data-store/get-all-contact-groups
+ (fn [cofx _]
+   (assoc cofx :all-contact-groups (into {}
+                                         (map (juxt :group-id identity))
+                                         (data-store/get-all-as-list)))))
 
 (re-frame/reg-fx
   :data-store/save-contact-group

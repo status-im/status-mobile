@@ -68,11 +68,11 @@
                                       ~body))})))))))
 
 (defn check-view [all {:keys [view views component hide? parent]}]
-  (let [parent           (or parent :root)
-        views            (or views #{view})
-        comp             {:views     views
-                          :component component
-                          :hide?     hide?}]
+  (let [parent (or parent :root)
+        views  (or views #{view})
+        comp   {:views     views
+                :component component
+                :hide?     hide?}]
     (-> all
         (assoc-in [:components views] comp)
         (update-in [:view->children parent]
@@ -107,8 +107,8 @@
          (fn [[_ children]]
            (not (nil? children)))
          (map (fn [child]
-                       [child (get view->children child)])
-                     (reduce clojure.set/union children)))))
+                [child (get view->children child)])
+              (reduce clojure.set/union children)))))
 
 (defn -generate-component
   [{:keys [components view->children] :as config} view-sym component-name]
@@ -132,26 +132,26 @@
                  ~(assoc (get components child) :current-view view-sym)])
              children)
       ~@(map (fn [[component-name children]]
-                  `[status-im.ui.components.react/navigation-wrapper
-                    {:component    [status-im.ui.components.react/with-empty-preview
-                                    ~(-generate-component config view-sym component-name)]
-                     :views        ~(conj
-                                     (reduce
-                                      clojure.set/union
-                                      (map (fn [child]
-                                             (-get-all-views config child))
-                                           children))
-                                     component-name)
-                     :hide?        true
-                     :current-view ~view-sym}])
-                  grandchildren)]))
+               `[status-im.ui.components.react/navigation-wrapper
+                 {:component    [status-im.ui.components.react/with-empty-preview
+                                 ~(-generate-component config view-sym component-name)]
+                  :views        ~(conj
+                                  (reduce
+                                   clojure.set/union
+                                   (map (fn [child]
+                                          (-get-all-views config child))
+                                        children))
+                                  component-name)
+                  :hide?        true
+                  :current-view ~view-sym}])
+             grandchildren)]))
 
 (defn -compile-views [n views]
   (let [view-sym (gensym "view-id")]
     `(defview ~n []
        (letsubs [~view-sym [:get :view-id]]
-        ~(let [tree (-build-tree views)]
-           (-generate-component tree view-sym :root))))))
+         ~(let [tree (-build-tree views)]
+            (-generate-component tree view-sym :root))))))
 
 (defmacro compile-views
   [n views]

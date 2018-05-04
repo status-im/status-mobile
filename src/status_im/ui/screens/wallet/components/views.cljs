@@ -33,13 +33,13 @@
 
 (defn- type->handler [k]
   (case k
-    :send    :wallet.send/set-symbol
+    :send :wallet.send/set-symbol
     :request :wallet.request/set-symbol
     (throw (str "Unknown type: " k))))
 
 (defn- render-token [{:keys [symbol name icon decimals amount]} type]
-  [list/touchable-item  #(do (re-frame/dispatch [(type->handler type) symbol])
-                             (re-frame/dispatch [:navigate-back]))
+  [list/touchable-item #(do (re-frame/dispatch [(type->handler type) symbol])
+                            (re-frame/dispatch [:navigate-back]))
    [react/view
     [list/item
      [list/item-image icon]
@@ -69,13 +69,13 @@
 
 (defn- type->view [k]
   (case k
-    :send    :wallet-send-assets
+    :send :wallet-send-assets
     :request :wallet-request-assets
     (throw (str "Unknown type: " k))))
 
 (views/defview asset-selector [{:keys [disabled? type symbol]}]
-  (views/letsubs [balance  [:balance]
-                  network  [:network]]
+  (views/letsubs [balance [:balance]
+                  network [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
        (i18n/label :t/wallet-asset)
@@ -118,7 +118,7 @@
     [list/item-content
      [list/item-primary {:accessibility-label :contact-name-text}
       (:name contact)]
-     [react/text {:style list.styles/secondary-text
+     [react/text {:style               list.styles/secondary-text
                   :accessibility-label :contact-address-text}
       (ethereum/normalized-address (:address contact))]]]])
 
@@ -162,13 +162,13 @@
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
                         :options (concat
-                                   [{:label  (i18n/label :t/recent-recipients)
-                                     :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
-                                   (when-not contact-only?
-                                     [{:label  (i18n/label :t/scan-qr)
-                                       :action request-camera-permissions}
-                                      {:label  (i18n/label :t/recipient-code)
-                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
+                                  [{:label  (i18n/label :t/recent-recipients)
+                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                                  (when-not contact-only?
+                                    [{:label  (i18n/label :t/scan-qr)
+                                      :action request-camera-permissions}
+                                     {:label  (i18n/label :t/recipient-code)
+                                      :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
   [components/cartouche {:on-press  #(on-choose-recipient contact-only?)
@@ -186,13 +186,13 @@
                :accessibility-label :specify-amount-button}
    [components/text-input
     (merge
-      (if disabled?
-        {:editable false}
-        {:keyboard-type       :numeric
-         :placeholder         (i18n/label :t/amount-placeholder)
-         :style               components.styles/flex
-         :accessibility-label :amount-input})
-      input-options)]])
+     (if disabled?
+       {:editable false}
+       {:keyboard-type       :numeric
+        :placeholder         (i18n/label :t/amount-placeholder)
+        :style               components.styles/flex
+        :accessibility-label :amount-input})
+     input-options)]])
 
 (defn amount-selector [{:keys [error disabled?] :as m}]
   [react/view

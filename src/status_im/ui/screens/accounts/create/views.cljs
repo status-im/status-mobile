@@ -49,10 +49,10 @@
     :error             error}])
 
 (defview create-account []
-  (letsubs [step [:get-in [:accounts/create :step]]
-            next-enabled? [:get-account-creation-next-enabled?]
-            error [:get-in [:accounts/create :error]]
-            password [:get-in [:accounts/create :password]]
+  (letsubs [step             [:get-in [:accounts/create :step]]
+            next-enabled?    [:get-account-creation-next-enabled?]
+            error            [:get-in [:accounts/create :error]]
+            password         [:get-in [:accounts/create :password]]
             password-confirm [:get-in [:accounts/create :password-confirm]]]
     [react/keyboard-avoiding-view {:style styles/create-account-view}
      [status-bar/status-bar {:flat? true}]

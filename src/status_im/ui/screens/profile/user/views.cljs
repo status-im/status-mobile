@@ -92,8 +92,8 @@
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
                            (i18n/label :t/logout) #(keychain/get-encryption-key-then
-                                                     (fn [encryption-key]
-                                                        (re-frame/dispatch [:logout encryption-key])))))
+                                                    (fn [encryption-key]
+                                                      (re-frame/dispatch [:logout encryption-key])))))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -115,21 +115,21 @@
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
      [react/view styles/my-profile-settings-logout-wrapper
-       [react/view styles/my-profile-settings-logout
-         [profile.components/settings-item {:label-kw            :t/logout
-                                            :accessibility-label :log-out-button
-                                            :destructive?        true
-                                            :hide-arrow?         true
-                                            :action-fn           #(handle-logout)}]]
-       [react/view styles/my-profile-settings-logout-version
-         [react/text build/version]]]]))
+      [react/view styles/my-profile-settings-logout
+       [profile.components/settings-item {:label-kw            :t/logout
+                                          :accessibility-label :log-out-button
+                                          :destructive?        true
+                                          :hide-arrow?         true
+                                          :action-fn           #(handle-logout)}]]
+      [react/view styles/my-profile-settings-logout-version
+       [react/text build/version]]]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
-  (letsubs [advanced?                     [:get :my-profile/advanced?]
+  (letsubs [advanced? [:get :my-profile/advanced?]
             {:keys [sharing-usage-data?]} [:get-current-account]]
     [react/view
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
-                                 :style styles/advanced-button}
+                                 :style    styles/advanced-button}
       [react/view {:style styles/advanced-button-container}
        [react/view {:style styles/advanced-button-container-background}
         [react/view {:style styles/advanced-button-row}
@@ -139,21 +139,21 @@
      (when advanced?
        [react/view
         [profile.components/settings-item
-         {:label-kw :t/network
-          :value (get-in networks [network :name])
-          :action-fn #(re-frame/dispatch [:navigate-to :network-settings])
+         {:label-kw            :t/network
+          :value               (get-in networks [network :name])
+          :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
           :accessibility-label :network-button}]
         (when config/offline-inbox-enabled?
           [profile.components/settings-item-separator])
         (when config/offline-inbox-enabled?
           [profile.components/settings-item
-           {:label-kw :t/offline-messaging
-            :action-fn #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+           {:label-kw            :t/offline-messaging
+            :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
             :accessibility-label :offline-messages-settings-button}])
         [profile.components/settings-item-separator]
         [profile.components/settings-switch-item
-         {:label-kw :t/dev-mode
-          :value dev-mode?
+         {:label-kw  :t/dev-mode
+          :value     dev-mode?
           :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]
         [profile.components/settings-item-separator]
         [profile.components/settings-item

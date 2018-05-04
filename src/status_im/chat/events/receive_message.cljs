@@ -53,9 +53,9 @@
         (re-frame/dispatch [:update-bot-db {:bot bot-id
                                             :db  update-db}]))
       (re-frame/dispatch [:suggestions-handler (assoc params
-                                                      :bot-id bot-id
-                                                      :result data
-                                                      :default-db default-db)])
+                                                 :bot-id bot-id
+                                                 :result data
+                                                 :default-db default-db)])
       (doseq [message log-messages]
         (let [{:keys [message type]} message]
           (when (or (not= type "debug")

@@ -8,4 +8,4 @@
 (spec/def ::symbol (spec/nilable keyword?))
 
 (spec/def :wallet/request-transaction (allowed-keys
-                                        :opt-un [::amount ::amount-error ::symbol]))
+                                       :opt-un [::amount ::amount-error ::symbol]))

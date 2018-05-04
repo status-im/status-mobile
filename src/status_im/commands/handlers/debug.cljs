@@ -119,59 +119,59 @@
 ;;;; FX
 
 (re-frame/reg-fx
- ::initialize-debugging-fx
- (fn [[address force-start?]]
-   (if force-start?
-     (debug-server-start)
-     (let [{:keys [debug?]} (accounts/get-by-address address)]
-       (when debug?
-         (debug-server-start))))))
+  ::initialize-debugging-fx
+  (fn [[address force-start?]]
+    (if force-start?
+      (debug-server-start)
+      (let [{:keys [debug?]} (accounts/get-by-address address)]
+        (when debug?
+          (debug-server-start))))))
 
 (re-frame/reg-fx
- ::stop-debugging-fx
- (fn [_]
-   (.stop react/http-bridge)))
+  ::stop-debugging-fx
+  (fn [_]
+    (.stop react/http-bridge)))
 
 (re-frame/reg-fx
- ::process-request-fx
- (fn [[{:keys [web3] :as db} url {:keys [encoded] :as post-data}]]
-   (try
-     (let [json (some->> encoded
-                         (.toAscii web3)
-                         (.parse js/JSON))
-           obj  (when json
-                  (js->clj json :keywordize-keys true))]
-       (case url
-         "/add-dapp" (add-contact db obj)
-         "/remove-dapp" (remove-contact db obj)
-         "/dapp-changed" (contact-changed db obj)
-         "/switch-node" (switch-node db obj)
-         "/list" (dapps-list db)
-         "/log" (log db post-data)
-         :default))
-     (catch js/Error e
-       (respond {:type :error :text (str "Error: " e)})
-       (log/debug "Error: " e)))))
+  ::process-request-fx
+  (fn [[{:keys [web3] :as db} url {:keys [encoded] :as post-data}]]
+    (try
+      (let [json (some->> encoded
+                          (.toAscii web3)
+                          (.parse js/JSON))
+            obj  (when json
+                   (js->clj json :keywordize-keys true))]
+        (case url
+          "/add-dapp" (add-contact db obj)
+          "/remove-dapp" (remove-contact db obj)
+          "/dapp-changed" (contact-changed db obj)
+          "/switch-node" (switch-node db obj)
+          "/list" (dapps-list db)
+          "/log" (log db post-data)
+          :default))
+      (catch js/Error e
+        (respond {:type :error :text (str "Error: " e)})
+        (log/debug "Error: " e)))))
 
 
 ;;;; Handlers
 
 (handlers/register-handler-fx
- :initialize-debugging
- [re-frame/trim-v]
- (fn [_ [{:keys [address force-start?]}]]
-   {::initialize-debugging-fx [address force-start?]}))
+  :initialize-debugging
+  [re-frame/trim-v]
+  (fn [_ [{:keys [address force-start?]}]]
+    {::initialize-debugging-fx [address force-start?]}))
 
 (handlers/register-handler-fx
- :stop-debugging
- (fn [_]
-   {::stop-debugging-fx nil}))
+  :stop-debugging
+  (fn [_]
+    {::stop-debugging-fx nil}))
 
 (handlers/register-handler-fx
- ::process-request
- [re-frame/trim-v]
- (fn [{:keys [db]} [url post-data]]
-   {::process-request-fx [db url post-data]}))
+  ::process-request
+  [re-frame/trim-v]
+  (fn [{:keys [db]} [url post-data]]
+    {::process-request-fx [db url post-data]}))
 
 ;; TODO(janherich) once `contact-changed` fn is refactored, get rid of this unnecessary event
 (handlers/register-handler-fx

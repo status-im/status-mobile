@@ -26,13 +26,13 @@
 (defn get-token-balance [{:keys [web3 contract account-id on-success on-error]}]
   (if (and web3 contract account-id)
     (erc20/balance-of
-      web3
-      contract
-      (ethereum/normalized-address account-id)
-      (fn [err resp]
-        (if-not err
-          (on-success resp)
-          (on-error err))))
+     web3
+     contract
+     (ethereum/normalized-address account-id)
+     (fn [err resp]
+       (if-not err
+         (on-success resp)
+         (on-error err))))
     (on-error "web3, contract or account-id not available")))
 
 (defn assoc-error-message [db error-type err]
@@ -47,21 +47,21 @@
 (reg-fx
   :get-balance
   (fn [{:keys [web3 account-id success-event error-event]}]
-    (get-balance {:web3           web3
-                  :account-id     account-id
-                  :on-success     #(re-frame/dispatch [success-event %])
-                  :on-error       #(re-frame/dispatch [error-event %])})))
+    (get-balance {:web3       web3
+                  :account-id account-id
+                  :on-success #(re-frame/dispatch [success-event %])
+                  :on-error   #(re-frame/dispatch [error-event %])})))
 
 (reg-fx
   :get-tokens-balance
   (fn [{:keys [web3 symbols chain account-id success-event error-event]}]
     (doseq [symbol symbols]
       (let [contract (:address (tokens/symbol->token chain symbol))]
-        (get-token-balance {:web3           web3
-                            :contract       contract
-                            :account-id     account-id
-                            :on-success     #(re-frame/dispatch [success-event symbol %])
-                            :on-error       #(re-frame/dispatch [error-event %])})))))
+        (get-token-balance {:web3       web3
+                            :contract   contract
+                            :account-id account-id
+                            :on-success #(re-frame/dispatch [success-event symbol %])
+                            :on-error   #(re-frame/dispatch [error-event %])})))))
 
 (reg-fx
   :get-transactions
@@ -99,25 +99,25 @@
           address  (:address account)
           symbols  (get-in account [:settings :wallet :visible-tokens chain])]
       (when (not= network-status :offline)
-        {:get-balance {:web3          web3
-                       :account-id    address
-                       :success-event :update-balance-success
-                       :error-event   :update-balance-fail}
+        {:get-balance        {:web3          web3
+                              :account-id    address
+                              :success-event :update-balance-success
+                              :error-event   :update-balance-fail}
          :get-tokens-balance {:web3          web3
                               :account-id    address
                               :symbols       symbols
                               :chain         chain
                               :success-event :update-token-balance-success
                               :error-event   :update-token-balance-fail}
-         :get-prices  {:from          (if mainnet? (conj symbols "ETH") ["ETH"])
-                       :to            ["USD"]
-                       :success-event :update-prices-success
-                       :error-event   :update-prices-fail}
-         :db          (-> db
-                          (clear-error-message :prices-update)
-                          (clear-error-message :balance-update)
-                          (assoc-in [:wallet :balance-loading?] true)
-                          (assoc :prices-loading? true))}))))
+         :get-prices         {:from          (if mainnet? (conj symbols "ETH") ["ETH"])
+                              :to            ["USD"]
+                              :success-event :update-prices-success
+                              :error-event   :update-prices-fail}
+         :db                 (-> db
+                                 (clear-error-message :prices-update)
+                                 (clear-error-message :balance-update)
+                                 (assoc-in [:wallet :balance-loading?] true)
+                                 (assoc :prices-loading? true))}))))
 
 (handlers/register-handler-fx
   :update-transactions
@@ -180,8 +180,8 @@
   :update-prices-success
   (fn [db [_ prices]]
     (assoc db
-           :prices prices
-           :prices-loading? false)))
+      :prices prices
+      :prices-loading? false)))
 
 (handlers/register-handler-db
   :update-prices-fail
@@ -194,13 +194,13 @@
 (handlers/register-handler-fx
   :show-transaction-details
   (fn [{:keys [db]} [_ hash]]
-    {:db (assoc-in db [:wallet :current-transaction] hash)
+    {:db       (assoc-in db [:wallet :current-transaction] hash)
      :dispatch [:navigate-to :wallet-transaction-details]}))
 
 (handlers/register-handler-fx
   :wallet/show-sign-transaction
   (fn [{:keys [db]} [_ id from-chat?]]
-    {:db       (assoc-in db [:wallet :send-transaction] {:id id
+    {:db       (assoc-in db [:wallet :send-transaction] {:id         id
                                                          :from-chat? from-chat?})
      :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
 

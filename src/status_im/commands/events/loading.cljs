@@ -93,7 +93,7 @@
   or not, etc.)"
   [jail-id scope]
   (let [member-scope (cond-> scope
-                       (not (scope :global)) (conj jail-id))]
+                             (not (scope :global)) (conj jail-id))]
     (add-exclusive-choices member-scope [#{:personal-chats :group-chats}
                                          #{:anonymous :registered}
                                          #{:dapps :humans :public-chats}])))
@@ -112,22 +112,22 @@
 (defn- enrich
   [jail-id type [_ {:keys [scope-bitmask scope name] :as props}]]
   (-> props
-      (assoc :scope    (into #{} (map keyword) scope)
+      (assoc :scope (into #{} (map keyword) scope)
              :owner-id jail-id
-             :bot      jail-id
-             :type     type
-             :ref      [jail-id type scope-bitmask name])))
+             :bot jail-id
+             :type type
+             :ref [jail-id type scope-bitmask name])))
 
 (defn add-jail-result
   "This function add commands/responses/subscriptions from jail-evaluated resource
   into the database"
   [db jail-id {:keys [commands responses subscriptions]}]
-  (let [enriched-commands (map (partial enrich jail-id :command) commands)
+  (let [enriched-commands  (map (partial enrich jail-id :command) commands)
         enriched-responses (map (partial enrich jail-id :response) responses)
-        new-db (reduce (fn [acc {:keys [ref] :as props}]
-                         (assoc-in acc (into [:contacts/contacts] ref) props))
-                       db
-                       (concat enriched-commands enriched-responses))]
+        new-db             (reduce (fn [acc {:keys [ref] :as props}]
+                                     (assoc-in acc (into [:contacts/contacts] ref) props))
+                                   db
+                                   (concat enriched-commands enriched-responses))]
     (-> new-db
         (update :access-scope->commands-responses (fn [acc]
                                                     (-> (or acc {})
@@ -154,10 +154,10 @@
         {::show-popup {:title "Error"
                        :msg   message}})
       (let [jail-loaded-events (get-in db [:contacts/contacts jail-id :jail-loaded-events])]
-        (cond-> {:db (add-jail-result db jail-id result)
-                 :call-jail-function {:chat-id jail-id
+        (cond-> {:db                 (add-jail-result db jail-id result)
+                 :call-jail-function {:chat-id  jail-id
                                       :function :init :context
-                                      {:from (get-in db [:account/account :address])}}}
-          (seq jail-loaded-events)
-          (-> (assoc :dispatch-n jail-loaded-events)
-              (update-in [:db :contacts/contacts jail-id] dissoc :jail-loaded-events)))))))
+                                                {:from (get-in db [:account/account :address])}}}
+                (seq jail-loaded-events)
+                (-> (assoc :dispatch-n jail-loaded-events)
+                    (update-in [:db :contacts/contacts jail-id] dissoc :jail-loaded-events)))))))

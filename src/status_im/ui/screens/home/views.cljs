@@ -38,22 +38,22 @@
 
 (views/defview home-list-item [[home-item-id home-item]]
   (views/letsubs [swiped? [:delete-swipe-position home-item-id]]
-    (let [delete-action (if (:chat-id home-item) :remove-chat-and-navigate-home :remove-browser)
-          inner-item-view (if (:chat-id home-item)
-                            inner-item/home-list-chat-item-inner-view
-                            inner-item/home-list-browser-item-inner-view)
-          is-deletable? (not= (:chat-id home-item) constants/console-chat-id)
-          offset-x (animation/create-value (if (and is-deletable? swiped?) styles/delete-button-width 0))
+    (let [delete-action       (if (:chat-id home-item) :remove-chat-and-navigate-home :remove-browser)
+          inner-item-view     (if (:chat-id home-item)
+                                inner-item/home-list-chat-item-inner-view
+                                inner-item/home-list-browser-item-inner-view)
+          is-deletable?       (not= (:chat-id home-item) constants/console-chat-id)
+          offset-x            (animation/create-value (if (and is-deletable? swiped?) styles/delete-button-width 0))
           swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width home-item-id swiped?)
-          swipe-pan-handler (if is-deletable? (responder/pan-handlers swipe-pan-responder) {})]
+          swipe-pan-handler   (if is-deletable? (responder/pan-handlers swipe-pan-responder) {})]
       [react/view (assoc swipe-pan-handler :accessibility-label :chat-item)
        [react/animated-view {:style {:flex 1 :right offset-x}}
         [inner-item-view home-item]
         (when is-deletable?
           [react/touchable-highlight {:style    styles/delete-icon-highlight
                                       :on-press #(do
-                                                  (re-frame/dispatch [:set-swipe-position home-item-id false])
-                                                  (re-frame/dispatch [delete-action home-item-id]))}
+                                                   (re-frame/dispatch [:set-swipe-position home-item-id false])
+                                                   (re-frame/dispatch [delete-action home-item-id]))}
            [react/view {:style styles/delete-icon-container}
             [vector-icons/icon :icons/delete {:color colors/red}]]])]])))
 
@@ -73,9 +73,9 @@
        (i18n/label :t/welcome-to-status-description)]]]))
 
 (views/defview home []
-  (views/letsubs [home-items [:home-items]
+  (views/letsubs [home-items    [:home-items]
                   show-welcome? [:get-in [:accounts/create :show-welcome?]]
-                  view-id [:get :view-id]]
+                  view-id       [:get :view-id]]
     [react/view styles/container
      [toolbar show-welcome?]
      (cond show-welcome?

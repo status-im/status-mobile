@@ -39,6 +39,6 @@
 
 (defn actions [group-chat? chat-id public?]
   (cond
-    public?     (public-chat-actions chat-id)
+    public? (public-chat-actions chat-id)
     group-chat? (group-chat-actions chat-id)
-    :else       (chat-actions chat-id)))
+    :else (chat-actions chat-id)))

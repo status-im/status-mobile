@@ -21,7 +21,7 @@
 (defn mark-as-answered
   [chat-id message-id]
   (realm/write @realm/account-realm
-               (fn []
-                 (-> (get-by-message-id chat-id message-id)
-                     (.-status)
-                     (set! "answered")))))
+    (fn []
+      (-> (get-by-message-id chat-id message-id)
+          (.-status)
+          (set! "answered")))))

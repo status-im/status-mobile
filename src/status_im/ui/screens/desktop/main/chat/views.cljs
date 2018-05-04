@@ -13,14 +13,14 @@
             [status-im.ui.components.react :as react]))
 
 (views/defview toolbar-chat-view []
-  (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat] 
-                  {:keys [pending?]}                                   [:get-current-chat-contact]]
+  (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat]
+                  {:keys [pending?]} [:get-current-chat-contact]]
     (let [chat-name (str
-                      (if public? "#" "")
-                      (if (string/blank? name)
-                        (gfycat.core/generate-gfy public-key)
-                        (or name
-                            "Chat name")))]
+                     (if public? "#" "")
+                     (if (string/blank? name)
+                       (gfycat.core/generate-gfy public-key)
+                       (or name
+                           "Chat name")))]
       [react/view {:style {:align-items :center :padding 11 :justify-content :center}}
        [react/view {:style {:flex-direction :row}}
         (when public?
@@ -32,7 +32,7 @@
        (when pending?
          [react/touchable-highlight
           {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
-          [react/view {:style {:background-color :white :border-radius 6 :margin-top 3 :padding 4}}                                      ;style/add-contact
+          [react/view {:style {:background-color :white :border-radius 6 :margin-top 3 :padding 4}} ;style/add-contact
            [react/text {:style {:font-size 14 :color "#939ba1"}}
             "Add to contacts"]]])])))
 
@@ -51,7 +51,7 @@
    :height       30})
 
 (views/defview member-photo [from]
-  (views/letsubs [photo-path nil];[:photo-path from]]
+  (views/letsubs [photo-path nil]                           ;[:photo-path from]]
     [react/view
      [react/image {:source {:uri (if (string/blank? photo-path)
                                    (identicon/identicon from)
@@ -77,64 +77,64 @@
      [react/view {:style {:height 1 :background-color "#e8ebec"}}]]
     (when (= content-type constants/text-content-type)
       (reagent.core/create-class
-        {:component-did-mount
-         #(when (and message-id
-                     chat-id
-                     (not outgoing)
-                     (not= :seen message-status)
-                     (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
-            (re-frame/dispatch [:send-seen! {:chat-id    chat-id
-                                             :from       from
-                                             :message-id message-id}]))
-         :reagent-render
-         (fn []
-           ^{:key (str "message" message-id)}
-           [react/view {:style {:flex-direction :row :flex 1 :margin-vertical 12}}
-            (if outgoing
-              [my-photo from]
-              [member-photo from])
-            [react/view {:style {:padding-horizontal 12 :background-color :white :border-radius 8 :flex 1}}
-             [react/view {:style {:flex-direction :row}}
-              [message-author-name message]
-              [react/view {:style {:flex 1}}]
-              [react/text {:style {:color styles/color-gray4 :font-size 12}} (time/timestamp->time timestamp)]]
-             ;;TODO use https://github.com/status-im/status-react/pull/3299
-             ;;[rn-hl/hyperlink {:linkStyle {:color "#2980b9"} :on-press #(re-frame/dispatch [:show-link-dialog %1])}
-             [react/text
-              text]]])}))))
+       {:component-did-mount
+        #(when (and message-id
+                    chat-id
+                    (not outgoing)
+                    (not= :seen message-status)
+                    (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
+           (re-frame/dispatch [:send-seen! {:chat-id    chat-id
+                                            :from       from
+                                            :message-id message-id}]))
+        :reagent-render
+        (fn []
+          ^{:key (str "message" message-id)}
+          [react/view {:style {:flex-direction :row :flex 1 :margin-vertical 12}}
+           (if outgoing
+             [my-photo from]
+             [member-photo from])
+           [react/view {:style {:padding-horizontal 12 :background-color :white :border-radius 8 :flex 1}}
+            [react/view {:style {:flex-direction :row}}
+             [message-author-name message]
+             [react/view {:style {:flex 1}}]
+             [react/text {:style {:color styles/color-gray4 :font-size 12}} (time/timestamp->time timestamp)]]
+            ;;TODO use https://github.com/status-im/status-react/pull/3299
+            ;;[rn-hl/hyperlink {:linkStyle {:color "#2980b9"} :on-press #(re-frame/dispatch [:show-link-dialog %1])}
+            [react/text
+             text]]])}))))
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
-  (views/letsubs [chat-id* (atom nil)
-                  scroll-ref (atom nil)
-                  scroll-timer (atom nil)
+  (views/letsubs [chat-id*      (atom nil)
+                  scroll-ref    (atom nil)
+                  scroll-timer  (atom nil)
                   scroll-height (atom nil)]
-    (let [_ (when (or (not @chat-id*) (not= @chat-id* chat-id))
-              (reset! chat-id* chat-id)
-              (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
-          messages (re-frame/subscribe [:get-current-chat-messages])
+    (let [_                  (when (or (not @chat-id*) (not= @chat-id* chat-id))
+                               (reset! chat-id* chat-id)
+                               (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
+          messages           (re-frame/subscribe [:get-current-chat-messages])
           current-public-key (re-frame/subscribe [:get-current-public-key])]
       [react/view {:style {:flex 1 :background-color :white :margin-horizontal 16}}
        [react/scroll-view {:scrollEventThrottle    16
                            :on-scroll              (fn [e]
-                                                    (let [ne (.-nativeEvent e)
-                                                          y (.-y (.-contentOffset ne))]
-                                                      (when (zero? y)
-                                                        (when @scroll-timer (js/clearTimeout @scroll-timer))
-                                                        (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
-                                                      (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
+                                                     (let [ne (.-nativeEvent e)
+                                                           y  (.-y (.-contentOffset ne))]
+                                                       (when (zero? y)
+                                                         (when @scroll-timer (js/clearTimeout @scroll-timer))
+                                                         (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
+                                                       (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
                            :on-content-size-change #(when (or (not @scroll-height) (< (- %2 @scroll-height) 500))
                                                       (.scrollToEnd @scroll-ref))
                            :ref                    #(reset! scroll-ref %)}
         [react/view {:style {:padding-vertical 60}}
          (doall
-           (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
-             ^{:key (str message index)}
-             [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
+          (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
+            ^{:key (str message index)}
+            [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 (views/defview chat-text-input []
   (views/letsubs [{:keys [input-text]} [:get-current-chat]
-                  inp-ref              (atom nil)]
-    [react/view {:style {:height 90 :margin-horizontal 16  :background-color :white :border-radius 12}}
+                  inp-ref (atom nil)]
+    [react/view {:style {:height 90 :margin-horizontal 16 :background-color :white :border-radius 12}}
      [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16 :flex 1 :margin-bottom 16}}
       [react/view {:style {:flex 1}}
        [react/text-input {:default-value  (or input-text "")
@@ -146,7 +146,7 @@
                           :ref            #(reset! inp-ref %)
                           :on-key-press   (fn [e]
                                             (let [native-event (.-nativeEvent e)
-                                                  key (.-key native-event)]
+                                                  key          (.-key native-event)]
                                               (when (= key "Enter")
                                                 (js/setTimeout #(do
                                                                   (.clear @inp-ref)
@@ -154,13 +154,13 @@
                                                 (re-frame/dispatch [:send-current-message]))))
                           :on-change      (fn [e]
                                             (let [native-event (.-nativeEvent e)
-                                                  text (.-text native-event)]
+                                                  text         (.-text native-event)]
                                               (re-frame/dispatch [:set-chat-input-text text])))}]]
       [react/touchable-highlight {:on-press (fn []
-                                              (js/setTimeout #(do (.clear @inp-ref)(.focus @inp-ref)) 200)
+                                              (js/setTimeout #(do (.clear @inp-ref) (.focus @inp-ref)) 200)
                                               (re-frame/dispatch [:send-current-message]))}
        [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
-                            :justify-content :center :transform [{ :rotate "90deg"}]}}
+                            :justify-content :center :transform [{:rotate "90deg"}]}}
         [icons/icon :icons/arrow-left]]]]]))
 
 (views/defview chat-view []

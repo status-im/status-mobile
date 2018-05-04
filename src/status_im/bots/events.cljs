@@ -18,10 +18,10 @@
   (when-let [subscriptions (and bot (get-in contacts (concat [bot :subscriptions] [path])))]
     {:call-jail-function-n
      (for [[sub-name sub-params] subscriptions]
-       {:chat-id  bot
-        :function :subscription
-        :parameters {:name          sub-name
-                     :subscriptions (subscription-values sub-params (get bot-db bot))}
+       {:chat-id                bot
+        :function               :subscription
+        :parameters             {:name          sub-name
+                                 :subscriptions (subscription-values sub-params (get bot-db bot))}
         :callback-event-creator (fn [jail-response]
                                   [::calculated-subscription
                                    {:bot    bot

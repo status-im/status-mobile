@@ -10,16 +10,16 @@
 (reg-sub :get-contacts :contacts/contacts)
 
 (reg-sub :get-current-contact
-  :<- [:get-contacts]
-  :<- [:get-current-contact-identity]
-  (fn [[contacts identity]]
-    (contacts identity)))
+         :<- [:get-contacts]
+         :<- [:get-current-contact-identity]
+         (fn [[contacts identity]]
+           (contacts identity)))
 
 (reg-sub :get-current-chat-contact
-  :<- [:get-contacts]
-  :<- [:get-current-chat-id] 
-  (fn [[contacts chat-id]]
-    (get contacts chat-id)))
+         :<- [:get-contacts]
+         :<- [:get-current-chat-id]
+         (fn [[contacts chat-id]]
+           (get contacts chat-id)))
 
 (defn sort-contacts [contacts]
   (sort (fn [c1 c2]
@@ -30,67 +30,67 @@
         (vals contacts)))
 
 (reg-sub :all-added-contacts
-  :<- [:get-contacts]
-  (fn [contacts]
-    (->> contacts
-         (remove (fn [[_ {:keys [pending? hide-contact?]}]]
-                   (or pending? hide-contact?)))
-         (sort-contacts))))
+         :<- [:get-contacts]
+         (fn [contacts]
+           (->> contacts
+                (remove (fn [[_ {:keys [pending? hide-contact?]}]]
+                          (or pending? hide-contact?)))
+                (sort-contacts))))
 
 (reg-sub :all-added-people-contacts
-  :<- [:all-added-contacts]
-  (fn [contacts]
-    (remove :dapp? contacts)))
+         :<- [:all-added-contacts]
+         (fn [contacts]
+           (remove :dapp? contacts)))
 
 (reg-sub :all-dapp-with-url-contacts
-  :<- [:all-added-contacts]
-  :<- [:get-current-account]
-  (fn [[contacts {:keys [dev-mode?]}]]
-    (filter #(and (:dapp? %) (:dapp-url %) (or dev-mode?
-                                               (not= "simple-dapp" (:whisper-identity %))))
-            contacts)))
+         :<- [:all-added-contacts]
+         :<- [:get-current-account]
+         (fn [[contacts {:keys [dev-mode?]}]]
+           (filter #(and (:dapp? %) (:dapp-url %) (or dev-mode?
+                                                      (not= "simple-dapp" (:whisper-identity %))))
+                   contacts)))
 
 (reg-sub :get-people-in-current-chat
-  :<- [:get-current-chat-contacts]
-  (fn [contacts]
-    (remove #(true? (:dapp? %)) contacts)))
+         :<- [:get-current-chat-contacts]
+         (fn [contacts]
+           (remove #(true? (:dapp? %)) contacts)))
 
 (defn filter-group-contacts [group-contacts contacts]
   (let [group-contacts' (into #{} group-contacts)]
     (filter #(group-contacts' (:whisper-identity %)) contacts)))
 
 (reg-sub :get-all-added-group-contacts
-  :<- [:all-added-contacts]
-  :<- [:get-contact-groups] 
-  (fn [[contacts contact-groups] [_ group-id]]
-    (filter-group-contacts (get-in contact-groups [group-id :contacts]) contacts)))
+         :<- [:all-added-contacts]
+         :<- [:get-contact-groups]
+         (fn [[contacts contact-groups] [_ group-id]]
+           (filter-group-contacts (get-in contact-groups [group-id :contacts]) contacts)))
 
 (reg-sub :get-contact-by-identity
-  :<- [:get-contacts]
-  (fn [contacts [_ identity]]
-    (get contacts identity)))
+         :<- [:get-contacts]
+         (fn [contacts [_ identity]]
+           (get contacts identity)))
 
 (reg-sub :get-contact-name-by-identity
-  :<- [:get-contacts]
-  :<- [:get-current-account]
- (fn [[contacts current-account] [_ identity]]
-   (let [me? (= (:public-key current-account) identity)]
-     (if me?
-       (:name current-account)
-       (:name (contacts identity))))))
+         :<- [:get-contacts]
+         :<- [:get-current-account]
+         (fn [[contacts current-account] [_ identity]]
+           (let [me? (= (:public-key current-account) identity)]
+             (if me?
+               (:name current-account)
+               (:name (contacts identity))))))
 
-(defn query-chat-contacts [[{:keys [contacts group-admin]} all-contacts] [_ query-fn]] 
+(defn query-chat-contacts [[{:keys [contacts group-admin]} all-contacts] [_ query-fn]]
   (let [participant-set (into #{} (filter identity) (conj contacts group-admin))]
     (query-fn (comp participant-set :whisper-identity) (vals all-contacts))))
 
 (reg-sub :query-current-chat-contacts
-  :<- [:get-current-chat]
-  :<- [:get-contacts]
-  query-chat-contacts)
+         :<- [:get-current-chat]
+         :<- [:get-contacts]
+         query-chat-contacts)
 
 (reg-sub :get-all-contacts-not-in-current-chat
-  :<- [:query-current-chat-contacts remove]
-  identity)
+         :<- [:query-current-chat-contacts remove]
+         identity)
 
 (defn get-all-contacts-in-group-chat [chat-contact-ids group-admin-id contacts current-account]
   (let [participant-set         (into #{} (filter identity) (conj chat-contact-ids group-admin-id))
@@ -103,33 +103,33 @@
          participant-set)))
 
 (reg-sub :get-current-chat-contacts
-  :<- [:get-current-chat]
-  :<- [:get-contacts]
-  :<- [:get-current-account]
-  (fn [[{:keys [contacts group-admin]} all-contacts current-account]]
-    (get-all-contacts-in-group-chat contacts group-admin all-contacts current-account)))
+         :<- [:get-current-chat]
+         :<- [:get-contacts]
+         :<- [:get-current-account]
+         (fn [[{:keys [contacts group-admin]} all-contacts current-account]]
+           (get-all-contacts-in-group-chat contacts group-admin all-contacts current-account)))
 
 (reg-sub :get-contacts-by-chat
-  (fn [[_ _ chat-id] _]
-    [(subscribe [:get-chat chat-id])
-     (subscribe [:get-contacts])])
-  query-chat-contacts)
+         (fn [[_ _ chat-id] _]
+           [(subscribe [:get-chat chat-id])
+            (subscribe [:get-contacts])])
+         query-chat-contacts)
 
 (reg-sub :get-chat-photo
-  (fn [[_ chat-id] _]
-    [(subscribe [:get-chat chat-id])
-     (subscribe [:get-contacts-by-chat filter chat-id])])
-  (fn [[chat contacts] [_ chat-id]]
-    (when (and chat (not (:group-chat chat)))
-      (cond
-        (:photo-path chat)
-        (:photo-path chat)
+         (fn [[_ chat-id] _]
+           [(subscribe [:get-chat chat-id])
+            (subscribe [:get-contacts-by-chat filter chat-id])])
+         (fn [[chat contacts] [_ chat-id]]
+           (when (and chat (not (:group-chat chat)))
+             (cond
+               (:photo-path chat)
+               (:photo-path chat)
 
-        (pos? (count contacts))
-        (:photo-path (first contacts))
+               (pos? (count contacts))
+               (:photo-path (first contacts))
 
-        :else
-        (identicon/identicon chat-id)))))
+               :else
+               (identicon/identicon chat-id)))))
 
 (defn- address= [{:keys [address] :as contact} s]
   (when (and address (= (ethereum/normalized-address s)
@@ -141,16 +141,16 @@
     contact))
 
 (reg-sub :get-contact-by-address
-  :<- [:get-contacts]
-  (fn [contacts [_ address]]
-    (some #(contact-by-address % address) contacts)))
+         :<- [:get-contacts]
+         (fn [contacts [_ address]]
+           (some #(contact-by-address % address) contacts)))
 
 (reg-sub :get-contacts-by-address
-  :<- [:get-contacts]
-  (fn [contacts]
-    (reduce (fn [acc [_ {:keys [address] :as contact}]]
-              (if address
-                (assoc acc address contact)
-                acc))
-            {}
-            contacts)))
+         :<- [:get-contacts]
+         (fn [contacts]
+           (reduce (fn [acc [_ {:keys [address] :as contact}]]
+                     (if address
+                       (assoc acc address contact)
+                       acc))
+                   {}
+                   contacts)))

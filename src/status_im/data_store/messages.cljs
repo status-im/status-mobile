@@ -23,13 +23,13 @@
    type))
 
 (def default-values
-  {:outgoing       false
-   :to             nil})
+  {:outgoing false
+   :to       nil})
 
 (re-frame/reg-cofx
-  :data-store/get-message
-  (fn [cofx _]
-    (assoc cofx :get-stored-message data-store/get-by-id)))
+ :data-store/get-message
+ (fn [cofx _]
+   (assoc cofx :get-stored-message data-store/get-by-id)))
 
 (defn get-by-chat-id
   ([chat-id]
@@ -42,24 +42,24 @@
                   message))))))
 
 (re-frame/reg-cofx
-  :data-store/get-messages
-  (fn [cofx _]
-    (assoc cofx :get-stored-messages get-by-chat-id)))
+ :data-store/get-messages
+ (fn [cofx _]
+   (assoc cofx :get-stored-messages get-by-chat-id)))
 
 (re-frame/reg-cofx
-  :data-store/message-ids
-  (fn [cofx _]
-    (assoc cofx :stored-message-ids (data-store/get-stored-message-ids))))
+ :data-store/message-ids
+ (fn [cofx _]
+   (assoc cofx :stored-message-ids (data-store/get-stored-message-ids))))
 
 (re-frame/reg-cofx
-  :data-store/unviewed-messages
-  (fn [{:keys [db] :as cofx} _]
-    (assoc cofx
-           :stored-unviewed-messages
-           (into {}
-                 (map (fn [[chat-id user-statuses]]
-                        [chat-id (into #{} (map :message-id) user-statuses)]))
-                 (group-by :chat-id (data-store/get-unviewed (:current-public-key db)))))))
+ :data-store/unviewed-messages
+ (fn [{:keys [db] :as cofx} _]
+   (assoc cofx
+     :stored-unviewed-messages
+     (into {}
+           (map (fn [[chat-id user-statuses]]
+                  [chat-id (into #{} (map :message-id) user-statuses)]))
+           (group-by :chat-id (data-store/get-unviewed (:current-public-key db)))))))
 
 (defn- prepare-content [content]
   (if (string? content)
@@ -89,7 +89,7 @@
   (when-not (data-store/exists? message-id)
     (data-store/save (prepare-message (merge default-values
                                              message
-                                             {:from      (or from "anonymous")
+                                             {:from               (or from "anonymous")
                                               :received-timestamp (datetime/timestamp)})))))
 (defn delete
   [message-id]

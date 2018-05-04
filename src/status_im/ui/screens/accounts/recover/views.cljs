@@ -17,21 +17,21 @@
             [status-im.ui.components.common.common :as components.common]))
 
 (defview passphrase-input [passphrase]
-  (letsubs [error [:get-in [:accounts/recover :passphrase-error]]
+  (letsubs [error     [:get-in [:accounts/recover :passphrase-error]]
             input-ref (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
                                     (.hideView js-dependencies/testfairy @input-ref)))}
     [text-input/text-input-with-label
-     {:style               components.styles/flex
-      :height              92
-      :ref                 (partial reset! input-ref)
-      :label               (i18n/label :t/passphrase)
-      :placeholder         (i18n/label :t/enter-12-words)
-      :multiline           true
-      :default-value       passphrase
-      :auto-correct        false
-      :on-change-text      #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
-      :error               error}]))
+     {:style          components.styles/flex
+      :height         92
+      :ref            (partial reset! input-ref)
+      :label          (i18n/label :t/passphrase)
+      :placeholder    (i18n/label :t/enter-12-words)
+      :multiline      true
+      :default-value  passphrase
+      :auto-correct   false
+      :on-change-text #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
+      :error          error}]))
 
 (defview password-input [password]
   (letsubs [error [:get-in [:accounts/recover :password-error]]]
@@ -48,8 +48,8 @@
 (defview recover []
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
-                        (spec/valid? ::recover.db/passphrase passphrase)
-                        (spec/valid? ::db/password password))]
+                       (spec/valid? ::recover.db/passphrase passphrase)
+                       (spec/valid? ::db/password password))]
       [react/keyboard-avoiding-view {:style styles/screen-container}
        [status-bar/status-bar]
        [toolbar/toolbar nil toolbar/default-nav-back

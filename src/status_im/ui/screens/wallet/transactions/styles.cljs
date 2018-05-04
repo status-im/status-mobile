@@ -57,10 +57,10 @@
    :font-size    17})
 
 (def tx-time
-  {:flex-grow   1
-   :font-size   14
-   :text-align  :right
-   :color       colors/blue})
+  {:flex-grow  1
+   :font-size  14
+   :text-align :right
+   :color      colors/blue})
 
 (def address-row
   {:flex-direction :row
@@ -91,10 +91,10 @@
    :padding-vertical 12})
 
 (def sign-all-view
-  {:flex              1
-   :flex-direction    :column
-   :justify-content   :center
-   :background-color  colors/gray-transparent})
+  {:flex             1
+   :flex-direction   :column
+   :justify-content  :center
+   :background-color colors/gray-transparent})
 
 (def sign-all-popup
   {:align-self        :flex-start

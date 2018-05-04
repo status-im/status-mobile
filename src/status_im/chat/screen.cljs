@@ -30,7 +30,7 @@
 
 (defn toolbar-action [chat-id chat-name group-chat public?]
   [react/touchable-highlight
-   {:on-press            #(list-selection/show {:title chat-name
+   {:on-press            #(list-selection/show {:title   chat-name
                                                 :options (actions/actions chat-id group-chat public?)})
     :accessibility-label :chat-menu}
    [react/view style/action
@@ -38,7 +38,7 @@
 
 (defview add-contact-bar [contact-identity]
   (letsubs [{:keys [pending?] :as contact} [:get-contact-by-identity contact-identity]]
-    (when (or pending? (not contact)) ;; contact is pending or not in contact list at all
+    (when (or pending? (not contact))                       ;; contact is pending or not in contact list at all
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
@@ -74,36 +74,36 @@
 (defmethod message-row :default
   [{:keys [group-chat current-public-key row]}]
   [message/chat-message (assoc row
-                               :group-chat group-chat
-                               :current-public-key current-public-key)])
+                          :group-chat group-chat
+                          :current-public-key current-public-key)])
 
 (defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
-  (letsubs [opacity       (animation/create-value 0)
-            duration      (if platform/android? 100 200)
-            timeout       (if platform/android? 50 0)]
+  (letsubs [opacity  (animation/create-value 0)
+            duration (if platform/android? 100 200)
+            timeout  (if platform/android? 50 0)]
     {:component-did-mount (fn [_]
                             (animation/start
-                              (animation/anim-sequence
-                               [(animation/anim-delay timeout)
-                                (animation/spring opacity {:toValue  1
-                                                           :duration duration})])))}
+                             (animation/anim-sequence
+                              [(animation/anim-delay timeout)
+                               (animation/spring opacity {:toValue  1
+                                                          :duration duration})])))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}
-      [react/touchable-without-feedback
-       {:on-press (fn [_]
-                    (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
-                    (react/dismiss-keyboard!))}
-       [react/animated-view {:style (style/message-view-animated opacity)}
-        message-view]]]))
+     [react/touchable-without-feedback
+      {:on-press (fn [_]
+                   (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                   (react/dismiss-keyboard!))}
+      [react/animated-view {:style (style/message-view-animated opacity)}
+       message-view]]]))
 
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
             chat-id            [:get-current-chat-id]
             current-public-key [:get-current-public-key]]
     {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
-                                                                   :input-focused? false}])}
+                                                                   :input-focused?    false}])}
     (if (empty? messages)
       [react/view style/empty-chat-container
        [react/text {:style style/empty-chat-text}
@@ -123,9 +123,9 @@
 
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
-            show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
+            show-bottom-info?     [:get-current-chat-ui-prop :show-bottom-info?]
             show-message-options? [:get-current-chat-ui-prop :show-message-options?]
-            current-view      [:get :view-id]]
+            current-view          [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
     [react/scroll-view {:scroll-enabled               false

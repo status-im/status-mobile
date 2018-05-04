@@ -29,7 +29,7 @@
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
   (->interceptor
-   :id     :debug-handlers-names
+   :id :debug-handlers-names
    :before (fn debug-handlers-names-before
              [context]
              (when @pre-event-callback
@@ -90,8 +90,8 @@
    :after
    (fn track-handler
      [context]
-     (let [new-db             (get-coeffect context :db)
-           [event-name]       (get-coeffect context :event)]
+     (let [new-db (get-coeffect context :db)
+           [event-name] (get-coeffect context :event)]
        (when (or
               (mixpanel/force-tracking? event-name)
               (get-in new-db [:account/account :sharing-usage-data?]))
@@ -141,6 +141,6 @@
        (map :whisper-identity)))
 
 (re-frame.core/reg-fx
- :drain-mixpanel-events
- (fn []
-   (async/go (async/<! (mixpanel/drain-events-queue!)))))
+  :drain-mixpanel-events
+  (fn []
+    (async/go (async/<! (mixpanel/drain-events-queue!)))))

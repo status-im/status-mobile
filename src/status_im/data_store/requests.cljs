@@ -5,9 +5,9 @@
             [status-im.data-store.realm.requests :as data-store]))
 
 (re-frame/reg-cofx
-  :data-store/get-unanswered-requests
-  (fn [cofx _]
-    (assoc cofx :stored-unanswered-requests (data-store/get-all-unanswered))))
+ :data-store/get-unanswered-requests
+ (fn [cofx _]
+   (assoc cofx :stored-unanswered-requests (data-store/get-all-unanswered))))
 
 (re-frame/reg-fx
   :data-store/save-request

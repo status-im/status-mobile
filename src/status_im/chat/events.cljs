@@ -22,7 +22,7 @@
             [status-im.transport.message.v1.group-chat :as group-chat]
             status-im.chat.events.commands
             status-im.chat.events.requests
-            status-im.chat.events.send-message 
+            status-im.chat.events.send-message
             status-im.chat.events.receive-message
             status-im.chat.events.console
             status-im.chat.events.webview-bridge))
@@ -123,10 +123,10 @@
                                   (assoc-in message [:user-statuses from] :not-sent))
                                 pending-messages)]
       {:data-store/update-messages updated-messages
-       :db (reduce (fn [m {:keys [chat-id message-id from]}]
-                     (assoc-in m [:chats chat-id :messages message-id :user-statuses from] :not-sent))
-                   db
-                   pending-messages)})))
+       :db                         (reduce (fn [m {:keys [chat-id message-id from]}]
+                                             (assoc-in m [:chats chat-id :messages message-id :user-statuses from] :not-sent))
+                                           db
+                                           pending-messages)})))
 
 (defn init-console-chat
   [{:keys [db] :as cofx}]
@@ -159,9 +159,9 @@
         contacts-to-add   (select-keys new-contacts (set/difference (set (keys new-contacts))
                                                                     (set (keys existing-contacts))))]
     (handlers-macro/merge-fx cofx
-                       {:db                       (update db :contacts/contacts merge contacts-to-add)
-                        :data-store/save-contacts (vals contacts-to-add)}
-                       (events.loading/load-commands))))
+                             {:db                       (update db :contacts/contacts merge contacts-to-add)
+                              :data-store/save-contacts (vals contacts-to-add)}
+                             (events.loading/load-commands))))
 
 (handlers/register-handler-fx
   :initialize-chats
@@ -182,22 +182,22 @@
                                               (assoc-in acc [chat-id message-id] request))
                                             {}
                                             stored-unanswered-requests)
-          chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                          (let [chat-messages (index-messages (get-stored-messages chat-id))]
-                            (assoc acc chat-id
-                                   (assoc chat
-                                          :unviewed-messages (get stored-unviewed-messages chat-id)
-                                          :requests (get chat->message-id->request chat-id)
-                                          :messages chat-messages
-                                          :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
-                                                                                  (-> chat-messages keys set))))))
-                        {}
-                        all-stored-chats)]
+          chats                     (reduce (fn [acc {:keys [chat-id] :as chat}]
+                                              (let [chat-messages (index-messages (get-stored-messages chat-id))]
+                                                (assoc acc chat-id
+                                                           (assoc chat
+                                                             :unviewed-messages (get stored-unviewed-messages chat-id)
+                                                             :requests (get chat->message-id->request chat-id)
+                                                             :messages chat-messages
+                                                             :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
+                                                                                                     (-> chat-messages keys set))))))
+                                            {}
+                                            all-stored-chats)]
       (handlers-macro/merge-fx cofx
-                         {:db (assoc db :chats chats)}
-                         (init-console-chat)
-                         (group.events/add-default-groups)
-                         (add-default-contacts)))))
+                               {:db (assoc db :chats chats)}
+                               (init-console-chat)
+                               (group.events/add-default-groups)
+                               (add-default-contacts)))))
 
 (handlers/register-handler-fx
   :browse-link-from-message
@@ -256,10 +256,10 @@
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [chat-id {:keys [db] :as cofx}]
   (handlers-macro/merge-fx cofx
-                     {:db (-> (assoc db :current-chat-id chat-id)
-                              (models/set-chat-ui-props {:validation-messages nil}))}
-                     (fire-off-chat-loaded-event chat-id)
-                     (mark-messages-seen chat-id)))
+                           {:db (-> (assoc db :current-chat-id chat-id)
+                                    (models/set-chat-ui-props {:validation-messages nil}))}
+                           (fire-off-chat-loaded-event chat-id)
+                           (mark-messages-seen chat-id)))
 
 (handlers/register-handler-fx
   :add-chat-loaded-event
@@ -267,7 +267,7 @@
   (fn [{:keys [db] :as cofx} [chat-id event]]
     (if (get (:chats db) chat-id)
       {:db (assoc-in db [:chats chat-id :chat-loaded-event] event)}
-      (-> (models/upsert-chat {:chat-id chat-id} cofx) ; chat not created yet, we have to create it
+      (-> (models/upsert-chat {:chat-id chat-id} cofx)      ; chat not created yet, we have to create it
           (assoc-in [:db :chats chat-id :chat-loaded-event] event)))))
 
 (defn- navigate-to-chat
@@ -275,12 +275,12 @@
   [chat-id {:keys [navigation-replace?]} {:keys [db] :as cofx}]
   (if navigation-replace?
     (handlers-macro/merge-fx cofx
-                       (navigation/replace-view :chat)
-                       (preload-chat-data chat-id))
+                             (navigation/replace-view :chat)
+                             (preload-chat-data chat-id))
     (handlers-macro/merge-fx cofx
-                       ;; TODO janherich - refactor `navigate-to` so it can be used with `merge-fx` macro
-                       {:db (navigation/navigate-to db :chat)}
-                       (preload-chat-data chat-id))))
+                             ;; TODO janherich - refactor `navigate-to` so it can be used with `merge-fx` macro
+                             {:db (navigation/navigate-to db :chat)}
+                             (preload-chat-data chat-id))))
 
 (handlers/register-handler-fx
   :navigate-to-chat
@@ -294,9 +294,9 @@
   ; don't allow to open chat with yourself
   (when (not= (:current-public-key db) chat-id)
     (handlers-macro/merge-fx cofx
-                       (models/upsert-chat {:chat-id chat-id
-                                            :is-active true})
-                       (navigate-to-chat chat-id opts))))
+                             (models/upsert-chat {:chat-id   chat-id
+                                                  :is-active true})
+                             (navigate-to-chat chat-id opts))))
 
 (handlers/register-handler-fx
   :start-chat
@@ -323,9 +323,9 @@
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
     (handlers-macro/merge-fx cofx
-                       (models/remove-chat chat-id)
-                       (navigation/replace-view :home)
-                       (remove-transport chat-id))))
+                             (models/remove-chat chat-id)
+                             (navigation/replace-view :home)
+                             (remove-transport chat-id))))
 
 (handlers/register-handler-fx
   :leave-group-chat?
@@ -341,8 +341,8 @@
   [re-frame/trim-v]
   (fn [cofx [chat-id]]
     (handlers-macro/merge-fx cofx
-                       (models/remove-chat chat-id)
-                       (navigation/replace-view :home))))
+                             (models/remove-chat chat-id)
+                             (navigation/replace-view :home))))
 
 (handlers/register-handler-fx
   :remove-chat-and-navigate-home?
@@ -358,10 +358,10 @@
   [re-frame/trim-v]
   (fn [{:keys [db now] :as cofx} [topic]]
     (handlers-macro/merge-fx cofx
-                       (models/add-public-chat topic)
-                       (navigation/navigate-to-clean :home)
-                       (navigate-to-chat topic {})
-                       (public-chat/join-public-chat topic))))
+                             (models/add-public-chat topic)
+                             (navigation/navigate-to-clean :home)
+                             (navigate-to-chat topic {})
+                             (public-chat/join-public-chat topic))))
 
 (defn- group-name-from-contacts [selected-contacts all-contacts username]
   (->> selected-contacts
@@ -380,19 +380,19 @@
                                                         (:contacts/contacts db)
                                                         (:username db)))]
       (handlers-macro/merge-fx cofx
-                         {:db (assoc db :group/selected-contacts #{})}
-                         (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
-                         (navigation/navigate-to-clean :home)
-                         (navigate-to-chat random-id {})
-                         (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
+                               {:db (assoc db :group/selected-contacts #{})}
+                               (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
+                               (navigation/navigate-to-clean :home)
+                               (navigate-to-chat random-id {})
+                               (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
 
 (handlers/register-handler-fx
   :show-profile
   [re-frame/trim-v]
   (fn [{:keys [db] :as cofx} [identity]]
     (handlers-macro/merge-fx cofx
-                       {:db (assoc db :contacts/identity identity)}
-                       (navigation/navigate-forget :profile))))
+                             {:db (assoc db :contacts/identity identity)}
+                             (navigation/navigate-forget :profile))))
 
 (handlers/register-handler-fx
   :resend-message

@@ -35,8 +35,8 @@
       (cond-> (handlers-macro/merge-fx cofx
                                        {:db (assoc db :network-status (if is-connected? :online :offline))}
                                        (inbox/recover-offline-inbox back-online?))
-        is-connected?
-        (assoc :drain-mixpanel-events nil)))))
+              is-connected?
+              (assoc :drain-mixpanel-events nil)))))
 
 (handlers/register-handler-fx
   ::update-network-status

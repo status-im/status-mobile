@@ -1,5 +1,5 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
-    status-im.transport.message.core)
+status-im.transport.message.core)
 
 (defprotocol StatusMessage
   "Protocol for the messages that are sent through the transport layer"

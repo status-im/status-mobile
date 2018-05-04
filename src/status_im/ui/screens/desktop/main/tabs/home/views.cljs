@@ -9,14 +9,14 @@
   (let [unviewed-messages-count (re-frame/subscribe [:unviewed-messages-count chat-id])]
     (when (pos? @unviewed-messages-count)
       [react/view
-       [react/text {:font  :medium}
+       [react/text {:font :medium}
         @unviewed-messages-count]])))
 
 (views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat public? public-key]}]
   (let [name (str
-               (if public? "#" "")
-               (or name
-                   (gfycat/generate-gfy public-key)))]
+              (if public? "#" "")
+              (or name
+                  (gfycat/generate-gfy public-key)))]
     [react/view {:style {:padding 12 :background-color :white :flex-direction :row :align-items :center}}
      (when public?
        [icons/icon :icons/public-chat])

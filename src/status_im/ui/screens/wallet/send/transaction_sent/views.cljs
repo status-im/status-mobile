@@ -26,7 +26,7 @@
       [react/text {:style styles/transaction-sent-description} (i18n/label :t/transaction-description)]]
      [react/view components.styles/flex]
      ;; TODO (andrey) uncomment when will be implemented
-     #_[react/touchable-highlight {:on-press #()}; TODO (andrey) #(re-frame/dispatch [:navigate-to-clean :wallet-transaction-details])}
+     #_[react/touchable-highlight {:on-press #()}           ; TODO (andrey) #(re-frame/dispatch [:navigate-to-clean :wallet-transaction-details])}
         [react/view styles/transaction-details-container
          [react/text {:style      styles/transaction-details
                       :font       (if platform/android? :medium :default)

@@ -17,7 +17,7 @@
      [chat-icon/contact-icon-contacts-tab contact]]
     [react/view styles/info-container
      [react/text (merge {:style           styles/name-text
-                          :number-of-lines 1}
+                         :number-of-lines 1}
                         (when dapp? {:accessibility-label :dapp-name})
                         props)
       (if (pos? (count (:name contact)))
@@ -34,18 +34,18 @@
   [react/touchable-highlight (merge {:accessibility-label accessibility-label}
                                     (when-not extended?
                                       {:on-press (when on-press #(on-press contact))}))
-    [react/view styles/contact-container
-     [contact-inner-view {:contact contact :info info :style style :props inner-props}]
-     (when show-forward?
-       [react/view styles/forward-btn
-        [vector-icons/icon :icons/forward]])
-     (when (and extended? (not (empty? extend-options)))
-       [react/view styles/more-btn-container
-        [react/touchable-highlight {:on-press            #(list-selection/show {:options extend-options
-                                                                                :title   extend-title})
-                                    :accessibility-label :menu-option}
-         [react/view styles/more-btn
-          [vector-icons/icon :icons/options {:accessibility-label :options}]]]])]])
+   [react/view styles/contact-container
+    [contact-inner-view {:contact contact :info info :style style :props inner-props}]
+    (when show-forward?
+      [react/view styles/forward-btn
+       [vector-icons/icon :icons/forward]])
+    (when (and extended? (not (empty? extend-options)))
+      [react/view styles/more-btn-container
+       [react/touchable-highlight {:on-press            #(list-selection/show {:options extend-options
+                                                                               :title   extend-title})
+                                   :accessibility-label :menu-option}
+        [react/view styles/more-btn
+         [vector-icons/icon :icons/options {:accessibility-label :options}]]]])]])
 
 (views/defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key whisper-identity]]

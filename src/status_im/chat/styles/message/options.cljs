@@ -5,12 +5,12 @@
             [status-im.constants :as constants]))
 
 (defstyle row
-          {:flex-direction     :row
-           :background-color   :white
-           :align-items        :center
-           :padding-horizontal 16
-           :ios                {:height 36}
-           :android            {:height 36}})
+  {:flex-direction     :row
+   :background-color   :white
+   :align-items        :center
+   :padding-horizontal 16
+   :ios                {:height 36}
+   :android            {:height 36}})
 
 (def title
   {:padding-horizontal 16
@@ -30,8 +30,8 @@
   {:font-size 12})
 
 (def icon
-  {:width            40
-   :height           40
-   :border-radius    20
-   :align-items      :center
-   :justify-content  :center})
+  {:width           40
+   :height          40
+   :border-radius   20
+   :align-items     :center
+   :justify-content :center})

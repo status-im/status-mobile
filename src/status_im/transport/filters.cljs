@@ -1,5 +1,5 @@
 (ns ^{:doc "API for whisper filters"}
-    status-im.transport.filters
+status-im.transport.filters
   (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.transport.utils :as utils]
@@ -21,9 +21,9 @@
 
 (defn add-filter!
   [web3 {:keys [topics to] :as options} callback]
-  (let [options  (if config/offline-inbox-enabled?
-                   (assoc options :allowP2P true)
-                   options)]
+  (let [options (if config/offline-inbox-enabled?
+                  (assoc options :allowP2P true)
+                  options)]
     (log/debug :add-filter options)
     (add-shh-filter! web3 options callback)))
 
@@ -31,7 +31,7 @@
   :shh/add-filter
   (fn [{:keys [web3 sym-key-id topic chat-id]}]
     (when-let [filter (add-filter! web3
-                                   {:topics [topic]
+                                   {:topics   [topic]
                                     :symKeyID sym-key-id}
                                    (fn [js-error js-message]
                                      (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))]
@@ -47,7 +47,7 @@
   :shh/add-discovery-filter
   (fn [{:keys [web3 private-key-id topic]}]
     (when-let [filter (add-filter! web3
-                                   {:topics [topic]
+                                   {:topics       [topic]
                                     :privateKeyID private-key-id}
                                    (fn [js-error js-message]
                                      (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message])))]

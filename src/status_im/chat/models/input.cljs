@@ -47,7 +47,7 @@
                                     (str/replace (str/trim command-text) #" +" " ")
                                     command-text)
           splitted                (cond-> (str/split command-text-normalized const/spacing-char)
-                                    space? (drop-last))]
+                                          space? (drop-last))]
       (->> splitted
            (reduce (fn [[list command-started?] arg]
                      (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
@@ -109,9 +109,9 @@
         :args     (into [] (if (empty? seq-arguments)
                              (rest command-args)
                              seq-arguments))})))
-  ([{:keys [chats current-chat-id access-scope->commands-responses]
+  ([{:keys          [chats current-chat-id access-scope->commands-responses]
      :contacts/keys [contacts] :as db}]
-   (let [chat (get chats current-chat-id)
+   (let [chat    (get chats current-chat-id)
          account (:account/account db)]
      (selected-chat-command chat
                             (commands-model/commands-responses :command

@@ -67,7 +67,7 @@
        [cartouche-content m
         (if-not (true? disabled?)
           [react/view styles/cartouche-icon-wrapper
-           [react/view {:flex 1} ;; Let content shrink if needed
+           [react/view {:flex 1}                            ;; Let content shrink if needed
             content]
            [vector-icons/icon icon (merge {:color :white} icon-opts)]]
           content)]]])])

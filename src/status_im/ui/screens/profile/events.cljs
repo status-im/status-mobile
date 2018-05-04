@@ -18,8 +18,8 @@
   (fn [callback-event]
     (show-image-picker
      (fn [image]
-       (let [path (get (js->clj image) "path")
-             _ (log/debug path)
+       (let [path       (get (js->clj image) "path")
+             _          (log/debug path)
              on-success (fn [base64]
                           (re-frame/dispatch [callback-event base64]))
              on-error   (fn [type error]
@@ -32,8 +32,8 @@
   (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
     (let [send-command (get-in contacts chat-const/send-command-ref)]
       (handlers-macro/merge-fx cofx
-                         (chat-events/start-chat chat-id {:navigation-replace? true})
-                         (input-events/select-chat-input-command send-command nil true)))))
+                               (chat-events/start-chat chat-id {:navigation-replace? true})
+                               (input-events/select-chat-input-command send-command nil true)))))
 
 (defn get-current-account [db]
   (:account/account db))
@@ -79,8 +79,8 @@
                               (if photo-path
                                 {:photo-path photo-path}))]
       (handlers-macro/merge-fx cofx
-                         (clear-profile)
-                         (accounts.utils/account-update cleaned-edit)))))
+                               (clear-profile)
+                               (accounts.utils/account-update cleaned-edit)))))
 
 (handlers/register-handler-fx
   :group-chat-profile/start-editing
@@ -98,8 +98,8 @@
   (fn [{:keys [db]} []]
     (let [{:keys [mnemonic]} (get-current-account db)
           shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]
-      {:db (assoc db :my-profile/seed {:step :first-word
-                                       :first-word (first shuffled-mnemonic)
+      {:db (assoc db :my-profile/seed {:step        :first-word
+                                       :first-word  (first shuffled-mnemonic)
                                        :second-word (second shuffled-mnemonic)})})))
 
 (handlers/register-handler-fx
@@ -111,5 +111,5 @@
   :my-profile/finish
   (fn [{:keys [db] :as cofx} _]
     (handlers-macro/merge-fx cofx
-                       {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                       (accounts.utils/account-update {:seed-backed-up? true}))))
+                             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
+                             (accounts.utils/account-update {:seed-backed-up? true}))))

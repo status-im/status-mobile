@@ -59,13 +59,13 @@
 
 (def message-timestamp-placeholder
   (assoc (message-timestamp false)
-         :color styles/color-white))
+    :color styles/color-white))
 
 (def selected-message
   {:margin-top  18
    :margin-left 40
    :font-size   12
-   :color      styles/text2-color})
+   :color       styles/text2-color})
 
 (defn group-message-wrapper [message]
   (merge {:flex-direction :column}
@@ -94,25 +94,25 @@
 (def delivery-view
   {:flex-direction :row
    :margin-top     2
-   :opacity       0.5})
+   :opacity        0.5})
 
 (defstyle delivery-text
-  {:color      styles/color-gray4
+  {:color       styles/color-gray4
    :margin-left 5
-   :android    {:font-size 13}
-   :ios        {:font-size 14}})
+   :android     {:font-size 13}
+   :ios         {:font-size 14}})
 
 (def not-sent-view
-  (assoc delivery-view :opacity       1
+  (assoc delivery-view :opacity 1
                        :margin-bottom 2
-                       :padding-top   2))
+                       :padding-top 2))
 
 (def not-sent-text
-  (assoc delivery-text  :color       styles/color-red
-                        :opacity     1
-                        :font-size   12
-                        :text-align  :right
-                        :padding-top 4))
+  (assoc delivery-text :color styles/color-red
+                       :opacity 1
+                       :font-size 12
+                       :text-align :right
+                       :padding-top 4))
 
 (def not-sent-icon
   {:padding-top  3
@@ -128,10 +128,10 @@
 
 (defn emoji-message
   [{:keys [incoming-group]}]
-  {:font-size 40
-   :color     styles/text1-color
-   :android   {:line-height 45}
-   :ios       {:line-height 46}
+  {:font-size  40
+   :color      styles/text1-color
+   :android    {:line-height 45}
+   :ios        {:line-height 46}
    :margin-top (if incoming-group 4 0)})
 
 (defn message-view
@@ -141,7 +141,7 @@
           :padding-bottom     8
           :border-radius      8}
          (when-not (= content-type constants/content-type-emoji)
-          {:background-color styles/color-white})
+           {:background-color styles/color-white})
          (when (= content-type constants/content-type-command)
            {:padding-top    10
             :padding-bottom 14})))

@@ -3,7 +3,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def item
-  {:flex-direction :row
+  {:flex-direction  :row
    :justify-content :center})
 
 (def item-content-view
@@ -18,8 +18,8 @@
    :justify-content :center})
 
 (def primary-text-base
-  {:font-size   16
-   :color       colors/black})
+  {:font-size 16
+   :color     colors/black})
 
 (def primary-text
   (merge primary-text-base
@@ -76,8 +76,8 @@
 
 (def separator
   (merge
-    base-separator
-    {:margin-left 70}))
+   base-separator
+   {:margin-left 70}))
 
 (defstyle list-header-footer-spacing
   {:android {:background-color colors/white
@@ -89,13 +89,13 @@
           :ios     {:margin-top 16}}))
 
 (defstyle section-header
-  {:font-size       14
-   :color           colors/gray
-   :margin-left     16
-   :android         {:margin-top    11
-                     :margin-bottom 3}
-   :ios             {:margin-top    10
-                     :margin-bottom 2}})
+  {:font-size   14
+   :color       colors/gray
+   :margin-left 16
+   :android     {:margin-top    11
+                 :margin-bottom 3}
+   :ios         {:margin-top    10
+                 :margin-bottom 2}})
 
 (def action-list
   {:background-color colors/blue})

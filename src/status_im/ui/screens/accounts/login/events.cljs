@@ -31,15 +31,15 @@
     ;; if we don't add delay when running app without status-go
     ;; "null is not an object (evaluating 'realm.schema')" error appears
     (keychain/get-encryption-key-then
-      (fn [encryption-key]
-        (let [change-account-fn (fn [] (data-store/change-account address
-                                                                  false
-                                                                  encryption-key
-                                                                  #(dispatch [:change-account-handler % address])))]
-          (if config/stub-status-go?
-            (utils/set-timeout change-account-fn
-                               300)
-            (change-account-fn)))))))
+     (fn [encryption-key]
+       (let [change-account-fn (fn [] (data-store/change-account address
+                                                                 false
+                                                                 encryption-key
+                                                                 #(dispatch [:change-account-handler % address])))]
+         (if config/stub-status-go?
+           (utils/set-timeout change-account-fn
+                              300)
+           (change-account-fn)))))))
 
 ;;;; Handlers
 
@@ -61,8 +61,8 @@
   ::login-account
   (fn [{db :db} [_ address password]]
     (wrap-with-login-account-fx
-      (assoc db :node/after-start nil)
-      address password)))
+     (assoc db :node/after-start nil)
+     address password)))
 
 (defn get-network-by-address [db address]
   (let [accounts (get db :accounts/accounts)
@@ -75,14 +75,14 @@
   (let [{:keys [network config]} (get-network-by-address db address)]
     {:initialize-geth-fx config
      :db                 (assoc db :network network
-                                :node/after-start [::login-account address password])}))
+                                   :node/after-start [::login-account address password])}))
 
 (register-handler-fx
   ::start-node
   (fn [{db :db} [_ address password]]
     (wrap-with-initialize-geth-fx
-      (assoc db :node/after-stop nil)
-      address password)))
+     (assoc db :node/after-stop nil)
+     address password)))
 
 (defn wrap-with-stop-node-fx [db address password]
   {:db         (assoc db :node/after-stop [::start-node address password])
@@ -92,8 +92,8 @@
   :login-account
   (fn [{{:keys [network status-node-started?] :as db} :db} [_ address password]]
     (let [{account-network :network} (get-network-by-address db address)
-          db' (-> db
-                  (assoc-in [:accounts/login :processing] true))
+          db'     (-> db
+                      (assoc-in [:accounts/login :processing] true))
           wrap-fn (cond (not status-node-started?)
                         wrap-with-initialize-geth-fx
 
@@ -112,7 +112,7 @@
           success (zero? (count error))
           db'     (assoc-in db [:accounts/login :processing] false)]
       (if success
-        {:db db'
+        {:db              db'
          ::clear-web-data nil
          ::change-account [address]}
         {:db (assoc-in db' [:accounts/login :error] error)}))))
@@ -125,8 +125,8 @@
                            (= view-id :create-account)
                            (assoc-in [:accounts/create :step] :enter-name))
        :dispatch-n (concat
-                     [[:stop-debugging]
-                      [:initialize-account address
-                       (when (not= view-id :create-account)
-                         [[:navigate-to-clean :home]])]])}
+                    [[:stop-debugging]
+                     [:initialize-account address
+                      (when (not= view-id :create-account)
+                        [[:navigate-to-clean :home]])]])}
       (log/debug "Error changing acount: " error))))

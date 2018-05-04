@@ -31,9 +31,9 @@
 
 (def webview-js (slurp "resources/js/webview.js"))
 (def jquery (str
-              " if (typeof jQuery2 == 'undefined') {"
-              (slurp "resources/js/vendors/jquery-3.1.1.min.js")
-              "}"))
+             " if (typeof jQuery2 == 'undefined') {"
+             (slurp "resources/js/vendors/jquery-3.1.1.min.js")
+             "}"))
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "node_modules/web3/dist/web3.min.js")
                "}"))

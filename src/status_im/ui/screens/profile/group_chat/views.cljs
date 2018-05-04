@@ -98,9 +98,9 @@
 
 (defview group-chat-profile []
   (letsubs [{:keys [group-admin] :as current-chat} [:get-current-chat]
-            editing?                               [:get :group-chat-profile/editing?]
-            changed-chat                           [:get :group-chat-profile/profile]
-            current-pk                             [:get :current-public-key]]
+            editing?     [:get :group-chat-profile/editing?]
+            changed-chat [:get :group-chat-profile/profile]
+            current-pk   [:get :current-public-key]]
     (let [shown-chat (merge current-chat changed-chat)
           admin?     (= current-pk group-admin)]
       [react/view profile.components.styles/profile

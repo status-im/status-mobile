@@ -17,7 +17,7 @@
 
 (defn save [account update?]
   (realm/write @realm/base-realm
-               (-> account
-                   (update :settings realm/serialize)
-                   (update :networks vals)
-                   (create-account-fn update?))))
+    (-> account
+        (update :settings realm/serialize)
+        (update :networks vals)
+        (create-account-fn update?))))

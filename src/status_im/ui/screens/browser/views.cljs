@@ -51,13 +51,13 @@
 
 (defn web-view-error []
   (reagent/as-element
-    [react/view styles/web-view-error
-     [react/text (i18n/label :t/web-view-error)]]))
+   [react/view styles/web-view-error
+    [react/text (i18n/label :t/web-view-error)]]))
 
 (defn web-view-loading []
   (reagent/as-element
-    [react/view styles/web-view-loading
-     [components/activity-indicator {:animating true}]]))
+   [react/view styles/web-view-loading
+    [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
   (let [{:strs [url title canGoBack canGoForward]} (js->clj event)]
@@ -70,12 +70,12 @@
     (get (:inject-js browser-config) domain-name)))
 
 (views/defview browser []
-  (views/letsubs [webview (atom nil)
+  (views/letsubs [webview                (atom nil)
                   {:keys [address]} [:get-current-account]
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
-                  extra-js [:web-view-extra-js]
-                  rpc-url [:get :rpc-url]
+                  extra-js               [:web-view-extra-js]
+                  rpc-url                [:get :rpc-url]
                   unread-messages-number [:get-chats-unread-messages-number]]
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]

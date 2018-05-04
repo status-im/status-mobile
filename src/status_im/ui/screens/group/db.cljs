@@ -13,16 +13,16 @@
 (spec/def :group/name :global/not-empty-string)
 (spec/def :group/timestamp int?)
 (spec/def :group/pending? boolean?)
-(spec/def :group/order int?) 
+(spec/def :group/order int?)
 
 (spec/def :group/contact :global/not-empty-string)
 
 (spec/def :group/contacts (spec/nilable (spec/* :group/contact)))
 
 (spec/def :group/contact-group (allowed-keys
-                                 :req-un [:group/group-id :group/name :group/timestamp
-                                          :group/order :group/contacts]
-                                 :opt-un [:group/pending?]))
+                                :req-un [:group/group-id :group/name :group/timestamp
+                                         :group/order :group/contacts]
+                                :opt-un [:group/pending?]))
 
 (spec/def :group/contact-groups (spec/nilable (spec/map-of :global/not-empty-string :group/contact-group)))
 ;;used during editing contact group

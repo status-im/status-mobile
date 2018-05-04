@@ -11,20 +11,21 @@
 (defn- generate-context
   "Generates context for jail call"
   [current-account-id chat-id group-chat? to]
-  (merge {:platform     platform/os
-          :from         current-account-id
-          :to           to
-          :chat         {:chat-id    chat-id
-                         :group-chat (boolean group-chat?)}}
+  (merge {:platform platform/os
+          :from     current-account-id
+          :to       to
+          :chat     {:chat-id    chat-id
+                     :group-chat (boolean group-chat?)}}
          i18n/delimeters))
 
 (defn request-command-message-data
   "Requests command message data from jail"
   [{:contacts/keys [contacts] :as db}
    {{:keys [command command-scope-bitmask bot params type]} :content
-    :keys [chat-id group-id] :as message}
+    :keys                                                   [chat-id group-id] :as message}
    {:keys [data-type] :as opts}]
-  (if-not (get contacts bot) ;; bot is not even in contacts, do nothing
+  ;; bot is not even in contacts, do nothing
+  (if-not (get contacts bot)
     {:db db}
     (if (get-in contacts [bot :jail-loaded?])
       (let [path        [(if (= :response (keyword type)) :responses :commands)

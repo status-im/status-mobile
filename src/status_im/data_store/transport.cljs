@@ -15,14 +15,14 @@
       (update :pending-send edn/read-string)))
 
 (re-frame/reg-cofx
-  :data-store/transport
-  (fn [cofx _]
-    (assoc cofx
-           :data-store/transport
-           (reduce (fn [acc {:keys [chat-id] :as chat}]
-                     (assoc acc chat-id (deserialize-chat chat)))
-                   {}
-                   (data-store/get-all)))))
+ :data-store/transport
+ (fn [cofx _]
+   (assoc cofx
+     :data-store/transport
+     (reduce (fn [acc {:keys [chat-id] :as chat}]
+               (assoc acc chat-id (deserialize-chat chat)))
+             {}
+             (data-store/get-all)))))
 
 (defn save [chat-id chat]
   (let [serialized-chat (-> chat
