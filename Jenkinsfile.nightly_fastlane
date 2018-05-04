@@ -36,7 +36,7 @@ node ('macos1'){
       latest_tag = sh(returnStdout: true, script: 'git describe --tags `git rev-list --tags --max-count=1`').trim()
       sh 'git tag -d ' + latest_tag
       sh 'rm -rf node_modules'
-      sh 'cp .env.jenkins .env'
+      sh 'cp .env.nightly .env'
       sh 'lein deps'
       installJSDeps()
 
