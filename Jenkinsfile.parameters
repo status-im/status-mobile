@@ -42,7 +42,6 @@ node ('macos1') {
       sh 'echo MAINNET_NETWORKS_ENABLED='    + MAINNET_NETWORKS_ENABLED     + '>>' + '.env'
       sh 'echo LOG_LEVEL='                   + LOG_LEVEL                    + '>>' + '.env'
       sh 'echo LOG_LEVEL_STATUS_GO='         + LOG_LEVEL_STATUS_GO          + '>>' + '.env'
-      sh 'echo JSC_ENABLED='                 + JSC_ENABLED                  + '>>' + '.env'
       sh 'echo OFFLINE_INBOX_ENABLED='       + OFFLINE_INBOX_ENABLED        + '>>' + '.env'
       sh 'echo MANY_WHISPER_TOPICS_ENABLED=' + MANY_WHISPER_TOPICS_ENABLED  + '>>' + '.env'
       sh 'echo POW_TARGET='                  + POW_TARGET                   + '>>' + '.env'

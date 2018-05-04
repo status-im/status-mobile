@@ -62,11 +62,6 @@ static RCTBridge *bridge;
 
 RCT_EXPORT_MODULE();
 
-+ (BOOL)JSCEnabled
-{
-    return @"1" == [ReactNativeConfig envFor:@"JSC_ENABLED"];
-}
-
 ////////////////////////////////////////////////////////////////////
 #pragma mark - Jails functions
 //////////////////////////////////////////////////////////////////// initJail
@@ -75,14 +70,10 @@ RCT_EXPORT_METHOD(initJail: (NSString *) js
 #if DEBUG
     NSLog(@"InitJail() method called");
 #endif
-    if([Status JSCEnabled]){
-        if(_jail == nil) {
-            _jail = [Jail new];
-        }
-        [_jail initJail:js];
-    } else {
-        InitJail((char *) [js UTF8String]);
+    if(_jail == nil) {
+        _jail = [Jail new];
     }
+    [_jail initJail:js];
     callback(@[[NSNull null]]);
 }
 

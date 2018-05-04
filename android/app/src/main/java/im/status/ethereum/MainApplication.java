@@ -47,17 +47,12 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                 devCluster = true;
             }
 
-            boolean jscEnabled = false;
-            if (BuildConfig.JSC_ENABLED == "1") {
-                jscEnabled = true;
-            }
-
             boolean webViewDebugEnabled = false;
             if (BuildConfig.DEBUG_WEBVIEW == "1") {
                 webViewDebugEnabled = true;
             }
 
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled, BuildConfig.LOG_LEVEL_STATUS_GO);
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, BuildConfig.LOG_LEVEL_STATUS_GO);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),

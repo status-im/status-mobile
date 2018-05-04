@@ -45,7 +45,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private String logLevel;
     private Jail jail;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean jscEnabled, String logLevel) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
@@ -54,11 +54,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.devCluster = devCluster;
         this.logLevel = logLevel;
         reactContext.addLifecycleEventListener(this);
-        if(jscEnabled) {
-            jail = new JSCJail(this);
-        } else {
-            jail = new OttoJail();
-        }
+        jail = new JSCJail(this);
     }
 
     @Override
@@ -574,7 +570,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
-        
+
         Log.d(TAG, "startCallJail");
         String res = jail.callJail(chatId, path, params);
         Log.d(TAG, "endCallJail");

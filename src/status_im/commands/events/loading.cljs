@@ -6,7 +6,6 @@
             [status-im.utils.js-resources :as js-resources]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]
             [status-im.native-module.core :as status]
             [status-im.bots.events :as bots-events]
             [taoensso.timbre :as log]))
@@ -20,9 +19,7 @@
       jail-id jail-resource
       (fn [jail-response]
         (let [converted (types/json->clj jail-response)]
-          (re-frame/dispatch [::proceed-loading jail-id (if config/jsc-enabled?
-                                                          (update converted :result types/json->clj)
-                                                          converted)])))))))
+          (re-frame/dispatch [::proceed-loading jail-id (update converted :result types/json->clj)])))))))
 
 (re-frame/reg-fx
  ::show-popup
