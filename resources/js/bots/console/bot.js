@@ -516,60 +516,6 @@ if (faucets.length > 0) {
     status.command(faucetCommandConfig);
 }
 
-function debugSuggestions(params) {
-    var values = ["On", "Off"];
-    var subContainerStyle = suggestionSubContainerStyle(false, false);
-
-    var suggestions = values.map(function (entry, index) {
-        return status.components.touchable(
-            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, entry, true]])},
-            status.components.view(
-                suggestionContainerStyle,
-                [status.components.view(
-                    (index == values.length - 1 ? suggestionSubContainerStyle(false, true) : subContainerStyle),
-                    [
-                        status.components.text(
-                            {style: valueStyle},
-                            entry
-                        )
-                    ]
-                )]
-            )
-        );
-    });
-
-    return {markup: status.components.view({}, suggestions)};
-}
-
-status.command({
-    name: "debug",
-    title: I18n.t('debug_mode_title'),
-    description: I18n.t('debug_mode_description'),
-    color: "#7099e6",
-    scope: ["personal-chats", "registered", "dapps"],
-    params: [{
-        name: "mode",
-        suggestions: debugSuggestions,
-        type: status.types.TEXT
-    }],
-    preview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                I18n.t('debug_mode_title') + ": " + params.mode
-            )
-        };
-    },
-    shortPreview: function (params) {
-        return {
-            markup: status.components.chatPreviewText(
-                {},
-                I18n.t('debug_mode_title') + ": " + params.mode
-            )
-        };
-    }
-});
-
 status.response({
     name: "grant-permissions",
     scope: ["personal-chats", "anonymous", "registered", "dapps"],
