@@ -14,7 +14,15 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]))
+
+;; TODO(pacamara) Symptomatic fix, root cause is react-native onLayout returning
+;; inconsistent height values, more investigation needed
+(defn android-blank-line-extra-height [input-text] 
+  (if (and platform/android? input-text (string/ends-with? input-text "\n"))
+    (/ style/min-input-height 2)
+    0))
 
 (defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
   (letsubs [{:keys [input-text]} [:get-current-chat] 
@@ -77,7 +85,8 @@
     [react/text {:style     (style/invisible-input-text-height container-width)
                  :on-layout #(let [h (-> (.-nativeEvent %)
                                          (.-layout)
-                                         (.-height))]
+                                         (.-height)
+                                         (+ (android-blank-line-extra-height input-text)))]
                                (set-layout-height-fn h))}
      (or input-text "")]))
 
