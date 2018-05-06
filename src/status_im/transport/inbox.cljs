@@ -3,13 +3,14 @@
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.handlers :as handlers]
-            [status-im.transport.utils :as web3.utils]
+            [status-im.transport.utils :as transport.utils]
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
-            [day8.re-frame.async-flow-fx]))
+            [day8.re-frame.async-flow-fx]
+            [status-im.constants :as constants]))
 
 (defn- parse-json
   ;; NOTE(dmitryn) Expects JSON response like:
@@ -48,13 +49,13 @@
   {:first-dispatch [:inbox/get-sym-key]
    :rules [{:when :seen-both?
             :events [:inbox/get-sym-key-success :inbox/connection-success]
-            :dispatch [:inbox/request-messages]}]})
+            :dispatch [:inbox/request-messages {:discover? true}]}]})
 
 (defn recover-offline-inbox-flow []
   {:first-dispatch [:inbox/fetch-peers]
    :rules [{:when     :seen?
             :events   :inbox/connection-success
-            :dispatch [:inbox/request-messages]}]})
+            :dispatch [:inbox/request-messages {:discover? true}]}]})
 
 (defn initialize-offline-inbox
   "Initialises offline inbox if inboxing enabled in config"
@@ -96,11 +97,11 @@
 
 (defn registered-peer? [peers enode]
   (let [peer-ids (into #{} (map :id) peers)
-        enode-id (web3.utils/extract-enode-id enode)]
+        enode-id (transport.utils/extract-enode-id enode)]
     (contains? peer-ids enode-id)))
 
 (defn mark-trusted-peer [web3 enode success-fn error-fn]
-  (.markTrustedPeer (web3.utils/shh web3)
+  (.markTrustedPeer (transport.utils/shh web3)
                     enode
                     (fn [err resp]
                       (if-not err
@@ -116,7 +117,7 @@
     (doseq [topic topics]
       (let [opts (assoc opts :topic topic)]
         (log/info "offline inbox: request-messages args" (pr-str opts))
-        (.requestMessages (web3.utils/shh web3)
+        (.requestMessages (transport.utils/shh web3)
                           (clj->js opts)
                           (fn [err resp]
                             (if-not err
@@ -215,18 +216,20 @@
 
 (handlers/register-handler-fx
  :inbox/request-messages
- (fn [{:keys [db now]} [_ {:keys [from topics]}]]
-   (let [web3     (:web3 db)
-         wnode    (get-current-wnode-address db)
-         topics   (or topics
-                      (map #(:topic %) (vals (:transport/chats db))))
-         from     (or from (:inbox/last-request db) nil)
+ (fn [{:keys [db now]} [_ {:keys [from topics discover?]}]]
+   (let [web3       (:web3 db)
+         wnode      (get-current-wnode-address db)
+         topics     (or topics
+                        (map #(:topic %) (vals (:transport/chats db))))
+         from       (or from (:inbox/last-request db) nil)
          sym-key-id (:inbox/sym-key-id db)]
      {::request-messages {:wnode      wnode
-                          :topics     topics
-                           ;;TODO (yenda) fix from, right now mailserver is dropping us
-                           ;;when we send a requestMessage with a from field
-                           ;;:from       from
+                          :topics     (if discover?
+                                        (conj topics (transport.utils/get-topic constants/contact-discovery))
+                                        topics)
+                          ;;TODO (yenda) fix from, right now mailserver is dropping us
+                          ;;when we send a requestMessage with a from field
+                          ;;:from       from
                           :sym-key-id sym-key-id
                           :web3       web3}
       :db (assoc db :inbox/last-request (quot now 1000))})))

@@ -45,10 +45,12 @@
                                (protocol/init-chat chat-id topic)
                                #_(protocol/requires-ack message-id chat-id))))
   (receive [this chat-id signature {:keys [db] :as cofx}]
-    (let [message-id (transport.utils/message-id this)]
+    (let [message-id (transport.utils/message-id this)
+          topic      (transport.utils/get-topic chat-id)]
       (when (protocol/is-new? message-id)
         (handlers-macro/merge-fx cofx
                                  #_(protocol/ack message-id chat-id)
+                                 {:dispatch [:inbox/request-messages {:topics [topic]}]}
                                  (contacts/receive-contact-request signature
                                                                    this))))))
 
