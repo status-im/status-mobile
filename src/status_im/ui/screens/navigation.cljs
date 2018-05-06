@@ -35,6 +35,11 @@
 (defn navigate-forget [view-id {:keys [db]}]
   {:db (assoc db :view-id view-id)})
 
+(defmulti unload-data!
+  (fn [db] (:view-id db)))
+
+(defmethod unload-data! :default [db] db)
+
 (defmulti preload-data!
   (fn [db [_ view-id]] (or view-id (:view-id db))))
 
@@ -57,23 +62,31 @@
        db
        (push-view db go-to-view-id)))))
 
+(def unload-data-interceptor
+  (re-frame/->interceptor
+   :id unload-data-interceptor
+   :before (fn unload-data-interceptor-before
+             [context]
+             (let [db (re-frame/get-coeffect context :db)]
+               (re-frame/assoc-coeffect context :db (unload-data! db))))))
+
 ;; event handlers
 
 (handlers/register-handler-db
  :navigate-to
- (re-frame/enrich preload-data!)
+ [unload-data-interceptor (re-frame/enrich preload-data!)]
  (fn [db [_ & params]]
    (apply navigate-to db params)))
 
 (handlers/register-handler-db
  :navigate-to-modal
- (re-frame/enrich preload-data!)
+ [unload-data-interceptor (re-frame/enrich preload-data!)]
  (fn [db [_ modal-view]]
    (assoc db :modal modal-view)))
 
 (handlers/register-handler-fx
  :navigation-replace
- (re-frame/enrich preload-data!)
+ [unload-data-interceptor (re-frame/enrich preload-data!)]
  (fn [cofx [_ view-id]]
    (replace-view view-id cofx)))
 
@@ -102,7 +115,7 @@
 
 (handlers/register-handler-fx
  :navigate-to-tab
- (re-frame/enrich preload-data!)
+ [unload-data-interceptor (re-frame/enrich preload-data!)]
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (handlers-macro/merge-fx cofx
                             {:db (-> db
