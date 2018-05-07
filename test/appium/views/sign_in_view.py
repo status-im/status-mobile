@@ -75,7 +75,8 @@ class DonNotShare(BaseButton):
 
     def __init__(self, driver):
         super(DonNotShare, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE"]' % "'")
+        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE" '
+                                                   'or @text="Do not share"]' % "'")
 
 
 class SignInView(BaseView):
