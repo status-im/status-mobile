@@ -105,8 +105,11 @@
  [re-frame/trim-v]
  (fn [{:keys [db] :as cofx} [envelope-hash status]]
    (let [{:keys [chat-id message-id]} (get-in db [:transport/message-envelopes envelope-hash])
-         message (get-in db [:chats chat-id :messages message-id])]
-     (models.message/update-message-status message status cofx))))
+         message (get-in db [:chats chat-id :messages message-id])
+         {:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
+     (handlers-macro/merge-fx cofx
+                              (models.message/update-message-status message status)
+                              (models.message/send-push-notification fcm-token status)))))
 
 ;; Change status of messages which are still in "sending" status to "not-sent"
 ;; (If signal from status-go has not been received)

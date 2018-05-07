@@ -34,6 +34,7 @@
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
             [status-im.transport.core :as transport]
+            [status-im.transport.inbox :as inbox]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.datetime :as time]
             [status-im.utils.ethereum.core :as ethereum]
@@ -205,6 +206,11 @@
  :close-application
  (fn [_]
    (status/close-application)))
+
+(re-frame/reg-fx
+ ::app-state-change-fx
+ (fn [state]
+   (status/app-state-change state)))
 
 ;;;; Handlers
 
@@ -407,8 +413,14 @@
 
 (handlers/register-handler-fx
  :app-state-change
- (fn [_ [_ state]]
-   (status/app-state-change state)))
+ (fn [{{:keys [network-status mailserver-status]} :db :as cofx} [_ state]]
+   (let [app-coming-from-background? (= state "active")
+         should-recover? (and app-coming-from-background?
+                              (= network-status :online)
+                              (not= mailserver-status :connecting))]
+     (handlers-macro/merge-fx cofx
+                              {::app-state-change-fx state}
+                              (inbox/recover-offline-inbox should-recover?)))))
 
 (handlers/register-handler-fx
  :request-permissions

@@ -169,19 +169,13 @@
 
 (defn- send
   [chat-id message-id send-record {{:contacts/keys [contacts] :keys [network-status current-public-key]} :db :as cofx}]
-  (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
+  (let [{:keys [dapp?]} (get contacts chat-id)]
     (if dapp?
       (send-dapp-message! cofx chat-id send-record)
       (if (= network-status :offline)
         {:dispatch-later [{:ms       10000
                            :dispatch [:update-message-status chat-id message-id current-public-key :not-sent]}]}
-        (if fcm-token
-          (handlers-macro/merge-fx cofx
-                                   {:send-notification {:message "message"
-                                                        :payload {:title "Status" :body "You have a new message"}
-                                                        :tokens  [fcm-token]}}
-                                   (transport/send send-record chat-id))
-          (transport/send send-record chat-id cofx))))))
+        (transport/send send-record chat-id cofx)))))
 
 (defn add-message-type [message {:keys [chat-id group-chat public?]}]
   (cond-> message
@@ -216,6 +210,12 @@
                                                       :timestamp now})
                              (add-message chat-id message-with-id true)
                              (send chat-id message-id send-record))))
+
+(defn send-push-notification [fcm-token status cofx]
+  (when (and fcm-token (= status :sent))
+    {:send-notification {:message "message"
+                         :payload {:title "Status" :body "You have a new message"}
+                         :tokens  [fcm-token]}}))
 
 (defn update-message-status [{:keys [chat-id message-id from] :as message} status {:keys [db]}]
   (let [updated-message (assoc-in message [:user-statuses from] status)]

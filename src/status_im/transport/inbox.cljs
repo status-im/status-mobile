@@ -64,18 +64,20 @@
       (log/info "offline inbox: initialize " wnode)
       (when wnode
         {:async-flow (initialize-offline-inbox-flow)
+         :db         (assoc db :mailserver-status :connecting)
          ::add-peer  {:wnode wnode}}))))
 
 (defn recover-offline-inbox
   "Recover offline inbox connection after being offline because of connectivity loss"
-  [back-online? {:keys [db]}]
-  (when config/offline-inbox-enabled?
+  [should-recover? {:keys [db]}]
+  (when (and config/offline-inbox-enabled?
+             should-recover?)
     (let [wnode (get-current-wnode-address db)]
-      (when (and back-online?
-                 wnode
+      (when (and wnode
                  (:account/account db))
         (log/info "offline inbox: recover" wnode)
-        {:async-flow (recover-offline-inbox-flow)}))))
+        {:db         (assoc db :mailserver-status :connecting)
+         :async-flow (recover-offline-inbox-flow)}))))
 
 (defn add-peer [enode success-fn error-fn]
   (status/add-peer enode (response-handler error-fn success-fn)))
