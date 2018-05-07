@@ -44,7 +44,7 @@
                   :accessibility-label :chat-message-text}
       content])])
 
-(defn message-timestamp [{:keys [timestamp]}]
+(defn message-timestamp [timestamp]
   (when timestamp
     [react/text {:style               styles/datetime-text
                  :accessibility-label :last-message-time-text}
@@ -80,7 +80,8 @@
 
 (defview home-list-chat-item-inner-view [{:keys [chat-id name color online
                                                  group-chat public?
-                                                 public-key]}]
+                                                 public-key
+                                                 timestamp]}]
   (letsubs [last-message [:get-last-message chat-id]]
     (let [name (or (i18n/get-contact-translated chat-id :name name)
                    (gfycat/generate-gfy public-key))
@@ -92,9 +93,8 @@
         [react/view styles/chat-info-container
          [react/view styles/item-upper-container
           [chat-list-item-name name group-chat public? public-key]
-          (when last-message
-            [react/view styles/message-status-container
-             [message-timestamp last-message]])]
+          [react/view styles/message-status-container
+           [message-timestamp timestamp]]]
          [react/view styles/item-lower-container
           [message-content-text last-message]
           [unviewed-indicator chat-id]]]]])))
