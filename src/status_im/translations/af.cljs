@@ -1,8 +1,7 @@
 (ns status-im.translations.af)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "lede"
    :not-implemented                  "!nie geimplimenteer nie"
    :chat-name                        "Bynaam"
@@ -132,10 +131,7 @@
    :address-explication              "Miskien moet hier 'n bietjie teks wees wat verduidelik wat 'n adres is en waar om daarvoor te soek."
    :contact-already-added            "Die kontak is alreeds bygevoeg"
    :can-not-add-yourself             "Jy kan nie jouself byvoeg nie"
-   :unknown-address                  "Onbekende adres"
-
-
-   ;;login
+   :unknown-address                  "Onbekende adres";;login
    :connect                          "Konnekteer"
    :address                          "Adres"
    :password                         "Wagwoord"
@@ -203,11 +199,8 @@
    :enter-address                    "Voeg ‘n adres in"
    :send-transaction                 "Stuur transaksie"
    :delete-contact                   "Skrap kontak"
-   :mute-notifications               "Demp kennisgewings"
-
-
-   :contact-s                        {:one   "kontak"
-                                      :other "kontakte"}
+   :mute-notifications               "Demp kennisgewings" :contact-s                        {:one   "kontak"
+                                                                                             :other "kontakte"}
    :next                             "Volgende"
    :from                             "Van"
    :search-chats                     "Soek kletse"
@@ -226,9 +219,6 @@
    :no-statuses-found                "Geen statusse gevind nie"
    :browsing-open-in-web-browser     "Maak oop in webblaaier"
    :delete-group-prompt              "Dit sal nie kontakte affekteer nie"
-   :edit-profile                     "Redigeer profiel"
-
-
-   :empty-topic                      "Leë onderwerp"
+   :edit-profile                     "Redigeer profiel" :empty-topic                      "Leë onderwerp"
    :to                               "Aan"
    :data                             "Data"})

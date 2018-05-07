@@ -1,8 +1,7 @@
 (ns status-im.translations.ro)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Membri"
    :not-implemented                  "!nu a fost implementat"
    :chat-name                        "Nume chat"
@@ -132,10 +131,7 @@
    :address-explication              "Poate că aici ar trebui să fie un text care să explice ce este o adresă și unde să o cauți"
    :contact-already-added            "Contactul a fost adăugat deja"
    :can-not-add-yourself             "Nu te poți adăuga pe tine"
-   :unknown-address                  "Adresă necunoscută"
-
-
-   ;;login
+   :unknown-address                  "Adresă necunoscută";;login
    :connect                          "Conectare"
    :address                          "Adresă"
    :password                         "Parolă"
@@ -203,11 +199,8 @@
    :enter-address                    "Introduceți adresa"
    :send-transaction                 "Trimitere tranzacție"
    :delete-contact                   "Ștergere contact"
-   :mute-notifications               "Notificări silențioase"
-
-
-   :contact-s                        {:one   "contact"
-                                      :other "contacte"}
+   :mute-notifications               "Notificări silențioase" :contact-s                        {:one   "contact"
+                                                                                                 :other "contacte"}
    :next                             "Mai departe"
    :from                             "De la"
    :search-chats                     "Căutare discuții"
@@ -226,9 +219,6 @@
    :no-statuses-found                "Niciun status găsit"
    :browsing-open-in-web-browser     "Deschide în browser web"
    :delete-group-prompt              "Aceasta nu va afecta contactele"
-   :edit-profile                     "Editare profil"
-
-
-   :empty-topic                      "Subiect gol"
+   :edit-profile                     "Editare profil" :empty-topic                      "Subiect gol"
    :to                               "Către"
    :data                             "Date"})

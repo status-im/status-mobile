@@ -33,8 +33,8 @@
 (defn- prepare-message
   [{:keys [content] :as message} chat-id current-chat?]
   (cond-> (assoc message :appearing? true)
-          (not current-chat?) (assoc :appearing? false)
-          (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
+    (not current-chat?) (assoc :appearing? false)
+    (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
 
 (defn- add-message
   [chat-id {:keys [message-id clock-value content] :as message} current-chat? {:keys [db]}]
@@ -43,8 +43,8 @@
                                (-> db
                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
                                    (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
-                               (not current-chat?)
-                               (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
+                                (not current-chat?)
+                                (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
      :data-store/save-message prepared-message}))
 
 (defn- prepare-chat [chat-id {:keys [db now] :as cofx}]
@@ -54,7 +54,6 @@
 (defn- send-message-seen [chat-id message-id send-seen? cofx]
   (when send-seen?
     (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
-
 
 (defn- add-received-message
   [{:keys [from message-id chat-id content content-type timestamp clock-value to-clock-value] :as message}
@@ -74,17 +73,17 @@
     (handlers-macro/merge-fx cofx
                              (add-message chat-id
                                           (cond-> (assoc message
-                                                    :timestamp new-timestamp
-                                                    :show? true)
-                                                  public-key
-                                                  (assoc :user-statuses {public-key (if current-chat? :seen :received)})
+                                                         :timestamp new-timestamp
+                                                         :show? true)
+                                            public-key
+                                            (assoc :user-statuses {public-key (if current-chat? :seen :received)})
 
-                                                  (not clock-value)
-                                                  (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
-                                                  command-request?
-                                                  (assoc-in [:content :request-command-ref]
-                                                            (lookup-response-ref access-scope->commands-responses
-                                                                                 current-account chat contacts request-command)))
+                                            (not clock-value)
+                                            (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
+                                            command-request?
+                                            (assoc-in [:content :request-command-ref]
+                                                      (lookup-response-ref access-scope->commands-responses
+                                                                           current-account chat contacts request-command)))
                                           current-chat?)
                              (send-message-seen chat-id message-id (and public-key
                                                                         (not public?)
@@ -186,12 +185,12 @@
 
 (defn add-message-type [message {:keys [chat-id group-chat public?]}]
   (cond-> message
-          (not group-chat)
-          (assoc :message-type :user-message)
-          (and group-chat public?)
-          (assoc :message-type :public-group-user-message)
-          (and group-chat (not public?))
-          (assoc :message-type :group-user-message)))
+    (not group-chat)
+    (assoc :message-type :user-message)
+    (and group-chat public?)
+    (assoc :message-type :public-group-user-message)
+    (and group-chat (not public?))
+    (assoc :message-type :group-user-message)))
 
 (defn- prepare-plain-message [chat-id {:keys [identity message-text]}
                               {:keys [last-clock-value] :as chat} now]
@@ -258,14 +257,14 @@
                     :prefill-bot-db      prefillBotDb}
                    {:params params})
         content' (assoc content
-                   :command (:name command)
-                   :handler-data handler-data
-                   :type (name (:type command))
-                   :command-scope-bitmask (:scope-bitmask command)
-                   :command-ref (:ref command)
-                   :preview (:preview command)
-                   :short-preview (:short-preview command)
-                   :bot (:owner-id command))]
+                        :command (:name command)
+                        :handler-data handler-data
+                        :type (name (:type command))
+                        :command-scope-bitmask (:scope-bitmask command)
+                        :command-ref (:ref command)
+                        :preview (:preview command)
+                        :short-preview (:short-preview command)
+                        :bot (:owner-id command))]
     (add-message-type {:chat-id      chat-id
                        :from         identity
                        :timestamp    now
@@ -321,8 +320,8 @@
                                            :to              to
                                            :current-account (get db :account/account)
                                            :message-id      id}
-                                          (:async-handler command)
-                                          (assoc :orig-params orig-params))}]
+                                    (:async-handler command)
+                                    (assoc :orig-params orig-params))}]
     {:call-jail {:jail-id                identity
                  :path                   [handler-type [name scope-bitmask] :handler]
                  :params                 jail-params

@@ -16,7 +16,6 @@
    :align-items        :center
    :padding-horizontal 12})
 
-
 (defn- border [position]
   (let [radius (if platform/ios? 8 4)]
     (case position
@@ -52,7 +51,6 @@
 (defstyle button-text-disabled
   {:android {:opacity 0.4}
    :ios     {:opacity 0.6}})
-
 
 (defstyle button-borders
   {:border-radius 8

@@ -1,8 +1,7 @@
 (ns status-im.translations.da)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Medlemmere"
    :not-implemented                  "Ikke implementeret!"
    :chat-name                        "Chatnavn"
@@ -198,10 +197,7 @@
    :enter-valid-public-key           "Indtast venligst en gyldig offentlig nøgle eller scan en QR-kode"
    :contact-already-added            "Kontakten er allerede tilføjet"
    :can-not-add-yourself             "Du kan ikke tilføje dig selv fjolle"
-   :unknown-address                  "Ukendt adresse"
-
-
-   ;;login
+   :unknown-address                  "Ukendt adresse";;login
    :connect                          "Tilslut"
    :address                          "Adresse"
    :password                         "Kodeord"

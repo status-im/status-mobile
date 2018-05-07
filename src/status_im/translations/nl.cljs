@@ -1,8 +1,7 @@
 (ns status-im.translations.nl)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Leden"
    :not-implemented                  "!niet geïmplementeerd"
    :chat-name                        "Chatnaam"

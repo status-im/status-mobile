@@ -1,5 +1,5 @@
 (ns ^{:doc "Protocol API and protocol utils"}
-status-im.transport.message.v1.protocol
+ status-im.transport.message.v1.protocol
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.chat.core :as chat]
@@ -100,9 +100,9 @@ status-im.transport.message.v1.protocol
           cofx))
   (receive [this chat-id signature cofx]
     {:dispatch [:chat-received-message/add (assoc (into {} this)
-                                             :message-id (transport.utils/message-id this)
-                                             :chat-id chat-id
-                                             :from signature)]}))
+                                                  :message-id (transport.utils/message-id this)
+                                                  :chat-id chat-id
+                                                  :from signature)]}))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

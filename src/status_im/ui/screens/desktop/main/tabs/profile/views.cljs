@@ -29,16 +29,16 @@
 
 (views/defview profile []
   (views/letsubs [current-account [:get-current-account]]
-    [react/view {:margin-top 40 :margin-horizontal 10}
-     [react/view
-      [profile-badge current-account]]
-     [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/view
-      [my-profile-info current-account]]
-     [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/touchable-highlight {:on-press #(keychain/get-encryption-key-then
-                                             (fn [encryption-key]
-                                               (re-frame/dispatch [:logout encryption-key])))
-                                 :style    {:margin-top 60}}
-      [react/view
-       [react/text {:style {:color :red}} "Log out"]]]]))
+                 [react/view {:margin-top 40 :margin-horizontal 10}
+                  [react/view
+                   [profile-badge current-account]]
+                  [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
+                  [react/view
+                   [my-profile-info current-account]]
+                  [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
+                  [react/touchable-highlight {:on-press #(keychain/get-encryption-key-then
+                                                          (fn [encryption-key]
+                                                            (re-frame/dispatch [:logout encryption-key])))
+                                              :style    {:margin-top 60}}
+                   [react/view
+                    [react/text {:style {:color :red}} "Log out"]]]]))

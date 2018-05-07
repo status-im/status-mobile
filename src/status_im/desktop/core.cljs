@@ -12,8 +12,8 @@
 (defn app-root []
   (reagent/create-class
    {:component-will-mount
-                    (fn []
-                      (.hide react/splash-screen))
+    (fn []
+      (.hide react/splash-screen))
     :reagent-render views/main}))
 
 (defn init []

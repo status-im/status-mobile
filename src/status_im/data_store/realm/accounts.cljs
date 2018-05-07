@@ -5,7 +5,6 @@
   (->> (realm/all-clj (realm/get-all @realm/base-realm :account) :account)
        (mapv #(update % :settings realm/deserialize))))
 
-
 (defn get-by-address [address]
   (-> @realm/base-realm
       (realm/get-by-field :account :address address)
@@ -17,7 +16,7 @@
 
 (defn save [account update?]
   (realm/write @realm/base-realm
-    (-> account
-        (update :settings realm/serialize)
-        (update :networks vals)
-        (create-account-fn update?))))
+               (-> account
+                   (update :settings realm/serialize)
+                   (update :networks vals)
+                   (create-account-fn update?))))

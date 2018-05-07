@@ -38,13 +38,13 @@
 
 (defview add-contact-bar [contact-identity]
   (letsubs [{:keys [pending?] :as contact} [:get-contact-by-identity contact-identity]]
-    (when (or pending? (not contact))                       ;; contact is pending or not in contact list at all
-      [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
-        :accessibility-label :add-to-contacts-button}
-       [react/view style/add-contact
-        [react/text {:style style/add-contact-text}
-         (i18n/label :t/add-to-contacts)]]])))
+           (when (or pending? (not contact))                       ;; contact is pending or not in contact list at all
+             [react/touchable-highlight
+              {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
+               :accessibility-label :add-to-contacts-button}
+              [react/view style/add-contact
+               [react/text {:style style/add-contact-text}
+                (i18n/label :t/add-to-contacts)]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   (if public? (str "#" chat-name) chat-name)
@@ -52,18 +52,18 @@
 
 (defview chat-toolbar [public?]
   (letsubs [{:keys [group-chat name chat-id contacts]} [:get-current-chat]]
-    [react/view
-     [status-bar/status-bar]
-     (if (= chat-id constants/console-chat-id)
-       [toolbar/simple-toolbar name]
-       [toolbar/platform-agnostic-toolbar {}
-        toolbar/nav-back-count
-        [toolbar-content/toolbar-content-view]
-        [toolbar/actions [{:icon      :icons/options
-                           :icon-opts {:color               :black
-                                       :accessibility-label :chat-menu-button}
-                           :handler   #(on-options chat-id name group-chat public?)}]]])
-     (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
+           [react/view
+            [status-bar/status-bar]
+            (if (= chat-id constants/console-chat-id)
+              [toolbar/simple-toolbar name]
+              [toolbar/platform-agnostic-toolbar {}
+               toolbar/nav-back-count
+               [toolbar-content/toolbar-content-view]
+               [toolbar/actions [{:icon      :icons/options
+                                  :icon-opts {:color               :black
+                                              :accessibility-label :chat-menu-button}
+                                  :handler   #(on-options chat-id name group-chat public?)}]]])
+            (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
@@ -74,52 +74,52 @@
 (defmethod message-row :default
   [{:keys [group-chat current-public-key row]}]
   [message/chat-message (assoc row
-                          :group-chat group-chat
-                          :current-public-key current-public-key)])
+                               :group-chat group-chat
+                               :current-public-key current-public-key)])
 
 (defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
   (letsubs [opacity  (animation/create-value 0)
             duration (if platform/android? 100 200)
             timeout  (if platform/android? 50 0)]
-    {:component-did-mount (fn [_]
-                            (animation/start
-                             (animation/anim-sequence
-                              [(animation/anim-delay timeout)
-                               (animation/spring opacity {:toValue  1
-                                                          :duration duration})])))}
-    [react/with-activity-indicator
-     {:style   style/message-view-preview
-      :preview [react/view style/message-view-preview]}
-     [react/touchable-without-feedback
-      {:on-press (fn [_]
-                   (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
-                   (react/dismiss-keyboard!))}
-      [react/animated-view {:style (style/message-view-animated opacity)}
-       message-view]]]))
+           {:component-did-mount (fn [_]
+                                   (animation/start
+                                    (animation/anim-sequence
+                                     [(animation/anim-delay timeout)
+                                      (animation/spring opacity {:toValue  1
+                                                                 :duration duration})])))}
+           [react/with-activity-indicator
+            {:style   style/message-view-preview
+             :preview [react/view style/message-view-preview]}
+            [react/touchable-without-feedback
+             {:on-press (fn [_]
+                          (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                          (react/dismiss-keyboard!))}
+             [react/animated-view {:style (style/message-view-animated opacity)}
+              message-view]]]))
 
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
             chat-id            [:get-current-chat-id]
             current-public-key [:get-current-public-key]]
-    {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
-                                                                   :input-focused?    false}])}
-    (if (empty? messages)
-      [react/view style/empty-chat-container
-       [react/text {:style style/empty-chat-text}
-        (if (= chat-id constants/console-chat-id)
-          (i18n/label :t/empty-chat-description-console)
-          (i18n/label :t/empty-chat-description))]]
-      [list/flat-list {:data                      messages
-                       :key-fn                    #(or (:message-id %) (:value %))
-                       :render-fn                 (fn [message]
-                                                    [message-row {:group-chat         group-chat
-                                                                  :current-public-key current-public-key
-                                                                  :row                message}])
-                       :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps :handled}])))
+           {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
+                                                                          :input-focused?    false}])}
+           (if (empty? messages)
+             [react/view style/empty-chat-container
+              [react/text {:style style/empty-chat-text}
+               (if (= chat-id constants/console-chat-id)
+                 (i18n/label :t/empty-chat-description-console)
+                 (i18n/label :t/empty-chat-description))]]
+             [list/flat-list {:data                      messages
+                              :key-fn                    #(or (:message-id %) (:value %))
+                              :render-fn                 (fn [message]
+                                                           [message-row {:group-chat         group-chat
+                                                                         :current-public-key current-public-key
+                                                                         :row                message}])
+                              :inverted                  true
+                              :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                              :enableEmptySections       true
+                              :keyboardShouldPersistTaps :handled}])))
 
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
@@ -128,20 +128,20 @@
             current-view          [:get :view-id]]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
-    [react/scroll-view {:scroll-enabled               false
-                        :style                        style/scroll-root
-                        :content-container-style      style/scroll-root
-                        :keyboard-should-persist-taps :handled}
-     [react/view {:style     style/chat-view
-                  :on-layout (fn [e]
-                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-      [chat-toolbar public?]
-      (when (= :chat current-view)
-        [messages-view-animation
-         [messages-view group-chat]])
-      [input/container {:text-empty? (string/blank? input-text)}]
-      (when show-bottom-info?
-        [bottom-info/bottom-info-view])
-      (when show-message-options?
-        [message-options/view])
-      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
+           [react/scroll-view {:scroll-enabled               false
+                               :style                        style/scroll-root
+                               :content-container-style      style/scroll-root
+                               :keyboard-should-persist-taps :handled}
+            [react/view {:style     style/chat-view
+                         :on-layout (fn [e]
+                                      (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+             [chat-toolbar public?]
+             (when (= :chat current-view)
+               [messages-view-animation
+                [messages-view group-chat]])
+             [input/container {:text-empty? (string/blank? input-text)}]
+             (when show-bottom-info?
+               [bottom-info/bottom-info-view])
+             (when show-message-options?
+               [message-options/view])
+             [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))

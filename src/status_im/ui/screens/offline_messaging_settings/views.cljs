@@ -28,11 +28,11 @@
 (views/defview offline-messaging-settings []
   (views/letsubs [current-wnode [:settings/current-wnode]
                   wnodes        [:settings/network-wnodes]]
-    [react/view {:flex 1}
-     [status-bar/status-bar]
-     [toolbar/simple-toolbar (i18n/label :t/offline-messaging-settings)]
-     [react/view styles/wrapper
-      [list/flat-list {:data               (vals wnodes)
-                       :default-separator? false
-                       :key-fn             :id
-                       :render-fn          (render-row current-wnode)}]]]))
+                 [react/view {:flex 1}
+                  [status-bar/status-bar]
+                  [toolbar/simple-toolbar (i18n/label :t/offline-messaging-settings)]
+                  [react/view styles/wrapper
+                   [list/flat-list {:data               (vals wnodes)
+                                    :default-separator? false
+                                    :key-fn             :id
+                                    :render-fn          (render-row current-wnode)}]]]))

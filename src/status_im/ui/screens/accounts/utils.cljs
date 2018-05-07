@@ -3,7 +3,6 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.v1.contact :as message.contact]))
 
-
 (defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update.
   Optionally, one can specify event to be dispatched after fields are persisted."

@@ -48,24 +48,24 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
-  ::jail-command-data-response
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [chat-id]} {:keys [proceed-event-creator]}]]
-    (when proceed-event-creator
-      {:dispatch (proceed-event-creator returned)})))
+ ::jail-command-data-response
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [chat-id]} {:keys [proceed-event-creator]}]]
+   (when proceed-event-creator
+     {:dispatch (proceed-event-creator returned)})))
 
 (handlers/register-handler-fx
-  :request-command-message-data
-  [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
-  (fn [{:keys [db]} [message opts]]
-    (request-command-message-data db message opts)))
+ :request-command-message-data
+ [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
+ (fn [{:keys [db]} [message opts]]
+   (request-command-message-data db message opts)))
 
 (handlers/register-handler-fx
-  :execute-command-immediately
-  [re-frame/trim-v]
-  (fn [_ [{command-name :name}]]
-    (case (keyword command-name)
-      :grant-permissions
-      {:dispatch [:request-permissions {:permissions [:read-external-storage]
-                                        :on-allowed  #(re-frame/dispatch [:initialize-geth])}]}
-      (log/debug "ignoring command: " command-name))))
+ :execute-command-immediately
+ [re-frame/trim-v]
+ (fn [_ [{command-name :name}]]
+   (case (keyword command-name)
+     :grant-permissions
+     {:dispatch [:request-permissions {:permissions [:read-external-storage]
+                                       :on-allowed  #(re-frame/dispatch [:initialize-geth])}]}
+     (log/debug "ignoring command: " command-name))))

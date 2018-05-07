@@ -24,15 +24,15 @@
 (defview manage-assets []
   (letsubs [network        [:network]
             visible-tokens [:wallet/visible-tokens-symbols]]
-    [react/view (merge components.styles/flex {:background-color :white})
-     [status-bar/status-bar {:type :modal-wallet}]
-     [toolbar/toolbar #_{} {:style wallet.styles/toolbar}
-      [toolbar/nav-text {:style               {:color :white}
-                         :accessibility-label :done-button}
-       (i18n/label :t/done)]
-      [toolbar/content-title {:color :white}
-       (i18n/label :t/wallet-assets)]]
-     [react/view {:style components.styles/flex}
-      [list/flat-list {:data      (tokens/sorted-tokens-for (ethereum/network->chain-keyword network))
-                       :key-fn    (comp str :symbol)
-                       :render-fn #(render-token % visible-tokens)}]]]))
+           [react/view (merge components.styles/flex {:background-color :white})
+            [status-bar/status-bar {:type :modal-wallet}]
+            [toolbar/toolbar #_{} {:style wallet.styles/toolbar}
+             [toolbar/nav-text {:style               {:color :white}
+                                :accessibility-label :done-button}
+              (i18n/label :t/done)]
+             [toolbar/content-title {:color :white}
+              (i18n/label :t/wallet-assets)]]
+            [react/view {:style components.styles/flex}
+             [list/flat-list {:data      (tokens/sorted-tokens-for (ethereum/network->chain-keyword network))
+                              :key-fn    (comp str :symbol)
+                              :render-fn #(render-token % visible-tokens)}]]]))

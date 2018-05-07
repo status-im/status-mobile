@@ -62,34 +62,34 @@
 (defview twelve-words [{:keys [mnemonic]}]
   (letsubs [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))
             ref          (reagent/atom nil)]
-    {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @ref)))}
-    [react/view {:style styles/twelve-words-container}
-     [react/text {:style styles/twelve-words-label}
-      (i18n/label :t/your-seed-phrase)]
-     [react/view {:style styles/twelve-words-columns
-                  :ref   (partial reset! ref)}
-      [six-words (subvec mnemonic-vec 0 6)]
-      [react/view {:style styles/twelve-words-columns-separator}]
-      [six-words (subvec mnemonic-vec 6 12)]]
-     [react/text {:style styles/twelve-words-description}
-      (i18n/label :t/your-seed-phrase-description)]
-     [react/view styles/twelve-words-spacer]
-     [react/view styles/twelve-words-button-container
-      [components.common/bottom-button
-       {:forward? true
-        :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
+           {:component-did-mount (fn [_] (when config/testfairy-enabled?
+                                           (.hideView js-dependencies/testfairy @ref)))}
+           [react/view {:style styles/twelve-words-container}
+            [react/text {:style styles/twelve-words-label}
+             (i18n/label :t/your-seed-phrase)]
+            [react/view {:style styles/twelve-words-columns
+                         :ref   (partial reset! ref)}
+             [six-words (subvec mnemonic-vec 0 6)]
+             [react/view {:style styles/twelve-words-columns-separator}]
+             [six-words (subvec mnemonic-vec 6 12)]]
+            [react/text {:style styles/twelve-words-description}
+             (i18n/label :t/your-seed-phrase-description)]
+            [react/view styles/twelve-words-spacer]
+            [react/view styles/twelve-words-button-container
+             [components.common/bottom-button
+              {:forward? true
+               :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
 
 (defview input [error]
   (letsubs [ref (reagent/atom nil)]
-    {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @ref)))}
-    [text-input/text-input-with-label
-     {:placeholder    (i18n/label :t/enter-word)
-      :ref            (partial reset! ref)
-      :auto-focus     true
-      :on-change-text #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
-      :error          error}]))
+           {:component-did-mount (fn [_] (when config/testfairy-enabled?
+                                           (.hideView js-dependencies/testfairy @ref)))}
+           [text-input/text-input-with-label
+            {:placeholder    (i18n/label :t/enter-word)
+             :ref            (partial reset! ref)
+             :auto-focus     true
+             :on-change-text #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
+             :error          error}]))
 
 (defn enter-word [step [idx word] error entered-word]
   ^{:key word}
@@ -137,21 +137,21 @@
 (defview backup-seed []
   (letsubs [current-account [:get-current-account]
             {:keys [step first-word second-word error word]} [:get :my-profile/seed]]
-    [react/keyboard-avoiding-view {:style common.styles/flex}
-     [status-bar/status-bar]
-     [toolbar/toolbar
-      nil
-      (when-not (#{:finish} step)
-        (toolbar/nav-button (actions/back #(step-back step))))
-      [react/view
-       [react/text {:style styles/backup-seed}
-        (i18n/label :t/backup-seed-phrase)]
-       [react/text {:style styles/step-n}
-        (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})]]]
-     [components.common/separator]
-     (case step
-       :intro [intro]
-       :12-words [twelve-words current-account]
-       :first-word [enter-word step first-word error word]
-       :second-word [enter-word step second-word error word]
-       :finish [finish])]))
+           [react/keyboard-avoiding-view {:style common.styles/flex}
+            [status-bar/status-bar]
+            [toolbar/toolbar
+             nil
+             (when-not (#{:finish} step)
+               (toolbar/nav-button (actions/back #(step-back step))))
+             [react/view
+              [react/text {:style styles/backup-seed}
+               (i18n/label :t/backup-seed-phrase)]
+              [react/text {:style styles/step-n}
+               (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})]]]
+            [components.common/separator]
+            (case step
+              :intro [intro]
+              :12-words [twelve-words current-account]
+              :first-word [enter-word step first-word error word]
+              :second-word [enter-word step second-word error word]
+              :finish [finish])]))

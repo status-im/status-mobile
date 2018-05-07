@@ -20,7 +20,6 @@
                         transaction
                         (assoc transaction :symbol :ETH)))))
 
-
 (re-frame/reg-sub :wallet.send/symbol
                   :<- [::send-transaction]
                   (fn [send-transaction]
@@ -88,6 +87,6 @@
                       (let [contact           (contacts (utils.hex/normalize-hex to))
                             sufficient-funds? (money/sufficient-funds? value (get balance symbol))]
                         (cond-> (assoc transaction
-                                  :amount value
-                                  :sufficient-funds? sufficient-funds?)
-                                contact (assoc :to-name (:name contact)))))))
+                                       :amount value
+                                       :sufficient-funds? sufficient-funds?)
+                          contact (assoc :to-name (:name contact)))))))

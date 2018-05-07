@@ -1,8 +1,7 @@
 (ns status-im.translations.ne)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "सदस्यहरु"
    :not-implemented                  "कार्यान्वयन भएको छैन"
    :chat-name                        "च्याट नाम"

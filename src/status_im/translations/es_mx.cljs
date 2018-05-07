@@ -1,8 +1,7 @@
 (ns status-im.translations.es-mx)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Miembros"
    :not-implemented                  "!No implementado!"
    :chat-name                        "Nombre del chat"
@@ -198,10 +197,7 @@
    :enter-valid-public-key           "Por favor ingresa una llave pública o escanea un código QR"
    :contact-already-added            "El contacto ya ha sido agregado"
    :can-not-add-yourself             "No puedes agregarte a ti mismo"
-   :unknown-address                  "Dirección desconocida"
-
-
-   ;;login
+   :unknown-address                  "Dirección desconocida";;login
    :connect                          "Conectar"
    :address                          "Dirección"
    :password                         "Contraseña"

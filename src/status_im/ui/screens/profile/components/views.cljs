@@ -69,8 +69,8 @@
   [react/touchable-highlight
    (cond-> {:on-press action-fn
             :disabled (not active?)}
-           accessibility-label
-           (assoc :accessibility-label accessibility-label))
+     accessibility-label
+     (assoc :accessibility-label accessibility-label))
    [react/view styles/settings-item
     [react/view styles/settings-item-text-wrapper
      [react/text {:style           (merge styles/settings-item-text

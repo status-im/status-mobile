@@ -1,8 +1,7 @@
 (ns status-im.translations.ur)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "ممبران"
    :not-implemented                  "نافذ نہیں ہوا!"
    :chat-name                        "چیٹ کا نام"
@@ -132,10 +131,7 @@
    :address-explication              "شائد یہاں آپ کو کچھ لکھنا چاہیے دیکھنے کے لیے کہ پتہ کیا ہے اور اسے کہاں ہونا چاہیے"
    :contact-already-added            "کانٹیکٹ پہلے سے شامل ہے"
    :can-not-add-yourself             "آپ خود کو شامل نہیں کر سکتے"
-   :unknown-address                  "نامعلوم پتہ"
-
-
-   ;;login
+   :unknown-address                  "نامعلوم پتہ";;login
    :connect                          "ملیں"
    :address                          "پتہ"
    :password                         "پاسورڈ"
@@ -206,8 +202,8 @@
    :mute-notifications               "اطلاع نامے خاموش کریں"
 
    :contact-s
-                                     {:one   "رابطہ"
-                                      :other "روابط"}
+   {:one   "رابطہ"
+    :other "روابط"}
    :next                             "اگلا"
    :from                             "سے"
    :search-chats                     "چیٹس تلاش کریں"

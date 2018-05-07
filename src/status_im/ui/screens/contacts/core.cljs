@@ -42,7 +42,6 @@
                                 :data-store/save-contact contact-props}
                                (chat.models/upsert-chat chat-props)))))
 
-
 (defn- update-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (when (get-in db [:contacts/contacts whisper-identity])
     {:db                      (update-in db [:contacts/contacts whisper-identity] merge contact)

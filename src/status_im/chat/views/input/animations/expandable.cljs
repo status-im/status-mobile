@@ -24,16 +24,16 @@
             chat-input-margin  [:chat-input-margin]
             keyboard-height    [:get :keyboard-height]
             chat-layout-height [:get :layout-height]]
-    (let [input-height (or input-height (+ input-style/padding-vertical
-                                           input-style/min-input-height
-                                           input-style/padding-vertical
-                                           input-style/border-height))
-          bottom       (+ input-height chat-input-margin)
-          max-height   (- chat-layout-height (when platform/ios? keyboard-height) input-height top-offset)]
-      [react/view style/overlap-container
-       [react/animated-view {:style (style/expandable-container anim-value bottom max-height)}
-        (into [react/scroll-view {:keyboard-should-persist-taps :always
-                                  :on-content-size-change       #(expandable-view-on-update anim-value %2)
-                                  :bounces                      false}]
-              (when (or input-focused? (not messages-focused?))
-                elements))]])))
+           (let [input-height (or input-height (+ input-style/padding-vertical
+                                                  input-style/min-input-height
+                                                  input-style/padding-vertical
+                                                  input-style/border-height))
+                 bottom       (+ input-height chat-input-margin)
+                 max-height   (- chat-layout-height (when platform/ios? keyboard-height) input-height top-offset)]
+             [react/view style/overlap-container
+              [react/animated-view {:style (style/expandable-container anim-value bottom max-height)}
+               (into [react/scroll-view {:keyboard-should-persist-taps :always
+                                         :on-content-size-change       #(expandable-view-on-update anim-value %2)
+                                         :bounces                      false}]
+                     (when (or input-focused? (not messages-focused?))
+                       elements))]])))

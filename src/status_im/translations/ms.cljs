@@ -1,8 +1,7 @@
 (ns status-im.translations.ms)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Ahli"
    :not-implemented                  "!tidak diimplementasikan"
    :chat-name                        "Nama perbualan"
@@ -199,10 +198,7 @@
    :enter-valid-public-key           "Sila masukkan public key yang sah atau imbas kod QR"
    :contact-already-added            "Kenalan telah ditambah"
    :can-not-add-yourself             "Anda tidak boleh menambah diri anda sendiri"
-   :unknown-address                  "Address tidak diketahui"
-
-
-   ;;login
+   :unknown-address                  "Address tidak diketahui";;login
    :connect                          "Sambung"
    :address                          "Address"
    :password                         "Kata laluan"

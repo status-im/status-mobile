@@ -15,6 +15,6 @@
 
 (defview parameter-box-view []
   (letsubs [show-parameter-box? [:show-parameter-box?]]
-    (when show-parameter-box?
-      [expandable/expandable-view {:key :parameter-box}
-       [parameter-box-container]])))
+           (when show-parameter-box?
+             [expandable/expandable-view {:key :parameter-box}
+              [parameter-box-container]])))

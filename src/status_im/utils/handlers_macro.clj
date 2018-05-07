@@ -38,8 +38,7 @@
             :a  "1"})
 
          (defn fn2 [a {:keys [db]}]
-           {:db (update db :a + a)
-            })
+           {:db (update db :a + a)})
 
          (defn fn3 [a {:keys [db u]}]
            {:db (update db :a + u)})

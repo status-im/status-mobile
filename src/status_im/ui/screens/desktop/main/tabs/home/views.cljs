@@ -34,14 +34,14 @@
 
 (views/defview chat-list-view []
   (views/letsubs [home-items [:home-items]]
-    [react/view {:style {:flex 1 :background-color :white}}
-     [react/view {:style {:align-items :center :flex-direction :row :padding 11}}
-      [react/view {:style {:flex 1}}]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :new-contact])}
-       [icons/icon :icons/add]]]
-     [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/scroll-view
-      [react/view
-       (for [[index chat] (map-indexed vector home-items)]
-         ^{:key (str chat index)}
-         [chat-list-item chat])]]]))
+                 [react/view {:style {:flex 1 :background-color :white}}
+                  [react/view {:style {:align-items :center :flex-direction :row :padding 11}}
+                   [react/view {:style {:flex 1}}]
+                   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :new-contact])}
+                    [icons/icon :icons/add]]]
+                  [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
+                  [react/scroll-view
+                   [react/view
+                    (for [[index chat] (map-indexed vector home-items)]
+                      ^{:key (str chat index)}
+                      [chat-list-item chat])]]]))

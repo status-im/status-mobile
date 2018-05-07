@@ -30,11 +30,11 @@
 
 (defview nav-button-with-count [props]
   (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
-    [react/view
-     [nav-button props]
-     (when (pos? unread-messages-number)
-       [react/view styles/counter-container
-        [components.common/counter unread-messages-number]])]))
+           [react/view
+            [nav-button props]
+            (when (pos? unread-messages-number)
+              [react/view styles/counter-container
+               [components.common/counter unread-messages-number]])]))
 
 (defn nav-text
   ([text] (nav-text nil text))
@@ -89,8 +89,8 @@
                                           (when disabled? styles/toolbar-text-action-disabled))
                        :on-press   (when-not disabled? handler)
                        :uppercase? true}
-                      accessibility-label
-                      (assoc :accessibility-label accessibility-label))
+                accessibility-label
+                (assoc :accessibility-label accessibility-label))
    title])
 
 (def blank-action [react/view {:style (merge styles/item styles/toolbar-action)}])
@@ -110,15 +110,15 @@
   [react/view {:style styles/toolbar-actions}
    (for [{:keys [image icon icon-opts options handler]} v]
      (with-meta
-      (cond (= image :blank)
-            blank-action
+       (cond (= image :blank)
+             blank-action
 
-            options
-            [option-actions icon icon-opts options]
+             options
+             [option-actions icon icon-opts options]
 
-            :else
-            [icon-action icon icon-opts handler])
-      {:key (str "action-" (or image icon))}))])
+             :else
+             [icon-action icon icon-opts handler])
+       {:key (str "action-" (or image icon))}))])
 
 (defn toolbar
   ([props nav-item content-item] (toolbar props nav-item content-item nil))

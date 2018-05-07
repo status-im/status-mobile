@@ -141,6 +141,6 @@
        (map :whisper-identity)))
 
 (re-frame.core/reg-fx
-  :drain-mixpanel-events
-  (fn []
-    (async/go (async/<! (mixpanel/drain-events-queue!)))))
+ :drain-mixpanel-events
+ (fn []
+   (async/go (async/<! (mixpanel/drain-events-queue!)))))

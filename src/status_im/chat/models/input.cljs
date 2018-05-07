@@ -47,7 +47,7 @@
                                     (str/replace (str/trim command-text) #" +" " ")
                                     command-text)
           splitted                (cond-> (str/split command-text-normalized const/spacing-char)
-                                          space? (drop-last))]
+                                    space? (drop-last))]
       (->> splitted
            (reduce (fn [[list command-started?] arg]
                      (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))

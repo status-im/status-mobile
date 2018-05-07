@@ -24,12 +24,12 @@
 
 (defn primary-button [{:keys [style text-style] :as m} label]
   [button (assoc m
-            :style (merge styles/primary-button style)
-            :text-style (merge styles/primary-button-text text-style))
+                 :style (merge styles/primary-button style)
+                 :text-style (merge styles/primary-button-text text-style))
    label])
 
 (defn secondary-button [{:keys [style text-style] :as m} label]
   [button (assoc m
-            :style (merge styles/secondary-button style)
-            :text-style (merge styles/secondary-button-text text-style))
+                 :style (merge styles/secondary-button style)
+                 :text-style (merge styles/secondary-button-text text-style))
    label])

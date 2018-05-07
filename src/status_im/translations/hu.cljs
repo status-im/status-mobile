@@ -1,8 +1,7 @@
 (ns status-im.translations.hu)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Tagok"
    :not-implemented                  "!nem végrehajtott"
    :chat-name                        "Csevegés neve"
@@ -132,10 +131,7 @@
    :address-explication              "Itt talán szükség lenne egy kis szövegre, ami elmagyarázná, mi is az a cím és hol lehet megtalálni"
    :contact-already-added            "A kapcsolat már hozzáadásra került"
    :can-not-add-yourself             "Magadat nem adhatod hozzá"
-   :unknown-address                  "Ismeretlen cím"
-
-
-   ;;login
+   :unknown-address                  "Ismeretlen cím";;login
    :connect                          "Kapcsolódás"
    :address                          "Cím"
    :password                         "Jelszó"
@@ -203,11 +199,8 @@
    :enter-address                    "Cím megadása"
    :send-transaction                 "Tranzakció küldése"
    :delete-contact                   "Névjegy törlése"
-   :mute-notifications               "Értesítések elnémítása"
-
-
-   :contact-s                        {:one   "névjegy"
-                                      :other "névjegyek"}
+   :mute-notifications               "Értesítések elnémítása" :contact-s                        {:one   "névjegy"
+                                                                                                 :other "névjegyek"}
    :next                             "Következő"
    :from                             "Feladó"
    :search-chats                     "Csevegések keresése"
@@ -226,9 +219,6 @@
    :no-statuses-found                "Nem található állapot"
    :browsing-open-in-web-browser     "Megnyitás új böngészőben"
    :delete-group-prompt              "Nem lesz hatással a névjegyekre"
-   :edit-profile                     "Profil szerkesztése"
-
-
-   :empty-topic                      "Üres téma"
+   :edit-profile                     "Profil szerkesztése" :empty-topic                      "Üres téma"
    :to                               "Címzett"
    :data                             "Adatok"})

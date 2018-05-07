@@ -25,17 +25,17 @@
         view-id              (re-frame/subscribe [:get :view-id])]
     (reagent/create-class
      {:component-did-mount
-                    on-update
+      on-update
       :component-did-update
-                    on-update
+      on-update
       :display-name "connectivity-error-view"
       :reagent-render
-                    (fn [{:keys [top]}]
-                      (when (or @offline? @connection-problem?)
-                        (let [pending? (and (:pending @current-chat-contact) (= :chat @view-id))]
-                          [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending?)}
-                           [react/view
-                            [react/text {:style styles/offline-text}
-                             (i18n/label (if @connection-problem?
-                                           :t/connection-problem
-                                           :t/offline))]]])))})))
+      (fn [{:keys [top]}]
+        (when (or @offline? @connection-problem?)
+          (let [pending? (and (:pending @current-chat-contact) (= :chat @view-id))]
+            [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending?)}
+             [react/view
+              [react/text {:style styles/offline-text}
+               (i18n/label (if @connection-problem?
+                             :t/connection-problem
+                             :t/offline))]]])))})))

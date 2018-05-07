@@ -327,7 +327,6 @@
 (defn supported-locales-that-are-not-considered-supported []
   (set/difference (actual-supported-locales) supported-locales))
 
-
 (set! (.-translations rn-dependencies/i18n)
       (clj->js translations-by-locale))
 

@@ -22,7 +22,7 @@
    {:icon      :icons/filter
     :icon-opts {:accessibility-label :filters-button}
     :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
-   filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
+    filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- all-checked? [filter-data]
   (and (every? :checked? (:type filter-data))
@@ -115,24 +115,24 @@
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             filter-data               [:wallet.transactions/filters]]
-    [react/view components.styles/flex
-     [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
-                         :key-fn          :hash
-                         :render-fn       render-transaction
-                         :empty-component [react/text {:style styles/empty-text}
-                                           (i18n/label :t/transactions-history-empty)]
-                         :on-refresh      #(re-frame/dispatch [:update-transactions])
-                         :refreshing      false}]]))
+           [react/view components.styles/flex
+            [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
+                                :key-fn          :hash
+                                :render-fn       render-transaction
+                                :empty-component [react/text {:style styles/empty-text}
+                                                  (i18n/label :t/transactions-history-empty)]
+                                :on-refresh      #(re-frame/dispatch [:update-transactions])
+                                :refreshing      false}]]))
 
 (defview unsigned-list []
   (letsubs [transactions [:wallet.transactions/unsigned-transactions-list]]
-    [react/view {:style components.styles/flex}
-     [list/flat-list {:data            transactions
-                      :key-fn          (fn [_ i] (str i))
-                      :render-fn       render-transaction
-                      :empty-component [react/text {:style               styles/empty-text
-                                                    :accessibility-label :no-unsigned-transactions-text}
-                                        (i18n/label :t/transactions-unsigned-empty)]}]]))
+           [react/view {:style components.styles/flex}
+            [list/flat-list {:data            transactions
+                             :key-fn          (fn [_ i] (str i))
+                             :render-fn       render-transaction
+                             :empty-component [react/text {:style               styles/empty-text
+                                                           :accessibility-label :no-unsigned-transactions-text}
+                                               (i18n/label :t/transactions-unsigned-empty)]}]]))
 
 ;; Filter history
 
@@ -159,18 +159,18 @@
 
 (defview filter-history []
   (letsubs [filter-data [:wallet.transactions/filters]]
-    [react/view styles/filter-container
-     [status-bar/status-bar {:type :modal-white}]
-     [toolbar/toolbar {}
-      [toolbar/nav-clear-text {:accessibility-label :done-button} (i18n/label :t/done)]
-      [toolbar/content-title (i18n/label :t/transactions-filter-title)]
-      [toolbar/text-action {:handler             #(re-frame/dispatch [:wallet.transactions/filter-all])
-                            :disabled?           (all-checked? filter-data)
-                            :accessibility-label :select-all-button}
-       (i18n/label :t/transactions-filter-select-all)]]
-     [react/view {:style (merge {:background-color :white} components.styles/flex)}
-      [list/section-list {:sections (wrap-filter-data filter-data)
-                          :key-fn   (comp str :id)}]]]))
+           [react/view styles/filter-container
+            [status-bar/status-bar {:type :modal-white}]
+            [toolbar/toolbar {}
+             [toolbar/nav-clear-text {:accessibility-label :done-button} (i18n/label :t/done)]
+             [toolbar/content-title (i18n/label :t/transactions-filter-title)]
+             [toolbar/text-action {:handler             #(re-frame/dispatch [:wallet.transactions/filter-all])
+                                   :disabled?           (all-checked? filter-data)
+                                   :accessibility-label :select-all-button}
+              (i18n/label :t/transactions-filter-select-all)]]
+            [react/view {:style (merge {:background-color :white} components.styles/flex)}
+             [list/section-list {:sections (wrap-filter-data filter-data)
+                                 :key-fn   (comp str :id)}]]]))
 
 (defn history-tab [active?]
   [react/text {:force-uppercase?    true
@@ -180,15 +180,15 @@
 
 (defview unsigned-tab [active?]
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
-    [react/view {:flex-direction :row}
-     [react/text {:style               (styles/tab-title active?)
-                  :force-uppercase?    true
-                  :accessibility-label :unsigned-transactions-button}
-      (i18n/label :t/transactions-unsigned)]
-     (when (pos? unsigned-transactions-count)
-       [react/text {:style               styles/tab-unsigned-transactions-count
-                    :accessibility-label :unsigned-transactions-counter-text}
-        (str " " unsigned-transactions-count)])]))
+           [react/view {:flex-direction :row}
+            [react/text {:style               (styles/tab-title active?)
+                         :force-uppercase?    true
+                         :accessibility-label :unsigned-transactions-button}
+             (i18n/label :t/transactions-unsigned)]
+            (when (pos? unsigned-transactions-count)
+              [react/text {:style               styles/tab-unsigned-transactions-count
+                           :accessibility-label :unsigned-transactions-counter-text}
+               (str " " unsigned-transactions-count)])]))
 
 (def tabs-list
   [{:view-id :transactions-history
@@ -211,14 +211,14 @@
 (defview transactions []
   (letsubs [current-tab [:get :view-id]
             filter-data [:wallet.transactions/filters]]
-    [react/view styles/transactions-view
-     [status-bar/status-bar]
-     [toolbar-view current-tab filter-data]
-     [tabs current-tab]
-     [(case current-tab
-        :transactions-history history-list
-        :unsigned-transactions unsigned-list
-        react/view)]]))
+           [react/view styles/transactions-view
+            [status-bar/status-bar]
+            [toolbar-view current-tab filter-data]
+            [tabs current-tab]
+            [(case current-tab
+               :transactions-history history-list
+               :unsigned-transactions unsigned-list
+               react/view)]]))
 
 (defn- pretty-print-asset [symbol amount & [with-currency?]]
   (let [token (case symbol
@@ -309,17 +309,17 @@
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations          [:wallet.transactions.details/confirmations]
             confirmations-progress [:wallet.transactions.details/confirmations-progress]]
-    [react/view {:style components.styles/flex}
-     [status-bar/status-bar]
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/transaction-details)]
-      (when transaction [toolbar/actions (details-action hash url)])]
-     (if transaction
-       [react/scroll-view {:style components.styles/main-container}
-        [details-header transaction]
-        [details-confirmations confirmations confirmations-progress]
-        [react/view {:style styles/details-separator}]
-        [details-list transaction]]
-       [react/text {:style styles/empty-text}
-        (i18n/label :t/unsigned-transaction-expired)])]))
+           [react/view {:style components.styles/flex}
+            [status-bar/status-bar]
+            [toolbar/toolbar {}
+             toolbar/default-nav-back
+             [toolbar/content-title (i18n/label :t/transaction-details)]
+             (when transaction [toolbar/actions (details-action hash url)])]
+            (if transaction
+              [react/scroll-view {:style components.styles/main-container}
+               [details-header transaction]
+               [details-confirmations confirmations confirmations-progress]
+               [react/view {:style styles/details-separator}]
+               [details-list transaction]]
+              [react/text {:style styles/empty-text}
+               (i18n/label :t/unsigned-transaction-expired)])]))

@@ -172,16 +172,16 @@
         previous-first-in-group? (or datemark?
                                      last-in-group?)
         new-message              (assoc message
-                                   :same-direction? same-direction?
-                                   :last-in-group? last-in-group?
-                                   :last-outgoing? last-outgoing?)]
+                                        :same-direction? same-direction?
+                                        :last-in-group? last-in-group?
+                                        :last-outgoing? last-outgoing?)]
     {:stream             (cond-> stream
-                                 previous-first-in-group?
+                           previous-first-in-group?
                                  ; update previuous message if necessary
-                                 set-previous-message-first-in-group
+                           set-previous-message-first-in-group
 
-                                 :always
-                                 (conj new-message))
+                           :always
+                           (conj new-message))
      ; mark the last message sent by the user
      :last-outgoing-seen (or last-outgoing-seen last-outgoing?)}))
 
@@ -193,9 +193,9 @@
   (when (seq ordered-messages)
     (let [initial-message       (first ordered-messages)
           message-with-metadata (assoc initial-message
-                                  :last-in-group? true
-                                  :last? true
-                                  :last-outgoing? (:outgoing initial-message))]
+                                       :last-in-group? true
+                                       :last? true
+                                       :last-outgoing? (:outgoing initial-message))]
       (->> (rest ordered-messages)
            (reduce add-positional-metadata
                    {:stream             [message-with-metadata]

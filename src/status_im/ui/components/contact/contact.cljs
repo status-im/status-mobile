@@ -49,10 +49,10 @@
 
 (views/defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   (views/letsubs [checked [selected-key whisper-identity]]
-    [react/view {:accessibility-label :contact-item}
-     [list/list-item-with-checkbox
-      {:checked?        checked
-       :on-value-change #(on-toggle-handler checked whisper-identity)
-       :plain-checkbox? true}
-      [react/view styles/contact-container
-       [contact-inner-view {:contact contact}]]]]))
+                 [react/view {:accessibility-label :contact-item}
+                  [list/list-item-with-checkbox
+                   {:checked?        checked
+                    :on-value-change #(on-toggle-handler checked whisper-identity)
+                    :plain-checkbox? true}
+                   [react/view styles/contact-container
+                    [contact-inner-view {:contact contact}]]]]))

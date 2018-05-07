@@ -1,8 +1,7 @@
 (ns status-im.translations.fy)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Leden"
    :not-implemented                  "!net ymplemintearre"
    :chat-name                        "Chatnamme"
@@ -199,10 +198,7 @@
    :enter-valid-public-key           "Fear in jildich adres public kaai yn of scan in QR koade"
    :contact-already-added            "De kontaktpersoan is ol tafoege"
    :can-not-add-yourself             "Do kinst dysels net tafoegje"
-   :unknown-address                  "Ûnbekend adres"
-
-
-   ;;login
+   :unknown-address                  "Ûnbekend adres";;login
    :connect                          "Ferbine"
    :address                          "Adres"
    :password                         "Wachtwurd"

@@ -56,20 +56,20 @@
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
                   error [:get :public-group-topic-error]]
-    [react/keyboard-avoiding-view styles/group-container
-     [status-bar/status-bar]
-     [toolbar/simple-toolbar
-      (i18n/label :t/public-chat)]
-     [react/view styles/chat-name-container
-      [react/text {:style styles/section-title
-                   :font  :medium}
-       (i18n/label :t/public-group-topic)]
-      [chat-name-input topic error]]
-     [react/view styles/chat-name-container
-      [react/text {:style styles/section-title
-                   :font  :medium}
-       (i18n/label :t/selected)]]
-     [list/flat-list {:data               default-public-chats
-                      :key-fn             identity
-                      :render-fn          render-topic
-                      :default-separator? true}]]))
+                 [react/keyboard-avoiding-view styles/group-container
+                  [status-bar/status-bar]
+                  [toolbar/simple-toolbar
+                   (i18n/label :t/public-chat)]
+                  [react/view styles/chat-name-container
+                   [react/text {:style styles/section-title
+                                :font  :medium}
+                    (i18n/label :t/public-group-topic)]
+                   [chat-name-input topic error]]
+                  [react/view styles/chat-name-container
+                   [react/text {:style styles/section-title
+                                :font  :medium}
+                    (i18n/label :t/selected)]]
+                  [list/flat-list {:data               default-public-chats
+                                   :key-fn             identity
+                                   :render-fn          render-topic
+                                   :default-separator? true}]]))

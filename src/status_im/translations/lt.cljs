@@ -1,8 +1,7 @@
 (ns status-im.translations.lt)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Nariams"
    :not-implemented                  "neįgyvendinta"
    :chat-name                        "Pokalbio pavadinimas"
@@ -329,11 +328,7 @@
    :wallet-invalid-chain-id          "Tinklas nesutampa su: \n {{data}}"
    :wallet-browse-photos             "Naršyti žinutes"
    :validation-amount-invalid-number "Kiekio skaičius netinkamas"
-   :validation-amount-is-too-precise "Suma yra per daug tiksli. Mažiausias vienetas, kurį galite siųsti, yra 1 Wei (1x10^-18 ETH)"
-
-
-
-   ;; network settings
+   :validation-amount-is-too-precise "Suma yra per daug tiksli. Mažiausias vienetas, kurį galite siųsti, yra 1 Wei (1x10^-18 ETH)";; network settings
    :new-network                      "Naujas tinklas"
    :add-network                      "Pridėti tinklą"
    :add-new-network                  "Pridėti naują tinklą"

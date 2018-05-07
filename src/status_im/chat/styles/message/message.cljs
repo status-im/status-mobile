@@ -5,7 +5,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]))
 
-
 (defstyle style-message-text
   {:font-size 15
    :color     styles/text1-color
@@ -59,7 +58,7 @@
 
 (def message-timestamp-placeholder
   (assoc (message-timestamp false)
-    :color styles/color-white))
+         :color styles/color-white))
 
 (def selected-message
   {:margin-top  18
@@ -104,15 +103,15 @@
 
 (def not-sent-view
   (assoc delivery-view :opacity 1
-                       :margin-bottom 2
-                       :padding-top 2))
+         :margin-bottom 2
+         :padding-top 2))
 
 (def not-sent-text
   (assoc delivery-text :color styles/color-red
-                       :opacity 1
-                       :font-size 12
-                       :text-align :right
-                       :padding-top 4))
+         :opacity 1
+         :font-size 12
+         :text-align :right
+         :padding-top 4))
 
 (def not-sent-icon
   {:padding-top  3

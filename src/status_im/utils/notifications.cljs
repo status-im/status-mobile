@@ -12,17 +12,17 @@
 ;; with Firebase Cloud Messaging.
 
 (handlers/register-handler-db
-  :update-fcm-token
-  (fn [db [_ fcm-token]]
-    (assoc-in db [:notifications :fcm-token] fcm-token)))
+ :update-fcm-token
+ (fn [db [_ fcm-token]]
+   (assoc-in db [:notifications :fcm-token] fcm-token)))
 
 (handlers/register-handler-fx
-  :request-notifications-granted
-  (fn [_ _]))
+ :request-notifications-granted
+ (fn [_ _]))
 
 (handlers/register-handler-fx
-  :request-notifications-denied
-  (fn [_ _]))
+ :request-notifications-denied
+ (fn [_ _]))
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []

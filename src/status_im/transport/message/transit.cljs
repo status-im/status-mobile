@@ -1,5 +1,5 @@
 (ns ^{:doc "Transit custom readers and writers, required when adding a new record implementing StatusMessage protocol"}
-status-im.transport.message.transit
+ status-im.transport.message.transit
   (:require [status-im.transport.message.v1.contact :as v1.contact]
             [status-im.transport.message.v1.protocol :as v1.protocol]
             [status-im.transport.message.v1.group-chat :as v1.group-chat]
@@ -110,7 +110,6 @@ status-im.transport.message.transit
                                      (v1.group-chat/GroupAdminUpdate. chat-name participants))
                               "g3" (fn [_]
                                      (v1.group-chat/GroupLeave.))}}))
-
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

@@ -54,8 +54,8 @@
 
 (views/defview add-new []
   (views/letsubs [account [:get-current-account]]
-    [react/view {:flex 1 :background-color :white}
-     [status-bar/status-bar]
-     [toolbar/simple-toolbar (i18n/label :t/new)]
-     [common/separator]
-     [options-list account]]))
+                 [react/view {:flex 1 :background-color :white}
+                  [status-bar/status-bar]
+                  [toolbar/simple-toolbar (i18n/label :t/new)]
+                  [common/separator]
+                  [options-list account]]))

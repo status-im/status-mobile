@@ -44,8 +44,8 @@
   (->> networks
        (map (fn [[network-name {:keys [config] :as data}]]
               [network-name (assoc data
-                              :config (types/clj->json config)
-                              :raw-config config)]))
+                                   :config (types/clj->json config)
+                                   :raw-config config)]))
        (into {})))
 
 (def mainnet-networks

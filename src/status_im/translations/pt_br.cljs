@@ -1,8 +1,7 @@
 (ns status-im.translations.pt-br)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Membros"
    :not-implemented                  "não implementado"
    :chat-name                        "Nome do chat"
@@ -132,10 +131,7 @@
    :address-explication              "Talvez aqui deveria haver algum texto explicando o que é um endereço e onde procurá-lo"
    :contact-already-added            "O contato já foi adicionado"
    :can-not-add-yourself             "Não é possível adicionar a si mesmo"
-   :unknown-address                  "E-mail desconhecido"
-
-
-   ;;login
+   :unknown-address                  "E-mail desconhecido";;login
    :connect                          "Conectar"
    :address                          "Endereço"
    :password                         "Senha"
@@ -203,11 +199,8 @@
    :enter-address                    "Inserir endereço"
    :send-transaction                 "Enviar transação"
    :delete-contact                   "Excluir contato"
-   :mute-notifications               "Silenciar notificações"
-
-
-   :contact-s                        {:one   "contato"
-                                      :other "contatos"}
+   :mute-notifications               "Silenciar notificações" :contact-s                        {:one   "contato"
+                                                                                                 :other "contatos"}
    :next                             "Próximo"
    :from                             "De"
    :search-chats                     "Buscar bate-papos"
@@ -226,9 +219,6 @@
    :no-statuses-found                "Nenhum status encontrado"
    :browsing-open-in-web-browser     "Abrir no navegador de internet"
    :delete-group-prompt              "Isso não afetará os contatos"
-   :edit-profile                     "Editar perfil"
-
-
-   :empty-topic                      "Assunto vazio"
+   :edit-profile                     "Editar perfil" :empty-topic                      "Assunto vazio"
    :to                               "Para"
    :data                             "Dados"})

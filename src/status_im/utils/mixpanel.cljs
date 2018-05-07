@@ -63,8 +63,8 @@
                     (recur (conj accumulator event))
                     accumulator))]
      (async/go
-      (doseq [batch (partition-all max-batch-size events)]
-        (async/<! (callback batch)))))))
+       (doseq [batch (partition-all max-batch-size events)]
+         (async/<! (callback batch)))))))
 
 (defn track
   "Track or accumulate an event"
@@ -114,15 +114,15 @@
                   ;; when event contains two or more elements we are trying
                   ;; to match by first two elements of :trigger
                   ;; {:trigger [:event-name :one-parameter]}
-                  (>= cnt 2)
-                  (concat (get-in triggers [event-name first-arg event-tag]))
+                   (>= cnt 2)
+                   (concat (get-in triggers [event-name first-arg event-tag]))
 
                   ;; also if event contains more than one parameter (more than
                   ;; two elements) we are trying to match it with equal :trigger
                   ;; {:trigger [:e-name :p1 :p2 :p3]}
                   ;; will match only with [:e-name :p1 :p2 :p3] event
-                  (> cnt 2)
-                  (concat (get-in triggers (conj event event-tag))))]
+                   (> cnt 2)
+                   (concat (get-in triggers (conj event event-tag))))]
     (->> triggers
 
          (filter (fn [{:keys [filter-fn]}]

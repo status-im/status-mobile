@@ -67,26 +67,26 @@
             accounts      [:get-accounts]
             contact       [:get-current-chat-contact]
             sync-state    [:sync-state]]
-    [react/view {:style st/toolbar-container}
+           [react/view {:style st/toolbar-container}
 
-     [react/view (when-not group-chat [photos/member-photo chat-id])]
-     [react/view (st/chat-name-view (or (empty? accounts)
-                                        show-actions?))
-      (let [chat-name (if (string/blank? name)
-                        (generate-gfy chat-id)
-                        (or (i18n/get-contact-translated chat-id :name name)
-                            (i18n/label :t/chat-name)))]
-        [react/text {:style               st/chat-name-text
-                     :number-of-lines     1
-                     :font                :toolbar-title
-                     :accessibility-label :chat-name-text}
-         (if public?
-           (str "#" chat-name)
-           chat-name)])
-      (if group-chat
-        [group-last-activity {:contacts   contacts
-                              :public?    public?
-                              :sync-state sync-state}]
-        [last-activity {:online-text         (online-text contact chat-id)
-                        :sync-state          sync-state
-                        :accessibility-label :last-seen-text}])]]))
+            [react/view (when-not group-chat [photos/member-photo chat-id])]
+            [react/view (st/chat-name-view (or (empty? accounts)
+                                               show-actions?))
+             (let [chat-name (if (string/blank? name)
+                               (generate-gfy chat-id)
+                               (or (i18n/get-contact-translated chat-id :name name)
+                                   (i18n/label :t/chat-name)))]
+               [react/text {:style               st/chat-name-text
+                            :number-of-lines     1
+                            :font                :toolbar-title
+                            :accessibility-label :chat-name-text}
+                (if public?
+                  (str "#" chat-name)
+                  chat-name)])
+             (if group-chat
+               [group-last-activity {:contacts   contacts
+                                     :public?    public?
+                                     :sync-state sync-state}]
+               [last-activity {:online-text         (online-text contact chat-id)
+                               :sync-state          sync-state
+                               :accessibility-label :last-seen-text}])]]))

@@ -1,5 +1,5 @@
 (ns ^{:doc "API to init and stop whisper messaging"}
-status-im.transport.core
+ status-im.transport.core
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
@@ -41,17 +41,17 @@ status-im.transport.core
 ;;it saves the sym-key-id in app-db to send messages later
 ;;and starts a filter to receive messages
 (handlers/register-handler-fx
-  ::sym-key-added
-  (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
-    (let [web3 (:web3 db)
-          {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
-      {:db                        (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
-       :data-store.transport/save {:chat-id chat-id
-                                   :chat    (assoc chat :sym-key-id sym-key-id)}
-       :shh/add-filter            {:web3       web3
-                                   :sym-key-id sym-key-id
-                                   :topic      topic
-                                   :chat-id    chat-id}})))
+ ::sym-key-added
+ (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
+   (let [web3 (:web3 db)
+         {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
+     {:db                        (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+      :data-store.transport/save {:chat-id chat-id
+                                  :chat    (assoc chat :sym-key-id sym-key-id)}
+      :shh/add-filter            {:web3       web3
+                                  :sym-key-id sym-key-id
+                                  :topic      topic
+                                  :chat-id    chat-id}})))
 
 ;;TODO (yenda) uncomment and rework once go implements persistence
 #_(doseq [[chat-id {:keys [sym-key-id topic] :as chat}] transport]

@@ -1,8 +1,7 @@
 (ns status-im.translations.tr)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Üyeler"
    :not-implemented                  "Uygulanmadı!"
    :chat-name                        "Sohbet adı"
@@ -132,10 +131,7 @@
    :address-explication              "Burada belki de bir adresin ne olduğu ve bunu bulmak için nereye bakılmasıyla ilgili bazı metinler yer alabilir"
    :contact-already-added            "Kişi zaten eklendi"
    :can-not-add-yourself             "Kendinizi ekleyemezsiniz"
-   :unknown-address                  "Bilinmeyen adres"
-
-
-   ;;login
+   :unknown-address                  "Bilinmeyen adres";;login
    :connect                          "Bağlan"
    :address                          "Adres"
    :password                         "Şifre"
@@ -206,8 +202,8 @@
    :mute-notifications               "Bildirimleri kapat"
 
    :contact-s
-                                     {:one   "kişi"
-                                      :other "kişiler"}
+   {:one   "kişi"
+    :other "kişiler"}
    :next                             "Sonraki"
    :from                             "Şuradan:"
    :search-chats                     "Sohbetlerde arayın"

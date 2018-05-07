@@ -68,7 +68,6 @@
 ;;Contacts ui props
 (spec/def :contacts-ui/edit? boolean?)
 
-
 (spec/def :contacts/contacts (spec/nilable (spec/map-of :global/not-empty-string :contact/contact)))
 ;public key of new contact during adding this new contact
 (spec/def :contacts/new-identity (spec/nilable string?))

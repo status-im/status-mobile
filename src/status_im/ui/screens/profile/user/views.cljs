@@ -66,11 +66,11 @@
 
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
-    [react/view styles/qr-code-viewer
-     [status-bar/status-bar {:type :modal}]
-     [qr-viewer-toolbar (:name contact) value]
-     [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
-      value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
+           [react/view styles/qr-code-viewer
+            [status-bar/status-bar {:type :modal}]
+            [qr-viewer-toolbar (:name contact) value]
+            [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
+             value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
 
 (defn- show-qr [contact source value]
   #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
@@ -127,55 +127,55 @@
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced? [:get :my-profile/advanced?]
             {:keys [sharing-usage-data?]} [:get-current-account]]
-    [react/view
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
-                                 :style    styles/advanced-button}
-      [react/view {:style styles/advanced-button-container}
-       [react/view {:style styles/advanced-button-container-background}
-        [react/view {:style styles/advanced-button-row}
-         [react/text {:style styles/advanced-button-label}
-          (i18n/label :t/wallet-advanced)]
-         [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
-     (when advanced?
-       [react/view
-        [profile.components/settings-item
-         {:label-kw            :t/network
-          :value               (get-in networks [network :name])
-          :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
-          :accessibility-label :network-button}]
-        (when config/offline-inbox-enabled?
-          [profile.components/settings-item-separator])
-        (when config/offline-inbox-enabled?
-          [profile.components/settings-item
-           {:label-kw            :t/offline-messaging
-            :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
-            :accessibility-label :offline-messages-settings-button}])
-        [profile.components/settings-item-separator]
-        [profile.components/settings-switch-item
-         {:label-kw  :t/dev-mode
-          :value     dev-mode?
-          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]
-        [profile.components/settings-item-separator]
-        [profile.components/settings-item
-         {:label-kw            :t/help-improve?
-          :value               (i18n/label (if sharing-usage-data? :on :off))
-          :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
-          :accessibility-label :help-improve}]])]))
+           [react/view
+            [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
+                                        :style    styles/advanced-button}
+             [react/view {:style styles/advanced-button-container}
+              [react/view {:style styles/advanced-button-container-background}
+               [react/view {:style styles/advanced-button-row}
+                [react/text {:style styles/advanced-button-label}
+                 (i18n/label :t/wallet-advanced)]
+                [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
+            (when advanced?
+              [react/view
+               [profile.components/settings-item
+                {:label-kw            :t/network
+                 :value               (get-in networks [network :name])
+                 :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
+                 :accessibility-label :network-button}]
+               (when config/offline-inbox-enabled?
+                 [profile.components/settings-item-separator])
+               (when config/offline-inbox-enabled?
+                 [profile.components/settings-item
+                  {:label-kw            :t/offline-messaging
+                   :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+                   :accessibility-label :offline-messages-settings-button}])
+               [profile.components/settings-item-separator]
+               [profile.components/settings-switch-item
+                {:label-kw  :t/dev-mode
+                 :value     dev-mode?
+                 :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]
+               [profile.components/settings-item-separator]
+               [profile.components/settings-item
+                {:label-kw            :t/help-improve?
+                 :value               (i18n/label (if sharing-usage-data? :on :off))
+                 :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
+                 :accessibility-label :help-improve}]])]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]]
-    (let [shown-account (merge current-account changed-account)]
-      [react/view profile.components.styles/profile
-       (if editing?
-         [my-profile-edit-toolbar]
-         [my-profile-toolbar])
-       [react/scroll-view {:keyboard-should-persist-taps :handled}
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
-        [react/view action-button.styles/actions-list
-         [share-contact-code current-account public-key]]
-        [react/view styles/my-profile-info-container
-         [my-profile-settings current-account]]
-        [advanced shown-account]]])))
+           (let [shown-account (merge current-account changed-account)]
+             [react/view profile.components.styles/profile
+              (if editing?
+                [my-profile-edit-toolbar]
+                [my-profile-toolbar])
+              [react/scroll-view {:keyboard-should-persist-taps :handled}
+               [react/view profile.components.styles/profile-form
+                [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
+               [react/view action-button.styles/actions-list
+                [share-contact-code current-account public-key]]
+               [react/view styles/my-profile-info-container
+                [my-profile-settings current-account]]
+               [advanced shown-account]]])))

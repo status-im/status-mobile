@@ -10,6 +10,6 @@
    (assoc cofx :get-local-storage-data (comp :data data-store/get-by-chat-id))))
 
 (re-frame/reg-fx
-  :data-store/set-local-storage-data
-  (fn [data]
-    (async/go (async/>! core/realm-queue #(data-store/save data)))))
+ :data-store/set-local-storage-data
+ (fn [data]
+   (async/go (async/>! core/realm-queue #(data-store/save data)))))

@@ -37,14 +37,14 @@
 
 (defview contacts-list-view [group-id]
   (letsubs [contacts [:get-all-added-group-contacts group-id]]
-    [contacts-list
-     contacts
-     true
-     (contact-extended-options group-id)]))
+           [contacts-list
+            contacts
+            true
+            (contact-extended-options group-id)]))
 
 (defview edit-contact-group-contact-list []
   (letsubs [group [:get-contact-group]]
-    [react/view styles/group-container
-     [status-bar]
-     [toolbar/simple-toolbar (:name group)]
-     [contacts-list-view (:group-id group)]]))
+           [react/view styles/group-container
+            [status-bar]
+            [toolbar/simple-toolbar (:name group)]
+            [contacts-list-view (:group-id group)]]))

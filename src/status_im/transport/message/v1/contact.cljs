@@ -1,5 +1,5 @@
 (ns ^{:doc "Contact request and update API"}
-status-im.transport.message.v1.contact
+ status-im.transport.message.v1.contact
   (:require [re-frame.core :as re-frame]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]

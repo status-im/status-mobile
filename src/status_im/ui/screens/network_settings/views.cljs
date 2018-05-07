@@ -41,12 +41,12 @@
 
 (views/defview network-settings []
   (views/letsubs [{:keys [network networks]} [:get-current-account]]
-    [react/view {:flex 1}
-     [status-bar/status-bar]
-     [toolbar/simple-toolbar
-      (i18n/label :t/network-settings)]
-     [react/view styles/wrapper
-      [list/flat-list {:data               (vals networks)
-                       :key-fn             :id
-                       :default-separator? true
-                       :render-fn          (render-network network)}]]]))
+                 [react/view {:flex 1}
+                  [status-bar/status-bar]
+                  [toolbar/simple-toolbar
+                   (i18n/label :t/network-settings)]
+                  [react/view styles/wrapper
+                   [list/flat-list {:data               (vals networks)
+                                    :key-fn             :id
+                                    :default-separator? true
+                                    :render-fn          (render-network network)}]]]))

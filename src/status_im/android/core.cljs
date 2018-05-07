@@ -39,32 +39,32 @@
   (let [keyboard-height (subscribe [:get :keyboard-height])]
     (reagent/create-class
      {:component-will-mount
-                      (fn []
-                        (.addListener react/keyboard
-                                      "keyboardDidShow"
-                                      (fn [e]
-                                        (let [h (.. e -endCoordinates -height)]
-                                          (dispatch [:hide-tab-bar])
-                                          (when-not (= h @keyboard-height)
-                                            (dispatch [:set :keyboard-height h])
-                                            (dispatch [:set :keyboard-max-height h])))))
-                        (.addListener react/keyboard
-                                      "keyboardDidHide"
-                                      (fn [_]
-                                        (dispatch [:show-tab-bar])
-                                        (when (zero? @keyboard-height)
-                                          (dispatch [:set :keyboard-height 0]))))
-                        (.hide react/splash-screen)
-                        (.addEventListener react/app-state "change" app-state-change-handler))
+      (fn []
+        (.addListener react/keyboard
+                      "keyboardDidShow"
+                      (fn [e]
+                        (let [h (.. e -endCoordinates -height)]
+                          (dispatch [:hide-tab-bar])
+                          (when-not (= h @keyboard-height)
+                            (dispatch [:set :keyboard-height h])
+                            (dispatch [:set :keyboard-max-height h])))))
+        (.addListener react/keyboard
+                      "keyboardDidHide"
+                      (fn [_]
+                        (dispatch [:show-tab-bar])
+                        (when (zero? @keyboard-height)
+                          (dispatch [:set :keyboard-height 0]))))
+        (.hide react/splash-screen)
+        (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
-                      (fn []
-                        (notifications/on-refresh-fcm-token)
+      (fn []
+        (notifications/on-refresh-fcm-token)
                         ;; TODO(oskarth): Background click_action handler
-                        (notifications/on-notification))
+        (notifications/on-notification))
       :component-will-unmount
-                      (fn []
-                        (.stop react/http-bridge)
-                        (.removeEventListener react/app-state "change" app-state-change-handler))
+      (fn []
+        (.stop react/http-bridge)
+        (.removeEventListener react/app-state "change" app-state-change-handler))
       :display-name   "root"
       :reagent-render views/main})))
 

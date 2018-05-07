@@ -48,14 +48,14 @@
 
 (defview network-info [{:keys [text-color]}]
   (letsubs [network-id [:get-network-id]]
-    [react/view
-     [react/view styles/network-container
-      [react/view styles/network-icon
-       [vector-icons/icon :icons/network {:color :white}]]
-      [react/text {:style (styles/network-text text-color)}
-       (if (ethereum/testnet? network-id)
-         (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
-         (i18n/label :t/mainnet-text))]]]))
+           [react/view
+            [react/view styles/network-container
+             [react/view styles/network-icon
+              [vector-icons/icon :icons/network {:color :white}]]
+             [react/text {:style (styles/network-text text-color)}
+              (if (ethereum/testnet? network-id)
+                (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
+                (i18n/label :t/mainnet-text))]]]))
 
 (defn logo
   ([] (logo nil))
@@ -84,8 +84,8 @@
   ([{:keys [size accessibility-label] :or {size 18}} value]
    [react/view {:style (styles/counter-container size)}
     [react/text (cond-> {:style (styles/counter-label size)}
-                        accessibility-label
-                        (assoc :accessibility-label accessibility-label))
+                  accessibility-label
+                  (assoc :accessibility-label accessibility-label))
      value]]))
 
 (defn image-contain [_ _]

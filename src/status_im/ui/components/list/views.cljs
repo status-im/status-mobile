@@ -203,7 +203,6 @@
       label]
      item-icon-forward]]])
 
-
 (defn action-list [actions {:keys [container-style action-separator-style] :as styles}]
   [react/view (merge styles/action-list container-style)
    [flat-list

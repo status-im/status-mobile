@@ -23,9 +23,9 @@
         wallet  (i18n/label :main-wallet)
         contact (get contacts (utils.hex/normalize-hex contact-address))]
     (cond-> transaction
-            contact (assoc key-contact (:name contact))
-            :always (assoc key-wallet wallet
-                           :time-formatted (datetime/timestamp->time timestamp)))))
+      contact (assoc key-contact (:name contact))
+      :always (assoc key-wallet wallet
+                     :time-formatted (datetime/timestamp->time timestamp)))))
 
 (reg-sub :wallet.transactions/transactions
          :<- [:wallet]
@@ -43,10 +43,10 @@
 
 (defn- format-unsigned-transaction [{:keys [id] :as transaction}]
   (assoc transaction
-    :type :unsigned
-    :confirmations 0
+         :type :unsigned
+         :confirmations 0
     ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
-    :hash id))
+         :hash id))
 
 (reg-sub :wallet/unsigned-transactions
          :<- [:wallet]
@@ -109,9 +109,9 @@
          :<- [:wallet.transactions/completed-transactions-list]
          (fn [[postponed pending completed]]
            (cond-> []
-                   postponed (into postponed)
-                   pending (into pending)
-                   completed (into completed))))
+             postponed (into postponed)
+             pending (into pending)
+             completed (into completed))))
 
 (reg-sub :wallet.transactions/current-transaction
          :<- [:wallet]

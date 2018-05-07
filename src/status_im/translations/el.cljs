@@ -1,8 +1,7 @@
 (ns status-im.translations.el)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Μέλη"
    :not-implemented                  "!μη υλοποιημένο"
    :chat-name                        "Όνομα συνομιλίας"
@@ -347,11 +346,7 @@
    :wallet-transaction-fee-details   "Το όριο gas είναι το ποσό του gas που θα αποσταλεί με τη συναλλαγή σας. Η αύξηση αυτού του αριθμού δε θα οδηγήσει σε ταχύτερη επεξεργασία της συναλλαγής σας"
    :wallet-transaction-total-fee     "Σύνολική Χρέωση"
    :validation-amount-invalid-number "Το ποσό δεν είναι έγκυρος αριθμός"
-   :validation-amount-is-too-precise "Το ποσό είναι πολύ ακριβές. Η μικρότερη μονάδα που μπορείτε να στείλετε είναι 1 Wei (1x10^-18 ETH)"
-
-
-
-   ;; network settings
+   :validation-amount-is-too-precise "Το ποσό είναι πολύ ακριβές. Η μικρότερη μονάδα που μπορείτε να στείλετε είναι 1 Wei (1x10^-18 ETH)";; network settings
    :new-network                      "Νέο δίκτυο"
    :add-network                      "Προσθήκη δικτύου"
    :add-new-network                  "Προσθήκη νέου δικτύου"

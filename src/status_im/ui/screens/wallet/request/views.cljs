@@ -29,31 +29,31 @@
   (views/letsubs [{:keys [to to-name whisper-identity]} [:wallet.send/transaction]
                   {:keys [amount amount-error]} [:wallet.request/transaction]
                   scroll (atom nil)]
-    [comp/simple-screen {:avoid-keyboard? true}
-     [comp/toolbar (i18n/label :t/new-request)]
-     [react/view components.styles/flex
-      [common/network-info {:text-color :white}]
-      [react/scroll-view {:ref #(reset! scroll %) :keyboardShouldPersistTaps :always}
-       [react/view styles/request-details-wrapper
-        [components/recipient-selector {:contact-only? true
-                                        :address       to
-                                        :name          to-name
-                                        :request?      true}]
-        [components/asset-selector {:disabled? true
-                                    :symbol    :ETH}]
-        [components/amount-selector {:error         amount-error
-                                     :input-options {:default-value  (str (money/to-fixed (money/wei->ether amount)))
-                                                     :max-length     21
-                                                     :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
-      [bottom-buttons/bottom-buttons styles/bottom-buttons
-       nil                                                  ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
-       [button/button {:disabled?           (not (and to amount))
-                       :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount])
-                       :text-style          {:padding-horizontal 0}
-                       :accessibility-label :sent-request-button}
-        (i18n/label :t/send-request)
-        [vector-icons/icon :icons/forward {:color :white}]]]]]))
+                 [comp/simple-screen {:avoid-keyboard? true}
+                  [comp/toolbar (i18n/label :t/new-request)]
+                  [react/view components.styles/flex
+                   [common/network-info {:text-color :white}]
+                   [react/scroll-view {:ref #(reset! scroll %) :keyboardShouldPersistTaps :always}
+                    [react/view styles/request-details-wrapper
+                     [components/recipient-selector {:contact-only? true
+                                                     :address       to
+                                                     :name          to-name
+                                                     :request?      true}]
+                     [components/asset-selector {:disabled? true
+                                                 :symbol    :ETH}]
+                     [components/amount-selector {:error         amount-error
+                                                  :input-options {:default-value  (str (money/to-fixed (money/wei->ether amount)))
+                                                                  :max-length     21
+                                                                  :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
+                                                                  :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
+                   [bottom-buttons/bottom-buttons styles/bottom-buttons
+                    nil                                                  ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
+                    [button/button {:disabled?           (not (and to amount))
+                                    :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount])
+                                    :text-style          {:padding-horizontal 0}
+                                    :accessibility-label :sent-request-button}
+                     (i18n/label :t/send-request)
+                     [vector-icons/icon :icons/forward {:color :white}]]]]]))
 
 ;; Main screen
 
@@ -66,19 +66,19 @@
 (views/defview request-transaction []
   (views/letsubs [address-hex [:get-current-account-hex]
                   chain-id    [:get-network-id]]
-    [comp/simple-screen
-     [comp/toolbar {}
-      comp/default-action
-      (i18n/label :t/receive)
-      [toolbar/actions [{:icon      :icons/share
-                         :icon-opts {:color               :white
-                                     :accessibility-label :share-button}
-                         :handler   #(list-selection/open-share {:message address-hex})}]]]
-     [react/view {:flex 1}
-      [common/network-info {:text-color :white}]
-      [react/scroll-view styles/request-wrapper
-       [qr-code address-hex chain-id]
-       [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
-                               :style               styles/send-request
-                               :accessibility-label :sent-transaction-request-button}
-        (i18n/label :t/send-transaction-request)]]]]))
+                 [comp/simple-screen
+                  [comp/toolbar {}
+                   comp/default-action
+                   (i18n/label :t/receive)
+                   [toolbar/actions [{:icon      :icons/share
+                                      :icon-opts {:color               :white
+                                                  :accessibility-label :share-button}
+                                      :handler   #(list-selection/open-share {:message address-hex})}]]]
+                  [react/view {:flex 1}
+                   [common/network-info {:text-color :white}]
+                   [react/scroll-view styles/request-wrapper
+                    [qr-code address-hex chain-id]
+                    [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
+                                            :style               styles/send-request
+                                            :accessibility-label :sent-transaction-request-button}
+                     (i18n/label :t/send-transaction-request)]]]]))

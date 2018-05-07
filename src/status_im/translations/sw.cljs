@@ -1,8 +1,7 @@
 (ns status-im.translations.sw)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                "Wanachama"
    :not-implemented              "!haijatekelezwa"
    :chat-name                    "Jina la gumzo"
@@ -137,10 +136,7 @@
    :address-explication          "Labda hapa kunapaswa kuwa na baadhi ya maandishi kueleza anwani ni nini na ni wapi pa kuitafuta"
    :contact-already-added        "Tayari mawasiliano yameongezwa"
    :can-not-add-yourself         "Huwezi kujiongeza mwenyewe"
-   :unknown-address              "Anwani Haijulikani"
-
-
-   ;;login
+   :unknown-address              "Anwani Haijulikani";;login
    :connect                      "Unganisha"
    :address                      "Anwani"
    :password                     "Nenosiri"

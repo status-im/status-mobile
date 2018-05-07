@@ -10,22 +10,22 @@
 
 (views/defview usage-data []
   (views/letsubs [next [:get-screen-params]]
-    [react/view {:style styles/usage-data-view}
-     [status-bar/status-bar {:flat? true}]
-     [react/view {:style styles/logo-container}
-      [components.common/logo styles/logo]
-      [react/image {:source (:analytics-image resources/ui)
-                    :style  styles/usage-data-image}]]
-     [react/text {:style styles/help-improve-text}
-      (i18n/label :t/help-improve)]
-     [react/view
-      [react/text {:style styles/help-improve-text-description}
-       (i18n/label :t/help-improve-description)]]
-     [react/view styles/buttons-container
-      [components.common/button {:style    {:flex-direction :row}
-                                 :on-press #(re-frame/dispatch [:help-improve-handler true next])
-                                 :label    (i18n/label :t/share-usage-data)}]
-      [react/view styles/bottom-button-container
-       [components.common/button {:on-press    #(re-frame/dispatch [:help-improve-handler false next])
-                                  :label       (i18n/label :t/dont-want-to-share)
-                                  :background? false}]]]]))
+                 [react/view {:style styles/usage-data-view}
+                  [status-bar/status-bar {:flat? true}]
+                  [react/view {:style styles/logo-container}
+                   [components.common/logo styles/logo]
+                   [react/image {:source (:analytics-image resources/ui)
+                                 :style  styles/usage-data-image}]]
+                  [react/text {:style styles/help-improve-text}
+                   (i18n/label :t/help-improve)]
+                  [react/view
+                   [react/text {:style styles/help-improve-text-description}
+                    (i18n/label :t/help-improve-description)]]
+                  [react/view styles/buttons-container
+                   [components.common/button {:style    {:flex-direction :row}
+                                              :on-press #(re-frame/dispatch [:help-improve-handler true next])
+                                              :label    (i18n/label :t/share-usage-data)}]
+                   [react/view styles/bottom-button-container
+                    [components.common/button {:on-press    #(re-frame/dispatch [:help-improve-handler false next])
+                                               :label       (i18n/label :t/dont-want-to-share)
+                                               :background? false}]]]]))

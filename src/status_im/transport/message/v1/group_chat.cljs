@@ -1,5 +1,5 @@
 (ns ^{:doc "Group chat API"}
-status-im.transport.message.v1.group-chat
+ status-im.transport.message.v1.group-chat
   (:require [clojure.set :as set]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -10,7 +10,6 @@ status-im.transport.message.v1.group-chat
             [status-im.chat.models.message :as models.message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]))
-
 
 ;; NOTE: We ignore the chat-id from the send and receive method.
 ;; The chat-id is usually deduced from the filter the message comes from but not in that case because it is sent

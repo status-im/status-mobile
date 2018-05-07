@@ -40,29 +40,28 @@
                    :on-press #(when click-handler
                                 (click-handler row action params))}]))
 
-
 (defview contact-list-modal []
   (letsubs [contacts      [:all-added-people-contacts]
             click-handler [:get :contacts/click-handler]
             action        [:get :contacts/click-action]
             params        [:get :contacts/click-params]]
-    [react/view {:flex 1 :background-color :white}
-     [status-bar {:type :modal-white}]
-     [toolbar/simple-toolbar (i18n/label :t/contacts)]
-     [list/flat-list {:style                     st/contacts-list-modal
-                      :data                      contacts
-                      :key-fn                    :address
-                      :render-fn                 (render-row click-handler action params)
-                      :header                    (when-not (:hide-actions? params)
-                                                   [react/view
-                                                    [actions-view action click-handler]
-                                                    [common/bottom-shadow]
-                                                    [common/form-title (i18n/label :t/choose-from-contacts)
-                                                     {:count-value (count contacts)}]
-                                                    [common/list-header]])
-                      :footer                    [react/view
-                                                  [common/list-footer]
-                                                  [common/bottom-shadow]]
-                      :enableEmptySections       true
-                      :bounces                   false
-                      :keyboardShouldPersistTaps :always}]]))
+           [react/view {:flex 1 :background-color :white}
+            [status-bar {:type :modal-white}]
+            [toolbar/simple-toolbar (i18n/label :t/contacts)]
+            [list/flat-list {:style                     st/contacts-list-modal
+                             :data                      contacts
+                             :key-fn                    :address
+                             :render-fn                 (render-row click-handler action params)
+                             :header                    (when-not (:hide-actions? params)
+                                                          [react/view
+                                                           [actions-view action click-handler]
+                                                           [common/bottom-shadow]
+                                                           [common/form-title (i18n/label :t/choose-from-contacts)
+                                                            {:count-value (count contacts)}]
+                                                           [common/list-header]])
+                             :footer                    [react/view
+                                                         [common/list-footer]
+                                                         [common/bottom-shadow]]
+                             :enableEmptySections       true
+                             :bounces                   false
+                             :keyboardShouldPersistTaps :always}]]))

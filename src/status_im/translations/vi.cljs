@@ -1,8 +1,7 @@
 (ns status-im.translations.vi)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Các thành viên"
    :not-implemented                  "!không được thực hiện"
    :chat-name                        "Tên trò chuyện"
@@ -132,10 +131,7 @@
    :address-explication              "Có lẽ ở đây nên có một vài nội dung để giải thích địa chỉ này là gì và phải tìm nó ở đâu"
    :contact-already-added            "Liên hệ đã được thêm vào"
    :can-not-add-yourself             "Bạn không thể tự thêm mình"
-   :unknown-address                  "Địa chỉ không xác định"
-
-
-   ;;login
+   :unknown-address                  "Địa chỉ không xác định";;login
    :connect                          "Kết nối"
    :address                          "Địa chỉ"
    :password                         "Mật khẩu"
@@ -206,8 +202,8 @@
    :mute-notifications               "Tắt tiếng thông báo"
 
    :contact-s
-                                     {:one   "liên hệ"
-                                      :other "Danh bạ"}
+   {:one   "liên hệ"
+    :other "Danh bạ"}
    :next                             "Tiếp theo"
    :from                             "Từ"
    :search-chats                     "Tìm kiếm các cuộc trò chuyện"

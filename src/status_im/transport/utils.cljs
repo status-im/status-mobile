@@ -1,5 +1,5 @@
 (ns ^{:doc "Utils for transport layer"}
-status-im.transport.utils
+ status-im.transport.utils
   (:require [cljs-time.coerce :refer [to-long]]
             [cljs-time.core :refer [now]]
             [clojure.string :as string]

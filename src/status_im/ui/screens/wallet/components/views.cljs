@@ -53,13 +53,13 @@
 
 (views/defview assets [type]
   (views/letsubs [assets [:wallet/visible-assets-with-amount]]
-    [components/simple-screen
-     [components/toolbar (i18n/label :t/wallet-assets)]
-     [react/view {:style (assoc components.styles/flex :background-color :white)}
-      [list/flat-list {:default-separator? true
-                       :data               assets
-                       :key-fn             (comp str :symbol)
-                       :render-fn          #(render-token % type)}]]]))
+                 [components/simple-screen
+                  [components/toolbar (i18n/label :t/wallet-assets)]
+                  [react/view {:style (assoc components.styles/flex :background-color :white)}
+                   [list/flat-list {:default-separator? true
+                                    :data               assets
+                                    :key-fn             (comp str :symbol)
+                                    :render-fn          #(render-token % type)}]]]))
 
 (defn send-assets []
   [assets :send])
@@ -76,20 +76,20 @@
 (views/defview asset-selector [{:keys [disabled? type symbol]}]
   (views/letsubs [balance [:balance]
                   network [:network]]
-    (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
-       (i18n/label :t/wallet-asset)
-       [react/view {:style               styles/asset-content-container
-                    :accessibility-label :choose-asset-button}
-        [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
-        [react/view styles/asset-text-content
-         [react/view styles/asset-label-content
-          [react/text {:style (merge styles/text-content styles/asset-label)}
-           name]
-          [react/text {:style styles/text-secondary-content}
-           (clojure.core/name symbol)]]
-         [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
-          (str (wallet.utils/format-amount (symbol balance) decimals))]]]])))
+                 (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+                   [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+                    (i18n/label :t/wallet-asset)
+                    [react/view {:style               styles/asset-content-container
+                                 :accessibility-label :choose-asset-button}
+                     [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+                     [react/view styles/asset-text-content
+                      [react/view styles/asset-label-content
+                       [react/text {:style (merge styles/text-content styles/asset-label)}
+                        name]
+                       [react/text {:style styles/text-secondary-content}
+                        (clojure.core/name symbol)]]
+                      [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
+                       (str (wallet.utils/format-amount (symbol balance) decimals))]]]])))
 
 (defn- recipient-address [address]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
@@ -98,18 +98,18 @@
 
 (views/defview recipient-contact [address name request?]
   (views/letsubs [contact [:get-contact-by-address address]]
-    (let [address? (and (not (nil? address)) (not= address ""))]
-      [react/view styles/recipient-container
-       [react/view styles/recipient-icon
-        [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]]
-       [react/view {:style styles/recipient-name}
-        [react/text {:style               (styles/participant true)
-                     :accessibility-label (if request? :contact-name-text :recipient-name-text)
-                     :number-of-lines     1}
-         name]
-        [react/text {:style               (styles/participant (and (not name) address?))
-                     :accessibility-label (if request? :contact-address-text :recipient-address-text)}
-         (ethereum/normalized-address address)]]])))
+                 (let [address? (and (not (nil? address)) (not= address ""))]
+                   [react/view styles/recipient-container
+                    [react/view styles/recipient-icon
+                     [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]]
+                    [react/view {:style styles/recipient-name}
+                     [react/text {:style               (styles/participant true)
+                                  :accessibility-label (if request? :contact-name-text :recipient-name-text)
+                                  :number-of-lines     1}
+                      name]
+                     [react/text {:style               (styles/participant (and (not name) address?))
+                                  :accessibility-label (if request? :contact-address-text :recipient-address-text)}
+                      (ethereum/normalized-address address)]]])))
 
 (defn render-contact [contact]
   [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
@@ -124,12 +124,12 @@
 
 (views/defview recent-recipients []
   (views/letsubs [contacts [:all-added-people-contacts]]
-    [components/simple-screen
-     [components/toolbar (i18n/label :t/recipient)]
-     [react/view styles/recent-recipients
-      [list/flat-list {:data      contacts
-                       :key-fn    :address
-                       :render-fn render-contact}]]]))
+                 [components/simple-screen
+                  [components/toolbar (i18n/label :t/recipient)]
+                  [react/view styles/recent-recipients
+                   [list/flat-list {:data      contacts
+                                    :key-fn    :address
+                                    :render-fn render-contact}]]]))
 
 (defn contact-code []
   (let [content (reagent/atom nil)]

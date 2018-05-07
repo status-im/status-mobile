@@ -22,13 +22,13 @@
   (let [dapps?               (some (partial is-dapp? all-contacts) contacts)
         humans?              (some (comp not (partial is-dapp? all-contacts)) contacts)
         basic-access-scope   (cond-> #{}
-                                     group-chat (conj :group-chats)
-                                     (not group-chat) (conj :personal-chats)
-                                     address (conj :registered)
-                                     (not address) (conj :anonymous)
-                                     dapps? (conj :dapps)
-                                     humans? (conj :humans)
-                                     public? (conj :public-chats))
+                               group-chat (conj :group-chats)
+                               (not group-chat) (conj :personal-chats)
+                               address (conj :registered)
+                               (not address) (conj :anonymous)
+                               dapps? (conj :dapps)
+                               humans? (conj :humans)
+                               public? (conj :public-chats))
         global-access-scope  (conj basic-access-scope :global)
         member-access-scopes (into #{} (map (partial conj basic-access-scope)) contacts)]
     (reduce (fn [acc access-scope]

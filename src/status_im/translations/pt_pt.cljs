@@ -1,8 +1,7 @@
 (ns status-im.translations.pt-pt)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "Membros"
    :not-implemented                  "!não implementado"
    :chat-name                        "Nome no chat"
@@ -132,10 +131,7 @@
    :address-explication              "Talvez aqui devesse aparecer algum texto a explicar o que é um endereço e onde procurá-lo"
    :contact-already-added            "O contacto já foi adicionado"
    :can-not-add-yourself             "Não pode adicionar-se a si mesmo"
-   :unknown-address                  "Endereço desconhecido"
-
-
-   ;;login
+   :unknown-address                  "Endereço desconhecido";;login
    :connect                          "Ligar"
    :address                          "Endereço"
    :password                         "Palavra-passe"
@@ -203,11 +199,8 @@
    :enter-address                    "Digitar o endereço"
    :send-transaction                 "Enviar a transação"
    :delete-contact                   "Apagar contacto"
-   :mute-notifications               "Silenciar as notificações"
-
-
-   :contact-s                        {:one   "contacto"
-                                      :other "Contactos"}
+   :mute-notifications               "Silenciar as notificações" :contact-s                        {:one   "contacto"
+                                                                                                    :other "Contactos"}
    :next                             "Próximo"
    :from                             "De"
    :search-chats                     "Pesquisar chats"
@@ -226,9 +219,6 @@
    :no-statuses-found                "Nenhum estado encontrado"
    :browsing-open-in-web-browser     "Abrir no navegador Web"
    :delete-group-prompt              "Isto não afetará os contactos"
-   :edit-profile                     "Editar perfil"
-
-
-   :empty-topic                      "Tema em branco"
+   :edit-profile                     "Editar perfil" :empty-topic                      "Tema em branco"
    :to                               "Para"
    :data                             "Dados"})

@@ -1,8 +1,7 @@
 (ns status-im.translations.hi)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                    "सदस्य"
    :not-implemented                  "!कार्यान्वित नहीं"
    :chat-name                        "चैट नाम"
@@ -132,10 +131,7 @@
    :address-explication              "संभवतः यहाँ कुछ टेक्स्ट विवरण होना चाहिए कि पता क्या है और इसे कहाँ खोजा जाए"
    :contact-already-added            "संपर्क पहले से जोड़ लिया गया है"
    :can-not-add-yourself             "आप अपने आपको नहीं जोड़ सकते"
-   :unknown-address                  "अज्ञात पता"
-
-
-   ;;login
+   :unknown-address                  "अज्ञात पता";;login
    :connect                          "कनेक्ट करें"
    :address                          "पता"
    :password                         "पासवर्ड"
@@ -203,11 +199,8 @@
    :enter-address                    "पता प्रविष्ट करें"
    :send-transaction                 "लेनदेन भेजें"
    :delete-contact                   "संपर्क मिटाएं"
-   :mute-notifications               "अधिसूचनाएं म्यूट करें"
-
-
-   :contact-s                        {:one   "संपर्क"
-                                      :other "संपर्क"}
+   :mute-notifications               "अधिसूचनाएं म्यूट करें" :contact-s                        {:one   "संपर्क"
+                                                                                                :other "संपर्क"}
    :next                             "अगला"
    :from                             "द्वारा"
    :search-chats                     "चैट्स खोजें"
@@ -226,9 +219,6 @@
    :no-statuses-found                "कोई स्टैटस नहीं मिले"
    :browsing-open-in-web-browser     "वेब ब्राउज़र में खोलें"
    :delete-group-prompt              "इससे संपर्क प्रभावित नहीं होंगे"
-   :edit-profile                     "प्रोफाइल का संपादन करें"
-
-
-   :empty-topic                      "रिक्त विषय"
+   :edit-profile                     "प्रोफाइल का संपादन करें" :empty-topic                      "रिक्त विषय"
    :to                               "प्रति"
    :data                             "डेटा"})

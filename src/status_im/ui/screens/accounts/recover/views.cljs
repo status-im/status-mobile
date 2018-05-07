@@ -19,50 +19,50 @@
 (defview passphrase-input [passphrase]
   (letsubs [error     [:get-in [:accounts/recover :passphrase-error]]
             input-ref (reagent/atom nil)]
-    {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @input-ref)))}
-    [text-input/text-input-with-label
-     {:style          components.styles/flex
-      :height         92
-      :ref            (partial reset! input-ref)
-      :label          (i18n/label :t/passphrase)
-      :placeholder    (i18n/label :t/enter-12-words)
-      :multiline      true
-      :default-value  passphrase
-      :auto-correct   false
-      :on-change-text #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
-      :error          error}]))
+           {:component-did-mount (fn [_] (when config/testfairy-enabled?
+                                           (.hideView js-dependencies/testfairy @input-ref)))}
+           [text-input/text-input-with-label
+            {:style          components.styles/flex
+             :height         92
+             :ref            (partial reset! input-ref)
+             :label          (i18n/label :t/passphrase)
+             :placeholder    (i18n/label :t/enter-12-words)
+             :multiline      true
+             :default-value  passphrase
+             :auto-correct   false
+             :on-change-text #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
+             :error          error}]))
 
 (defview password-input [password]
   (letsubs [error [:get-in [:accounts/recover :password-error]]]
-    [react/view {:margin-top 10}
-     [text-input/text-input-with-label
-      {:label             (i18n/label :t/password)
-       :placeholder       (i18n/label :t/enter-password)
-       :default-value     password
-       :auto-focus        false
-       :on-change-text    #(re-frame/dispatch [:set-in [:accounts/recover :password] %])
-       :secure-text-entry true
-       :error             error}]]))
+           [react/view {:margin-top 10}
+            [text-input/text-input-with-label
+             {:label             (i18n/label :t/password)
+              :placeholder       (i18n/label :t/enter-password)
+              :default-value     password
+              :auto-focus        false
+              :on-change-text    #(re-frame/dispatch [:set-in [:accounts/recover :password] %])
+              :secure-text-entry true
+              :error             error}]]))
 
 (defview recover []
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
-    (let [valid-form? (and
-                       (spec/valid? ::recover.db/passphrase passphrase)
-                       (spec/valid? ::db/password password))]
-      [react/keyboard-avoiding-view {:style styles/screen-container}
-       [status-bar/status-bar]
-       [toolbar/toolbar nil toolbar/default-nav-back
-        [toolbar/content-title (i18n/label :t/sign-in-to-another)]]
-       [components.common/separator]
-       [react/view {:margin 16}
-        [passphrase-input (or passphrase "")]
-        [password-input (or password "")]]
-       [react/view {:flex 1}]
-       [react/view {:style styles/bottom-button-container}
-        [react/view {:style {:flex 1}}]
-        [components.common/bottom-button
-         {:forward?  true
-          :label     (i18n/label :t/sign-in)
-          :disabled? (not valid-form?)
-          :on-press  #(re-frame/dispatch [:recover-account passphrase password])}]]])))
+           (let [valid-form? (and
+                              (spec/valid? ::recover.db/passphrase passphrase)
+                              (spec/valid? ::db/password password))]
+             [react/keyboard-avoiding-view {:style styles/screen-container}
+              [status-bar/status-bar]
+              [toolbar/toolbar nil toolbar/default-nav-back
+               [toolbar/content-title (i18n/label :t/sign-in-to-another)]]
+              [components.common/separator]
+              [react/view {:margin 16}
+               [passphrase-input (or passphrase "")]
+               [password-input (or password "")]]
+              [react/view {:flex 1}]
+              [react/view {:style styles/bottom-button-container}
+               [react/view {:style {:flex 1}}]
+               [components.common/bottom-button
+                {:forward?  true
+                 :label     (i18n/label :t/sign-in)
+                 :disabled? (not valid-form?)
+                 :on-press  #(re-frame/dispatch [:recover-account passphrase password])}]]])))

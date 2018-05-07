@@ -30,20 +30,20 @@
 
 (defview accounts []
   (letsubs [accounts [:get-accounts]]
-    [react/view styles/accounts-view
-     [status-bar/status-bar]
-     [toolbar/toolbar nil nil
-      [toolbar/content-title (i18n/label :t/sign-in-to-status)]]
-     [react/view styles/accounts-container
-      [react/view styles/accounts-list-container
-       [list/flat-list {:data      (vals accounts)
-                        :key-fn    :address
-                        :render-fn (fn [account] [account-view account])
-                        :separator [react/view {:height 12}]}]]
-      [react/view
-       [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :create-account])
-                                  :label    (i18n/label :t/create-new-account)}]
-       [react/view styles/bottom-button-container
-        [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
-                                   :label       (i18n/label :t/add-existing-account)
-                                   :background? false}]]]]]))
+           [react/view styles/accounts-view
+            [status-bar/status-bar]
+            [toolbar/toolbar nil nil
+             [toolbar/content-title (i18n/label :t/sign-in-to-status)]]
+            [react/view styles/accounts-container
+             [react/view styles/accounts-list-container
+              [list/flat-list {:data      (vals accounts)
+                               :key-fn    :address
+                               :render-fn (fn [account] [account-view account])
+                               :separator [react/view {:height 12}]}]]
+             [react/view
+              [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :create-account])
+                                         :label    (i18n/label :t/create-new-account)}]
+              [react/view styles/bottom-button-container
+               [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
+                                          :label       (i18n/label :t/add-existing-account)
+                                          :background? false}]]]]]))
