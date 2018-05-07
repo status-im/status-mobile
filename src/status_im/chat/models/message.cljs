@@ -40,9 +40,9 @@
   [chat-id {:keys [message-id clock-value content] :as message} current-chat? {:keys [db]}]
   (let [prepared-message (prepare-message message chat-id current-chat?)]
     {:db                    (cond->
-                                (-> db
-                                    (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                    (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
+                             (-> db
+                                 (update-in [:chats chat-id :messages] assoc message-id prepared-message)
+                                 (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
                               (not current-chat?)
                               (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
      :data-store/save-message prepared-message}))
@@ -54,7 +54,6 @@
 (defn- send-message-seen [chat-id message-id send-seen? cofx]
   (when send-seen?
     (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
-
 
 (defn- add-received-message
   [{:keys [from message-id chat-id content content-type timestamp clock-value to-clock-value] :as message}
@@ -72,35 +71,35 @@
                                                        request-command)
         new-timestamp                             (or timestamp now)]
     (handlers-macro/merge-fx cofx
-                       (add-message chat-id
-                                    (cond-> (assoc message
-                                                   :timestamp        new-timestamp
-                                                   :show?            true)
-                                      public-key
-                                      (assoc :user-statuses {public-key (if current-chat? :seen :received)})
+                             (add-message chat-id
+                                          (cond-> (assoc message
+                                                         :timestamp        new-timestamp
+                                                         :show?            true)
+                                            public-key
+                                            (assoc :user-statuses {public-key (if current-chat? :seen :received)})
 
-                                      (not clock-value)
-                                      (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
-                                      command-request?
-                                      (assoc-in [:content :request-command-ref]
-                                                (lookup-response-ref access-scope->commands-responses
-                                                                     current-account chat contacts request-command)))
-                                    current-chat?)
-                       (send-message-seen chat-id message-id (and public-key
-                                                                  (not public?)
-                                                                  current-chat?
-                                                                  (not (chat-model/bot-only-chat? db chat-id))
-                                                                  (not (= constants/system from)))))))
+                                            (not clock-value)
+                                            (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
+                                            command-request?
+                                            (assoc-in [:content :request-command-ref]
+                                                      (lookup-response-ref access-scope->commands-responses
+                                                                           current-account chat contacts request-command)))
+                                          current-chat?)
+                             (send-message-seen chat-id message-id (and public-key
+                                                                        (not public?)
+                                                                        current-chat?
+                                                                        (not (chat-model/bot-only-chat? db chat-id))
+                                                                        (not (= constants/system from)))))))
 
 (defn receive
   [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
   (handlers-macro/merge-fx cofx
-                     (chat-model/upsert-chat {:chat-id chat-id
+                           (chat-model/upsert-chat {:chat-id chat-id
                                               ; We activate a chat again on new messages
-                                              :is-active true
-                                              :timestamp now})
-                     (add-received-message message)
-                     (requests-events/add-request chat-id message-id)))
+                                                    :is-active true
+                                                    :timestamp now})
+                           (add-received-message message)
+                           (requests-events/add-request chat-id message-id)))
 
 (defn system-message [chat-id message-id timestamp content]
   {:message-id   message-id
@@ -213,10 +212,10 @@
         message-id      (transport.utils/message-id send-record)
         message-with-id (assoc message :message-id message-id)]
     (handlers-macro/merge-fx cofx
-                       (chat-model/upsert-chat {:chat-id chat-id
-                                                :timestamp now})
-                       (add-message chat-id message-with-id true)
-                       (send chat-id message-id send-record))))
+                             (chat-model/upsert-chat {:chat-id chat-id
+                                                      :timestamp now})
+                             (add-message chat-id message-with-id true)
+                             (send chat-id message-id send-record))))
 
 (defn update-message-status [{:keys [chat-id message-id from] :as message} status {:keys [db]}]
   (let [updated-message (assoc-in message [:user-statuses from] status)]
@@ -291,9 +290,9 @@
         chat    (or (get chats chat-id) {:chat-id chat-id})
         request (:request handler-data)]
     (handlers-macro/merge-fx cofx
-                       (upsert-and-send (prepare-command-message current-public-key chat now request content))
-                       (add-console-responses command handler-data)
-                       (requests-events/request-answered chat-id to-message))))
+                             (upsert-and-send (prepare-command-message current-public-key chat now request content))
+                             (add-console-responses command handler-data)
+                             (requests-events/request-answered chat-id to-message))))
 
 (defn invoke-console-command-handler
   [{:keys [db] :as cofx} {:keys [command] :as command-params}]

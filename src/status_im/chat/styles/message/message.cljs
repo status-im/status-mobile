@@ -5,7 +5,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]))
 
-
 (defstyle style-message-text
   {:font-size 15
    :color     styles/text1-color
@@ -104,15 +103,15 @@
 
 (def not-sent-view
   (assoc delivery-view :opacity       1
-                       :margin-bottom 2
-                       :padding-top   2))
+         :margin-bottom 2
+         :padding-top   2))
 
 (def not-sent-text
   (assoc delivery-text  :color       styles/color-red
-                        :opacity     1
-                        :font-size   12
-                        :text-align  :right
-                        :padding-top 4))
+         :opacity     1
+         :font-size   12
+         :text-align  :right
+         :padding-top 4))
 
 (def not-sent-icon
   {:padding-top  3
@@ -141,7 +140,7 @@
           :padding-bottom     8
           :border-radius      8}
          (when-not (= content-type constants/content-type-emoji)
-          {:background-color styles/color-white})
+           {:background-color styles/color-white})
          (when (= content-type constants/content-type-command)
            {:padding-top    10
             :padding-bottom 14})))

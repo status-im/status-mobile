@@ -270,8 +270,8 @@
                                                                                 :destructive? true
                                                                                 :action       #(re-frame/dispatch [:delete-message chat-id message-id])}]})
                                                  (re-frame/dispatch
-                                                   [:show-message-options {:chat-id    chat-id
-                                                                           :message-id message-id}])))}
+                                                  [:show-message-options {:chat-id    chat-id
+                                                                          :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
      (i18n/message-status-label :not-sent)]
@@ -318,7 +318,7 @@
      (when first-in-group?
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}
-       content]]]
+      content]]]
    [react/view style/delivery-status
     [message-delivery-status message]]])
 
@@ -327,11 +327,11 @@
     (let [to-value @to-value]
       (when (pos? to-value)
         (animation/start
-          (animation/timing val {:toValue  to-value
-                                 :duration 250})
-          (fn [arg]
-            (when (.-finished arg)
-              (callback))))))))
+         (animation/timing val {:toValue  to-value
+                                :duration 250})
+         (fn [arg]
+           (when (.-finished arg)
+             (callback))))))))
 
 (defn message-container [message & children]
   (if (:appearing? message)
@@ -343,28 +343,28 @@
                          :callback anim-callback}
           on-update     (message-container-animation-logic context)]
       (reagent/create-class
-        {:component-did-update
-         on-update
-         :display-name
-         "message-container"
-         :reagent-render
-         (fn [_ & children]
-           @layout-height
-           [react/animated-view {:style (style/message-animated-container anim-value)}
-            (into [react/view {:style    (style/message-container window-width)
-                               :onLayout (fn [event]
-                                           (let [height (.. event -nativeEvent -layout -height)]
-                                             (reset! layout-height height)))}]
-                  children)])}))
+       {:component-did-update
+        on-update
+        :display-name
+        "message-container"
+        :reagent-render
+        (fn [_ & children]
+          @layout-height
+          [react/animated-view {:style (style/message-animated-container anim-value)}
+           (into [react/view {:style    (style/message-container window-width)
+                              :onLayout (fn [event]
+                                          (let [height (.. event -nativeEvent -layout -height)]
+                                            (reset! layout-height height)))}]
+                 children)])}))
     (into [react/view] children)))
 
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
   [message-container message
-  [react/touchable-highlight {:on-press      (fn [_]
-                                               (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
-                                               (react/dismiss-keyboard!))
-                              :on-long-press #(when (= content-type constants/text-content-type)
-                                                (list-selection/share content (i18n/label :t/message)))}
+   [react/touchable-highlight {:on-press      (fn [_]
+                                                (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                                                (react/dismiss-keyboard!))
+                               :on-long-press #(when (= content-type constants/text-content-type)
+                                                 (list-selection/share content (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message

@@ -25,23 +25,23 @@
 
 (defn button-animation [val to-value loop? answered?]
   (anim/anim-sequence
-    [(anim/anim-delay
-      (if (and @loop? (not @answered?))
-        request-message-icon-scale-delay
-        0))
-     (anim/spring val {:toValue         to-value
-                       :useNativeDriver true})]))
+   [(anim/anim-delay
+     (if (and @loop? (not @answered?))
+       request-message-icon-scale-delay
+       0))
+    (anim/spring val {:toValue         to-value
+                      :useNativeDriver true})]))
 
 (defn request-button-animation-logic
   [{:keys [to-value val loop? answered?] :as context}]
   (anim/start
-    (button-animation val to-value loop? answered?)
-    #(if (and @loop? (not @answered?))
-       (let [new-value (if (= to-value min-scale) max-scale min-scale)
-             context'  (assoc context :to-value new-value)]
-         (request-button-animation-logic context'))
-       (anim/start
-         (button-animation val min-scale loop? answered?)))))
+   (button-animation val to-value loop? answered?)
+   #(if (and @loop? (not @answered?))
+      (let [new-value (if (= to-value min-scale) max-scale min-scale)
+            context'  (assoc context :to-value new-value)]
+        (request-button-animation-logic context'))
+      (anim/start
+       (button-animation val min-scale loop? answered?)))))
 
 (defn request-button-label
   "The request button label will be in the form of `request-the-command-name`"
@@ -57,29 +57,29 @@
                         :answered? answered?
                         :loop?     loop?}]
     (r/create-class
-      {:display-name "request-button"
-       :component-did-mount
-       (if @answered? (fn []) #(request-button-animation-logic context))
-       :component-will-unmount
-       #(reset! loop? false)
-       :reagent-render
-       (fn [message-id {command-icon :icon :as command} on-press-handler]
-         (when command
-           [touchable-highlight
-            {:on-press            on-press-handler
-             :style               (st/command-request-image-touchable)
-             :accessibility-label (request-button-label (:name command))}
-            [animated-view {:style (st/command-request-image-view command scale-anim-val)}
-             (when command-icon
-               [icon command-icon st/command-request-image])]]))})))
+     {:display-name "request-button"
+      :component-did-mount
+      (if @answered? (fn []) #(request-button-animation-logic context))
+      :component-will-unmount
+      #(reset! loop? false)
+      :reagent-render
+      (fn [message-id {command-icon :icon :as command} on-press-handler]
+        (when command
+          [touchable-highlight
+           {:on-press            on-press-handler
+            :style               (st/command-request-image-touchable)
+            :accessibility-label (request-button-label (:name command))}
+           [animated-view {:style (st/command-request-image-view command scale-anim-val)}
+            (when command-icon
+              [icon command-icon st/command-request-image])]]))})))
 
 (defview message-content-command-request
   [{:keys [message-id content] :as message}]
   (letsubs [command             [:get-command (:request-command-ref content)]
             answered?           [:is-request-answered? message-id]
-            status-initialized? [:get :status-module-initialized?]] 
+            status-initialized? [:get :status-module-initialized?]]
     (let [{:keys        [prefill prefill-bot-db prefillBotDb params preview]
-           text-content :text} content 
+           text-content :text} content
           command          (if (and params command)
                              (merge command {:prefill        prefill
                                              :prefill-bot-db (or prefill-bot-db prefillBotDb)})
@@ -92,7 +92,7 @@
        [touchable-highlight
         {:on-press on-press-handler}
         [view st/command-request-message-view
-         (if (:markup preview) 
+         (if (:markup preview)
            [view (commands-utils/generate-hiccup (:markup preview))]
            [text {:style st/style-message-text
                   :font  :default}

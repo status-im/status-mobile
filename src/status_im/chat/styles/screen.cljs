@@ -3,7 +3,6 @@
   (:require [status-im.ui.components.styles :as component.styles]
             [status-im.ui.components.colors :as colors]))
 
-
 (def scroll-root
   {:flex 1})
 

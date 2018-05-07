@@ -28,9 +28,9 @@
   "Upsert chat when not deleted"
   [{:keys [chat-id] :as chat-props} {:keys [db] :as cofx}]
   (let [chat (merge
-               (or (get (:chats db) chat-id)
-                 (create-new-chat chat-id cofx))
-               chat-props)]
+              (or (get (:chats db) chat-id)
+                  (create-new-chat chat-id cofx))
+              chat-props)]
 
     (if (:is-active chat)
       {:db                   (update-in db [:chats chat-id] merge chat)

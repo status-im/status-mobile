@@ -12,8 +12,8 @@
   (fn [_]
     (let [to-spin-value (if (some #{:complete :no-command} [@command-completion]) 1 0)]
       (animation/start
-        (animation/timing spin-value {:toValue  to-spin-value
-                                      :duration 300})))))
+       (animation/timing spin-value {:toValue  to-spin-value
+                                     :duration 300})))))
 
 (defview send-button-view []
   (letsubs [command-completion                      [:command-completion]

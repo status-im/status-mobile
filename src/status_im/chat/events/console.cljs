@@ -59,16 +59,16 @@
    (fn [{:keys [db random-id now] :as cofx} {:keys [params]}]
      (let [debug? (= "On" (:mode params))]
        (handlers-macro/merge-fx cofx
-                          {:dispatch-n (if debug?
-                                         [[:initialize-debugging {:force-start? true}]
-                                          [:chat-received-message/add
-                                           (console-chat/console-message
-                                            {:message-id random-id
-                                             :content (i18n/label :t/debug-enabled)
-                                             :content-type constants/text-content-type})]]
-                                         [[:stop-debugging]])}
-                          (account.utils/account-update {:debug? debug?
-                                                           :last-updated now}))))})
+                                {:dispatch-n (if debug?
+                                               [[:initialize-debugging {:force-start? true}]
+                                                [:chat-received-message/add
+                                                 (console-chat/console-message
+                                                  {:message-id random-id
+                                                   :content (i18n/label :t/debug-enabled)
+                                                   :content-type constants/text-content-type})]]
+                                               [[:stop-debugging]])}
+                                (account.utils/account-update {:debug? debug?
+                                                               :last-updated now}))))})
 
 (def commands-names (set (keys console-commands->fx)))
 

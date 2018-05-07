@@ -18,38 +18,38 @@
 (reg-sub :chat-ui-props :chat-ui-props)
 
 (reg-sub
-  :get-current-chat-ui-props
-  :<- [:chat-ui-props]
-  :<- [:get-current-chat-id]
-  (fn [[chat-ui-props id]]
-    (get chat-ui-props id)))
+ :get-current-chat-ui-props
+ :<- [:chat-ui-props]
+ :<- [:get-current-chat-id]
+ (fn [[chat-ui-props id]]
+   (get chat-ui-props id)))
 
 (reg-sub
-  :get-current-chat-ui-prop
-  :<- [:get-current-chat-ui-props]
-  (fn [ui-props [_ prop]]
-    (get ui-props prop)))
+ :get-current-chat-ui-prop
+ :<- [:get-current-chat-ui-props]
+ (fn [ui-props [_ prop]]
+   (get ui-props prop)))
 
 (reg-sub
-  :validation-messages
-  :<- [:get-current-chat-ui-props]
-  (fn [ui-props]
-    (some-> ui-props :validation-messages commands-utils/generate-hiccup)))
+ :validation-messages
+ :<- [:get-current-chat-ui-props]
+ (fn [ui-props]
+   (some-> ui-props :validation-messages commands-utils/generate-hiccup)))
 
 (reg-sub
-  :result-box-markup
-  :<- [:get-current-chat-ui-props]
-  (fn [ui-props]
-    (some-> ui-props :result-box :markup commands-utils/generate-hiccup)))
+ :result-box-markup
+ :<- [:get-current-chat-ui-props]
+ (fn [ui-props]
+   (some-> ui-props :result-box :markup commands-utils/generate-hiccup)))
 
 (reg-sub
-  :chat-input-margin
-  :<- [:get :keyboard-height]
-  (fn [kb-height]
-    (cond
-      (and platform/iphone-x? (> kb-height 0)) (- kb-height 34)
-      platform/ios? kb-height
-      :default 0)))
+ :chat-input-margin
+ :<- [:get :keyboard-height]
+ (fn [kb-height]
+   (cond
+     (and platform/iphone-x? (> kb-height 0)) (- kb-height 34)
+     platform/ios? kb-height
+     :default 0)))
 
 (defn- active-chat? [dev-mode? [_ chat]]
   (and (:is-active chat)
@@ -60,29 +60,29 @@
   (into {} (filter (partial active-chat? dev-mode?) chats)))
 
 (reg-sub
-  :get-active-chats
-  :<- [:get-chats]
-  :<- [:get-current-account]
-  active-chats)
+ :get-active-chats
+ :<- [:get-chats]
+ :<- [:get-current-account]
+ active-chats)
 
 (reg-sub
-  :get-chat
-  :<- [:get-active-chats]
-  (fn [chats [_ chat-id]]
-    (get chats chat-id)))
+ :get-chat
+ :<- [:get-active-chats]
+ (fn [chats [_ chat-id]]
+   (get chats chat-id)))
 
 (reg-sub
-  :get-current-chat
-  :<- [:get-active-chats]
-  :<- [:get-current-chat-id]
-  (fn [[chats current-chat-id]]
-    (get chats current-chat-id)))
+ :get-current-chat
+ :<- [:get-active-chats]
+ :<- [:get-current-chat-id]
+ (fn [[chats current-chat-id]]
+   (get chats current-chat-id)))
 
 (reg-sub
-  :get-current-chat-message
-  :<- [:get-current-chat]
-  (fn [{:keys [messages]} [_ message-id]]
-    (get messages message-id)))
+ :get-current-chat-message
+ :<- [:get-current-chat]
+ (fn [{:keys [messages]} [_ message-id]]
+   (get messages message-id)))
 
 (defn- intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
@@ -122,11 +122,11 @@
   [id->messages]
   (->> id->messages
        vals
-      (filter :show?)
-      (sort-by (juxt (comp unchecked-negate :clock-value) :message-id))))
+       (filter :show?)
+       (sort-by (juxt (comp unchecked-negate :clock-value) :message-id))))
 
 (defn- add-datemark [{:keys [timestamp] :as msg}]
-   (assoc msg :datemark (time/day-relative timestamp)))
+  (assoc msg :datemark (time/day-relative timestamp)))
 
 (defn- add-timestamp [{:keys [timestamp] :as msg}]
   (assoc msg :timestamp-str (time/timestamp->time timestamp)))
@@ -137,8 +137,8 @@
   [messages]
   (when (seq messages)
     (let [messages-with-datemarks (transduce (comp
-                                               (map add-datemark)
-                                               (map add-timestamp))
+                                              (map add-datemark)
+                                              (map add-timestamp))
                                              (completing intersperse-datemark :acc)
                                              {:acc []}
                                              messages)]
@@ -203,35 +203,35 @@
            :stream))))
 
 (reg-sub
-  :get-ordered-chat-messages
-  (fn [[_ chat-id]]
-    (subscribe [:get-chat chat-id]))
-  (fn [{:keys [messages]}]
-    (sort-messages messages)))
+ :get-ordered-chat-messages
+ (fn [[_ chat-id]]
+   (subscribe [:get-chat chat-id]))
+ (fn [{:keys [messages]}]
+   (sort-messages messages)))
 
 (reg-sub
-  :get-current-chat-messages
-  :<- [:get-current-chat]
-  (fn [{:keys [messages]}]
-    (-> messages sort-messages intersperse-datemarks messages-stream)))
+ :get-current-chat-messages
+ :<- [:get-current-chat]
+ (fn [{:keys [messages]}]
+   (-> messages sort-messages intersperse-datemarks messages-stream)))
 
 (reg-sub
-  :get-commands-for-chat
-  :<- [:get-commands-responses-by-access-scope]
-  :<- [:get-current-account]
-  :<- [:get-current-chat]
-  :<- [:get-contacts]
-  (fn [[commands-responses account chat contacts]]
-    (commands-model/commands-responses :command commands-responses account chat contacts)))
+ :get-commands-for-chat
+ :<- [:get-commands-responses-by-access-scope]
+ :<- [:get-current-account]
+ :<- [:get-current-chat]
+ :<- [:get-contacts]
+ (fn [[commands-responses account chat contacts]]
+   (commands-model/commands-responses :command commands-responses account chat contacts)))
 
 (reg-sub
-  :get-responses-for-chat
-  :<- [:get-commands-responses-by-access-scope]
-  :<- [:get-current-account]
-  :<- [:get-current-chat]
-  :<- [:get-contacts]
-  (fn [[commands-responses account {:keys [requests] :as chat} contacts]]
-    (commands-model/requested-responses commands-responses account chat contacts (vals requests))))
+ :get-responses-for-chat
+ :<- [:get-commands-responses-by-access-scope]
+ :<- [:get-current-account]
+ :<- [:get-current-chat]
+ :<- [:get-contacts]
+ (fn [[commands-responses account {:keys [requests] :as chat} contacts]]
+   (commands-model/requested-responses commands-responses account chat contacts (vals requests))))
 
 (def ^:private map->sorted-seq (comp (partial map second) (partial sort-by first)))
 
@@ -243,149 +243,149 @@
                    (string/includes? (commands-model/command-name item) input-text))))))
 
 (reg-sub
-  :get-available-commands
-  :<- [:get-commands-for-chat]
-  :<- [:get-current-chat]
-  available-commands-responses)
+ :get-available-commands
+ :<- [:get-commands-for-chat]
+ :<- [:get-current-chat]
+ available-commands-responses)
 
 (reg-sub
-  :get-available-responses
-  :<- [:get-responses-for-chat]
-  :<- [:get-current-chat]
-  available-commands-responses)
+ :get-available-responses
+ :<- [:get-responses-for-chat]
+ :<- [:get-current-chat]
+ available-commands-responses)
 
 (reg-sub
-  :get-available-commands-responses
-  :<- [:get-commands-for-chat]
-  :<- [:get-responses-for-chat]
-  (fn [[commands responses]]
-    (map->sorted-seq (merge commands responses))))
+ :get-available-commands-responses
+ :<- [:get-commands-for-chat]
+ :<- [:get-responses-for-chat]
+ (fn [[commands responses]]
+   (map->sorted-seq (merge commands responses))))
 
 (reg-sub
-  :selected-chat-command
-  :<- [:get-current-chat]
-  :<- [:get-commands-for-chat]
-  :<- [:get-responses-for-chat]
-  (fn [[chat commands responses]]
-    (input-model/selected-chat-command chat commands responses)))
+ :selected-chat-command
+ :<- [:get-current-chat]
+ :<- [:get-commands-for-chat]
+ :<- [:get-responses-for-chat]
+ (fn [[chat commands responses]]
+   (input-model/selected-chat-command chat commands responses)))
 
 (reg-sub
-  :chat-input-placeholder
-  :<- [:get-current-chat]
-  :<- [:selected-chat-command]
-  (fn [[{:keys [input-text]} command]]
-    (when (and (string/ends-with? (or input-text "") chat-constants/spacing-char)
-               (not (get-in command [:command :sequential-params])))
-      (let [input     (string/trim (or input-text ""))
-            real-args (remove string/blank? (:args command))]
-        (cond
-          (and command (empty? real-args))
-          (get-in command [:command :params 0 :placeholder])
+ :chat-input-placeholder
+ :<- [:get-current-chat]
+ :<- [:selected-chat-command]
+ (fn [[{:keys [input-text]} command]]
+   (when (and (string/ends-with? (or input-text "") chat-constants/spacing-char)
+              (not (get-in command [:command :sequential-params])))
+     (let [input     (string/trim (or input-text ""))
+           real-args (remove string/blank? (:args command))]
+       (cond
+         (and command (empty? real-args))
+         (get-in command [:command :params 0 :placeholder])
 
-          (and command
-               (= (count real-args) 1)
-               (input-model/text-ends-with-space? input))
-          (get-in command [:command :params 1 :placeholder]))))))
-
-(reg-sub
-  :current-chat-argument-position
-  :<- [:selected-chat-command]
-  :<- [:get-current-chat]
-  :<- [:get-current-chat-ui-prop :selection]
-  (fn [[command {:keys [input-text seq-arguments]} selection]]
-    (input-model/current-chat-argument-position command input-text selection seq-arguments)))
+         (and command
+              (= (count real-args) 1)
+              (input-model/text-ends-with-space? input))
+         (get-in command [:command :params 1 :placeholder]))))))
 
 (reg-sub
-  :chat-parameter-box
-  :<- [:get-current-chat]
-  :<- [:selected-chat-command]
-  :<- [:current-chat-argument-position]
-  (fn [[current-chat selected-chat-command argument-position]]
-    (cond
-      (and selected-chat-command
-           (not= argument-position input-model/*no-argument-error*))
-      (get-in current-chat [:parameter-boxes
-                            (get-in selected-chat-command [:command :name])
-                            argument-position])
-
-      (not selected-chat-command)
-      (get-in current-chat [:parameter-boxes :message])
-
-      :default
-      nil)))
+ :current-chat-argument-position
+ :<- [:selected-chat-command]
+ :<- [:get-current-chat]
+ :<- [:get-current-chat-ui-prop :selection]
+ (fn [[command {:keys [input-text seq-arguments]} selection]]
+   (input-model/current-chat-argument-position command input-text selection seq-arguments)))
 
 (reg-sub
-  :show-parameter-box?
-  :<- [:chat-parameter-box]
-  :<- [:show-suggestions?]
-  :<- [:get-current-chat]
-  :<- [:validation-messages]
-  (fn [[chat-parameter-box show-suggestions? {:keys [input-text]} validation-messages]]
-    (and (get chat-parameter-box :markup)
-         (not validation-messages)
-         (not show-suggestions?))))
+ :chat-parameter-box
+ :<- [:get-current-chat]
+ :<- [:selected-chat-command]
+ :<- [:current-chat-argument-position]
+ (fn [[current-chat selected-chat-command argument-position]]
+   (cond
+     (and selected-chat-command
+          (not= argument-position input-model/*no-argument-error*))
+     (get-in current-chat [:parameter-boxes
+                           (get-in selected-chat-command [:command :name])
+                           argument-position])
+
+     (not selected-chat-command)
+     (get-in current-chat [:parameter-boxes :message])
+
+     :default
+     nil)))
 
 (reg-sub
-  :command-completion
-  :<- [:selected-chat-command]
-  input-model/command-completion)
+ :show-parameter-box?
+ :<- [:chat-parameter-box]
+ :<- [:show-suggestions?]
+ :<- [:get-current-chat]
+ :<- [:validation-messages]
+ (fn [[chat-parameter-box show-suggestions? {:keys [input-text]} validation-messages]]
+   (and (get chat-parameter-box :markup)
+        (not validation-messages)
+        (not show-suggestions?))))
 
 (reg-sub
-  :show-suggestions-view?
-  :<- [:get-current-chat-ui-prop :show-suggestions?]
-  :<- [:get-current-chat]
-  :<- [:selected-chat-command]
-  :<- [:get-available-commands-responses]
-  (fn [[show-suggestions? {:keys [input-text]} selected-command commands-responses]]
-    (and (or show-suggestions? (input-model/starts-as-command? (string/trim (or input-text ""))))
-         (seq commands-responses))))
+ :command-completion
+ :<- [:selected-chat-command]
+ input-model/command-completion)
 
 (reg-sub
-  :show-suggestions?
-  :<- [:show-suggestions-view?]
-  :<- [:selected-chat-command]
-  (fn [[show-suggestions-box? selected-command]]
-    (and show-suggestions-box? (not (:command selected-command)))))
+ :show-suggestions-view?
+ :<- [:get-current-chat-ui-prop :show-suggestions?]
+ :<- [:get-current-chat]
+ :<- [:selected-chat-command]
+ :<- [:get-available-commands-responses]
+ (fn [[show-suggestions? {:keys [input-text]} selected-command commands-responses]]
+   (and (or show-suggestions? (input-model/starts-as-command? (string/trim (or input-text ""))))
+        (seq commands-responses))))
 
 (reg-sub
-  :is-request-answered?
-  :<- [:get-current-chat]
-  (fn [{:keys [requests]} [_ message-id]]
-    (not= "open" (get-in requests [message-id :status]))))
+ :show-suggestions?
+ :<- [:show-suggestions-view?]
+ :<- [:selected-chat-command]
+ (fn [[show-suggestions-box? selected-command]]
+   (and show-suggestions-box? (not (:command selected-command)))))
 
 (reg-sub
-  :unviewed-messages-count
-  (fn [[_ chat-id]]
-    (subscribe [:get-chat chat-id]))
-  (fn [{:keys [unviewed-messages]}]
-    (count unviewed-messages)))
+ :is-request-answered?
+ :<- [:get-current-chat]
+ (fn [{:keys [requests]} [_ message-id]]
+   (not= "open" (get-in requests [message-id :status]))))
 
 (reg-sub
-  :web-view-extra-js
-  :<- [:get-current-chat]
-  (fn [current-chat]
-    (:web-view-extra-js current-chat)))
+ :unviewed-messages-count
+ (fn [[_ chat-id]]
+   (subscribe [:get-chat chat-id]))
+ (fn [{:keys [unviewed-messages]}]
+   (count unviewed-messages)))
 
 (reg-sub
-  :get-photo-path
-  :<- [:get-contacts]
-  (fn [contacts [_ id]]
-    (:photo-path (contacts id))))
+ :web-view-extra-js
+ :<- [:get-current-chat]
+ (fn [current-chat]
+   (:web-view-extra-js current-chat)))
 
 (reg-sub
-  :get-last-message
-  (fn [[_ chat-id]]
-    (subscribe [:get-ordered-chat-messages chat-id]))
-  first)
+ :get-photo-path
+ :<- [:get-contacts]
+ (fn [contacts [_ id]]
+   (:photo-path (contacts id))))
 
 (reg-sub
-  :chat-animations
-  (fn [db [_ key type]]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (get-in db [:chat-animations @chat-id key type]))))
+ :get-last-message
+ (fn [[_ chat-id]]
+   (subscribe [:get-ordered-chat-messages chat-id]))
+ first)
 
 (reg-sub
-  :get-chats-unread-messages-number
-  :<- [:get-active-chats]
-  (fn [chats _]
-    (apply + (map #(count (:unviewed-messages %)) (vals chats)))))
+ :chat-animations
+ (fn [db [_ key type]]
+   (let [chat-id (subscribe [:get-current-chat-id])]
+     (get-in db [:chat-animations @chat-id key type]))))
+
+(reg-sub
+ :get-chats-unread-messages-number
+ :<- [:get-active-chats]
+ (fn [chats _]
+   (apply + (map #(count (:unviewed-messages %)) (vals chats)))))

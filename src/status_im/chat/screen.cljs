@@ -84,19 +84,19 @@
             timeout       (if platform/android? 50 0)]
     {:component-did-mount (fn [_]
                             (animation/start
-                              (animation/anim-sequence
-                               [(animation/anim-delay timeout)
-                                (animation/spring opacity {:toValue  1
-                                                           :duration duration})])))}
+                             (animation/anim-sequence
+                              [(animation/anim-delay timeout)
+                               (animation/spring opacity {:toValue  1
+                                                          :duration duration})])))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}
-      [react/touchable-without-feedback
-       {:on-press (fn [_]
-                    (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
-                    (react/dismiss-keyboard!))}
-       [react/animated-view {:style (style/message-view-animated opacity)}
-        message-view]]]))
+     [react/touchable-without-feedback
+      {:on-press (fn [_]
+                   (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                   (react/dismiss-keyboard!))}
+      [react/animated-view {:style (style/message-view-animated opacity)}
+       message-view]]]))
 
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
