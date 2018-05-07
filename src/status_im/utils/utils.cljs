@@ -4,18 +4,18 @@
 
 (defn show-popup
   ([title content]
-    (show-popup title content nil))
+   (show-popup title content nil))
   ([title content on-dismiss]
-    (.alert (.-Alert rn-dependencies/react-native)
-            title
-            content
-            (clj->js
-             (vector (merge {:text                "OK"
-                             :style               "cancel"
-                             :accessibility-label :cancel-button}
-                            (when on-dismiss {:onPress on-dismiss}))))
-            (when on-dismiss
-              (clj->js {:cancelable false})))))
+   (.alert (.-Alert rn-dependencies/react-native)
+           title
+           content
+           (clj->js
+            (vector (merge {:text                "OK"
+                            :style               "cancel"
+                            :accessibility-label :cancel-button}
+                           (when on-dismiss {:onPress on-dismiss}))))
+           (when on-dismiss
+             (clj->js {:cancelable false})))))
 
 (defn show-confirmation
   ([title content on-accept]

@@ -9,17 +9,17 @@
 (defn- encryption-key-fetch [{:keys [resolve reject]}]
   (-> (.getGenericPassword rn/keychain)
       (.then
-        (fn [res]
-          (if (not res)
-            (when reject
-              (reject))
-            (let [encryption-key (.parse js/JSON (.-password res))]
-              (log/debug "Found existing encryption key!")
-              (re-frame/dispatch [:got-encryption-key {:encryption-key encryption-key
-                                                       :callback       resolve}])))))
+       (fn [res]
+         (if (not res)
+           (when reject
+             (reject))
+           (let [encryption-key (.parse js/JSON (.-password res))]
+             (log/debug "Found existing encryption key!")
+             (re-frame/dispatch [:got-encryption-key {:encryption-key encryption-key
+                                                      :callback       resolve}])))))
       (.catch
-        (fn [err]
-          (log/debug err)))))
+       (fn [err]
+         (log/debug err)))))
 
 (defn encryption-key-reset []
   (log/debug "Resetting key...")
@@ -32,17 +32,17 @@
                                      (log/debug "No key exists, creating...")
                                      (-> (rn/secure-random key-bytes)
                                          (.then
-                                           (fn [encryption-key]
-                                             (-> (.setGenericPassword
-                                                   rn/keychain
-                                                   username
-                                                   (.stringify js/JSON (.from js/Array encryption-key)))
-                                                 (.then
-                                                   (fn [res]
-                                                     (encryption-key-fetch {:resolve callback})))
-                                                 (.catch
-                                                   (fn [err]
-                                                     (log/debug err))))))
-                                          (.catch
-                                            (fn [err]
-                                              (log/debug err)))))}))
+                                          (fn [encryption-key]
+                                            (-> (.setGenericPassword
+                                                 rn/keychain
+                                                 username
+                                                 (.stringify js/JSON (.from js/Array encryption-key)))
+                                                (.then
+                                                 (fn [res]
+                                                   (encryption-key-fetch {:resolve callback})))
+                                                (.catch
+                                                 (fn [err]
+                                                   (log/debug err))))))
+                                         (.catch
+                                          (fn [err]
+                                            (log/debug err)))))}))

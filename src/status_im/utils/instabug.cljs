@@ -30,8 +30,8 @@
                                             count)
           {:keys [token]} (first (filter (fn [{:keys [count]}]
                                            (or
-                                             (= count sent-messages-count)
-                                             (= count sent-messages-after-ts-count)))
+                                            (= count sent-messages-count)
+                                            (= count sent-messages-after-ts-count)))
                                          survey-triggers))]
       (when token
         (.showSurveyWithToken instabug token)))))

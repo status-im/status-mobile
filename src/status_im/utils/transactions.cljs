@@ -54,4 +54,4 @@
 (defn get-transactions [network account on-success on-error]
   (http/get (get-transaction-url network account)
             #(on-success (format-transactions-response % account))
-             on-error))
+            on-error))

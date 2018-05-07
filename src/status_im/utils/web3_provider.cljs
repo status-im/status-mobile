@@ -5,10 +5,10 @@
 
 (defn make-web3 []
   (dependencies/Web3.
-    #js {:sendAsync (fn [payload callback]
-                      (status/call-web3
-                        (.stringify js/JSON payload)
-                        (fn [response]
-                          (if (= "" response)
-                            (log/warn :web3-response-error)
-                            (callback nil (.parse js/JSON response))))))}))
+   #js {:sendAsync (fn [payload callback]
+                     (status/call-web3
+                      (.stringify js/JSON payload)
+                      (fn [response]
+                        (if (= "" response)
+                          (log/warn :web3-response-error)
+                          (callback nil (.parse js/JSON response))))))}))

@@ -33,15 +33,14 @@
       `(merge-fx* ~form ~cofx ~@(next forms))
       `(merge-fx* {} ~cofx ~@forms))))
 
-(comment (defn fn1 [{:keys [db]} ]
+(comment (defn fn1 [{:keys [db]}]
            {:db (assoc db :a 0)
             :a "1"})
 
-         (defn fn2 [ a {:keys [db]}]
-           {:db (update db :a + a)
-            })
+         (defn fn2 [a {:keys [db]}]
+           {:db (update db :a + a)})
 
-         (defn fn3 [ a {:keys [db u]}]
+         (defn fn3 [a {:keys [db u]}]
            {:db (update db :a + u)})
 
          (let [a    1

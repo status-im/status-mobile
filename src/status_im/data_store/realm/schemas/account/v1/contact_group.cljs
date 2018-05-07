@@ -6,7 +6,7 @@
              :properties {:group-id         :string
                           :name             :string
                           :timestamp        :int
-                          :order            :int 
+                          :order            :int
                           :contacts         {:type    "string[]"}}})
 
 (defn migration [old-realm new-realm]

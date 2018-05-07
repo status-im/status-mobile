@@ -7,7 +7,7 @@
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-chat [{:keys [chat-id] :as chat}]
-  (let [last-clock-value (messages/get-last-clock-value chat-id)] 
+  (let [last-clock-value (messages/get-last-clock-value chat-id)]
     (assoc chat :last-clock-value  (or last-clock-value 0))))
 
 (defn get-all
