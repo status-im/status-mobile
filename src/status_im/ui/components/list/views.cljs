@@ -54,7 +54,7 @@
    [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
 
 (defn item-image
-  [{:keys[source style image-style]}]
+  [{:keys [source style image-style]}]
   [react/view {:style style}
    [react/image {:source source
                  :style  (merge styles/item-image image-style)}]])
@@ -116,11 +116,11 @@
 (defn- base-list-props
   [{:keys [key-fn render-fn empty-component header separator default-separator?]}]
   (let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
-    (merge (when key-fn          {:keyExtractor (wrap-key-fn key-fn)})
-           (when render-fn       {:renderItem (wrap-render-fn render-fn)})
-           (when separator       {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
+    (merge (when key-fn {:keyExtractor (wrap-key-fn key-fn)})
+           (when render-fn {:renderItem (wrap-render-fn render-fn)})
+           (when separator {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
            (when empty-component {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
-           (when header          {:ListHeaderComponent (fn [] (reagent/as-element header))}))))
+           (when header {:ListHeaderComponent (fn [] (reagent/as-element header))}))))
 
 ;; Workaround an issue in reagent that does not consider JS array as JS value
 ;; This forces clj <-> js serialization and breaks clj semantic
@@ -168,16 +168,16 @@
 
 (defn- wrap-per-section-render-fn [props]
   (update
-    (if-let [f (:render-fn props)]
-      (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
-      props)
-    :data wrap-data))
+   (if-let [f (:render-fn props)]
+     (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
+     props)
+   :data wrap-data))
 
 (defn section-list
   "A wrapper for SectionList.
    See https://facebook.github.io/react-native/docs/sectionlist.html"
   [{:keys [sections render-section-header-fn] :as props
-    :or {render-section-header-fn default-render-section-header}}]
+    :or   {render-section-header-fn default-render-section-header}}]
   [section-list-class
    (merge (base-list-props props)
           props
@@ -202,7 +202,6 @@
                                        (when disabled? styles/action-label-disabled))}
       label]
      item-icon-forward]]])
-
 
 (defn action-list [actions {:keys [container-style action-separator-style] :as styles}]
   [react/view (merge styles/action-list container-style)

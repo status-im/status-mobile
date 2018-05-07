@@ -57,20 +57,20 @@
    [profile-info-contact-code-item whisper-identity]])
 
 (defview profile []
-  (letsubs [identity        [:get-current-contact-identity]
-            maybe-contact   [:get-current-contact]]
-    (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))]
-      [react/view profile.components.styles/profile
-       [status-bar/status-bar]
-       [profile-contact-toolbar]
-       [react/scroll-view
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header contact false false nil nil]]
-        [list/action-list (actions contact)
-         {:container-style        styles/action-container
-          :action-style           styles/action
-          :action-label-style     styles/action-label
-          :action-separator-style styles/action-separator
-          :icon-opts              styles/action-icon-opts}]
-        [react/view styles/contact-profile-info-container
-         [profile-info contact]]]])))
+  (letsubs [identity      [:get-current-contact-identity]
+            maybe-contact [:get-current-contact]]
+           (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))]
+             [react/view profile.components.styles/profile
+              [status-bar/status-bar]
+              [profile-contact-toolbar]
+              [react/scroll-view
+               [react/view profile.components.styles/profile-form
+                [profile.components/profile-header contact false false nil nil]]
+               [list/action-list (actions contact)
+                {:container-style        styles/action-container
+                 :action-style           styles/action
+                 :action-label-style     styles/action-label
+                 :action-separator-style styles/action-separator
+                 :icon-opts              styles/action-icon-opts}]
+               [react/view styles/contact-profile-info-container
+                [profile-info contact]]]])))

@@ -14,8 +14,8 @@
         (.catch on-error))))
 
 (defn- image-base64-encode [path on-success on-error]
-  (let [on-error   (fn [error]
-                     (on-error :base64 error))]
+  (let [on-error (fn [error]
+                   (on-error :base64 error))]
     (read-file path "base64" on-success on-error)))
 
 (defn img->base64 [path on-success on-error]

@@ -4,8 +4,8 @@
 (re-frame/reg-sub :browsers :browser/browsers)
 
 (re-frame/reg-sub
-  :get-current-browser
-  :<- [:get :browser/options]
-  :<- [:browsers]
-  (fn [[options browsers]]
-    (get browsers (:browser-id options))))
+ :get-current-browser
+ :<- [:get :browser/options]
+ :<- [:browsers]
+ (fn [[options browsers]]
+   (get browsers (:browser-id options))))

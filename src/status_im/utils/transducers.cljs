@@ -8,7 +8,7 @@
   one is removed."
   [compare-fn]
   (fn [rf]
-    (let [accumulated-input (volatile! {:seen {}
+    (let [accumulated-input (volatile! {:seen  {}
                                         :input []})]
       (fn
         ([] (rf))

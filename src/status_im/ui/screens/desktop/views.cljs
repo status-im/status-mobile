@@ -11,14 +11,14 @@
 
 (views/defview main []
   (views/letsubs [view-id [:get :view-id]]
-    (let [component (case view-id
-                      :intro intro.views/intro
-                      :usage-data usage-data.views/usage-data
-                      :accounts accounts.views/accounts
-                      :recover recover.views/recover
-                      :create-account create.views/create-account
-                      (:new-contact :chat :home) main.views/main-views
-                      :login login.views/login
-                      react/view)]
-      [react/view {:style {:flex 1}}
-       [component]])))
+                 (let [component (case view-id
+                                   :intro intro.views/intro
+                                   :usage-data usage-data.views/usage-data
+                                   :accounts accounts.views/accounts
+                                   :recover recover.views/recover
+                                   :create-account create.views/create-account
+                                   (:new-contact :chat :home) main.views/main-views
+                                   :login login.views/login
+                                   react/view)]
+                   [react/view {:style {:flex 1}}
+                    [component]])))

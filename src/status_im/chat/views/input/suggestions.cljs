@@ -20,18 +20,18 @@
 
 (defview suggestions-view []
   (letsubs [commands [:get-available-commands]]
-    [expandable/expandable-view {:key :suggestions}
-     [react/view
-      [react/scroll-view {:keyboard-should-persist-taps :always
-                          :bounces                      false}
-       (when (seq commands)
-         (for [[i {:keys [description] :as command}] (map-indexed vector commands)]
-           ^{:key i}
-           [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
-                             :name                (commands-model/command-name command)
-                             :description         description
-                             :last?               (= i (dec (count commands)))
-                             :accessibility-label (case (:name command)
-                                                    "send"    :send-payment-button
-                                                    "request" :request-payment-button
-                                                    nil)}]))]]]))
+           [expandable/expandable-view {:key :suggestions}
+            [react/view
+             [react/scroll-view {:keyboard-should-persist-taps :always
+                                 :bounces                      false}
+              (when (seq commands)
+                (for [[i {:keys [description] :as command}] (map-indexed vector commands)]
+                  ^{:key i}
+                  [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
+                                    :name                (commands-model/command-name command)
+                                    :description         description
+                                    :last?               (= i (dec (count commands)))
+                                    :accessibility-label (case (:name command)
+                                                           "send" :send-payment-button
+                                                           "request" :request-payment-button
+                                                           nil)}]))]]]))

@@ -67,20 +67,20 @@
     (cond-> {:position         :absolute
              :background-color :black
              :opacity          0.7}
-      (= :top side)    (assoc :height top-bottom-height
-                              :width  top-bottom-width)
-      (= :right side)  (assoc :height left-right-height
-                              :width  left-right-width
-                              :top    top-bottom-height
-                              :right  0)
+      (= :top side) (assoc :height top-bottom-height
+                           :width top-bottom-width)
+      (= :right side) (assoc :height left-right-height
+                             :width left-right-width
+                             :top top-bottom-height
+                             :right 0)
       (= :bottom side) (assoc :height top-bottom-height
-                              :width  top-bottom-width
+                              :width top-bottom-width
                               :bottom 0
-                              :left   0)
-      (= :left side)   (assoc :height left-right-height
-                              :width  left-right-width
-                              :top    top-bottom-height
-                              :left   0))))
+                              :left 0)
+      (= :left side) (assoc :height left-right-height
+                            :width left-right-width
+                            :top top-bottom-height
+                            :left 0))))
 
 (def qr-code
   {:flex             1

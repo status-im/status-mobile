@@ -15,7 +15,7 @@
                                             (fn [] (dispatch [:hide-contact contact])))
                             :label        (label :t/delete-contact)
                             :destructive? true}
-        options (if unremovable? [] [delete-contact-opt])]
+        options            (if unremovable? [] [delete-contact-opt])]
     (if group
       (conj options
             {:action #(dispatch [:remove-contact-from-group

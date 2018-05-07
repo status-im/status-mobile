@@ -35,15 +35,15 @@
 
 (defn cartouche-content-wrapper [disabled?]
   (merge
-    {:flex-direction     :row
-     :margin-top         8
-     :border-radius      styles/border-radius
-     :padding-left       14
-     :padding-right      8}
-    (if disabled?
-      {:border-color colors/white-light-transparent
-       :border-width 1}
-      {:background-color colors/white-transparent})))
+   {:flex-direction :row
+    :margin-top     8
+    :border-radius  styles/border-radius
+    :padding-left   14
+    :padding-right  8}
+   (if disabled?
+     {:border-color colors/white-light-transparent
+      :border-width 1}
+     {:background-color colors/white-transparent})))
 
 (def cartouche-icon-wrapper
   {:flex            1

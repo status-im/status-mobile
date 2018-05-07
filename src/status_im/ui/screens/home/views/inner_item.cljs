@@ -52,10 +52,10 @@
 
 (defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:unviewed-messages-count chat-id]]
-    (when (pos? unviewed-messages-count)
-      [components.common/counter {:size                22
-                                  :accessibility-label :unread-messages-count-text}
-       unviewed-messages-count])))
+           (when (pos? unviewed-messages-count)
+             [components.common/counter {:size                22
+                                         :accessibility-label :unread-messages-count-text}
+              unviewed-messages-count])))
 
 (defn chat-list-item-name [name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
@@ -82,43 +82,43 @@
                                                  group-chat public?
                                                  public-key]}]
   (letsubs [last-message [:get-last-message chat-id]]
-    (let [name (or (i18n/get-contact-translated chat-id :name name)
-                   (gfycat/generate-gfy public-key))
-          hide-dapp? (= chat-id const/console-chat-id)]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
-       [react/view styles/chat-container
-        [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online hide-dapp?]]
-        [react/view styles/chat-info-container
-         [react/view styles/item-upper-container
-          [chat-list-item-name name group-chat public? public-key]
-          (when last-message
-            [react/view styles/message-status-container
-             [message-timestamp last-message]])]
-         [react/view styles/item-lower-container
-          [message-content-text last-message]
-          [unviewed-indicator chat-id]]]]])))
+           (let [name       (or (i18n/get-contact-translated chat-id :name name)
+                                (gfycat/generate-gfy public-key))
+                 hide-dapp? (= chat-id const/console-chat-id)]
+             [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
+              [react/view styles/chat-container
+               [react/view styles/chat-icon-container
+                [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online hide-dapp?]]
+               [react/view styles/chat-info-container
+                [react/view styles/item-upper-container
+                 [chat-list-item-name name group-chat public? public-key]
+                 (when last-message
+                   [react/view styles/message-status-container
+                    [message-timestamp last-message]])]
+                [react/view styles/item-lower-container
+                 [message-content-text last-message]
+                 [unviewed-indicator chat-id]]]]])))
 
 (defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
   (letsubs [contact' [:get-contact-by-identity contact]]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
-     [react/view styles/chat-container
-      [react/view styles/chat-icon-container
-       (if contact'
-         [chat-icon.screen/dapp-icon-browser contact' 36]
-         [react/view styles/browser-icon-container
-          [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
-      [react/view styles/chat-info-container
-       [react/view styles/item-upper-container
-        [react/view styles/name-view
-         [react/view {:flex-shrink 1}
-          [react/text {:style               styles/name-text
-                       :accessibility-label :chat-name-text
-                       :number-of-lines     1}
-           name]]]]
-       [react/view styles/item-lower-container
-        [react/view styles/last-message-container
-         [react/text {:style               styles/last-message-text
-                      :accessibility-label :chat-url-text
-                      :number-of-lines     1}
-          (or url (i18n/label :t/dapp))]]]]]]))
+           [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
+            [react/view styles/chat-container
+             [react/view styles/chat-icon-container
+              (if contact'
+                [chat-icon.screen/dapp-icon-browser contact' 36]
+                [react/view styles/browser-icon-container
+                 [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
+             [react/view styles/chat-info-container
+              [react/view styles/item-upper-container
+               [react/view styles/name-view
+                [react/view {:flex-shrink 1}
+                 [react/text {:style               styles/name-text
+                              :accessibility-label :chat-name-text
+                              :number-of-lines     1}
+                  name]]]]
+              [react/view styles/item-lower-container
+               [react/view styles/last-message-container
+                [react/text {:style               styles/last-message-text
+                             :accessibility-label :chat-url-text
+                             :number-of-lines     1}
+                 (or url (i18n/label :t/dapp))]]]]]]))

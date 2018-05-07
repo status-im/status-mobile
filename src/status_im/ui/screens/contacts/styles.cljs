@@ -60,7 +60,7 @@
 
 (def group-icon
   (assoc option-inner-image
-    :tint-color common/color-gray))
+         :tint-color common/color-gray))
 
 ; New contact
 

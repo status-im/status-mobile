@@ -1,6 +1,6 @@
 (ns status-im.chat.views.message.datemark
   (:require [status-im.ui.components.react :as react]
-            [clojure.string :as str] 
+            [clojure.string :as str]
             [status-im.chat.styles.message.datemark :as st]))
 
 (defn chat-datemark [value]

@@ -13,27 +13,27 @@
             [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
-  :open-image-picker
+ :open-image-picker
   ;; the image picker is only used here for now, this effect can be use in other scenarios as well
-  (fn [callback-event]
-    (show-image-picker
-     (fn [image]
-       (let [path (get (js->clj image) "path")
-             _ (log/debug path)
-             on-success (fn [base64]
-                          (re-frame/dispatch [callback-event base64]))
-             on-error   (fn [type error]
-                          (.log js/console type error))]
-         (img->base64 path on-success on-error))))))
+ (fn [callback-event]
+   (show-image-picker
+    (fn [image]
+      (let [path       (get (js->clj image) "path")
+            _          (log/debug path)
+            on-success (fn [base64]
+                         (re-frame/dispatch [callback-event base64]))
+            on-error   (fn [type error]
+                         (.log js/console type error))]
+        (img->base64 path on-success on-error))))))
 
 (handlers/register-handler-fx
-  :profile/send-transaction
-  [re-frame/trim-v]
-  (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
-    (let [send-command (get-in contacts chat-const/send-command-ref)]
-      (handlers-macro/merge-fx cofx
-                         (chat-events/start-chat chat-id {:navigation-replace? true})
-                         (input-events/select-chat-input-command send-command nil true)))))
+ :profile/send-transaction
+ [re-frame/trim-v]
+ (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
+   (let [send-command (get-in contacts chat-const/send-command-ref)]
+     (handlers-macro/merge-fx cofx
+                              (chat-events/start-chat chat-id {:navigation-replace? true})
+                              (input-events/select-chat-input-command send-command nil true)))))
 
 (defn get-current-account [db]
   (:account/account db))
@@ -42,18 +42,18 @@
   (spec/valid? :profile/name name))
 
 (handlers/register-handler-fx
-  :my-profile/update-name
-  (fn [{:keys [db]} [_ name]]
-    {:db (-> db
-             (assoc-in [:my-profile/profile :valid-name?] (valid-name? name))
-             (assoc-in [:my-profile/profile :name] name))}))
+ :my-profile/update-name
+ (fn [{:keys [db]} [_ name]]
+   {:db (-> db
+            (assoc-in [:my-profile/profile :valid-name?] (valid-name? name))
+            (assoc-in [:my-profile/profile :name] name))}))
 
 (handlers/register-handler-fx
-  :my-profile/update-picture
-  (fn [{:keys [db]} [this-event base64-image]]
-    (if base64-image
-      {:db (assoc-in db [:my-profile/profile :photo-path] (str "data:image/jpeg;base64," base64-image))}
-      {:open-image-picker this-event})))
+ :my-profile/update-picture
+ (fn [{:keys [db]} [this-event base64-image]]
+   (if base64-image
+     {:db (assoc-in db [:my-profile/profile :photo-path] (str "data:image/jpeg;base64," base64-image))}
+     {:open-image-picker this-event})))
 
 (defn clean-name [db edit-view]
   (let [name (get-in db [edit-view :name])]
@@ -65,51 +65,51 @@
   {:db (dissoc db :my-profile/profile :my-profile/default-name :my-profile/editing?)})
 
 (handlers/register-handler-fx
-  :my-profile/start-editing-profile
-  (fn [{:keys [db]} []]
-    {:db (assoc db :my-profile/editing? true)}))
+ :my-profile/start-editing-profile
+ (fn [{:keys [db]} []]
+   {:db (assoc db :my-profile/editing? true)}))
 
 (handlers/register-handler-fx
-  :my-profile/save-profile
-  (fn [{:keys [db now] :as cofx} _]
-    (let [{:keys [photo-path]} (:my-profile/profile db)
-          cleaned-name (clean-name db :my-profile/profile)
-          cleaned-edit (merge {:name         cleaned-name
-                               :last-updated now}
-                              (if photo-path
-                                {:photo-path photo-path}))]
-      (handlers-macro/merge-fx cofx
-                         (clear-profile)
-                         (accounts.utils/account-update cleaned-edit)))))
+ :my-profile/save-profile
+ (fn [{:keys [db now] :as cofx} _]
+   (let [{:keys [photo-path]} (:my-profile/profile db)
+         cleaned-name (clean-name db :my-profile/profile)
+         cleaned-edit (merge {:name         cleaned-name
+                              :last-updated now}
+                             (if photo-path
+                               {:photo-path photo-path}))]
+     (handlers-macro/merge-fx cofx
+                              (clear-profile)
+                              (accounts.utils/account-update cleaned-edit)))))
 
 (handlers/register-handler-fx
-  :group-chat-profile/start-editing
-  (fn [{:keys [db]} _]
-    {:db (assoc db :group-chat-profile/editing? true)}))
+ :group-chat-profile/start-editing
+ (fn [{:keys [db]} _]
+   {:db (assoc db :group-chat-profile/editing? true)}))
 
 (handlers/register-handler-fx
-  :group-chat-profile/save-profile
-  (fn [{:keys [db]} _]
-    (-> {:db db}
-        (update :db dissoc :group-chat-profile/editing?))))
+ :group-chat-profile/save-profile
+ (fn [{:keys [db]} _]
+   (-> {:db db}
+       (update :db dissoc :group-chat-profile/editing?))))
 
 (handlers/register-handler-fx
-  :my-profile/enter-two-random-words
-  (fn [{:keys [db]} []]
-    (let [{:keys [mnemonic]} (get-current-account db)
-          shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]
-      {:db (assoc db :my-profile/seed {:step :first-word
-                                       :first-word (first shuffled-mnemonic)
-                                       :second-word (second shuffled-mnemonic)})})))
+ :my-profile/enter-two-random-words
+ (fn [{:keys [db]} []]
+   (let [{:keys [mnemonic]} (get-current-account db)
+         shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]
+     {:db (assoc db :my-profile/seed {:step        :first-word
+                                      :first-word  (first shuffled-mnemonic)
+                                      :second-word (second shuffled-mnemonic)})})))
 
 (handlers/register-handler-fx
-  :my-profile/set-step
-  (fn [{:keys [db]} [_ step]]
-    {:db (update db :my-profile/seed assoc :step step :error nil :word nil)}))
+ :my-profile/set-step
+ (fn [{:keys [db]} [_ step]]
+   {:db (update db :my-profile/seed assoc :step step :error nil :word nil)}))
 
 (handlers/register-handler-fx
-  :my-profile/finish
-  (fn [{:keys [db] :as cofx} _]
-    (handlers-macro/merge-fx cofx
-                       {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                       (accounts.utils/account-update {:seed-backed-up? true}))))
+ :my-profile/finish
+ (fn [{:keys [db] :as cofx} _]
+   (handlers-macro/merge-fx cofx
+                            {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
+                            (accounts.utils/account-update {:seed-backed-up? true}))))

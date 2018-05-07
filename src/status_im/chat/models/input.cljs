@@ -109,9 +109,9 @@
         :args     (into [] (if (empty? seq-arguments)
                              (rest command-args)
                              seq-arguments))})))
-  ([{:keys [chats current-chat-id access-scope->commands-responses]
+  ([{:keys          [chats current-chat-id access-scope->commands-responses]
      :contacts/keys [contacts] :as db}]
-   (let [chat (get chats current-chat-id)
+   (let [chat    (get chats current-chat-id)
          account (:account/account db)]
      (selected-chat-command chat
                             (commands-model/commands-responses :command

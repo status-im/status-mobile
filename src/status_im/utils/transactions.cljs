@@ -27,21 +27,21 @@
 
 (defn- format-transaction [account {:keys [value timeStamp blockNumber hash from to gas gasPrice gasUsed nonce confirmations input]}]
   (let [inbound? (= (str "0x" account) to)]
-    {:value value
+    {:value         value
      ;; timestamp is in seconds, we convert it in ms
-     :timestamp (str timeStamp "000")
-     :symbol :ETH
-     :type (if inbound? :inbound :outbound)
-     :block blockNumber
-     :hash  hash
-     :from from
-     :to to
-     :gas-limit gas
-     :gas-price gasPrice
-     :gas-used gasUsed
-     :nonce nonce
+     :timestamp     (str timeStamp "000")
+     :symbol        :ETH
+     :type          (if inbound? :inbound :outbound)
+     :block         blockNumber
+     :hash          hash
+     :from          from
+     :to            to
+     :gas-limit     gas
+     :gas-price     gasPrice
+     :gas-used      gasUsed
+     :nonce         nonce
      :confirmations confirmations
-     :data input}))
+     :data          input}))
 
 (defn- format-transactions-response [response account]
   (->> response
@@ -54,4 +54,4 @@
 (defn get-transactions [network account on-success on-error]
   (http/get (get-transaction-url network account)
             #(on-success (format-transactions-response % account))
-             on-error))
+            on-error))

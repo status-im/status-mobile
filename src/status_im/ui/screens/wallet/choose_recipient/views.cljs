@@ -25,7 +25,7 @@
 
 (defn- viewfinder [{:keys [height width]} size]
   (let [height (cond-> height
-                   platform/iphone-x? (- 78))]
+                 platform/iphone-x? (- 78))]
     [react/view {:style styles/viewfinder-port}
      [react/view {:style (styles/viewfinder-translucent height width size :top)}]
      [react/view {:style (styles/viewfinder-translucent height width size :right)}]
@@ -47,24 +47,24 @@
   (letsubs [dimensions        (react/get-dimensions "window")
             camera-flashlight [:wallet.send/camera-flashlight]
             view              [:get :view-id]]
-    [react/view {:style styles/qr-code}
-     [status-bar/status-bar {:type :transparent}]
-     [toolbar-view camera-flashlight]
-     [react/text {:style               (styles/qr-code-text dimensions)
-                  :accessibility-label :scan-qr-code-with-wallet-address-text}
-      (i18n/label :t/scan-qr-code)]
-     [react/view {:style          styles/qr-container
-                  :pointer-events :none}
-      [react/with-activity-indicator
-       {}
-       [camera/camera {:style         styles/preview
-                       :aspect        :fill
-                       :captureAudio  false
-                       :torchMode     (camera/set-torch camera-flashlight)
-                       :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}]]
-      [viewfinder dimensions (size dimensions)]]
-     [bottom-buttons/bottom-button
-      [button/button {:disabled?           false
-                      :on-press            #(re-frame/dispatch [:navigate-back])
-                      :accessibility-label :cancel-button}
-       (i18n/label :t/cancel)]]]))
+           [react/view {:style styles/qr-code}
+            [status-bar/status-bar {:type :transparent}]
+            [toolbar-view camera-flashlight]
+            [react/text {:style               (styles/qr-code-text dimensions)
+                         :accessibility-label :scan-qr-code-with-wallet-address-text}
+             (i18n/label :t/scan-qr-code)]
+            [react/view {:style          styles/qr-container
+                         :pointer-events :none}
+             [react/with-activity-indicator
+              {}
+              [camera/camera {:style         styles/preview
+                              :aspect        :fill
+                              :captureAudio  false
+                              :torchMode     (camera/set-torch camera-flashlight)
+                              :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}]]
+             [viewfinder dimensions (size dimensions)]]
+            [bottom-buttons/bottom-button
+             [button/button {:disabled?           false
+                             :on-press            #(re-frame/dispatch [:navigate-back])
+                             :accessibility-label :cancel-button}
+              (i18n/label :t/cancel)]]]))

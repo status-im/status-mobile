@@ -50,42 +50,42 @@
 
 (defview login []
   (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]
-            can-navigate-back? [:can-navigate-back?]
+            can-navigate-back?  [:can-navigate-back?]
             password-text-input (atom nil)]
-    [react/keyboard-avoiding-view {:style ast/accounts-view}
-     [status-bar/status-bar]
-     [login-toolbar can-navigate-back?]
-     [components.common/separator]
-     [react/view styles/login-view
-      [react/view styles/login-badge-container
-       [account-login-badge photo-path name]
-       [react/view styles/password-container
-        [text-input/text-input-with-label
-         {:label             (i18n/label :t/password)
-          :placeholder       (i18n/label :t/password)
-          :ref               #(reset! password-text-input %)
-          :auto-focus        can-navigate-back? ;;this needed because keyboard overlays testfairy alert
-          :on-submit-editing #(login-account @password-text-input address password)
-          :on-change-text    #(do
-                                (re-frame/dispatch [:set-in [:accounts/login :password] %])
-                                (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
-          :secure-text-entry true
-          :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]]]
-     [react/view styles/processing-view
-      (when processing
-        [components/activity-indicator {:animating true}])
-      (when processing
-        [react/text {:style styles/sign-you-in}
-         (i18n/label :t/sign-you-in)])]
-     (when-not processing
-       [react/view {:style styles/bottom-button-container}
-        (when-not can-navigate-back?
-          [components.common/bottom-button
-           {:label    (i18n/label :t/other-accounts)
-            :on-press #(re-frame/dispatch [:navigate-to-clean :accounts])}])
-        [react/view {:style {:flex 1}}]
-        [components.common/bottom-button
-         {:forward?  true
-          :label     (i18n/label :t/sign-in)
-          :disabled? (not (spec/valid? ::db/password password))
-          :on-press  #(login-account @password-text-input address password)}]])]))
+           [react/keyboard-avoiding-view {:style ast/accounts-view}
+            [status-bar/status-bar]
+            [login-toolbar can-navigate-back?]
+            [components.common/separator]
+            [react/view styles/login-view
+             [react/view styles/login-badge-container
+              [account-login-badge photo-path name]
+              [react/view styles/password-container
+               [text-input/text-input-with-label
+                {:label             (i18n/label :t/password)
+                 :placeholder       (i18n/label :t/password)
+                 :ref               #(reset! password-text-input %)
+                 :auto-focus        can-navigate-back?             ;;this needed because keyboard overlays testfairy alert
+                 :on-submit-editing #(login-account @password-text-input address password)
+                 :on-change-text    #(do
+                                       (re-frame/dispatch [:set-in [:accounts/login :password] %])
+                                       (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
+                 :secure-text-entry true
+                 :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]]]
+            [react/view styles/processing-view
+             (when processing
+               [components/activity-indicator {:animating true}])
+             (when processing
+               [react/text {:style styles/sign-you-in}
+                (i18n/label :t/sign-you-in)])]
+            (when-not processing
+              [react/view {:style styles/bottom-button-container}
+               (when-not can-navigate-back?
+                 [components.common/bottom-button
+                  {:label    (i18n/label :t/other-accounts)
+                   :on-press #(re-frame/dispatch [:navigate-to-clean :accounts])}])
+               [react/view {:style {:flex 1}}]
+               [components.common/bottom-button
+                {:forward?  true
+                 :label     (i18n/label :t/sign-in)
+                 :disabled? (not (spec/valid? ::db/password password))
+                 :on-press  #(login-account @password-text-input address password)}]])]))

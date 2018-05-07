@@ -16,7 +16,6 @@
    :align-items        :center
    :padding-horizontal 12})
 
-
 (defn- border [position]
   (let [radius (if platform/ios? 8 4)]
     (case position
@@ -53,23 +52,22 @@
   {:android {:opacity 0.4}
    :ios     {:opacity 0.6}})
 
-
 (defstyle button-borders
   {:border-radius 8
    :ios           {;; Border radius is ignored with transparent background unless overflow "hidden" is used
                    ;; See https://github.com/facebook/react-native/issues/13760
-                   :overflow      :hidden}})
+                   :overflow :hidden}})
 
 (def primary-button
   (merge
-    button-borders
-    {:background-color styles/color-blue4}))
+   button-borders
+   {:background-color styles/color-blue4}))
 
 (def primary-button-text {:color styles/color-white})
 
 (def secondary-button
   (merge
-    button-borders
-    {:background-color styles/color-blue4-transparent}))
+   button-borders
+   {:background-color styles/color-blue4-transparent}))
 
 (def secondary-button-text {:color styles/color-blue4})

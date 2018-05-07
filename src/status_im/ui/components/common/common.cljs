@@ -48,14 +48,14 @@
 
 (defview network-info [{:keys [text-color]}]
   (letsubs [network-id [:get-network-id]]
-    [react/view
-     [react/view styles/network-container
-      [react/view styles/network-icon
-       [vector-icons/icon :icons/network {:color :white}]]
-      [react/text {:style (styles/network-text text-color)}
-       (if (ethereum/testnet? network-id)
-         (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
-         (i18n/label :t/mainnet-text))]]]))
+           [react/view
+            [react/view styles/network-container
+             [react/view styles/network-icon
+              [vector-icons/icon :icons/network {:color :white}]]
+             [react/text {:style (styles/network-text text-color)}
+              (if (ethereum/testnet? network-id)
+                (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
+                (i18n/label :t/mainnet-text))]]]))
 
 (defn logo
   ([] (logo nil))
@@ -91,12 +91,12 @@
 (defn image-contain [_ _]
   (let [content-width (reagent/atom 0)]
     (reagent/create-class
-      {:reagent-render
-       (fn [{:keys [container-style style]} {:keys [image width height]}]
-         [react/view {:style     (merge styles/image-contain container-style)
-                      :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
-          [react/image {:source      image
-                        :resize-mode :contain
-                        :style       (merge style
-                                            {:width  @content-width
-                                             :height (/ (* @content-width height) width)})}]])})))
+     {:reagent-render
+      (fn [{:keys [container-style style]} {:keys [image width height]}]
+        [react/view {:style     (merge styles/image-contain container-style)
+                     :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+         [react/image {:source      image
+                       :resize-mode :contain
+                       :style       (merge style
+                                           {:width  @content-width
+                                            :height (/ (* @content-width height) width)})}]])})))

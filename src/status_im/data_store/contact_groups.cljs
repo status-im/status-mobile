@@ -6,29 +6,29 @@
   (:refer-clojure :exclude [exists?]))
 
 (re-frame/reg-cofx
-  :data-store/get-all-contact-groups
-  (fn [cofx _]
-    (assoc cofx :all-contact-groups (into {}
-                                          (map (juxt :group-id identity))
-                                          (data-store/get-all-as-list)))))
+ :data-store/get-all-contact-groups
+ (fn [cofx _]
+   (assoc cofx :all-contact-groups (into {}
+                                         (map (juxt :group-id identity))
+                                         (data-store/get-all-as-list)))))
 
 (re-frame/reg-fx
-  :data-store/save-contact-group
-  (fn [{:keys [group-id] :as group}]
-    (async/go (async/>! core/realm-queue #(data-store/save group (data-store/exists? group-id))))))
+ :data-store/save-contact-group
+ (fn [{:keys [group-id] :as group}]
+   (async/go (async/>! core/realm-queue #(data-store/save group (data-store/exists? group-id))))))
 
 (re-frame/reg-fx
-  :data-store/save-contact-groups
-  (fn [groups]
-    (doseq [{:keys [group-id] :as group} groups]
-      (async/go (async/>! core/realm-queue #(data-store/save group (data-store/exists? group-id)))))))
+ :data-store/save-contact-groups
+ (fn [groups]
+   (doseq [{:keys [group-id] :as group} groups]
+     (async/go (async/>! core/realm-queue #(data-store/save group (data-store/exists? group-id)))))))
 
 (re-frame/reg-fx
-  :data-store/save-contact-group-property
-  (fn [[group-id property-name value]]
-    (async/go (async/>! core/realm-queue #(data-store/save-property group-id property-name value)))))
+ :data-store/save-contact-group-property
+ (fn [[group-id property-name value]]
+   (async/go (async/>! core/realm-queue #(data-store/save-property group-id property-name value)))))
 
 (re-frame/reg-fx
-  :data-store/add-contacts-to-contact-group
-  (fn [[group-id contacts]]
-    (async/go (async/>! core/realm-queue #(data-store/add-contacts group-id contacts)))))
+ :data-store/add-contacts-to-contact-group
+ (fn [[group-id contacts]]
+   (async/go (async/>! core/realm-queue #(data-store/add-contacts group-id contacts)))))

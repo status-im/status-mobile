@@ -28,18 +28,18 @@
 (defn request-permissions []
   (-> (.requestPermissions (.-default rn/react-native-fcm))
       (.then
-        (fn [_]
-          (log/debug "notifications-granted")
-          (dispatch [:request-notifications-granted {}]))
-        (fn [_]
-          (log/debug "notifications-denied")
-          (dispatch [:request-notifications-denied {}])))))
+       (fn [_]
+         (log/debug "notifications-granted")
+         (dispatch [:request-notifications-granted {}]))
+       (fn [_]
+         (log/debug "notifications-denied")
+         (dispatch [:request-notifications-denied {}])))))
 
 (defn get-fcm-token []
-    (-> (.getFCMToken (object/get rn/react-native-fcm "default"))
-        (.then (fn [x]
-                 (log/debug "get-fcm-token: " x)
-                 (dispatch [:update-fcm-token x])))))
+  (-> (.getFCMToken (object/get rn/react-native-fcm "default"))
+      (.then (fn [x]
+               (log/debug "get-fcm-token: " x)
+               (dispatch [:update-fcm-token x])))))
 
 (defn on-refresh-fcm-token []
   (.on (.-default rn/react-native-fcm)
@@ -58,5 +58,5 @@
                data  (select-keys event [:sum :msg])
                aps   (:aps event)]
            (log/debug "on-notification event: " (pr-str event))
-           (log/debug "on-notification aps: "   (pr-str aps))
-           (log/debug "on-notification data: "  (pr-str data))))))
+           (log/debug "on-notification aps: " (pr-str aps))
+           (log/debug "on-notification data: " (pr-str data))))))

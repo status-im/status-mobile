@@ -50,14 +50,14 @@
 
 (views/defview tab [view-id content active? accessibility-label count-subscription]
   (views/letsubs [count [count-subscription]]
-    [react/touchable-highlight
-     (cond-> {:style    common.styles/flex
-              :disabled active?
-              :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
-       accessibility-label
-       (assoc :accessibility-label accessibility-label))
-     [react/view
-      [content active? count]]]))
+                 [react/touchable-highlight
+                  (cond-> {:style    common.styles/flex
+                           :disabled active?
+                           :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
+                    accessibility-label
+                    (assoc :accessibility-label accessibility-label))
+                  [react/view
+                   [content active? count]]]))
 
 (defn tabs [current-view-id]
   [react/view {:style styles/tabs-container}
@@ -67,32 +67,32 @@
 (views/defview main-tabs []
   (views/letsubs [view-id          [:get :view-id]
                   tab-bar-visible? [:tab-bar-visible?]]
-    [react/view common.styles/flex
-     [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
-     [react/view common.styles/main-container
+                 [react/view common.styles/flex
+                  [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
+                  [react/view common.styles/main-container
 
-      [react/with-activity-indicator
-       {:enabled? (= :home view-id)
-        :preview  [react/view {}]}
-       [react/navigation-wrapper
-        {:component    home/home
-         :views        :home
-         :current-view view-id}]]
+                   [react/with-activity-indicator
+                    {:enabled? (= :home view-id)
+                     :preview  [react/view {}]}
+                    [react/navigation-wrapper
+                     {:component    home/home
+                      :views        :home
+                      :current-view view-id}]]
 
-      [react/with-activity-indicator
-       {:enabled? (= :wallet view-id)
-        :preview  [react/view {}]}
-       [react/navigation-wrapper
-        {:component    wallet/wallet
-         :views        :wallet
-         :current-view view-id}]]
+                   [react/with-activity-indicator
+                    {:enabled? (= :wallet view-id)
+                     :preview  [react/view {}]}
+                    [react/navigation-wrapper
+                     {:component    wallet/wallet
+                      :views        :wallet
+                      :current-view view-id}]]
 
-      [react/with-activity-indicator
-       {:enabled? (= :my-profile view-id)
-        :preview  [react/view {}]}
-       [react/navigation-wrapper
-        {:component    profile.user/my-profile
-         :views        :my-profile
-         :current-view view-id}]]
-      (when tab-bar-visible?
-        [tabs view-id])]]))
+                   [react/with-activity-indicator
+                    {:enabled? (= :my-profile view-id)
+                     :preview  [react/view {}]}
+                    [react/navigation-wrapper
+                     {:component    profile.user/my-profile
+                      :views        :my-profile
+                      :current-view view-id}]]
+                   (when tab-bar-visible?
+                     [tabs view-id])]]))

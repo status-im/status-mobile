@@ -18,10 +18,10 @@
   (when-let [subscriptions (and bot (get-in contacts (concat [bot :subscriptions] [path])))]
     {:call-jail-function-n
      (for [[sub-name sub-params] subscriptions]
-       {:chat-id  bot
-        :function :subscription
-        :parameters {:name          sub-name
-                     :subscriptions (subscription-values sub-params (get bot-db bot))}
+       {:chat-id                bot
+        :function               :subscription
+        :parameters             {:name          sub-name
+                                 :subscriptions (subscription-values sub-params (get bot-db bot))}
         :callback-event-creator (fn [jail-response]
                                   [::calculated-subscription
                                    {:bot    bot
@@ -88,19 +88,19 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
-  :set-in-bot-db
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [params]]
-    (set-in-bot-db db params)))
+ :set-in-bot-db
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [params]]
+   (set-in-bot-db db params)))
 
 (handlers/register-handler-db
-  :update-bot-db
-  [re-frame/trim-v]
-  (fn [db [params]]
-    (update-bot-db db params)))
+ :update-bot-db
+ [re-frame/trim-v]
+ (fn [db [params]]
+   (update-bot-db db params)))
 
 (handlers/register-handler-db
-  ::calculated-subscription
-  [re-frame/trim-v]
-  (fn [db [params]]
-    (calculated-subscription db params)))
+ ::calculated-subscription
+ [re-frame/trim-v]
+ (fn [db [params]]
+   (calculated-subscription db params)))

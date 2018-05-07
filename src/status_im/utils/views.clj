@@ -63,16 +63,16 @@
                          (into {}))
                    {:display-name (name '~n)
                     :reagent-render
-                                  (fn ~params
-                                    (let [~@vars-bindings]
-                                      ~body))})))))))
+                    (fn ~params
+                      (let [~@vars-bindings]
+                        ~body))})))))))
 
 (defn check-view [all {:keys [view views component hide? parent]}]
-  (let [parent           (or parent :root)
-        views            (or views #{view})
-        comp             {:views     views
-                          :component component
-                          :hide?     hide?}]
+  (let [parent (or parent :root)
+        views  (or views #{view})
+        comp   {:views     views
+                :component component
+                :hide?     hide?}]
     (-> all
         (assoc-in [:components views] comp)
         (update-in [:view->children parent]
@@ -107,8 +107,8 @@
          (fn [[_ children]]
            (not (nil? children)))
          (map (fn [child]
-                       [child (get view->children child)])
-                     (reduce clojure.set/union children)))))
+                [child (get view->children child)])
+              (reduce clojure.set/union children)))))
 
 (defn -generate-component
   [{:keys [components view->children] :as config} view-sym component-name]
@@ -132,71 +132,70 @@
                  ~(assoc (get components child) :current-view view-sym)])
              children)
       ~@(map (fn [[component-name children]]
-                  `[status-im.ui.components.react/navigation-wrapper
-                    {:component    [status-im.ui.components.react/with-empty-preview
-                                    ~(-generate-component config view-sym component-name)]
-                     :views        ~(conj
-                                     (reduce
-                                      clojure.set/union
-                                      (map (fn [child]
-                                             (-get-all-views config child))
-                                           children))
-                                     component-name)
-                     :hide?        true
-                     :current-view ~view-sym}])
-                  grandchildren)]))
+               `[status-im.ui.components.react/navigation-wrapper
+                 {:component    [status-im.ui.components.react/with-empty-preview
+                                 ~(-generate-component config view-sym component-name)]
+                  :views        ~(conj
+                                  (reduce
+                                   clojure.set/union
+                                   (map (fn [child]
+                                          (-get-all-views config child))
+                                        children))
+                                  component-name)
+                  :hide?        true
+                  :current-view ~view-sym}])
+             grandchildren)]))
 
 (defn -compile-views [n views]
   (let [view-sym (gensym "view-id")]
     `(defview ~n []
        (letsubs [~view-sym [:get :view-id]]
-        ~(let [tree (-build-tree views)]
-           (-generate-component tree view-sym :root))))))
+                ~(let [tree (-build-tree views)]
+                   (-generate-component tree view-sym :root))))))
 
 (defmacro compile-views
   [n views]
   (-compile-views n views))
 
-
 (comment
 
- (-compile-views
-  'root-view
-  '[{:views     #{:home :wallet :my-profile}
-     :component main-tabs}
+  (-compile-views
+   'root-view
+   '[{:views     #{:home :wallet :my-profile}
+      :component main-tabs}
 
-    {:view      :chat
-     :hide?     (not android?)
-     :component chat}
+     {:view      :chat
+      :hide?     (not android?)
+      :component chat}
 
-    {:view      :wallet-send-transaction
-     :parent    :wallet
-     :component send-transaction}
+     {:view      :wallet-send-transaction
+      :parent    :wallet
+      :component send-transaction}
 
-    {:view      :wallet-request-transaction
-     :parent    :wallet
-     :component request-transaction}
+     {:view      :wallet-request-transaction
+      :parent    :wallet
+      :component request-transaction}
 
-    {:view      :choose-recipient
-     :parent    :wallet-send-transaction
-     :component choose-recipient}
+     {:view      :choose-recipient
+      :parent    :wallet-send-transaction
+      :component choose-recipient}
 
-    {:view      :wallet-transaction-sent
-     :parent    :wallet-send-transaction
-     :component transaction-sent}
+     {:view      :wallet-transaction-sent
+      :parent    :wallet-send-transaction
+      :component transaction-sent}
 
-    {:views     #{:transactions-history :unsigned-transactions}
-     :parent    :wallet
-     :component wallet-transactions/transactions}
+     {:views     #{:transactions-history :unsigned-transactions}
+      :parent    :wallet
+      :component wallet-transactions/transactions}
 
-    {:view      :edit-my-profile
-     :parent    :profile
-     :component edit-my-profile}])
+     {:view      :edit-my-profile
+      :parent    :profile
+      :component edit-my-profile}])
 
- (status-im.utils.views/defview
-   root-view
-   []
-   (status-im.utils.views/letsubs
+  (status-im.utils.views/defview
+    root-view
+    []
+    (status-im.utils.views/letsubs
      [view-id76826 [:get :view-id]]
      [status-im.ui.components.react/view
       {:flex 1}

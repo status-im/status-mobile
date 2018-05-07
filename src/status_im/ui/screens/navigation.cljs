@@ -42,7 +42,7 @@
 
 (defn- -preload-data! [{:keys [was-modal?] :as db} & args]
   (if was-modal?
-    (dissoc db :was-modal?) ;;TODO check how it worked with this bug
+    (dissoc db :was-modal?)                                 ;;TODO check how it worked with this bug
     (apply preload-data! db args)))
 
 (defn navigate-to
@@ -60,52 +60,52 @@
 ;; event handlers
 
 (handlers/register-handler-db
-  :navigate-to
-  (re-frame/enrich preload-data!)
-  (fn [db [_ & params]]
-    (apply navigate-to db params)))
+ :navigate-to
+ (re-frame/enrich preload-data!)
+ (fn [db [_ & params]]
+   (apply navigate-to db params)))
 
 (handlers/register-handler-db
-  :navigate-to-modal
-  (re-frame/enrich preload-data!)
-  (fn [db [_ modal-view]]
-    (assoc db :modal modal-view)))
+ :navigate-to-modal
+ (re-frame/enrich preload-data!)
+ (fn [db [_ modal-view]]
+   (assoc db :modal modal-view)))
 
 (handlers/register-handler-fx
-  :navigation-replace
-  (re-frame/enrich preload-data!)
-  (fn [cofx [_ view-id]]
-    (replace-view view-id cofx)))
+ :navigation-replace
+ (re-frame/enrich preload-data!)
+ (fn [cofx [_ view-id]]
+   (replace-view view-id cofx)))
 
 (handlers/register-handler-db
-  :navigate-back
-  (re-frame/enrich -preload-data!)
-  (fn [{:keys [navigation-stack view-id modal] :as db} _]
-    (cond
-      modal (assoc db :modal nil
-                   :was-modal? true)
-      (>= 1 (count navigation-stack)) db
+ :navigate-back
+ (re-frame/enrich -preload-data!)
+ (fn [{:keys [navigation-stack view-id modal] :as db} _]
+   (cond
+     modal (assoc db :modal nil
+                  :was-modal? true)
+     (>= 1 (count navigation-stack)) db
 
-      :else
-      (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
-            first-in-stack (first navigation-stack)]
-        (if (= view-id first-in-stack)
-          (-> db
-              (assoc :view-id previous-view-id)
-              (assoc :navigation-stack navigation-stack'))
-          (assoc db :view-id first-in-stack))))))
-
-(handlers/register-handler-fx
-  :navigate-to-clean
-  (fn [cofx [_ view-id params]]
-    (navigate-to-clean view-id cofx params)))
+     :else
+     (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
+           first-in-stack (first navigation-stack)]
+       (if (= view-id first-in-stack)
+         (-> db
+             (assoc :view-id previous-view-id)
+             (assoc :navigation-stack navigation-stack'))
+         (assoc db :view-id first-in-stack))))))
 
 (handlers/register-handler-fx
-  :navigate-to-tab
-  (re-frame/enrich preload-data!)
-  (fn [{:keys [db] :as cofx} [_ view-id]]
-    (handlers-macro/merge-fx cofx
-                       {:db (-> db
-                                (assoc :prev-tab-view-id (:view-id db))
-                                (assoc :prev-view-id (:view-id db)))}
-                       (navigate-to-clean view-id))))
+ :navigate-to-clean
+ (fn [cofx [_ view-id params]]
+   (navigate-to-clean view-id cofx params)))
+
+(handlers/register-handler-fx
+ :navigate-to-tab
+ (re-frame/enrich preload-data!)
+ (fn [{:keys [db] :as cofx} [_ view-id]]
+   (handlers-macro/merge-fx cofx
+                            {:db (-> db
+                                     (assoc :prev-tab-view-id (:view-id db))
+                                     (assoc :prev-view-id (:view-id db)))}
+                            (navigate-to-clean view-id))))

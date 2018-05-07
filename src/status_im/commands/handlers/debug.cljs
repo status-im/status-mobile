@@ -34,7 +34,6 @@
               (catch js/Error e
                 (log/debug "Error: " e))))))
 
-
 ;;;; Specific debug methods
 ;; TODO: there are still a lot of dispatch calls here. we can remove or restructure most of them,
 ;; but to do this we need to also rewrite a lot of already existing functions
@@ -115,7 +114,6 @@
       (respond {:type :error
                 :text "No log messages found."}))))
 
-
 ;;;; FX
 
 (re-frame/reg-fx
@@ -153,7 +151,6 @@
        (respond {:type :error :text (str "Error: " e)})
        (log/debug "Error: " e)))))
 
-
 ;;;; Handlers
 
 (handlers/register-handler-fx
@@ -175,7 +172,7 @@
 
 ;; TODO(janherich) once `contact-changed` fn is refactored, get rid of this unnecessary event
 (handlers/register-handler-fx
-  ::load-commands
-  [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
-  (fn [cofx [contact]]
-    (loading-events/load-commands-for-bot cofx {} contact)))
+ ::load-commands
+ [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
+ (fn [cofx [contact]]
+   (loading-events/load-commands-for-bot cofx {} contact)))

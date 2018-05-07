@@ -42,7 +42,7 @@
 
 (views/defview main-tabs []
   (views/letsubs [current-tab [:get :left-view-id]]
-    [react/view
-     [react/view {:style tabs.styles/tabs-container}
-      (for [[index {:keys [content view-id]}] tabs-list-indexed]
-        ^{:key index} [tab index content view-id (= current-tab view-id)])]]))
+                 [react/view
+                  [react/view {:style tabs.styles/tabs-container}
+                   (for [[index {:keys [content view-id]}] tabs-list-indexed]
+                     ^{:key index} [tab index content view-id (= current-tab view-id)])]]))

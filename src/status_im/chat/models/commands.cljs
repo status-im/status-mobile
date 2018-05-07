@@ -19,17 +19,17 @@
 (defn commands-responses
   "Returns map of commands/responses eligible for current chat."
   [type access-scope->commands-responses {:keys [address]} {:keys [contacts group-chat public?]} all-contacts]
-  (let [dapps?             (some (partial is-dapp? all-contacts) contacts)
-        humans?            (some (comp not (partial is-dapp? all-contacts)) contacts)
-        basic-access-scope (cond-> #{}
-                             group-chat (conj :group-chats)
-                             (not group-chat) (conj :personal-chats)
-                             address (conj :registered)
-                             (not address) (conj :anonymous)
-                             dapps? (conj :dapps)
-                             humans? (conj :humans)
-                             public? (conj :public-chats))
-        global-access-scope (conj basic-access-scope :global)
+  (let [dapps?               (some (partial is-dapp? all-contacts) contacts)
+        humans?              (some (comp not (partial is-dapp? all-contacts)) contacts)
+        basic-access-scope   (cond-> #{}
+                               group-chat (conj :group-chats)
+                               (not group-chat) (conj :personal-chats)
+                               address (conj :registered)
+                               (not address) (conj :anonymous)
+                               dapps? (conj :dapps)
+                               humans? (conj :humans)
+                               public? (conj :public-chats))
+        global-access-scope  (conj basic-access-scope :global)
         member-access-scopes (into #{} (map (partial conj basic-access-scope)) contacts)]
     (reduce (fn [acc access-scope]
               (merge acc (resolve-references all-contacts
@@ -41,5 +41,5 @@
   "Returns map of requested command responses eligible for current chat."
   [access-scope->commands-responses account chat contacts requests]
   (let [requested-responses (map :response requests)
-        responses-map (commands-responses :response access-scope->commands-responses account chat contacts)]
+        responses-map       (commands-responses :response access-scope->commands-responses account chat contacts)]
     (select-keys responses-map requested-responses)))

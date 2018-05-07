@@ -38,57 +38,57 @@
 
 (views/defview home-list-item [[home-item-id home-item]]
   (views/letsubs [swiped? [:delete-swipe-position home-item-id]]
-    (let [delete-action (if (:chat-id home-item) :remove-chat-and-navigate-home :remove-browser)
-          inner-item-view (if (:chat-id home-item)
-                            inner-item/home-list-chat-item-inner-view
-                            inner-item/home-list-browser-item-inner-view)
-          is-deletable? (not= (:chat-id home-item) constants/console-chat-id)
-          offset-x (animation/create-value (if (and is-deletable? swiped?) styles/delete-button-width 0))
-          swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width home-item-id swiped?)
-          swipe-pan-handler (if is-deletable? (responder/pan-handlers swipe-pan-responder) {})]
-      [react/view (assoc swipe-pan-handler :accessibility-label :chat-item)
-       [react/animated-view {:style {:flex 1 :right offset-x}}
-        [inner-item-view home-item]
-        (when is-deletable?
-          [react/touchable-highlight {:style    styles/delete-icon-highlight
-                                      :on-press #(do
-                                                  (re-frame/dispatch [:set-swipe-position home-item-id false])
-                                                  (re-frame/dispatch [delete-action home-item-id]))}
-           [react/view {:style styles/delete-icon-container}
-            [vector-icons/icon :icons/delete {:color colors/red}]]])]])))
+                 (let [delete-action       (if (:chat-id home-item) :remove-chat-and-navigate-home :remove-browser)
+                       inner-item-view     (if (:chat-id home-item)
+                                             inner-item/home-list-chat-item-inner-view
+                                             inner-item/home-list-browser-item-inner-view)
+                       is-deletable?       (not= (:chat-id home-item) constants/console-chat-id)
+                       offset-x            (animation/create-value (if (and is-deletable? swiped?) styles/delete-button-width 0))
+                       swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width home-item-id swiped?)
+                       swipe-pan-handler   (if is-deletable? (responder/pan-handlers swipe-pan-responder) {})]
+                   [react/view (assoc swipe-pan-handler :accessibility-label :chat-item)
+                    [react/animated-view {:style {:flex 1 :right offset-x}}
+                     [inner-item-view home-item]
+                     (when is-deletable?
+                       [react/touchable-highlight {:style    styles/delete-icon-highlight
+                                                   :on-press #(do
+                                                                (re-frame/dispatch [:set-swipe-position home-item-id false])
+                                                                (re-frame/dispatch [delete-action home-item-id]))}
+                        [react/view {:style styles/delete-icon-container}
+                         [vector-icons/icon :icons/delete {:color colors/red}]]])]])))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
 (views/defview welcome [view-id]
   (views/letsubs [handler #(re-frame/dispatch [:set-in [:accounts/create :show-welcome?] false])]
-    {:component-will-update  handler
-     :component-will-unmount handler}
-    [react/view {:style styles/welcome-view}
-     [react/view {:style styles/welcome-image-container}
-      [react/image {:source (:welcome-image resources/ui)
-                    :style  styles/welcome-image}]]
-     [react/text {:style styles/welcome-text}
-      (i18n/label :t/welcome-to-status)]
-     [react/view
-      [react/text {:style styles/welcome-text-description}
-       (i18n/label :t/welcome-to-status-description)]]]))
+                 {:component-will-update  handler
+                  :component-will-unmount handler}
+                 [react/view {:style styles/welcome-view}
+                  [react/view {:style styles/welcome-image-container}
+                   [react/image {:source (:welcome-image resources/ui)
+                                 :style  styles/welcome-image}]]
+                  [react/text {:style styles/welcome-text}
+                   (i18n/label :t/welcome-to-status)]
+                  [react/view
+                   [react/text {:style styles/welcome-text-description}
+                    (i18n/label :t/welcome-to-status-description)]]]))
 
 (views/defview home []
-  (views/letsubs [home-items [:home-items]
+  (views/letsubs [home-items    [:home-items]
                   show-welcome? [:get-in [:accounts/create :show-welcome?]]
-                  view-id [:get :view-id]]
-    [react/view styles/container
-     [toolbar show-welcome?]
-     (cond show-welcome?
-           [welcome view-id]
-           (empty? home-items)
-           [react/view styles/no-chats
-            [react/text {:style styles/no-chats-text}
-             (i18n/label :t/no-recent-chats)]]
-           :else
-           [list/flat-list {:data      home-items
-                            :key-fn    first
-                            :render-fn (fn [home-item]
-                                         [home-list-item home-item])}])
-     (when platform/android?
-       [home-action-button])
-     [connectivity/error-view]]))
+                  view-id       [:get :view-id]]
+                 [react/view styles/container
+                  [toolbar show-welcome?]
+                  (cond show-welcome?
+                        [welcome view-id]
+                        (empty? home-items)
+                        [react/view styles/no-chats
+                         [react/text {:style styles/no-chats-text}
+                          (i18n/label :t/no-recent-chats)]]
+                        :else
+                        [list/flat-list {:data      home-items
+                                         :key-fn    first
+                                         :render-fn (fn [home-item]
+                                                      [home-list-item home-item])}])
+                  (when platform/android?
+                    [home-action-button])
+                  [connectivity/error-view]]))

@@ -11,10 +11,10 @@
 
 (defn- build-gfy
   [public-key]
-  (let [gen               (rnd/rand-gen public-key)
-        first-adjective   (pick-random gen adjectives/data)
-        second-adjective  (pick-random gen adjectives/data)
-        animal            (pick-random gen animals/data)]
+  (let [gen              (rnd/rand-gen public-key)
+        first-adjective  (pick-random gen adjectives/data)
+        second-adjective (pick-random gen adjectives/data)
+        animal           (pick-random gen animals/data)]
     (str first-adjective " " second-adjective " " animal)))
 
 (def unknown-gfy "Unknown")

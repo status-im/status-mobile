@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def create-account-view
-  {:flex               1
+  {:flex             1
    :background-color colors/white})
 
 (def account-creating-view

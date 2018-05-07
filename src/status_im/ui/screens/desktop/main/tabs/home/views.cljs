@@ -9,14 +9,14 @@
   (let [unviewed-messages-count (re-frame/subscribe [:unviewed-messages-count chat-id])]
     (when (pos? @unviewed-messages-count)
       [react/view
-       [react/text {:font  :medium}
+       [react/text {:font :medium}
         @unviewed-messages-count]])))
 
 (views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat public? public-key]}]
   (let [name (str
-               (if public? "#" "")
-               (or name
-                   (gfycat/generate-gfy public-key)))]
+              (if public? "#" "")
+              (or name
+                  (gfycat/generate-gfy public-key)))]
     [react/view {:style {:padding 12 :background-color :white :flex-direction :row :align-items :center}}
      (when public?
        [icons/icon :icons/public-chat])
@@ -34,14 +34,14 @@
 
 (views/defview chat-list-view []
   (views/letsubs [home-items [:home-items]]
-    [react/view {:style {:flex 1 :background-color :white}}
-     [react/view {:style {:align-items :center :flex-direction :row :padding 11}}
-      [react/view {:style {:flex 1}}]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :new-contact])}
-       [icons/icon :icons/add]]]
-     [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/scroll-view
-      [react/view
-       (for [[index chat] (map-indexed vector home-items)]
-         ^{:key (str chat index)}
-         [chat-list-item chat])]]]))
+                 [react/view {:style {:flex 1 :background-color :white}}
+                  [react/view {:style {:align-items :center :flex-direction :row :padding 11}}
+                   [react/view {:style {:flex 1}}]
+                   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :new-contact])}
+                    [icons/icon :icons/add]]]
+                  [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
+                  [react/scroll-view
+                   [react/view
+                    (for [[index chat] (map-indexed vector home-items)]
+                      ^{:key (str chat index)}
+                      [chat-list-item chat])]]]))

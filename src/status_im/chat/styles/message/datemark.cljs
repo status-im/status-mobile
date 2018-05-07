@@ -6,9 +6,9 @@
    :align-items :center})
 
 (def datemark
-  {:opacity          0.5
-   :margin-top       16
-   :height           20})
+  {:opacity    0.5
+   :margin-top 16
+   :height     20})
 
 (def datemark-text
   {:color     common/color-gray4

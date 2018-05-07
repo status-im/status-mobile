@@ -14,9 +14,9 @@
    :padding-right (if options 16 40)})
 
 (defstyle profile-info-title
-  {:color       colors/gray
-   :font-size   14
-   :ios         {:letter-spacing -0.2}})
+  {:color     colors/gray
+   :font-size 14
+   :ios       {:letter-spacing -0.2}})
 
 (defstyle profile-setting-spacing
   {:ios     {:height 10}

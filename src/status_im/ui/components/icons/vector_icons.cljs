@@ -99,20 +99,20 @@
                 :accessibility-label accessibility-label}
     (if-let [icon-fn (get icons (normalize-property-name name))]
       (let [icon-vec (icon-fn
-                       (cond
-                         (keyword? color)
-                         (case color
-                           :dark styles/icon-dark-color
-                           :gray styles/icon-gray-color
-                           :blue styles/color-light-blue
-                           :active styles/color-blue4
-                           :white styles/color-white
-                           :red styles/icon-red-color
-                           styles/icon-dark-color)
-                         (string? color)
-                         color
-                         :else
-                         styles/icon-dark-color))]
+                      (cond
+                        (keyword? color)
+                        (case color
+                          :dark styles/icon-dark-color
+                          :gray styles/icon-gray-color
+                          :blue styles/color-light-blue
+                          :active styles/color-blue4
+                          :white styles/color-white
+                          :red styles/icon-red-color
+                          styles/icon-dark-color)
+                        (string? color)
+                        color
+                        :else
+                        styles/icon-dark-color))]
         (if width
           (update icon-vec 1 assoc :width width :height height)
           icon-vec))

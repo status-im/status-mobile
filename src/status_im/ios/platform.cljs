@@ -21,13 +21,13 @@
     (and (= width x-width) (= height x-height))))
 
 (def platform-specific
-  {:fonts                        fonts
-   :tabs                         {:tab-shadows? false}
-   :chats                        {:action-button?       false
-                                  :new-chat-in-toolbar? true
-                                  :render-separator?    true}
-   :contacts                     {:action-button?          false
-                                  :new-contact-in-toolbar? true}
-   :group-block-shadows?         false
-   :discover                     {:uppercase-subtitles? true}
-   :status-bar-default-height    (if (iphone-x-dimensions?) 0 20)})
+  {:fonts                     fonts
+   :tabs                      {:tab-shadows? false}
+   :chats                     {:action-button?       false
+                               :new-chat-in-toolbar? true
+                               :render-separator?    true}
+   :contacts                  {:action-button?          false
+                               :new-contact-in-toolbar? true}
+   :group-block-shadows?      false
+   :discover                  {:uppercase-subtitles? true}
+   :status-bar-default-height (if (iphone-x-dimensions?) 0 20)})

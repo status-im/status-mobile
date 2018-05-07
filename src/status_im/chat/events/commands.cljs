@@ -11,20 +11,21 @@
 (defn- generate-context
   "Generates context for jail call"
   [current-account-id chat-id group-chat? to]
-  (merge {:platform     platform/os
-          :from         current-account-id
-          :to           to
-          :chat         {:chat-id    chat-id
-                         :group-chat (boolean group-chat?)}}
+  (merge {:platform platform/os
+          :from     current-account-id
+          :to       to
+          :chat     {:chat-id    chat-id
+                     :group-chat (boolean group-chat?)}}
          i18n/delimeters))
 
 (defn request-command-message-data
   "Requests command message data from jail"
   [{:contacts/keys [contacts] :as db}
    {{:keys [command command-scope-bitmask bot params type]} :content
-    :keys [chat-id group-id] :as message}
+    :keys                                                   [chat-id group-id] :as message}
    {:keys [data-type] :as opts}]
-  (if-not (get contacts bot) ;; bot is not even in contacts, do nothing
+  ;; bot is not even in contacts, do nothing
+  (if-not (get contacts bot)
     {:db db}
     (if (get-in contacts [bot :jail-loaded?])
       (let [path        [(if (= :response (keyword type)) :responses :commands)
@@ -47,24 +48,24 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
-  ::jail-command-data-response
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [chat-id]} {:keys [proceed-event-creator]}]]
-    (when proceed-event-creator
-      {:dispatch (proceed-event-creator returned)})))
+ ::jail-command-data-response
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [chat-id]} {:keys [proceed-event-creator]}]]
+   (when proceed-event-creator
+     {:dispatch (proceed-event-creator returned)})))
 
 (handlers/register-handler-fx
-  :request-command-message-data
-  [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
-  (fn [{:keys [db]} [message opts]]
-    (request-command-message-data db message opts)))
+ :request-command-message-data
+ [re-frame/trim-v (re-frame/inject-cofx :data-store/get-local-storage-data)]
+ (fn [{:keys [db]} [message opts]]
+   (request-command-message-data db message opts)))
 
 (handlers/register-handler-fx
-  :execute-command-immediately
-  [re-frame/trim-v]
-  (fn [_ [{command-name :name}]]
-    (case (keyword command-name)
-      :grant-permissions
-      {:dispatch [:request-permissions {:permissions [:read-external-storage]
-                                        :on-allowed  #(re-frame/dispatch [:initialize-geth])}]}
-      (log/debug "ignoring command: " command-name))))
+ :execute-command-immediately
+ [re-frame/trim-v]
+ (fn [_ [{command-name :name}]]
+   (case (keyword command-name)
+     :grant-permissions
+     {:dispatch [:request-permissions {:permissions [:read-external-storage]
+                                       :on-allowed  #(re-frame/dispatch [:initialize-geth])}]}
+     (log/debug "ignoring command: " command-name))))

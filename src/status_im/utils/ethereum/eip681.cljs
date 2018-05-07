@@ -61,7 +61,7 @@
   "Takes a map as returned by `parse-uri` and returns value as BigNumber"
   (when (string? s)
     (let [eth? (string/ends-with? s "ETH")
-          n (money/bignumber (string/replace s "ETH" ""))]
+          n    (money/bignumber (string/replace s "ETH" ""))]
       (if eth? (.times n 1e18) n))))
 
 (defn extract-request-details [{:keys [value address chain-id function-name function-arguments]}]

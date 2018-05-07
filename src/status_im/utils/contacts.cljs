@@ -9,7 +9,7 @@
    :whisper-identity whisper-id})
 
 (defn public-key->address [public-key]
-  (let [length (count public-key)
+  (let [length         (count public-key)
         normalized-key (case length
                          132 (subs public-key 4)
                          130 (subs public-key 2)

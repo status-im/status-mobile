@@ -15,14 +15,14 @@
 
 (views/defview group-name-view []
   (views/letsubs [new-group-name [:get :new-chat-name]]
-    [react/view add-new.styles/input-container
-     [react/text-input
-      {:auto-focus          true
-       :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
-       :default-value       new-group-name
-       :placeholder         (i18n/label :t/set-a-topic)
-       :style               add-new.styles/input
-       :accessibility-label :chat-name-input}]]))
+                 [react/view add-new.styles/input-container
+                  [react/text-input
+                   {:auto-focus          true
+                    :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
+                    :default-value       new-group-name
+                    :placeholder         (i18n/label :t/set-a-topic)
+                    :style               add-new.styles/input
+                    :accessibility-label :chat-name-input}]]))
 
 (defn- render-contact [contact]
   [contact/contact-view {:contact             contact
@@ -47,17 +47,17 @@
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:get :new-chat-name]]
-    (let [save-btn-enabled? (and (spec/valid? ::v/name group-name) (pos? (count contacts)))]
-      [react/keyboard-avoiding-view (merge {:behavior :padding}
-                                           styles/group-container)
-       [status-bar/status-bar]
-       [toolbar group-name save-btn-enabled?]
-       [group-name-view]
-       [list/list-with-label {:flex 1}
-        (i18n/label :t/members-title)
-        [list/flat-list {:data                      contacts
-                         :key-fn                    :address
-                         :render-fn                 render-contact
-                         :bounces                   false
-                         :keyboardShouldPersistTaps :always
-                         :enableEmptySections       true}]]])))
+                 (let [save-btn-enabled? (and (spec/valid? ::v/name group-name) (pos? (count contacts)))]
+                   [react/keyboard-avoiding-view (merge {:behavior :padding}
+                                                        styles/group-container)
+                    [status-bar/status-bar]
+                    [toolbar group-name save-btn-enabled?]
+                    [group-name-view]
+                    [list/list-with-label {:flex 1}
+                     (i18n/label :t/members-title)
+                     [list/flat-list {:data                      contacts
+                                      :key-fn                    :address
+                                      :render-fn                 render-contact
+                                      :bounces                   false
+                                      :keyboardShouldPersistTaps :always
+                                      :enableEmptySections       true}]]])))

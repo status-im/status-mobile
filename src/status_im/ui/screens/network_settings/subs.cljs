@@ -2,11 +2,11 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]))
 
 (reg-sub
-  :get-current-account-network
-  :<- [:get-current-account]
-  :<- [:get :networks/networks]
-  (fn [[current-account networks]]
-    (get networks (:network current-account))))
+ :get-current-account-network
+ :<- [:get-current-account]
+ :<- [:get :networks/networks]
+ (fn [[current-account networks]]
+   (get networks (:network current-account))))
 
 (reg-sub
  :get-network-id

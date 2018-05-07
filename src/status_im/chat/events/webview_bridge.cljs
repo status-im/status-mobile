@@ -15,15 +15,15 @@
      (case (keyword event)
        :get-card-id (nfc/get-card-id #(callback {:event :get-card-id :card %})
                                      #(callback {:event :get-card-id :error %}))
-       :read-tag    (let [{:keys [sectors]} params]
-                      (nfc/read-tag sectors
-                                    #(callback {:event :read-tag :card %})
-                                    #(callback {:event :read-tag :error %})))
-       :write-tag   (let [{:keys [sectors id]} params]
-                      (nfc/write-tag sectors
-                                     id
-                                     #(callback {:event :write-tag :card %})
-                                     #(callback {:event :write-tag :error %})))
+       :read-tag (let [{:keys [sectors]} params]
+                   (nfc/read-tag sectors
+                                 #(callback {:event :read-tag :card %})
+                                 #(callback {:event :read-tag :error %})))
+       :write-tag (let [{:keys [sectors id]} params]
+                    (nfc/write-tag sectors
+                                   id
+                                   #(callback {:event :write-tag :card %})
+                                   #(callback {:event :write-tag :error %})))
        :default))))
 
 (re-frame/reg-fx

@@ -18,6 +18,6 @@
 
 (defview member-photo [from]
   (letsubs [photo-path [:get-photo-path from]]
-    (photo from  (if (string/blank? photo-path)
-                   (identicon/identicon from)
-                   photo-path))))
+           (photo from (if (string/blank? photo-path)
+                         (identicon/identicon from)
+                         photo-path))))

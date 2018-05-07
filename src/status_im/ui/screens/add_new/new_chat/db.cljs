@@ -8,7 +8,7 @@
   (when (and whisper-identity (not (string/blank? whisper-identity)))
     (cond
       (#{(hex/normalize-hex address) (hex/normalize-hex public-key)}
-        (hex/normalize-hex whisper-identity))
+       (hex/normalize-hex whisper-identity))
       (i18n/label :t/can-not-add-yourself)
 
       (not (spec/valid? :global/public-key whisper-identity))

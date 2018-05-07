@@ -46,12 +46,12 @@
    :margin-top     12})
 
 (defstyle settings-icon-container
-  {:width            40
-   :height           40
-   :align-items      :center
-   :justify-content  :center
-   :ios              {:background-color "#628fe333"
-                      :border-radius    50}})
+  {:width           40
+   :height          40
+   :align-items     :center
+   :justify-content :center
+   :ios             {:background-color "#628fe333"
+                     :border-radius    50}})
 (def add-icon
   {:align-items :center
    :width       24
@@ -101,16 +101,16 @@
   {:padding-left   16
    :flex-direction :row
    :align-items    :center
-   :ios            {:height         64}
-   :android        {:height         56}})
+   :ios            {:height 64}
+   :android        {:height 56}})
 
 (defstyle delete-icon-container
-  {:width            40
-   :height           40
-   :align-items      :center
-   :justify-content  :center
-   :ios              {:background-color "#d84b4b33"
-                      :border-radius    50}})
+  {:width           40
+   :height          40
+   :align-items     :center
+   :justify-content :center
+   :ios             {:background-color "#d84b4b33"
+                     :border-radius    50}})
 
 (def order-item-container
   {:background-color common/color-white})

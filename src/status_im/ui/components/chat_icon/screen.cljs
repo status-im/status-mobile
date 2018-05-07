@@ -33,21 +33,21 @@
 (defview pending-contact-badge
   [chat-id {:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]
   (letsubs [pending-contact? [:get-in [:contacts/contacts chat-id :pending?]]]
-    (when pending-contact?
-      [react/view pending-wrapper
-       [react/view pending-outer-circle
-        [react/view pending-inner-circle]]])))
+           (when pending-contact?
+             [react/view pending-wrapper
+              [react/view pending-outer-circle
+               [react/view pending-inner-circle]]])))
 
 (defview chat-icon-view [chat-id _group-chat name _online styles & [hide-dapp?]]
   (letsubs [photo-path [:get-chat-photo chat-id]
             dapp?      [:get-in [:contacts/contacts chat-id :dapp?]]]
-    [react/view (:container styles)
-     (if-not (string/blank? photo-path)
-       [chat-icon photo-path styles]
-       [default-chat-icon name styles])
-     (when (and dapp? (not hide-dapp?))
-       [dapp-badge styles])
-     [pending-contact-badge chat-id styles]]))
+           [react/view (:container styles)
+            (if-not (string/blank? photo-path)
+              [chat-icon photo-path styles]
+              [default-chat-icon name styles])
+            (when (and dapp? (not hide-dapp?))
+              [dapp-badge styles])
+            [pending-contact-badge chat-id styles]]))
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online & [hide-dapp?]]
   [chat-icon-view chat-id group-chat name online
@@ -158,8 +158,8 @@
        [react/view (styles/profile-icon-mask size)])
      (when edit?
        [react/view (styles/profile-icon-edit-text-containter size)
-         [react/text {:style styles/profile-icon-edit-text}
-          (i18n/label :t/edit)]])
+        [react/text {:style styles/profile-icon-edit-text}
+         (i18n/label :t/edit)]])
      (if (and photo-path (seq photo-path))
        [chat-icon photo-path styles]
        [default-chat-icon name styles])]))

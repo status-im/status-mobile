@@ -16,13 +16,13 @@
   (when command
     (case name
       "js" (let [{:keys [err data messages]} handler-data
-                 content                     (or err data)
-                 message-events              (mapv (fn [{:keys [message type]} id]
-                                                     (console-chat/console-message
-                                                      {:message-id id
-                                                       :content (str type ": " message)
-                                                       :content-type constants/text-content-type}))
-                                                   messages random-id-seq)]
+                 content        (or err data)
+                 message-events (mapv (fn [{:keys [message type]} id]
+                                        (console-chat/console-message
+                                         {:message-id   id
+                                          :content      (str type ": " message)
+                                          :content-type constants/text-content-type}))
+                                      messages random-id-seq)]
              (conj message-events
                    (console-chat/console-message
                     {:message-id   (first random-id-seq)
@@ -35,16 +35,16 @@
 
 (defn- faucet-response-event [message-id content]
   [:chat-received-message/add
-   (console-chat/console-message {:message-id message-id
-                                  :content content
+   (console-chat/console-message {:message-id   message-id
+                                  :content      content
                                   :content-type constants/text-content-type})])
 
 (def console-commands->fx
   {"faucet"
    (fn [{:keys [db random-id] :as cofx} {:keys [params]}]
      (let [current-address (get-in db [:account/account :address])
-           faucet-url (faucet-base-url->url (:url params))]
-       {:http-get {:url (gstring/format faucet-url current-address)
+           faucet-url      (faucet-base-url->url (:url params))]
+       {:http-get {:url                   (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]
                                             (faucet-response-event
                                              random-id
@@ -59,16 +59,16 @@
    (fn [{:keys [db random-id now] :as cofx} {:keys [params]}]
      (let [debug? (= "On" (:mode params))]
        (handlers-macro/merge-fx cofx
-                          {:dispatch-n (if debug?
-                                         [[:initialize-debugging {:force-start? true}]
-                                          [:chat-received-message/add
-                                           (console-chat/console-message
-                                            {:message-id random-id
-                                             :content (i18n/label :t/debug-enabled)
-                                             :content-type constants/text-content-type})]]
-                                         [[:stop-debugging]])}
-                          (account.utils/account-update {:debug? debug?
-                                                           :last-updated now}))))})
+                                {:dispatch-n (if debug?
+                                               [[:initialize-debugging {:force-start? true}]
+                                                [:chat-received-message/add
+                                                 (console-chat/console-message
+                                                  {:message-id   random-id
+                                                   :content      (i18n/label :t/debug-enabled)
+                                                   :content-type constants/text-content-type})]]
+                                               [[:stop-debugging]])}
+                                (account.utils/account-update {:debug?       debug?
+                                                               :last-updated now}))))})
 
 (def commands-names (set (keys console-commands->fx)))
 

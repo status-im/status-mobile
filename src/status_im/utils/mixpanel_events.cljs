@@ -141,10 +141,7 @@
     :properties {:target :wallet-got-it}}
    {:label      "Tap"
     :trigger    [:navigate-to :wallet-transaction-sent]
-    :properties {:target :wallet-transaction-sent}}
-
-
-   ;;Profile
+    :properties {:target :wallet-transaction-sent}};;Profile
    {:label      "Tap"
     :trigger    [:my-profile/start-editing-profile]
     :properties {:target :edit-profile}}

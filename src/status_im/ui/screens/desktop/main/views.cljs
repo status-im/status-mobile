@@ -14,21 +14,21 @@
 
 (views/defview tab-views []
   (views/letsubs [tab [:get-in [:desktop/desktop :tab-view-id]]]
-    (let [component (case tab
-                      :profile profile.views/profile
-                      :home home.views/chat-list-view
-                      react/view)]
-      [react/view {:style {:flex 1}}
-       [component]])))
+                 (let [component (case tab
+                                   :profile profile.views/profile
+                                   :home home.views/chat-list-view
+                                   react/view)]
+                   [react/view {:style {:flex 1}}
+                    [component]])))
 
 (views/defview main-view []
   (views/letsubs [view-id [:get :view-id]]
-    (let [component (case view-id
-                      :chat chat.views/chat-view
-                      :new-contact add-new.views/new-contact
-                      status-view)]
-      [react/view {:style {:flex 1}}
-       [component]])))
+                 (let [component (case view-id
+                                   :chat chat.views/chat-view
+                                   :new-contact add-new.views/new-contact
+                                   status-view)]
+                   [react/view {:style {:flex 1}}
+                    [component]])))
 
 (views/defview main-views []
   [react/view {:style {:flex 1 :flex-direction :row}}

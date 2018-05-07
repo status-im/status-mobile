@@ -30,11 +30,11 @@
 
 (defview nav-button-with-count [props]
   (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
-    [react/view
-     [nav-button props]
-     (when (pos? unread-messages-number)
-       [react/view styles/counter-container
-        [components.common/counter unread-messages-number]])]))
+           [react/view
+            [nav-button props]
+            (when (pos? unread-messages-number)
+              [react/view styles/counter-container
+               [components.common/counter unread-messages-number]])]))
 
 (defn nav-text
   ([text] (nav-text nil text))

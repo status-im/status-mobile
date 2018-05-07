@@ -1,5 +1,5 @@
 (ns ^{:doc "Protocol API and protocol utils"}
-    status-im.transport.message.v1.protocol
+ status-im.transport.message.v1.protocol
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.chat.core :as chat]
@@ -9,7 +9,7 @@
             [status-im.transport.utils :as transport.utils]))
 
 (def ^:private whisper-opts
-  {:ttl       10 ;; ttl of 10 sec
+  {:ttl       10                                            ;; ttl of 10 sec
    :powTarget config/pow-target
    :powTime   config/pow-time})
 
@@ -69,7 +69,7 @@
   "Sends payload to multiple participants selected by `:public-keys` key. "
   [{:keys [payload public-keys success-event]} {:keys [db] :as cofx}]
   (let [{:keys [current-public-key web3]} db
-        recipients                        (prepare-recipients public-keys db)]
+        recipients (prepare-recipients public-keys db)]
     {:shh/multi-post {:web3          web3
                       :success-event success-event
                       :recipients    recipients
@@ -101,8 +101,8 @@
   (receive [this chat-id signature cofx]
     {:dispatch [:chat-received-message/add (assoc (into {} this)
                                                   :message-id (transport.utils/message-id this)
-                                                  :chat-id    chat-id
-                                                  :from       signature)]}))
+                                                  :chat-id chat-id
+                                                  :from signature)]}))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

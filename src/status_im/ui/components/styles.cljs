@@ -3,7 +3,7 @@
 
 (def color-transparent "transparent")
 (def color-blue "#7099e6")
-(def color-blue4 "#4360df") ; colors/blue
+(def color-blue4 "#4360df")                                 ; colors/blue
 (def color-blue4-transparent "rgba(67, 96, 223, 0.10)")
 (def color-blue6 "#3745AF")
 (def color-blue-transparent "#7099e632")

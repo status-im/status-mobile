@@ -42,43 +42,43 @@
                     :keyboardShouldPersistTaps :always}]])
 
 (defview contact-toggle-list []
-  (letsubs [contacts [:all-added-people-contacts]
+  (letsubs [contacts                [:all-added-people-contacts]
             selected-contacts-count [:selected-contacts-count]
-            group-type [:get-group-type]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
-     [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
-                           :label   (i18n/label :t/next)
-                           :count   (pos? selected-contacts-count)}
-      (i18n/label (if (= group-type :contact-group)
-                    :t/new-group
-                    :t/group-chat))]
-     [toggle-list contacts group-toggle-contact]]))
+            group-type              [:get-group-type]]
+           [react/keyboard-avoiding-view {:style styles/group-container}
+            [status-bar]
+            [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
+                                  :label   (i18n/label :t/next)
+                                  :count   (pos? selected-contacts-count)}
+             (i18n/label (if (= group-type :contact-group)
+                           :t/new-group
+                           :t/group-chat))]
+            [toggle-list contacts group-toggle-contact]]))
 
 (defview add-contacts-toggle-list []
-  (letsubs [contacts [:all-group-not-added-contacts]
-            group [:get-contact-group]
+  (letsubs [contacts                [:all-group-not-added-contacts]
+            group                   [:get-contact-group]
             selected-contacts-count [:selected-contacts-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
-     [toggle-list-toolbar {:count   selected-contacts-count
-                           :handler #(do
-                                       (re-frame/dispatch [:add-selected-contacts-to-group])
-                                       (re-frame/dispatch [:navigate-back]))
-                           :label   (i18n/label :t/save)}
-      (:name group)]
-     [toggle-list contacts group-toggle-contact]]))
+           [react/keyboard-avoiding-view {:style styles/group-container}
+            [status-bar]
+            [toggle-list-toolbar {:count   selected-contacts-count
+                                  :handler #(do
+                                              (re-frame/dispatch [:add-selected-contacts-to-group])
+                                              (re-frame/dispatch [:navigate-back]))
+                                  :label   (i18n/label :t/save)}
+             (:name group)]
+            [toggle-list contacts group-toggle-contact]]))
 
 (defview add-participants-toggle-list []
   (letsubs [contacts                [:get-all-contacts-not-in-current-chat]
-            {:keys [name]}          [:get-current-chat]
+            {:keys [name]} [:get-current-chat]
             selected-contacts-count [:selected-participants-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
-     [toggle-list-toolbar {:count   selected-contacts-count
-                           :handler #(do
-                                       (re-frame/dispatch [:add-new-group-chat-participants])
-                                       (re-frame/dispatch [:navigate-back]))
-                           :label   (i18n/label :t/add)}
-      name]
-     [toggle-list contacts group-toggle-participant]]))
+           [react/keyboard-avoiding-view {:style styles/group-container}
+            [status-bar]
+            [toggle-list-toolbar {:count   selected-contacts-count
+                                  :handler #(do
+                                              (re-frame/dispatch [:add-new-group-chat-participants])
+                                              (re-frame/dispatch [:navigate-back]))
+                                  :label   (i18n/label :t/add)}
+             name]
+            [toggle-list contacts group-toggle-participant]]))

@@ -49,37 +49,37 @@
     :error             error}])
 
 (defview create-account []
-  (letsubs [step [:get-in [:accounts/create :step]]
-            next-enabled? [:get-account-creation-next-enabled?]
-            error [:get-in [:accounts/create :error]]
-            password [:get-in [:accounts/create :password]]
+  (letsubs [step             [:get-in [:accounts/create :step]]
+            next-enabled?    [:get-account-creation-next-enabled?]
+            error            [:get-in [:accounts/create :error]]
+            password         [:get-in [:accounts/create :password]]
             password-confirm [:get-in [:accounts/create :password-confirm]]]
-    [react/keyboard-avoiding-view {:style styles/create-account-view}
-     [status-bar/status-bar {:flat? true}]
-     (when (= :account-creating step)
-       [react/view styles/account-creating-view
-        [react/view styles/account-creating-logo-container
-         [components.common/logo styles/account-creating-logo]]
-        [react/view {:style styles/account-creating-indicatior}
-         [components/activity-indicator {:animating true}]
-         [react/text {:style styles/account-creating-text}
-          (i18n/label :t/creating-your-account)]]])
-     (when (#{:enter-password :confirm-password :enter-name} step)
-       [react/view components.styles/flex
-        [toolbar/toolbar {:flat? true} (when (#{:enter-password :confirm-password} step)
-                                         (toolbar/nav-button (actions/back #(step-back step)))) nil]
-        [react/view {:style styles/logo-container}
-         [components.common/logo styles/logo]]
-        ^{:key (str "step" step)}
-        [react/view components.styles/flex
-         [react/view {:style styles/input-container}
-          [input step error]
-          [react/text {:style styles/input-description}
-           (get-in steps [step :input-description])]]
-         [react/view {:style components.styles/flex}]
-         [react/view {:style styles/bottom-container}
-          [react/view {:style components.styles/flex}]
-          [components.common/bottom-button
-           {:forward?  true
-            :disabled? (not next-enabled?)
-            :on-press  #(next-step step password password-confirm)}]]]])]))
+           [react/keyboard-avoiding-view {:style styles/create-account-view}
+            [status-bar/status-bar {:flat? true}]
+            (when (= :account-creating step)
+              [react/view styles/account-creating-view
+               [react/view styles/account-creating-logo-container
+                [components.common/logo styles/account-creating-logo]]
+               [react/view {:style styles/account-creating-indicatior}
+                [components/activity-indicator {:animating true}]
+                [react/text {:style styles/account-creating-text}
+                 (i18n/label :t/creating-your-account)]]])
+            (when (#{:enter-password :confirm-password :enter-name} step)
+              [react/view components.styles/flex
+               [toolbar/toolbar {:flat? true} (when (#{:enter-password :confirm-password} step)
+                                                (toolbar/nav-button (actions/back #(step-back step)))) nil]
+               [react/view {:style styles/logo-container}
+                [components.common/logo styles/logo]]
+               ^{:key (str "step" step)}
+               [react/view components.styles/flex
+                [react/view {:style styles/input-container}
+                 [input step error]
+                 [react/text {:style styles/input-description}
+                  (get-in steps [step :input-description])]]
+                [react/view {:style components.styles/flex}]
+                [react/view {:style styles/bottom-container}
+                 [react/view {:style components.styles/flex}]
+                 [components.common/bottom-button
+                  {:forward?  true
+                   :disabled? (not next-enabled?)
+                   :on-press  #(next-step step password password-confirm)}]]]])]))

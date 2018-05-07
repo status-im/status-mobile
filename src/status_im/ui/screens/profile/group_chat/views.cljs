@@ -85,11 +85,11 @@
 
 (defview chat-group-contacts-view [admin? group-admin-identity current-user-identity]
   (letsubs [contacts [:get-current-chat-contacts]]
-    [react/view
-     [list/flat-list {:data      contacts
-                      :separator list/default-separator
-                      :key-fn    :address
-                      :render-fn #(render-contact % admin? group-admin-identity current-user-identity)}]]))
+           [react/view
+            [list/flat-list {:data      contacts
+                             :separator list/default-separator
+                             :key-fn    :address
+                             :render-fn #(render-contact % admin? group-admin-identity current-user-identity)}]]))
 
 (defn members-list [admin? group-admin-identity current-user-identity]
   [react/view
@@ -98,23 +98,23 @@
 
 (defview group-chat-profile []
   (letsubs [{:keys [group-admin] :as current-chat} [:get-current-chat]
-            editing?                               [:get :group-chat-profile/editing?]
-            changed-chat                           [:get :group-chat-profile/profile]
-            current-pk                             [:get :current-public-key]]
-    (let [shown-chat (merge current-chat changed-chat)
-          admin?     (= current-pk group-admin)]
-      [react/view profile.components.styles/profile
-       [status-bar/status-bar]
-       (if editing?
-         [group-chat-profile-edit-toolbar]
-         [group-chat-profile-toolbar])
-       [react/scroll-view
-        [react/view profile.components.styles/profile-form
-         [profile.components/profile-header shown-chat editing? false nil :set-group-chat-name]
-         [list/action-list (actions admin? (:chat-id current-chat))
-          {:container-style        styles/action-container
-           :action-style           styles/action
-           :action-label-style     styles/action-label
-           :action-separator-style styles/action-separator
-           :icon-opts              styles/action-icon-opts}]
-         [members-list admin? group-admin current-pk]]]])))
+            editing?     [:get :group-chat-profile/editing?]
+            changed-chat [:get :group-chat-profile/profile]
+            current-pk   [:get :current-public-key]]
+           (let [shown-chat (merge current-chat changed-chat)
+                 admin?     (= current-pk group-admin)]
+             [react/view profile.components.styles/profile
+              [status-bar/status-bar]
+              (if editing?
+                [group-chat-profile-edit-toolbar]
+                [group-chat-profile-toolbar])
+              [react/scroll-view
+               [react/view profile.components.styles/profile-form
+                [profile.components/profile-header shown-chat editing? false nil :set-group-chat-name]
+                [list/action-list (actions admin? (:chat-id current-chat))
+                 {:container-style        styles/action-container
+                  :action-style           styles/action
+                  :action-label-style     styles/action-label
+                  :action-separator-style styles/action-separator
+                  :icon-opts              styles/action-icon-opts}]
+                [members-list admin? group-admin current-pk]]]])))

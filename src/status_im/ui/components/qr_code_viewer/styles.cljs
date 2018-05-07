@@ -61,14 +61,14 @@
    :justify-content :center})
 
 (def qr-code
-  {:flex-grow        1
-   :align-items      :center
-   :justify-content  :center})
+  {:flex-grow       1
+   :align-items     :center
+   :justify-content :center})
 
 (def footer
-  {:flex-direction   :row
-   :justify-content  :center
-   :padding-top      22})
+  {:flex-direction  :row
+   :justify-content :center
+   :padding-top     22})
 
 (def wallet-info
   {:align-items    :center

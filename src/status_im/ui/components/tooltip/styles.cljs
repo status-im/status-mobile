@@ -27,5 +27,5 @@
    :font-size font-size})
 
 (def tooltip-triangle
-  {:width   16
-   :height  8})
+  {:width  16
+   :height 8})

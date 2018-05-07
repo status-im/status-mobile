@@ -17,12 +17,12 @@
 
 (def text-input
   (merge text-content
-    {:font-size      15
-     :flex           1
-     :padding-bottom 0
-     :padding-top    0
-     :height         52
-     :letter-spacing -0.2}))
+         {:font-size      15
+          :flex           1
+          :padding-bottom 0
+          :padding-top    0
+          :height         52
+          :letter-spacing -0.2}))
 
 (def contact-code-text-input
   {:text-align-vertical :top
@@ -36,7 +36,7 @@
    :ios     {:font-size      14
              :line-height    16
              :letter-spacing -0.2}
-   :android {:font-size   12}})
+   :android {:font-size 12}})
 
 (def amount-text-input-container
   {:margin-top 8})
@@ -50,7 +50,7 @@
    :background-color (if active?
                        colors/white-light-transparent
                        styles/color-white-transparent-3)
-   :border-radius      8})
+   :border-radius    8})
 
 (def network
   {:color          :white
@@ -184,5 +184,4 @@
   {:color          :white
    :font-size      15
    :letter-spacing -0.2})
-
 

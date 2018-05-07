@@ -6,8 +6,8 @@
 
 (defn qr-code [props]
   (reagent/create-element
-    rn-dependencies/qr-code
-    (clj->js (merge {:inverted true} props))))
+   rn-dependencies/qr-code
+   (clj->js (merge {:inverted true} props))))
 
 (defn- footer [style value]
   [react/view styles/footer

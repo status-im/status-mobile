@@ -11,7 +11,7 @@
   {:added "1.0"}
   [fx cofx & forms]
   (if forms
-    (let [form (first forms)
+    (let [form      (first forms)
           temp-cofx (gensym 'temp-cofx)]
       `(let [~temp-cofx (update-db ~cofx ~fx)
              fx# (safe-merge ~fx ~(with-meta `(~(first form) ~@(next form) ~temp-cofx) (meta form)))]
@@ -33,15 +33,14 @@
       `(merge-fx* ~form ~cofx ~@(next forms))
       `(merge-fx* {} ~cofx ~@forms))))
 
-(comment (defn fn1 [{:keys [db]} ]
+(comment (defn fn1 [{:keys [db]}]
            {:db (assoc db :a 0)
-            :a "1"})
+            :a  "1"})
 
-         (defn fn2 [ a {:keys [db]}]
-           {:db (update db :a + a)
-            })
+         (defn fn2 [a {:keys [db]}]
+           {:db (update db :a + a)})
 
-         (defn fn3 [ a {:keys [db u]}]
+         (defn fn3 [a {:keys [db u]}]
            {:db (update db :a + u)})
 
          (let [a    1

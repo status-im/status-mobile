@@ -14,9 +14,9 @@
 (defn- container-animation-logic [{:keys [to-value val]}]
   (fn [_]
     (anim/start
-      (anim/spring val {:toValue  to-value
-                        :friction 6
-                        :tension  40}))))
+     (anim/spring val {:toValue  to-value
+                       :friction 6
+                       :tension  40}))))
 
 (defn overlay [{:keys [on-click-outside]} items]
   [react/view styles/bottom-info-overlay
@@ -26,18 +26,18 @@
    items])
 
 (defn container [height & _]
-  (let [anim-value    (anim/create-value 1)
-        context       {:to-value height
-                       :val      anim-value}
-        on-update     (container-animation-logic context)]
+  (let [anim-value (anim/create-value 1)
+        context    {:to-value height
+                    :val      anim-value}
+        on-update  (container-animation-logic context)]
     (reagent/create-class
-      {:component-did-update
-       on-update
-       :display-name "container"
-       :reagent-render
-       (fn [height & children]
-         [react/animated-view {:style (styles/bottom-info-container height)}
-          (into [react/view] children)])})))
+     {:component-did-update
+      on-update
+      :display-name "container"
+      :reagent-render
+      (fn [height & children]
+        [react/animated-view {:style (styles/bottom-info-container height)}
+         (into [react/view] children)])})))
 
 (defn- message-status-row [{:keys [photo-path name]} {:keys [whisper-identity status]}]
   [react/view styles/bottom-info-row
@@ -62,20 +62,20 @@
   (let [bottom-info (re-frame/subscribe [:get-current-chat-ui-prop :bottom-info])
         contacts    (re-frame/subscribe [:get-contacts])]
     (reagent/create-class
-      {:display-name "bottom-info-view"
-       :reagent-render
-       (fn []
-         (let [{:keys [user-statuses message-status participants]} @bottom-info
-               participants (->> participants
-                                 (map (fn [{:keys [identity]}]
-                                        [identity {:whisper-identity identity
-                                                   :status           message-status}]))
-                                 (into {}))
-               statuses     (vals (merge participants user-statuses))]
-           [overlay {:on-click-outside #(re-frame/dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
-            [container (* styles/item-height (count statuses))
-             [list/flat-list {:contentContainerStyle styles/bottom-info-list-container
-                              :data                statuses
-                              :key-fn              :address
-                              :render-fn           (render-status @contacts)
-                              :enableEmptySections true}]]]))})))
+     {:display-name "bottom-info-view"
+      :reagent-render
+      (fn []
+        (let [{:keys [user-statuses message-status participants]} @bottom-info
+              participants (->> participants
+                                (map (fn [{:keys [identity]}]
+                                       [identity {:whisper-identity identity
+                                                  :status           message-status}]))
+                                (into {}))
+              statuses     (vals (merge participants user-statuses))]
+          [overlay {:on-click-outside #(re-frame/dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
+           [container (* styles/item-height (count statuses))
+            [list/flat-list {:contentContainerStyle styles/bottom-info-list-container
+                             :data                  statuses
+                             :key-fn                :address
+                             :render-fn             (render-status @contacts)
+                             :enableEmptySections   true}]]]))})))

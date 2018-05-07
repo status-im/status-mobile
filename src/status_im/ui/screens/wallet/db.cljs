@@ -22,7 +22,7 @@
 (defn parse-amount [amount]
   (when-not (empty? amount)
     (let [normalized-amount (money/normalize amount)
-          value (money/bignumber normalized-amount)]
+          value             (money/bignumber normalized-amount)]
       (cond
         (not (money/valid? value))
         {:error (i18n/label :t/validation-amount-invalid-number) :value value}

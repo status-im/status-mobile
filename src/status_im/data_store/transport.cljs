@@ -5,7 +5,6 @@
             [status-im.data-store.realm.transport :as data-store]
             [status-im.data-store.realm.core :as core]))
 
-
 (defn deserialize-chat [serialized-chat]
   (-> serialized-chat
       (dissoc :chat-id)
@@ -15,14 +14,14 @@
       (update :pending-send edn/read-string)))
 
 (re-frame/reg-cofx
-  :data-store/transport
-  (fn [cofx _]
-    (assoc cofx
-           :data-store/transport
-           (reduce (fn [acc {:keys [chat-id] :as chat}]
-                     (assoc acc chat-id (deserialize-chat chat)))
-                   {}
-                   (data-store/get-all)))))
+ :data-store/transport
+ (fn [cofx _]
+   (assoc cofx
+          :data-store/transport
+          (reduce (fn [acc {:keys [chat-id] :as chat}]
+                    (assoc acc chat-id (deserialize-chat chat)))
+                  {}
+                  (data-store/get-all)))))
 
 (defn save [chat-id chat]
   (let [serialized-chat (-> chat
@@ -34,11 +33,11 @@
     (data-store/save serialized-chat)))
 
 (re-frame/reg-fx
-  :data-store.transport/save
-  (fn [{:keys [chat-id chat]}]
-    (async/go (async/>! core/realm-queue #(save chat-id chat)))))
+ :data-store.transport/save
+ (fn [{:keys [chat-id chat]}]
+   (async/go (async/>! core/realm-queue #(save chat-id chat)))))
 
 (re-frame/reg-fx
-  :data-store.transport/delete
-  (fn [chat-id]
-    (async/go (async/>! core/realm-queue #(data-store/delete chat-id)))))
+ :data-store.transport/delete
+ (fn [chat-id]
+   (async/go (async/>! core/realm-queue #(data-store/delete chat-id)))))

@@ -30,24 +30,24 @@
 
 (defview contacts-list-view [group edit?]
   (letsubs [contacts [:get-all-added-group-contacts (:group-id group)]]
-    [list/flat-list {:style                     styles/contacts-list
-                     :data                      contacts
-                     :key-fn                    :address
-                     :render-fn                 (render-row group edit?)
-                     :enableEmptySections       true
-                     :keyboardShouldPersistTaps :always
-                     :header                    list/default-header
-                     :footer                    list/default-footer}]))
+           [list/flat-list {:style                     styles/contacts-list
+                            :data                      contacts
+                            :key-fn                    :address
+                            :render-fn                 (render-row group edit?)
+                            :enableEmptySections       true
+                            :keyboardShouldPersistTaps :always
+                            :header                    list/default-header
+                            :footer                    list/default-footer}]))
 
 (defview contact-list []
   (letsubs [edit? [:get-in [:contacts/list-ui-props :edit?]]
             group [:get-contact-group]]
-    [react/view {:flex 1}
-     [react/view
-      [status-bar/status-bar]
-      (if edit?
-        [contact-list-toolbar-edit group]
-        [toolbar/simple-toolbar (if-not group
-                                  (i18n/label :t/contacts)
-                                  (or (:name group) (i18n/label :t/contacts-group-new-chat)))])]
-     [contacts-list-view group edit?]]))
+           [react/view {:flex 1}
+            [react/view
+             [status-bar/status-bar]
+             (if edit?
+               [contact-list-toolbar-edit group]
+               [toolbar/simple-toolbar (if-not group
+                                         (i18n/label :t/contacts)
+                                         (or (:name group) (i18n/label :t/contacts-group-new-chat)))])]
+            [contacts-list-view group edit?]]))

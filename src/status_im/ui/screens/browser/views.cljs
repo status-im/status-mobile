@@ -17,17 +17,17 @@
 
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:get-contact-by-identity contact-identity]]
-    [react/view
-     [react/view styles/toolbar-content-dapp
-      [chat-icon.screen/dapp-icon-browser contact 36]
-      [react/view styles/dapp-name
-       [react/text {:style               styles/dapp-name-text
-                    :number-of-lines     1
-                    :font                :toolbar-title
-                    :accessibility-label :dapp-name-text}
-        (:name contact)]
-       [react/text {:style styles/dapp-text}
-        (i18n/label :t/dapp)]]]]))
+                 [react/view
+                  [react/view styles/toolbar-content-dapp
+                   [chat-icon.screen/dapp-icon-browser contact 36]
+                   [react/view styles/dapp-name
+                    [react/text {:style               styles/dapp-name-text
+                                 :number-of-lines     1
+                                 :font                :toolbar-title
+                                 :accessibility-label :dapp-name-text}
+                     (:name contact)]
+                    [react/text {:style styles/dapp-text}
+                     (i18n/label :t/dapp)]]]]))
 
 (def browser-config
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
@@ -51,13 +51,13 @@
 
 (defn web-view-error []
   (reagent/as-element
-    [react/view styles/web-view-error
-     [react/text (i18n/label :t/web-view-error)]]))
+   [react/view styles/web-view-error
+    [react/text (i18n/label :t/web-view-error)]]))
 
 (defn web-view-loading []
   (reagent/as-element
-    [react/view styles/web-view-loading
-     [components/activity-indicator {:animating true}]]))
+   [react/view styles/web-view-loading
+    [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
   (let [{:strs [url title canGoBack canGoForward]} (js->clj event)]
@@ -70,47 +70,47 @@
     (get (:inject-js browser-config) domain-name)))
 
 (views/defview browser []
-  (views/letsubs [webview (atom nil)
+  (views/letsubs [webview                (atom nil)
                   {:keys [address]} [:get-current-account]
                   {:keys [dapp? contact url] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
-                  extra-js [:web-view-extra-js]
-                  rpc-url [:get :rpc-url]
+                  extra-js               [:web-view-extra-js]
+                  rpc-url                [:get :rpc-url]
                   unread-messages-number [:get-chats-unread-messages-number]]
-    [react/keyboard-avoiding-view styles/browser
-     [status-bar/status-bar]
-     [toolbar.view/toolbar {}
-      toolbar.view/nav-back-count
-      (if dapp?
-        [toolbar-content-dapp contact unread-messages-number]
-        [toolbar-content browser unread-messages-number])]
-     (if url
-       [components.webview-bridge/webview-bridge
-        {:ref                                   #(reset! webview %)
-         :source                                {:uri url}
-         :java-script-enabled                   true
-         :bounces                               false
-         :local-storage-enabled                 true
-         :start-in-loading-state                true
-         :render-error                          web-view-error
-         :render-loading                        web-view-loading
-         :on-navigation-state-change            #(on-navigation-change % browser)
-         :injected-on-start-loading-java-script (str js-res/web3
-                                                     js-res/jquery
-                                                     (get-inject-js url)
-                                                     (js-res/web3-init rpc-url address))
-         :injected-java-script                  (str js-res/webview-js extra-js)}]
-       [react/view styles/background
-        [react/text (i18n/label :t/enter-dapp-url)]])
-     [react/view styles/toolbar
-      [react/touchable-highlight {:on-press            #(.goBack @webview)
-                                  :disabled            (not can-go-back?)
-                                  :accessibility-label :previou-page-button}
-       [react/view (when (not can-go-back?) {:opacity 0.4})
-        [vector-icons/icon :icons/arrow-left]]]
-      [react/touchable-highlight {:on-press            #(.goForward @webview)
-                                  :disabled            (not can-go-forward?)
-                                  :style               styles/forward-button
-                                  :accessibility-label :next-page-button}
-       [react/view (when (not can-go-forward?) {:opacity 0.4})
-        [vector-icons/icon :icons/arrow-right]]]]]))
+                 [react/keyboard-avoiding-view styles/browser
+                  [status-bar/status-bar]
+                  [toolbar.view/toolbar {}
+                   toolbar.view/nav-back-count
+                   (if dapp?
+                     [toolbar-content-dapp contact unread-messages-number]
+                     [toolbar-content browser unread-messages-number])]
+                  (if url
+                    [components.webview-bridge/webview-bridge
+                     {:ref                                   #(reset! webview %)
+                      :source                                {:uri url}
+                      :java-script-enabled                   true
+                      :bounces                               false
+                      :local-storage-enabled                 true
+                      :start-in-loading-state                true
+                      :render-error                          web-view-error
+                      :render-loading                        web-view-loading
+                      :on-navigation-state-change            #(on-navigation-change % browser)
+                      :injected-on-start-loading-java-script (str js-res/web3
+                                                                  js-res/jquery
+                                                                  (get-inject-js url)
+                                                                  (js-res/web3-init rpc-url address))
+                      :injected-java-script                  (str js-res/webview-js extra-js)}]
+                    [react/view styles/background
+                     [react/text (i18n/label :t/enter-dapp-url)]])
+                  [react/view styles/toolbar
+                   [react/touchable-highlight {:on-press            #(.goBack @webview)
+                                               :disabled            (not can-go-back?)
+                                               :accessibility-label :previou-page-button}
+                    [react/view (when (not can-go-back?) {:opacity 0.4})
+                     [vector-icons/icon :icons/arrow-left]]]
+                   [react/touchable-highlight {:on-press            #(.goForward @webview)
+                                               :disabled            (not can-go-forward?)
+                                               :style               styles/forward-button
+                                               :accessibility-label :next-page-button}
+                    [react/view (when (not can-go-forward?) {:opacity 0.4})
+                     [vector-icons/icon :icons/arrow-right]]]]]))

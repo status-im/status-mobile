@@ -9,16 +9,16 @@
   (data-store/get-by-address address))
 
 (re-frame/reg-cofx
-  :data-store/get-all-accounts
-  (fn [coeffects _]
-    (assoc coeffects :all-accounts (data-store/get-all-as-list))))
+ :data-store/get-all-accounts
+ (fn [coeffects _]
+   (assoc coeffects :all-accounts (data-store/get-all-as-list))))
 
 (re-frame/reg-fx
-  :data-store/save-account
-  (fn [{:keys [after-update-event] :as account}]
-    (let [account-to-save (dissoc account :after-update-event)]
-      (async/go (async/>! core/realm-queue #(if after-update-event
-                                              (do (data-store/save account-to-save true)
-                                                  (re-frame/dispatch after-update-event))
-                                              (data-store/save account-to-save true)))))))
+ :data-store/save-account
+ (fn [{:keys [after-update-event] :as account}]
+   (let [account-to-save (dissoc account :after-update-event)]
+     (async/go (async/>! core/realm-queue #(if after-update-event
+                                             (do (data-store/save account-to-save true)
+                                                 (re-frame/dispatch after-update-event))
+                                             (data-store/save account-to-save true)))))))
 
