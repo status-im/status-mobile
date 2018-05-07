@@ -98,7 +98,7 @@ def enableProguardInReleaseBuilds = false
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         exec {
-            commandLine "git", "rev-list", "--count", "HEAD"
+            commandLine "./build_no.sh"
             standardOutput = stdOut
         }
         return stdOut.toString().toInteger()
