@@ -18,9 +18,9 @@
   2 arities are provided, 2arg arity initialises the chat with topic derived from first argument (`chat-id`),
   using the 3arg arity, you can specify the topic as well (second argument)"
   ([chat-id cofx]
-   (init-chat chat-id (transport.utils/get-topic chat-id) cofx))
-  ([chat-id topic {:keys [db] :as cofx}]
-   {:db (assoc-in db [:transport/chats chat-id] (transport.db/create-chat topic))}))
+   (init-chat chat-id (transport.utils/get-topic chat-id) {} cofx))
+  ([chat-id topic opts {:keys [db] :as cofx}]
+   {:db (assoc-in db [:transport/chats chat-id] (transport.db/create-chat topic opts))}))
 
 (defn is-new?
   "Determines if given message-id already exists in in-memory message cache"
@@ -57,7 +57,7 @@
                 :message       (merge {:sig     current-public-key
                                        :pubKey  chat-id
                                        :payload payload
-                                       :topic   (transport.utils/get-topic constants/contact-discovery)}
+                                       :topic   (transport.utils/get-topic chat-id)}
                                       whisper-opts)}}))
 
 (defn- prepare-recipients [public-keys db]

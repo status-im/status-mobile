@@ -53,6 +53,7 @@
                               {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
+                                                :one-to-one true
                                                 :topic      topic
                                                 :chat-id    chat-id}
                                :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
@@ -71,6 +72,7 @@
      (handlers-macro/merge-fx cofx
                               {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
                                :shh/add-filter {:web3       web3
+                                                :one-to-one true
                                                 :sym-key-id sym-key-id
                                                 :topic      topic
                                                 :chat-id    chat-id}

@@ -26,14 +26,14 @@
                                    (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
                                                                         :sym-key    sym-key
                                                                         :sym-key-id sym-key-id}]))
-          topic (transport.utils/get-topic constants/contact-discovery)]
+          discover-topic         (transport.utils/get-topic public-key)]
       (handlers-macro/merge-fx cofx
                                {:shh/add-discovery-filter {:web3           web3
                                                            :private-key-id public-key
-                                                           :topic topic}
-                                :shh/restore-sym-keys {:web3       web3
-                                                       :transport  (:transport/chats db)
-                                                       :on-success sym-key-added-callback}}
+                                                           :topic          discover-topic}
+                                :shh/restore-sym-keys     {:web3       web3
+                                                           :transport  (:transport/chats db)
+                                                           :on-success sym-key-added-callback}}
                                (inbox/initialize-offline-inbox)))))
 
 ;;TODO (yenda) remove once go implements persistence
@@ -51,6 +51,7 @@
                                                             :chat    (assoc chat :sym-key-id sym-key-id)})]
       :shh/add-filter {:web3       web3
                        :sym-key-id sym-key-id
+                       :one-to-one (get-in db [:transport/chats chat-id :one-to-one])
                        :topic      topic
                        :chat-id    chat-id}})))
 
@@ -72,6 +73,6 @@
   account A messages without this."
   [{:keys [db]}]
   (let [{:transport/keys [chats discovery-filter]} db
-        chat-filters                               (mapv :filter (vals chats))
+        chat-filters                               (mapcat :filters (vals chats))
         all-filters                                (conj chat-filters discovery-filter)]
     {:shh/remove-filters all-filters}))

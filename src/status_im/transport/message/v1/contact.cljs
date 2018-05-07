@@ -25,7 +25,7 @@
                                {:shh/add-new-sym-key {:web3       (get-in cofx [:db :web3])
                                                       :sym-key    sym-key
                                                       :on-success on-success}}
-                               (protocol/init-chat chat-id topic)))))
+                               (protocol/init-chat chat-id topic {:one-to-one true})))))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
@@ -42,7 +42,7 @@
       (handlers-macro/merge-fx cofx
                                {:shh/get-new-sym-key {:web3       (:web3 db)
                                                       :on-success on-success}}
-                               (protocol/init-chat chat-id topic)
+                               (protocol/init-chat chat-id topic {:one-to-one true})
                                #_(protocol/requires-ack message-id chat-id))))
   (receive [this chat-id signature {:keys [db] :as cofx}]
     (let [message-id (transport.utils/message-id this)

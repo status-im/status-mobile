@@ -9,10 +9,10 @@
 (defn unsubscribe-from-chat
   "Unsubscribe from chat on transport layer"
   [chat-id {:keys [db]}]
-  (let [filter (get-in db [:transport/chats chat-id :filter])]
-    {:db                (update db :transport/chats dissoc chat-id)
-     :data-store/tx     [(transport-store/delete-transport-tx chat-id)]
-     :shh/remove-filter filter}))
+  (let [filters (get-in db [:transport/chats chat-id :filters])]
+    {:db                 (update db :transport/chats dissoc chat-id)
+     :data-store/tx      [(transport-store/delete-transport-tx chat-id)]
+     :shh/remove-filters filters}))
 
 (defn from-utf8 [s]
   (.fromUtf8 dependencies/Web3.prototype s))

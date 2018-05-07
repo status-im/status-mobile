@@ -14,10 +14,11 @@
 (spec/def ::sym-key-id string?)
 ;;TODO (yenda) remove once go implements persistence
 (spec/def ::sym-key string?)
-(spec/def ::filter any?)
+(spec/def ::filters any?)
+(spec/def ::one-to-one (spec/nilable boolean?))
 
 (spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
-                                        :opt-un [::sym-key-id ::sym-key ::filter]))
+                                        :opt-un [::sym-key-id ::sym-key ::filters ::one-to-one]))
 
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
 (spec/def :transport/discovery-filter (spec/nilable any?))
@@ -25,9 +26,11 @@
 (defn create-chat
   "Initialize datastructure for chat representation at the transport level
   Currently only :topic is actually used"
-  [topic]
-  {:ack          []
-   :seen         []
-   :pending-ack  []
-   :pending-send []
-   :topic        topic})
+  [topic opts]
+  (merge {:ack              []
+          :filters          []
+          :one-to-one       false
+          :seen             []
+          :pending-ack      []
+          :pending-send     []
+          :topic            topic} opts))

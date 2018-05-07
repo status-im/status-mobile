@@ -220,13 +220,14 @@
  (fn [{:keys [db now]} [_ {:keys [from topics discover?]}]]
    (let [web3       (:web3 db)
          wnode      (get-current-wnode-address db)
+         public-key (:current-public-key db)
          topics     (or topics
                         (map #(:topic %) (vals (:transport/chats db))))
          from       (or from (:inbox/last-request db) nil)
          sym-key-id (:inbox/sym-key-id db)]
      {::request-messages {:wnode      wnode
                           :topics     (if discover?
-                                        (conj topics (transport.utils/get-topic constants/contact-discovery))
+                                        (conj topics (transport.utils/get-topic public-key))
                                         topics)
                           ;;TODO (yenda) fix from, right now mailserver is dropping us
                           ;;when we send a requestMessage with a from field
