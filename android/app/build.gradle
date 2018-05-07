@@ -97,10 +97,8 @@ def enableProguardInReleaseBuilds = false
 
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
-        println System.getProperty("user.dir")
         exec {
-            workingDir "../"
-            commandLine "./build_no.sh", "--tag"
+            commandLine "sh", "../build_no.sh", "--tag"
             standardOutput = stdOut
         }
         return stdOut.toString().toInteger()
