@@ -134,6 +134,6 @@ node ('macos1'){
   }
 
   stage('Run extended e2e tests') {
-    build job: 'status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + apk_name)], wait: false
+    build job: 'end-to-end-tests/status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + apk_name)], wait: false
   }
 }
