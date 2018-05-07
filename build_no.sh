@@ -24,6 +24,9 @@ getNumber () {
 
 REGEX='^build-[0-9]\+$' 
 
+# make sure we have all the tags
+git fetch --tags
+
 # check if current commit has a build tag
 BUILD=$(git tag --points-at HEAD | grep -e "$REGEX")
 
