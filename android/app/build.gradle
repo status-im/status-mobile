@@ -99,7 +99,7 @@ def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         exec {
             workingDir "../"
-            commandLine "./build_no.sh"
+            commandLine "./build_no.sh --tag"
             standardOutput = stdOut
         }
         return stdOut.toString().toInteger()
