@@ -98,6 +98,7 @@ def enableProguardInReleaseBuilds = false
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         exec {
+            workingDir "../"
             commandLine "./build_no.sh"
             standardOutput = stdOut
         }
