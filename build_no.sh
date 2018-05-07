@@ -25,7 +25,7 @@ getNumber () {
 REGEX='^build-[0-9]\+$' 
 
 # check if current commit has a build tag
-BUILD=$(git tag --points-at refs/tags/HEAD | grep -e "$REGEX")
+BUILD=$(git tag --points-at HEAD | grep -e "$REGEX")
 
 # chech for multiple lines
 if [ 1 -lt $(echo "$BUILD" | grep -c -) ]; then
@@ -49,9 +49,9 @@ BUILD_NO=$(getNumber "$BUILD")
 BUILD_NO="$((BUILD_NO+1))"
 
 if [ "$1" = "--tag" ]; then
-    echo "Tagging refs/tags/HEAD: $BUILD" >&2
+    echo "Tagging HEAD: $BUILD" >&2
     echo "You will need to 'git push --tags' to make this tag take effect." >&2
-    git tag "build-$BUILD_NO" refs/tags/HEAD
+    git tag "build-$BUILD_NO" HEAD
 fi
 
 # finally print build number
