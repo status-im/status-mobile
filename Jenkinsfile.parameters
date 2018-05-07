@@ -46,6 +46,8 @@ node ('macos1') {
       sh 'echo MANY_WHISPER_TOPICS_ENABLED=' + MANY_WHISPER_TOPICS_ENABLED  + '>>' + '.env'
       sh 'echo POW_TARGET='                  + POW_TARGET                   + '>>' + '.env'
       sh 'echo POW_TIME='                    + POW_TIME                     + '>>' + '.env'
+      sh 'echo MAINNET_WARNING_ENABLED='     + MAINNET_WARNING_ENABLED      + '>>' + '.env'
+      sh 'echo DEFAULT_NETWORK='             + DEFAULT_NETWORK              + '>>' + '.env'
 
       sh 'echo "**********************************************************************"'
       sh 'echo PARAMETERIZED BUILD - USING CUSTOM ENVIRONMENT'

@@ -7,7 +7,9 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.network-settings.styles :as styles]))
+            [status-im.ui.screens.network-settings.styles :as styles]
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]))
 
 (defn- network-icon [connected? size]
   [react/view (styles/network-icon connected? size)
@@ -23,11 +25,27 @@
       [react/text {:style styles/badge-connected-text}
        (i18n/label :t/connected)])]])
 
+(def mainnet?
+  #{"mainnet" "mainnet_rpc"})
+
+(defn navigate-to-network [network]
+  (re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}]))
+
+(defn wrap-mainnet-warning [network cb]
+  (fn []
+    (if (and config/mainnet-warning-enabled?
+             (mainnet? (:id network)))
+      (utils/show-confirmation (i18n/label :t/mainnet-warning-title)
+                               (i18n/label :t/mainnet-warning-text)
+                               (i18n/label :t/mainnet-warning-ok-text)
+                               #(cb network))
+      (cb network))))
+
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]
     (let [connected? (= id current-network)]
       [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}])
+       {:on-press            (wrap-mainnet-warning network navigate-to-network)
         :accessibility-label :network-item}
        [react/view styles/network-item
         [network-icon connected? 40]
