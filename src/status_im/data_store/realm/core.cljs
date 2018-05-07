@@ -50,7 +50,7 @@
   ;; delete the realm file if its schema version is lower
   ;; than existing schema version - dirty hotfix for `0.9.17` -> `0.9.18` upgrade
   (if (< (realm-version file-name)
-         (apply max :schemaVersion base/schemas))
+         (apply max (map :schemaVersion base/schemas)))
     (reset-realm file-name schemas)
     (migrate-realm file-name schemas)))
 
