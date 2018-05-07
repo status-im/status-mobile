@@ -70,10 +70,6 @@ node ('macos1'){
       sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
     }
 
-    stage('Push Build Tag') {
-      sh ('git push --tags')
-    }
-
     stage('Deploy (Android)') {
       def artifact_dir = pwd() + '/android/app/build/outputs/apk/release/'
       println (artifact_dir + 'app-release.apk')
@@ -100,6 +96,10 @@ node ('macos1'){
 
         sh ('echo ARTIFACT iOS: ' + ipaUrl)
       }
+    }
+
+    stage('Push Build Tag') {
+      sh ('git push --tags')
     }
   } catch (e) {
     slackSend color: 'bad', message: 'Release build failed to build. ' + env.BUILD_URL
