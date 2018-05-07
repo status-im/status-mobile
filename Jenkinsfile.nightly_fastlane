@@ -75,7 +75,7 @@ node ('macos1'){
       println (artifact_dir + 'app-release.apk')
       def artifact = (artifact_dir + 'app-release.apk')
       def server = Artifactory.server('artifacts')
-      def shortCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(6)
+      shortCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(6)
       def filename = 'im.status.ethereum-' + shortCommit + '.apk'
       def newArtifact = (artifact_dir + filename)
       sh ('cp ' + artifact + ' '  + newArtifact)
