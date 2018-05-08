@@ -54,16 +54,20 @@ release-ios: prod-build-ios ##@build build release for iOS release
 prod-build:
 	lein prod-build
 
+prod-build-android:
+	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null || true
+	lein prod-build-android
+
+prod-build-ios:
+	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
+	lein prod-build-ios
+
 full-prod-build: ##@build build prod for both Android and iOS
 	./scripts/bundle-status-go.sh ios
 	./scripts/bundle-status-go.sh android
 	$(MAKE) prod-build
-
-prod-build-android:
-	lein prod-build-android
-
-prod-build-ios:
-	lein prod-build-ios
+	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
+	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null
 
 #----------------
 # Dev builds
