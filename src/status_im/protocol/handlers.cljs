@@ -9,13 +9,18 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.web3-provider :as web3-provider]
-            [status-im.transport.core :as transport]))
+            [status-im.transport.core :as transport]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 ;;;; COFX
 (re-frame/reg-cofx
  ::get-web3
  (fn [coeffects _]
-   (assoc coeffects :web3 (web3-provider/make-web3))))
+   (let [web3 (web3-provider/make-web3)
+         address (get-in coeffects [:db :account/account :address])]
+     (set! (.-defaultAccount (.-eth web3))
+           (ethereum/normalized-address address))
+     (assoc coeffects :web3 web3))))
 
 (re-frame/reg-fx
  ::web3-get-syncing
