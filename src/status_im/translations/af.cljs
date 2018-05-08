@@ -221,6 +221,7 @@
    :no-statuses-found                "Geen statusse gevind nie"
    :browsing-open-in-web-browser     "Maak oop in webblaaier"
    :delete-group-prompt              "Dit sal nie kontakte affekteer nie"
-   :edit-profile                     "Redigeer profiel" :empty-topic "Leë onderwerp"
+   :edit-profile                     "Redigeer profiel"
+   :empty-topic "Leë onderwerp"
    :to                               "Aan"
    :data                             "Data"})

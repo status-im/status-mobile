@@ -221,6 +221,7 @@
    :no-statuses-found                     "Nie znaleziono statusów"
    :browsing-open-in-web-browser          "Otwórz w przeglądarce"
    :delete-group-prompt                   "To nie będzie miało wpływu na kontakty"
-   :edit-profile                          "Edytuj profil" :empty-topic                           "Pusty temat"
+   :edit-profile                          "Edytuj profil"
+   :empty-topic                           "Pusty temat"
    :to                                    "Do"
    :data                                  "Dane"})

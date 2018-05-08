@@ -221,6 +221,7 @@
    :no-statuses-found                     "Nem található állapot"
    :browsing-open-in-web-browser          "Megnyitás új böngészőben"
    :delete-group-prompt                   "Nem lesz hatással a névjegyekre"
-   :edit-profile                          "Profil szerkesztése" :empty-topic                           "Üres téma"
+   :edit-profile                          "Profil szerkesztése"
+   :empty-topic                           "Üres téma"
    :to                                    "Címzett"
    :data                                  "Adatok"})

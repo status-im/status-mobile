@@ -221,6 +221,7 @@
    :no-statuses-found                     "Niciun status găsit"
    :browsing-open-in-web-browser          "Deschide în browser web"
    :delete-group-prompt                   "Aceasta nu va afecta contactele"
-   :edit-profile                          "Editare profil" :empty-topic                           "Subiect gol"
+   :edit-profile                          "Editare profil"
+   :empty-topic                           "Subiect gol"
    :to                                    "Către"
    :data                                  "Date"})

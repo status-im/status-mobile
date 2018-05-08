@@ -221,6 +221,7 @@
    :no-statuses-found                     "Ni statusov"
    :browsing-open-in-web-browser          "Odpri v spletnem brskalniku"
    :delete-group-prompt                   "To ne bo vplivalo na stike"
-   :edit-profile                          "Uredi profil" :empty-topic                           "Prazna tema"
+   :edit-profile                          "Uredi profil"
+   :empty-topic                           "Prazna tema"
    :to                                    "Za"
    :data                                  "Podatki"})

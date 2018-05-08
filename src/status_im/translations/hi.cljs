@@ -221,6 +221,7 @@
    :no-statuses-found                     "कोई स्टैटस नहीं मिले"
    :browsing-open-in-web-browser          "वेब ब्राउज़र में खोलें"
    :delete-group-prompt                   "इससे संपर्क प्रभावित नहीं होंगे"
-   :edit-profile                          "प्रोफाइल का संपादन करें" :empty-topic                           "रिक्त विषय"
+   :edit-profile                          "प्रोफाइल का संपादन करें"
+   :empty-topic                           "रिक्त विषय"
    :to                                    "प्रति"
    :data                                  "डेटा"})

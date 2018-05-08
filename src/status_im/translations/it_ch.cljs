@@ -221,6 +221,7 @@
    :no-statuses-found                     "Nessuno stato trovato"
    :browsing-open-in-web-browser          "Apri nel browser"
    :delete-group-prompt                   "Questo non intaccherà i contatti"
-   :edit-profile                          "Modifica profilo" :empty-topic                           "Argomento non definito"
+   :edit-profile                          "Modifica profilo"
+   :empty-topic                           "Argomento non definito"
    :to                                    "A"
    :data                                  "Dati"})

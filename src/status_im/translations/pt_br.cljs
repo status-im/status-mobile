@@ -221,6 +221,7 @@
    :no-statuses-found                     "Nenhum status encontrado"
    :browsing-open-in-web-browser          "Abrir no navegador de internet"
    :delete-group-prompt                   "Isso não afetará os contatos"
-   :edit-profile                          "Editar perfil" :empty-topic                           "Assunto vazio"
+   :edit-profile                          "Editar perfil"
+   :empty-topic                           "Assunto vazio"
    :to                                    "Para"
    :data                                  "Dados"})
