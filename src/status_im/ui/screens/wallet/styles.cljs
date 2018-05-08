@@ -65,18 +65,18 @@
 
 ;; Main section
 
-(def main-section
-  {:flex 1})
+(defstyle main-section
+  {:flex 1
+   :ios  {:background-color colors/blue}})
 
-(def scroll-top
-  (let [height (:height (react/get-dimensions "window"))]
-    {:background-color colors/blue
-     :zIndex           -1
-     :position         :absolute
-     :height           height
-     :top              (- height)
-     :left             0
-     :right            0}))
+(defstyle scroll-bottom
+  {:background-color colors/white
+   :zIndex           -1
+   :position         :absolute
+   :left             0
+   :right            0
+   :android          {:height 0}
+   :ios              {:height 9999}})
 
 (def section
   {:background-color colors/blue})
