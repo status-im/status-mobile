@@ -1,8 +1,7 @@
 (ns status-im.translations.zh-hant)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "成員"
    :not-implemented                       "!未實現"
    :chat-name                             "聊天名稱"
@@ -328,11 +327,7 @@
    :wallet-invalid-address                "無效的地址: \n {{data}}"
    :wallet-browse-photos                  "瀏覽相冊"
    :validation-amount-invalid-number      "金額不是一個有效的數字"
-   :validation-amount-is-too-precise      "金額過於精確，所能發送的最小單位是1 Wei (1x10^-18 ETH)"
-
-
-
-   ;; network settings
+   :validation-amount-is-too-precise      "金額過於精確，所能發送的最小單位是1 Wei (1x10^-18 ETH)";; network settings
    :new-network                           "新建網絡"
    :add-network                           "添加網絡"
    :add-new-network                       "添加新網絡"

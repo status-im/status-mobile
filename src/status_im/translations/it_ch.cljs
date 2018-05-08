@@ -1,8 +1,7 @@
 (ns status-im.translations.it-ch)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Membri"
    :not-implemented                       "!non implementato"
    :chat-name                             "Nome chat"
@@ -132,10 +131,7 @@
    :address-explication                   "Forse qui dovremmo spiegare cos'è un indirizzo e dove cercarlo"
    :contact-already-added                 "Il contatto è già stato aggiunto"
    :can-not-add-yourself                  "Non puoi aggiungere te stesso"
-   :unknown-address                       "Indirizzo sconosciuto"
-
-
-   ;;login
+   :unknown-address                       "Indirizzo sconosciuto";;login
    :connect                               "Effettua connessione"
    :address                               "Indirizzo"
    :password                              "Password"
@@ -203,11 +199,8 @@
    :enter-address                         "Inserisci indirizzo"
    :send-transaction                      "Invia transazione"
    :delete-contact                        "Elimina contatto"
-   :mute-notifications                    "Silenzia le notifiche"
-
-
-   :contact-s                             {:one   "contatto"
-                                           :other "contatti"}
+   :mute-notifications                    "Silenzia le notifiche" :contact-s                             {:one   "contatto"
+                                                                                                          :other "contatti"}
    :next                                  "Avanti"
    :from                                  "Da"
    :search-chats                          "Cerca nelle chat"
@@ -226,9 +219,6 @@
    :no-statuses-found                     "Nessuno stato trovato"
    :browsing-open-in-web-browser          "Apri nel browser"
    :delete-group-prompt                   "Questo non intaccherà i contatti"
-   :edit-profile                          "Modifica profilo"
-
-
-   :empty-topic                           "Argomento non definito"
+   :edit-profile                          "Modifica profilo" :empty-topic                           "Argomento non definito"
    :to                                    "A"
    :data                                  "Dati"})

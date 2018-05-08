@@ -32,8 +32,7 @@
            {:id :outbound  :label (i18n/label :t/outgoing)  :checked? true}
            {:id :pending   :label (i18n/label :t/pending)   :checked? true}
            ;; TODO(jeluard) Restore once we support postponing transaction
-           #_
-           {:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
+           #_{:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 
 (def default-account-settings
   {:wallet {:visible-tokens {:testnet #{:STT :ATT}
@@ -45,8 +44,8 @@
   (->> networks
        (map (fn [[network-name {:keys [config] :as data}]]
               [network-name (assoc data
-                              :config (types/clj->json config)
-                              :raw-config config)]))
+                                   :config (types/clj->json config)
+                                   :raw-config config)]))
        (into {})))
 
 (def mainnet-networks

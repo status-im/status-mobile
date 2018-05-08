@@ -1,5 +1,5 @@
 (ns ^{:doc "Message caching API for message deduplication"}
-    status-im.transport.message-cache
+ status-im.transport.message-cache
   (:refer-clojure :exclude [exists?]))
 
 (defonce messages-set (atom #{}))

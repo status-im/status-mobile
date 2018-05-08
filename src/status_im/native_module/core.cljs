@@ -10,47 +10,38 @@
     (non-status-go-module/ReactNativeStatus.)
     (native-module/ReactNativeStatus.)))
 
-
 (def adjust-resize 16)
 (def adjust-pan 32)
 
 #_(defn- wrap-and-print-callback [name callback]
-   (fn [& args]
-     (println :callback name (str args))
-     (log/debug :callback name args)
-     (apply callback args)))
+    (fn [& args]
+      (println :callback name (str args))
+      (log/debug :callback name args)
+      (apply callback args)))
 
 (defn init-jail []
   (module-interface/-init-jail rns-module))
 
-
 (defn move-to-internal-storage [callback]
   (module-interface/-move-to-internal-storage rns-module callback))
-
 
 (defn start-node [config]
   (module-interface/-start-node rns-module config))
 
-
 (defn stop-node []
   (module-interface/-stop-node rns-module))
-
 
 (defn create-account [password callback]
   (module-interface/-create-account rns-module password callback))
 
-
 (defn recover-account [passphrase password callback]
   (module-interface/-recover-account rns-module passphrase password callback))
-
 
 (defn login [address password callback]
   (module-interface/-login rns-module address password callback))
 
-
 (defn approve-sign-requests [hashes password callback]
   (module-interface/-approve-sign-requests rns-module hashes password callback))
-
 
 (defn discard-sign-request [id]
   (module-interface/-discard-sign-request rns-module id))
@@ -58,18 +49,14 @@
 (defn parse-jail [chat-id file callback]
   (module-interface/-parse-jail rns-module chat-id file callback))
 
-
 (defn call-jail [params]
   (module-interface/-call-jail rns-module params))
-
 
 (defn call-function! [params]
   (module-interface/-call-function! rns-module params))
 
-
 (defn set-soft-input-mode [mode]
   (module-interface/-set-soft-input-mode rns-module mode))
-
 
 (defn clear-web-data []
   (module-interface/-clear-web-data rns-module))

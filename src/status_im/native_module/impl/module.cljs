@@ -6,7 +6,7 @@
             [taoensso.timbre :as log]
             [cljs.core.async :as async :refer [<!]]
             [status-im.utils.js-resources :as js-res]
-            [status-im.utils.platform :as p] 
+            [status-im.utils.platform :as p]
             [status-im.utils.types :as types]
             [status-im.utils.transducers :as transducers]
             [status-im.utils.async :as async-util :refer [timeout]]
@@ -55,17 +55,17 @@
 (defn init-jail []
   (when status
     (call-module
-      (fn []
-        (let [init-js     (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "'; ")
-              init-js'    (if config/jsc-enabled?
-                            (str init-js js-res/web3)
-                            init-js)
-              log-message (str (if config/jsc-enabled?
-                                 "JavaScriptCore"
-                                 "OttoVM")
-                               " jail initialized")]
-          (.initJail status init-js' #(do (re-frame/dispatch [:initialize-keychain])
-                                          (log/debug log-message))))))))
+     (fn []
+       (let [init-js     (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "'; ")
+             init-js'    (if config/jsc-enabled?
+                           (str init-js js-res/web3)
+                           init-js)
+             log-message (str (if config/jsc-enabled?
+                                "JavaScriptCore"
+                                "OttoVM")
+                              " jail initialized")]
+         (.initJail status init-js' #(do (re-frame/dispatch [:initialize-keychain])
+                                         (log/debug log-message))))))))
 
 (defonce listener-initialized (atom false))
 
@@ -134,7 +134,7 @@
     (call-module #(.discardSignRequest status id))))
 
 (defn- append-catalog-init [js]
-    (str js "\n" "var catalog = JSON.stringify(_status_catalog); catalog;"))
+  (str js "\n" "var catalog = JSON.stringify(_status_catalog); catalog;"))
 
 (defn parse-jail [bot-id file callback]
   (when status
@@ -299,8 +299,8 @@
   (-close-application [this]
     (close-application))
   (-connection-change [this data]
-   (connection-change data))
+    (connection-change data))
   (-app-state-change [this state]
-   (app-state-change state))
+    (app-state-change state))
   (-get-device-UUID [this callback]
-   (get-device-UUID callback)))
+    (get-device-UUID callback)))

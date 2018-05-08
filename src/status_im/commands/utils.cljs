@@ -39,7 +39,7 @@
 
 (def events #{:onPress :onValueChange :onSlidingComplete})
 
-(defn wrap-event [[_ event] bot-id] 
+(defn wrap-event [[_ event] bot-id]
   #(dispatch [:suggestions-event! bot-id (update event 0 keyword) %]))
 
 (defn check-events [m bot-id]
@@ -50,22 +50,22 @@
 (defn generate-hiccup
   ([markup]
    (generate-hiccup markup nil {}))
-  ([markup bot-id bot-db] 
+  ([markup bot-id bot-db]
    (w/prewalk
-     (fn [el]
-       (cond
+    (fn [el]
+      (cond
 
-         (and (vector? el) (= "subscribe" (first el)))
-         (let [path (mapv keyword (second el))]
-           (get-in bot-db path))
+        (and (vector? el) (= "subscribe" (first el)))
+        (let [path (mapv keyword (second el))]
+          (get-in bot-db path))
 
-         (and (vector? el) (string? (first el)))
-         (-> el
-             (update 0 get-element)
-             (update 1 check-events bot-id))
+        (and (vector? el) (string? (first el)))
+        (-> el
+            (update 0 get-element)
+            (update 1 check-events bot-id))
 
-         :else el))
-     markup)))
+        :else el))
+    markup)))
 
 (defn reg-handler
   ([name handler] (reg-handler name nil handler))

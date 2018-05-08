@@ -1,8 +1,7 @@
 (ns status-im.translations.fr-ch)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Membres"
    :not-implemented                       "!pas mis en place"
    :chat-name                             "Nom de chat"
@@ -132,10 +131,7 @@
    :address-explication                   "On pourrait mettre ici un texte qui explique ce qu'est une adresse et comment la rechercher"
    :contact-already-added                 "Le contact a déjà été ajouté"
    :can-not-add-yourself                  "Vous ne pouvez pas vous ajouter vous-même"
-   :unknown-address                       "Adresse inconnue"
-
-
-   ;;login
+   :unknown-address                       "Adresse inconnue";;login
    :connect                               "Se connecter"
    :address                               "Adresse"
    :password                              "Mot de passe"
@@ -203,11 +199,8 @@
    :enter-address                         "Renseigner l'adresse"
    :send-transaction                      "Envoyer la transaction"
    :delete-contact                        "Supprimer le contact"
-   :mute-notifications                    "Désactiver le son des notifications"
-
-
-   :contact-s                             {:one   "contact"
-                                           :other "contacts"}
+   :mute-notifications                    "Désactiver le son des notifications" :contact-s                             {:one   "contact"
+                                                                                                                        :other "contacts"}
    :next                                  "Suivant"
    :from                                  "De"
    :search-chats                          "Rechercher dans les discussions"
@@ -226,9 +219,6 @@
    :no-statuses-found                     "Aucun statut trouvé"
    :browsing-open-in-web-browser          "Ouvrir dans le navigateur"
    :delete-group-prompt                   "Cela n'affectera pas les contacts"
-   :edit-profile                          "Modifier le profil"
-
-
-   :empty-topic                           "Sujet vide"
+   :edit-profile                          "Modifier le profil" :empty-topic                           "Sujet vide"
    :to                                    "À"
    :data                                  "Données"})

@@ -1,8 +1,7 @@
 (ns status-im.translations.sl)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Člani"
    :not-implemented                       "!ni implementirano"
    :chat-name                             "Ime za klepet"
@@ -132,10 +131,7 @@
    :address-explication                   "Sem morda sodi besedilo, ki razlaga, kaj je naslov ter kje ga najti"
    :contact-already-added                 "Stik je bil že dodan"
    :can-not-add-yourself                  "Sebe ni mogoče dodati"
-   :unknown-address                       "Neznan naslov"
-
-
-   ;;login
+   :unknown-address                       "Neznan naslov";;login
    :connect                               "Poveži"
    :address                               "Naslov"
    :password                              "Geslo"
@@ -203,11 +199,8 @@
    :enter-address                         "Vnesi naslov"
    :send-transaction                      "Pošlji transakcijo"
    :delete-contact                        "Izbriši stik"
-   :mute-notifications                    "Utišaj obvestila"
-
-
-   :contact-s                             {:one   "stik"
-                                           :other "stiki"}
+   :mute-notifications                    "Utišaj obvestila" :contact-s                             {:one   "stik"
+                                                                                                     :other "stiki"}
    :next                                  "Naprej"
    :from                                  "Od"
    :search-chats                          "Išči klepete"
@@ -226,9 +219,6 @@
    :no-statuses-found                     "Ni statusov"
    :browsing-open-in-web-browser          "Odpri v spletnem brskalniku"
    :delete-group-prompt                   "To ne bo vplivalo na stike"
-   :edit-profile                          "Uredi profil"
-
-
-   :empty-topic                           "Prazna tema"
+   :edit-profile                          "Uredi profil" :empty-topic                           "Prazna tema"
    :to                                    "Za"
    :data                                  "Podatki"})

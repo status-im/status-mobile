@@ -1,8 +1,7 @@
 (ns status-im.translations.fr)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Membres"
    :not-implemented                       "! Non disponible"
    :chat-name                             "Pseudonyme"
@@ -346,11 +345,7 @@
    :wallet-invalid-address                "Adresse invalide: \n {{data}}"
    :wallet-browse-photos                  "Parcourir les Photos"
    :validation-amount-invalid-number      "Le montant n'est pas un nombre valide"
-   :validation-amount-is-too-precise      "Le montant est trop précis. La plus petite unité que vous pouvez saisir est 1 Wei (1x10^-18 ETH)"
-
-
-
-   ;; network settings
+   :validation-amount-is-too-precise      "Le montant est trop précis. La plus petite unité que vous pouvez saisir est 1 Wei (1x10^-18 ETH)";; network settings
    :new-network                           "Nouveau réseau"
    :add-network                           "Ajouter un réseau"
    :add-new-network                       "Ajouter un nouveau réseau"

@@ -1,8 +1,7 @@
 (ns status-im.translations.es-ar)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Miembros"
    :not-implemented                       "!no implementado"
    :chat-name                             "Nombre del chat"
@@ -137,10 +136,7 @@
    :address-explication                   "Tal vez, aquí debería haber alguna indicación explicando qué es una dirección y dónde buscarla"
    :contact-already-added                 "El contacto ya ha sido agregado"
    :can-not-add-yourself                  "No puedes agregarte a ti mismo(a)"
-   :unknown-address                       "Dirección desconocida"
-
-
-   ;;login
+   :unknown-address                       "Dirección desconocida";;login
    :connect                               "Conectar"
    :address                               "Dirección"
    :password                              "Contraseña"
@@ -206,11 +202,8 @@
    :enter-address                         "Ingresar dirección"
    :send-transaction                      "Enviar transacción"
    :delete-contact                        "Eliminar contacto"
-   :mute-notifications                    "Silenciar notificaciones"
-
-
-   :contact-s                             {:one   "contacto"
-                                           :other "contactos"}
+   :mute-notifications                    "Silenciar notificaciones" :contact-s                             {:one   "contacto"
+                                                                                                             :other "contactos"}
    :next                                  "Siguiente"
    :from                                  "De"
    :search-chats                          "Buscar chats"
@@ -228,9 +221,6 @@
    :no-statuses-found                     "No se encontraron estados"
    :browsing-open-in-web-browser          "Abrir en navegador web"
    :delete-group-prompt                   "Esto no afectará a los contactos"
-   :edit-profile                          "Editar perfil"
-
-
-   :empty-topic                           "Tema vacío"
+   :edit-profile                          "Editar perfil" :empty-topic                           "Tema vacío"
    :to                                    "Para"
    :data                                  "Datos"})

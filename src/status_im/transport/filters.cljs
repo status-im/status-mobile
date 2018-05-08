@@ -1,5 +1,5 @@
 (ns ^{:doc "API for whisper filters"}
-    status-im.transport.filters
+ status-im.transport.filters
   (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.transport.utils :as utils]
@@ -28,44 +28,44 @@
     (add-shh-filter! web3 options callback)))
 
 (re-frame/reg-fx
-  :shh/add-filter
-  (fn [{:keys [web3 sym-key-id topic chat-id]}]
-    (when-let [filter (add-filter! web3
-                                   {:topics [topic]
-                                    :symKeyID sym-key-id}
-                                   (fn [js-error js-message]
-                                     (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))]
-      (re-frame/dispatch [::filter-added chat-id filter]))))
+ :shh/add-filter
+ (fn [{:keys [web3 sym-key-id topic chat-id]}]
+   (when-let [filter (add-filter! web3
+                                  {:topics [topic]
+                                   :symKeyID sym-key-id}
+                                  (fn [js-error js-message]
+                                    (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))]
+     (re-frame/dispatch [::filter-added chat-id filter]))))
 
 (handlers/register-handler-db
-  ::filter-added
-  [re-frame/trim-v]
-  (fn [db [chat-id filter]]
-    (assoc-in db [:transport/chats chat-id :filter] filter)))
+ ::filter-added
+ [re-frame/trim-v]
+ (fn [db [chat-id filter]]
+   (assoc-in db [:transport/chats chat-id :filter] filter)))
 
 (re-frame/reg-fx
-  :shh/add-discovery-filter
-  (fn [{:keys [web3 private-key-id topic]}]
-    (when-let [filter (add-filter! web3
-                                   {:topics [topic]
-                                    :privateKeyID private-key-id}
-                                   (fn [js-error js-message]
-                                     (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message])))]
-      (re-frame/dispatch [::discovery-filter-added filter]))))
+ :shh/add-discovery-filter
+ (fn [{:keys [web3 private-key-id topic]}]
+   (when-let [filter (add-filter! web3
+                                  {:topics [topic]
+                                   :privateKeyID private-key-id}
+                                  (fn [js-error js-message]
+                                    (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message])))]
+     (re-frame/dispatch [::discovery-filter-added filter]))))
 
 (handlers/register-handler-db
-  ::discovery-filter-added
-  [re-frame/trim-v]
-  (fn [db [filter]]
-    (assoc db :transport/discovery-filter filter)))
+ ::discovery-filter-added
+ [re-frame/trim-v]
+ (fn [db [filter]]
+   (assoc db :transport/discovery-filter filter)))
 
 (re-frame/reg-fx
-  :shh/remove-filter
-  (fn [filter]
-    (when filter (remove-filter! filter))))
+ :shh/remove-filter
+ (fn [filter]
+   (when filter (remove-filter! filter))))
 
 (re-frame/reg-fx
-  :shh/remove-filters
-  (fn [filters]
-    (doseq [filter filters]
-      (remove-filter! filter))))
+ :shh/remove-filters
+ (fn [filters]
+   (doseq [filter filters]
+     (remove-filter! filter))))

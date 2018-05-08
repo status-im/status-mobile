@@ -1,8 +1,7 @@
 (ns status-im.translations.th)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "สมาชิก"
    :not-implemented                       "!ยังไม่ได้ดำเนินการ"
    :chat-name                             "ชื่อแชท"
@@ -132,10 +131,7 @@
    :address-explication                   "บางที ในที่นี้คุณควรกรอกข้อความสักเล็กน้อยเพื่อแสดงที่อยู่หรือสถานที่ที่จะมองหามันได้"
    :contact-already-added                 "ได้มีการเพิ่มผู้ติดต่อนี้แล้ว"
    :can-not-add-yourself                  "คุณไม่สามารถเพิ่มตัวคุณเอง"
-   :unknown-address                       "ที่อยู่ที่ไม่ทราบ"
-
-
-   ;;login
+   :unknown-address                       "ที่อยู่ที่ไม่ทราบ";;login
    :connect                               "เชื่อมต่อ"
    :address                               "ที่อยู่"
    :password                              "รหัสผ่าน"

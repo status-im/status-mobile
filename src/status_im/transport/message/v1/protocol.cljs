@@ -1,5 +1,5 @@
 (ns ^{:doc "Protocol API and protocol utils"}
-    status-im.transport.message.v1.protocol
+ status-im.transport.message.v1.protocol
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.chat.core :as chat]

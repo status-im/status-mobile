@@ -1,8 +1,7 @@
 (ns status-im.translations.he)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "חבר"
    :not-implemented                       "!עדיין לא יושם"
    :chat-name                             "שם הצ'אט"
@@ -200,10 +199,7 @@
    :enter-valid-public-key                "אנא הזן קוד פומבי תקף או סרוק ברקוד"
    :contact-already-added                 "איש הקשר כבר קיים"
    :can-not-add-yourself                  "אתה לא יכול להוסיף את עצמך"
-   :unknown-address                       "כתובת לא ידועה"
-
-
-   ;;login
+   :unknown-address                       "כתובת לא ידועה";;login
    :connect                               "התחבר"
    :address                               "כתובת"
    :password                              "סיסמא"
