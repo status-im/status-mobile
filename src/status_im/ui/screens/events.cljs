@@ -14,6 +14,7 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.ui.screens.navigation
+            status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
             status-im.ui.screens.qr-scanner.events
