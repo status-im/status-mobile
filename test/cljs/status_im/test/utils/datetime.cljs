@@ -25,7 +25,7 @@
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-fmt (d/mk-fmt "us" d/short-time-format)
                 d/time-zone-offset (t/period :hours 0)]
-   (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
+    (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
 
 (deftest to-short-str-before-yesterday-us-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)

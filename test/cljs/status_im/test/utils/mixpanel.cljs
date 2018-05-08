@@ -12,7 +12,6 @@
                   (true? first-parameter))}
     {:trigger [:key3 :p1 :p2 :p3]}]))
 
-
 (deftest matching-event
   (is (empty? (mixpanel/matching-events {} [:non-existing] definitions)))
   (is (= 1 (count (mixpanel/matching-events {} [:key] definitions))))
@@ -26,9 +25,9 @@
 (deftest drain-events-queue!-test
   (async
    done
-    (let [queue   (async/chan (async/sliding-buffer 2000))
-          results (atom [])]
-      (async/go
+   (let [queue   (async/chan (async/sliding-buffer 2000))
+         results (atom [])]
+     (async/go
        (async/<! (async/onto-chan queue (range 123) false))
        (async/<!
         (mixpanel/drain-events-queue!

@@ -21,7 +21,7 @@
                                     :from "a"
                                     :chat-id "a"}))))
   (testing "it returns false when it's already in the not-loaded-message-ids"
-    (is (not (message/add-to-chat? {:db {:chats {"a" {:not-loaded-message-ids #{"message-id" }}}}}
+    (is (not (message/add-to-chat? {:db {:chats {"a" {:not-loaded-message-ids #{"message-id"}}}}}
                                    {:message-id "message-id"
                                     :from "a"
                                     :chat-id "a"})))))
@@ -41,21 +41,21 @@
       (is (= #{"1"} (:message-ids (extract-seen (message/receive message db))))))
     (testing "it does not send any when the chat is public"
       (is (nil? (extract-seen
-                  (message/receive
-                    message
-                    (assoc-in db [:db :chats "chat-id" :public?] true))))))
+                 (message/receive
+                  message
+                  (assoc-in db [:db :chats "chat-id" :public?] true))))))
     (testing "it does not send any when we are in a different chat"
       (is (nil? (extract-seen
-                  (message/receive
-                    message
-                    (assoc-in db [:db :current-chat-id] :different))))))
+                 (message/receive
+                  message
+                  (assoc-in db [:db :current-chat-id] :different))))))
     (testing "it does not send any when we are not in a chat view"
       (is (nil? (extract-seen
-                  (message/receive
-                    message
-                    (assoc-in db [:db :view-id] :home))))))
+                 (message/receive
+                  message
+                  (assoc-in db [:db :view-id] :home))))))
     (testing "it does not send any when no public key is in account"
       (is (nil? (extract-seen
-                  (message/receive
-                    message
-                    (assoc-in db [:db :account/account :public-key] nil))))))))
+                 (message/receive
+                  message
+                  (assoc-in db [:db :account/account :public-key] nil))))))))

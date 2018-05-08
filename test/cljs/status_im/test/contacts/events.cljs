@@ -12,44 +12,44 @@
             [status-im.utils.datetime :as datetime]))
 
 (def test-contact-group
-  {:group-id "1501682106404-685e041e-38e7-593e-b42c-fb4cabd7faa4"
-   :name "Test"
+  {:group-id  "1501682106404-685e041e-38e7-593e-b42c-fb4cabd7faa4"
+   :name      "Test"
    :timestamp 0
-   :order 0
-   :pending? false
-   :contacts (list
+   :order     0
+   :pending?  false
+   :contacts  (list
                {:identity "bchat"}
                {:identity "Commiteth"}
                {:identity "demo-bot"})})
 
 (def dapps-contact-group
-  {:group-id "dapps"
-   :name "ÐApps"
-   :order 1
+  {:group-id  "dapps"
+   :name      "ÐApps"
+   :order     1
    :timestamp 0
-   :contacts [{:identity "oaken-water-meter"}
-              {:identity "melonport"}
-              {:identity "bchat"}
-              {:identity "Dentacoin"}
-              {:identity "Augur"}
-              {:identity "Ethlance"}
-              {:identity "Commiteth"}]
-   :pending? false})
+   :contacts  [{:identity "oaken-water-meter"}
+               {:identity "melonport"}
+               {:identity "bchat"}
+               {:identity "Dentacoin"}
+               {:identity "Augur"}
+               {:identity "Ethlance"}
+               {:identity "Commiteth"}]
+   :pending?  false})
 
 (def demo-bot-contact
-  {:address nil
-   :name "Demo bot"
-   :description nil
-   :hide-contact? false
-   :dapp-hash nil
-   :photo-path nil
-   :dapp-url nil
-   :bot-url "local://demo-bot"
+  {:address          nil
+   :name             "Demo bot"
+   :description      nil
+   :hide-contact?    false
+   :dapp-hash        nil
+   :photo-path       nil
+   :dapp-url         nil
+   :bot-url          "local://demo-bot"
    :whisper-identity "demo-bot"
-   :dapp? true
-   :pending? false
-   :unremovable? false
-   :public-key nil})
+   :dapp?            true
+   :pending?         false
+   :unremovable?     false
+   :public-key       nil})
 
 (def console-contact
   {:whisper-identity "console"
@@ -79,27 +79,27 @@
   (rf/reg-fx :data-store/save-chat #())
 
   (rf/reg-cofx
-    :data-store/get-all-contacts
-    (fn [coeffects _]
-      (assoc coeffects :all-contacts [])))
+   :data-store/get-all-contacts
+   (fn [coeffects _]
+     (assoc coeffects :all-contacts [])))
 
   (rf/reg-cofx
-    :data-store/get-local-storage-data
-    (fn [cofx]
-      (assoc cofx :get-local-storage-data (constantly nil))))
+   :data-store/get-local-storage-data
+   (fn [cofx]
+     (assoc cofx :get-local-storage-data (constantly nil))))
 
   (rf/reg-cofx
-    ::group-events/get-all-contact-groups
-    (fn [coeffects _]
-      (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
+   ::group-events/get-all-contact-groups
+   (fn [coeffects _]
+     (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
 
   ;;TODO implement tests later for :add-chat? and :bot-url
   (rf/reg-cofx
-    ::contacts-events/get-default-contacts-and-groups
-    (fn [coeffects _]
-      (assoc coeffects
-             :default-contacts (select-keys js-res/default-contacts [:demo-bot])
-             :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
+   ::contacts-events/get-default-contacts-and-groups
+   (fn [coeffects _]
+     (assoc coeffects
+            :default-contacts (select-keys js-res/default-contacts [:demo-bot])
+            :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
 
 #_(deftest contacts-events
     "load-contacts
@@ -122,7 +122,7 @@
    delete-contact-group"
 
     (testing "watch-contact"
-      (let [contact   {:public-key "public-key"
+      (let [contact   {:public-key       "public-key"
                        :whisper-identity "whisper-identity"}
             actual-fx (-> {:db {:web3 "web3"}}
                           (contacts-events/watch-contact contact)
@@ -141,16 +141,16 @@
           (is (= "public-key" (:public-key actual-fx))))))
 
     (testing "send-contact-request"
-      (let [contact    {:whisper-identity "contact-whisper-identity"}
-            account    {:name "name"
-                        :photo-path "photo-path"
-                        :status "status"}
-            accounts   {"current-account-id" account}
-            db         {:accounts/accounts accounts
-                        :accounts/current-account-id "current-account-id"
-                        :web3 "web3"
-                        :current-public-key "current-public-key"
-                        :notifications {:fcm-token "fcm-token"}}
+      (let [contact   {:whisper-identity "contact-whisper-identity"}
+            account   {:name       "name"
+                       :photo-path "photo-path"
+                       :status     "status"}
+            accounts  {"current-account-id" account}
+            db        {:accounts/accounts           accounts
+                       :accounts/current-account-id "current-account-id"
+                       :web3                        "web3"
+                       :current-public-key          "current-public-key"
+                       :notifications               {:fcm-token "fcm-token"}}
             actual-fx (-> {:db db}
                           (contacts-events/send-contact-request contact)
                           ::contacts-events/send-contact-request-fx)]
@@ -180,274 +180,272 @@
 
     (run-test-sync
 
-      (test-fixtures)
+     (test-fixtures)
 
-      (rf/dispatch [:initialize-db])
+     (rf/dispatch [:initialize-db])
 
-      (def contacts (rf/subscribe [:get-contacts]))
-      (def contact-groups (rf/subscribe [:get-contact-groups]))
-      (def view-id         (rf/subscribe [:get :view-id]))
+     (def contacts (rf/subscribe [:get-contacts]))
+     (def contact-groups (rf/subscribe [:get-contact-groups]))
+     (def view-id (rf/subscribe [:get :view-id]))
 
-      (testing ":load-contacts event"
+     (testing ":load-contacts event"
 
-        ;;Assert the initial state
-        (is (and (map? @contacts) (empty? @contacts)))
-        (rf/dispatch [:load-contacts]))
+       ;;Assert the initial state
+       (is (and (map? @contacts) (empty? @contacts)))
+       (rf/dispatch [:load-contacts]))
 
-      (testing ":load-contact-groups event"
+     (testing ":load-contact-groups event"
 
-        ;;Assert the initial state
-        (is (and (map? @contact-groups) (empty? @contact-groups)))
-        (rf/dispatch [:load-contact-groups])
-        (is (= {(:group-id test-contact-group) test-contact-group}
-               @contact-groups)))
+       ;;Assert the initial state
+       (is (and (map? @contact-groups) (empty? @contact-groups)))
+       (rf/dispatch [:load-contact-groups])
+       (is (= {(:group-id test-contact-group) test-contact-group}
+              @contact-groups)))
 
-      (testing ":load-default-contacts! event"
+     (testing ":load-default-contacts! event"
 
-        ;; :load-default-contacts! event dispatches next 5 events
-        ;;
-        ;; :add-contact-groups
-        ;; :add-contacts
-        ;; :add-contacts-to-group
-        ;;TODO :add-chat
-        ;;TODO :load-commands!
-        (rf/dispatch [:load-default-contacts!])
+       ;; :load-default-contacts! event dispatches next 5 events
+       ;;
+       ;; :add-contact-groups
+       ;; :add-contacts
+       ;; :add-contacts-to-group
+       ;;TODO :add-chat
+       ;;TODO :load-commands!
+       (rf/dispatch [:load-default-contacts!])
 
-        (rf/dispatch [:set-in [:group/contact-groups "dapps" :timestamp] 0])
+       (rf/dispatch [:set-in [:group/contact-groups "dapps" :timestamp] 0])
 
-        (is (= {"dapps" dapps-contact-group
-                (:group-id test-contact-group) test-contact-group}
-               @contact-groups))
+       (is (= {"dapps"                        dapps-contact-group
+               (:group-id test-contact-group) test-contact-group}
+              @contact-groups))
 
-        (testing "it adds a default contact"
-          (is (= demo-bot-contact (get @contacts "demo-bot"))))
+       (testing "it adds a default contact"
+         (is (= demo-bot-contact (get @contacts "demo-bot"))))
 
-        (testing "it adds the console bot"
-          (is (= console-contact (get @contacts "console"))))
+       (testing "it adds the console bot"
+         (is (= console-contact (get @contacts "console"))))
 
-        (testing "it does not add any other contact"
-          (is (= 2 (count (keys @contacts))))))
+       (testing "it does not add any other contact"
+         (is (= 2 (count (keys @contacts))))))
 
-      (def new-contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
-      (def new-contact-address "5392ccb49f2e9fef8b8068b3e3b5ba6c020a9aca")
-      (def new-contact {:name ""
-                        :photo-path ""
-                        :whisper-identity new-contact-public-key
-                        :address new-contact-address
-                        :pending? false})
-      (def contact (rf/subscribe [:contact-by-identity new-contact-public-key]))
-      (def current-chat-id (rf/subscribe [:get-current-chat-id]))
+     (def new-contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
+     (def new-contact-address "5392ccb49f2e9fef8b8068b3e3b5ba6c020a9aca")
+     (def new-contact {:name             ""
+                       :photo-path       ""
+                       :whisper-identity new-contact-public-key
+                       :address          new-contact-address
+                       :pending?         false})
+     (def contact (rf/subscribe [:contact-by-identity new-contact-public-key]))
+     (def current-chat-id (rf/subscribe [:get-current-chat-id]))
 
-      (testing ":add-contact-handler event - new contact"
+     (testing ":add-contact-handler event - new contact"
 
-        (rf/dispatch [:set :view-id nil])
-        (rf/dispatch [:set :current-chat-id nil])
+       (rf/dispatch [:set :view-id nil])
+       (rf/dispatch [:set :current-chat-id nil])
 
-        ;; :add-contact-handler event dispatches next 4 events for new contact
-        ;;
-        ;; :add-new-contact-and-open-chat
-        ;; :status-im.contacts.events/add-new-contact
-        ;; :status-im.contacts.events/send-contact-request
-        ;;TODO :start-chat
+       ;; :add-contact-handler event dispatches next 4 events for new contact
+       ;;
+       ;; :add-new-contact-and-open-chat
+       ;; :status-im.contacts.events/add-new-contact
+       ;; :status-im.contacts.events/send-contact-request
+       ;;TODO :start-chat
 
-        (rf/dispatch [:set :contacts/new-identity new-contact-public-key])
-        (rf/dispatch [:add-contact-handler])
+       (rf/dispatch [:set :contacts/new-identity new-contact-public-key])
+       (rf/dispatch [:add-contact-handler])
 
-        (testing "it returns the new contact from the contact-by-identity sub"
-          (is (= new-contact (assoc @contact :photo-path "" :name ""))))
+       (testing "it returns the new contact from the contact-by-identity sub"
+         (is (= new-contact (assoc @contact :photo-path "" :name ""))))
 
-        (testing "it adds the new contact to the list of contacts"
-          (is (= new-contact
-                 (-> @contacts
-                     (get new-contact-public-key)
-                     (assoc :photo-path "" :name "")))))
+       (testing "it adds the new contact to the list of contacts"
+         (is (= new-contact
+                (-> @contacts
+                    (get new-contact-public-key)
+                    (assoc :photo-path "" :name "")))))
 
-        (testing "it loads the 1-1 chat"
-          (is (= :chat @view-id)))
+       (testing "it loads the 1-1 chat"
+         (is (= :chat @view-id)))
 
-        (testing "it adds the new contact to the chat"
-          (is (= new-contact-public-key @current-chat-id))))
+       (testing "it adds the new contact to the chat"
+         (is (= new-contact-public-key @current-chat-id))))
 
-      (testing ":contact-request-received event"
+     (testing ":contact-request-received event"
 
-        ;; :contact-request-received event dispatches next 3 events
-        ;;
-        ;; :update-contact!
-        ;; :watch-contact
-        ;;TODO :update-chat!
-        (rf/reg-event-db :update-chat! (fn [db _] db))
-        (def received-contact {:name "test"
-                               :profile-image ""
-                               :address new-contact-address
-                               :status "test status"
-                               :fcm-token "0xwhatever"})
-        (def received-contact1 (merge new-contact
-                                      (dissoc received-contact :profile-image)
-                                      {:public-key new-contact-public-key}))
+       ;; :contact-request-received event dispatches next 3 events
+       ;;
+       ;; :update-contact!
+       ;; :watch-contact
+       ;;TODO :update-chat!
+       (rf/reg-event-db :update-chat! (fn [db _] db))
+       (def received-contact {:name          "test"
+                              :profile-image ""
+                              :address       new-contact-address
+                              :status        "test status"
+                              :fcm-token     "0xwhatever"})
+       (def received-contact1 (merge new-contact
+                                     (dissoc received-contact :profile-image)
+                                     {:public-key new-contact-public-key}))
 
-        (rf/dispatch [:contact-request-received {:from new-contact-public-key
-                                                 :payload {:contact received-contact}}])
+       (rf/dispatch [:contact-request-received {:from    new-contact-public-key
+                                                :payload {:contact received-contact}}])
 
-        (testing "it adds the new contact to the list of contacts"
-          (is (= received-contact1
-                 (get @contacts new-contact-public-key)))))
+       (testing "it adds the new contact to the list of contacts"
+         (is (= received-contact1
+                (get @contacts new-contact-public-key)))))
 
-      (testing ":contact-update-received event"
+     (testing ":contact-update-received event"
 
-        ;; :contact-update-received event dispatches next 2 events
-        ;;
-        ;; :update-contact!
-        ;;TODO :update-chat!
-        (let [timestamp (datetime/timestamp)]
-          (def received-contact2 (assoc received-contact1
-                                        :last-updated timestamp
-                                        :status "new status"
-                                        :name "new name"))
+       ;; :contact-update-received event dispatches next 2 events
+       ;;
+       ;; :update-contact!
+       ;;TODO :update-chat!
+       (let [timestamp (datetime/timestamp)]
+         (def received-contact2 (assoc received-contact1
+                                       :last-updated timestamp
+                                       :status "new status"
+                                       :name "new name"))
 
-          (rf/dispatch [:contact-update-received {:from new-contact-public-key
-                                                  :payload {:content {:profile {:profile-image ""
-                                                                                :status "new status"
-                                                                                :name "new name"}}
-                                                            :timestamp timestamp}}]))
+         (rf/dispatch [:contact-update-received {:from    new-contact-public-key
+                                                 :payload {:content   {:profile {:profile-image ""
+                                                                                 :status        "new status"
+                                                                                 :name          "new name"}}
+                                                           :timestamp timestamp}}]))
 
-        (testing "it updates the contact and set the :last-updated key"
-          (is (= received-contact2
-                 (get @contacts new-contact-public-key)))))
+       (testing "it updates the contact and set the :last-updated key"
+         (is (= received-contact2
+                (get @contacts new-contact-public-key)))))
 
-      (testing ":hide-contact event"
+     (testing ":hide-contact event"
 
-        ;; :hide-contact event dispatches next 2 events
-        ;;
-        ;; :update-contact!
-        ;;TODO :account-update-keys
-        (rf/reg-event-db :account-update-keys (fn [db _] db))
+       ;; :hide-contact event dispatches next 2 events
+       ;;
+       ;; :update-contact!
+       ;;TODO :account-update-keys
+       (rf/reg-event-db :account-update-keys (fn [db _] db))
 
-        (rf/dispatch [:hide-contact @contact])
+       (rf/dispatch [:hide-contact @contact])
 
-        (testing "it sets the pending? flag to true"
-          (is (= (assoc received-contact2 :pending? true)
-                 (get @contacts new-contact-public-key)))))
+       (testing "it sets the pending? flag to true"
+         (is (= (assoc received-contact2 :pending? true)
+                (get @contacts new-contact-public-key)))))
 
-      (testing ":add-contact-handler event - :add-contact"
+     (testing ":add-contact-handler event - :add-contact"
 
-        ;; :add-contact-handler event dispatches next 4 events
-        ;;
-        ;; :add-contact
-        ;; :status-im.contacts.events/add-new-contact
-        ;; :status-im.contacts.events/send-contact-request
-        ;;TODO :discoveries-send-portions
-        (rf/reg-event-db :discoveries-send-portions (fn [db _] db))
+       ;; :add-contact-handler event dispatches next 4 events
+       ;;
+       ;; :add-contact
+       ;; :status-im.contacts.events/add-new-contact
+       ;; :status-im.contacts.events/send-contact-request
+       ;;TODO :discoveries-send-portions
+       (rf/reg-event-db :discoveries-send-portions (fn [db _] db))
 
-        (rf/dispatch [:set :view-id nil])
-        (rf/dispatch [:set :current-chat-id nil])
-        (rf/dispatch [:set :contacts/new-identity new-contact-public-key])
-        (rf/dispatch [:add-contact-handler])
+       (rf/dispatch [:set :view-id nil])
+       (rf/dispatch [:set :current-chat-id nil])
+       (rf/dispatch [:set :contacts/new-identity new-contact-public-key])
+       (rf/dispatch [:add-contact-handler])
 
-        (testing "it sets the pending? flag to false"
-          (is (= (assoc received-contact2 :pending? false)
-                 (get @contacts new-contact-public-key))))
+       (testing "it sets the pending? flag to false"
+         (is (= (assoc received-contact2 :pending? false)
+                (get @contacts new-contact-public-key))))
 
-        (testing "it loads the 1-1 chat"
-          (is (= :chat @view-id)))
+       (testing "it loads the 1-1 chat"
+         (is (= :chat @view-id)))
 
-        (testing "it adds the new contact to the chat"
-          (is (= new-contact-public-key @current-chat-id))))
+       (testing "it adds the new contact to the chat"
+         (is (= new-contact-public-key @current-chat-id))))
 
-      (testing ":create-new-contact-group event"
+     (testing ":create-new-contact-group event"
 
-        (def new-group-name "new group")
-        (rf/dispatch [:select-contact new-contact-public-key])
-        (rf/dispatch [:select-contact "demo-bot"])
-        (rf/dispatch [:select-contact "browse"])
-        (rf/dispatch [:deselect-contact "browse"])
+       (def new-group-name "new group")
+       (rf/dispatch [:select-contact new-contact-public-key])
+       (rf/dispatch [:select-contact "demo-bot"])
+       (rf/dispatch [:select-contact "browse"])
+       (rf/dispatch [:deselect-contact "browse"])
 
-        (rf/dispatch [:create-new-contact-group new-group-name])
+       (rf/dispatch [:create-new-contact-group new-group-name])
 
-        (rf/dispatch [:deselect-contact "demo-bot"])
-        (rf/dispatch [:deselect-contact new-contact-public-key])
-        (def new-group-id (->> @contact-groups
-                               (vals)
-                               (filter #(= (:name %) new-group-name))
-                               (first)
-                               (:group-id)))
-        (def new-group {:group-id new-group-id
-                        :name new-group-name
-                        :order 2
-                        :timestamp 0
-                        :contacts [{:identity new-contact-public-key}
+       (rf/dispatch [:deselect-contact "demo-bot"])
+       (rf/dispatch [:deselect-contact new-contact-public-key])
+       (def new-group-id (->> @contact-groups
+                              (vals)
+                              (filter #(= (:name %) new-group-name))
+                              (first)
+                              (:group-id)))
+       (def new-group {:group-id  new-group-id
+                       :name      new-group-name
+                       :order     2
+                       :timestamp 0
+                       :contacts  [{:identity new-contact-public-key}
                                    {:identity "demo-bot"}]})
-        (def groups-with-new-group {new-group-id new-group
-                                    "dapps" dapps-contact-group
-                                    (:group-id test-contact-group) test-contact-group})
-        (def groups-with-new-group1 (update groups-with-new-group new-group-id assoc :name "new group name"))
-        (def groups-with-new-group2 (-> groups-with-new-group1
-                                        (update new-group-id assoc :order 1)
-                                        (update "dapps" assoc :order 2)))
+       (def groups-with-new-group {new-group-id                   new-group
+                                   "dapps"                        dapps-contact-group
+                                   (:group-id test-contact-group) test-contact-group})
+       (def groups-with-new-group1 (update groups-with-new-group new-group-id assoc :name "new group name"))
+       (def groups-with-new-group2 (-> groups-with-new-group1
+                                       (update new-group-id assoc :order 1)
+                                       (update "dapps" assoc :order 2)))
 
-        (rf/dispatch [:set-in [:group/contact-groups new-group-id :timestamp] 0])
+       (rf/dispatch [:set-in [:group/contact-groups new-group-id :timestamp] 0])
 
-        (is (= groups-with-new-group @contact-groups)))
+       (is (= groups-with-new-group @contact-groups)))
 
-      (testing ":set-contact-group-name event"
+     (testing ":set-contact-group-name event"
 
-        (rf/reg-event-db ::prepare-group-name
-                         (fn [db _] (assoc db
-                                           :new-chat-name "new group name"
-                                           :group/contact-group-id new-group-id)))
+       (rf/reg-event-db ::prepare-group-name
+                        (fn [db _] (assoc db
+                                          :new-chat-name "new group name"
+                                          :group/contact-group-id new-group-id)))
 
-        (rf/dispatch [::prepare-group-name])
-        (rf/dispatch [:set-contact-group-name])
+       (rf/dispatch [::prepare-group-name])
+       (rf/dispatch [:set-contact-group-name])
 
-        (is (= groups-with-new-group1 @contact-groups)))
+       (is (= groups-with-new-group1 @contact-groups)))
 
-      (testing ":save-contact-group-order event"
+     (testing ":save-contact-group-order event"
 
-        (rf/reg-event-db ::prepare-groups-order
-                         (fn [db _]
-                           (assoc db :group/groups-order
-                                  (->> (vals (:group/contact-groups db))
-                                       (remove :pending?)
-                                       (sort-by :order >)
-                                       (map :group-id)))))
+       (rf/reg-event-db ::prepare-groups-order
+                        (fn [db _]
+                          (assoc db :group/groups-order
+                                 (->> (vals (:group/contact-groups db))
+                                      (remove :pending?)
+                                      (sort-by :order >)
+                                      (map :group-id)))))
 
-        (rf/dispatch [::prepare-groups-order])
-        (rf/dispatch [:change-contact-group-order 1 0])
-        (rf/dispatch [:save-contact-group-order])
+       (rf/dispatch [::prepare-groups-order])
+       (rf/dispatch [:change-contact-group-order 1 0])
+       (rf/dispatch [:save-contact-group-order])
 
-        (is (= groups-with-new-group2 @contact-groups)))
+       (is (= groups-with-new-group2 @contact-groups)))
 
-      (testing ":add-selected-contacts-to-group event"
+     (testing ":add-selected-contacts-to-group event"
 
-        (rf/dispatch [:select-contact "browse"])
-        (rf/dispatch [:add-selected-contacts-to-group])
-        (rf/dispatch [:deselect-contact "browse"])
+       (rf/dispatch [:select-contact "browse"])
+       (rf/dispatch [:add-selected-contacts-to-group])
+       (rf/dispatch [:deselect-contact "browse"])
 
-        (is (= (update groups-with-new-group2 new-group-id assoc :contacts [{:identity new-contact-public-key}
-                                                                            {:identity "demo-bot"}
-                                                                            {:identity "browse"}])
-               @contact-groups)))
+       (is (= (update groups-with-new-group2 new-group-id assoc :contacts [{:identity new-contact-public-key}
+                                                                           {:identity "demo-bot"}
+                                                                           {:identity "browse"}])
+              @contact-groups)))
 
-      (testing ":remove-contact-from-group event"
+     (testing ":remove-contact-from-group event"
 
-        (rf/dispatch [:remove-contact-from-group "browse" new-group-id])
+       (rf/dispatch [:remove-contact-from-group "browse" new-group-id])
 
-        (is (= groups-with-new-group2 @contact-groups)))
+       (is (= groups-with-new-group2 @contact-groups)))
+     (testing ":add-contacts-to-group event"
 
+       (rf/dispatch [:add-contacts-to-group new-group-id ["browse"]])
 
-      (testing ":add-contacts-to-group event"
+       (is (= (update groups-with-new-group2 new-group-id assoc :contacts [{:identity new-contact-public-key}
+                                                                           {:identity "demo-bot"}
+                                                                           {:identity "browse"}])
+              @contact-groups))
 
-        (rf/dispatch [:add-contacts-to-group new-group-id ["browse"]])
+       (rf/dispatch [:remove-contact-from-group "browse" new-group-id]))
 
-        (is (= (update groups-with-new-group2 new-group-id assoc :contacts [{:identity new-contact-public-key}
-                                                                            {:identity "demo-bot"}
-                                                                            {:identity "browse"}])
-               @contact-groups))
+     (testing ":delete-contact-group event"
 
-        (rf/dispatch [:remove-contact-from-group "browse" new-group-id]))
+       (rf/dispatch [:delete-contact-group])
 
-      (testing ":delete-contact-group event"
-
-        (rf/dispatch [:delete-contact-group])
-
-        (is (= (update groups-with-new-group2 new-group-id assoc :pending? true)
-               @contact-groups)))))
+       (is (= (update groups-with-new-group2 new-group-id assoc :pending? true)
+              @contact-groups)))))

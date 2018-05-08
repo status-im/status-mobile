@@ -58,7 +58,7 @@
       (testing "it updates it if is-active is passed"
         (is (get-in (chat/upsert-chat (assoc chat-props :is-active true) cofx) [:db :chats chat-id :is-active])))
       (testing "it returns the db unchanged"
-         (is (= {:db (:db cofx)} (chat/upsert-chat chat-props cofx)))))))
+        (is (= {:db (:db cofx)} (chat/upsert-chat chat-props cofx)))))))
 
 (deftest add-group-chat
   (let [chat-id "chat-id"
