@@ -6,6 +6,7 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]
+            [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]

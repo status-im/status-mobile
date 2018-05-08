@@ -91,13 +91,17 @@
 (defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
   (send [this chat-id cofx]
-    (send {:chat-id       chat-id
-           :payload       this
-           :success-event [:transport/set-message-envelope-hash
-                           chat-id
-                           (transport.utils/message-id this)
-                           message-type]}
-          cofx))
+    (let [params     {:chat-id       chat-id
+                      :payload       this
+                      :success-event [:transport/set-message-envelope-hash
+                                      chat-id
+                                      (transport.utils/message-id this)
+                                      message-type]}
+          group-chat (get-in cofx [:db :chats chat-id :group-chat])]
+      (if (or group-chat
+              config/use-sym-key)
+        (send params cofx)
+        (send-with-pubkey params cofx))))
   (receive [this chat-id signature cofx]
     {:dispatch [:chat-received-message/add (assoc (into {} this)
                                                   :message-id (transport.utils/message-id this)
