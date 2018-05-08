@@ -201,8 +201,9 @@
    :enter-address                         "Vnesi naslov"
    :send-transaction                      "Pošlji transakcijo"
    :delete-contact                        "Izbriši stik"
-   :mute-notifications                    "Utišaj obvestila" :contact-s                             {:one   "stik"
-                                                                                                     :other "stiki"}
+   :mute-notifications                    "Utišaj obvestila"
+   :contact-s                             {:one   "stik"
+                                           :other "stiki"}
    :next                                  "Naprej"
    :from                                  "Od"
    :search-chats                          "Išči klepete"

@@ -204,8 +204,9 @@
    :enter-address                         "Ingresar dirección"
    :send-transaction                      "Enviar transacción"
    :delete-contact                        "Eliminar contacto"
-   :mute-notifications                    "Silenciar notificaciones" :contact-s                             {:one   "contacto"
-                                                                                                             :other "contactos"}
+   :mute-notifications                    "Silenciar notificaciones"
+   :contact-s                             {:one   "contacto"
+                                           :other "contactos"}
    :next                                  "Siguiente"
    :from                                  "De"
    :search-chats                          "Buscar chats"

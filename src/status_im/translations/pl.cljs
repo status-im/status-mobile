@@ -201,8 +201,9 @@
    :enter-address                         "Wprowadź adres"
    :send-transaction                      "Wyślij transakcję"
    :delete-contact                        "Usuń kontakt"
-   :mute-notifications                    "Wycisz powiadomienia" :contact-s                             {:one   "kontakt"
-                                                                                                         :other "kontakty"}
+   :mute-notifications                    "Wycisz powiadomienia"
+   :contact-s                             {:one   "kontakt"
+                                           :other "kontakty"}
    :next                                  "Dalej"
    :from                                  "Z"
    :search-chats                          "Przeszukaj czaty"

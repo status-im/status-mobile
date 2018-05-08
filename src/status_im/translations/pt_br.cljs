@@ -201,8 +201,9 @@
    :enter-address                         "Inserir endereço"
    :send-transaction                      "Enviar transação"
    :delete-contact                        "Excluir contato"
-   :mute-notifications                    "Silenciar notificações" :contact-s                             {:one   "contato"
-                                                                                                           :other "contatos"}
+   :mute-notifications                    "Silenciar notificações"
+   :contact-s                             {:one   "contato"
+                                           :other "contatos"}
    :next                                  "Próximo"
    :from                                  "De"
    :search-chats                          "Buscar bate-papos"

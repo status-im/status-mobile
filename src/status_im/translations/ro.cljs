@@ -201,8 +201,9 @@
    :enter-address                         "Introduceți adresa"
    :send-transaction                      "Trimitere tranzacție"
    :delete-contact                        "Ștergere contact"
-   :mute-notifications                    "Notificări silențioase" :contact-s                             {:one   "contact"
-                                                                                                           :other "contacte"}
+   :mute-notifications                    "Notificări silențioase"
+   :contact-s                             {:one   "contact"
+                                           :other "contacte"}
    :next                                  "Mai departe"
    :from                                  "De la"
    :search-chats                          "Căutare discuții"

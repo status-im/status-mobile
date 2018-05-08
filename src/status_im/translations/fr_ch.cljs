@@ -201,8 +201,9 @@
    :enter-address                         "Renseigner l'adresse"
    :send-transaction                      "Envoyer la transaction"
    :delete-contact                        "Supprimer le contact"
-   :mute-notifications                    "Désactiver le son des notifications" :contact-s                             {:one   "contact"
-                                                                                                                        :other "contacts"}
+   :mute-notifications                    "Désactiver le son des notifications"
+   :contact-s                             {:one   "contact"
+                                           :other "contacts"}
    :next                                  "Suivant"
    :from                                  "De"
    :search-chats                          "Rechercher dans les discussions"

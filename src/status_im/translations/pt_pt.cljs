@@ -201,8 +201,9 @@
    :enter-address                         "Digitar o endereço"
    :send-transaction                      "Enviar a transação"
    :delete-contact                        "Apagar contacto"
-   :mute-notifications                    "Silenciar as notificações" :contact-s                             {:one   "contacto"
-                                                                                                              :other "Contactos"}
+   :mute-notifications                    "Silenciar as notificações"
+   :contact-s                             {:one   "contacto"
+                                           :other "Contactos"}
    :next                                  "Próximo"
    :from                                  "De"
    :search-chats                          "Pesquisar chats"

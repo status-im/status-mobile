@@ -201,8 +201,9 @@
    :enter-address                         "Cím megadása"
    :send-transaction                      "Tranzakció küldése"
    :delete-contact                        "Névjegy törlése"
-   :mute-notifications                    "Értesítések elnémítása" :contact-s                             {:one   "névjegy"
-                                                                                                           :other "névjegyek"}
+   :mute-notifications                    "Értesítések elnémítása"
+   :contact-s                             {:one   "névjegy"
+                                           :other "névjegyek"}
    :next                                  "Következő"
    :from                                  "Feladó"
    :search-chats                          "Csevegések keresése"

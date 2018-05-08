@@ -201,8 +201,9 @@
    :enter-address                         "पता प्रविष्ट करें"
    :send-transaction                      "लेनदेन भेजें"
    :delete-contact                        "संपर्क मिटाएं"
-   :mute-notifications                    "अधिसूचनाएं म्यूट करें" :contact-s                             {:one   "संपर्क"
-                                                                                                          :other "संपर्क"}
+   :mute-notifications                    "अधिसूचनाएं म्यूट करें"
+   :contact-s                             {:one   "संपर्क"
+                                           :other "संपर्क"}
    :next                                  "अगला"
    :from                                  "द्वारा"
    :search-chats                          "चैट्स खोजें"
