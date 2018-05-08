@@ -198,7 +198,9 @@
    :enter-valid-public-key                "Anna voimassaoleva julkinen osoite tai skannaa QR koodi"
    :contact-already-added                 "Tämä yhteystieto on jo lisätty"
    :can-not-add-yourself                  "Et voi lisätä itseäsi"
-   :unknown-address                       "Tuntematon osoite";;login
+   :unknown-address                       "Tuntematon osoite"
+
+   ;;login
    :connect                               "Yhdistä"
    :address                               "Osoite"
    :password                              "Salasana"

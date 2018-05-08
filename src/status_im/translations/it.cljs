@@ -326,7 +326,9 @@
    :wallet-invalid-address                "Indirizzo non valido: \n {{data}}"
    :wallet-browse-photos                  "Sfoglia Foto"
    :validation-amount-invalid-number      "La Quantità è un numero invalido"
-   :validation-amount-is-too-precise      "L'ammontare è troppo preciso. La più piccola unità che puoi inviare è 1 Wei (1x10^-18 ETH)";; network settings
+   :validation-amount-is-too-precise      "L'ammontare è troppo preciso. La più piccola unità che puoi inviare è 1 Wei (1x10^-18 ETH)"
+
+   ;; network settings
    :new-network                           "Nuova rete"
    :add-network                           "Aggiungi rete"
    :add-new-network                       "Aggiungi nuova rete"

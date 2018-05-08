@@ -131,7 +131,9 @@
    :address-explication                   "ربما يتعين أن تتوافر هنا بعض النصوص التي تشرح ما هو العنوان وأين تبحث عنه"
    :contact-already-added                 "تمت إضافة جهة الاتصال"
    :can-not-add-yourself                  "لا يمكنك إضافة نفسك"
-   :unknown-address                       "عنوان غير معروف";;login
+   :unknown-address                       "عنوان غير معروف"
+
+   ;;login
    :connect                               "اتصال"
    :address                               "عنوان"
    :password                              "كلمة مرور"

@@ -131,7 +131,9 @@
    :address-explication                   "संभवतः यहाँ कुछ टेक्स्ट विवरण होना चाहिए कि पता क्या है और इसे कहाँ खोजा जाए"
    :contact-already-added                 "संपर्क पहले से जोड़ लिया गया है"
    :can-not-add-yourself                  "आप अपने आपको नहीं जोड़ सकते"
-   :unknown-address                       "अज्ञात पता";;login
+   :unknown-address                       "अज्ञात पता"
+
+   ;;login
    :connect                               "कनेक्ट करें"
    :address                               "पता"
    :password                              "पासवर्ड"

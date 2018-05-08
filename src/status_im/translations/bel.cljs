@@ -145,7 +145,9 @@
    :enter-valid-public-key                "Калі ласка, увядзіце сапраўдны публічны ключ ці скануйце QR-код"
    :contact-already-added                 "Кантакт ўжо дададзены"
    :can-not-add-yourself                  "Вы не можаце дадаць сябе"
-   :unknown-address                       "Невядомы адрас";;login
+   :unknown-address                       "Невядомы адрас"
+
+   ;;login
    :connect                               "Падлучыцца"
    :address                               "Адрас"
    :password                              "Пароль"

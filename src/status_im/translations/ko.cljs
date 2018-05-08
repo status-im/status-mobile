@@ -326,7 +326,9 @@
    :wallet-invalid-address                "잘못된 주소: \n {{data}}"
    :wallet-browse-photos                  "사진 보기"
    :validation-amount-invalid-number      "잘못된 액수입니다"
-   :validation-amount-is-too-precise      "액수가 너무 정확합니다. 최소 송금 단위는 1 Wei (1x10^-18 ETH) 입니다.";; network settings
+   :validation-amount-is-too-precise      "액수가 너무 정확합니다. 최소 송금 단위는 1 Wei (1x10^-18 ETH) 입니다."
+
+   ;; network settings
    :new-network                           "새 네트워크"
    :add-network                           "네트워크 추가"
    :add-new-network                       "새 네트워크 추가"

@@ -197,7 +197,9 @@
    :enter-valid-public-key                "Por favor ingresa una llave pública o escanea un código QR"
    :contact-already-added                 "El contacto ya ha sido agregado"
    :can-not-add-yourself                  "No puedes agregarte a ti mismo"
-   :unknown-address                       "Dirección desconocida";;login
+   :unknown-address                       "Dirección desconocida"
+
+   ;;login
    :connect                               "Conectar"
    :address                               "Dirección"
    :password                              "Contraseña"

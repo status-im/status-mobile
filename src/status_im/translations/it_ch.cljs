@@ -131,7 +131,9 @@
    :address-explication                   "Forse qui dovremmo spiegare cos'è un indirizzo e dove cercarlo"
    :contact-already-added                 "Il contatto è già stato aggiunto"
    :can-not-add-yourself                  "Non puoi aggiungere te stesso"
-   :unknown-address                       "Indirizzo sconosciuto";;login
+   :unknown-address                       "Indirizzo sconosciuto"
+
+   ;;login
    :connect                               "Effettua connessione"
    :address                               "Indirizzo"
    :password                              "Password"

@@ -131,7 +131,9 @@
    :address-explication                   "Sem morda sodi besedilo, ki razlaga, kaj je naslov ter kje ga najti"
    :contact-already-added                 "Stik je bil že dodan"
    :can-not-add-yourself                  "Sebe ni mogoče dodati"
-   :unknown-address                       "Neznan naslov";;login
+   :unknown-address                       "Neznan naslov"
+
+   ;;login
    :connect                               "Poveži"
    :address                               "Naslov"
    :password                              "Geslo"

@@ -131,7 +131,9 @@
    :address-explication                   "Có lẽ ở đây nên có một vài nội dung để giải thích địa chỉ này là gì và phải tìm nó ở đâu"
    :contact-already-added                 "Liên hệ đã được thêm vào"
    :can-not-add-yourself                  "Bạn không thể tự thêm mình"
-   :unknown-address                       "Địa chỉ không xác định";;login
+   :unknown-address                       "Địa chỉ không xác định"
+
+   ;;login
    :connect                               "Kết nối"
    :address                               "Địa chỉ"
    :password                              "Mật khẩu"

@@ -131,7 +131,9 @@
    :address-explication                   "Burada belki de bir adresin ne olduğu ve bunu bulmak için nereye bakılmasıyla ilgili bazı metinler yer alabilir"
    :contact-already-added                 "Kişi zaten eklendi"
    :can-not-add-yourself                  "Kendinizi ekleyemezsiniz"
-   :unknown-address                       "Bilinmeyen adres";;login
+   :unknown-address                       "Bilinmeyen adres"
+
+   ;;login
    :connect                               "Bağlan"
    :address                               "Adres"
    :password                              "Şifre"

@@ -334,7 +334,9 @@
    :wallet-invalid-chain-id               "Мережа не відповідає: \n {{data}}"
    :wallet-browse-photos                  "Переглянути Фотографії"
    :validation-amount-invalid-number      "Сума недійсна"
-   :validation-amount-is-too-precise      "Занадто багато цифр після десяткової коми. Найменша сума, яку ви можете надіслати це 1 Wei (1x10^-18 ETH)";; network settings
+   :validation-amount-is-too-precise      "Занадто багато цифр після десяткової коми. Найменша сума, яку ви можете надіслати це 1 Wei (1x10^-18 ETH)"
+
+   ;; network settings
    :new-network                           "Нова мережа"
    :add-network                           "Додати мережу"
    :add-new-network                       "Додати нову мережу"

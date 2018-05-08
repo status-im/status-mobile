@@ -198,7 +198,9 @@
    :enter-valid-public-key              "Prosím zadejte platný veřejný klíč nebo načtěte QR kód"
    :contact-already-added                 "Tento kontakt již byl přidán"
    :can-not-add-yourself                  "Nemůžeš přidat sebe"
-   :unknown-address                       "Neznámá adresa";;login
+   :unknown-address                       "Neznámá adresa"
+
+   ;;login
    :connect                             "Připojit"
    :address                               "Adresa"
    :password                              "Heslo"

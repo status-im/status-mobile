@@ -198,7 +198,9 @@
    :enter-valid-public-key                "请输入有效公钥或扫描QR码"
    :contact-already-added                 "联系人已被添加"
    :can-not-add-yourself                  "您不能添加您自己"
-   :unknown-address                       "未知地址";;login
+   :unknown-address                       "未知地址"
+
+   ;;login
    :connect                               "连接"
    :address                               "地址"
    :password                              "密码"

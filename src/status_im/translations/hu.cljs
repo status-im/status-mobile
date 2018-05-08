@@ -131,7 +131,9 @@
    :address-explication                   "Itt talán szükség lenne egy kis szövegre, ami elmagyarázná, mi is az a cím és hol lehet megtalálni"
    :contact-already-added                 "A kapcsolat már hozzáadásra került"
    :can-not-add-yourself                  "Magadat nem adhatod hozzá"
-   :unknown-address                       "Ismeretlen cím";;login
+   :unknown-address                       "Ismeretlen cím"
+
+   ;;login
    :connect                               "Kapcsolódás"
    :address                               "Cím"
    :password                              "Jelszó"

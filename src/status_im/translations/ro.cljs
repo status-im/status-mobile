@@ -131,7 +131,9 @@
    :address-explication                   "Poate că aici ar trebui să fie un text care să explice ce este o adresă și unde să o cauți"
    :contact-already-added                 "Contactul a fost adăugat deja"
    :can-not-add-yourself                  "Nu te poți adăuga pe tine"
-   :unknown-address                       "Adresă necunoscută";;login
+   :unknown-address                       "Adresă necunoscută"
+
+   ;;login
    :connect                               "Conectare"
    :address                               "Adresă"
    :password                              "Parolă"

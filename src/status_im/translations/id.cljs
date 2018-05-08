@@ -131,7 +131,9 @@
    :address-explication                   "mungkin harus ada beberapa konten untuk menjelaskan alamat ini dan di mana menemukannya"
    :contact-already-added                 "Kontak yang telah ditambahkan"
    :can-not-add-yourself                  "tidak dapat menambahkan anda sendiri"
-   :unknown-address                       "alamat tidak diketahui";;login
+   :unknown-address                       "alamat tidak diketahui"
+
+   ;;login
    :connect                               "terhubung"
    :address                               "alamat"
    :password                              "kata sandi"

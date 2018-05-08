@@ -327,7 +327,9 @@
    :wallet-invalid-address                "Неисправна адреса: \n {{data}}"
    :wallet-browse-photos                  "Претражи слике"
    :validation-amount-invalid-number      "Износ није исправан број"
-   :validation-amount-is-too-precise      "Износ има превише децимала. Најмања јединица коју можете послати је 1 Wei (1x10^-18 ETH)";; network settings
+   :validation-amount-is-too-precise      "Износ има превише децимала. Најмања јединица коју можете послати је 1 Wei (1x10^-18 ETH)"
+
+   ;; network settings
    :new-network                           "Нова мрежа"
    :add-network                           "Додај мрежу"
    :add-new-network                       "Додај нову мрежу"
