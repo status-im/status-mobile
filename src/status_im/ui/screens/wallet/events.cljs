@@ -227,8 +227,9 @@
 
 (handlers/register-handler-fx
  :wallet/show-sign-transaction
- (fn [{:keys [db]} [_ id from-chat?]]
-   {:db       (assoc-in db [:wallet :send-transaction] {:id id
+ (fn [{:keys [db]} [_ {:keys [id method]} from-chat?]]
+   {:db       (assoc-in db [:wallet :send-transaction] {:id         id
+                                                        :method     method
                                                         :from-chat? from-chat?})
     :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
 

@@ -38,10 +38,10 @@
      nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
 
 
-(defn action-buttons [{:keys [id] :as transaction}]
+(defn action-buttons [transaction]
   [react/view {:style styles/action-buttons}
    [button/primary-button {:style               {:margin-right 12}
-                           :on-press            #(re-frame/dispatch [:wallet/show-sign-transaction id])
+                           :on-press            #(re-frame/dispatch [:wallet/show-sign-transaction transaction])
                            :accessibility-label :sign-button}
     (i18n/label :t/transactions-sign)]
    [button/secondary-button {:on-press            #(on-delete-transaction transaction)
