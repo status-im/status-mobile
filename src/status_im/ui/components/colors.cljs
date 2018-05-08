@@ -25,6 +25,6 @@
         r (js/parseInt (subs hex 0 2) 16)
         g (js/parseInt (subs hex 2 4) 16)
         b (js/parseInt (subs hex 4 6) 16)]
-    (str "rgba(" r "," g "," b "," opacity")")))
+    (str "rgba(" r "," g "," b "," opacity ")")))
 
 (def text black)

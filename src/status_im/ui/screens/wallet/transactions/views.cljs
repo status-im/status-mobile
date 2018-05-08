@@ -19,9 +19,9 @@
 
 (defn history-action [filter?]
   (cond->
-      {:icon      :icons/filter
-       :icon-opts {:accessibility-label :filters-button}
-       :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
+   {:icon      :icons/filter
+    :icon-opts {:accessibility-label :filters-button}
+    :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
     filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- all-checked? [filter-data]

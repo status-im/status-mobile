@@ -52,8 +52,8 @@
         (when is-deletable?
           [react/touchable-highlight {:style    styles/delete-icon-highlight
                                       :on-press #(do
-                                                  (re-frame/dispatch [:set-swipe-position home-item-id false])
-                                                  (re-frame/dispatch [delete-action home-item-id]))}
+                                                   (re-frame/dispatch [:set-swipe-position home-item-id false])
+                                                   (re-frame/dispatch [delete-action home-item-id]))}
            [react/view {:style styles/delete-icon-container}
             [vector-icons/icon :icons/delete {:color colors/red}]]])]])))
 

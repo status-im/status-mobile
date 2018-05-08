@@ -32,13 +32,13 @@
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
 
 (spec/def :accounts/account (allowed-keys
-                              :req-un [:account/name :account/address :account/public-key
-                                       :account/photo-path :account/signing-phrase]
-                              :opt-un [:account/debug? :account/status :account/last-updated
-                                       :account/email :account/signed-up? :account/network
-                                       :account/networks :account/settings :account/wnode
-                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
-                                       :account/seed-backed-up? :account/mnemonic]))
+                             :req-un [:account/name :account/address :account/public-key
+                                      :account/photo-path :account/signing-phrase]
+                             :opt-un [:account/debug? :account/status :account/last-updated
+                                      :account/email :account/signed-up? :account/network
+                                      :account/networks :account/settings :account/wnode
+                                      :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
+                                      :account/seed-backed-up? :account/mnemonic]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

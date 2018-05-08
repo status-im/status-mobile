@@ -21,9 +21,9 @@
                          :chat-id      public-key
                          :contact-info (prn-str contact-props)}]
       (handlers-macro/merge-fx cofx
-                         {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
-                          :data-store/save-contact contact-props}
-                         (chat.models/upsert-chat chat-props)))))
+                               {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
+                                :data-store/save-contact contact-props}
+                               (chat.models/upsert-chat chat-props)))))
 
 (defn receive-contact-request-confirmation
   [public-key {:keys [name profile-image address fcm-token]}
@@ -38,10 +38,9 @@
           chat-props    {:name    name
                          :chat-id public-key}]
       (handlers-macro/merge-fx cofx
-                         {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
-                          :data-store/save-contact contact-props}
-                         (chat.models/upsert-chat chat-props)))))
-
+                               {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
+                                :data-store/save-contact contact-props}
+                               (chat.models/upsert-chat chat-props)))))
 
 (defn- update-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (when (get-in db [:contacts/contacts whisper-identity])
@@ -59,7 +58,7 @@
                          :last-updated     now}]
             (if (chats public-key)
               (handlers-macro/merge-fx cofx
-                                 (update-contact contact)
-                                 (chat.models/upsert-chat {:chat-id chat-id
-                                                           :name    name}))
+                                       (update-contact contact)
+                                       (chat.models/upsert-chat {:chat-id chat-id
+                                                                 :name    name}))
               (update-contact contact cofx))))))))

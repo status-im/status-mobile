@@ -54,7 +54,7 @@
    [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
 
 (defn item-image
-  [{:keys[source style image-style]}]
+  [{:keys [source style image-style]}]
   [react/view {:style style}
    [react/image {:source source
                  :style  (merge styles/item-image image-style)}]])
@@ -168,10 +168,10 @@
 
 (defn- wrap-per-section-render-fn [props]
   (update
-    (if-let [f (:render-fn props)]
-      (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
-      props)
-    :data wrap-data))
+   (if-let [f (:render-fn props)]
+     (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
+     props)
+   :data wrap-data))
 
 (defn section-list
   "A wrapper for SectionList.
@@ -202,7 +202,6 @@
                                        (when disabled? styles/action-label-disabled))}
       label]
      item-icon-forward]]])
-
 
 (defn action-list [actions {:keys [container-style action-separator-style] :as styles}]
   [react/view (merge styles/action-list container-style)

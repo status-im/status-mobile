@@ -117,9 +117,9 @@
 
                          :else
                          (utils/show-question
-                           (i18n/label :t/are-you-sure?)
-                           (i18n/label :t/are-you-sure-description)
-                           #(re-frame/dispatch [:my-profile/finish]))))}]]])
+                          (i18n/label :t/are-you-sure?)
+                          (i18n/label :t/are-you-sure-description)
+                          #(re-frame/dispatch [:my-profile/finish]))))}]]])
 
 (defn finish []
   [react/view {:style styles/finish-container}

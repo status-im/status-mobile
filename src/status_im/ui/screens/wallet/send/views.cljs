@@ -26,11 +26,11 @@
 (defn sign-later-popup
   [from-chat?]
   (utils/show-question
-    (i18n/label :t/sign-later-title)
-    (i18n/label :t/sign-later-text)
-    #(re-frame/dispatch (if from-chat?
-                          [:sign-later-from-chat]
-                          [:wallet/sign-transaction true]))))
+   (i18n/label :t/sign-later-title)
+   (i18n/label :t/sign-later-text)
+   #(re-frame/dispatch (if from-chat?
+                         [:sign-later-from-chat]
+                         [:wallet/sign-transaction true]))))
 
 (defview sign-panel [message?]
   (letsubs [account [:get-current-account]
@@ -78,9 +78,9 @@
 
 (defn- sign-enabled? [amount-error to amount]
   (and
-    (nil? amount-error)
-    (not (nil? to)) (not= to "")
-    (not (nil? amount))))
+   (nil? amount-error)
+   (not (nil? to)) (not= to "")
+   (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
 (defn- sign-buttons [amount-error to amount sufficient-funds? sign-later-handler modal?]
@@ -233,8 +233,8 @@
          sufficient-funds?
          (if modal?
            (if from-chat?
-               #(sign-later-popup true)
-               #(re-frame/dispatch [:navigate-back]))
+             #(sign-later-popup true)
+             #(re-frame/dispatch [:navigate-back]))
            #(sign-later-popup false))
          modal?])
       (when signing?

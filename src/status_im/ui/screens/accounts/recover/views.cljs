@@ -48,8 +48,8 @@
 (defview recover []
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
-                        (spec/valid? ::recover.db/passphrase passphrase)
-                        (spec/valid? ::db/password password))]
+                       (spec/valid? ::recover.db/passphrase passphrase)
+                       (spec/valid? ::db/password password))]
       [react/keyboard-avoiding-view {:style styles/screen-container}
        [status-bar/status-bar]
        [toolbar/toolbar nil toolbar/default-nav-back

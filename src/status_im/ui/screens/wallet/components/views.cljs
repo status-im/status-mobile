@@ -162,13 +162,13 @@
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
                         :options (concat
-                                   [{:label  (i18n/label :t/recent-recipients)
-                                     :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
-                                   (when-not contact-only?
-                                     [{:label  (i18n/label :t/scan-qr)
-                                       :action request-camera-permissions}
-                                      {:label  (i18n/label :t/recipient-code)
-                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
+                                  [{:label  (i18n/label :t/recent-recipients)
+                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                                  (when-not contact-only?
+                                    [{:label  (i18n/label :t/scan-qr)
+                                      :action request-camera-permissions}
+                                     {:label  (i18n/label :t/recipient-code)
+                                      :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
   [components/cartouche {:on-press  #(on-choose-recipient contact-only?)
@@ -186,13 +186,13 @@
                :accessibility-label :specify-amount-button}
    [components/text-input
     (merge
-      (if disabled?
-        {:editable false}
-        {:keyboard-type       :numeric
-         :placeholder         (i18n/label :t/amount-placeholder)
-         :style               components.styles/flex
-         :accessibility-label :amount-input})
-      input-options)]])
+     (if disabled?
+       {:editable false}
+       {:keyboard-type       :numeric
+        :placeholder         (i18n/label :t/amount-placeholder)
+        :style               components.styles/flex
+        :accessibility-label :amount-input})
+     input-options)]])
 
 (defn amount-selector [{:keys [error disabled?] :as m}]
   [react/view

@@ -51,13 +51,13 @@
 
 (defn web-view-error []
   (reagent/as-element
-    [react/view styles/web-view-error
-     [react/text (i18n/label :t/web-view-error)]]))
+   [react/view styles/web-view-error
+    [react/text (i18n/label :t/web-view-error)]]))
 
 (defn web-view-loading []
   (reagent/as-element
-    [react/view styles/web-view-loading
-     [components/activity-indicator {:animating true}]]))
+   [react/view styles/web-view-loading
+    [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
   (let [{:strs [url title canGoBack canGoForward]} (js->clj event)]

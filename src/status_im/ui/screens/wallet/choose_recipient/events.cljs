@@ -7,23 +7,23 @@
             [status-im.utils.money :as money]))
 
 (handlers/register-handler-db
-  :wallet/toggle-flashlight
-  (fn [db]
-    (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
-          toggled-state (if (= :on flashlight-state) :off :on)]
-      (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
+ :wallet/toggle-flashlight
+ (fn [db]
+   (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
+         toggled-state (if (= :on flashlight-state) :off :on)]
+     (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
 
 (defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity]}]
   {:pre [(not (nil? address))]}
   (update-in
-    db [:wallet :send-transaction]
-    #(cond-> (assoc % :to address :to-name name :whisper-identity whisper-identity)
-             value       (assoc :amount value)
-             symbol      (assoc :symbol symbol)
-             gas         (assoc :gas (money/bignumber gas))
-             gasPrice    (assoc :gas-price (money/bignumber gasPrice))
-             (and symbol (not gasPrice))
-             (assoc :gas-price (ethereum/estimate-gas symbol)))))
+   db [:wallet :send-transaction]
+   #(cond-> (assoc % :to address :to-name name :whisper-identity whisper-identity)
+      value       (assoc :amount value)
+      symbol      (assoc :symbol symbol)
+      gas         (assoc :gas (money/bignumber gas))
+      gasPrice    (assoc :gas-price (money/bignumber gasPrice))
+      (and symbol (not gasPrice))
+      (assoc :gas-price (ethereum/estimate-gas symbol)))))
 
 (defn- extract-details
   "First try to parse as EIP681 URI, if not assume this is an address directly.
@@ -35,21 +35,21 @@
         {:address s :chain-id chain-id})))
 
 (handlers/register-handler-fx
-  :wallet/fill-request-from-url
-  (fn [{{:keys [network] :as db} :db} [_ data]]
-    (let [{:keys [view-id]}                db
-          current-chain-id                 (get-in constants/default-networks [network :raw-config :NetworkId])
-          {:keys [address chain-id] :as details} (extract-details data current-chain-id)
-          valid-network?                   (boolean (= current-chain-id chain-id))]
-      (cond-> {:db         db
-               :dispatch   [:navigate-back]}
-        (and address (= :choose-recipient view-id)) (assoc :dispatch [:navigate-back])
-        (and address valid-network?) (update :db #(fill-request-details % details))
-        (not address) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))
-        (and address (not valid-network?)) (assoc :show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
+ :wallet/fill-request-from-url
+ (fn [{{:keys [network] :as db} :db} [_ data]]
+   (let [{:keys [view-id]}                db
+         current-chain-id                 (get-in constants/default-networks [network :raw-config :NetworkId])
+         {:keys [address chain-id] :as details} (extract-details data current-chain-id)
+         valid-network?                   (boolean (= current-chain-id chain-id))]
+     (cond-> {:db         db
+              :dispatch   [:navigate-back]}
+       (and address (= :choose-recipient view-id)) (assoc :dispatch [:navigate-back])
+       (and address valid-network?) (update :db #(fill-request-details % details))
+       (not address) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))
+       (and address (not valid-network?)) (assoc :show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
 
 (handlers/register-handler-fx
-  :wallet/fill-request-from-contact
-  (fn [{db :db} [_ {:keys [address name whisper-identity]}]]
-    {:db         (fill-request-details db {:address address :name name :whisper-identity whisper-identity})
-     :dispatch   [:navigate-back]}))
+ :wallet/fill-request-from-contact
+ (fn [{db :db} [_ {:keys [address name whisper-identity]}]]
+   {:db         (fill-request-details db {:address address :name name :whisper-identity whisper-identity})
+    :dispatch   [:navigate-back]}))

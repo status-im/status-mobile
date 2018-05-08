@@ -92,8 +92,8 @@
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
                            (i18n/label :t/logout) #(keychain/get-encryption-key-then
-                                                     (fn [encryption-key]
-                                                        (re-frame/dispatch [:logout encryption-key])))))
+                                                    (fn [encryption-key]
+                                                      (re-frame/dispatch [:logout encryption-key])))))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -115,14 +115,14 @@
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
      [react/view styles/my-profile-settings-logout-wrapper
-       [react/view styles/my-profile-settings-logout
-         [profile.components/settings-item {:label-kw            :t/logout
-                                            :accessibility-label :log-out-button
-                                            :destructive?        true
-                                            :hide-arrow?         true
-                                            :action-fn           #(handle-logout)}]]
-       [react/view styles/my-profile-settings-logout-version
-         [react/text build/version]]]]))
+      [react/view styles/my-profile-settings-logout
+       [profile.components/settings-item {:label-kw            :t/logout
+                                          :accessibility-label :log-out-button
+                                          :destructive?        true
+                                          :hide-arrow?         true
+                                          :action-fn           #(handle-logout)}]]
+      [react/view styles/my-profile-settings-logout-version
+       [react/text build/version]]]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced?                     [:get :my-profile/advanced?]

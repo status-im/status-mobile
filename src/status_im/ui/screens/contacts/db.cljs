@@ -38,36 +38,35 @@
 
 (spec/def :contact/contact
   (allowed-keys
-    :req-un [:contact/name]
-    :opt-un [:contact/whisper-identity
-             :contact/address
-             :contact/public-key
-             :contact/photo-path
-             :contact/status
-             :contact/last-updated
-             :contact/last-online
-             :contact/pending?
-             :contact/hide-contact?
-             :contact/unremovable?
-             :contact/dapp?
-             :contact/dapp-url
-             :contact/dapp-hash
-             :contact/bot-url
-             :contact/jail-loaded?
-             :contact/jail-loaded-events
-             :contact/command
-             :contact/response
-             :contact/debug?
-             :contact/subscriptions
-             :contact/fcm-token
-             :contact/description]))
+   :req-un [:contact/name]
+   :opt-un [:contact/whisper-identity
+            :contact/address
+            :contact/public-key
+            :contact/photo-path
+            :contact/status
+            :contact/last-updated
+            :contact/last-online
+            :contact/pending?
+            :contact/hide-contact?
+            :contact/unremovable?
+            :contact/dapp?
+            :contact/dapp-url
+            :contact/dapp-hash
+            :contact/bot-url
+            :contact/jail-loaded?
+            :contact/jail-loaded-events
+            :contact/command
+            :contact/response
+            :contact/debug?
+            :contact/subscriptions
+            :contact/fcm-token
+            :contact/description]))
 
 ;;Contact list ui props
 (spec/def :contact-list-ui/edit? boolean?)
 
 ;;Contacts ui props
 (spec/def :contacts-ui/edit? boolean?)
-
 
 (spec/def :contacts/contacts (spec/nilable (spec/map-of :global/not-empty-string :contact/contact)))
 ;public key of new contact during adding this new contact

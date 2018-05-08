@@ -25,7 +25,7 @@
 
 (defn- viewfinder [{:keys [height width]} size]
   (let [height (cond-> height
-                   platform/iphone-x? (- 78))]
+                 platform/iphone-x? (- 78))]
     [react/view {:style styles/viewfinder-port}
      [react/view {:style (styles/viewfinder-translucent height width size :top)}]
      [react/view {:style (styles/viewfinder-translucent height width size :right)}]

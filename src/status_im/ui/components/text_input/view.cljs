@@ -12,10 +12,10 @@
    [react/view {:style (merge (styles/input-container height) container)}
     [react/text-input
      (merge
-       {:style                  (merge styles/input style)
-        :placeholder-text-color colors/gray
-        :auto-focus             true
-        :auto-capitalize        :none}
-       (dissoc props :style :height))]]
+      {:style                  (merge styles/input style)
+       :placeholder-text-color colors/gray
+       :auto-focus             true
+       :auto-capitalize        :none}
+      (dissoc props :style :height))]]
    (when error
      [tooltip/tooltip error (styles/error label)])])

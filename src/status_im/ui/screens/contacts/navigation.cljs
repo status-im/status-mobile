@@ -11,5 +11,5 @@
 (defmethod nav/preload-data! :contact-list-modal
   [db [_ _ {:keys [handler action params]}]]
   (assoc db :contacts/click-handler handler
-            :contacts/click-action action
-            :contacts/click-params params))
+         :contacts/click-action action
+         :contacts/click-params params))

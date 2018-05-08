@@ -75,42 +75,42 @@
 ;;;                                    |
 ;;;                                    - profile-photo-capture
 (views/compile-views root-view
-  [{:views     #{:home :wallet :my-profile}
-    :component main-tabs}
+                     [{:views     #{:home :wallet :my-profile}
+                       :component main-tabs}
 
-   {:view      :chat
-    :hide?     (not android?)
-    :component chat}
+                      {:view      :chat
+                       :hide?     (not android?)
+                       :component chat}
 
-   {:view      :wallet-send-transaction
-    :parent    :wallet
-    :hide?     (not android?)
-    :component send-transaction}
+                      {:view      :wallet-send-transaction
+                       :parent    :wallet
+                       :hide?     (not android?)
+                       :component send-transaction}
 
-   {:view      :wallet-request-transaction
-    :parent    :wallet
-    :component request-transaction}
+                      {:view      :wallet-request-transaction
+                       :parent    :wallet
+                       :component request-transaction}
 
-   {:view      :wallet-request-assets
-    :parent    :wallet-request-transaction
-    :component wallet.components/request-assets}
+                      {:view      :wallet-request-assets
+                       :parent    :wallet-request-transaction
+                       :component wallet.components/request-assets}
 
-   {:view      :choose-recipient
-    :parent    :wallet-send-transaction
-    :hide?     true
-    :component choose-recipient}
+                      {:view      :choose-recipient
+                       :parent    :wallet-send-transaction
+                       :hide?     true
+                       :component choose-recipient}
 
-   {:view      :wallet-transaction-sent
-    :parent    :wallet-send-transaction
-    :component transaction-sent}
+                      {:view      :wallet-transaction-sent
+                       :parent    :wallet-send-transaction
+                       :component transaction-sent}
 
-   {:views     #{:transactions-history :unsigned-transactions}
-    :parent    :wallet
-    :component wallet-transactions/transactions}
+                      {:views     #{:transactions-history :unsigned-transactions}
+                       :parent    :wallet
+                       :component wallet-transactions/transactions}
 
-   {:view      :profile-photo-capture
-    :parent    :my-profile
-    :component profile-photo-capture}])
+                      {:view      :profile-photo-capture
+                       :parent    :my-profile
+                       :component profile-photo-capture}])
 
 (defview main []
   (letsubs [signed-up? [:signed-up?]
@@ -167,7 +167,7 @@
                      :choose-recipient :wallet-transaction-sent :transactions-history
                      :unsigned-transactions :wallet-request-transaction :edit-my-profile
                      :profile-photo-capture :wallet-request-assets}
-                    view-id))
+                   view-id))
            [root-view]
            [component])
          (when modal-view
@@ -186,4 +186,4 @@
                                :wallet-transaction-fee wallet.send/transaction-fee
                                [react/view [react/text (str "Unknown modal view: " modal-view)]])]
                [react/main-screen-modal-view modal-view
-                 [component]])]])]))))
+                [component]])]])]))))

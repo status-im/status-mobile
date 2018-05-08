@@ -158,8 +158,8 @@
        [react/view (styles/profile-icon-mask size)])
      (when edit?
        [react/view (styles/profile-icon-edit-text-containter size)
-         [react/text {:style styles/profile-icon-edit-text}
-          (i18n/label :t/edit)]])
+        [react/text {:style styles/profile-icon-edit-text}
+         (i18n/label :t/edit)]])
      (if (and photo-path (seq photo-path))
        [chat-icon photo-path styles]
        [default-chat-icon name styles])]))

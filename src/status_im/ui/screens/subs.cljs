@@ -19,17 +19,17 @@
             status-im.ui.screens.profile.subs))
 
 (reg-sub :get
-  (fn [db [_ k]]
-    (get db k)))
+         (fn [db [_ k]]
+           (get db k)))
 
 (reg-sub :get-in
-  (fn [db [_ path]]
-    (get-in db path)))
+         (fn [db [_ path]]
+           (get-in db path)))
 
 (reg-sub :signed-up?
-  :<- [:get-current-account]
-  (fn [current-account]
-    (:signed-up? current-account)))
+         :<- [:get-current-account]
+         (fn [current-account]
+           (:signed-up? current-account)))
 
 (reg-sub :network :network)
 
@@ -39,37 +39,37 @@
 (reg-sub :mailserver-status :mailserver-status)
 
 (reg-sub :offline?
-  :<- [:network-status]
-  :<- [:sync-state]
-  (fn [[network-status sync-state]]
-    (or (= network-status :offline)
-        (= sync-state :offline))))
+         :<- [:network-status]
+         :<- [:sync-state]
+         (fn [[network-status sync-state]]
+           (or (= network-status :offline)
+               (= sync-state :offline))))
 
 (reg-sub :connection-problem?
-  :<- [:mailserver-status]
-  :<- [:peers-count]
-  (fn [[mailserver-status peers-count]]
-    (or (= :disconnected mailserver-status)
-        (zero? peers-count))))
+         :<- [:mailserver-status]
+         :<- [:peers-count]
+         (fn [[mailserver-status peers-count]]
+           (or (= :disconnected mailserver-status)
+               (zero? peers-count))))
 
 (reg-sub :syncing?
-  :<- [:sync-state]
-  (fn [sync-state]
-    (#{:pending :in-progress} sync-state)))
+         :<- [:sync-state]
+         (fn [sync-state]
+           (#{:pending :in-progress} sync-state)))
 
 (reg-sub :tab-bar-visible?
-  (fn [db _]
-    (get db :tab-bar-visible?)))
+         (fn [db _]
+           (get db :tab-bar-visible?)))
 
 (reg-sub :get-screen-params
-  (fn [db [_ view-id]]
-    (get-in db [:navigation/screen-params (or view-id (:view-id db))])))
+         (fn [db [_ view-id]]
+           (get-in db [:navigation/screen-params (or view-id (:view-id db))])))
 
 (reg-sub :can-navigate-back?
-  (fn [db]
-    (> (count (:navigation-stack db)) 1)))
+         (fn [db]
+           (> (count (:navigation-stack db)) 1)))
 
 (reg-sub :delete-swipe-position
-  (fn [db [_ item-id]]
-    (let [item-animation (get-in db [:chat-animations item-id])]
-      (if (some? item-animation) (:delete-swiped item-animation) nil))))
+         (fn [db [_ item-id]]
+           (let [item-animation (get-in db [:chat-animations item-id])]
+             (if (some? item-animation) (:delete-swiped item-animation) nil))))
