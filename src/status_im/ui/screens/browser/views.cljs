@@ -13,7 +13,8 @@
             [reagent.core :as reagent]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:get-contact-by-identity contact-identity]]
@@ -76,7 +77,8 @@
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
-                  unread-messages-number [:get-chats-unread-messages-number]]
+                  unread-messages-number [:get-chats-unread-messages-number]
+                  network-id [:get-network-id]]
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
@@ -98,7 +100,10 @@
          :injected-on-start-loading-java-script (str js-res/web3
                                                      js-res/jquery
                                                      (get-inject-js url)
-                                                     (js-res/web3-init rpc-url address))
+                                                     (js-res/web3-init
+                                                      rpc-url
+                                                      (ethereum/normalized-address address)
+                                                      (str network-id)))
          :injected-java-script                  (str js-res/webview-js extra-js)}]
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])

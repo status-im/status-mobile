@@ -22,39 +22,23 @@ var StatusHttpProvider = function (host, timeout) {
     this.timeout = timeout || 0;
 };
 
+function syncResponse(payload, result){
+    return {id: payload.id,
+            jsonrpc: "2.0",
+            result: result};
+}
+
 StatusHttpProvider.prototype.send = function (payload) {
-    if (typeof StatusBridge == "undefined") {
-        if (window.location.protocol == "https:") {
-            throw new Error('You tried to send "' + payload.method + '" synchronously. Synchronous requests are not supported, sorry.');
-        }
-
-        var request = this.prepareRequest(false);
-
-        try {
-            request.send(JSON.stringify(payload));
-        } catch (error) {
-            throw errors.InvalidConnection(this.host);
-        }
-
-        var result = request.responseText;
-
-        try {
-            result = JSON.parse(result);
-        } catch (e) {
-            throw errors.InvalidResponse(request.responseText);
-        }
-
-        return result;
+    //TODO to be compatible with MM https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#dizzy-all-async---think-of-metamask-as-a-light-client
+    if (payload.method == "eth_accounts"){
+        return syncResponse(payload, [currentAccountAddress])
+    } else if (payload.method == "eth_coinbase"){
+        return syncResponse(payload, currentAccountAddress)
+    } else if (payload.method == "net_version"){
+        return syncResponse(payload, networkId)
     } else {
-        result = StatusBridge.sendRequestSync(this.host, JSON.stringify(payload));
-
-        try {
-            result = JSON.parse(result);
-        } catch (e) {
-            throw new Error("InvalidResponse: " + result);
-        }
-
-        return result;
+        alert('You tried to send "' + payload.method + '" synchronously. Synchronous requests are not supported, sorry.');
+        return null;
     }
 };
 
@@ -67,7 +51,6 @@ StatusHttpProvider.prototype.prepareRequest = function () {
 };
 
 function sendAsync(payload, callback) {
-
     var messageId = callbackId++;
     callbacks[messageId] = callback;
     if (typeof StatusBridge == "undefined") {
