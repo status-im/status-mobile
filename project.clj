@@ -13,7 +13,12 @@
                  [com.cognitect/transit-cljs "0.8.248"]
                  [day8.re-frame/async-flow-fx "0.0.10"]]
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-re-frisk "0.5.8"]]
+            [lein-re-frisk "0.5.8"]
+            [lein-cljfmt "0.5.7"]
+            [lein-githooks "0.1.0"]]
+  :githooks {:auto-install true
+             :pre-commit   ["lein cljfmt check"]}
+  :cljfmt {:indents {letsubs [[:inner 0]]}}
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"

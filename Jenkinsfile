@@ -40,6 +40,10 @@ node ('macos1') {
       sh 'cd ios && pod install && cd ..'
     }
 
+    stage('Code style checks') {
+        sh 'lein cljfmt check'
+    }
+
     stage('Tests') {
       sh 'lein test-cljs'
     }
