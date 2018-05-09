@@ -85,16 +85,11 @@ RCT_EXPORT_METHOD(parseJail:(NSString *)chatId
     NSLog(@"ParseJail() method called");
 #endif
     NSString *stringResult;
-    if([Status JSCEnabled]){
-        if(_jail == nil) {
-            _jail = [Jail new];
-        }
-        NSDictionary *result = [_jail parseJail:chatId withCode:js];
-        stringResult = [result bv_jsonStringWithPrettyPrint:NO];
-    } else {
-        char * result = Parse((char *) [chatId UTF8String], (char *) [js UTF8String]);
-        stringResult = [NSString stringWithUTF8String: result];
+    if(_jail == nil) {
+        _jail = [Jail new];
     }
+    NSDictionary *result = [_jail parseJail:chatId withCode:js];
+    stringResult = [result bv_jsonStringWithPrettyPrint:NO];
     
     callback(@[stringResult]);
 }
@@ -110,16 +105,11 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSString *stringResult;
-        if([Status JSCEnabled]){
-            if(_jail == nil) {
-                _jail = [Jail new];
-            }
-            NSDictionary *result = [_jail call:chatId path:path params:params];
-            stringResult = [result bv_jsonStringWithPrettyPrint:NO];
-        } else {
-            char * result = Call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
-            stringResult = [NSString stringWithUTF8String: result];
+        if(_jail == nil) {
+            _jail = [Jail new];
         }
+        NSDictionary *result = [_jail call:chatId path:path params:params];
+        stringResult = [result bv_jsonStringWithPrettyPrint:NO];
 
         dispatch_async( dispatch_get_main_queue(), ^{
             callback(@[stringResult]);
