@@ -28,6 +28,8 @@
           ;; CIDER compatible nREPL
           cider/cider-nrepl       {:mvn/version "0.16.0"}
           org.clojure/tools.nrepl {:mvn/version "0.2.13"}
-          refactor-nrepl          {:mvn/version "2.3.1"}}}
+          refactor-nrepl          {:mvn/version "2.3.1"}
+          org.clojure/tools.cli   {:mvn/version "0.3.7"}
+          clj-rn                  {:git/url "https://github.com/status-im/clj-rn" :sha "e3fe471c601b2fa890f8692757aab74adf96fa28"}}}
   :test {:extra-deps {day8.re-frame/test {:mvn/version "0.1.5"}
                       doo                {:mvn/version "0.1.9"}}}}}
