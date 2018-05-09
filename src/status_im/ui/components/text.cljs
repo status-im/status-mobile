@@ -3,12 +3,12 @@
             [status-im.utils.platform :as platform]))
 
 (defn- selectable-text [{:keys [value style]}]
-    (if platform/ios?
-      [react/text-input {:value     value
-                         :editable  false
-                         :multiline true
-                         :style     style}]
-      [react/text {:style               style
-                   :accessibility-label :address-text
-                   :selectable          true}
-       value]))
+  (if platform/ios?
+    [react/text-input {:value     value
+                       :editable  false
+                       :multiline true
+                       :style     style}]
+    [react/text {:style               style
+                 :accessibility-label :address-text
+                 :selectable          true}
+     value]))

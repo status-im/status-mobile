@@ -64,19 +64,19 @@
                            :on-error       #(re-frame/dispatch [error-event %])})))))
 
 (reg-fx
-  :get-transactions
-  (fn [{:keys [web3 network account-id token-addresses success-event error-event]}]
-    (transactions/get-transactions network
+ :get-transactions
+ (fn [{:keys [web3 network account-id token-addresses success-event error-event]}]
+   (transactions/get-transactions network
+                                  account-id
+                                  #(re-frame/dispatch [success-event %])
+                                  #(re-frame/dispatch [error-event %]))
+   (doseq [direction [:inbound :outbound]]
+     (erc20/get-token-transactions web3
+                                   network
+                                   token-addresses
+                                   direction
                                    account-id
-                                   #(re-frame/dispatch [success-event %])
-                                   #(re-frame/dispatch [error-event %]))
-    (doseq [direction [:inbound :outbound]]
-      (erc20/get-token-transactions web3
-                                    network
-                                    token-addresses
-                                    direction
-                                    account-id
-                                    #(re-frame/dispatch [success-event %])))))
+                                   #(re-frame/dispatch [success-event %])))))
 
 ;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
 (reg-fx
@@ -127,21 +127,21 @@
                          (assoc :prices-loading? true))}))))
 
 (handlers/register-handler-fx
-  :update-transactions
-  (fn [{{:keys [network network-status web3] :as db} :db} _]
-    (when (not= network-status :offline)
-      (let [chain           (ethereum/network->chain-keyword network)
-            all-tokens      (tokens/tokens-for chain)
-            token-addresses (map :address all-tokens)]
-      {:get-transactions {:account-id    (get-in db [:account/account :address])
-                          :token-addresses token-addresses
-                          :network         network
-                          :web3            web3
-                          :success-event :update-transactions-success
-                          :error-event   :update-transactions-fail}
-       :db               (-> db
-                             (clear-error-message :transactions-update)
-                             (assoc-in [:wallet :transactions-loading?] true))}))))
+ :update-transactions
+ (fn [{{:keys [network network-status web3] :as db} :db} _]
+   (when (not= network-status :offline)
+     (let [chain           (ethereum/network->chain-keyword network)
+           all-tokens      (tokens/tokens-for chain)
+           token-addresses (map :address all-tokens)]
+       {:get-transactions {:account-id    (get-in db [:account/account :address])
+                           :token-addresses token-addresses
+                           :network         network
+                           :web3            web3
+                           :success-event :update-transactions-success
+                           :error-event   :update-transactions-fail}
+        :db               (-> db
+                              (clear-error-message :transactions-update)
+                              (assoc-in [:wallet :transactions-loading?] true))}))))
 
 (defn combine-entries [transaction token-transfer]
   (merge transaction (select-keys token-transfer
@@ -160,11 +160,11 @@
         :else tx2))
 
 (handlers/register-handler-db
-  :update-transactions-success
-  (fn [db [_ transactions]]
-    (-> db
-        (update-in [:wallet :transactions] #(merge-with dedupe-transactions % transactions))
-        (assoc-in [:wallet :transactions-loading?] false))))
+ :update-transactions-success
+ (fn [db [_ transactions]]
+   (-> db
+       (update-in [:wallet :transactions] #(merge-with dedupe-transactions % transactions))
+       (assoc-in [:wallet :transactions-loading?] false))))
 
 (handlers/register-handler-db
  :update-transactions-fail
