@@ -146,8 +146,15 @@
       (conj messages-with-datemarks {:value (:datemark (peek messages-with-datemarks))
                                      :type  :datemark}))))
 
-(defn- set-previous-message-first-in-group [stream]
-  (conj (pop stream) (assoc (peek stream) :first-in-group? true)))
+(defn- set-previous-message-info [stream]
+  (let [{:keys [display-photo?] :as previous-message} (peek stream)]
+    (conj (pop stream) (assoc previous-message
+                              :display-username? display-photo?
+                              :first-in-group?   true))))
+
+(defn display-photo? [{:keys [outgoing message-type]}]
+  (and (not outgoing)
+       (not= message-type :user-message)))
 
 ; any message that comes after this amount of ms will be grouped separately
 (def ^:private group-ms 60000)
@@ -156,7 +163,7 @@
   "Reduce step which adds positional metadata to a message and conditionally
   update the previous message with :first-in-group?."
   [{:keys [stream last-outgoing-seen]}
-   {:keys [type from datemark outgoing timestamp] :as message}]
+   {:keys [type message-type from datemark outgoing timestamp] :as message}]
   (let [previous-message         (peek stream)
         ; Was the previous message from a different author or this message
         ; comes after x ms
@@ -172,13 +179,14 @@
         previous-first-in-group? (or datemark?
                                      last-in-group?)
         new-message              (assoc message
+                                        :display-photo?  (display-photo? message)
                                         :same-direction? same-direction?
-                                        :last-in-group? last-in-group?
-                                        :last-outgoing? last-outgoing?)]
+                                        :last-in-group?  last-in-group?
+                                        :last-outgoing?  last-outgoing?)]
     {:stream             (cond-> stream
                            previous-first-in-group?
                            ; update previuous message if necessary
-                           set-previous-message-first-in-group
+                           set-previous-message-info
 
                            :always
                            (conj new-message))
@@ -195,6 +203,7 @@
           message-with-metadata (assoc initial-message
                                        :last-in-group? true
                                        :last? true
+                                       :display-photo? (display-photo? initial-message)
                                        :last-outgoing? (:outgoing initial-message))]
       (->> (rest ordered-messages)
            (reduce add-positional-metadata

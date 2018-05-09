@@ -19,8 +19,9 @@
    :height      16})
 
 (defn message-padding-top
-  [{:keys [first-in-group?]}]
-  (if first-in-group?
+  [{:keys [first-in-group? display-username?]}]
+  (if (and display-username?
+           first-in-group?)
     8
     4))
 

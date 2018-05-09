@@ -304,18 +304,22 @@
                                                        (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
 
 (defn message-body
-  [{:keys [last-in-group? first-in-group? group-chat from outgoing username] :as message} content]
+  [{:keys [last-in-group?
+           display-photo?
+           display-username?
+           from
+           outgoing
+           username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
-    (when (and (not outgoing)
-               group-chat)
+    (when display-photo?
       [react/view style/message-author
        (when last-in-group?
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
           [react/view
            [photos/member-photo from]]])])
     [react/view (style/group-message-view outgoing)
-     (when first-in-group?
+     (when display-username?
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}
       content]]]

@@ -87,6 +87,14 @@
         (is (:first-in-group? actual-m1))
         (is (not (:first-in-group? actual-m2)))
         (is (:first-in-group? actual-m3)))
+      (testing "it marks messages with display-photo? when they are not outgoing and we are in a group chat"
+        (is (:display-photo? actual-m1))
+        (is (not (:display-photo? actual-m2)))
+        (is (not (:display-photo? actual-m3))))
+      (testing "it marks messages with display-username? when we display the photo and are the first in a group"
+        (is (:display-username? actual-m1))
+        (is (not (:display-username? actual-m2)))
+        (is (not (:display-username? actual-m3))))
       (testing "it marks the last message from the same author with :last-in-group?"
         (is (:last-in-group? actual-m1))
         (is (:last-in-group? actual-m2))
