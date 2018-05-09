@@ -34,12 +34,10 @@ node ('macos1'){
         error "Wrong branch name format: " + BRANCH_NAME + ", but it should be `release/version`"
       }
 
+      checkout scm
+
       version = BRANCH_NAME.substring(8)
       sh 'echo "' + version + '" > .version'
-
-      println version
-
-      checkout scm
 
       sh 'git fetch --tags'
 
