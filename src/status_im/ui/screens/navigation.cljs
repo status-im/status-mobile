@@ -105,7 +105,7 @@
  (re-frame/enrich preload-data!)
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (handlers-macro/merge-fx cofx
-                            {:db (-> db
-                                     (assoc :prev-tab-view-id (:view-id db))
-                                     (assoc :prev-view-id (:view-id db)))}
-                            (navigate-to-clean view-id))))
+                        {:db (-> db
+                                 (assoc :prev-tab-view-id (:view-id db))
+                                 (assoc :prev-view-id (:view-id db)))}
+                        (navigate-to-clean view-id))))
