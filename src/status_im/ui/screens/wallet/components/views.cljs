@@ -21,7 +21,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.utils.utils :as utils]))
 
 (defn view-asset [symbol]
   [react/view
@@ -157,7 +158,9 @@
 
 (defn- request-camera-permissions []
   (re-frame/dispatch [:request-permissions {:permissions [:camera]
-                                            :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])}]))
+                                            :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])
+                                            :on-denied   #(utils/show-popup (i18n/label :t/error)
+                                                                            (i18n/label :t/camera-access-error))}]))
 
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
