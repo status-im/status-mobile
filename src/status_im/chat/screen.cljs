@@ -100,7 +100,7 @@
        message-view]]]))
 
 (defview messages-view [group-chat]
-  (letsubs [messages           [:get-current-chat-messages]
+  (letsubs [messages           [:get-current-chat-messages-stream]
             chat-id            [:get-current-chat-id]
             current-public-key [:get-current-public-key]]
     {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true

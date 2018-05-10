@@ -3,6 +3,7 @@
             [status-im.constants :as constants]
             [status-im.utils.core :as utils]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.datetime :as time]
             [status-im.chat.events.console :as console-events]
             [status-im.chat.events.requests :as requests-events]
             [status-im.chat.models :as chat-model]
@@ -33,20 +34,77 @@
 
 (defn- prepare-message
   [{:keys [content] :as message} chat-id current-chat?]
+  ;; TODO janherich: enable the animations again once we can do them more efficiently
   (cond-> (assoc message :appearing? true)
     (not current-chat?) (assoc :appearing? false)
     (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
 
+(defn- re-index-message-groups
+  "Relative datemarks of message groups can get obsolete with passing time,
+  this function re-indexes them for given chat"
+  [chat-id {:keys [db]}]
+  (let [chat-messages (get-in db [:chats chat-id :messages])]
+    {:db (update-in db
+                    [:chats chat-id :message-groups]
+                    (partial reduce-kv (fn [groups datemark message-refs]
+                                         (let [new-datemark (->> message-refs
+                                                                 first
+                                                                 :message-id
+                                                                 (get chat-messages)
+                                                                 :timestamp
+                                                                 time/day-relative)]
+                                           (if (= datemark new-datemark)
+                                             ;; nothing to re-index
+                                             (assoc groups datemark message-refs)
+                                             ;; relative datemark shifted, reindex
+                                             (assoc groups new-datemark message-refs))))
+                             {}))}))
+
+(defn- sort-references
+  "Sorts message-references sequence primary by clock value,
+  breaking ties by `:message-id`"
+  [messages message-references]
+  (sort-by (juxt (comp :clock-value (partial get messages) :message-id)
+                 :message-id)
+           message-references))
+
+(defn- group-messages
+  "Takes chat-id, new messages + cofx and properly groups them
+  into the `:message-groups`index in db"
+  [chat-id messages {:keys [db]}]
+  {:db (reduce (fn [db [datemark grouped-messages]]
+                 (update-in db [:chats chat-id :message-groups datemark]
+                            (fn [message-references]
+                              (->> grouped-messages
+                                   (map (fn [{:keys [message-id timestamp]}]
+                                          {:message-id    message-id
+                                           :timestamp-str (time/timestamp->time timestamp)}))
+                                   (into (or message-references '()))
+                                   (sort-references (get-in db [:chats chat-id :messages]))))))
+               db
+               (group-by (comp time/day-relative :timestamp)
+                         (filter :show? messages)))})
+
 (defn- add-message
-  [chat-id {:keys [message-id clock-value content] :as message} current-chat? {:keys [db]}]
+  [batch? {:keys [chat-id message-id clock-value content] :as message} current-chat? {:keys [db] :as cofx}]
   (let [prepared-message (prepare-message message chat-id current-chat?)]
-    {:db            (cond->
-                     (-> db
-                         (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                         (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value))) ; this will increase last-clock-value twice when sending our own messages
-                      (not current-chat?)
-                      (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
-     :data-store/tx [(messages-store/save-message-tx prepared-message)]}))
+    (let [fx {:db            (cond->
+                              (-> db
+                                  (update-in [:chats chat-id :messages] assoc message-id prepared-message)
+                                  ;; this will increase last-clock-value twice when sending our own messages
+                                  (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
+                               (not current-chat?)
+                               (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
+              :data-store/tx [(messages-store/save-message-tx prepared-message)]}]
+      (if batch?
+        fx
+        (handlers-macro/merge-fx cofx
+                                 fx
+                                 (re-index-message-groups chat-id)
+                                 (group-messages chat-id [message]))))))
+
+(def ^:private- add-single-message (partial add-message false))
+(def ^:private- add-batch-message (partial add-message true))
 
 (defn- prepare-chat [chat-id {:keys [db now] :as cofx}]
   (chat-model/upsert-chat {:chat-id chat-id
@@ -57,9 +115,11 @@
     (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
 
 (defn- add-received-message
-  [{:keys [from message-id chat-id content content-type timestamp clock-value to-clock-value] :as message}
+  [batch?
+   {:keys [from message-id chat-id content content-type timestamp clock-value to-clock-value js-obj] :as message}
    {:keys [db now] :as cofx}]
-  (let [{:keys [current-chat-id
+  (let [{:keys [web3
+                current-chat-id
                 view-id
                 access-scope->commands-responses]
          :contacts/keys [contacts]}               db
@@ -70,42 +130,58 @@
         request-command                           (:request-command content)
         command-request?                          (and (= content-type constants/content-type-command-request)
                                                        request-command)
-        new-timestamp                             (or timestamp now)]
+        new-timestamp                             (or timestamp now)
+        add-message-fn                            (if batch? add-batch-message add-single-message)]
     (handlers-macro/merge-fx cofx
-                             (add-message chat-id
-                                          (cond-> (assoc message
-                                                         :timestamp        new-timestamp
-                                                         :show?            true)
-                                            public-key
-                                            (assoc :user-statuses {public-key (if current-chat? :seen :received)})
-
-                                            (not clock-value)
-                                            (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
-                                            command-request?
-                                            (assoc-in [:content :request-command-ref]
-                                                      (lookup-response-ref access-scope->commands-responses
-                                                                           current-account chat contacts request-command)))
-                                          current-chat?)
+                             {:confirm-message-processed [{:web3   web3
+                                                           :js-obj js-obj}]}
+                             (add-message-fn (cond-> (assoc message :timestamp new-timestamp)
+                                               public-key
+                                               (assoc :user-statuses {public-key (if current-chat? :seen :received)})
+                                               (not clock-value)
+                                               (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
+                                               command-request?
+                                               (assoc-in [:content :request-command-ref]
+                                                         (lookup-response-ref access-scope->commands-responses
+                                                                              current-account chat contacts request-command)))
+                                             current-chat?)
+                             (requests-events/add-request chat-id message-id)
                              (send-message-seen chat-id message-id (and public-key
                                                                         (not public?)
                                                                         current-chat?
                                                                         (not (chat-model/bot-only-chat? db chat-id))
                                                                         (not (= constants/system from)))))))
 
-(defn confirm-messages-processed [js-obj {{:keys [web3]} :db}]
-  {:confirm-message-processed [{:web3   web3
-                                :js-obj js-obj}]})
+(def ^:private add-single-received-message (partial add-received-message false))
+(def ^:private add-batch-received-message (partial add-received-message true))
 
 (defn receive
-  [{:keys [chat-id message-id js-obj] :as message} {:keys [now] :as cofx}]
+  [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
   (handlers-macro/merge-fx cofx
-                           (chat-model/upsert-chat {:chat-id chat-id
+                           (chat-model/upsert-chat {:chat-id   chat-id
                                                     ;; We activate a chat again on new messages
                                                     :is-active true
                                                     :timestamp now})
-                           (add-received-message message)
-                           (requests-events/add-request chat-id message-id)
-                           (confirm-messages-processed js-obj)))
+                           (add-single-received-message message)))
+
+(defn receive-many
+  [messages {:keys [now] :as cofx}]
+  (let [chat-ids        (into #{} (map :chat-id) messages)
+        chat-effects    (handlers-macro/merge-effects cofx
+                                                      (fn [chat-id cofx]
+                                                        (chat-model/upsert-chat {:chat-id   chat-id
+                                                                                 :is-active true
+                                                                                 :timestamp now}
+                                                                                cofx))
+                                                      chat-ids)
+        message-effects (handlers-macro/merge-effects chat-effects cofx add-batch-received-message messages)]
+    (handlers-macro/merge-effects message-effects
+                                  cofx
+                                  (fn [chat-id cofx]
+                                    (handlers-macro/merge-fx cofx
+                                                             (re-index-message-groups chat-id)
+                                                             (group-messages chat-id messages)))
+                                  chat-ids)))
 
 (defn system-message [chat-id message-id timestamp content]
   {:message-id   message-id
@@ -214,7 +290,7 @@
     (handlers-macro/merge-fx cofx
                              (chat-model/upsert-chat {:chat-id chat-id
                                                       :timestamp now})
-                             (add-message chat-id message-with-id true)
+                             (add-single-message message-with-id true)
                              (send chat-id message-id send-record))))
 
 (defn send-push-notification [fcm-token status cofx]
@@ -238,9 +314,27 @@
                              (send chat-id message-id send-record)
                              (update-message-status message :sending))))
 
-(defn delete-message [chat-id message-id {:keys [db]}]
-  {:db            (update-in db [:chats chat-id :messages] dissoc message-id)
-   :data-store/tx [(messages-store/delete-message-tx message-id)]})
+(defn- remove-message-from-group [chat-id {:keys [timestamp message-id]} {:keys [db]}]
+  (let [datemark (time/day-relative timestamp)]
+    {:db (update-in db [:chats chat-id :message-groups]
+                    (fn [groups]
+                      (let [message-references (get groups datemark)]
+                        (if (= 1 (count message-references))
+                          ;; message removed is the only one in group, remove whole group
+                          (dissoc groups datemark)
+                          ;; remove message from `message-references` list
+                          (assoc groups datemark
+                                 (remove (comp (partial = message-id) :message-id)
+                                         message-references))))))}))
+
+(defn delete-message
+  "Deletes chat message, along its occurence in all references, like `:message-groups`"
+  [chat-id message-id {:keys [db] :as cofx}]
+  (handlers-macro/merge-fx
+   cofx
+   {:db            (update-in db [:chats chat-id :messages] dissoc message-id)
+    :data-store/tx [(messages-store/delete-message-tx message-id)]}
+   (remove-message-from-group chat-id (get-in db [:chats chat-id :messages message-id]))))
 
 (defn send-message [{:keys [db now random-id] :as cofx} {:keys [chat-id] :as params}]
   (upsert-and-send (prepare-plain-message chat-id params (get-in db [:chats chat-id]) now) cofx))

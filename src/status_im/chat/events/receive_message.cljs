@@ -44,13 +44,19 @@
       ;; regular non command message, we can add it right away
       (message-model/receive message cofx))))
 
-(defn add-messages [[messages] {:keys [db] :as cofx}]
-  (handlers-macro/merge-effects cofx add-message messages))
+(defn add-messages [messages {:keys [db] :as cofx}]
+  (let [messages-to-add  (filter (partial message-model/add-to-chat? cofx) messages)
+        plain-messages   (remove (comp :command :content) messages-to-add)
+        command-messages (filter (comp :command :content) messages-to-add)]
+    (handlers-macro/merge-effects (message-model/receive-many plain-messages cofx)
+                                  cofx
+                                  add-message
+                                  command-messages)))
 
 (handlers/register-handler-fx
  :chat-received-message/add
  message-model/receive-interceptors
- (fn [cofx messages]
+ (fn [cofx [messages]]
    (add-messages messages cofx)))
 
 ;; TODO(alwx): refactor this when status-im.commands.handlers.jail is refactored

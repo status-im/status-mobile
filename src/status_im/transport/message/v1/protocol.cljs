@@ -99,8 +99,9 @@
     {:chat-received-message/add-fx
      [(assoc (into {} this)
              :message-id (transport.utils/message-id this)
-             :chat-id chat-id
-             :from signature)]}))
+             :show?      true
+             :chat-id    chat-id
+             :from       signature)]}))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

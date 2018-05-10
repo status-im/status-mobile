@@ -70,15 +70,20 @@
 (handlers/register-handler-fx
  :load-more-messages
  [(re-frame/inject-cofx :data-store/get-messages)]
- (fn [{{:keys [current-chat-id] :as db} :db get-stored-messages :get-stored-messages} _]
+ (fn [{{:keys [current-chat-id] :as db} :db get-stored-messages :get-stored-messages :as cofx} _]
    (when-not (get-in db [:chats current-chat-id :all-loaded?])
-     (let [loaded-count (count (get-in db [:chats current-chat-id :messages]))
-           new-messages (index-messages (get-stored-messages current-chat-id loaded-count))]
-       {:db (-> db
-                (update-in [:chats current-chat-id :messages] merge new-messages)
-                (update-in [:chats current-chat-id :not-loaded-message-ids] #(apply disj % (keys new-messages)))
-                (assoc-in [:chats current-chat-id :all-loaded?]
-                          (> constants/default-number-of-messages (count new-messages))))}))))
+     (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
+           new-messages     (get-stored-messages current-chat-id loaded-count)
+           indexed-messages (index-messages new-messages)]
+       (handlers-macro/merge-fx
+        cofx
+        {:db (-> db
+                 (update-in [:chats current-chat-id :messages] merge indexed-messages)
+                 (update-in [:chats current-chat-id :not-loaded-message-ids]
+                            #(apply disj % (keys indexed-messages)))
+                 (assoc-in [:chats current-chat-id :all-loaded?]
+                           (> constants/default-number-of-messages (count new-messages))))}
+        (models.message/group-messages current-chat-id new-messages))))))
 
 (handlers/register-handler-db
  :message-appeared
@@ -173,6 +178,13 @@
                                                (vals contacts-to-add))]}
                              (events.loading/load-commands))))
 
+(defn- group-chat-messages
+  [{:keys [db]}]
+  (reduce-kv (fn [fx chat-id {:keys [messages]}]
+               (models.message/group-messages chat-id (vals messages) fx))
+             {:db db}
+             (:chats db)))
+
 (handlers/register-handler-fx
  :initialize-chats
  [(re-frame/inject-cofx :get-default-contacts)
@@ -206,6 +218,7 @@
      (handlers-macro/merge-fx cofx
                               {:db (assoc db :chats chats)}
                               (init-console-chat)
+                              (group-chat-messages)
                               (add-default-contacts)))))
 
 (handlers/register-handler-fx

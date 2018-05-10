@@ -61,7 +61,9 @@
 (handlers/register-handler-fx
  :clear-history
  (fn [{{:keys [current-chat-id] :as db} :db} _]
-   {:db            (assoc-in db [:chats current-chat-id :messages] {})
+   {:db            (-> db
+                       (assoc-in [:chats current-chat-id :messages] {})
+                       (assoc-in [:chats current-chat-id :message-groups] {}))
     :data-store/tx [(messages-store/hide-messages-tx current-chat-id)]}))
 
 (handlers/register-handler-fx

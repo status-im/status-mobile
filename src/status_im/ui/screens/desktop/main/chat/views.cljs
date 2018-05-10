@@ -111,7 +111,7 @@
     (let [_ (when (or (not @chat-id*) (not= @chat-id* chat-id))
               (reset! chat-id* chat-id)
               (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
-          messages (re-frame/subscribe [:get-current-chat-messages])
+          messages (re-frame/subscribe [:get-current-chat-messages-stream])
           current-public-key (re-frame/subscribe [:get-current-public-key])]
       [react/view {:style {:flex 1 :background-color :white :margin-horizontal 16}}
        [react/scroll-view {:scrollEventThrottle    16
