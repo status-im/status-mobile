@@ -28,8 +28,7 @@
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [{:keys [to to-name whisper-identity]} [:wallet.send/transaction]
                   {:keys [amount amount-error]}         [:wallet.request/transaction]
-                  scroll (atom nil)
-                  amount-text-value (atom nil)]
+                  scroll (atom nil)]
     [comp/simple-screen {:avoid-keyboard? true}
      [comp/toolbar (i18n/label :t/new-request)]
      [react/view components.styles/flex
@@ -46,8 +45,7 @@
                                      :input-options {:default-value  (str (money/to-fixed (money/wei->ether amount)))
                                                      :max-length     21
                                                      :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(reset! amount-text-value %)
-                                                     :on-end-editing #(re-frame/dispatch [:wallet.request/set-and-validate-amount @amount-text-value])}}]]]
+                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
       [bottom-buttons/bottom-buttons styles/bottom-buttons
        nil ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
        [button/button {:disabled?           (not (and to amount))
