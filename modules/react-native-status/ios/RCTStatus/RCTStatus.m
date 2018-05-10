@@ -170,11 +170,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
     NSString *devCluster = [ReactNativeConfig envFor:@"ETHEREUM_DEV_CLUSTER"];
     NSString *logLevel = [[ReactNativeConfig envFor:@"LOG_LEVEL_STATUS_GO"] uppercaseString];
-    int dev = 0;
-    if([devCluster isEqualToString:@"1"]){
-        dev = 1;
-    }
-    char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId, dev);
+    char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId);
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];

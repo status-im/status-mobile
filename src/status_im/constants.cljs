@@ -90,13 +90,10 @@
 (def default-wnodes
   {:testnet {"main"   {:id      "main"
                        :name    "Status testnet mailserver A"
-                       :address "enode://fa63a6cc730468c5456eab365b2a7a68a166845423c8c9acc363e5f8c4699ff6d954e7ec58f13ae49568600cff9899561b54f6fc2b9923136cd7104911f31cce@163.172.168.202:30303"}
-             "backup" {:id      "backup"
-                       :name    "Status testnet mailserver B"
-                       :address "enode://90cbf961c87eb837adc1300a0a6722a57134d843f0028a976d35dff387f101a2754842b6b694e50a01093808f304440d4d968bcbc599259e895ff26e5a1a17cf@51.15.194.39:30303"}}
+                       :address "enode://88329092a4328bec2bf5422063a87e50637992d3d7e2e2937371ad6db36e268c4fe7ce4e1f45c71e462339d051505a65b9ac13b86c5788d5bee7f481c01ba58b@159.65.125.20:30504"}}
    :mainnet {"main" {:id      "main"
                      :name    "Status mainnet mailserver"
-                     :address "enode://b963569aac14785f756ecf97e7549a513dea993a1bc744c4f8efe2b4e9479500dd3f5d18f3da19f6550b8bd0d8770350950c9a7da8168b44865402dcc9a51657@51.15.35.110:30403"}}})
+                     :address "enode://b17980946f8ae5415bd43930582a1ba792ac03a3654a9a5348263d80b5b5bc9206ec057dd603e9be87c2599e5ca23532d070969bcb1a3f985b318cc2e8290449@46.101.250.197:30504"}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

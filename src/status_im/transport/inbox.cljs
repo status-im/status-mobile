@@ -162,21 +162,21 @@
 
 (handlers/register-handler-fx
  :inbox/add-peer
-  ;; This event adds a wnode to the list of peers
+ ;; This event adds a wnode to the list of peers
  (fn [_ [_ wnode]]
    {::add-peer {:wnode wnode}}))
 
 (handlers/register-handler-fx
  :inbox/fetch-peers
-  ;; This event fetches the list of peers
-  ;; We want it to check if the node has been added
+ ;; This event fetches the list of peers
+ ;; We want it to check if the node has been added
  (fn [_ [_ retries]]
    {::fetch-peers (or retries 0)}))
 
 (handlers/register-handler-fx
  :inbox/check-peer-added
-  ;; We check if the wnode is part of the peers list
-  ;; if not we dispatch a new fetch-peer event for later
+ ;; We check if the wnode is part of the peers list
+ ;; if not we dispatch a new fetch-peer event for later
  (fn [{:keys [db]} [_ peers retries]]
    (let [web3     (:web3 db)
          wnode    (get-current-wnode-address db)]
