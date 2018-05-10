@@ -125,7 +125,7 @@
   (merge style-message-text
          {:margin-top (if incoming-group 4 0)}))
 
-(defn emoji-message
+(defnstyle emoji-message
   [{:keys [incoming-group]}]
   {:font-size 40
    :color     styles/text1-color
@@ -302,4 +302,3 @@
    :letter-spacing -0.2
    :padding-bottom 4
    :color          colors/gray})
-
