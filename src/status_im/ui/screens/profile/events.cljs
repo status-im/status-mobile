@@ -112,4 +112,4 @@
  (fn [{:keys [db] :as cofx} _]
    (handlers-macro/merge-fx cofx
                             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                            (accounts.utils/account-update {:seed-backed-up? true}))))
+                            (accounts.utils/clean-seed-phrase))))
