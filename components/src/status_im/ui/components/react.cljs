@@ -210,9 +210,6 @@
 
 ;; Platform-specific View
 
-(def platform-specific-view
-  (if platform/iphone-x? safe-area-view view))
-
 (defmulti create-main-screen-view #(cond
                                      platform/iphone-x? :iphone-x
                                      platform/ios? :ios

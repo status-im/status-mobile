@@ -75,92 +75,118 @@
 ;;;                  - edit-my-profile -
 ;;;                                    |
 ;;;                                    - profile-photo-capture
-(views/compile-views root-view
-                     [{:views     #{:home :wallet :my-profile}
-                       :component main-tabs}
+(views/compile-views
+ root-view
+ [{:views     #{:home :wallet :my-profile}
+   :component main-tabs}
 
-                      {:view      :chat
-                       :hide?     (not android?)
-                       :component chat}
+  {:view      :chat
+   :hide?     (not android?)
+   :component chat}
 
-                      {:view      :wallet-send-transaction
-                       :parent    :wallet
-                       :hide?     (not android?)
-                       :component send-transaction}
+  {:view      :wallet-send-transaction
+   :parent    :wallet
+   :hide?     (not android?)
+   :component send-transaction}
 
-                      {:view      :wallet-request-transaction
-                       :parent    :wallet
-                       :component request-transaction}
+  {:view      :wallet-request-transaction
+   :parent    :wallet
+   :component request-transaction}
 
-                      {:view      :wallet-request-assets
-                       :parent    :wallet-request-transaction
-                       :component wallet.components/request-assets}
+  {:view      :wallet-request-assets
+   :parent    :wallet-request-transaction
+   :component wallet.components/request-assets}
 
-                      {:view      :choose-recipient
-                       :parent    :wallet-send-transaction
-                       :hide?     true
-                       :component choose-recipient}
+  {:view      :choose-recipient
+   :parent    :wallet-send-transaction
+   :hide?     true
+   :component choose-recipient}
 
-                      {:view      :wallet-transaction-sent
-                       :parent    :wallet-send-transaction
-                       :component transaction-sent}
+  {:view      :wallet-transaction-sent
+   :parent    :wallet-send-transaction
+   :component transaction-sent}
 
-                      {:views     #{:transactions-history :unsigned-transactions}
-                       :parent    :wallet
-                       :component wallet-transactions/transactions}
+  {:views     #{:transactions-history :unsigned-transactions}
+   :parent    :wallet
+   :component wallet-transactions/transactions}
 
-                      {:view      :profile-photo-capture
-                       :parent    :my-profile
-                       :component profile-photo-capture}])
+  {:view      :profile-photo-capture
+   :parent    :my-profile
+   :component profile-photo-capture}])
+
+(defn get-main-component [view-id]
+  (case view-id
+    :intro intro
+    :create-account create-account
+    :usage-data usage-data
+    (:home :wallet :my-profile) main-tabs
+    :browser browser
+    :open-dapp open-dapp
+    :dapp-description dapp-description
+    :wallet-send-transaction send-transaction
+    :wallet-transaction-sent transaction-sent
+    :wallet-request-transaction request-transaction
+    :wallet-send-transaction-request send-transaction-request
+    (:transactions-history :unsigned-transactions) wallet-transactions/transactions
+    :wallet-transaction-details wallet-transactions/transaction-details
+    :wallet-send-assets wallet.components/send-assets
+    :wallet-request-assets wallet.components/request-assets
+    :new add-new
+    :new-group new-group
+    :add-contacts-toggle-list add-contacts-toggle-list
+    :add-participants-toggle-list add-participants-toggle-list
+    :edit-group-contact-list edit-contact-group-contact-list
+    :new-public-chat new-public-chat
+    :contact-toggle-list contact-toggle-list
+    :new-chat new-chat
+    :qr-scanner qr-scanner
+    :chat chat
+    :profile profile.contact/profile
+    :group-chat-profile profile.group-chat/group-chat-profile
+    :profile-photo-capture profile-photo-capture
+    :accounts accounts
+    :login login
+    :recover recover
+    :network-settings network-settings
+    :network-details network-details
+    :offline-messaging-settings offline-messaging-settings
+    :currency-settings currency-settings
+    :recent-recipients recent-recipients
+    :recipient-qr-code recipient-qr-code
+    :contact-code contact-code
+    :profile-qr-viewer profile.user/qr-viewer
+    :backup-seed backup-seed
+    [react/view [react/text (str "Unknown view: " view-id)]]))
+
+(defn get-modal-component [modal-view]
+  (case modal-view
+    :qr-scanner qr-scanner
+    :contact-list-modal contact-list-modal
+    :wallet-transactions-filter wallet-transactions/filter-history
+    :wallet-settings-assets wallet-settings/manage-assets
+    :wallet-send-transaction-modal send-transaction-modal
+    :wallet-transaction-sent-modal transaction-sent-modal
+    :wallet-sign-message-modal sign-message-modal
+    :wallet-transaction-fee wallet.send/transaction-fee
+    [react/view [react/text (str "Unknown modal view: " modal-view)]]))
+
+(defview main-modal []
+  (letsubs [modal-view [:get :modal]]
+    (when modal-view
+      [view common-styles/modal
+       [modal {:animation-type   :slide
+               :transparent      true
+               :on-request-close #(dispatch [:navigate-back])}
+        (let [component (get-modal-component modal-view)]
+          [react/main-screen-modal-view modal-view
+           [component]])]])))
 
 (defview main []
   (letsubs [signed-up? [:signed-up?]
-            view-id    [:get :view-id]
-            modal-view [:get :modal]]
+            view-id    [:get :view-id]]
     {:component-will-update (fn [] (react/dismiss-keyboard!))}
     (when view-id
-      (let [component (case view-id
-                        :intro intro
-                        :create-account create-account
-                        :usage-data usage-data
-                        (:home :wallet :my-profile) main-tabs
-                        :browser browser
-                        :open-dapp open-dapp
-                        :dapp-description dapp-description
-                        :wallet-send-transaction send-transaction
-                        :wallet-transaction-sent transaction-sent
-                        :wallet-request-transaction request-transaction
-                        :wallet-send-transaction-request send-transaction-request
-                        (:transactions-history :unsigned-transactions) wallet-transactions/transactions
-                        :wallet-transaction-details wallet-transactions/transaction-details
-                        :wallet-send-assets wallet.components/send-assets
-                        :wallet-request-assets wallet.components/request-assets
-                        :new add-new
-                        :new-group new-group
-                        :add-contacts-toggle-list add-contacts-toggle-list
-                        :add-participants-toggle-list add-participants-toggle-list
-                        :edit-group-contact-list edit-contact-group-contact-list
-                        :new-public-chat new-public-chat
-                        :contact-toggle-list contact-toggle-list
-                        :new-chat new-chat
-                        :qr-scanner qr-scanner
-                        :chat chat
-                        :profile profile.contact/profile
-                        :group-chat-profile profile.group-chat/group-chat-profile
-                        :profile-photo-capture profile-photo-capture
-                        :accounts accounts
-                        :login login
-                        :recover recover
-                        :network-settings network-settings
-                        :network-details network-details
-                        :offline-messaging-settings offline-messaging-settings
-                        :currency-settings currency-settings
-                        :recent-recipients recent-recipients
-                        :recipient-qr-code recipient-qr-code
-                        :contact-code contact-code
-                        :profile-qr-viewer profile.user/qr-viewer
-                        :backup-seed backup-seed
-                        [react/view [react/text (str "Unknown view: " view-id)]])
+      (let [component        (get-main-component view-id)
             main-screen-view (create-main-screen-view view-id)]
         [main-screen-view common-styles/flex
          (if (and config/compile-views-enabled?
@@ -172,20 +198,4 @@
                    view-id))
            [root-view]
            [component])
-         (when modal-view
-           [view common-styles/modal
-            [modal {:animation-type   :slide
-                    :transparent      true
-                    :on-request-close #(dispatch [:navigate-back])}
-             (let [component (case modal-view
-                               :qr-scanner qr-scanner
-                               :contact-list-modal contact-list-modal
-                               :wallet-transactions-filter wallet-transactions/filter-history
-                               :wallet-settings-assets wallet-settings/manage-assets
-                               :wallet-send-transaction-modal send-transaction-modal
-                               :wallet-transaction-sent-modal transaction-sent-modal
-                               :wallet-sign-message-modal sign-message-modal
-                               :wallet-transaction-fee wallet.send/transaction-fee
-                               [react/view [react/text (str "Unknown modal view: " modal-view)]])]
-               [react/main-screen-modal-view modal-view
-                [component]])]])]))))
+         [main-modal]]))))
