@@ -46,13 +46,9 @@
   {:flex-direction :row
    :flex           1})
 
-(defnstyle chat-name-view [show-actions]
-  {:flex            1
-   :justify-content :center
-   :android         {:align-items    :flex-start
-                     :margin-left    (if show-actions 66 18)
-                     :padding-bottom 6}
-   :ios             {:align-items :center}})
+(defnstyle chat-name-view [has-subtitle?]
+  {:flex       1
+   :margin-top (if has-subtitle? 0 6)})
 
 (def chat-name-text
   {:color     component.styles/color-gray6

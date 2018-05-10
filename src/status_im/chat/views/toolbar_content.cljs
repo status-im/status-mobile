@@ -37,14 +37,13 @@
 
     (str (i18n/label :t/sync-in-progress) " " percentage "% " currentBlock)))
 
-(defview last-activity [{:keys [online-text sync-state accessibility-label]}]
-  [state [:get :sync-data]]
-  [react/text {:style               st/last-activity-text
-               :accessibility-label accessibility-label}
-   (case sync-state
-     :in-progress (in-progress-text state)
-     :synced      (i18n/label :t/sync-synced)
-     online-text)])
+(defview last-activity [{:keys [sync-state accessibility-label]}]
+  (letsubs [state [:get :sync-data]]
+    [react/text {:style               st/last-activity-text
+                 :accessibility-label accessibility-label}
+     (case sync-state
+       :in-progress (in-progress-text state)
+       :synced      (i18n/label :t/sync-synced))]))
 
 (defn- group-last-activity [{:keys [contacts sync-state public?]}]
   (if (or (= sync-state :in-progress)
@@ -67,26 +66,27 @@
             accounts                              [:get-accounts]
             contact                               [:get-current-chat-contact]
             sync-state                            [:sync-state]]
-    [react/view {:style st/toolbar-container}
-
-     [react/view (when-not group-chat [photos/member-photo chat-id])]
-     [react/view (st/chat-name-view (or (empty? accounts)
-                                        show-actions?))
-      (let [chat-name (if (string/blank? name)
-                        (generate-gfy chat-id)
-                        (or (i18n/get-contact-translated chat-id :name name)
-                            (i18n/label :t/chat-name)))]
-        [react/text {:style               st/chat-name-text
-                     :number-of-lines     1
-                     :font                :toolbar-title
-                     :accessibility-label :chat-name-text}
-         (if public?
-           (str "#" chat-name)
-           chat-name)])
-      (if group-chat
-        [group-last-activity {:contacts   contacts
-                              :public?    public?
-                              :sync-state sync-state}]
-        [last-activity {:online-text         (online-text contact chat-id)
-                        :sync-state          sync-state
-                        :accessibility-label :last-seen-text}])]]))
+    (let [has-subtitle? (or group-chat (not= :done sync-state))]
+      [react/view {:style st/toolbar-container}
+       (when-not group-chat
+         [react/view {:margin-right 5}
+          [photos/member-photo chat-id]])
+       [react/view (st/chat-name-view has-subtitle?)
+        (let [chat-name (if (string/blank? name)
+                          (generate-gfy chat-id)
+                          (or (i18n/get-contact-translated chat-id :name name)
+                              (i18n/label :t/chat-name)))]
+          [react/text {:style               st/chat-name-text
+                       :number-of-lines     1
+                       :font                :toolbar-title
+                       :accessibility-label :chat-name-text}
+           (if public?
+             (str "#" chat-name)
+             chat-name)])
+        (if group-chat
+          [group-last-activity {:contacts   contacts
+                                :public?    public?
+                                :sync-state sync-state}]
+          (when has-subtitle?
+            [last-activity {:sync-state          sync-state
+                            :accessibility-label :last-seen-text}]))]])))
