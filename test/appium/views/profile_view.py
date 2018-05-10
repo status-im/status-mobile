@@ -187,9 +187,9 @@ class SeedPhraseWordNumberText(BaseText):
         self.locator = self.Locator.xpath_selector("//*[contains(@text,'#')]")
 
     @property
-    def text(self):
+    def number(self):
         time.sleep(1)
-        return self.find_element().text.split('#')[1]
+        return int(self.find_element().text.split('#')[1])
 
 
 class SeedPhraseWordInput(BaseEditBox):
@@ -280,7 +280,7 @@ class ProfileView(BaseView):
 
     def get_seed_phrase(self):
         text = [i.text for i in self.seed_phrase_table.find_elements()]
-        return dict(zip(text[::2], text[1::2]))
+        return dict(zip(map(int, text[::2]), text[1::2]))
 
     def edit_profile_picture(self, file_name: str):
         if AbstractTestCase().environment == 'sauce':

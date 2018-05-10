@@ -90,10 +90,10 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view.ok_continue_button.click()
         seed_phrase = profile_view.get_seed_phrase()
         profile_view.next_button.click()
-        word_number = profile_view.seed_phrase_word_number.text
+        word_number = profile_view.seed_phrase_word_number.number
         profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number])
         profile_view.next_button.click()
-        word_number_1 = profile_view.seed_phrase_word_number.text
+        word_number_1 = profile_view.seed_phrase_word_number.number
         profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number_1])
         profile_view.done_button.click()
         profile_view.yes_button.click()
