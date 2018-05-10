@@ -61,7 +61,7 @@
 
 (def nav-item-button
   {:padding-vertical   16
-   :padding-horizontal 12})
+   :padding-horizontal 13})
 
 (defstyle item
   {:ios     {:padding-horizontal 12
@@ -90,4 +90,4 @@
 (def counter-container
   {:position :absolute
    :top      19
-   :right    2})
+   :right    0})

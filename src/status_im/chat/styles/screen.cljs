@@ -11,8 +11,10 @@
    :background-color component.styles/chat-background})
 
 (def toolbar-container
-  {:flex 1
-   :flex-direction :row})
+  {:flex           1
+   :flex-direction :row
+   :align-items    :stretch
+   :margin-left    3})
 
 (def messages-container
   {:flex           1
@@ -46,9 +48,10 @@
   {:flex-direction :row
    :flex           1})
 
-(defnstyle chat-name-view [has-subtitle?]
-  {:flex       1
-   :margin-top (if has-subtitle? 0 6)})
+(def chat-name-view
+  {:flex            1
+   :justify-content :center
+   :margin-bottom   2})
 
 (def chat-name-text
   {:color     component.styles/color-gray6
@@ -64,7 +67,7 @@
   {:width  14
    :height 8})
 
-(defstyle members
+(defstyle toolbar-subtitle
   {:color   component.styles/text4-color
    :ios     {:font-size  14
              :margin-top 4}

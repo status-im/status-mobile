@@ -11,6 +11,7 @@
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id]]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.styles :as common.styles]))
 
@@ -51,16 +52,17 @@
     [last-activity {:sync-state sync-state}]
     (if public?
       [react/view {:flex-direction :row}
-       [react/text (i18n/label :t/public-group-status)]]
+       [react/text {:style st/toolbar-subtitle}
+        (i18n/label :t/public-group-status)]]
       [react/view {:flex-direction :row}
-       [react/text {:style st/members}
+       [react/text {:style st/toolbar-subtitle}
         (if public?
           (i18n/label :t/public-group-status)
           (let [cnt (inc (count contacts))]
             (i18n/label-pluralize cnt :t/members-active)))]])))
 
 (defview toolbar-content-view []
-  (letsubs [{:keys [group-chat name contacts
+  (letsubs [{:keys [group-chat name color online contacts
                     public? chat-id]}             [:get-current-chat]
             show-actions?                         [:get-current-chat-ui-prop :show-actions?]
             accounts                              [:get-accounts]
@@ -68,10 +70,9 @@
             sync-state                            [:sync-state]]
     (let [has-subtitle? (or group-chat (not= :done sync-state))]
       [react/view {:style st/toolbar-container}
-       (when-not group-chat
-         [react/view {:margin-right 5}
-          [photos/member-photo chat-id]])
-       [react/view (st/chat-name-view has-subtitle?)
+       [react/view {:margin-right 8}
+        [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat name color online]]
+       [react/view {:style st/chat-name-view}
         (let [chat-name (if (string/blank? name)
                           (generate-gfy chat-id)
                           (or (i18n/get-contact-translated chat-id :name name)
