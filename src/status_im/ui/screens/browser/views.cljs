@@ -14,7 +14,8 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.utils :as utils]))
 
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:get-contact-by-identity contact-identity]]
@@ -73,7 +74,7 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   {:keys [address]} [:get-current-account]
-                  {:keys [dapp? contact url] :as browser} [:get-current-browser]
+                  {:keys [dapp? contact url browser-id] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
@@ -95,6 +96,12 @@
          :local-storage-enabled                 true
          :start-in-loading-state                true
          :render-error                          web-view-error
+         :on-error                              (fn [_]
+                                                  (utils/show-popup "Error"
+                                                                    (i18n/label :t/web-view-error)
+                                                                    #(do
+                                                                       (re-frame/dispatch [:remove-browser browser-id])
+                                                                       (re-frame/dispatch [:navigation-replace :open-dapp]))))
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
          :injected-on-start-loading-java-script (str js-res/web3
