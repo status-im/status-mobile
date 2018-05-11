@@ -23,6 +23,8 @@
   ([title content confirm-button-text on-accept]
    (show-confirmation title content confirm-button-text on-accept nil))
   ([title content confirm-button-text on-accept on-cancel]
+   (show-confirmation nil title content confirm-button-text on-accept on-cancel))
+  ([{:keys [ios-confirm-style] :or {ios-confirm-style "destructive"}} title content confirm-button-text on-accept on-cancel]
    (.alert (.-Alert rn-dependencies/react-native)
            title
            content
@@ -34,7 +36,7 @@
                            (when on-cancel {:onPress on-cancel}))
                     {:text                (or confirm-button-text "OK")
                      :onPress             on-accept
-                     :style               "destructive"
+                     :style               ios-confirm-style
                      :accessibility-label :confirm-button})))))
 
 (defn show-question
