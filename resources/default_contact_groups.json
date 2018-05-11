@@ -31,18 +31,5 @@
             "cryptofighters",
             "airswap"
         ]
-    },
-    "state-of-dapps":
-    {
-        "name":
-        {
-            "en": "State of the ÐApps"
-        },
-        "contacts":
-        [
-            "flight-delays-suck",
-            "FirstBlood",
-            "auction-house"
-        ]
     }
 }

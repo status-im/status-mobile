@@ -19,51 +19,6 @@
         "bot-url": "local://demo-bot"
     },
 
-    "auction-house":
-    {
-        "name":
-        {
-            "en": "Auction House"
-        },
-        "photo-path": "contacts://auction-house",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://auctionhouse.dappbench.com"
-        },
-        "description": "Decentralized auctions for on-chain assets."
-    },
-
-    "flight-delays-suck":
-    {
-        "name":
-        {
-            "en": "Flight Delays Suck"
-        },
-        "photo-path": "contacts://flight-delays-suck",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://fdd.etherisc.com"
-        },
-        "description": "Get instant payout in case your flight is late."
-    },
-
-    "FirstBlood":
-    {
-        "name":
-        {
-            "en": "FirstBlood"
-        },
-        "photo-path": "contacts://firstblood",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://app.firstblood.io"
-        },
-        "description": "ESports for Everyone! A platform that lets players challenge the field and win rewards."
-    },
-
     "ethlance":
     {
         "name":
@@ -184,13 +139,6 @@
         "dapp-url": {"en" : "https://opensea.io"},
         "dapp?": true,
         "photo-path": "contacts://opensea"
-    },
-    "decentraland": {
-        "name" : {"en" : "Decentraland"},
-        "description": "Decentraland is a virtual reality platform powered by the Ethereum blockchain.",
-        "dapp-url": {"en" : "https://market.decentraland.org/"},
-        "dapp?": true,
-        "photo-path": "contacts://decentraland"
     },
     "cryptocribs": {
         "name" : {"en" : "CryptoCribs"},

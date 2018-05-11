@@ -1,12 +1,9 @@
 (ns status-im.react-native.resources)
 
 (def contacts
-  {:auction-house      (js/require "./resources/images/contacts/auction-house.png")
-   :mkr-market         (js/require "./resources/images/contacts/mkr-market.png")
+  {:mkr-market         (js/require "./resources/images/contacts/mkr-market.png")
    :oaken-water-meter  (js/require "./resources/images/contacts/oaken-water-meter.png")
-   :flight-delays-suck (js/require "./resources/images/contacts/flight-delays-suck.png")
    :jarrad             (js/require "./resources/images/contacts/jarrad.png")
-   :firstblood         (js/require "./resources/images/contacts/FirstBlood.png")
    :gnosis             (js/require "./resources/images/contacts/gnosis.png")
    :melonport          (js/require "./resources/images/contacts/melonport.png")
    :bchat              (js/require "./resources/images/contacts/bchat.png")
@@ -29,7 +26,6 @@
    :opensea            (js/require "./resources/images/contacts/opensea.png")
    :kyber              (js/require "./resources/images/contacts/kyber.png")
    :bancor             (js/require "./resources/images/contacts/bancor.png")
-   :decentraland       (js/require "./resources/images/contacts/decentraland.png")
    :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
    :airswap            (js/require "./resources/images/contacts/airswap.png")
