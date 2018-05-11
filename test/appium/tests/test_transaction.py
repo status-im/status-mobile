@@ -1,4 +1,3 @@
-import pytest
 import time
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests import transaction_users, api_requests, get_current_time, transaction_users_wallet, marks
@@ -31,6 +30,7 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction_view.back_button.click()
         api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
         wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         transactions_view = wallet_view.transactions_button.click()
         transactions_view.transactions_table.find_transaction(amount=transaction_amount)
 

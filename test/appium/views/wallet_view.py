@@ -110,6 +110,12 @@ class AddressText(BaseButton):
         self.locator = self.Locator.accessibility_id('address-text')
 
 
+class SetUpButton(BaseButton):
+    def __init__(self, driver):
+        super(SetUpButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("LET’S GET SET UP")
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -132,6 +138,8 @@ class WalletView(BaseView):
         self.qr_code_image = QRCodeImage(self.driver)
         self.address_text = AddressText(self.driver)
 
+        self.set_up_button = SetUpButton(self.driver)
+
     def get_usd_total_value(self):
         return float(self.usd_total_value.text)
 
@@ -147,3 +155,8 @@ class WalletView(BaseView):
             errors.append('Difference between current (%s) and expected (%s) USD balance > 2%%!!' % (usd, expected_usd))
         else:
             info('Current USD balance %s is ok' % usd)
+
+    def set_up_wallet(self):
+        self.set_up_button.click()
+        self.done_button.click()
+        self.yes_button.click()

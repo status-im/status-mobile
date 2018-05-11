@@ -23,6 +23,7 @@ class TestProfileView(SingleDeviceTestCase):
             self.errors.append("QR code value '%s' doesn't match public key '%s'" % (key_value_from_qr, key_value))
         profile_view.cross_icon.click()
         wallet_view = profile_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         wallet_view.request_button.click()
         wallet_view.qr_code_image.wait_for_element()
         key_value = wallet_view.address_text.text
