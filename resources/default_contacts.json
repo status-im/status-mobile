@@ -93,6 +93,20 @@
         },
         "description": "Collect and breed adorable digital cats."
     },
+    "airswap":
+    {
+        "name":
+        {
+            "en": "AirSwap"
+        },
+        "photo-path": "contacts://airswap",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://www.airswap.io/trade"
+        },
+        "description": "Meet the future of trading."
+    },
 
     "cryptopunks": {
         "name" :  {"en" : "CryptoPunks"},

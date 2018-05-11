@@ -32,6 +32,7 @@
    :decentraland       (js/require "./resources/images/contacts/decentraland.png")
    :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
+   :airswap            (js/require "./resources/images/contacts/airswap.png")
 
    :console            (js/require "./resources/images/contacts/console.png")})
 
