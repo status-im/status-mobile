@@ -62,10 +62,11 @@
 
 (defn- prepare-recipients [public-keys db]
   (map (fn [public-key]
-         (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id]))
+         (assoc (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id])
+                :public-key public-key))
        public-keys))
 
-(defn multi-send-with-pubkey
+(defn multi-send-by-pubkey
   "Sends payload to multiple participants selected by `:public-keys` key. "
   [{:keys [payload public-keys success-event]} {:keys [db] :as cofx}]
   (let [{:keys [current-public-key web3]} db
