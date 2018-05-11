@@ -22,6 +22,8 @@ var StatusHttpProvider = function (host, timeout) {
     this.timeout = timeout || 0;
 };
 
+StatusHttpProvider.prototype.isStatus = true;
+
 function syncResponse(payload, result){
     return {id: payload.id,
             jsonrpc: "2.0",
