@@ -20,10 +20,10 @@
   message/StatusMessage
   (send [this _ cofx]
     (let [public-keys (get-in cofx [:db :chats chat-id :contacts])]
-      (protocol/multi-send-with-pubkey {:public-keys public-keys
-                                        :chat-id     chat-id
-                                        :payload     this}
-                                       cofx)))
+      (protocol/multi-send-by-pubkey {:public-keys public-keys
+                                      :chat-id     chat-id
+                                      :payload     this}
+                                     cofx)))
   (receive [this _ signature {:keys [db] :as cofx}]
     (handlers-macro/merge-fx cofx
                              {:shh/add-new-sym-key {:web3       (:web3 db)
@@ -129,4 +129,3 @@
                                                                  (str participant-leaving-name " " (i18n/label :t/left))))
                                  (group/participants-removed chat-id #{signature})
                                  (send-new-group-key nil chat-id))))))
-
