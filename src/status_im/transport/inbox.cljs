@@ -219,18 +219,25 @@
  :inbox/request-messages
  (fn [{:keys [db now]} [_ {:keys [from topics discover?]}]]
    (let [web3       (:web3 db)
+         account    (:account/account db)
          wnode      (get-current-wnode-address db)
          topics     (or topics
                         (map #(:topic %) (vals (:transport/chats db))))
-         from       (or from (:inbox/last-request db) nil)
-         sym-key-id (:inbox/sym-key-id db)]
-     {::request-messages {:wnode      wnode
-                          :topics     (if discover?
-                                        (conj topics (transport.utils/get-topic constants/contact-discovery))
-                                        topics)
-                          ;;TODO (yenda) fix from, right now mailserver is dropping us
-                          ;;when we send a requestMessage with a from field
-                          ;;:from       from
-                          :sym-key-id sym-key-id
-                          :web3       web3}
-      :db (assoc db :inbox/last-request (quot now 1000))})))
+         from       (or from (:last-request account))
+         sym-key-id (:inbox/sym-key-id db)
+         now-in-s   (quot now 1000)
+         fx         {:data-store/save-account (assoc account :last-request now-in-s)
+                     :db                      (assoc-in db [:account/account :last-request] now-in-s)}]
+     (if from
+       ;; NOTE (yenda) we ensure a delay of 10 seconds between mailserver requests
+       (when (< 10 (- now-in-s from))
+         (merge fx
+                {::request-messages       {:wnode      wnode
+                                           :topics     (if discover?
+                                                         (conj topics
+                                                               (transport.utils/get-topic constants/contact-discovery))
+                                                         topics)
+                                           :from       from
+                                           :sym-key-id sym-key-id
+                                           :web3       web3}}))
+       fx))))
