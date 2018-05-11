@@ -173,25 +173,31 @@
  (fn [_ [_ retries]]
    {::fetch-peers (or retries 0)}))
 
+(def ^:private ^:const short-retry-delay-ms 300)
+(def ^:private ^:const long-retry-delay-ms 5000)
+(def ^:private ^:const max-retries 10)
+(def ^:private ^:const retries-interval-change-threshold 3)
+
 (handlers/register-handler-fx
  :inbox/check-peer-added
- ;; We check if the wnode is part of the peers list
- ;; if not we dispatch a new fetch-peer event for later
- (fn [{:keys [db]} [_ peers retries]]
-   (let [web3     (:web3 db)
-         wnode    (get-current-wnode-address db)]
+  ;; We check if the wnode is part of the peers list
+  ;; if not we dispatch a new fetch-peer event for later
+ (fn [{{:keys [web3 network-status] :as db} :db} [_ peers retries]]
+   (let [wnode    (get-current-wnode-address db)]
      (log/info "offline inbox: fetch-peers response" peers)
      (if (registered-peer? peers wnode)
        {::mark-trusted-peer {:web3  web3
                              :wnode wnode}}
        (do
          (log/info "Peer" wnode "is not registered. Retrying fetch peers.")
-         (let [delay (if (< retries 3) 300 5000)]
-           (if (> retries 10)
-             (do (log/error :mailserver-connection-error)
-                 (utils/show-popup (i18n/label :t/error)
-                                   (i18n/label :t/mailserver-connection-error)))
-             {:dispatch-later [{:ms delay :dispatch [:inbox/fetch-peers (inc retries)]}]})))))))
+         (let [delay-ms (if (< retries retries-interval-change-threshold)
+                          short-retry-delay-ms
+                          long-retry-delay-ms)]
+           (if (or (= network-status :offline)
+                   (> retries max-retries))
+             (do (log/info :mailserver-connection-error)
+                 {:db (assoc db :mailserver-status :disconnected)})
+             {:dispatch-later [{:ms delay-ms :dispatch [:inbox/fetch-peers (inc retries)]}]})))))))
 
 (handlers/register-handler-fx
  :inbox/get-sym-key
@@ -234,3 +240,8 @@
                           :sym-key-id sym-key-id
                           :web3       web3}
       :db (assoc db :inbox/last-request (quot now 1000))})))
+
+(handlers/register-handler-fx
+ :inbox/reconnect
+ (fn [cofx _]
+   (recover-offline-inbox true cofx)))

@@ -8,6 +8,7 @@
    :notifications-title                  "Notifications and sounds"
    :offline                              "Offline"
    :connection-problem                   "Messages connection problem"
+   :mailserver-reconnect                 "Could not connect to mailserver. Tap to reconnect"
    :search-for                           "Search for..."
    :cancel                               "Cancel"
    :next                                 "Next"

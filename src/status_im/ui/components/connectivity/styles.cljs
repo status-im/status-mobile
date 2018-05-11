@@ -1,7 +1,7 @@
 (ns status-im.ui.components.connectivity.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 
-(defnstyle offline-wrapper [top opacity window-width pending?]
+(defnstyle text-wrapper [top opacity window-width pending?]
   {:ios              {:z-index 0}
    :opacity          opacity
    :width            window-width
@@ -10,7 +10,7 @@
    :background-color "#828b92cc"
    :height           35})
 
-(def offline-text
+(def text
   {:text-align :center
    :color      :white
    :font-size  14

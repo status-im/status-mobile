@@ -31,11 +31,14 @@
       :display-name "connectivity-error-view"
       :reagent-render
       (fn [{:keys [top]}]
-        (when (or @offline? @connection-problem?)
+        (when-let [label (cond
+                           @offline? :t/offline
+                           @connection-problem? :t/mailserver-reconnect
+                           :else nil)]
           (let [pending? (and (:pending @current-chat-contact) (= :chat @view-id))]
-            [react/animated-view {:style (styles/offline-wrapper top offline-opacity window-width pending?)}
+            [react/animated-view {:style (styles/text-wrapper top offline-opacity window-width pending?)}
              [react/view
-              [react/text {:style styles/offline-text}
-               (i18n/label (if @connection-problem?
-                             :t/connection-problem
-                             :t/offline))]]])))})))
+              [react/text {:style    styles/text
+                           :on-press (when @connection-problem?
+                                       #(re-frame/dispatch [:inbox/reconnect]))}
+               (i18n/label label)]]])))})))
