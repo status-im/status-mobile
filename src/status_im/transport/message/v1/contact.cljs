@@ -76,8 +76,8 @@
     (let [message-id (transport.utils/message-id this)
           public-keys (remove nil? (map :public-key (vals (:contacts/contacts db))))]
       (handlers-macro/merge-fx cofx
-                               (protocol/multi-send-with-pubkey {:public-keys public-keys
-                                                                 :payload     this}))))
+                               (protocol/multi-send-by-pubkey {:public-keys public-keys
+                                                               :payload     this}))))
   (receive [this chat-id signature cofx]
     (let [message-id (transport.utils/message-id this)]
       (when (protocol/is-new? message-id)

@@ -13,6 +13,8 @@
             [day8.re-frame.async-flow-fx]
             [status-im.constants :as constants]))
 
+(def delay-in-s-between-mailserver-requests 10)
+
 (defn- parse-json
   ;; NOTE(dmitryn) Expects JSON response like:
   ;; {"error": "msg"} or {"result": true}
@@ -221,23 +223,20 @@
    (let [web3       (:web3 db)
          account    (:account/account db)
          wnode      (get-current-wnode-address db)
-         topics     (or topics
-                        (map #(:topic %) (vals (:transport/chats db))))
+         topics     (cond-> (or topics
+                                (map #(:topic %) (vals (:transport/chats db))))
+                      discover? (conj (transport.utils/get-topic constants/contact-discovery)))
          from       (or from (:last-request account))
          sym-key-id (:inbox/sym-key-id db)
          now-in-s   (quot now 1000)
          fx         {:data-store/save-account (assoc account :last-request now-in-s)
                      :db                      (assoc-in db [:account/account :last-request] now-in-s)}]
      (if from
-       ;; NOTE (yenda) we ensure a delay of 10 seconds between mailserver requests
-       (when (< 10 (- now-in-s from))
+       (when (< delay-in-s-between-mailserver-requests (- now-in-s from))
          (merge fx
-                {::request-messages       {:wnode      wnode
-                                           :topics     (if discover?
-                                                         (conj topics
-                                                               (transport.utils/get-topic constants/contact-discovery))
-                                                         topics)
-                                           :from       from
-                                           :sym-key-id sym-key-id
-                                           :web3       web3}}))
+                {::request-messages {:wnode      wnode
+                                     :topics     topics
+                                     :from       from
+                                     :sym-key-id sym-key-id
+                                     :web3       web3}}))
        fx))))
