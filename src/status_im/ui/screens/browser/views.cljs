@@ -61,9 +61,9 @@
     [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
-  (let [{:strs [url title canGoBack canGoForward]} (js->clj event)]
+  (let [{:strs [url canGoBack canGoForward]} (js->clj event)]
     (when-not (= "about:blank" url)
-      (re-frame/dispatch [:update-browser (assoc browser :url url :name title)]))
+      (re-frame/dispatch [:update-browser (assoc browser :url url)]))
     (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
 
 (defn get-inject-js [url]

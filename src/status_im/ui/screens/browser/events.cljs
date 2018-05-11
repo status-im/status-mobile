@@ -26,9 +26,9 @@
     (:url browser)
     (update :url match-url)))
 
-(defn add-browser-fx [{:keys [db now] :as cofx} browser]
+(defn add-browser-fx [{:keys [db now]} browser]
   (let [new-browser (get-new-browser browser now)]
-    {:db           (update-in db [:browser/browsers (:browser-id new-browser)] merge new-browser)
+    {:db                      (update-in db [:browser/browsers (:browser-id new-browser)] merge new-browser)
      :data-store/save-browser new-browser}))
 
 (handlers/register-handler-fx
@@ -54,7 +54,7 @@
 (handlers/register-handler-fx
  :update-browser
  [re-frame/trim-v]
- (fn [{:keys [db now] :as cofx} [browser]]
+ (fn [{:keys [now] :as cofx} [browser]]
    (let [new-browser (get-new-browser browser now)]
      (-> (add-browser-fx cofx new-browser)
          (update-in [:db :browser/options] #(assoc % :browser-id (:browser-id new-browser)))))))
@@ -62,7 +62,7 @@
 (handlers/register-handler-fx
  :update-browser-options
  [re-frame/trim-v]
- (fn [{:keys [db now] :as cofx} [options]]
+ (fn [{:keys [db]} [options]]
    {:db (update db :browser/options merge options)}))
 
 (handlers/register-handler-fx
