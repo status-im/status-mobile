@@ -236,19 +236,6 @@
     :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
 
 (handlers/register-handler-fx
- :wallet/discard-unsigned-transaction
- (fn [_ [_ transaction-id]]
-   {:discard-transaction transaction-id}))
-
-(handlers/register-handler-fx
- :wallet/discard-unsigned-transaction-with-confirmation
- (fn [_ [_ transaction-id]]
-   {:show-confirmation {:title               (i18n/label :t/transactions-delete)
-                        :content             (i18n/label :t/transactions-delete-content)
-                        :confirm-button-text (i18n/label :t/confirm)
-                        :on-accept           #(re-frame/dispatch [:wallet/discard-unsigned-transaction transaction-id])}}))
-
-(handlers/register-handler-fx
  :wallet/update-gas-price
  (fn [{:keys [db]} [_ edit?]]
    {:update-gas-price {:web3          (:web3 db)

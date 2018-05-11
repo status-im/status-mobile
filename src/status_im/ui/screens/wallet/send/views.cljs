@@ -88,11 +88,7 @@
         immediate-sign-enabled? (or modal? (and sign-enabled? sufficient-funds?))]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons
-     (when sign-enabled?
-       [button/button {:style               components.styles/flex
-                       :on-press            sign-later-handler
-                       :accessibility-label :sign-later-button}
-        (i18n/label :t/transactions-sign-later)])
+     [react/view]
      [button/button {:style               components.styles/flex
                      :disabled?           (not immediate-sign-enabled?)
                      :on-press            #(re-frame/dispatch [:wallet.send/set-signing? true])

@@ -534,7 +534,7 @@
    :transactions-sign-later              "Sign later"
    :transactions-delete                  "Delete transaction"
    :transactions-delete-content          "Transaction will be removed from 'Unsigned' list"
-   :transactions-history                 "History"
+   :transactions-history                 "Transaction history"
    :transactions-unsigned                "Unsigned"
    :transactions-history-empty           "No transactions in your history yet"
    :transactions-unsigned-empty          "You don't have any unsigned transactions"

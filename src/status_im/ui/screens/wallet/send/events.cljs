@@ -143,13 +143,13 @@
           ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
 
-         (let [{:keys [gas gasPrice]} args
-               transaction (prepare-transaction queued-transaction now)
+         (let [{:keys [gas gasPrice]}    args
+               transaction               (prepare-transaction queued-transaction now)
                sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
-               new-db (assoc-in db' [:wallet :transactions-unsigned id] transaction)
-               sending-db {:id         id
-                           :method     method
-                           :from-chat? sending-from-bot-or-dapp?}]
+               new-db                    (assoc-in db' [:wallet :transactions-unsigned id] transaction)
+               sending-db                {:id         id
+                                          :method     method
+                                          :from-chat? sending-from-bot-or-dapp?}]
            (if sending-from-bot-or-dapp?
               ;;SENDING FROM BOT (CHAT) OR DAPP
              {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
@@ -159,19 +159,13 @@
                              [:wallet/update-estimated-gas transaction])
                            (when-not (seq gasPrice)
                              [:wallet/update-gas-price])]}
-              ;;WALLET SEND SCREEN WAITING SIGNAL
-             (let [{:keys [later? password]} (get-in db [:wallet :send-transaction])
-                   new-db' (update-in new-db [:wallet :send-transaction] merge sending-db)] ; just update sending state as we are in wallet flow
-               (if later?
-                  ;;SIGN LATER
-                 {:db                      (assoc-in new-db' [:wallet :send-transaction :waiting-signal?] false)
-                  :dispatch                [:navigate-back]
-                  ::show-transaction-moved false}
-                  ;;SIGN NOW
-                 {:db                  new-db'
-                  ::accept-transaction {:id           id
-                                        :password     password
-                                        :on-completed on-transactions-completed}}))))
+             ;;WALLET SEND SCREEN WAITING SIGNAL
+             (let [{:keys [password]} (get-in db [:wallet :send-transaction])
+                   new-db'            (update-in new-db [:wallet :send-transaction] merge sending-db)] ; just update sending state as we are in wallet flow
+               {:db                  new-db'
+                ::accept-transaction {:id           id
+                                      :password     password
+                                      :on-completed on-transactions-completed}})))
           ;;SIGN MESSAGE
          (= method constants/web3-personal-sign)
 
