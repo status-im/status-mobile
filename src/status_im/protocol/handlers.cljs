@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.native-module.core :as status]
-            [status-im.transport.message-cache :as message-cache]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.ethereum.core :as utils]
             [status-im.utils.handlers :as handlers]

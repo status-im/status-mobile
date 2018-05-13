@@ -30,8 +30,7 @@
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id {:keys [db random-id] :as cofx}]
-    (let [message-id (transport.utils/message-id this)
-          topic      (transport.utils/get-topic random-id)
+    (let [topic      (transport.utils/get-topic random-id)
           on-success (fn [sym-key sym-key-id]
                        (re-frame/dispatch [:contact/send-new-sym-key
                                            {:sym-key-id sym-key-id
@@ -42,46 +41,34 @@
       (handlers-macro/merge-fx cofx
                                {:shh/get-new-sym-key {:web3       (:web3 db)
                                                       :on-success on-success}}
-                               (protocol/init-chat chat-id topic)
-                               #_(protocol/requires-ack message-id chat-id))))
+                               (protocol/init-chat chat-id topic))))
   (receive [this chat-id signature {:keys [db] :as cofx}]
-    (let [message-id (transport.utils/message-id this)
-          topic      (transport.utils/get-topic chat-id)]
-      (when (protocol/is-new? message-id)
-        (handlers-macro/merge-fx cofx
-                                 #_(protocol/ack message-id chat-id)
-                                 {:dispatch [:inbox/request-messages {:topics [topic]}]}
-                                 (contacts/receive-contact-request signature
-                                                                   this))))))
+    (let [topic      (transport.utils/get-topic chat-id)]
+      (handlers-macro/merge-fx cofx
+                               {:dispatch [:inbox/request-messages {:topics [topic]}]}
+                               (contacts/receive-contact-request signature
+                                                                 this)))))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id cofx]
-    (let [message-id (transport.utils/message-id this)]
-      (handlers-macro/merge-fx cofx
-                               #_(protocol/requires-ack message-id chat-id)
-                               (protocol/send {:chat-id chat-id
-                                               :payload this}))))
+    (handlers-macro/merge-fx cofx
+                             (protocol/send {:chat-id chat-id
+                                             :payload this})))
   (receive [this chat-id signature cofx]
-    (let [message-id (transport.utils/message-id this)]
-      (when (protocol/is-new? message-id)
-        (handlers-macro/merge-fx cofx
-                                 #_(protocol/ack message-id chat-id)
-                                 (contacts/receive-contact-request-confirmation signature
-                                                                                this))))))
+    (handlers-macro/merge-fx cofx
+                             (contacts/receive-contact-request-confirmation signature
+                                                                            this))))
 
 (defrecord ContactUpdate [name profile-image]
   message/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    (let [message-id (transport.utils/message-id this)
-          public-keys (remove nil? (map :public-key (vals (:contacts/contacts db))))]
+    (let [public-keys (remove nil? (map :public-key (vals (:contacts/contacts db))))]
       (handlers-macro/merge-fx cofx
                                (protocol/multi-send-by-pubkey {:public-keys public-keys
                                                                :payload     this}))))
   (receive [this chat-id signature cofx]
-    (let [message-id (transport.utils/message-id this)]
-      (when (protocol/is-new? message-id)
-        (handlers-macro/merge-fx cofx
-                                 (contacts/receive-contact-update chat-id
-                                                                  signature
-                                                                  this))))))
+    (handlers-macro/merge-fx cofx
+                             (contacts/receive-contact-update chat-id
+                                                              signature
+                                                              this))))

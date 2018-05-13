@@ -3,7 +3,6 @@
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.chat.core :as chat]
-            [status-im.transport.message-cache :as message-cache]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.core :as message]
             [status-im.transport.utils :as transport.utils]))
@@ -21,12 +20,6 @@
    (init-chat chat-id (transport.utils/get-topic chat-id) cofx))
   ([chat-id topic {:keys [db] :as cofx}]
    {:db (assoc-in db [:transport/chats chat-id] (transport.db/create-chat topic))}))
-
-(defn is-new?
-  "Determines if given message-id already exists in in-memory message cache"
-  [message-id]
-  (when-not (message-cache/exists? message-id)
-    (message-cache/add! message-id)))
 
 #_(defn requires-ack [message-id chat-id {:keys [db] :as cofx}]
     {:db (update-in db [:transport/chats chat-id :pending-ack] conj message-id)})
