@@ -24,17 +24,18 @@
     item]])
 
 (defn nav-button
-  [{:keys [icon icon-opts] :as props}]
-  [nav-item (merge {:style styles/nav-item-button} props)
+  [{:keys [icon icon-opts unread-messages?] :as props}]
+  [nav-item (merge {:style (styles/nav-item-button unread-messages?)} props)
    [vector-icons/icon icon icon-opts]])
 
 (defview nav-button-with-count [props]
   (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
-    [react/view
-     [nav-button props]
-     (when (pos? unread-messages-number)
-       [react/view styles/counter-container
-        [components.common/counter unread-messages-number]])]))
+    (let [unread-messages? (pos? unread-messages-number)]
+      [react/view {:flex-direction :row}
+       [nav-button (assoc props :unread-messages? unread-messages?)]
+       (when unread-messages?
+         [nav-item (merge {:style styles/counter-container} props)
+          [components.common/counter unread-messages-number]])])))
 
 (defn nav-text
   ([text] (nav-text nil text))

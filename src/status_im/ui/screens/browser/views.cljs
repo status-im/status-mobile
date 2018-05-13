@@ -82,15 +82,14 @@
                   {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
-                  unread-messages-number [:get-chats-unread-messages-number]
                   network-id [:get-network-id]]
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
       (toolbar.view/nav-back-count)
       (if dapp?
-        [toolbar-content-dapp contact unread-messages-number]
-        [toolbar-content browser unread-messages-number])]
+        [toolbar-content-dapp contact]
+        [toolbar-content browser])]
      (if url
        [components.webview-bridge/webview-bridge
         {:ref                                   #(reset! webview %)
