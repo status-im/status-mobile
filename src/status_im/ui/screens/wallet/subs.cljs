@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.subs
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]))
@@ -31,13 +32,15 @@
 (re-frame/reg-sub :asset-value
                   (fn [[_ fsym tsym]]
                     [(re-frame/subscribe [:balance])
-                     (re-frame/subscribe [:price fsym tsym])])
-                  (fn [[balance price] [_ fsym tsym]]
+                     (re-frame/subscribe [:price fsym tsym])
+                     (re-frame/subscribe [:wallet/currency])])
+                  (fn [[balance price currency] [_ fsym tsym]]
                     (when (and balance price)
                       (-> (money/wei->ether (get balance fsym))
                           (money/eth->fiat price)
                           (money/with-precision 2)
-                          str))))
+                          str
+                          (i18n/format-currency (:code currency))))))
 
 (defn- get-balance-total-value [balance prices currency]
   (->> balance
@@ -61,7 +64,8 @@
                                                          (-> currency :code keyword)))]
                         (-> balance-total-value
                             (money/with-precision 2)
-                            str))
+                            str
+                            (i18n/format-currency (:code currency))))
                       "...")))
 
 (re-frame/reg-sub :prices-loading?

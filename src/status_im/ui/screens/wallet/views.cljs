@@ -68,7 +68,7 @@
         [react/text {:style           styles/asset-item-price
                      :uppercase?      true
                      :number-of-lines 1}
-         (if @asset-value (str (:symbol currency) @asset-value) "...")]]])))
+         (if @asset-value @asset-value "...")]]])))
 
 (defn- asset-section [assets currency]
   [react/view styles/asset-section
