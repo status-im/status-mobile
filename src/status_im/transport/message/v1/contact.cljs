@@ -43,11 +43,7 @@
                                                       :on-success on-success}}
                                (protocol/init-chat chat-id topic))))
   (receive [this chat-id signature {:keys [db] :as cofx}]
-    (let [topic      (transport.utils/get-topic chat-id)]
-      (handlers-macro/merge-fx cofx
-                               {:dispatch [:inbox/request-messages {:topics [topic]}]}
-                               (contacts/receive-contact-request signature
-                                                                 this)))))
+    (contacts/receive-contact-request signature this cofx)))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage

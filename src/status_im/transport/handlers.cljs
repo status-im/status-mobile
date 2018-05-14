@@ -69,7 +69,10 @@
                                                ;;TODO (yenda) remove once go implements persistence
                                                (assoc :sym-key sym-key))]
      (handlers-macro/merge-fx cofx
-                              {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+                              {:db             (assoc-in db
+                                                         [:transport/chats chat-id :sym-key-id]
+                                                         sym-key-id)
+                               :dispatch       [:inbox/request-messages {:topics [topic]}]
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
                                                 :topic      topic
@@ -124,10 +127,14 @@
  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
  (fn [{:keys [db] :as cofx} [{:keys [sym-key-id sym-key chat-id signature message]}]]
    (let [{:keys [web3 current-public-key]} db
-         fx {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+         topic                            (transport.utils/get-topic chat-id)
+         fx {:db             (assoc-in db
+                                       [:transport/chats chat-id :sym-key-id]
+                                       sym-key-id)
+             :dispatch       [:inbox/request-messages {:topics [topic]}]
              :shh/add-filter {:web3       web3
                               :sym-key-id sym-key-id
-                              :topic      (transport.utils/get-topic chat-id)
+                              :topic      topic
                               :chat-id    chat-id}
              :data-store/tx  [(transport-store/save-transport-tx
                                {:chat-id chat-id
