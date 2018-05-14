@@ -62,7 +62,8 @@
 
 (defn- prepare-recipients [public-keys db]
   (map (fn [public-key]
-         (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id]))
+         (assoc (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id])
+                :public-key public-key))
        public-keys))
 
 (defn multi-send-by-pubkey
