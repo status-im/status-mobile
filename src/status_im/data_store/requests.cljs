@@ -1,20 +1,25 @@
 (ns status-im.data-store.requests
-  (:require [cljs.core.async :as async]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]
-            [status-im.data-store.realm.requests :as data-store]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]))
 
 (re-frame/reg-cofx
  :data-store/get-unanswered-requests
  (fn [cofx _]
-   (assoc cofx :stored-unanswered-requests (data-store/get-all-unanswered))))
+   (assoc cofx :stored-unanswered-requests (-> @core/account-realm
+                                               (core/get-by-field :request :status "open")
+                                               (core/all-clj :request)))))
 
-(re-frame/reg-fx
- :data-store/save-request
- (fn [request]
-   (async/go (async/>! core/realm-queue #(data-store/save request)))))
+(defn save-request-tx
+  "Returns tx function for saving request"
+  [request]
+  (fn [realm]
+    (core/create realm :request request true)))
 
-(re-frame/reg-fx
- :data-store/mark-request-as-answered
- (fn [{:keys [chat-id message-id]}]
-   (async/go (async/>! core/realm-queue #(data-store/mark-as-answered chat-id message-id)))))
+(defn mark-request-as-answered-tx
+  "Given chat-id and message-id, returns tx function for marking request as answered"
+  [chat-id message-id]
+  (fn [realm]
+    (some-> (core/get-by-fields realm :request :and [[:chat-id chat-id]
+                                                     [:message-id message-id]])
+            core/single
+            (aset "status" "answered"))))

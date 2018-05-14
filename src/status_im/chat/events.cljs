@@ -22,6 +22,7 @@
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
+            [status-im.data-store.contacts :as contacts-store]
             status-im.chat.events.commands
             status-im.chat.events.requests
             status-im.chat.events.send-message
@@ -167,8 +168,9 @@
         contacts-to-add   (select-keys new-contacts (set/difference (set (keys new-contacts))
                                                                     (set (keys existing-contacts))))]
     (handlers-macro/merge-fx cofx
-                             {:db                       (update db :contacts/contacts merge contacts-to-add)
-                              :data-store/save-contacts (vals contacts-to-add)}
+                             {:db            (update db :contacts/contacts merge contacts-to-add)
+                              :data-store/tx [(contacts-store/save-contacts-tx
+                                               (vals contacts-to-add))]}
                              (events.loading/load-commands))))
 
 (handlers/register-handler-fx

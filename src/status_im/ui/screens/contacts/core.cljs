@@ -3,7 +3,8 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.chat.models :as chat.models]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.data-store.contacts :as contacts-store]))
 
 (defn receive-contact-request
   [public-key
@@ -21,8 +22,10 @@
                          :chat-id      public-key
                          :contact-info (prn-str contact-props)}]
       (handlers-macro/merge-fx cofx
-                               {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
-                                :data-store/save-contact contact-props}
+                               {:db            (update-in db [:contacts/contacts public-key]
+                                                          merge contact-props)
+                                :data-store/tx [(contacts-store/save-contact-tx
+                                                 contact-props)]}
                                (chat.models/upsert-chat chat-props)))))
 
 (defn receive-contact-request-confirmation
@@ -38,14 +41,16 @@
           chat-props    {:name    name
                          :chat-id public-key}]
       (handlers-macro/merge-fx cofx
-                               {:db                      (update-in db [:contacts/contacts public-key] merge contact-props)
-                                :data-store/save-contact contact-props}
+                               {:db            (update-in db [:contacts/contacts public-key]
+                                                          merge contact-props)
+                                :data-store/tx [(contacts-store/save-contact-tx
+                                                 contact-props)]}
                                (chat.models/upsert-chat chat-props)))))
 
 (defn- update-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (when (get-in db [:contacts/contacts whisper-identity])
-    {:db                      (update-in db [:contacts/contacts whisper-identity] merge contact)
-     :data-store/save-contact contact}))
+    {:db            (update-in db [:contacts/contacts whisper-identity] merge contact)
+     :data-store/tx [(contacts-store/save-contact-tx contact)]}))
 
 (defn receive-contact-update [chat-id public-key {:keys [name profile-image]} {:keys [db now] :as cofx}]
   (let [{:keys [chats current-public-key]} db]

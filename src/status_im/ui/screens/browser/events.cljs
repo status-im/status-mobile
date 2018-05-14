@@ -3,7 +3,8 @@
             [status-im.utils.handlers :as handlers]
             [re-frame.core :as re-frame]
             [status-im.utils.random :as random]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.data-store.browser :as browser-store]))
 
 (handlers/register-handler-fx
  :initialize-browsers
@@ -28,8 +29,9 @@
 
 (defn add-browser-fx [{:keys [db now]} browser]
   (let [new-browser (get-new-browser browser now)]
-    {:db                      (update-in db [:browser/browsers (:browser-id new-browser)] merge new-browser)
-     :data-store/save-browser new-browser}))
+    {:db            (update-in db [:browser/browsers (:browser-id new-browser)]
+                               merge new-browser)
+     :data-store/tx [(browser-store/save-browser-tx new-browser)]}))
 
 (handlers/register-handler-fx
  :open-dapp-in-browser
@@ -69,5 +71,5 @@
  :remove-browser
  [re-frame/trim-v]
  (fn [{:keys [db]} [browser-id]]
-   {:db (update-in db [:browser/browsers] dissoc browser-id)
-    :data-store/remove-browser browser-id}))
+   {:db            (update-in db [:browser/browsers] dissoc browser-id)
+    :data-store/tx [(browser-store/remove-browser-tx browser-id)]}))
