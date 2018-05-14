@@ -68,14 +68,17 @@
   (re-frame/dispatch [::transaction-completed {:id (name (key result)) :response (second result)} modal?]))
 ;;;; Handlers
 
+(defn set-and-validate-amount-db [db amount]
+  (let [{:keys [value error]} (wallet.db/parse-amount amount)]
+    (-> db
+        (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
+        (assoc-in [:wallet :send-transaction :amount-text] amount)
+        (assoc-in [:wallet :send-transaction :amount-error] error))))
+
 (handlers/register-handler-fx
  :wallet.send/set-and-validate-amount
  (fn [{:keys [db]} [_ amount]]
-   (let [{:keys [value error]} (wallet.db/parse-amount amount)]
-     {:db (-> db
-              (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
-              (assoc-in [:wallet :send-transaction :amount-text] amount)
-              (assoc-in [:wallet :send-transaction :amount-error] error))})))
+   {:db (set-and-validate-amount-db db amount)}))
 
 (handlers/register-handler-fx
  :wallet.send/set-symbol
@@ -347,10 +350,21 @@
                          assoc
                          :gas (ethereum/estimate-gas (get-in db [:wallet :send-transaction :symbol])))}))
 
+(defn update-gas-price [db edit?]
+  {:update-gas-price {:web3          (:web3 db)
+                      :success-event :wallet/update-gas-price-success
+                      :edit?         edit?}})
+
+(handlers/register-handler-fx
+ :wallet/update-gas-price
+ (fn [{:keys [db]} [_ edit?]]
+   (update-gas-price db edit?)))
+
 (handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [{:keys [db]} _]
-   {:dispatch (if (= :wallet-send-transaction (second (:navigation-stack db)))
-                [:navigate-to-clean :wallet]
-                [:navigate-back])
+ (fn [{:keys [db]} [_ chat-id]]
+   {:dispatch       (condp = (second (:navigation-stack db))
+                      :wallet-send-transaction [:navigate-to-clean :wallet]
+                      :wallet-send-transaction-chat [:execute-stored-command-and-return-to-chat chat-id]
+                      [:navigate-back])
     :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))

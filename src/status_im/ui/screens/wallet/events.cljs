@@ -237,13 +237,6 @@
                                                         :from-chat? from-chat?})
     :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
 
-(handlers/register-handler-fx
- :wallet/update-gas-price
- (fn [{:keys [db]} [_ edit?]]
-   {:update-gas-price {:web3          (:web3 db)
-                       :success-event :wallet/update-gas-price-success
-                       :edit?         edit?}}))
-
 (handlers/register-handler-db
  :wallet/update-gas-price-success
  (fn [db [_ price edit?]]

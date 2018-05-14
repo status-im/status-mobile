@@ -147,6 +147,7 @@
                  :contacts/click-handler
                  :contacts/click-action
                  :contacts/click-params
+                 :commands/stored-command
                  :group/selected-contacts
                  :accounts/accounts
                  :accounts/create

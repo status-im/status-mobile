@@ -23,7 +23,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.contacts :as contacts-store]
-            status-im.chat.events.commands
+            [status-im.chat.events.commands :as events.commands]
             status-im.chat.events.requests
             status-im.chat.events.send-message
             status-im.chat.events.receive-message
@@ -297,6 +297,13 @@
  [re-frame/trim-v]
  (fn [cofx [chat-id opts]]
    (navigate-to-chat chat-id opts cofx)))
+
+(handlers/register-handler-fx
+ :execute-stored-command-and-return-to-chat
+ (fn [cofx [_ chat-id]]
+   (handlers-macro/merge-fx cofx
+                            (events.commands/execute-stored-command)
+                            (navigate-to-chat chat-id {}))))
 
 (defn start-chat
   "Start a chat, making sure it exists"

@@ -13,7 +13,7 @@
          toggled-state (if (= :on flashlight-state) :off :on)]
      (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
 
-(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity]}]
+(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity from-chat?]}]
   {:pre [(not (nil? address))]}
   (update-in
    db [:wallet :send-transaction]
@@ -22,6 +22,7 @@
       symbol      (assoc :symbol symbol)
       gas         (assoc :gas (money/bignumber gas))
       gasPrice    (assoc :gas-price (money/bignumber gasPrice))
+      from-chat?  (assoc :from-chat? from-chat?)
       (and symbol (not gasPrice))
       (assoc :gas-price (ethereum/estimate-gas symbol)))))
 

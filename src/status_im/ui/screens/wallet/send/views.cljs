@@ -212,13 +212,13 @@
                           :on-content-size-change        #(when (and (not modal?) scroll @scroll)
                                                             (.scrollToEnd @scroll))}
        [react/view styles/send-transaction-form
-        [components/recipient-selector {:disabled? modal?
+        [components/recipient-selector {:disabled? (or from-chat? modal?)
                                         :address   to
                                         :name      to-name}]
-        [components/asset-selector {:disabled? modal?
+        [components/asset-selector {:disabled? (or from-chat? modal?)
                                     :type      :send
                                     :symbol    symbol}]
-        [components/amount-selector {:disabled?     modal?
+        [components/amount-selector {:disabled?     (or from-chat? modal?)
                                      :error         (or amount-error
                                                         (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
                                      :input-options {:max-length     21

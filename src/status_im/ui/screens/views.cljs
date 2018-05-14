@@ -122,6 +122,7 @@
     :dapp-description dapp-description
     :wallet-onboarding-setup wallet.onboarding.setup/screen
     :wallet-send-transaction send-transaction
+    :wallet-send-transaction-chat send-transaction
     :wallet-transaction-sent transaction-sent
     :wallet-request-transaction request-transaction
     :wallet-send-transaction-request send-transaction-request
