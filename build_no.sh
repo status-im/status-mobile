@@ -52,7 +52,7 @@ BUILD_NO=$(getNumber "$BUILD")
 BUILD_NO="$((BUILD_NO+1))"
 
 if [ "$1" = "--tag" ]; then
-    echo "Tagging HEAD: $BUILD" >&2
+    echo "Tagging HEAD: build-$BUILD_NO" >&2
     echo "You will need to 'git push --tags' to make this tag take effect." >&2
     git tag "build-$BUILD_NO" HEAD
 fi
