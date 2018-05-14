@@ -22,6 +22,7 @@
             [status-im.test.protocol.web3.inbox]
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
+            [status-im.test.utils.handlers-macro]
             [status-im.test.utils.clocks]
             [status-im.test.utils.inbox]
             [status-im.test.utils.ethereum.eip681]
@@ -66,6 +67,7 @@
  'status-im.test.transport.inbox
  'status-im.test.protocol.web3.inbox
  'status-im.test.utils.utils
+ 'status-im.test.utils.handlers-macro
  'status-im.test.utils.money
  'status-im.test.utils.clocks
  'status-im.test.utils.inbox

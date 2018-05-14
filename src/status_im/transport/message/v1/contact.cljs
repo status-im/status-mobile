@@ -4,7 +4,6 @@
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
-            [status-im.ui.screens.contacts.core :as contacts]
             [status-im.utils.handlers-macro :as handlers-macro]))
 
 (defrecord NewContactKey [sym-key topic message]
@@ -41,20 +40,14 @@
       (handlers-macro/merge-fx cofx
                                {:shh/get-new-sym-keys [{:web3       (:web3 db)
                                                         :on-success on-success}]}
-                               (protocol/init-chat chat-id topic))))
-  (receive [this chat-id signature {:keys [db] :as cofx}]
-    (contacts/receive-contact-request signature this cofx)))
+                               (protocol/init-chat chat-id topic)))))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id cofx]
     (handlers-macro/merge-fx cofx
                              (protocol/send {:chat-id chat-id
-                                             :payload this})))
-  (receive [this chat-id signature cofx]
-    (handlers-macro/merge-fx cofx
-                             (contacts/receive-contact-request-confirmation signature
-                                                                            this))))
+                                             :payload this}))))
 
 (defrecord ContactUpdate [name profile-image]
   message/StatusMessage
@@ -62,9 +55,4 @@
     (let [public-keys (remove nil? (map :public-key (vals (:contacts/contacts db))))]
       (handlers-macro/merge-fx cofx
                                (protocol/multi-send-by-pubkey {:public-keys public-keys
-                                                               :payload     this}))))
-  (receive [this chat-id signature cofx]
-    (handlers-macro/merge-fx cofx
-                             (contacts/receive-contact-update chat-id
-                                                              signature
-                                                              this))))
+                                                               :payload     this})))))

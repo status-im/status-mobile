@@ -1,6 +1,8 @@
 (ns status-im.data-store.realm.schemas.account.core
-  (:require [status-im.data-store.realm.schemas.account.v1.core :as v1]
-            [status-im.data-store.realm.schemas.account.v2.core :as v2]))
+  (:require
+   [status-im.data-store.realm.schemas.account.v1.core :as v1]
+   [status-im.data-store.realm.schemas.account.v2.core :as v2]
+   [status-im.data-store.realm.schemas.account.v3.core :as v3]))
 
 ;; TODO(oskarth): Add failing test if directory vXX exists but isn't in schemas.
 
@@ -10,5 +12,7 @@
                :migration     v1/migration}
               {:schema        v2/schema
                :schemaVersion 2
-               :migration     v2/migration}])
-
+               :migration     v2/migration}
+              {:schema        v3/schema
+               :schemaVersion 3
+               :migration     v3/migration}])

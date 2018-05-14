@@ -296,7 +296,7 @@
    :clear                                "Clear"
    :clear-history                        "Clear history"
    :clear-history-title                  "Clear history?"
-   :clear-group-history-confirmation     "Are you sure you want to clear this group's chat history?"
+   :clear-history-confirmation-content   "Are you sure you want to clear this chat history?"
    :clear-history-confirmation           "Clear history?"
    :clear-history-action                 "Clear"
    :mute-notifications                   "Mute notifications"

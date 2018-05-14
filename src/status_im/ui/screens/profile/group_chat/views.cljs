@@ -44,25 +44,17 @@
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close
      :action              #(utils/show-confirmation (i18n/label :t/clear-history-title)
-                                                    (i18n/label :t/clear-group-history-confirmation)
+                                                    (i18n/label :t/clear-history-confirmation-content)
                                                     (i18n/label :t/clear-history-action)
                                                     (fn [] (re-frame/dispatch [:clear-history])))
      :accessibility-label :clear-history-button}
     {:label               (i18n/label :t/delete-chat)
-     :icon                :icons/delete
-     :action              #(utils/show-confirmation (i18n/label :t/delete-chat-title)
-                                                    (i18n/label :t/delete-group-chat-confirmation)
-                                                    (i18n/label :t/delete)
-                                                    (fn []
-                                                      (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
-     :accessibility-label :delete-chat-button}
-    {:label               (i18n/label :t/leave-group)
      :icon                :icons/arrow-left
      :action              #(utils/show-confirmation (i18n/label :t/leave-group-title)
                                                     (i18n/label :t/leave-group-confirmation)
                                                     (i18n/label :t/leave-group-action)
                                                     (fn [] (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
-     :accessibility-label :leave-chat-button}]))
+     :accessibility-label :delete-chat-button}]))
 
 (defn contact-actions [contact]
   [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])

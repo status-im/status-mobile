@@ -37,6 +37,14 @@
 (defn- get-chat-by-id [chat-id realm]
   (core/single (core/get-by-field realm :chat :chat-id chat-id)))
 
+(defn clear-history-tx
+  "Returns tx function for clearing the history of chat"
+  [chat-id deleted-at-clock-value]
+  (fn [realm]
+    (let [chat (get-chat-by-id chat-id realm)]
+      (doto chat
+        (aset "deleted-at-clock-value" deleted-at-clock-value)))))
+
 (defn deactivate-chat-tx
   "Returns tx function for deactivating chat"
   [chat-id now]

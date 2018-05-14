@@ -342,38 +342,15 @@
  (fn [cofx [chat]]
    (models/upsert-chat chat cofx)))
 
-(defn- remove-transport [chat-id {:keys [db] :as cofx}]
-  (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])]
-    ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
-    (if (and group-chat (not public?))
-      (handlers-macro/merge-fx cofx (transport.message/send (group-chat/GroupLeave.) chat-id))
-      (handlers-macro/merge-fx cofx (transport/unsubscribe-from-chat chat-id)))))
-
-(handlers/register-handler-fx
- :leave-chat-and-navigate-home
- [re-frame/trim-v]
- (fn [cofx [chat-id]]
-   (handlers-macro/merge-fx cofx
-                            (models/remove-chat chat-id)
-                            (navigation/replace-view :home)
-                            (remove-transport chat-id))))
-
-(handlers/register-handler-fx
- :leave-group-chat?
- [re-frame/trim-v]
- (fn [_ [chat-id]]
-   {:show-confirmation {:title               (i18n/label :t/leave-confirmation)
-                        :content             (i18n/label :t/leave-group-chat-confirmation)
-                        :confirm-button-text (i18n/label :t/leave)
-                        :on-accept           #(re-frame/dispatch [:leave-chat-and-navigate-home chat-id])}}))
+(defn remove-chat-and-navigate-home [cofx [chat-id]]
+  (handlers-macro/merge-fx cofx
+                           (models/remove-chat chat-id)
+                           (navigation/replace-view :home)))
 
 (handlers/register-handler-fx
  :remove-chat-and-navigate-home
  [re-frame/trim-v]
- (fn [cofx [chat-id]]
-   (handlers-macro/merge-fx cofx
-                            (models/remove-chat chat-id)
-                            (navigation/replace-view :home))))
+ remove-chat-and-navigate-home)
 
 (handlers/register-handler-fx
  :remove-chat-and-navigate-home?
@@ -383,6 +360,19 @@
                         :content             (i18n/label (if group? :t/delete-group-chat-confirmation :t/delete-chat-confirmation))
                         :confirm-button-text (i18n/label :t/delete)
                         :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
+
+(handlers/register-handler-fx
+ :clear-history
+ (fn [{{:keys [current-chat-id]} :db :as cofx} _]
+   (models/clear-history current-chat-id cofx)))
+
+(handlers/register-handler-fx
+ :clear-history?
+ (fn [_ _]
+   {:show-confirmation {:title               (i18n/label :t/clear-history-confirmation)
+                        :content             (i18n/label :t/clear-history-confirmation-content)
+                        :confirm-button-text (i18n/label :t/clear)
+                        :on-accept           #(re-frame/dispatch [:clear-history])}}))
 
 (handlers/register-handler-fx
  :create-new-public-chat

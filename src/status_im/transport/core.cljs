@@ -63,8 +63,6 @@
                            (fn [js-error js-message]
                              (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
 
-(def unsubscribe-from-chat transport.utils/unsubscribe-from-chat)
-
 (defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters
   It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
