@@ -46,10 +46,11 @@
 (handlers/register-handler-fx
  :open-browser
  [re-frame/trim-v]
- (fn [{:keys [now] :as cofx} [browser]]
+ (fn [{:keys [now] :as cofx} [browser new?]]
    (let [new-browser (get-new-browser browser now)]
      (merge (add-browser-fx cofx new-browser)
-            {:dispatch [:navigate-to :browser {:browser/browser-id (:browser-id new-browser)}]}))))
+            {:dispatch [:navigate-to :browser {:browser/browser-id (:browser-id new-browser)
+                                               :browser/new?       new?}]}))))
 
 (handlers/register-handler-fx
  :update-browser
