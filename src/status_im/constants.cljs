@@ -205,9 +205,6 @@
 
 (def inbox-password "status-offline-inbox")
 
-;; Used to generate topic for contact discoveries
-(def contact-discovery "contact-discovery")
-
 (def ^:const send-transaction-no-error-code        "0")
 (def ^:const send-transaction-default-error-code   "1")
 (def ^:const send-transaction-password-error-code  "2")
