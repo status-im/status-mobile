@@ -1,4 +1,3 @@
-import time
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests import transaction_users, api_requests, get_current_time, transaction_users_wallet, marks
 from selenium.common.exceptions import TimeoutException
@@ -82,63 +81,26 @@ class TestTransaction(SingleDeviceTestCase):
         sender = transaction_users['B_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
-        home_view = sign_in_view.get_home_view()
         address = transaction_users['B_USER']['address']
         initial_balance = api_requests.get_balance(address)
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        home_view = profile_view.home_button.click()
         start_new_chat_view = home_view.plus_button.click()
         start_new_chat_view.open_d_app_button.click()
-        auction_house = start_new_chat_view.auction_house_button.click()
+        start_new_chat_view.simple_dapp_button.scroll_to_element()
+        simple_dapp = start_new_chat_view.simple_dapp_button.click()
         start_new_chat_view.open_button.click()
 
-        auction_house.wait_for_d_aap_to_load()
-        auction_house.toggle_navigation_button.click()
-        auction_house.new_auction_button.click()
-        auction_house.name_to_reserve_input.click()
-        auction_name = time.strftime('%Y-%m-%d-%H-%M')
-        auction_house.send_as_keyevent(auction_name)
-        auction_house.register_name_button.click()
+        simple_dapp.wait_for_d_aap_to_load()
+        simple_dapp.assets_button.click()
+        simple_dapp.request_stt_button.click()
 
         send_transaction_view = home_view.get_send_transaction_view()
         send_transaction_view.sign_transaction(sender['password'])
 
-        auction_house.find_full_text('You are the proud owner of the name: ' + auction_name, 120)
-
         api_requests.verify_balance_is_updated(initial_balance, address)
-
-    @marks.pr
-    @marks.testrail_case_id(3405)
-    def test_send_eth_from_wallet_sign_later(self):
-        sender = transaction_users_wallet['B_USER']
-        recipient = transaction_users_wallet['A_USER']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
-        home_view = sign_in_view.get_home_view()
-        initial_balance_recipient = api_requests.get_balance(recipient['address'])
-        home_view.add_contact(recipient['public_key'])
-        home_view.get_back_to_home_view()
-        wallet_view = home_view.wallet_button.click()
-        send_transaction = wallet_view.send_button.click()
-        send_transaction.amount_edit_box.click()
-        amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click_until_presence_of_element(send_transaction.sign_later_button)
-        send_transaction.sign_later_button.click()
-        send_transaction.yes_button.click()
-        send_transaction.ok_button.click()
-        transactions_view = wallet_view.transactions_button.click()
-        transactions_view.unsigned_tab.click()
-        transactions_view.sign_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.enter_password_input.send_keys(sender['password'])
-        send_transaction.sign_transaction_button.click()
-        send_transaction.got_it_button.click()
-        api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
-        transactions_view.history_tab.click()
-        transactions_view.transactions_table.find_transaction(amount=amount)
 
     @marks.pr
     @marks.testrail_case_id(3406)
@@ -301,4 +263,3 @@ class TestTransactions(MultipleDeviceTestCase):
         request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')
         device_2_chat.send_eth_to_request(request_button, sender['password'])
         api_requests.verify_balance_is_updated(initial_balance_recipient, recipient['address'])
-

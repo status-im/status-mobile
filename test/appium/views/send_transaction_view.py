@@ -14,12 +14,6 @@ class SignTransactionButton(BaseButton):
         self.locator = self.Locator.accessibility_id('sign-transaction-button')
 
 
-class SignLaterButton(BaseButton):
-    def __init__(self, driver):
-        super(SignLaterButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('sign-later-button')
-
-
 class AmountEditBox(BaseEditBox, BaseButton):
 
     def __init__(self, driver):
@@ -104,7 +98,6 @@ class SendTransactionView(BaseView):
 
         self.amount_edit_box = AmountEditBox(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
-        self.sign_later_button = SignLaterButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)
