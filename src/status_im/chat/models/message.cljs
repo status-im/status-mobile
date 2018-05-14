@@ -280,8 +280,8 @@
 
 (defn- add-console-responses
   [command handler-data {:keys [random-id-seq]}]
-  {:dispatch-n (->> (console-events/console-respond-command-messages command handler-data random-id-seq)
-                    (mapv (partial vector :chat-received-message/add)))})
+  {:dispatch (->> (console-events/console-respond-command-messages command handler-data random-id-seq)
+                  (vector :chat-received-message/add))})
 
 (defn send-command
   [{{:keys [current-public-key chats] :as db} :db :keys [now] :as cofx} params]
@@ -322,12 +322,12 @@
                                            :message-id      id}
                                     (:async-handler command)
                                     (assoc :orig-params orig-params))}]
-    {:call-jail {:jail-id                 identity
-                 :path                    [handler-type [name scope-bitmask] :handler]
-                 :params                  jail-params
-                 :callback-event-creator (fn [jail-response]
-                                           (when-not (:async-handler command)
-                                             [:command-handler! chat-id orig-params jail-response]))}}))
+    {:call-jail [{:jail-id                identity
+                  :path                   [handler-type [name scope-bitmask] :handler]
+                  :params                 jail-params
+                  :callback-event-creator (fn [jail-response]
+                                            (when-not (:async-handler command)
+                                              [:command-handler! chat-id orig-params jail-response]))}]}))
 
 (defn process-command
   [cofx {:keys [command chat-id] :as params}]

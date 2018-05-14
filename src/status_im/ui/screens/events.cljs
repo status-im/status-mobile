@@ -92,14 +92,15 @@
 
 (re-frame/reg-fx
  :call-jail
- (fn [{:keys [callback-event-creator] :as opts}]
-   (status/call-jail
-    (-> opts
-        (dissoc :callback-event-creator)
-        (assoc :callback
-               (fn [jail-response]
-                 (when-let [event (callback-event-creator jail-response)]
-                   (re-frame/dispatch event))))))))
+ (fn [args]
+   (doseq [{:keys [callback-event-creator] :as opts} args]
+     (status/call-jail
+      (-> opts
+          (dissoc :callback-event-creator)
+          (assoc :callback
+                 (fn [jail-response]
+                   (when-let [event (callback-event-creator jail-response)]
+                     (re-frame/dispatch event)))))))))
 
 (re-frame/reg-fx
  :call-jail-function

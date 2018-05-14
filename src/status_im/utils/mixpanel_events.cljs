@@ -219,9 +219,17 @@
    {:label      "SRratio"
     :trigger    [:chat-received-message/add]
     :properties {:target :user-message-received}
-    :filter-fn  (fn [db [_ {:keys [message-type] :as message}]]
-                  (and (= :user-message message-type)
-                       (message-model/add-to-chat? {:db db} message)))
-    :data-fn    (fn [db [_ {:keys [message-id message-type]}]]
-                  {:message-type message-type
-                   :message-id   message-id})}])
+    :filter-fn  (fn [db [_ messages]]
+                  (some
+                   (fn [{:keys [message-type] :as message}]
+                     (and (= :user-message message-type)
+                          (message-model/add-to-chat? {:db db} message)))
+                   messages))
+    :data-fn    (fn [db [_ messages]]
+                  (keep
+                   (fn [{:keys [message-id message-type] :as message}]
+                     (when (and (= :user-message message-type)
+                                (message-model/add-to-chat? {:db db} message))
+                       {:message-type message-type
+                        :message-id   message-id}))
+                   messages))}])

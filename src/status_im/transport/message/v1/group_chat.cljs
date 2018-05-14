@@ -25,16 +25,20 @@
                                       :payload     this}
                                      cofx)))
   (receive [this _ signature {:keys [db] :as cofx}]
-    (handlers-macro/merge-fx cofx
-                             {:shh/add-new-sym-key {:web3       (:web3 db)
-                                                    :sym-key    sym-key
-                                                    :on-success (fn [sym-key sym-key-id]
-                                                                  (re-frame/dispatch [:group/add-new-sym-key {:chat-id    chat-id
-                                                                                                              :signature  signature
-                                                                                                              :sym-key    sym-key
-                                                                                                              :sym-key-id sym-key-id
-                                                                                                              :message    message}]))}}
-                             (protocol/init-chat chat-id))))
+    (handlers-macro/merge-fx
+     cofx
+     {:shh/add-new-sym-keys
+      [{:web3       (:web3 db)
+        :sym-key    sym-key
+        :on-success (fn [sym-key sym-key-id]
+                      (re-frame/dispatch
+                       [:group/add-new-sym-key
+                        {:chat-id    chat-id
+                         :signature  signature
+                         :sym-key    sym-key
+                         :sym-key-id sym-key-id
+                         :message    message}]))}]}
+     (protocol/init-chat chat-id))))
 
 (defn- user-is-group-admin? [chat-id cofx]
   (= (get-in cofx [:db :chats chat-id :group-admin])
@@ -42,12 +46,14 @@
 
 (defn- send-new-group-key [message chat-id cofx]
   (when (user-is-group-admin? chat-id cofx)
-    {:shh/get-new-sym-key {:web3 (get-in cofx [:db :web3])
-                           :on-success (fn [sym-key sym-key-id]
-                                         (re-frame/dispatch [:group/send-new-sym-key {:chat-id    chat-id
-                                                                                      :sym-key    sym-key
-                                                                                      :sym-key-id sym-key-id
-                                                                                      :message    message}]))}}))
+    {:shh/get-new-sym-keys [{:web3       (get-in cofx [:db :web3])
+                             :on-success (fn [sym-key sym-key-id]
+                                           (re-frame/dispatch
+                                            [:group/send-new-sym-key
+                                             {:chat-id    chat-id
+                                              :sym-key    sym-key
+                                              :sym-key-id sym-key-id
+                                              :message    message}]))}]}))
 
 (defn- prepare-system-message [admin-name added-participants removed-participants contacts]
   (let [added-participants-names   (map #(get-in contacts [% :name] %) added-participants)

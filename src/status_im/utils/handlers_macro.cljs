@@ -7,17 +7,28 @@
     (assoc cofx :db db)
     cofx))
 
-(def ^:private tx-keys #{:data-store/tx :data-store/base-tx})
+(def ^:private mergable-keys
+  #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
+    :shh/add-new-sym-keys :call-jail :shh/get-new-sym-keys})
 
 (defn safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
     fx
     (let [common-keys (set/intersection (into #{} (keys fx))
                                         (into #{} (keys new-fx)))]
-      (if (empty? (set/difference common-keys (conj tx-keys :db)))
-        (merge (apply dissoc fx tx-keys)
-               (apply dissoc new-fx tx-keys)
+      (if (empty? (set/difference common-keys (conj mergable-keys :db)))
+        (merge (apply dissoc fx mergable-keys)
+               (apply dissoc new-fx mergable-keys)
                (merge-with into
-                           (select-keys fx tx-keys)
-                           (select-keys new-fx tx-keys)))
+                           (select-keys fx mergable-keys)
+                           (select-keys new-fx mergable-keys)))
         {:merging-fx-with-common-keys common-keys}))))
+
+(defn merge-effects [{:keys [db] :as initial-cofx} handler args]
+  (reduce (fn [fx arg]
+            (let [temp-cofx (update-db initial-cofx fx)]
+              (safe-merge
+               fx
+               (handler arg temp-cofx))))
+          {:db db}
+          args))

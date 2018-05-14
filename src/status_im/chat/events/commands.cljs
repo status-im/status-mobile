@@ -35,12 +35,12 @@
             jail-params {:parameters params
                          :context    (generate-context address chat-id (models.message/group-message? message) to)}]
         {:db        db
-         :call-jail {:jail-id                bot
-                     :path                   path
-                     :params                 jail-params
-                     :callback-event-creator (fn [jail-response]
-                                               [::jail-command-data-response
-                                                jail-response message opts])}})
+         :call-jail [{:jail-id                bot
+                      :path                   path
+                      :params                 jail-params
+                      :callback-event-creator (fn [jail-response]
+                                                [::jail-command-data-response
+                                                 jail-response message opts])}]})
       {:db (update-in db [:contacts/contacts bot :jail-loaded-events]
                       conj [:request-command-message-data message opts])})))
 

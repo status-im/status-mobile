@@ -96,10 +96,11 @@
         (send params cofx)
         (send-with-pubkey params cofx))))
   (receive [this chat-id signature cofx]
-    {:dispatch [:chat-received-message/add (assoc (into {} this)
-                                                  :message-id (transport.utils/message-id this)
-                                                  :chat-id    chat-id
-                                                  :from       signature)]}))
+    {:chat-received-message/add-fx
+     [(assoc (into {} this)
+             :message-id (transport.utils/message-id this)
+             :chat-id chat-id
+             :from signature)]}))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

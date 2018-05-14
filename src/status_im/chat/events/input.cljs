@@ -145,15 +145,15 @@
                      :context    {:data data
                                   :from from
                                   :to   to}}]
-        {:call-jail {:jail-id owner-id
-                     :path    path
-                     :params  params
-                     :callback-event-creator (fn [jail-response]
-                                               [:chat-received-message/bot-response
-                                                {:chat-id         current-chat-id
-                                                 :command         command
-                                                 :parameter-index parameter-index}
-                                                jail-response])}}))))
+        {:call-jail [{:jail-id                owner-id
+                      :path                   path
+                      :params                 params
+                      :callback-event-creator (fn [jail-response]
+                                                [:chat-received-message/bot-response
+                                                 {:chat-id         current-chat-id
+                                                  :command         command
+                                                  :parameter-index parameter-index}
+                                                 jail-response])}]}))))
 
 (defn chat-input-focus
   "Returns fx for focusing on active chat input reference"

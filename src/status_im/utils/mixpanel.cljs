@@ -128,10 +128,13 @@
          (filter (fn [{:keys [filter-fn]}]
                    (or (not filter-fn) (filter-fn db event))))
 
-         (map (fn [{:keys [data-fn] :as trigger}]
-                (if data-fn
-                  (update trigger :properties merge (data-fn db event))
-                  trigger))))))
+         (mapcat (fn [{:keys [data-fn] :as trigger}]
+                   (if data-fn
+                     (let [data (data-fn db event)]
+                       (if (map? data)
+                         [(update trigger :properties merge data)]
+                         (map (partial update trigger :properties merge) data)))
+                     [trigger]))))))
 
 (defn force-tracking? [event-name]
   (and config/force-sr-ratio-tracking

@@ -133,26 +133,31 @@
                                  (on-success chat-id sym-key sym-key-id))
                    :on-error   log-error}))))
 
-(re-frame/reg-fx
- :shh/add-new-sym-key
- (fn [{:keys [web3 sym-key on-success]}]
-   (add-sym-key {:web3       web3
-                 :sym-key    sym-key
-                 :on-success (fn [sym-key-id]
-                               (on-success sym-key sym-key-id))
-                 :on-error   log-error})))
+(defn add-new-sym-key [{:keys [web3 sym-key on-success]}]
+  (add-sym-key {:web3       web3
+                :sym-key    sym-key
+                :on-success (fn [sym-key-id]
+                              (on-success sym-key sym-key-id))
+                :on-error   log-error}))
 
 (re-frame/reg-fx
- :shh/get-new-sym-key
- (fn [{:keys [web3 on-success]}]
-   (new-sym-key {:web3       web3
-                 :on-success (fn [sym-key-id]
-                               (get-sym-key {:web3       web3
-                                             :sym-key-id sym-key-id
-                                             :on-success (fn [sym-key]
-                                                           (on-success sym-key sym-key-id))
-                                             :on-error   log-error}))
-                 :on-error   log-error})))
+ :shh/add-new-sym-keys
+ (fn [args]
+   (doseq [add-new-sym-key-params args]
+     (add-new-sym-key add-new-sym-key-params))))
+
+(re-frame/reg-fx
+ :shh/get-new-sym-keys
+ (fn [args]
+   (doseq [{:keys [web3 on-success]} args]
+     (new-sym-key {:web3       web3
+                   :on-success (fn [sym-key-id]
+                                 (get-sym-key {:web3       web3
+                                               :sym-key-id sym-key-id
+                                               :on-success (fn [sym-key]
+                                                             (on-success sym-key sym-key-id))
+                                               :on-error   log-error}))
+                   :on-error   log-error}))))
 
 (re-frame/reg-fx
  :shh/generate-sym-key-from-password

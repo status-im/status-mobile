@@ -35,16 +35,17 @@
 
 (defn- faucet-response-event [message-id content]
   [:chat-received-message/add
-   (console-chat/console-message {:message-id message-id
-                                  :content content
-                                  :content-type constants/text-content-type})])
+   [(console-chat/console-message
+     {:message-id   message-id
+      :content      content
+      :content-type constants/text-content-type})]])
 
 (def console-commands->fx
   {"faucet"
    (fn [{:keys [db random-id] :as cofx} {:keys [params]}]
      (let [current-address (get-in db [:account/account :address])
-           faucet-url (faucet-base-url->url (:url params))]
-       {:http-get {:url (gstring/format faucet-url current-address)
+           faucet-url      (faucet-base-url->url (:url params))]
+       {:http-get {:url                   (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]
                                             (faucet-response-event
                                              random-id
@@ -62,12 +63,12 @@
                                 {:dispatch-n (if debug?
                                                [[:initialize-debugging {:force-start? true}]
                                                 [:chat-received-message/add
-                                                 (console-chat/console-message
-                                                  {:message-id random-id
-                                                   :content (i18n/label :t/debug-enabled)
-                                                   :content-type constants/text-content-type})]]
+                                                 [(console-chat/console-message
+                                                   {:message-id   random-id
+                                                    :content      (i18n/label :t/debug-enabled)
+                                                    :content-type constants/text-content-type})]]]
                                                [[:stop-debugging]])}
-                                (account.utils/account-update {:debug? debug?
+                                (account.utils/account-update {:debug?       debug?
                                                                :last-updated now}))))})
 
 (def commands-names (set (keys console-commands->fx)))
