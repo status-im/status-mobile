@@ -19,8 +19,7 @@
                          :fcm-token        fcm-token
                          :pending?         true}
           chat-props    {:name         name
-                         :chat-id      public-key
-                         :contact-info (prn-str contact-props)}]
+                         :chat-id      public-key}]
       (handlers-macro/merge-fx cofx
                                {:db            (update-in db [:contacts/contacts public-key]
                                                           merge contact-props)

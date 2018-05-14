@@ -35,7 +35,9 @@
      {:db (update db :contacts/contacts #(merge contacts %))})))
 
 (defn- add-new-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
-  (let [new-contact (assoc contact :pending? false)]
+  (let [new-contact (assoc contact
+                           :pending? false
+                           :public-key whisper-identity)]
     {:db            (-> db
                         (update-in [:contacts/contacts whisper-identity]
                                    merge new-contact)
@@ -57,11 +59,9 @@
       (transport/send (message.v1.contact/map->ContactRequest (own-info db)) whisper-identity cofx))))
 
 (defn- build-contact [whisper-id {{:keys [chats] :contacts/keys [contacts]} :db}]
-  (-> (if-let [contact-info (get-in chats [whisper-id :contact-info])]
-        (reader/read-string contact-info)
-        (or (get contacts whisper-id)
-            (utils.contacts/whisper-id->new-contact whisper-id)))
-      (assoc :address (utils.contacts/public-key->address whisper-id))))
+  (assoc (or (get contacts whisper-id)
+             (utils.contacts/whisper-id->new-contact whisper-id))
+         :address (utils.contacts/public-key->address whisper-id)))
 
 (defn add-contact [whisper-id {:keys [db] :as cofx}]
   (let [contact (build-contact whisper-id cofx)]
