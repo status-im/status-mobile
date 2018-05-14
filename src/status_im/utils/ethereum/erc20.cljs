@@ -82,30 +82,27 @@
   (if topic
     (str "0x" (subs topic 26))))
 
-(defn- parse-transaction-entry [block-number chain direction entries]
+(defn- parse-transaction-entries [current-block-number block-info chain direction transfers]
   (into {}
-        (for [entry entries]
-          (let [token (->> entry :address (tokens/address->token chain))]
-            [(:transactionHash entry)
-             {:block         (-> entry :blockNumber ethereum/hex->int str)
-              :hash          (:transactionHash entry)
+        (for [transfer transfers]
+          (let [token (->> transfer :address (tokens/address->token chain))]
+            [(:transactionHash transfer)
+             {:block         (-> block-info :number str)
+              :hash          (:transactionHash transfer)
               :symbol        (:symbol token)
-              :from          (-> entry :topics second remove-padding)
-              :to            (-> entry :topics last remove-padding)
-              :value         (-> entry :data ethereum/hex->bignumber)
+              :from          (-> transfer :topics second remove-padding)
+              :to            (-> transfer :topics last remove-padding)
+              :value         (-> transfer :data ethereum/hex->bignumber)
               :type          direction
 
-              :confirmations (str (- block-number (-> entry :blockNumber ethereum/hex->int)))
+              :confirmations (str (- current-block-number (-> transfer :blockNumber ethereum/hex->int)))
 
               :gas-price     nil
               :nonce         nil
               :data          nil
 
               :gas-limit     nil
-              ;; NOTE(goranjovic) - timestamp is mocked to the current time so that the transaction is shown at the
-              ;; top of transaction history list between the moment when transfer event was detected and actual
-              ;; timestamp was retrieved from block info.
-              :timestamp     (str (datetime/timestamp))
+              :timestamp     (-> block-info :timestamp (* 1000) str)
 
               :gas-used      nil
 
@@ -117,7 +114,18 @@
               ;; confirmations count.
               :transfer      true}]))))
 
-(defn- response-handler [block-number chain direction error-fn success-fn]
+(defn add-block-info [web3 current-block-number chain direction result success-fn]
+  (let [transfers-by-block (group-by :blockNumber result)]
+    (doseq [[block-number transfers] transfers-by-block]
+      (ethereum/get-block-info web3 (ethereum/hex->int block-number)
+                               (fn [block-info]
+                                 (success-fn (parse-transaction-entries current-block-number
+                                                                        block-info
+                                                                        chain
+                                                                        direction
+                                                                        transfers)))))))
+
+(defn- response-handler [web3 current-block-number chain direction error-fn success-fn]
   (fn handle-response
     ([response]
      (let [{:keys [error result]} (parse-json response)]
@@ -125,7 +133,7 @@
     ([error result]
      (if error
        (error-fn error)
-       (success-fn (parse-transaction-entry block-number chain direction result))))))
+       (add-block-info web3 current-block-number chain direction result success-fn)))))
 
 ;;
 ;; Here we are querying event logs for Transfer events.
@@ -139,8 +147,9 @@
 ;;
 
 (defn get-token-transfer-logs
-  ;; NOTE(goranjovic): here we cannot use web3 since events don't work with infura
-  [block-number network contracts direction address cb]
+  ;; NOTE(goranjovic): here we use direct JSON-RPC calls to get event logs because of web3 event issues with infura
+  ;; we still use web3 to get other data, such as block info
+  [web3 current-block-number network contracts direction address cb]
   (let [chain (ethereum/network->chain-keyword network)
         [from to] (if (= :inbound direction)
                     [nil (ethereum/normalized-address address)]
@@ -155,9 +164,9 @@
                                      (add-padding to)]}]}
         payload (.stringify js/JSON (clj->js args))]
     (status/call-web3-private payload
-                              (response-handler block-number chain direction ethereum/handle-error cb))))
+                              (response-handler web3 current-block-number chain direction ethereum/handle-error cb))))
 
 (defn get-token-transactions
   [web3 network contracts direction address cb]
   (ethereum/get-block-number web3
-                             #(get-token-transfer-logs % network contracts direction address cb)))
+                             #(get-token-transfer-logs web3 % network contracts direction address cb)))
