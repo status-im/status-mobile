@@ -78,7 +78,7 @@
                              :photo-path          (identicon pubkey)
                              :signing-phrase      signing-phrase
                              :mnemonic            mnemonic
-                             :settings            constants/default-account-settings}]
+                             :settings            (constants/default-account-settings)}]
      (log/debug "account-created")
      (when-not (str/blank? pubkey)
        (-> (add-account db account)

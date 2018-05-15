@@ -39,7 +39,7 @@
                      :mnemonic              ""
                      :signed-up?            true
                      :signing-phrase        phrase
-                     :settings              constants/default-account-settings
+                     :settings              (constants/default-account-settings)
                      :wallet-set-up-passed? true}]
      (when-not (string/blank? public-key)
        (-> db

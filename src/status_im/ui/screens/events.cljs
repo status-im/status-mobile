@@ -145,6 +145,13 @@
       (re-frame/dispatch [:initialize-app encryption-key])))))
 
 (re-frame/reg-fx
+ ::get-encryption-key-fx
+ (fn [event]
+   (keychain/get-encryption-key-then
+    (fn [encryption-key]
+      (re-frame/dispatch [event encryption-key])))))
+
+(re-frame/reg-fx
  ::got-encryption-key-fx
  (fn [{:keys [encryption-key callback]}]
    (callback encryption-key)))
@@ -248,17 +255,16 @@
 
 (handlers/register-handler-fx
  :logout
- (fn [{:keys [db] :as cofx} [_ encryption-key]]
-   (let [{:transport/keys [chats]} db
-         sharing-usage-data? (get-in db [:account/account :sharing-usage-data?])]
-     (handlers-macro/merge-fx cofx
-                              {:dispatch-n (concat [[:initialize-db encryption-key]
-                                                    [:load-accounts]
-                                                    [:listen-to-network-status]
-                                                    [:navigate-to :accounts]]
-                                                   (when sharing-usage-data?
-                                                     [[:unregister-mixpanel-tracking]]))}
-                              (transport/stop-whisper)))))
+ (fn [{:keys [db] :as cofx} [this-event encryption-key]]
+   (if encryption-key
+     (let [{:transport/keys [chats]} db]
+       (handlers-macro/merge-fx cofx
+                                {:dispatch-n [[:initialize-db encryption-key]
+                                              [:load-accounts]
+                                              [:listen-to-network-status]
+                                              [:navigate-to :accounts]]}
+                                (transport/stop-whisper)))
+     {::get-encryption-key-fx this-event})))
 
 (handlers/register-handler-fx
  :initialize-db
