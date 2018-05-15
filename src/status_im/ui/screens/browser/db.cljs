@@ -13,6 +13,7 @@
 (spec/def :browser/can-go-back? (spec/nilable boolean?))
 (spec/def :browser/can-go-forward? (spec/nilable boolean?))
 (spec/def :browser/new? (spec/nilable boolean?))
+(spec/def :browser/error? (spec/nilable boolean?))
 
 (spec/def :browser/options
   (allowed-keys
@@ -20,7 +21,8 @@
             :browser/can-go-back?
             :browser/can-go-forward?
             :browser/fullscreen?
-            :browser/new?]))
+            :browser/new?
+            :browser/error?]))
 
 (spec/def :browser/browser
   (allowed-keys

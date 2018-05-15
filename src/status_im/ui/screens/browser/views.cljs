@@ -31,6 +31,15 @@
        [react/text {:style styles/dapp-text}
         (i18n/label :t/dapp)]]]]))
 
+(defn toolbar-nav-button [browser-id error? new?]
+  (let [handler (fn []
+                  (re-frame/dispatch [:navigate-back])
+                  (when error?
+                    (re-frame/dispatch [:remove-browser browser-id])))]
+    (if (and error? new?)
+      (toolbar.view/nav-button (toolbar.actions/back handler))
+      (toolbar.view/nav-back-count {:handler handler}))))
+
 (def browser-config
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
 
@@ -73,10 +82,9 @@
 
 (views/defview browser []
   (views/letsubs [webview (atom nil)
-                  open-new-url-error? (atom false)
                   {:keys [address]} [:get-current-account]
                   {:keys [dapp? contact url browser-id] :as browser} [:get-current-browser]
-                  {:keys [can-go-back? can-go-forward? new?] :as opts} [:get :browser/options]
+                  {:keys [can-go-back? can-go-forward? new? error?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
                   unread-messages-number [:get-chats-unread-messages-number]
@@ -84,10 +92,7 @@
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
-      (if @open-new-url-error?
-        (toolbar.view/nav-button (toolbar.actions/back #(do (re-frame/dispatch [:navigate-back])
-                                                            (re-frame/dispatch [:remove-browser browser-id]))))
-        (toolbar.view/nav-back-count))
+      [toolbar-nav-button browser-id error? new?]
       (if dapp?
         [toolbar-content-dapp contact unread-messages-number]
         [toolbar-content browser unread-messages-number])]
@@ -100,9 +105,14 @@
          :local-storage-enabled                 true
          :start-in-loading-state                true
          :render-error                          web-view-error
-         :on-error                              #(when new?
-                                                   (re-frame/dispatch [:navigation-replace :open-dapp true])
-                                                   (reset! open-new-url-error? true))
+         :on-load                               (fn []
+                                                  (when (and error? new?)
+                                                    (re-frame/dispatch [:navigation-replace-last :home]))
+                                                  (re-frame/dispatch [:update-browser-options {:error? false}]))
+         :on-error                              (fn []
+                                                  (re-frame/dispatch [:update-browser-options {:error? true}])
+                                                  (when new?
+                                                    (re-frame/dispatch [:navigation-replace-last :open-dapp])))
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
          :injected-on-start-loading-java-script (str js-res/web3

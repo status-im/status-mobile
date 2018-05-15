@@ -10,13 +10,16 @@
       (update :navigation-stack conj view-id)
       (assoc :view-id view-id)))
 
-(defn- replace-top-element [stack view-id second?]
+(defn- replace-top-element [stack view-id]
   (let [stack' (if (> 2 (count stack))
                  (list :home)
                  (pop stack))]
-    (if second?
-      (conj stack' view-id (first stack))
-      (conj stack' view-id))))
+    (conj stack' view-id)))
+
+(defn- replace-second-top-element [stack view-id]
+  (let [stack' (replace-top-element stack view-id)
+        top    (first stack)]
+    (conj stack' top)))
 
 ;; public fns
 
@@ -30,10 +33,12 @@
               (assoc-in [:navigation/screen-params view-id] screen-params))]
      {:db (push-view db view-id)})))
 
-(defn replace-view [view-id {:keys [db]} & [second?]]
-  {:db (cond-> (update db :navigation-stack replace-top-element view-id second?)
-         (not second?)
-         (assoc :view-id view-id))})
+(defn replace-view [view-id {:keys [db]}]
+  {:db (-> (update db :navigation-stack replace-top-element view-id)
+           (assoc :view-id view-id))})
+
+(defn replace-view-last [view-id {:keys [db]}]
+  {:db (update db :navigation-stack replace-second-top-element view-id)})
 
 (defn navigate-forget [view-id {:keys [db]}]
   {:db (assoc db :view-id view-id)})
@@ -77,8 +82,13 @@
 (handlers/register-handler-fx
  :navigation-replace
  (re-frame/enrich preload-data!)
- (fn [cofx [_ view-id second?]]
-   (replace-view view-id cofx second?)))
+ (fn [cofx [_ view-id]]
+   (replace-view view-id cofx)))
+
+(handlers/register-handler-fx
+ :navigation-replace-last
+ (fn [cofx [_ view-id]]
+   (replace-view-last view-id cofx)))
 
 (handlers/register-handler-db
  :navigate-back
