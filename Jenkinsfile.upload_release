@@ -74,7 +74,7 @@ node ('macos1'){
     }
 
     stage('Deploy (Android)') {
-      sh ('bundle exec fastlane android release || exit 0')
+      //sh ('bundle exec fastlane android release || exit 0')
     }
 
     stage('Deploy (iOS)') {
