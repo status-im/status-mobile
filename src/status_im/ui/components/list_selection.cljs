@@ -29,8 +29,10 @@
 
 (defn browse [link]
   (show {:title       (i18n/label :t/browsing-title)
-         :options     [{:label  (i18n/label :t/browsing-open-in-browser)
-                        :action #(re-frame/dispatch [:open-browser {:url link}])}
+         :options     [;; Disable browsing external links inside status from now
+                       ;; This is a security risk and will be restored once HTTPS certificates details will be shown
+                       #_{:label  (i18n/label :t/browsing-open-in-browser)
+                          :action #(re-frame/dispatch [:open-browser {:url link}])}
                        {:label  (i18n/label :t/browsing-open-in-web-browser)
                         :action #(.openURL react/linking link)}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
