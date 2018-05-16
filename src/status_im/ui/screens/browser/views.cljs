@@ -50,10 +50,15 @@
          [react/view
           [vector-icons/icon :icons/refresh]]]]]))
 
-(defn web-view-error []
+(defn- web-view-error [_ code desc]
   (reagent/as-element
    [react/view styles/web-view-error
-    [react/text (i18n/label :t/web-view-error)]]))
+    [react/text {:style styles/web-view-error-text}
+     (i18n/label :t/web-view-error)]
+    [react/text {:style styles/web-view-error-text}
+     (str code)]
+    [react/text {:style styles/web-view-error-text}
+     (str desc)]]))
 
 (defn web-view-loading []
   (reagent/as-element

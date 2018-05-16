@@ -398,7 +398,7 @@
    :postponed                            "Postponed"
 
    ;;webview
-   :web-view-error                       "oops, error"
+   :web-view-error                       "Unable to load page"
 
    ;;testfairy warning
    :testfairy-title                      "Warning!"
