@@ -33,7 +33,7 @@ node ('macos1'){
       checkout scm
 
       sh 'git fetch --tags'
-      latest_tag = sh(returnStdout: true, script: 'git describe --tags `git rev-list --tags --max-count=1`').trim()
+      latest_tag = sh(returnStdout: true, script: 'git describe --tags `git rev-list --tags=release --max-count=1`').trim()
       sh 'git tag -d ' + latest_tag
       sh 'rm -rf node_modules'
       sh 'cp .env.nightly .env'
