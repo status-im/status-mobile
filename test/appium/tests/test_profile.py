@@ -110,7 +110,7 @@ class TestProfileView(SingleDeviceTestCase):
         assert public_key == public_key_1
 
     @pytest.mark.testrail_case_id(3411)
-    def test_debug_on_of(self):
+    def test_faucet_console_command(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
@@ -119,19 +119,17 @@ class TestProfileView(SingleDeviceTestCase):
         home_view = profile_view.home_button.click()
         chat_view = home_view.get_chat_with_user('Status Console').click()
         chat_view.commands_button.click()
-        chat_view.debug_command.click()
-        chat_view.debug_on_command.click()
+        chat_view.faucet_command.click()
+        chat_view.faucet_send_command.click()
         chat_view.send_message_button.click()
-        chat_view.wait_for_message_in_one_to_one_chat('Debug server has been launched! You can now execute '
-                                                      'status-dev-cli scan to find the server from your computer '
-                                                      'on the same network.', self.errors)
-        chat_view.wait_for_message_in_one_to_one_chat('Debug mode: On', self.errors)
-        chat_view.commands_button.click()
-        chat_view.debug_command.click()
-        chat_view.debug_off_command.click()
-        chat_view.send_message_button.click()
-        chat_view.wait_for_message_in_one_to_one_chat('Debug mode: Off', self.errors)
+        chat_view.wait_for_message_in_one_to_one_chat('Faucet request has been received', self.errors)
         self.verify_no_errors()
+        chat_view.back_button.click()
+
+        wallet_view = profile_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.wait_balance_changed_on_wallet_screen()
+
 
     @pytest.mark.testrail_case_id(3421)
     def test_switch_users(self):

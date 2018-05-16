@@ -42,23 +42,17 @@ class RequestCommand(BaseButton):
         self.locator = self.Locator.accessibility_id('request-payment-button')
 
 
-class DebugCommand(BaseButton):
+class FaucetCommand(BaseButton):
     def __init__(self, driver):
-        super(DebugCommand, self).__init__(driver)
+        super(FaucetCommand, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//*[contains(@text,'Starts/stops')]/preceding-sibling::*[@text='/debug']")
+            "//*[contains(@text,'Get some ETH')]/preceding-sibling::*[@text='/faucet']")
 
 
-class DebugOnCommand(BaseButton):
+class FaucetSendCommand(BaseButton):
     def __init__(self, driver):
-        super(DebugOnCommand, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='On']")
-
-
-class DebugOffCommand(BaseButton):
-    def __init__(self, driver):
-        super(DebugOffCommand, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Off']")
+        super(FaucetSendCommand, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Status Testnet Faucet']")
 
 
 class ChatMenuButton(BaseButton):
@@ -170,9 +164,9 @@ class ChatView(BaseView):
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
-        self.debug_command = DebugCommand(self.driver)
-        self.debug_on_command = DebugOnCommand(self.driver)
-        self.debug_off_command = DebugOffCommand(self.driver)
+        self.faucet_command = FaucetCommand(self.driver)
+        self.faucet_send_command = FaucetSendCommand(self.driver)
+
 
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)

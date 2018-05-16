@@ -35,6 +35,12 @@ class TestDAppsAndBrowsing(SingleDeviceTestCase):
         browsing_view.browser_next_page_button.click()
         browsing_view.find_text_part('Избранная статья')
         browsing_view.back_to_home_button.click()
+        expected_title = 'Browser'
+        expected_url = 'https://ru.m.wikipedia.org'
 
-        assert home_view.chat_name_text.text.startswith('Википедия')
-        assert home_view.chat_url_text.text.startswith('https://ru.m.wikipedia.org')
+        if not home_view.chat_name_text.text.startswith(expected_title):
+            self.errors.append("'%s' web page title instead of '%s'", (home_view.chat_name_text.text, expected_title))
+        if not home_view.chat_url_text.text.startswith(expected_url):
+            self.errors.append("'%s' web page URL instead of '%s'", (home_view.chat_url_text.text, expected_url))
+
+        self.verify_no_errors()

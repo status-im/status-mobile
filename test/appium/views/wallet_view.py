@@ -1,4 +1,6 @@
 from tests import info
+import time
+import pytest
 from views.base_view import BaseView
 from views.base_element import BaseButton, BaseText
 
@@ -155,6 +157,20 @@ class WalletView(BaseView):
             errors.append('Difference between current (%s) and expected (%s) USD balance > 2%%!!' % (usd, expected_usd))
         else:
             info('Current USD balance %s is ok' % usd)
+
+    def wait_balance_changed_on_wallet_screen(self, initial_balance=0, wait_time=300):
+        counter = 0
+        while True:
+            if counter >= wait_time:
+                pytest.fail('Balance is not changed during %s seconds!' % wait_time)
+            elif self.get_eth_value() == initial_balance:
+                counter += 10
+                time.sleep(10)
+                self.driver.swipe(500, 500, 500, 1000)
+                info('Waiting %s seconds for ETH update' % counter)
+            else:
+                info('Transaction received, balance updated!')
+                return
 
     def set_up_wallet(self):
         self.set_up_button.click()
