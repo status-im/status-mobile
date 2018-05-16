@@ -64,7 +64,7 @@ node ('macos1'){
 
     stage('Build (iOS)') {
       withCredentials([string(credentialsId: 'jenkins_pass', variable: 'password')]) {
-        def build_no = sh(returnStdout: true, script: 'git rev-list --count HEAD').trim()
+        def build_no = sh(returnStdout: true, script: './build_no.sh --tag').trim()
         sh ('plutil -replace CFBundleShortVersionString  -string ' + version + ' ios/StatusIm/Info.plist')
         sh ('plutil -replace CFBundleVersion  -string ' + build_no + ' ios/StatusIm/Info.plist')
         sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
@@ -79,6 +79,18 @@ node ('macos1'){
 
     stage('Deploy (iOS)') {
       sh ('bundle exec fastlane ios release || exit 0')
+    }
+
+
+    stage('Push build tag') {
+      withCredentials([[
+        $class: 'UsernamePasswordMultiBinding',
+        credentialsId: 'jenkins-status-im',
+        usernameVariable: 'GIT_USER',
+        passwordVariable: 'GIT_PASS'
+      ]]) {
+        sh ('git push --tags https://${GIT_USER}:${GIT_PASS}@github.com/status-im/status-react --tags')
+      }
     }
   } catch (e) {
     slackSend color: 'bad', message: 'Release build failed uploading to iTC/Play Market. ' + env.BUILD_URL
