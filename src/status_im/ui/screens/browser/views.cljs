@@ -14,7 +14,8 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.components.toolbar.actions :as actions]))
 
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:get-contact-by-identity contact-identity]]
@@ -67,7 +68,7 @@
 
 (defn on-navigation-change [event browser]
   (let [{:strs [url canGoBack canGoForward]} (js->clj event)]
-    (when-not (= "about:blank" url)
+    (when (and (not (:dapp? browser)) (not= "about:blank" url))
       (re-frame/dispatch [:update-browser (assoc browser :url url)]))
     (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
 
@@ -86,7 +87,7 @@
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
-      (toolbar.view/nav-back-count)
+      [toolbar.view/nav-button-with-count actions/default-close]
       (if dapp?
         [toolbar-content-dapp contact]
         [toolbar-content browser])]
