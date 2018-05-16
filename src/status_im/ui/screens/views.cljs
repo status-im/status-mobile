@@ -151,13 +151,13 @@
     :recent-recipients recent-recipients
     :recipient-qr-code recipient-qr-code
     :contact-code contact-code
-    :profile-qr-viewer profile.user/qr-viewer
     :backup-seed backup-seed
     [react/view [react/text (str "Unknown view: " view-id)]]))
 
 (defn get-modal-component [modal-view]
   (case modal-view
     :qr-scanner qr-scanner
+    :profile-qr-viewer profile.user/qr-viewer
     :wallet-transactions-filter wallet-transactions/filter-history
     :wallet-settings-assets wallet-settings/manage-assets
     :wallet-send-transaction-modal send-transaction-modal

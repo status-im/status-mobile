@@ -139,6 +139,11 @@ android-ports-avd: ##@other Add reverse proxy to Android Device/Simulator
 	adb -e reverse tcp:3449 tcp:3449
 	adb -e reverse tcp:4567 tcp:4567
 
+android-ports-genymotion: ##@other Add reverse proxy to Android Device/Simulator
+	adb -e reverse tcp:8081 tcp:8081
+	adb -e reverse tcp:3449 tcp:3449
+	adb -e reverse tcp:4567 tcp:4567
+
 android-ports-real: ##@other Add reverse proxy to Android Device/Simulator
 	adb -d reverse tcp:8081 tcp:8081
 	adb -d reverse tcp:3449 tcp:3449
