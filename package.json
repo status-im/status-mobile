@@ -16,6 +16,7 @@
     "node_modules/react-native-securerandom/desktop",
     "modules/react-native-status/desktop"
   ],
+  "desktopJSBundlePath": "/Users/vkjr/work/projects/github/status-im-mac-bundle/status-react/StatusIm.jsbundle",
   "dependencies": {
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",
