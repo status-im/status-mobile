@@ -90,7 +90,7 @@
 (spec/def :navigation/prev-view-id (spec/nilable keyword?))
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
-(spec/def :navigation.screen-params/browser (allowed-keys :req [:browser/browser-id]))
+(spec/def :navigation.screen-params/browser (allowed-keys :req [:browser/browser-id] :opt [:browser/new?]))
 (spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
 (spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))

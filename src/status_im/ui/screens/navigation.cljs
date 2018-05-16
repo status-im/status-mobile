@@ -16,6 +16,11 @@
                  (pop stack))]
     (conj stack' view-id)))
 
+(defn- replace-second-top-element [stack view-id]
+  (let [stack' (replace-top-element stack view-id)
+        top    (first stack)]
+    (conj stack' top)))
+
 ;; public fns
 
 (defn navigate-to-clean
@@ -31,6 +36,9 @@
 (defn replace-view [view-id {:keys [db]}]
   {:db (-> (update db :navigation-stack replace-top-element view-id)
            (assoc :view-id view-id))})
+
+(defn replace-view-last [view-id {:keys [db]}]
+  {:db (update db :navigation-stack replace-second-top-element view-id)})
 
 (defn navigate-forget [view-id {:keys [db]}]
   {:db (assoc db :view-id view-id)})
@@ -76,6 +84,11 @@
  (re-frame/enrich preload-data!)
  (fn [cofx [_ view-id]]
    (replace-view view-id cofx)))
+
+(handlers/register-handler-fx
+ :navigation-replace-last
+ (fn [cofx [_ view-id]]
+   (replace-view-last view-id cofx)))
 
 (handlers/register-handler-db
  :navigate-back

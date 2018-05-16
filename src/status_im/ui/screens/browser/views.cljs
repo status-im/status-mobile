@@ -6,6 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.components.webview-bridge :as components.webview-bridge]
             [status-im.utils.js-resources :as js-res]
@@ -29,6 +30,15 @@
         (:name contact)]
        [react/text {:style styles/dapp-text}
         (i18n/label :t/dapp)]]]]))
+
+(defn toolbar-nav-button [browser-id error? new?]
+  (let [handler (fn []
+                  (re-frame/dispatch [:navigate-back])
+                  (when error?
+                    (re-frame/dispatch [:remove-browser browser-id])))]
+    (if (and error? new?)
+      (toolbar.view/nav-button (toolbar.actions/back handler))
+      (toolbar.view/nav-back-count {:handler handler}))))
 
 (def browser-config
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
@@ -73,8 +83,8 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   {:keys [address]} [:get-current-account]
-                  {:keys [dapp? contact url] :as browser} [:get-current-browser]
-                  {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
+                  {:keys [dapp? contact url browser-id] :as browser} [:get-current-browser]
+                  {:keys [can-go-back? can-go-forward? new? error?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
                   unread-messages-number [:get-chats-unread-messages-number]
@@ -82,7 +92,7 @@
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
-      (toolbar.view/nav-back-count)
+      [toolbar-nav-button browser-id error? new?]
       (if dapp?
         [toolbar-content-dapp contact unread-messages-number]
         [toolbar-content browser unread-messages-number])]
@@ -95,6 +105,14 @@
          :local-storage-enabled                 true
          :start-in-loading-state                true
          :render-error                          web-view-error
+         :on-load                               (fn []
+                                                  (when (and error? new?)
+                                                    (re-frame/dispatch [:navigation-replace-last :home]))
+                                                  (re-frame/dispatch [:update-browser-options {:error? false}]))
+         :on-error                              (fn []
+                                                  (re-frame/dispatch [:update-browser-options {:error? true}])
+                                                  (when new?
+                                                    (re-frame/dispatch [:navigation-replace-last :open-dapp])))
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
          :injected-on-start-loading-java-script (str js-res/web3

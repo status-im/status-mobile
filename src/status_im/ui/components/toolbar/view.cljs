@@ -54,8 +54,9 @@
 (defn nav-back-count
   ([]
    [nav-button-with-count actions/default-back])
-  ([{:keys [home?]}]
-   [nav-button-with-count (if home? actions/home-back actions/default-back)]))
+  ([{:keys [home?] :as props}]
+   [nav-button-with-count (merge (if home? actions/home-back actions/default-back)
+                                 (dissoc props :home?))]))
 
 (defn default-done
   "Renders a touchable icon on Android or a label or iOS."
