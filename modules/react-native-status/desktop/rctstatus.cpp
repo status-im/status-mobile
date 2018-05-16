@@ -16,6 +16,7 @@
 #include <QJsonDocument>
 #include <QByteArray>
 #include <QVariantMap>
+#include <QDir>
 
 #include "libstatus.h"
 
@@ -109,7 +110,13 @@ void RCTStatus::startNode(QString configString) {
     int networkId = configJSON["NetworkId"].toInt();
     QString dataDir = configJSON["DataDir"].toString();
 
+#ifndef __APPLE__
     QString networkDir = "./" + dataDir;
+#else
+    QString appFolder = QDir::homePath() + "/Library/StatusIm";
+    QString networkDir = appFolder + dataDir;
+    qDebug()<<"RCTStatus::startNode networkDir: "<<networkDir<<" homePath: "<<QDir::homePath();
+#endif
 
     char *configChars = GenerateConfig(networkDir.toUtf8().data(), networkId);
     qDebug() << "RCTStatus::startNode GenerateConfig result: " << configChars;
