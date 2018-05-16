@@ -112,14 +112,14 @@
          success (zero? (count error))
          db'     (assoc-in db [:accounts/login :processing] false)]
      (if success
-       {:db db'
+       {:db db
         ::clear-web-data nil
         ::change-account [address]}
        {:db (assoc-in db' [:accounts/login :error] error)}))))
 
 (register-handler-fx
  :change-account-handler
- (fn [{{:keys [accounts/accounts view-id] :as db} :db} [_ error address]]
+ (fn [{{:keys [view-id] :as db} :db} [_ error address]]
    (if (nil? error)
      {:db         (cond-> (dissoc db :accounts/login)
                     (= view-id :create-account)
