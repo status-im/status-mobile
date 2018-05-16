@@ -1,8 +1,9 @@
 import time
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from tests import info
-from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
+from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
+from views.profile_view import ProfilePictureElement
 
 
 class ChatMessageInput(BaseEditBox):
@@ -99,11 +100,11 @@ class FirstRecipient(BaseButton):
         self.locator = self.Locator.accessibility_id('contact-item')
 
 
-class MessageByUsername(BaseText):
-    def __init__(self, driver, username):
-        super(MessageByUsername, self).__init__(driver)
+class UsernameByMessage(BaseText):
+    def __init__(self, driver, message):
+        super(UsernameByMessage, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//*[@text="%s"]/following-sibling::android.widget.TextView' % username)
+            "//*[@content-desc='chat-item']//*[contains(@text, '%s')]/../../android.widget.TextView" % message)
 
 
 class MoreUsersButton(BaseButton):
@@ -167,7 +168,6 @@ class ChatView(BaseView):
         self.faucet_command = FaucetCommand(self.driver)
         self.faucet_send_command = FaucetSendCommand(self.driver)
 
-
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
@@ -183,6 +183,7 @@ class ChatView(BaseView):
         self.open_in_browser_button = OpenInBrowserButton(self.driver)
 
         # Contact's profile
+        self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
 
@@ -195,24 +196,11 @@ class ChatView(BaseView):
             except TimeoutException:
                 break
 
-    def wait_for_message_in_one_to_one_chat(self, expected_message: str, errors: list):
+    def wait_for_message_in_one_to_one_chat(self, expected_message: str, errors: list, wait_time: int = 20):
         try:
-            self.wait_for_element_starts_with_text(expected_message, wait_time=20)
+            self.wait_for_element_starts_with_text(expected_message, wait_time=wait_time)
         except TimeoutException:
             errors.append('Message with text "%s" was not received' % expected_message)
-
-    def wait_for_messages_by_user(self, username: str, expected_messages: list, errors: list, wait_time: int = 30):
-        expected_messages = expected_messages if type(expected_messages) == list else [expected_messages]
-        repeat = 0
-        while repeat <= wait_time:
-            received_messages = [element.text for element in MessageByUsername(self.driver, username).find_elements()]
-            if not set(expected_messages) - set(received_messages):
-                break
-            time.sleep(3)
-            repeat += 3
-        if set(expected_messages) - set(received_messages):
-            errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
-                [i for i in list(set(expected_messages) - set(received_messages))])))
 
     def wait_for_messages(self, username: str, expected_messages: list, errors: list, wait_time: int = 30):
         expected_messages = expected_messages if type(expected_messages) == list else [expected_messages]
@@ -229,6 +217,15 @@ class ChatView(BaseView):
         if set(expected_messages) - set(received_messages):
             errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
                 [i for i in list(set(expected_messages) - set(received_messages))])))
+
+    def verify_username_is_shown_per_message(self, username: str, messages: str, errors: list):
+        messages = messages if type(messages) == list else [messages]
+        for message in messages:
+            elements = UsernameByMessage(self.driver, message).find_elements()
+            for element in elements:
+                if not element.text == username:
+                    errors.append("Message '%s' was received but username is '%s' instead of %s" %
+                                  (message, element.text, username))
 
     def send_eth_to_request(self, request, sender_password):
         gas_popup = self.element_by_text_part('Specify amount')
@@ -282,3 +279,10 @@ class ChatView(BaseView):
         self.request_command.click()
         self.send_as_keyevent(amount)
         self.send_message_button.click()
+
+    def chat_element_by_text(self, text):
+        info("Looking for full text: '%s'" % text)
+        element = self.element_types['text'](self.driver)
+        element.locator = element.Locator.xpath_selector(
+            "//*[@content-desc='chat-item']//*[starts-with(@text,'%s')]" % text)
+        return element

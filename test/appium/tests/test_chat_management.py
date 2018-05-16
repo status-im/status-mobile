@@ -1,17 +1,15 @@
 import time
 
-import pytest
-
-from tests import transaction_users
-from tests.base_test_case import MultipleDeviceTestCase
+from tests import transaction_users, marks, group_chat_users, get_current_time
+from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.all
-@pytest.mark.chat_management
-class TestChatManagement(MultipleDeviceTestCase):
+@marks.all
+@marks.chat_management
+class TestChatManagementMultiple(MultipleDeviceTestCase):
 
-    @pytest.mark.testrail_case_id(3412)
+    @marks.testrail_case_id(3412)
     def test_delete_1_1_chat(self):
         self.senders['g_user'] = transaction_users['G_USER']
         self.senders['h_user'] = transaction_users['H_USER']
@@ -73,3 +71,41 @@ class TestChatManagement(MultipleDeviceTestCase):
         assert device_1_chat_view.no_messages_in_chat.is_element_present()
 
         self.verify_no_errors()
+
+
+@marks.all
+@marks.chat_management
+class TestChatManagement(SingleDeviceTestCase):
+
+    @marks.testrail_case_id(3413)
+    def test_swipe_and_delete_1_1_chat(self):
+        recipient = transaction_users['A_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(recipient['public_key'])
+        chat_view = home_view.get_chat_view()
+        chat_view.chat_message_input.send_keys('test message')
+        chat_view.send_message_button.click()
+        chat_view.get_back_to_home_view()
+        home_view.swipe_and_delete_chat(recipient['username'][:20])
+        home_view.relogin()
+        assert not home_view.get_chat_with_user(recipient['username']).is_element_present(20)
+
+    @marks.testrail_case_id(3418)
+    def test_swipe_and_delete_group_chat(self):
+        recipient = group_chat_users['A_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(recipient['public_key'])
+        home_view.get_back_to_home_view()
+        chat_name = 'a_chat_%s' % get_current_time()
+        home_view.create_group_chat([recipient['username']], chat_name)
+        chat_view = home_view.get_chat_view()
+        chat_view.chat_message_input.send_keys('This is text message!')
+        chat_view.send_message_button.click()
+        chat_view.get_back_to_home_view()
+        home_view.swipe_and_delete_chat(chat_name)
+        home_view.relogin()
+        assert not home_view.get_chat_with_user(chat_name).is_element_displayed()

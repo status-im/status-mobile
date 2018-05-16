@@ -1,3 +1,5 @@
+import pytest
+
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests import transaction_users, api_requests, get_current_time, transaction_users_wallet, marks
 from selenium.common.exceptions import TimeoutException
@@ -177,6 +179,35 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction.enter_password_input.send_keys(sender['password'])
         send_transaction.sign_transaction_button.click()
         send_transaction.got_it_button.click()
+        if sender['password'] in str(home_view.logcat):
+            pytest.fail('Password in logcat!!!', pytrace=False)
+
+    @marks.testrail_case_id(3452)
+    def test_sign_transaction_twice(self):
+        recipient = transaction_users['F_USER']
+        sender = transaction_users['E_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(recipient['public_key'])
+        home_view.get_back_to_home_view()
+        wallet_view = home_view.wallet_button.click()
+        send_transaction = wallet_view.send_button.click()
+        send_transaction.amount_edit_box.click()
+        send_transaction.amount_edit_box.set_value(send_transaction.get_unique_amount())
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.recent_recipients_button.click()
+        recent_recipient = send_transaction.element_by_text(recipient['username'])
+        send_transaction.recent_recipients_button.click_until_presence_of_element(recent_recipient)
+        recent_recipient.click()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.enter_password_input.send_keys(sender['password'])
+        send_transaction.cancel_button.click()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.enter_password_input.wait_for_visibility_of_element()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.enter_password_input.wait_for_visibility_of_element()
 
 
 @marks.all

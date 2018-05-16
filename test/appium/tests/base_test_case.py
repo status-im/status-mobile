@@ -68,6 +68,11 @@ class AbstractTestCase:
         desired_caps['ignoreUnimportantViews'] = False
         return desired_caps
 
+    def update_capabilities_sauce_lab(self, key, value):
+        caps = self.capabilities_sauce_lab.copy()
+        caps[key] = value
+        return caps
+
     @property
     def capabilities_local(self):
         desired_caps = dict()
@@ -167,10 +172,14 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         self.drivers = dict()
 
     def create_drivers(self, quantity=2):
+        if self.__class__.__name__ == 'TestOfflineMessages':
+            capabilities = self.update_capabilities_sauce_lab('platformVersion', '6.0')
+        else:
+            capabilities = self.capabilities_sauce_lab
         self.drivers = self.loop.run_until_complete(start_threads(quantity, webdriver.Remote,
                                                     self.drivers,
                                                     self.executor_sauce_lab,
-                                                    self.capabilities_sauce_lab))
+                                                    capabilities))
         for driver in range(quantity):
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
             BaseView(self.drivers[driver]).accept_agreements()

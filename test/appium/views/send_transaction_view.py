@@ -1,3 +1,5 @@
+from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_view import BaseView
 from views.base_element import BaseElement, BaseButton, BaseEditBox
 from views.base_view import BaseView, OkButton
 
@@ -6,6 +8,12 @@ class FirstRecipient(BaseButton):
     def __init__(self, driver):
         super(FirstRecipient, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('chat-icon')
+
+
+class CancelButton(BaseButton):
+    def __init__(self, driver):
+        super(CancelButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('cancel-button')
 
 
 class SignTransactionButton(BaseButton):
@@ -19,6 +27,12 @@ class AmountEditBox(BaseEditBox, BaseButton):
     def __init__(self, driver):
         super(AmountEditBox, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('amount-input')
+
+
+class SignInPhraseText(BaseText):
+    def __init__(self, driver):
+        super(SignInPhraseText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('signing-phrase-text')
 
 
 class PasswordInput(BaseEditBox):
@@ -107,8 +121,10 @@ class SendTransactionView(BaseView):
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
 
         self.amount_edit_box = AmountEditBox(self.driver)
+        self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)
+        self.sign_in_phrase_text = SignInPhraseText(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)
         self.got_it_button = GotItButton(self.driver)
