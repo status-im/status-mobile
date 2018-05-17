@@ -53,7 +53,7 @@
   (open-realm (last schemas) file-name encryption-key))
 
 (defn reset-realm [file-name schemas encryption-key]
-  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
+  (utils/show-popup "Important: Wallet Upgrade" "The Status Wallet will be upgraded in this release. The 12 mnemonic words will generate different addresses and whisper identities (public key). Given that we changed the algorithm used to generate keys and addresses, it will be impossible to re-import accounts created with the old algorithm in Status. Please create a new account.")
   (delete-realm file-name)
   (open-realm (last schemas) file-name encryption-key))
 
