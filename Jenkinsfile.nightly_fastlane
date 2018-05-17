@@ -34,7 +34,6 @@ node ('macos1'){
 
       sh 'git fetch --tags'
       latest_tag = sh(returnStdout: true, script: 'git describe --tags `git rev-list --tags --max-count=1`').trim()
-      sh 'git tag -d ' + latest_tag
       sh 'rm -rf node_modules'
       sh 'cp .env.nightly .env'
       sh 'lein deps'
@@ -58,8 +57,6 @@ node ('macos1'){
 
     stage('Build (iOS)') {
       withCredentials([string(credentialsId: 'jenkins_pass', variable: 'password')]) {
-        sh ('git tag -d ' + latest_tag + ' || exit 0')
-        sh ('git tag ' + latest_tag)
         def build_no = sh(returnStdout: true, script: 'git rev-list --count HEAD').trim()
         sh ('plutil -replace CFBundleShortVersionString  -string ' + latest_tag + ' ios/StatusIm/Info.plist')
         sh ('plutil -replace CFBundleVersion  -string ' + build_no + ' ios/StatusIm/Info.plist')
