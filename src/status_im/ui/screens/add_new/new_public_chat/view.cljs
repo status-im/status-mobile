@@ -69,7 +69,8 @@
       [react/text {:style styles/section-title
                    :font  :medium}
        (i18n/label :t/selected)]]
-     [list/flat-list {:data               default-public-chats
-                      :key-fn             identity
-                      :render-fn          render-topic
-                      :default-separator? true}]]))
+     [list/flat-list {:data                         default-public-chats
+                      :key-fn                       identity
+                      :render-fn                    render-topic
+                      :keyboard-should-persist-taps :always
+                      :default-separator?           true}]]))
