@@ -48,7 +48,7 @@
        :error             error}]]))
 
 (defview recover []
-  (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
+  (letsubs [{:keys [passphrase password processing]} [:get :accounts/recover]]
     (let [valid-form? (and
                        (spec/valid? ::recover.db/passphrase passphrase)
                        (spec/valid? ::db/password password))]
@@ -61,12 +61,17 @@
         [passphrase-input (or passphrase "")]
         [password-input (or password "")]]
        [react/view {:flex 1}]
-       [react/view {:style styles/bottom-button-container}
-        [react/view {:style {:flex 1}}]
-        [components.common/bottom-button
-         {:forward?  true
-          :label     (i18n/label :t/sign-in)
-          :disabled? (not valid-form?)
-          :on-press  (fn [_]
-                       (let [masked-passphrase (security/mask-data (string/trim passphrase))]
-                         (re-frame/dispatch [:recover-account masked-passphrase password])))}]]])))
+       (if processing
+         [react/view styles/processing-view
+          [react/activity-indicator {:animating true}]
+          [react/text {:style styles/sign-you-in}
+           (i18n/label :t/sign-you-in)]]
+         [react/view {:style styles/bottom-button-container}
+          [react/view {:style {:flex 1}}]
+          [components.common/bottom-button
+           {:forward?  true
+            :label     (i18n/label :t/sign-in)
+            :disabled? (not valid-form?)
+            :on-press  (fn [_]
+                         (let [masked-passphrase (security/mask-data (string/trim passphrase))]
+                           (re-frame/dispatch [:recover-account masked-passphrase password])))}]])])))
