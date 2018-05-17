@@ -23,7 +23,7 @@
     "events": "1.1.1",
     "homoglyph-finder": "1.1.1",
     "identicon.js": "github:status-im/identicon.js",
-    "instabug-reactnative": "2.11.0",
+    "instabug-reactnative": "2.11.1",
     "level-filesystem": "1.2.0",
     "nfc-react-native": "github:status-im/nfc-react-native",
     "process": "0.11.10",
