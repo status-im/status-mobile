@@ -30,7 +30,8 @@
                                                  (re-frame/dispatch [:add-contact-handler]))
                          :placeholder         (i18n/label :t/enter-contact-code)
                          :style               add-new.styles/input
-                         :accessibility-label :enter-contact-code-input}]
+                         :accessibility-label :enter-contact-code-input
+                         :return-key-type     :go}]
       [react/touchable-highlight {:on-press            #(re-frame/dispatch [:scan-qr-code
                                                                             {:toolbar-title (i18n/label :t/new-contact)}
                                                                             :set-contact-identity-from-qr])

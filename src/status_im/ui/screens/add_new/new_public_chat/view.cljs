@@ -30,7 +30,8 @@
                                (re-frame/dispatch [:create-new-public-chat topic]))
        :auto-capitalize     :none
        :accessibility-label :chat-name-input
-       :placeholder         nil}]]]
+       :placeholder         nil
+       :return-key-type     :go}]]]
    (when error
      [tooltip/tooltip error styles/tooltip])])
 

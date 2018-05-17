@@ -36,7 +36,8 @@
                          :auto-capitalize     :none
                          :auto-correct        false
                          :style               add-new.styles/input
-                         :accessibility-label :dapp-url-input}]]
+                         :accessibility-label :dapp-url-input
+                         :return-key-type     :go}]]
      [react/text {:style styles/list-title}
       (i18n/label :t/selected-dapps)]
      [list/flat-list {:data                      dapps
