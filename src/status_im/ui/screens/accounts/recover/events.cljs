@@ -54,9 +54,16 @@
        (-> db
            (accounts-events/add-account account)
            (assoc :dispatch [:login-account address password])
-           (assoc :dispatch-later [{:ms 2000 :dispatch [:navigate-to :usage-data [:account-finalized false]]}]))))))
+           (assoc :dispatch-later [{:ms 2000 :dispatch [:account-recovered-navigate]}]))))))
+
+(handlers/register-handler-fx
+ :account-recovered-navigate
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:accounts/recover :processing] false)
+    :dispatch [:navigate-to :usage-data [:account-finalized false]]}))
 
 (handlers/register-handler-fx
  :recover-account
- (fn [_ [_ masked-passphrase password]]
-   {::recover-account-fx [masked-passphrase password]}))
+ (fn [{:keys [db]} [_ masked-passphrase password]]
+   {:db (assoc-in db [:accounts/recover :processing] true)
+    ::recover-account-fx [masked-passphrase password]}))
