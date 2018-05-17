@@ -6,11 +6,10 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
             [status-im.ui.screens.wallet.styles :as styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style styles/toolbar :flat? true}
@@ -34,6 +33,17 @@
                   :accessibility-label :total-amount-currency-text}
       (:code currency)]]
     [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
+
+(defn- backup-seed-phrase []
+  [react/view styles/section
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
+    [react/view styles/backup-seed-phrase-container
+     [react/view styles/backup-seed-phrase-text-container
+      [react/text {:style styles/backup-seed-phrase-title}
+       (i18n/label :t/wallet-backup-seed-title)]
+      [react/text {:style styles/backup-seed-phrase-description}
+       (i18n/label :t/wallet-backup-seed-description)]]
+     [vector-icons/icon :icons/forward {:color :white}]]]])
 
 (def actions
   [{:label               (i18n/label :t/send-transaction)
@@ -83,7 +93,8 @@
 (views/defview wallet-root []
   (views/letsubs [assets          [:wallet/visible-assets-with-amount]
                   currency        [:wallet/currency]
-                  portfolio-value [:portfolio-value]]
+                  portfolio-value [:portfolio-value]
+                  {:keys [seed-backed-up?]} [:get-current-account]]
     [react/view styles/main-section
      [toolbar-view]
      [react/scroll-view {:refresh-control
@@ -92,6 +103,11 @@
                                                   :tint-color :white
                                                   :refreshing false}])}
       [total-section portfolio-value currency]
+      (when (and (not seed-backed-up?)
+                 (some (fn [{:keys [amount]}]
+                         (and amount (not (.isZero amount))))
+                       assets))
+        [backup-seed-phrase])
       [list/action-list actions
        {:container-style styles/action-section}]
       [asset-section assets currency]
@@ -100,6 +116,6 @@
 
 (views/defview wallet []
   (views/letsubs [{:keys [wallet-set-up-passed?]} [:get-current-account]]
-    (if wallet-set-up-passed?
-      [wallet-root]
-      [onboarding.views/onboarding])))
+    (if (not wallet-set-up-passed?)
+      [onboarding.views/onboarding]
+      [wallet-root])))

@@ -81,6 +81,30 @@
 (def section
   {:background-color colors/blue})
 
+(def backup-seed-phrase-container
+  {:flex-direction   :row
+   :align-items      :center
+   :border-radius    8
+   :margin           16
+   :background-color colors/black-darker-transparent
+   :padding-top      10
+   :padding-bottom   10
+   :padding-left     14
+   :padding-right    12})
+
+(def backup-seed-phrase-text-container
+  {:flex 1})
+
+(def backup-seed-phrase-title
+  {:font-size   15
+   :line-height 20
+   :color       colors/white})
+
+(def backup-seed-phrase-description
+  {:font-size   14
+   :line-height 20
+   :color       colors/white-lighter-transparent})
+
 (def total-balance-container
   {:align-items     :center
    :justify-content :center})

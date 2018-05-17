@@ -177,6 +177,8 @@
    :wallet-set-up-signing-phrase         "This is your personal transaction phrase that you’ll use everytime you make a transaction. Make sure to write it down on a piece of paper, store it somewhere, and only confirm transactions when you see these three words."
    :wallet-set-up-confirm-title          "Wrote it down?"
    :wallet-set-up-confirm-description    "You won’t be able to see your 3-word transaction phrase again after this."
+   :wallet-backup-seed-title             "Backup your Seed Phrase"
+   :wallet-backup-seed-description       "This will help you to keep your money safe"
 
    ;;make_photo
    :image-source-title                   "Edit picture"

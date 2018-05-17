@@ -70,15 +70,15 @@
  [re-frame/trim-v (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
  (fn [{:keys [signing-phrase status db] :as cofx} [{:keys [pubkey address mnemonic]} password]]
    (let [normalized-address (utils.hex/normalize-hex address)
-         account            {:public-key          pubkey
-                             :address             normalized-address
-                             :name                (generate-gfy pubkey)
-                             :status              status
-                             :signed-up?          true
-                             :photo-path          (identicon pubkey)
-                             :signing-phrase      signing-phrase
-                             :mnemonic            mnemonic
-                             :settings            (constants/default-account-settings)}]
+         account            {:public-key     pubkey
+                             :address        normalized-address
+                             :name           (generate-gfy pubkey)
+                             :status         status
+                             :signed-up?     true
+                             :photo-path     (identicon pubkey)
+                             :signing-phrase signing-phrase
+                             :mnemonic       mnemonic
+                             :settings       (constants/default-account-settings)}]
      (log/debug "account-created")
      (when-not (str/blank? pubkey)
        (-> (add-account db account)
