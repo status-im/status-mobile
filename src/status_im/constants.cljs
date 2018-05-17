@@ -49,17 +49,7 @@
                                    :raw-config config)]))
        (into {})))
 
-(def mainnet-networks
-  {"mainnet"     {:id     "mainnet",
-                  :name   "Mainnet",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir   "/ethereum/mainnet"}}
-   "mainnet_rpc" {:id     "mainnet_rpc",
-                  :name   "Mainnet with upstream RPC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir        "/ethereum/mainnet_rpc"
-                           :UpstreamConfig {:Enabled true
-                                            :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
+(def mainnet-networks {})
 
 (def testnet-networks
   {"testnet"     {:id     "testnet",
