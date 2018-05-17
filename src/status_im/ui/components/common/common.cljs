@@ -86,7 +86,7 @@
     [react/text (cond-> {:style (styles/counter-label size)}
                   accessibility-label
                   (assoc :accessibility-label accessibility-label))
-     value]]))
+     (if (<= value 99) value (i18n/label :t/counter-99-plus))]]))
 
 (defn image-contain [_ _]
   (let [content-width (reagent/atom 0)]
