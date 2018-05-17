@@ -8,7 +8,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-//#define BULID_FOR_BUNDLE
+// #define BULID_FOR_BUNDLE
 
 #include <QCommandLineParser>
 #include <QFile>
@@ -126,8 +126,10 @@ private:
 
 #ifdef BULID_FOR_BUNDLE
 void runUbuntuServer();
-void logErrorToFile(QtMsgType type, const QMessageLogContext &context,
-                    const QString &msg);
+void saveMessage(QtMsgType type, const QMessageLogContext &context,
+                 const QString &msg);
+
+void writeLogsToFile();
 #endif
 
 int main(int argc, char **argv) {
@@ -139,7 +141,7 @@ int main(int argc, char **argv) {
 
 #ifdef BULID_FOR_BUNDLE
   QString dataFolder = QDir::homePath() + "/Library/StatusIm/";
-  qInstallMessageHandler(logErrorToFile);
+  qInstallMessageHandler(saveMessage);
 
   QDir dir(dataFolder + "ethereum/mainnet_rpc");
   if (!dir.exists()) {
@@ -152,7 +154,8 @@ int main(int argc, char **argv) {
   QQuickView view;
   ReactNativeProperties *rnp = new ReactNativeProperties(&view);
 #ifdef BULID_FOR_BUNDLE
-  rnp->setCodeLocation(QString("file:assets"));
+  rnp->setCodeLocation("file:" + QGuiApplication::applicationDirPath() +
+                       "/assets");
 #endif
 
   utilities::registerReactTypes();
@@ -189,18 +192,7 @@ int main(int argc, char **argv) {
 #ifdef BULID_FOR_BUNDLE
   QTimer t;
   t.setInterval(500);
-  QObject::connect(&t, &QTimer::timeout, [=]() {
-    QFile logFile(QDir::homePath() + "/Library/StatusIm/StatusIm.log");
-    logFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    for (QString message : consoleOutputStrings) {
-      logFile.write(message.toStdString().c_str());
-    }
-    consoleOutputStrings.clear();
-
-    logFile.flush();
-    logFile.close();
-
-  });
+  QObject::connect(&t, &QTimer::timeout, [=]() { writeLogsToFile(); });
   t.start();
 #endif
 
@@ -208,6 +200,19 @@ int main(int argc, char **argv) {
 }
 
 #ifdef BULID_FOR_BUNDLE
+
+void writeLogsToFile() {
+  QFile logFile(QDir::homePath() + "/Library/StatusIm/StatusIm.log");
+  logFile.open(QIODevice::WriteOnly | QIODevice::Append);
+  for (QString message : consoleOutputStrings) {
+    logFile.write(message.toStdString().c_str());
+  }
+  consoleOutputStrings.clear();
+
+  logFile.flush();
+  logFile.close();
+}
+
 void runUbuntuServer() {
   QProcess *process = new QProcess();
   process->setProgram(QGuiApplication::applicationDirPath() + "/ubuntu-server");
@@ -246,8 +251,8 @@ void runUbuntuServer() {
   qDebug() << "waiting finished";
 }
 
-void logErrorToFile(QtMsgType type, const QMessageLogContext &context,
-                    const QString &msg) {
+void saveMessage(QtMsgType type, const QMessageLogContext &context,
+                 const QString &msg) {
 
   QByteArray localMsg = msg.toLocal8Bit();
   QString message = localMsg + "\n";
@@ -266,7 +271,9 @@ void logErrorToFile(QtMsgType type, const QMessageLogContext &context,
     consoleOutputStrings << "Critical: " << message << "\n";
     break;
   case QtFatalMsg:
+
     consoleOutputStrings << "Fatal: " << message << "\n";
+    writeLogsToFile();
     abort();
   }
 }
