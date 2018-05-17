@@ -85,7 +85,7 @@ class EnterRecipientAddressInput(BaseEditBox):
 class RecentRecipientsButton(BaseButton):
     def __init__(self, driver):
         super(RecentRecipientsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Recent recipients']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Contacts']")
 
 
 class SelectAssetButton(BaseButton):

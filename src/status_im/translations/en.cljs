@@ -376,7 +376,7 @@
    :recipient                            "Recipient"
    :specify-recipient                    "Specify recipient..."
    :recipient-code                       "Enter recipient address"
-   :recent-recipients                    "Recent recipients"
+   :recent-recipients                    "Contacts"
    :to                                   "To"
    :from                                 "From"
    :data                                 "Data"
