@@ -25,7 +25,6 @@
              :navigation-stack            '()
              :contacts/contacts           {}
              :qr-codes                    {}
-             :group/contact-groups        {}
              :group/selected-contacts     #{}
              :chats                       {}
              :current-chat-id             nil
@@ -148,11 +147,7 @@
                  :contacts/click-handler
                  :contacts/click-action
                  :contacts/click-params
-                 :group/contact-groups
-                 :group/contact-group-id
-                 :group/group-type
                  :group/selected-contacts
-                 :group/groups-order
                  :accounts/accounts
                  :accounts/create
                  :accounts/recover

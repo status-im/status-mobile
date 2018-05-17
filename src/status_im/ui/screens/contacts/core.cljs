@@ -1,9 +1,6 @@
 (ns status-im.ui.screens.contacts.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.data-store.messages :as data-store.messages]
+  (:require [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.chat.models :as chat.models]
-            [status-im.constants :as constants]
             [status-im.data-store.contacts :as contacts-store]))
 
 (defn receive-contact-request

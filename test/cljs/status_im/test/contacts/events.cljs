@@ -5,11 +5,9 @@
             [day8.re-frame.test :refer-macros [run-test-sync]]
             status-im.ui.screens.db
             [status-im.ui.screens.contacts.events :as contacts-events]
-            [status-im.ui.screens.group.events :as group-events]
             status-im.ui.screens.subs
             [status-im.ui.screens.events :as events]
-            [status-im.utils.js-resources :as js-res]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.js-resources :as js-res]))
 
 (def test-contact-group
   {:group-id  "1501682106404-685e041e-38e7-593e-b42c-fb4cabd7faa4"
@@ -70,12 +68,6 @@
   (rf/reg-fx ::contacts-events/stop-watching-contact #())
   (rf/reg-fx ::contacts-events/send-contact-request-fx #())
 
-  (rf/reg-fx ::group-events/save-contact-group #())
-  (rf/reg-fx ::group-events/save-contact-groups #())
-  (rf/reg-fx ::group-events/add-contacts-to-contact-group #())
-  (rf/reg-fx ::group-events/save-contact-group-property #())
-  (rf/reg-fx ::group-events/add-contacts-to-contact-group #())
-
   (rf/reg-fx :data-store/save-chat #())
 
   (rf/reg-cofx
@@ -88,18 +80,11 @@
    (fn [cofx]
      (assoc cofx :get-local-storage-data (constantly nil))))
 
-  (rf/reg-cofx
-   ::group-events/get-all-contact-groups
-   (fn [coeffects _]
-     (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
-
   ;;TODO implement tests later for :add-chat? and :bot-url
   (rf/reg-cofx
    ::contacts-events/get-default-contacts-and-groups
    (fn [coeffects _]
-     (assoc coeffects
-            :default-contacts (select-keys js-res/default-contacts [:demo-bot])
-            :default-groups (select-keys js-res/default-contact-groups [:dapps])))))
+     (assoc coeffects :default-contacts (select-keys js-res/default-contacts [:demo-bot])))))
 
 #_(deftest contacts-events
     "load-contacts

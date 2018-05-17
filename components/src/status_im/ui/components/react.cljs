@@ -237,8 +237,7 @@
                              (:qr-viewer
                               :recipient-qr-code) "#2f3031"
                              (:accounts :login
-                              :wallet-transactions-filter
-                              :contact-list-modal) styles/color-white
+                              :wallet-transactions-filter) styles/color-white
                              :transparent)})
           children (cond-> children
                            (#{:wallet

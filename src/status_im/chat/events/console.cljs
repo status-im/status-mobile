@@ -2,14 +2,10 @@
   (:require [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.chat.console :as console-chat]
-            [status-im.ui.screens.accounts.utils :as account.utils]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [goog.string :as gstring]
-            goog.string.format
-            [status-im.utils.handlers-macro :as handlers-macro]))
-
-;;;; Helper fns
+            goog.string.format))
 
 (defn console-respond-command-messages
   [{:keys [name] :as command} handler-data random-id-seq]
@@ -42,7 +38,7 @@
 
 (def console-commands->fx
   {"faucet"
-   (fn [{:keys [db random-id] :as cofx} {:keys [params]}]
+   (fn [{:keys [db random-id]} {:keys [params]}]
      (let [current-address (get-in db [:account/account :address])
            faucet-url      (faucet-base-url->url (:url params))]
        {:http-get {:url                   (gstring/format faucet-url current-address)
@@ -54,24 +50,9 @@
                                             (log/error "Faucet error" event)
                                             (faucet-response-event
                                              random-id
-                                             (i18n/label :t/faucet-error)))}}))
-
-   "debug"
-   (fn [{:keys [db random-id now] :as cofx} {:keys [params]}]
-     (let [debug? (= "On" (:mode params))]
-       (handlers-macro/merge-fx cofx
-                                {:dispatch-n (if debug?
-                                               [[:initialize-debugging {:force-start? true}]
-                                                [:chat-received-message/add
-                                                 [(console-chat/console-message
-                                                   {:message-id   random-id
-                                                    :content      (i18n/label :t/debug-enabled)
-                                                    :content-type constants/text-content-type})]]]
-                                               [[:stop-debugging]])}
-                                (account.utils/account-update {:debug?       debug?
-                                                               :last-updated now}))))})
+                                             (i18n/label :t/faucet-error)))}}))})
 
 (def commands-names (set (keys console-commands->fx)))
 
 (def commands-with-delivery-status
-  (disj commands-names "faucet" "debug"))
+  (disj commands-names "faucet"))

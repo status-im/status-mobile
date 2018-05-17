@@ -15,16 +15,11 @@
             [status-im.ui.screens.add-new.new-chat.views :refer [new-chat]]
             [status-im.ui.screens.add-new.new-public-chat.view :refer [new-public-chat]]
 
-            [status-im.ui.screens.contacts.contact-list-modal.views :refer [contact-list-modal]]
-
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
             [status-im.ui.screens.group.views :refer [new-group]]
-            [status-im.ui.screens.group.edit-contacts.views :refer [edit-contact-group-contact-list]]
             [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list
-                                                                   add-contacts-toggle-list
                                                                    add-participants-toggle-list]]
-
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
@@ -136,9 +131,7 @@
     :wallet-request-assets wallet.components/request-assets
     :new add-new
     :new-group new-group
-    :add-contacts-toggle-list add-contacts-toggle-list
     :add-participants-toggle-list add-participants-toggle-list
-    :edit-group-contact-list edit-contact-group-contact-list
     :new-public-chat new-public-chat
     :contact-toggle-list contact-toggle-list
     :new-chat new-chat
@@ -165,7 +158,6 @@
 (defn get-modal-component [modal-view]
   (case modal-view
     :qr-scanner qr-scanner
-    :contact-list-modal contact-list-modal
     :wallet-transactions-filter wallet-transactions/filter-history
     :wallet-settings-assets wallet-settings/manage-assets
     :wallet-send-transaction-modal send-transaction-modal

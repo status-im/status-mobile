@@ -3,7 +3,6 @@
             status-im.chat.events
             status-im.commands.handlers.jail
             status-im.commands.events.loading
-            status-im.commands.handlers.debug
             status-im.network.events
             status-im.transport.handlers
             status-im.protocol.handlers
@@ -309,10 +308,8 @@
                          [:fetch-web3-node-version]
                          [:initialize-sync-listener]
                          [:load-contacts]
-                         [:load-contact-groups]
                          [:initialize-chats]
                          [:initialize-browsers]
-                         [:initialize-debugging {:address address}]
                          [:send-account-update-if-needed]
                          [:process-pending-messages]
                          [:update-wallet]

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.contacts.db
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
             status-im.utils.db))
 
 ;;;; DB

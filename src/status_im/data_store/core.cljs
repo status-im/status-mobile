@@ -9,7 +9,6 @@
             status-im.data-store.browser
             status-im.data-store.accounts
             status-im.data-store.local-storage
-            status-im.data-store.contact-groups
             status-im.data-store.requests))
 
 (defn init [encryption-key]

@@ -7,7 +7,6 @@
             [status-im.ui.components.contact.contact :as contact]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [re-frame.core :as re-frame]

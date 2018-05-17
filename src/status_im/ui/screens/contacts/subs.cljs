@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.contacts.subs
-  (:require [clojure.string :as string]
-            [re-frame.core :refer [reg-sub subscribe]]
+  (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.contacts :as utils.contacts]))
@@ -58,12 +57,6 @@
 (defn filter-group-contacts [group-contacts contacts]
   (let [group-contacts' (into #{} group-contacts)]
     (filter #(group-contacts' (:whisper-identity %)) contacts)))
-
-(reg-sub :get-all-added-group-contacts
-         :<- [:all-added-contacts]
-         :<- [:get-contact-groups]
-         (fn [[contacts contact-groups] [_ group-id]]
-           (filter-group-contacts (get-in contact-groups [group-id :contacts]) contacts)))
 
 (reg-sub :get-contact-by-identity
          :<- [:get-contacts]

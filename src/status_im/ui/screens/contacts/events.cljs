@@ -1,23 +1,21 @@
 (ns status-im.ui.screens.contacts.events
-  (:require [clojure.set :as set]
-            [cljs.reader :as reader]
+  (:require [cljs.reader :as reader]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.constants :as constants]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.gfycat.core :as gfycat.core]
-            [status-im.ui.screens.contacts.navigation]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.group.events :as group.events]
-            [status-im.chat.console :as console-chat]
             [status-im.chat.events :as chat.events]
-            [status-im.chat.models :as chat.models]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.contact :as message.v1.contact]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [status-im.data-store.contacts :as contacts-store]))
+            [status-im.data-store.contacts :as contacts-store]
+            [status-im.utils.js-resources :as js-res]))
+
+(re-frame/reg-cofx
+ :get-default-contacts
+ (fn [coeffects _]
+   (assoc coeffects :default-contacts js-res/default-contacts)))
 
 ;;;; Handlers
 
@@ -93,26 +91,10 @@
                                 fx
                                 (add-contact-and-open-chat contact-identity))))))
 
-(handlers/register-handler-fx
- :hide-contact
- (fn [cofx [_ {:keys [whisper-identity] :as contact}]]
-   (update-contact {:whisper-identity whisper-identity
-                    :pending?         true}
-                   cofx)))
-
-;;used only by status-dev-cli
-(handlers/register-handler-fx
- :remove-contact
- (fn [{:keys [db]} [_ whisper-identity]]
-   (when-let [contact (get-in db [:contacts/contacts whisper-identity])]
-     {:db            (update db :contacts/contacts dissoc whisper-identity)
-      :data-store/tx [(contacts-store/delete-contact-tx whisper-identity)]})))
-
 (handlers/register-handler-db
  :open-contact-toggle-list
- (fn [db [_ group-type]]
+ (fn [db _]
    (-> (assoc db
-              :group/group-type group-type
               :group/selected-contacts #{}
               :new-chat-name "")
        (navigation/navigate-to :contact-toggle-list))))
@@ -120,7 +102,7 @@
 (handlers/register-handler-fx
  :open-chat-with-contact
  [(re-frame/inject-cofx :random-id)]
- (fn [{:keys [db] :as cofx} [_ {:keys [whisper-identity] :as contact}]]
+ (fn [cofx [_ {:keys [whisper-identity]}]]
    (handlers-macro/merge-fx cofx
                             (navigation/navigate-to-clean :home)
                             (add-contact whisper-identity)
@@ -129,6 +111,6 @@
 (handlers/register-handler-fx
  :add-contact-handler
  [(re-frame/inject-cofx :random-id)]
- (fn [{{:contacts/keys [new-identity] :as db} :db :as cofx} _]
+ (fn [{{:contacts/keys [new-identity]} :db :as cofx} _]
    (when (seq new-identity)
      (add-contact-and-open-chat new-identity cofx))))

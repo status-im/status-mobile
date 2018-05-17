@@ -175,7 +175,7 @@
 
 (handlers/register-handler-fx
  :initialize-chats
- [(re-frame/inject-cofx :get-default-contacts-and-groups)
+ [(re-frame/inject-cofx :get-default-contacts)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/unviewed-messages)
@@ -206,7 +206,6 @@
      (handlers-macro/merge-fx cofx
                               {:db (assoc db :chats chats)}
                               (init-console-chat)
-                              (group.events/add-default-groups)
                               (add-default-contacts)))))
 
 (handlers/register-handler-fx

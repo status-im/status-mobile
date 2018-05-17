@@ -63,7 +63,7 @@
     :trigger    [:show-profile]
     :properties {:target :show-profile}}
    {:label      "Tap"
-    :trigger    [:open-contact-toggle-list :chat-group]
+    :trigger    [:open-contact-toggle-list]
     :properties {:target :new-group-chat}}
    {:label      "Tap"
     :trigger    [:navigate-to :new-public-chat]

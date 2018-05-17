@@ -10,12 +10,10 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]))
 
-;;;; Handlers
-
 (handlers/register-handler-fx
  :show-group-chat-profile
  [re-frame/trim-v]
- (fn [{:keys [db] :as cofx} [chat-id]]
+ (fn [{:keys [db]} [chat-id]]
    {:db (-> db
             (assoc :new-chat-name (get-in db [:chats chat-id :name])
                    :group/group-type :chat-group)

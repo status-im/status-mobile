@@ -29,7 +29,7 @@
        :accessibility-label :start-group-chat-button
        :icon                :icons/contacts
        :icon-opts           {:color colors/blue}
-       :on-press            #(re-frame/dispatch [:open-contact-toggle-list :chat-group])}])
+       :on-press            #(re-frame/dispatch [:open-contact-toggle-list])}])
    [action-button/action-separator]
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)

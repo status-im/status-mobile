@@ -9,7 +9,6 @@
   (and (string? url) (s/starts-with? url local-protocol)))
 
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
-(def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
 
 (def transactor-js (slurp-bot :transactor))
 

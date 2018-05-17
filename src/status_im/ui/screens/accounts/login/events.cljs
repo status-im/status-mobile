@@ -8,8 +8,7 @@
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.keychain :as keychain]
-            [status-im.utils.utils :as utils]
-            [status-im.constants :as constants]))
+            [status-im.utils.utils :as utils]))
 
 ;;;; FX
 
@@ -28,8 +27,8 @@
 (reg-fx
  ::change-account
  (fn [[address]]
-    ;; if we don't add delay when running app without status-go
-    ;; "null is not an object (evaluating 'realm.schema')" error appears
+   ;; if we don't add delay when running app without status-go
+   ;; "null is not an object (evaluating 'realm.schema')" error appears
    (keychain/get-encryption-key-then
     (fn [encryption-key]
       (let [change-account-fn (fn [] (data-store/change-account address
@@ -92,8 +91,8 @@
  :login-account
  (fn [{{:keys [network status-node-started?] :as db} :db} [_ address password]]
    (let [{account-network :network} (get-network-by-address db address)
-         db' (-> db
-                 (assoc-in [:accounts/login :processing] true))
+         db'     (-> db
+                     (assoc-in [:accounts/login :processing] true))
          wrap-fn (cond (not status-node-started?)
                        wrap-with-initialize-geth-fx
 
@@ -112,7 +111,7 @@
          success (zero? (count error))
          db'     (assoc-in db [:accounts/login :processing] false)]
      (if success
-       {:db db
+       {:db              db
         ::clear-web-data nil
         ::change-account [address]}
        {:db (assoc-in db' [:accounts/login :error] error)}))))
@@ -121,12 +120,10 @@
  :change-account-handler
  (fn [{{:keys [view-id] :as db} :db} [_ error address]]
    (if (nil? error)
-     {:db         (cond-> (dissoc db :accounts/login)
-                    (= view-id :create-account)
-                    (assoc-in [:accounts/create :step] :enter-name))
-      :dispatch-n (concat
-                   [[:stop-debugging]
-                    [:initialize-account address
-                     (when (not= view-id :create-account)
-                       [[:navigate-to-clean :home]])]])}
+     {:db       (cond-> (dissoc db :accounts/login)
+                  (= view-id :create-account)
+                  (assoc-in [:accounts/create :step] :enter-name))
+      :dispatch [:initialize-account address
+                 (when (not= view-id :create-account)
+                   [[:navigate-to-clean :home]])]}
      (log/debug "Error changing acount: " error))))
