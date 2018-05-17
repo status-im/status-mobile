@@ -10,8 +10,9 @@
 
 (handlers/register-handler-fx
  :wallet.settings/toggle-visible-token
- (fn [{{:keys [network account/account] :as db} :db :as cofx} [_ symbol checked?]]
-   (let [chain        (ethereum/network->chain-keyword network)
+ (fn [{{:keys [account/account] :as db} :db :as cofx} [_ symbol checked?]]
+   (let [network      (get (:networks account) (:network account))
+         chain        (ethereum/network->chain-keyword network)
          settings     (get account :settings)
          new-settings (update-in settings [:wallet :visible-tokens chain] #(toggle-checked % symbol checked?))]
      (accounts/update-settings new-settings cofx))))

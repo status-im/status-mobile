@@ -4,7 +4,8 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
-            [status-im.utils.transactions :as transactions]))
+            [status-im.utils.transactions :as transactions]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (reg-sub :wallet.transactions/transactions-loading?
          :<- [:wallet]
@@ -125,7 +126,8 @@
          :<- [:network]
          (fn [[unsigned-transactions transactions current-transaction network]]
            (let [transactions (merge transactions unsigned-transactions)
-                 {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
+                 {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)
+                 chain (ethereum/network->chain-keyword network)]
              (when transaction
                (merge transaction
                       {:gas-price-eth  (if gas-price (money/wei->str :eth gas-price) "-")
@@ -140,7 +142,7 @@
                          :hash      (i18n/label :not-applicable)}
                         {:cost (when gas-used
                                  (money/wei->str :eth (money/fee-value gas-used gas-price)))
-                         :url  (transactions/get-transaction-details-url network hash)}))))))
+                         :url  (transactions/get-transaction-details-url chain hash)}))))))
 
 (reg-sub :wallet.transactions.details/confirmations
          :<- [:wallet.transactions/transaction-details]

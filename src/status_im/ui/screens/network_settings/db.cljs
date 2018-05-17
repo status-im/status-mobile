@@ -12,3 +12,5 @@
 (spec/def :networks/selected-network :networks/network)
 
 (spec/def :networks/networks (spec/nilable (spec/map-of :networks/id :networks/network)))
+
+(spec/def :networks/manage (spec/nilable map?))

@@ -9,20 +9,20 @@
 
 (handlers/register-handler-fx
  ::save-wnode
- (fn [{:keys [db now] :as cofx} [_ wnode]]
-   (let [network  (ethereum/network->chain-keyword (:network db))
-         settings (get-in db [:account/account :settings])]
+ (fn [{:keys [db now] :as cofx} [_ chain wnode]]
+   (let [settings (get-in db [:account/account :settings])]
      (handlers-macro/merge-fx cofx
                               {:dispatch [:logout]}
-                              (accounts-events/update-settings (assoc-in settings [:wnode network] wnode))))))
+                              (accounts-events/update-settings (assoc-in settings [:wnode chain] wnode))))))
 
 (handlers/register-handler-fx
  :connect-wnode
  (fn [{:keys [db]} [_ wnode]]
-   (let [network (ethereum/network->chain-keyword (:network db))]
+   (let [network (get (:networks (:account/account db)) (:network db))
+         chain   (ethereum/network->chain-keyword network)]
      {:show-confirmation {:title               (i18n/label :t/close-app-title)
                           :content             (i18n/label :t/connect-wnode-content
-                                                           {:name (get-in db [:inbox/wnodes network wnode :name])})
+                                                           {:name (get-in db [:inbox/wnodes chain wnode :name])})
                           :confirm-button-text (i18n/label :t/close-app-button)
-                          :on-accept           #(dispatch [::save-wnode wnode])
+                          :on-accept           #(dispatch [::save-wnode chain wnode])
                           :on-cancel           nil}})))

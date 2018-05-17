@@ -1,11 +1,15 @@
 (ns status-im.ui.screens.network-settings.events
   (:require [re-frame.core :refer [dispatch dispatch-sync after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
+            status-im.ui.screens.network-settings.edit-network.events
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as utils]
-            [status-im.transport.core :as transport]))
+            [status-im.transport.core :as transport]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.types :as types]
+            [clojure.string :as string]))
 
 ;; handlers
 
@@ -36,12 +40,20 @@
                                                            [::close-application]))))
 
 (handlers/register-handler-fx
+ ::remove-network
+ (fn [{:keys [db now] :as cofx} [_ network]]
+   (let [networks         (dissoc (get-in db [:account/account :networks]) network)]
+     (handlers-macro/merge-fx cofx
+                              {:dispatch [:navigate-back]}
+                              (accounts.utils/account-update {:networks     networks
+                                                              :last-updated now})))))
+
+(handlers/register-handler-fx
  :connect-network
  (fn [{:keys [db now] :as cofx} [_ network]]
-   (let [current-network (:network db)
-         networks        (:networks/networks db)
+   (let [current-network (get-in db [:account/account :networks (:network db)])
          chats           (:transport/chats db)]
-     (if (utils/network-with-upstream-rpc? networks current-network)
+     (if (utils/network-with-upstream-rpc? current-network)
        (handlers-macro/merge-fx cofx
                                 {:dispatch-n            [[:load-accounts]
                                                          [:navigate-to-clean :accounts]]}
@@ -52,4 +64,16 @@
                             :content             (i18n/label :t/close-app-content)
                             :confirm-button-text (i18n/label :t/close-app-button)
                             :on-accept           #(dispatch [::save-network network])
+                            :on-cancel           nil}}))))
+
+(handlers/register-handler-fx
+ :delete-network
+ (fn [{{:account/keys [account] :as db} :db :as cofx} [_ network]]
+   (let [current-network? (= (:network account) network)]
+     (if current-network?
+       {:show-error (i18n/label :t/delete-network-error)}
+       {:show-confirmation {:title               (i18n/label :t/delete-network-title)
+                            :content             (i18n/label :t/delete-network-confirmation)
+                            :confirm-button-text (i18n/label :t/delete)
+                            :on-accept           #(dispatch [::remove-network network])
                             :on-cancel           nil}}))))

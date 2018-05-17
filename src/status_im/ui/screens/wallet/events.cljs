@@ -102,7 +102,8 @@
 (handlers/register-handler-fx
  :update-wallet
  (fn [{{:keys [web3 account/account network network-status] {:keys [address settings]} :account/account :as db} :db} _]
-   (let [chain       (ethereum/network->chain-keyword network)
+   (let [network     (get-in db [:account/account :networks network])
+         chain       (ethereum/network->chain-keyword network)
          mainnet?    (= :mainnet chain)
          symbols     (get-in settings [:wallet :visible-tokens chain])
          currency-id (or (get-in settings [:wallet :currency]) :usd)
@@ -132,12 +133,13 @@
  :update-transactions
  (fn [{{:keys [network network-status web3] :as db} :db} _]
    (when (not= network-status :offline)
-     (let [chain           (ethereum/network->chain-keyword network)
+     (let [network         (get-in db [:account/account :networks network])
+           chain           (ethereum/network->chain-keyword network)
            all-tokens      (tokens/tokens-for chain)
            token-addresses (map :address all-tokens)]
        {:get-transactions {:account-id      (get-in db [:account/account :address])
                            :token-addresses token-addresses
-                           :network         network
+                           :network         chain
                            :web3            web3
                            :success-event   :update-transactions-success
                            :error-event     :update-transactions-fail}

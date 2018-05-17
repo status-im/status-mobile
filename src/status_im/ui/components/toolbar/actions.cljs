@@ -2,9 +2,9 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.styles :as styles]))
 
-(defn add [handler]
+(defn add [illuminated? handler]
   {:icon      :icons/add
-   :icon-opts styles/icon-add
+   :icon-opts (if illuminated? styles/icon-add-illuminated styles/icon-add)
    :handler   handler})
 
 (defn opts [options]

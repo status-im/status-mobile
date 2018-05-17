@@ -34,8 +34,9 @@
   ([left content] (item left content nil))
   ([left content right]
    [react/view {:style styles/item}
-    [react/view {:style styles/left-item-wrapper}
-     left]
+    (when left
+      [react/view {:style styles/left-item-wrapper}
+       left])
     [react/view {:style styles/content-item-wrapper}
      content]
     (when right
@@ -88,7 +89,7 @@
 
 (defn list-item-with-checkbox [{:keys [on-value-change checked? plain-checkbox?] :as props} item]
   (let [handler  #(on-value-change (not checked?))
-        checkbox [(if plain-checkbox? checkbox/checkbox item-checkbox) props]
+        checkbox [(if plain-checkbox? checkbox/plain-checkbox item-checkbox) props]
         item     (conj item checkbox)]
     [touchable-item handler item]))
 
@@ -105,13 +106,13 @@
     {:post [(some? %)]}
     (f data index)))
 
+(def base-separator [react/view styles/base-separator])
+
 (def default-separator [react/view styles/separator])
 
 (def default-header [react/view styles/list-header-footer-spacing])
 
 (def default-footer [react/view styles/list-header-footer-spacing])
-
-(def section-separator [react/view styles/section-separator])
 
 (defn- base-list-props
   [{:keys [key-fn render-fn empty-component header separator default-separator?]}]
@@ -163,8 +164,9 @@
 
 (defn- default-render-section-header [{:keys [title data]}]
   (when (seq data)
-    [react/text {:style styles/section-header}
-     title]))
+    [react/view styles/section-header-container
+     [react/text {:style styles/section-header}
+      title]]))
 
 (defn- wrap-per-section-render-fn [props]
   (update
@@ -182,8 +184,7 @@
    (merge (base-list-props props)
           props
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
-           :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)}
-          (when platform/ios? {:SectionSeparatorComponent (fn [] (reagent/as-element section-separator))}))])
+           :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)})])
 
 (defn- render-action [{:keys [label accessibility-label icon action disabled?]}
                       {:keys [action-style action-label-style icon-opts]}]

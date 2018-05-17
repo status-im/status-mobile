@@ -1,12 +1,16 @@
 (ns status-im.ui.screens.network-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.network-settings.styles :as styles]
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]))
@@ -31,6 +35,9 @@
 (defn navigate-to-network [network]
   (re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}]))
 
+(defn navigate-to-add-network []
+  (re-frame/dispatch [:edit-network]))
+
 (defn wrap-mainnet-warning [network cb]
   (fn []
     (if (and config/mainnet-warning-enabled?
@@ -44,9 +51,7 @@
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]
     (let [connected? (= id current-network)]
-      [react/touchable-highlight
-       {:on-press            (wrap-mainnet-warning network navigate-to-network)
-        :accessibility-label :network-item}
+      [list/touchable-item (wrap-mainnet-warning network navigate-to-network)
        [react/view styles/network-item
         [network-icon connected? 40]
         [react/view {:padding-horizontal 16}
@@ -58,13 +63,25 @@
             (i18n/label :t/connected)])]]])))
 
 (views/defview network-settings []
-  (views/letsubs [{:keys [network networks]} [:get-current-account]]
-    [react/view {:flex 1}
+  (views/letsubs [{:keys [network]} [:get-current-account]
+                  networks          [:get-networks]]
+    [react/view components.styles/flex
      [status-bar/status-bar]
-     [toolbar/simple-toolbar
-      (i18n/label :t/network-settings)]
+     [toolbar/toolbar {}
+      toolbar/default-nav-back
+      [toolbar/content-title (i18n/label :t/network-settings)]
+      [toolbar/actions
+       [(toolbar.actions/add false navigate-to-add-network)]]]
      [react/view styles/wrapper
-      [list/flat-list {:data               (vals networks)
-                       :key-fn             :id
-                       :default-separator? true
-                       :render-fn          (render-network network)}]]]))
+      [list/section-list {:sections           [{:title (i18n/label :t/main-networks)
+                                                :key :mainnet
+                                                :data (:mainnet networks)}
+                                               {:title (i18n/label :t/test-networks)
+                                                :key :testnet
+                                                :data (:testnet networks)}
+                                               {:title (i18n/label :t/custom-networks)
+                                                :key :custom
+                                                :data (:custom networks)}]
+                          :key-fn             :id
+                          :default-separator? true
+                          :render-fn          (render-network network)}]]]))

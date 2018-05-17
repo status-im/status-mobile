@@ -331,6 +331,7 @@
    :add-new-contact                      "Add new contact"
    :scan-qr                              "Scan QR code"
    :name                                 "Name"
+   :specify-name                         "Specify a name"
    :address-explication                  "Your public key is used to generate your address on Ethereum and is a series of numbers and letters. You can find it easily in your profile"
    :use-valid-contact-code               "Please enter a valid contact code"
    :enter-valid-public-key               "Please enter a valid public key or scan a QR code"
@@ -580,6 +581,8 @@
    :add-new-network                      "Add new network"
    :add-wnode                            "Add mailserver"
    :existing-networks                    "Existing networks"
+   :delete-network-title                 "Delete network?"
+   :delete-network-confirmation          "Are you sure you want to delete this network?"
    ;; TODO(dmitryn): come up with better description/naming. Suggested namings: Mailbox and Master Node
    :existing-wnodes                      "Existing mailservers"
    :add-json-file                        "Add a JSON file"
@@ -591,12 +594,15 @@
    :process-json                         "Process JSON"
    :error-processing-json                "Error processing JSON"
    :rpc-url                              "RPC URL"
+   :network-chain                        "Network chain"
    :network                              "Network"
+   :network-details                      "Network details"
    :remove-network                       "Remove network"
    :network-settings                     "Network settings"
    :offline-messaging                    "Offline messages"
    :offline-messaging-settings           "Offline messages settings"
    :edit-network-warning                 "Be careful, editing the network data may disable this network for you"
+   :delete-network-error                 "Please connect to a different network before deleting this one"
    :connecting-requires-login            "Connecting to another network requires login"
    :close-app-title                      "Warning!"
    :close-app-content                    "The app will stop and close. When you reopen it, the selected network will be used"
@@ -606,6 +612,14 @@
    :mainnet-warning-title                "Warning!"
    :mainnet-warning-text                 "While we highly appreciate your contribution as a tester of Status, we’d like to point out the dangers. You’re switching to Mainnet mode which is still in Alpha. This means it is still in development and has not been audited yet. Some of the risks you may be exposed to include:\n\n- Accounts may be unrecoverable due to breaking changes\n- Loss of ETH and tokens\n- Failure to send or receive messages\n\nSwitching to Mainnet should be done for testing purposes only. By tapping \"I understand\", you confirm that you assume the full responsibility for all risks concerning your data and funds. "
    :mainnet-warning-ok-text              "I understand"
+
+   :main-networks                        "Main networks"
+   :test-networks                        "Test networks"
+   :custom-networks                      "Custom networks"
+
+   :mainnet-network                      "Main network"
+   :ropsten-network                      "Ropsten test network"
+   :rinkeby-network                      "Rinkeby test network"
 
    ;; browser
    :browser                              "Browser"

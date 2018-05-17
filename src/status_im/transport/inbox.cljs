@@ -42,9 +42,10 @@
        (success-fn result)))))
 
 (defn get-current-wnode-address [db]
-  (let [network  (ethereum/network->chain-keyword (get db :network))
+  (let [network  (get (:networks (:account/account db)) (:network db))
+        chain    (ethereum/network->chain-keyword network)
         wnode-id (get-in db [:account/account :settings :wnode network])]
-    (get-in db [:inbox/wnodes network wnode-id :address])))
+    (get-in db [:inbox/wnodes chain wnode-id :address])))
 
 (defn initialize-offline-inbox-flow []
   {:first-dispatch [:inbox/get-sym-key]

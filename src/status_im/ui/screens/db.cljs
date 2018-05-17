@@ -167,6 +167,7 @@
                  :group-chat-profile/editing?
                  :networks/selected-network
                  :networks/networks
+                 :networks/manage
                  :node/after-start
                  :node/after-stop
                  :inbox/wnodes

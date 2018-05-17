@@ -80,8 +80,8 @@
 
 (handlers/register-handler-fx
  :initialize-sync-listener
- (fn [{{:keys [sync-listening-started network networks/networks] :as db} :db} _]
+ (fn [{{:keys [sync-listening-started network account/account] :as db} :db} _]
    (when (and (not sync-listening-started)
-              (not (utils/network-with-upstream-rpc? networks network)))
+              (not (utils/network-with-upstream-rpc? (get-in account [:networks network]))))
      {:db       (assoc db :sync-listening-started true)
       :dispatch [:check-sync]})))

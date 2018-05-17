@@ -37,7 +37,7 @@
   [{:keys [db get-local-storage-data]} commands-resource whisper-identity]
   (let [data                  (get-local-storage-data whisper-identity)
         local-storage-snippet (js-resources/local-storage-data data)
-        network-id            (get-in db [:networks/networks (:network db) :raw-config :NetworkId])
+        network-id            (get-in db [:account/account :networks (:network db) :raw-config :NetworkId])
         ethereum-id-snippet   (js-resources/network-id network-id)
         commands-snippet      (str local-storage-snippet ethereum-id-snippet commands-resource)]
     {::evaluate-jail-n [{:jail-id       whisper-identity

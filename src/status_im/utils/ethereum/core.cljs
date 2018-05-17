@@ -3,7 +3,8 @@
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.types :as types]))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 
@@ -21,8 +22,11 @@
 (defn testnet? [id]
   (contains? #{(chain-keyword->chain-id :testnet) (chain-keyword->chain-id :rinkeby)} id))
 
-(defn network-with-upstream-rpc? [networks network]
-  (get-in networks [network :raw-config :UpstreamConfig :Enabled]))
+(defn network-config [network]
+  (or (:raw-config network) (types/json->clj (:config network))))
+
+(defn network-with-upstream-rpc? [network]
+  (get-in (network-config network) [:UpstreamConfig :Enabled]))
 
 (def hex-prefix "0x")
 
@@ -36,9 +40,11 @@
   (when s
     (.isAddress dependencies/Web3.prototype s)))
 
+(defn network->chain-id [network]
+  (:NetworkId (network-config network)))
+
 (defn network->chain-keyword [network]
-  (when network
-    (keyword (string/replace network "_rpc" ""))))
+  (chain-id->chain-keyword (network->chain-id network)))
 
 (defn sha3 [s]
   (.sha3 dependencies/Web3.prototype (str s)))

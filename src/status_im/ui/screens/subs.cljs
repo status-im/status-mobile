@@ -32,7 +32,10 @@
          (fn [current-account]
            (:signed-up? current-account)))
 
-(reg-sub :network :network)
+(reg-sub :network
+         :<- [:get-current-account]
+         (fn [current-account]
+           (get (:networks current-account) (:network current-account))))
 
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)

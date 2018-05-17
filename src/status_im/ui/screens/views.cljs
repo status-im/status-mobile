@@ -41,6 +41,7 @@
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
+            [status-im.ui.screens.network-settings.edit-network.views :refer [edit-network]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
             [status-im.ui.screens.browser.views :refer [browser]]
@@ -151,6 +152,7 @@
     :recover recover
     :network-settings network-settings
     :network-details network-details
+    :edit-network edit-network
     :offline-messaging-settings offline-messaging-settings
     :currency-settings currency-settings
     :recent-recipients recent-recipients
