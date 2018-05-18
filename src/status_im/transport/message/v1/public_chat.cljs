@@ -41,5 +41,6 @@
                                       (assoc :sym-key-id sym-key-id)
                                       ;;TODO (yenda) remove once go implements persistence
                                       (assoc :sym-key sym-key))})]
-      :dispatch [:inbox/request-messages {:topics [topic]
-                                          :from   0}]})))
+      :dispatch [:inbox/request-messages {:topics    [topic]
+                                          :discover? false
+                                          :from      0}]})))

@@ -1,6 +1,7 @@
 (ns status-im.utils.utils
   (:require [status-im.i18n :as i18n]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [re-frame.core :as re-frame]))
 
 (defn show-popup
   ([title content]
@@ -58,6 +59,14 @@
 
 (defn set-timeout [cb ms]
   (.setTimeout rn-dependencies/background-timer cb ms))
+
+;; same as re-frame dispatch-later but using background timer for long
+;; running timeouts
+(re-frame/reg-fx
+ :utils/dispatch-later
+ (fn [params]
+   (doseq [{:keys [ms dispatch]} params]
+     (set-timeout #(re-frame/dispatch dispatch) ms))))
 
 (defn clear-timeout [id]
   (.clearTimeout rn-dependencies/background-timer id))

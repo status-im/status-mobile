@@ -44,6 +44,10 @@
 (reg-sub :peers-count :peers-count)
 (reg-sub :mailserver-status :mailserver-status)
 
+(reg-sub :fetching?
+         (fn [db]
+           (get db :inbox/fetching?)))
+
 (reg-sub :offline?
          :<- [:network-status]
          :<- [:sync-state]
@@ -51,12 +55,15 @@
            (or (= network-status :offline)
                (= sync-state :offline))))
 
-(reg-sub :connection-problem?
-         :<- [:mailserver-status]
+(reg-sub :disconnected?
          :<- [:peers-count]
-         (fn [[mailserver-status peers-count]]
-           (or (= :disconnected mailserver-status)
-               (zero? peers-count))))
+         (fn [peers-count]
+           (zero? peers-count)))
+
+(reg-sub :mailserver-error?
+         :<- [:mailserver-status]
+         (fn [mailserver-status]
+           (#{:error :disconnected} mailserver-status)))
 
 (reg-sub :syncing?
          :<- [:sync-state]

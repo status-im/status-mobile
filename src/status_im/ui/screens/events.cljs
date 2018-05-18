@@ -270,13 +270,15 @@
 (handlers/register-handler-fx
  :initialize-db
  (fn [{{:keys          [status-module-initialized? status-node-started?
-                        network-status network device-UUID]
+                        network-status network peers-count peers-summary device-UUID]
         :or {network (get app-db :network)}} :db}
       [_ encryption-key]]
    {::init-store encryption-key
     :db          (assoc app-db
                         :contacts/contacts {}
                         :network-status network-status
+                        :peers-count peers-count
+                        :peers-summary peers-summary
                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                         :status-node-started? status-node-started?
                         :network network
@@ -285,7 +287,7 @@
 (handlers/register-handler-db
  :initialize-account-db
  (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
-              network network-status view-id navigation-stack
+              network network-status peers-count peers-summary view-id navigation-stack
               access-scope->commands-responses
               status-module-initialized? status-node-started? device-UUID]
        :or   [network (get app-db :network)]} [_ address]]
@@ -303,6 +305,8 @@
                     :account/account current-account
                     :network-status network-status
                     :network network
+                    :peers-summary peers-summary
+                    :peers-count peers-count
                     :device-UUID device-UUID)
        console-contact
        (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
@@ -399,6 +403,16 @@
       (log/debug "Unknown jail signal " event))))
 
 (handlers/register-handler-fx
+ :discovery/summary
+ (fn [{:keys [db] :as cofx} [_ peers-summary]]
+   (let [peers-count (count peers-summary)]
+     (handlers-macro/merge-fx cofx
+                              {:db (assoc db
+                                          :peers-summary peers-summary
+                                          :peers-count peers-count)}
+                              (inbox/peers-summary-change-fx)))))
+
+(handlers/register-handler-fx
  :signal-event
  (fn [_ [_ event-str]]
    (log/debug :event-str event-str)
@@ -407,12 +421,13 @@
          to-dispatch (case type
                        "sign-request.queued" [:sign-request-queued event]
                        "sign-request.failed" [:sign-request-failed event]
-                       "node.started"       [:status-node-started]
-                       "node.stopped"       [:status-node-stopped]
-                       "module.initialized" [:status-module-initialized]
-                       "jail.signal"        (handle-jail-signal event)
-                       "envelope.sent"      [:signals/envelope-status (:hash event) :sent]
-                       "envelope.expired"   [:signals/envelope-status (:hash event) :not-sent]
+                       "node.started"        [:status-node-started]
+                       "node.stopped"        [:status-node-stopped]
+                       "module.initialized"  [:status-module-initialized]
+                       "jail.signal"         (handle-jail-signal event)
+                       "envelope.sent"       [:signals/envelope-status (:hash event) :sent]
+                       "envelope.expired"    [:signals/envelope-status (:hash event) :not-sent]
+                       "discovery.summary"   [:discovery/summary event]
                        (log/debug "Event " type " not handled"))]
      (when to-dispatch
        {:dispatch to-dispatch}))))
@@ -437,13 +452,11 @@
 (handlers/register-handler-fx
  :app-state-change
  (fn [{{:keys [network-status mailserver-status]} :db :as cofx} [_ state]]
-   (let [app-coming-from-background? (= state "active")
-         should-recover? (and app-coming-from-background?
-                              (= network-status :online)
-                              (not= mailserver-status :connecting))]
+   (let [app-coming-from-background? (= state "active")]
      (handlers-macro/merge-fx cofx
                               {::app-state-change-fx state}
-                              (inbox/recover-offline-inbox should-recover?)))))
+                              (inbox/request-messages {:should-recover? app-coming-from-background?
+                                                       :discover?       true})))))
 
 (handlers/register-handler-fx
  :request-permissions

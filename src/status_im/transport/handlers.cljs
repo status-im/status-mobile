@@ -86,7 +86,7 @@
                               {:db             (assoc-in db
                                                          [:transport/chats chat-id :sym-key-id]
                                                          sym-key-id)
-                               :dispatch       [:inbox/request-messages {:topics [topic]}]
+                               :dispatch       [:inbox/request-messages {:topics [topic] :discover? false}]
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
                                                 :topic      topic
