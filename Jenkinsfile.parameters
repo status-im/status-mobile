@@ -14,7 +14,7 @@ def installJSDeps() {
     }
 }
 
-node ('macos1') {
+node ('macos') {
   def apkUrl = ''
   def ipaUrl = ''
   def testPassed = true
