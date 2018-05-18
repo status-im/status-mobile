@@ -44,7 +44,7 @@
 (defn get-current-wnode-address [db]
   (let [network  (get (:networks (:account/account db)) (:network db))
         chain    (ethereum/network->chain-keyword network)
-        wnode-id (get-in db [:account/account :settings :wnode network])]
+        wnode-id (get-in db [:account/account :settings :wnode chain])]
     (get-in db [:inbox/wnodes chain wnode-id :address])))
 
 (defn initialize-offline-inbox-flow []
@@ -181,8 +181,8 @@
 
 (handlers/register-handler-fx
  :inbox/check-peer-added
-  ;; We check if the wnode is part of the peers list
-  ;; if not we dispatch a new fetch-peer event for later
+ ;; We check if the wnode is part of the peers list
+ ;; if not we dispatch a new fetch-peer event for later
  (fn [{{:keys [web3 network-status] :as db} :db} [_ peers retries]]
    (let [wnode    (get-current-wnode-address db)]
      (log/info "offline inbox: fetch-peers response" peers)
