@@ -109,24 +109,24 @@
 (defn get-block-number [web3 cb]
   (.getBlockNumber (.-eth web3)
                    (fn [error result]
-                     (if (seq error)
-                       (handle-error error)
-                       (cb result)))))
+                     (if-not error
+                       (cb result)
+                       (handle-error error)))))
 
 (defn get-block-info [web3 number cb]
   (.getBlock (.-eth web3) number (fn [error result]
-                                   (if (seq error)
-                                     (handle-error error)
-                                     (cb (js->clj result :keywordize-keys true))))))
+                                   (if-not error
+                                     (cb (js->clj result :keywordize-keys true))
+                                     (handle-error error)))))
 
 (defn get-transaction [web3 number cb]
   (.getTransaction (.-eth web3) number (fn [error result]
-                                         (if (seq error)
-                                           (handle-error error)
-                                           (cb (js->clj result :keywordize-keys true))))))
+                                         (if-not error
+                                           (cb (js->clj result :keywordize-keys true))
+                                           (handle-error error)))))
 
 (defn get-transaction-receipt [web3 number cb]
   (.getTransactionReceipt (.-eth web3) number (fn [error result]
-                                                (if (seq error)
-                                                  (handle-error error)
-                                                  (cb (js->clj result :keywordize-keys true))))))
+                                                (if-not error
+                                                  (cb (js->clj result :keywordize-keys true))
+                                                  (handle-error error)))))
