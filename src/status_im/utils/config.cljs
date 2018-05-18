@@ -22,14 +22,12 @@
 (def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
 (def mainnet-warning-enabled? (enabled? (get-config :MAINNET_WARNING_ENABLED 0)))
 (def offline-inbox-enabled? (enabled? (get-config :OFFLINE_INBOX_ENABLED 0)))
-(def offline-inbox-many-enabled? (enabled? (get-config :OFFLINE_INBOX_MANY_ENABLED 0)))
 (def log-level
   (-> (get-config :LOG_LEVEL "error")
       string/lower-case
       keyword))
 
 (def queue-message-enabled? (enabled? (get-config :QUEUE_MESSAGE_ENABLED 0)))
-(def many-whisper-topics-enabled? (enabled? (get-config :MANY_WHISPER_TOPICS_ENABLED 0)))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def compile-views-enabled? (enabled? (get-config :COMPILE_VIEWS_ENABLED 0)))
 (def mixpanel-token (get-config :MIXPANEL_TOKEN))
