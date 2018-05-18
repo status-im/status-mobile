@@ -87,7 +87,8 @@
                              (animation/anim-sequence
                               [(animation/anim-delay timeout)
                                (animation/spring opacity {:toValue  1
-                                                          :duration duration})])))}
+                                                          :duration duration
+                                                          :useNativeDriver true})])))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}

@@ -326,44 +326,8 @@
    [react/view style/delivery-status
     [message-delivery-status message]]])
 
-(defn message-container-animation-logic [{:keys [to-value val callback]}]
-  (fn [_]
-    (let [to-value @to-value]
-      (when (pos? to-value)
-        (animation/start
-         (animation/timing val {:toValue  to-value
-                                :duration 250})
-         (fn [arg]
-           (when (.-finished arg)
-             (callback))))))))
-
-(defn message-container [message & children]
-  (if (:appearing? message)
-    (let [layout-height (reagent/atom 0)
-          anim-value    (animation/create-value 1)
-          anim-callback #(re-frame/dispatch [:message-appeared message])
-          context       {:to-value layout-height
-                         :val      anim-value
-                         :callback anim-callback}
-          on-update     (message-container-animation-logic context)]
-      (reagent/create-class
-       {:component-did-update
-        on-update
-        :display-name
-        "message-container"
-        :reagent-render
-        (fn [_ & children]
-          @layout-height
-          [react/animated-view {:style (style/message-animated-container anim-value)}
-           (into [react/view {:style    (style/message-container window-width)
-                              :onLayout (fn [event]
-                                          (let [height (.. event -nativeEvent -layout -height)]
-                                            (reset! layout-height height)))}]
-                 children)])}))
-    (into [react/view] children)))
-
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
-  [message-container message
+  [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
                                                 (react/dismiss-keyboard!))
