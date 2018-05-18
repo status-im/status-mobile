@@ -60,9 +60,12 @@
 
 (defview message-content-command
   [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:command-ref content)]]
+  (letsubs [command [:get-command (:command-ref content)]
+            network [:network-name]]
     (let [preview (:preview content)
-          {:keys [color] icon-path :icon} command]
+          {:keys [color] icon-path :icon} command
+          send-network (get-in content [:params :network])
+          network-mismatch? (and (seq send-network) (not= network send-network))]
       [react/view style/content-command-view
        (when color
          [react/view style/command-container
@@ -75,7 +78,8 @@
           [react/icon icon-path style/command-image]])
        (if (:markup preview)
          ;; Markup was defined for command in jail, generate hiccup and render it
-         (commands.utils/generate-hiccup (:markup preview))
+         (cond-> (commands.utils/generate-hiccup (:markup preview))
+           network-mismatch? (conj [react/text send-network]))
          ;; Display preview if it's defined (as a string), in worst case, render params
          [react/text {:style style/command-text
                       :font  :default}
@@ -278,6 +282,15 @@
     [react/view style/not-sent-icon
      [vector-icons/icon :icons/warning {:color colors/red}]]]])
 
+(defview command-status [{{:keys [network]} :params}]
+  (letsubs [current-network [:network-name]]
+    (when (and network (not= current-network network))
+      [react/view style/not-sent-view
+       [react/text {:style style/not-sent-text}
+        (i18n/label :network-mismatch)]
+       [react/view style/not-sent-icon
+        [vector-icons/icon :icons/warning {:color colors/red}]]])))
+
 (defn message-delivery-status
   [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
   (let [outgoing-status (or (get user-statuses current-public-key) :not-sent)
@@ -291,11 +304,14 @@
     (case status
       :sending  [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]
-      (when last-outgoing?
-        (if (= message-type :group-user-message)
-          [group-message-delivery-status message]
-          (when outgoing
-            [text-status status]))))))
+      (if (and (not outgoing)
+               (:command content))
+        [command-status content]
+        (when last-outgoing?
+          (if (= message-type :group-user-message)
+            [group-message-delivery-status message]
+            (if outgoing
+              [text-status status])))))))
 
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
@@ -323,7 +339,7 @@
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}
       content]]]
-   [react/view style/delivery-status
+   [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]

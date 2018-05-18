@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
+            [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
             status-im.commands.subs
             status-im.ui.screens.accounts.subs
@@ -35,6 +36,8 @@
          :<- [:get-current-account]
          (fn [current-account]
            (get (:networks current-account) (:network current-account))))
+
+(reg-sub :network-name (comp ethereum/network-names :network))
 
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)

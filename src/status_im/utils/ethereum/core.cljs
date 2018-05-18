@@ -13,6 +13,14 @@
    :testnet {:id 3 :name "Ropsten"}
    :rinkeby {:id 4 :name "Rinkeby"}})
 
+(def network-names
+  {"mainnet"     "mainnet"
+   "mainnet_rpc" "mainnet"
+   "testnet"     "testnet"
+   "testnet_rpc" "testnet"
+   "rinkeby"     "rinkeby"
+   "rinkeby_rpc" "rinkeby"})
+
 (defn chain-id->chain-keyword [i]
   (some #(when (= i (:id (val %))) (key %)) chains))
 

@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.chat.models.message :as models.message]
+            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
@@ -10,8 +11,9 @@
 
 (defn- generate-context
   "Generates context for jail call"
-  [current-account-id chat-id group-chat? to]
+  [current-account-id chat-id group-chat? to network]
   (merge {:platform     platform/os
+          :network      (ethereum/network-names network)
           :from         current-account-id
           :to           to
           :chat         {:chat-id    chat-id
@@ -20,7 +22,7 @@
 
 (defn request-command-message-data
   "Requests command message data from jail"
-  [{:contacts/keys [contacts] :as db}
+  [{:contacts/keys [contacts] :keys [network] :as db}
    {{:keys [command command-scope-bitmask bot params type]} :content
     :keys [chat-id group-id] :as message}
    {:keys [data-type] :as opts}]
@@ -33,7 +35,7 @@
             to          (get-in contacts [chat-id :address])
             address     (get-in db [:account/account :address])
             jail-params {:parameters params
-                         :context    (generate-context address chat-id (models.message/group-message? message) to)}]
+                         :context    (generate-context address chat-id (models.message/group-message? message) to network)}]
         {:db        db
          :call-jail [{:jail-id                bot
                       :path                   path

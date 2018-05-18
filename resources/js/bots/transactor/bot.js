@@ -563,13 +563,15 @@ var paramsGroupRequest = [recipientRequestParam, amountRequestParam];
 
 function handlePersonalRequest(params, context) {
     var val = params["amount"].replace(",", ".");
+    var network = context["network"];
 
     return {
         event: "request",
         request: {
             command: "send",
             params: {
-                amount: val
+                network: network,
+                amount: val,
             },
             prefill: [val]
         }
@@ -578,6 +580,7 @@ function handlePersonalRequest(params, context) {
 
 function handleGroupRequest(params, context) {
     var val = params["amount"].replace(",", ".");
+    var network = context["network"];
 
     return {
         event: "request",
@@ -585,6 +588,7 @@ function handleGroupRequest(params, context) {
             command: "send",
             params: {
                 recipient: context["current-account"]["name"],
+                network: network,
                 amount: val
             },
             prefill: [context["current-account"]["name"], val],

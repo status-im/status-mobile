@@ -91,6 +91,7 @@
    :suggestions-commands                 "Commands"
    :faucet-success                       "Faucet request has been received"
    :faucet-error                         "Faucet request error"
+   :network-mismatch                     "Network mismatch"
 
    ;;sync
    :sync-in-progress                     "Syncing..."

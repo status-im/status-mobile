@@ -83,9 +83,12 @@
      :padding-right  10
      :align-items    align}))
 
-(def delivery-status
-  {:align-self    :flex-end
-   :padding-right 22})
+(defn delivery-status [outgoing]
+  (if outgoing
+    {:align-self    :flex-end
+     :padding-right 22}
+    {:align-self    :flex-start
+     :padding-left  16}))
 
 (def message-author
   {:width      photos/photo-size
