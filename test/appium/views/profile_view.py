@@ -266,6 +266,8 @@ class ProfileView(BaseView):
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
 
     def switch_network(self, network):
+        self.advanced_button.click()
+        self.debug_mode_toggle.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
