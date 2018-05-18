@@ -8,7 +8,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-// #define BULID_FOR_BUNDLE
+ // #define BUILD_FOR_BUNDLE
 
 #include <QCommandLineParser>
 #include <QFile>
@@ -17,13 +17,14 @@
 #include <QQuickView>
 #include <QTimer>
 #include <QUrl>
+#include <QStandardPaths>
 
 #include "attachedproperties.h"
 #include "reactitem.h"
 #include "rootview.h"
 #include "utilities.h"
 
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
 QStringList consoleOutputStrings;
 bool ubuntuServerStarted = false;
 #endif
@@ -117,14 +118,14 @@ private:
       "http://%1:%2/index.desktop.bundle?platform=desktop&dev=true";
   QUrl m_codeLocation;
   QString m_pluginsPath;
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
   QString m_executor = "RemoteServerConnection";
 #else
   QString m_executor = "LocalServerConnection";
 #endif
 };
 
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
 void runUbuntuServer();
 void saveMessage(QtMsgType type, const QMessageLogContext &context,
                  const QString &msg);
@@ -139,7 +140,7 @@ int main(int argc, char **argv) {
 
   Q_INIT_RESOURCE(react_resources);
 
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
   QString dataFolder = QDir::homePath() + "/Library/StatusIm/";
   qInstallMessageHandler(saveMessage);
 
@@ -153,7 +154,7 @@ int main(int argc, char **argv) {
 
   QQuickView view;
   ReactNativeProperties *rnp = new ReactNativeProperties(&view);
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
   rnp->setCodeLocation("file:" + QGuiApplication::applicationDirPath() +
                        "/assets");
 #endif
@@ -189,7 +190,7 @@ int main(int argc, char **argv) {
   view.setResizeMode(QQuickView::SizeRootObjectToView);
   view.show();
 
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
   QTimer t;
   t.setInterval(500);
   QObject::connect(&t, &QTimer::timeout, [=]() { writeLogsToFile(); });
@@ -199,10 +200,10 @@ int main(int argc, char **argv) {
   return app.exec();
 }
 
-#ifdef BULID_FOR_BUNDLE
+#ifdef BUILD_FOR_BUNDLE
 
 void writeLogsToFile() {
-  QFile logFile(QDir::homePath() + "/Library/StatusIm/StatusIm.log");
+  QFile logFile(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/StatusIm.log");
   logFile.open(QIODevice::WriteOnly | QIODevice::Append);
   for (QString message : consoleOutputStrings) {
     logFile.write(message.toStdString().c_str());
