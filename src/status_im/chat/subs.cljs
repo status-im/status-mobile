@@ -8,6 +8,7 @@
             [status-im.commands.utils :as commands-utils]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
             [status-im.constants :as const]))
 
@@ -23,6 +24,33 @@
  :<- [:get-current-chat-id]
  (fn [[chat-ui-props id]]
    (get chat-ui-props id)))
+
+(defn chat-name [{:keys [group-chat
+                         chat-id
+                         public?
+                         name]}
+                 {contact-name :name}]
+  (cond
+    public?    (str "#" name)
+    group-chat name
+    :else      (i18n/get-contact-translated
+                chat-id
+                :name
+                (or contact-name
+                    (gfycat/generate-gfy chat-id)))))
+(reg-sub
+ :get-current-chat-name
+ :<- [:get-current-chat-contact]
+ :<- [:get-current-chat]
+ (fn [[contact chat]]
+   (chat-name chat contact)))
+
+(reg-sub
+ :get-chat-name
+ :<- [:get-contacts]
+ :<- [:get-chats]
+ (fn [[contacts chats] [_ chat-id]]
+   (chat-name (get chats chat-id) (get contacts chat-id))))
 
 (reg-sub
  :get-current-chat-ui-prop

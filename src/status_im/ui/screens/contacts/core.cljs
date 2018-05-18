@@ -14,15 +14,12 @@
                          :photo-path       profile-image
                          :name             name
                          :fcm-token        fcm-token
-                         :pending?         true}
-          chat-props    {:name         name
-                         :chat-id      public-key}]
+                         :pending?         true}]
       (handlers-macro/merge-fx cofx
                                {:db            (update-in db [:contacts/contacts public-key]
                                                           merge contact-props)
                                 :data-store/tx [(contacts-store/save-contact-tx
-                                                 contact-props)]}
-                               (chat.models/upsert-chat chat-props)))))
+                                                 contact-props)]}))))
 
 (defn receive-contact-request-confirmation
   [public-key {:keys [name profile-image address fcm-token]}
@@ -33,15 +30,12 @@
                          :address          address
                          :photo-path       profile-image
                          :name             name
-                         :fcm-token        fcm-token}
-          chat-props    {:name    name
-                         :chat-id public-key}]
+                         :fcm-token        fcm-token}]
       (handlers-macro/merge-fx cofx
                                {:db            (update-in db [:contacts/contacts public-key]
                                                           merge contact-props)
                                 :data-store/tx [(contacts-store/save-contact-tx
-                                                 contact-props)]}
-                               (chat.models/upsert-chat chat-props)))))
+                                                 contact-props)]}))))
 
 (defn- update-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (when (get-in db [:contacts/contacts whisper-identity])
@@ -57,9 +51,4 @@
                          :name             name
                          :photo-path       profile-image
                          :last-updated     now}]
-            (if (chats public-key)
-              (handlers-macro/merge-fx cofx
-                                       (update-contact contact)
-                                       (chat.models/upsert-chat {:chat-id chat-id
-                                                                 :name    name}))
-              (update-contact contact cofx))))))))
+            (update-contact contact cofx)))))))

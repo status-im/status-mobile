@@ -8,7 +8,7 @@
 (def emoji-picker           #js {:default #js {}})
 (def fs                     #js {})
 (def http-bridge            #js {})
-(def i18n                   #js {})
+(def i18n                   #js {:locale "en"})
 (def image-crop-picker      #js {})
 (def image-resizer          #js {})
 (def instabug               #js {})

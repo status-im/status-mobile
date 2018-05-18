@@ -57,12 +57,9 @@
                                   :accessibility-label :unread-messages-count-text}
        unviewed-messages-count])))
 
-(defn chat-list-item-name [name group-chat? public? public-key]
+(defn chat-list-item-name [chat-name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
-        public-group?  (and group-chat? public?)
-        chat-name      (if (str/blank? name)
-                         (gfycat/generate-gfy public-key)
-                         (utils/truncate-str name 30))]
+        public-group?  (and group-chat? public?)]
     [react/view styles/name-view
      (when public-group?
        [react/view styles/public-group-icon-container
@@ -74,25 +71,23 @@
       [react/text {:style               styles/name-text
                    :number-of-lines     1
                    :accessibility-label :chat-name-text}
-       (if public-group?
-         (str "#" chat-name)
-         chat-name)]]]))
+       chat-name]]]))
 
 (defview home-list-chat-item-inner-view [{:keys [chat-id name color online
                                                  group-chat public?
                                                  public-key
                                                  timestamp]}]
-  (letsubs [last-message [:get-last-message chat-id]]
-    (let [name (or (i18n/get-contact-translated chat-id :name name)
-                   (gfycat/generate-gfy public-key))
-          hide-dapp? (= chat-id const/console-chat-id)]
+  (letsubs [last-message [:get-last-message chat-id]
+            chat-name    [:get-chat-name chat-id]]
+    (let [hide-dapp?          (= chat-id const/console-chat-id)
+          truncated-chat-name (utils/truncate-str chat-name 30)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
        [react/view styles/chat-container
         [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat name color online hide-dapp?]]
+         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online hide-dapp?]]
         [react/view styles/chat-info-container
          [react/view styles/item-upper-container
-          [chat-list-item-name name group-chat public? public-key]
+          [chat-list-item-name truncated-chat-name group-chat public? public-key]
           [react/view styles/message-status-container
            [message-timestamp timestamp]]]
          [react/view styles/item-lower-container

@@ -191,18 +191,17 @@ class TestMessages(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1, username_2 = device_1.create_user(), device_2.create_user()
         home_1, home_2 = device_1.get_home_view(), device_2.get_home_view()
-
         device_2_public_key = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         file_name = 'sauce_logo.png'
         profile_2.edit_profile_picture(file_name)
-
         home_1.add_contact(device_2_public_key)
+        chat_1 = home_1.get_chat_view()
+        chat_1.chat_message_input.send_keys('ping')
+        chat_1.send_message_button.click()
         profile_2.home_button.click()
         chat_2 = home_2.get_chat_with_user(username_1).click()
         chat_2.add_to_contacts.click()
-
-        chat_1 = home_1.get_chat_view()
         time.sleep(3)
         if chat_1.user_name_text.text != username_2:
             self.errors.append("Real username '%s' is not shown in one-to-one chat" % username_2)
@@ -278,18 +277,19 @@ class TestOfflineMessages(MultipleDeviceTestCase):
         device_2_public_key = home_2.get_public_key()
         home_1.add_contact(device_2_public_key)
         chat_1 = home_1.get_chat_view()
-        profile_2 = home_2.get_profile_view()
+        chat_1.chat_message_input.send_keys('ping')
+        chat_1.send_message_button.click()
+        home_2.home_button.click()
+        home_2.get_chat_with_user(username_1).is_element_present(20)
+        profile_2 = home_2.profile_button.click()
         profile_2.logout()
         device_2.set_network_connection(1)  # airplane mode
-
         message_text = 'test message'
         chat_1.chat_message_input.send_keys(message_text)
         chat_1.send_message_button.click()
-
         sign_in_2.click_account_by_position(0)
         sign_in_2.sign_in('qwerty1234')
         sign_in_2.home_button.wait_for_visibility_of_element()
-
         if not home_2.offline_label.is_element_displayed():
             self.errors.append('Offline label is not shown on Home view while being offline')
         chat_2 = home_2.get_chat_with_user(username_1).click()

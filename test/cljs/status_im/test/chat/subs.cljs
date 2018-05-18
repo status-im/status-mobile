@@ -3,6 +3,23 @@
             [status-im.constants :as const]
             [status-im.chat.subs :as s]))
 
+(deftest chat-name
+  (testing "it prepends # if it's a public chat"
+    (is (= "#withhash" (s/chat-name {:group-chat true
+                                     :chat-id "1"
+                                     :public? true
+                                     :name "withhash"} nil))))
+  (testing "it leaves the name unchanged if it's a group chat"
+    (is (= "unchanged" (s/chat-name {:group-chat true
+                                     :chat-id "1"
+                                     :name "unchanged"} nil))))
+  (testing "it pulls the name from contact if it's a one-to-one"
+    (is (= "this-one" (s/chat-name {:chat-id "1"
+                                    :name "not-this-one"} {:name "this-one"}))))
+  (testing "it generates the name from chat id if no contact"
+    (is (= "Blond Cooperative Coelacanth" (s/chat-name {:chat-id "1"
+                                                        :name "not-this-one"} nil)))))
+
 (deftest message-stream-tests
   (testing "messages with no interspersed datemarks"
     (let [m1 {:from "1"
