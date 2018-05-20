@@ -131,6 +131,7 @@ class TestTransaction(SingleDeviceTestCase):
         base_web_view.find_text_part(transaction_hash)
 
     @pytest.mark.pr
+    @pytest.mark.testrail_case_id(3406)
     def test_send_stt_from_wallet_via_enter_recipient_address(self):
         sender = transaction_users_wallet['A_USER']
         recipient = transaction_users_wallet['B_USER']

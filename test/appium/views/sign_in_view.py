@@ -105,12 +105,9 @@ class SignInView(BaseView):
         self.confirm_password_input.set_value(password)
         self.next_button.click()
 
-        # bypass StaleElementReferenceException
-        time.sleep(5)
-        self.name_input.wait_for_element(10)
-        self.name_input.click()
+        self.element_by_text_part('Display name').wait_for_element(10)
         username = 'user_%s' % get_current_time()
-        self.send_as_keyevent(username)
+        self.name_input.send_keys(username)
 
         self.next_button.click()
         self.do_not_share.wait_for_visibility_of_element(10)

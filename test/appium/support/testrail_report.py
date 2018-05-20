@@ -1,5 +1,6 @@
 import json
 import requests
+import emoji
 import base64
 from os import environ
 from support.base_test_report import BaseTestReport
@@ -68,6 +69,6 @@ class TestrailReport(BaseTestReport):
             for i, device in enumerate(last_testrun.jobs):
                 devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(device))
             data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
-                    'comment': '%s' % ('# Error: \n %s \n' % last_testrun.error) + devices + test_steps if last_testrun.error
+                    'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps if last_testrun.error
                     else devices + test_steps}
             self.post(method, data=data)

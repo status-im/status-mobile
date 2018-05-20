@@ -58,7 +58,6 @@ class TestProfileView(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
-        profile_view.advanced_button.click()
         sign_in_view = profile_view.switch_network('Rinkeby with upstream RPC')
         sign_in_view.click_account_by_position(0)
         sign_in_view.password_input.set_value('qwerty1234')
@@ -77,6 +76,7 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view.edit_profile_picture(file_name='sauce_logo.png')
         profile_view.relogin()
         sign_in_view.profile_button.click()
+        self.driver.swipe(500, 500, 500, 1000)
         if not profile_view.profile_picture.is_element_image_equals_template():
             pytest.fail('Profile picture was not updated')
 

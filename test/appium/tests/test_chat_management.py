@@ -1,5 +1,5 @@
 import time
-
+import pytest
 from tests import transaction_users, marks, group_chat_users, get_current_time
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -64,11 +64,13 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
         time.sleep(5) # Prevent stale element exception for first_account_button
         device_1_sign_in_view.account_button.click()
         device_1_sign_in_view.sign_in(self.senders['g_user']['password'])
-        assert not device_1_home_view.get_chat_with_user(self.senders['h_user']['username']).is_element_present(20)
+        if device_1_home_view.get_chat_with_user(self.senders['h_user']['username']).is_element_present(20):
+            pytest.fail('The chat is present after re-login')
 
         # Device 1: Start 1-1 chat with device 2
         device_1_chat_view = device_1_home_view.start_1_1_chat(self.senders['h_user']['username'])
-        assert device_1_chat_view.no_messages_in_chat.is_element_present()
+        if not device_1_chat_view.no_messages_in_chat.is_element_present():
+            pytest.fail('Message history is shown in a chat which was previously deleted')
 
         self.verify_no_errors()
 
@@ -90,7 +92,8 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.get_back_to_home_view()
         home_view.swipe_and_delete_chat(recipient['username'][:20])
         home_view.relogin()
-        assert not home_view.get_chat_with_user(recipient['username']).is_element_present(20)
+        if home_view.get_chat_with_user(recipient['username']).is_element_present(20):
+            pytest.fail('The chat is present after re-login')
 
     @marks.testrail_case_id(3418)
     def test_swipe_and_delete_group_chat(self):
@@ -108,4 +111,5 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.get_back_to_home_view()
         home_view.swipe_and_delete_chat(chat_name)
         home_view.relogin()
-        assert not home_view.get_chat_with_user(chat_name).is_element_displayed()
+        if home_view.get_chat_with_user(chat_name).is_element_displayed():
+            pytest.fail('The chat is present after re-login')
