@@ -59,23 +59,9 @@
       (close migrated-realm)))
   (open-realm (last schemas) file-name encryption-key))
 
-(defn reset-realm [file-name schemas encryption-key]
-  (utils/show-popup "Important: Wallet Upgrade" "The Status Wallet will be upgraded in this release. The 12 mnemonic words will generate different addresses and whisper identities (public key). Given that we changed the algorithm used to generate keys and addresses, it will be impossible to re-import accounts created with the old algorithm in Status. Please create a new account.")
-  (delete-realm file-name)
-  (open-realm (last schemas) file-name encryption-key))
-
 (defn open-migrated-realm
   [file-name schemas encryption-key]
-  ;; TODO: remove for release 0.9.20
-  ;; delete the realm file if its schema version is higher
-  ;; than existing schema version (this means the previous
-  ;; install has incompatible database schemas)
-  (if-let [current-version (realm-version file-name encryption-key)]
-    (if (> current-version
-           (apply max (map :schemaVersion base/schemas)))
-      (reset-realm file-name schemas encryption-key)
-      (migrate-realm file-name schemas encryption-key))
-    (reset-realm file-name schemas encryption-key)))
+  (migrate-realm file-name schemas encryption-key))
 
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))

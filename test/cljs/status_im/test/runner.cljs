@@ -10,6 +10,8 @@
             [status-im.test.wallet.transactions.views]
             [status-im.test.profile.events]
             [status-im.test.bots.events]
+            [status-im.test.offline-messaging-settings.events]
+            [status-im.test.transport.core]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
             [status-im.test.chat.models.message]
@@ -20,6 +22,7 @@
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
             [status-im.test.utils.clocks]
+            [status-im.test.utils.inbox]
             [status-im.test.utils.ethereum.eip681]
             [status-im.test.utils.ethereum.core]
             [status-im.test.utils.random]
@@ -49,7 +52,9 @@
  'status-im.test.contacts.subs
  'status-im.test.profile.events
  'status-im.test.data-store.realm.core
+ 'status-im.test.offline-messaging-settings.events
  'status-im.test.bots.events
+ 'status-im.test.transport.core
  'status-im.test.wallet.subs
  'status-im.test.wallet.transactions.subs
  'status-im.test.wallet.transactions.views
@@ -61,6 +66,7 @@
  'status-im.test.utils.utils
  'status-im.test.utils.money
  'status-im.test.utils.clocks
+ 'status-im.test.utils.inbox
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
  'status-im.test.utils.random

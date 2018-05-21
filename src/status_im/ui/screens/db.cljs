@@ -164,6 +164,7 @@
                  :networks/selected-network
                  :networks/networks
                  :networks/manage
+                 :mailservers/manage
                  :node/after-start
                  :node/after-stop
                  :inbox/wnodes

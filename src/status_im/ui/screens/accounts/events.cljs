@@ -107,10 +107,13 @@
      {:db                 (assoc-in db [:accounts/accounts id] new-account)
       :data-store/base-tx [(accounts-store/save-account-tx new-account)]})))
 
-(defn update-settings [settings {{:keys [account/account] :as db} :db :as cofx}]
-  (let [new-account (assoc account :settings settings)]
-    {:db                 (assoc db :account/account new-account)
-     :data-store/base-tx [(accounts-store/save-account-tx new-account)]}))
+(defn update-settings
+  ([settings cofx] (update-settings settings nil cofx))
+  ([settings success-event {{:keys [account/account] :as db} :db :as cofx}]
+   (let [new-account (assoc account :settings settings)]
+     {:db                 (assoc db :account/account new-account)
+      :data-store/base-tx [{:transaction (accounts-store/save-account-tx new-account)
+                            :success-event success-event}]})))
 
 (handlers/register-handler-fx
  :send-account-update-if-needed

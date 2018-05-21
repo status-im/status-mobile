@@ -27,7 +27,7 @@
       string/lower-case
       keyword))
 
-(def queue-message-enabled? (enabled? (get-config :QUEUE_MESSAGE_ENABLED 0)))
+(def add-custom-mailservers-enabled? (enabled? (get-config :ADD_CUSTOM_MAILSERVERS_ENABLED "1")))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def compile-views-enabled? (enabled? (get-config :COMPILE_VIEWS_ENABLED 0)))
 (def mixpanel-token (get-config :MIXPANEL_TOKEN))

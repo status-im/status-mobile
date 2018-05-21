@@ -12,7 +12,7 @@
             status-im.ui.screens.contacts.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
-            status-im.ui.screens.navigation
+            [status-im.ui.screens.navigation :as navigation]
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
@@ -263,6 +263,7 @@
                                               [:load-accounts]
                                               [:listen-to-network-status]
                                               [:navigate-to :accounts]]}
+                                (navigation/navigate-to-clean nil)
                                 (transport/stop-whisper)))
      {::get-encryption-key-fx this-event})))
 

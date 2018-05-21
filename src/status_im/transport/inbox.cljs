@@ -3,6 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]
@@ -179,6 +180,15 @@
 (def ^:private ^:const max-retries 10)
 (def ^:private ^:const retries-interval-change-threshold 3)
 
+(defn add-custom-mailservers [mailservers {:keys [db]}]
+  {:db (reduce (fn [db {:keys [id chain] :as mailserver}]
+                 (assoc-in db [:inbox/wnodes (keyword chain) id]
+                           (-> mailserver
+                               (dissoc :chain)
+                               (assoc :user-defined true))))
+               db
+               mailservers)})
+
 (handlers/register-handler-fx
  :inbox/check-peer-added
  ;; We check if the wnode is part of the peers list
@@ -205,7 +215,8 @@
  (fn [{:keys [db]} _]
    (let [web3     (:web3 db)
          wnode    (get-current-wnode-address db)
-         password (:inbox/password db)]
+         password (or (:password wnode)
+                      (:inbox/password db))]
      {:shh/generate-sym-key-from-password {:password   password
                                            :web3       web3
                                            :on-success (fn [_ sym-key-id]

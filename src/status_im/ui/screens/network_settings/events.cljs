@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [dispatch dispatch-sync after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
             status-im.ui.screens.network-settings.edit-network.events
+            status-im.ui.screens.offline-messaging-settings.edit-mailserver.events
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.i18n :as i18n]
