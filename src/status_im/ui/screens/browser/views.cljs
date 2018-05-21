@@ -79,15 +79,19 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   {:keys [address]} [:get-current-account]
-                  {:keys [dapp? contact url] :as browser} [:get-current-browser]
-                  {:keys [can-go-back? can-go-forward?]} [:get :browser/options]
+                  {:keys [dapp? contact url browser-id] :as browser} [:get-current-browser]
+                  {:keys [can-go-back? can-go-forward? error?]} [:get :browser/options]
                   extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
                   network-id [:get-network-id]]
     [react/keyboard-avoiding-view styles/browser
      [status-bar/status-bar]
      [toolbar.view/toolbar {}
-      [toolbar.view/nav-button-with-count actions/default-close]
+      [toolbar.view/nav-button-with-count
+       (actions/close (fn []
+                        (re-frame/dispatch [:navigate-back])
+                        (when error?
+                          (re-frame/dispatch [:remove-browser browser-id]))))]
       (if dapp?
         [toolbar-content-dapp contact]
         [toolbar-content browser])]
@@ -102,6 +106,8 @@
          :render-error                          web-view-error
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
+         :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
+         :on-error                              #(re-frame/dispatch [:update-browser-options {:error? true}])
          :injected-on-start-loading-java-script (str js-res/web3
                                                      js-res/jquery
                                                      (get-inject-js url)
