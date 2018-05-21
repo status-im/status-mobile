@@ -33,6 +33,8 @@ else()
   set(CONFIGURE_SCRIPT build-status-go.sh)
 endif()
 
+#message(FATAL_ERROR "Going to call configure command: ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIGURE_SCRIPT} ${GO_ROOT_PATH} ${StatusGo_ROOT} ${StatusGo_SOURCE_DIR}")
+
 ExternalProject_Add(StatusGo_ep
   PREFIX ${StatusGo_PREFIX}
   SOURCE_DIR ${StatusGo_SOURCE_DIR}

@@ -14,7 +14,8 @@
 
 find_program(GO_EXECUTABLE go PATHS ENV GOROOT GOPATH GOBIN PATH_SUFFIXES bin)
 if (GO_EXECUTABLE)
-    get_filename_component(GO_ROOT_PATH ${GO_EXECUTABLE}/../.. ABSOLUTE)
+    get_filename_component(GO_ROOT_PATH ${GO_EXECUTABLE} REALPATH)
+    get_filename_component(GO_ROOT_PATH ${GO_ROOT_PATH}/../.. REALPATH)
     message(STATUS "GO_ROOT_PATH is set to: ${GO_ROOT_PATH}")
     execute_process(COMMAND ${GO_EXECUTABLE} version OUTPUT_VARIABLE GO_VERSION_OUTPUT OUTPUT_STRIP_TRAILING_WHITESPACE)
     if(GO_VERSION_OUTPUT MATCHES "go([0-9]+\\.[0-9]+\\.?[0-9]*)[a-zA-Z0-9]* ([^/]+)/(.*)")

@@ -1,0 +1,63 @@
+env.LANG="en_US.UTF-8"
+env.LANGUAGE="en_US.UTF-8"
+env.LC_ALL="en_US.UTF-8"
+
+def installJSDeps() {
+    def attempt = 1
+    def maxAttempts = 10
+    def installed = false
+    while (!installed && attempt <= maxAttempts) {
+        println "#${attempt} attempt to install npm deps"
+        sh 'npm install'
+        installed = fileExists('node_modules/web3/index.js')
+        attemp = attempt + 1
+    }
+}
+
+node ('macos1') {
+  def apkUrl = ''
+  def ipaUrl = ''
+  def testPassed = true
+  def branch;
+  def scriptOutput = ''
+
+  load "$HOME/env.groovy"
+
+  try {
+
+    stage('Git & Dependencies') {
+      //slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+
+      checkout scm
+      sh 'git rebase origin/desktop'
+
+      sh 'rm -rf node_modules'
+      sh 'cp .env.jenkins .env'
+      sh 'lein deps'
+
+      installJSDeps()
+
+      sh 'cd ./node_modules/react-native/react-native-cli && npm install -g && cd ../../../'
+    }
+
+    /*stage('Build ClojureScript') {
+      sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
+      sh 'lein prod-build-desktop'
+      sh 'react-native bundle --entry-file index.desktop.js --bundle-output $WORKFOLDER/StatusIm.jsbundle --dev false --platform desktop --assets-dest $WORKFOLDER/assets'
+      sh 'rm index.desktop.js'
+    }*/
+
+    stage('Build MacOS bundle') {
+      sh 'react-native desktop'
+      scriptOutput = sh (
+        script: 'react-native build-desktop',
+        returnStdout: true
+      )
+      echo "Script output: ${scriptOutput}"
+    }
+
+  } catch (e) {
+    //slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+    throw e
+  }
+}
