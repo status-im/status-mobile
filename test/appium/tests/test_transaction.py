@@ -177,7 +177,8 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction.recent_recipients_button.click_until_presence_of_element(recent_recipient)
         recent_recipient.click()
         send_transaction.sign_transaction_button.click()
-        send_transaction.enter_password_input.send_keys(sender['password'])
+        send_transaction.enter_password_input.click()
+        send_transaction.send_as_keyevent(sender['password'])
         send_transaction.sign_transaction_button.click()
         send_transaction.got_it_button.click()
         if sender['password'] in str(home_view.logcat):

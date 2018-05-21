@@ -22,9 +22,12 @@
 
 (defn- pretty-print-event [ctx]
   (let [[first second] (get-coeffect ctx :event)]
-    (if (or (string? second) (keyword? second) (boolean? second))
-      (str first " " second)
-      first)))
+    ;; TODO wrap passwords in a custom type so it won't be possible to print them occasionally
+    (if (= first :wallet.send/set-password)
+      (str first " " "******") ;; special case not to expose password to the logs
+      (if (or (string? second) (keyword? second) (boolean? second))
+        (str first " " second)
+        first))))
 
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
