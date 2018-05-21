@@ -15,7 +15,8 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.ui.components.toolbar.actions :as actions]))
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.tooltip.views :as tooltip]))
 
 (views/defview toolbar-content-dapp [contact-identity]
   (views/letsubs [contact [:get-contact-by-identity contact-identity]]
@@ -45,11 +46,7 @@
                          :auto-capitalize   :none
                          :auto-correct      false
                          :default-value     url
-                         :style             styles/url-input}]
-      ;;TODO .reload doesn't work, implement later
-      #_[react/touchable-highlight {:on-press #(when @webview (.reload @webview))}
-         [react/view
-          [vector-icons/icon :icons/refresh]]]]]))
+                         :style             styles/url-input}]]]))
 
 (defn- web-view-error [_ code desc]
   (reagent/as-element
@@ -129,4 +126,7 @@
                                   :style               styles/forward-button
                                   :accessibility-label :next-page-button}
        [react/view (when (not can-go-forward?) {:opacity 0.4})
-        [vector-icons/icon :icons/arrow-right]]]]]))
+        [vector-icons/icon :icons/arrow-right]]]]
+     (when-not dapp?
+       [tooltip/bottom-tooltip-info
+        (i18n/label :t/browser-warning)])]))

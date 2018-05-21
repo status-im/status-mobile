@@ -12,6 +12,7 @@
 (def gray-light "#e8ebec") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
 (def gray-transparent "rgba(184, 193, 199, 0.5)") ;; Used for tabs
+(def gray-notifications "#4A5054cc") ;; Used for notifications background
 (def gray-border "#ececf0")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
 (def blue-dark "#3147ac") ;; Used as secondary wallet color (icon background)

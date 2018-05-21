@@ -633,4 +633,5 @@
    :enter-dapp-url                       "Enter a ÐApp URL"
    :dapp                                 "ÐApp"
    :selected                             "Selected"
-   :selected-dapps                       "Selected ÐApps"})
+   :selected-dapps                       "Selected ÐApps"
+   :browser-warning                      "Connection is not proven secure. Make sure you trust this site before signing transactions or entering personal data."})
