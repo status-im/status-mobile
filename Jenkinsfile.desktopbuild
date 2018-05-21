@@ -48,12 +48,8 @@ node ('macos1') {
     }*/
 
     stage('Build MacOS bundle') {
-      sh 'react-native desktop'
-      scriptOutput = sh (
-        script: 'react-native build-desktop',
-        returnStdout: true
-      )
-      echo "Script output: ${scriptOutput}"
+      // sh 'react-native desktop'
+      sh 'react-native build-desktop'
     }
 
   } catch (e) {
