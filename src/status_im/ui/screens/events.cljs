@@ -165,7 +165,7 @@
       (if should-move?
         (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
                                                   :on-allowed  #(move-to-internal-storage config)}])
-        (status/start-node config))))))
+        (status/start-node (types/clj->json config)))))))
 
 (re-frame/reg-fx
  ::status-module-initialized-fx

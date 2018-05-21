@@ -34,14 +34,6 @@
            ;; TODO(jeluard) Restore once we support postponing transaction
            #_{:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 
-(defn- transform-config [networks]
-  (->> networks
-       (map (fn [[network-name {:keys [config] :as data}]]
-              [network-name (assoc data
-                                   :config (types/clj->json config)
-                                   :raw-config config)]))
-       (into {})))
-
 (def mainnet-networks
   {"mainnet"     {:id     "mainnet",
                   :name   "Mainnet",
@@ -77,9 +69,8 @@
                                             :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
 
 (def default-networks
-  (transform-config
-   (merge testnet-networks
-          mainnet-networks)))
+  (merge testnet-networks
+         mainnet-networks))
 
 (def default-wnodes
   {:testnet {"mailserver-a" {:id      "mailserver-a"

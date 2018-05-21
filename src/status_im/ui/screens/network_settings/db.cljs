@@ -4,7 +4,7 @@
 
 (spec/def :networks/id string?)
 (spec/def :networks/name string?)
-(spec/def :networks/config string?)
+(spec/def :networks/config map?)
 
 (spec/def :networks/network
   (spec/keys :req-un [:networks/id :networks/name :networks/config]))
