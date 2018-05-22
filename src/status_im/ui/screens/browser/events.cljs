@@ -4,7 +4,8 @@
             [re-frame.core :as re-frame]
             [status-im.utils.random :as random]
             [status-im.i18n :as i18n]
-            [status-im.data-store.browser :as browser-store]))
+            [status-im.data-store.browser :as browser-store]
+            [status-im.utils.http :as http]))
 
 (handlers/register-handler-fx
  :initialize-browsers
@@ -12,9 +13,6 @@
  (fn [{:keys [db all-stored-browsers]} _]
    (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
      {:db (assoc db :browser/browsers browsers)})))
-
-(defn match-url [url]
-  (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
 
 (defn get-new-browser [browser now]
   (cond-> browser
@@ -25,7 +23,7 @@
     (not (:name browser))
     (assoc :name (i18n/label :t/browser))
     (:url browser)
-    (update :url match-url)))
+    (update :url http/normalize-url)))
 
 (defn add-browser-fx [{:keys [db now]} browser]
   (let [new-browser (get-new-browser browser now)]
