@@ -38,7 +38,7 @@
  :wallet/fill-request-from-url
  (fn [{{:keys [network] :as db} :db} [_ data]]
    (let [{:keys [view-id]}                db
-         current-chain-id                 (get-in constants/default-networks [network :raw-config :NetworkId])
+         current-chain-id                 (get-in constants/default-networks [network :config :NetworkId])
          {:keys [address chain-id] :as details} (extract-details data current-chain-id)
          valid-network?                   (boolean (= current-chain-id chain-id))]
      (cond-> {:db         db
