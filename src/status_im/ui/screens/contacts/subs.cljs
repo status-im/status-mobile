@@ -8,6 +8,8 @@
 
 (reg-sub :get-contacts :contacts/contacts)
 
+(reg-sub :get-dapps :contacts/dapps)
+
 (reg-sub :get-current-contact
          :<- [:get-contacts]
          :<- [:get-current-contact-identity]
@@ -41,13 +43,14 @@
          (fn [contacts]
            (remove :dapp? contacts)))
 
+(defn- filter-dapps [v dev-mode?]
+  (remove #(when-not dev-mode? (true? (:developer? %))) v))
+
 (reg-sub :all-dapp-with-url-contacts
-         :<- [:all-added-contacts]
+         :<- [:get-dapps]
          :<- [:get-current-account]
-         (fn [[contacts {:keys [dev-mode?]}]]
-           (filter #(and (:dapp? %) (:dapp-url %) (or dev-mode?
-                                                      (not= "simple-dapp" (:whisper-identity %))))
-                   contacts)))
+         (fn [[dapps {:keys [dev-mode?]}]]
+           (map (fn [m] (update m :data #(filter-dapps % dev-mode?))) dapps)))
 
 (reg-sub :get-people-in-current-chat
          :<- [:get-current-chat-contacts]

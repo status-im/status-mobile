@@ -14,9 +14,9 @@
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.open-dapp.styles :as styles]))
 
-(defn render-row [row _ _]
-  [contact-view/contact-view {:contact             row
-                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description row])
+(defn- render-contact [contact]
+  [contact-view/contact-view {:contact             contact
+                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description contact])
                               :show-forward?       true
                               :accessibility-label :dapp-item}])
 
@@ -38,14 +38,12 @@
                          :style               add-new.styles/input
                          :accessibility-label :dapp-url-input
                          :return-key-type     :go}]]
-     [react/text {:style styles/list-title}
-      (i18n/label :t/selected-dapps)]
-     [list/flat-list {:data                      dapps
-                      :key-fn                    :dapp-url
-                      :render-fn                 render-row
-                      :default-separator?        true
-                      :enableEmptySections       true
-                      :keyboardShouldPersistTaps :always}]]))
+     [list/section-list {:sections                  dapps
+                         :key-fn                    :dapp-url
+                         :render-fn                 render-contact
+                         :default-separator?        true
+                         :enableEmptySections       true
+                         :keyboardShouldPersistTaps :always}]]))
 
 (views/defview dapp-description []
   (views/letsubs [{:keys [name dapp-url description] :as dapp} [:get-screen-params]]

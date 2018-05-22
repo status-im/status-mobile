@@ -7,11 +7,9 @@
             [status-im.chat.models :as models]
             [status-im.chat.models.message :as models.message]
             [status-im.chat.console :as console]
-            [status-im.chat.constants :as chat.constants]
             [status-im.commands.events.loading :as events.loading]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.group.events :as group.events]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts]
@@ -143,7 +141,7 @@
                              pending-messages)})))
 
 (defn init-console-chat
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (when-not (get-in db [:chats constants/console-chat-id])
     {:db            (-> db
                         (assoc :current-chat-id constants/console-chat-id)
@@ -188,6 +186,7 @@
 (handlers/register-handler-fx
  :initialize-chats
  [(re-frame/inject-cofx :get-default-contacts)
+  (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/unviewed-messages)
@@ -195,6 +194,7 @@
   (re-frame/inject-cofx :data-store/get-unanswered-requests)
   (re-frame/inject-cofx :data-store/get-local-storage-data)]
  (fn [{:keys [db
+              default-dapps
               all-stored-chats
               stored-unanswered-requests
               get-stored-messages
@@ -216,7 +216,9 @@
                        {}
                        all-stored-chats)]
      (handlers-macro/merge-fx cofx
-                              {:db (assoc db :chats chats)}
+                              {:db (assoc db
+                                          :chats          chats
+                                          :contacts/dapps default-dapps)}
                               (init-console-chat)
                               (group-chat-messages)
                               (add-default-contacts)))))
@@ -402,7 +404,7 @@
 (handlers/register-handler-fx
  :create-new-group-chat-and-open
  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [{:keys [db now random-id] :as cofx} [group-name]]
+ (fn [{:keys [db random-id] :as cofx} [group-name]]
    (let [selected-contacts (:group/selected-contacts db)
          chat-name         (if-not (string/blank? group-name)
                              group-name

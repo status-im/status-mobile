@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.contacts.events
-  (:require [cljs.reader :as reader]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.chat.events :as chat.events]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.contact :as message.v1.contact]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.ui.screens.contacts.default-dapps :as default-dapps]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.utils.js-resources :as js-res]))
 
@@ -16,6 +16,11 @@
  :get-default-contacts
  (fn [coeffects _]
    (assoc coeffects :default-contacts js-res/default-contacts)))
+
+(re-frame/reg-cofx
+ :get-default-dapps
+ (fn [coeffects _]
+   (assoc coeffects :default-dapps default-dapps/all)))
 
 ;;;; Handlers
 

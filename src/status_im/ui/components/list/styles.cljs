@@ -87,12 +87,11 @@
   {:font-size       14
    :color           colors/gray
    :margin-left     16
-   :android         {:margin-top    11
-                     :margin-bottom 3}
-   :ios             {:margin-top    10
-                     :margin-bottom 10}})
+   :margin-top      16
+   :android         {:margin-bottom 3}
+   :ios             {:margin-bottom 10}})
 
-(defstyle section-header-container
+(def section-header-container
   {:background-color colors/white})
 
 (def action-list

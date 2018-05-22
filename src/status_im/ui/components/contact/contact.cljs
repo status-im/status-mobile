@@ -4,7 +4,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.contact.styles :as styles]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list]
@@ -20,7 +19,7 @@
                          :number-of-lines 1}
                         (when dapp? {:accessibility-label :dapp-name})
                         props)
-      (if (pos? (count (:name contact)))
+      (if (pos? (count name))
         (i18n/get-contact-translated whisper-identity :name name)
         ;;TODO is this correct behaviour?
         (gfycat/generate-gfy whisper-identity))]
