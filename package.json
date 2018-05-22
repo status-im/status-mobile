@@ -69,6 +69,7 @@
     "rn-snoopy": "github:status-im/rn-snoopy",
     "string_decoder": "0.10.31",
     "url": "0.10.3",
+    "metro": "git+https://github.com/MaxRis/metro-bundler.git#react-native-desktop-0.24.7",
     "web3": "github:status-im/web3.js#status-develop"
   }
 }
