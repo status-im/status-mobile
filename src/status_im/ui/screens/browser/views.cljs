@@ -78,7 +78,6 @@
                   {:keys [address]} [:get-current-account]
                   {:keys [dapp? contact url browser-id] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward? error?]} [:get :browser/options]
-                  extra-js [:web-view-extra-js]
                   rpc-url [:get :rpc-url]
                   network-id [:get-network-id]]
     [react/keyboard-avoiding-view styles/browser
@@ -106,13 +105,12 @@
          :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
          :on-error                              #(re-frame/dispatch [:update-browser-options {:error? true}])
          :injected-on-start-loading-java-script (str js-res/web3
-                                                     js-res/jquery
                                                      (get-inject-js url)
                                                      (js-res/web3-init
                                                       rpc-url
                                                       (ethereum/normalized-address address)
                                                       (str network-id)))
-         :injected-java-script                  (str js-res/webview-js extra-js)}]
+         :injected-java-script                  js-res/webview-js}]
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])
      [react/view styles/toolbar

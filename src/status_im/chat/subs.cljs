@@ -336,12 +336,6 @@
    (count unviewed-messages)))
 
 (reg-sub
- :web-view-extra-js
- :<- [:get-current-chat]
- (fn [current-chat]
-   (:web-view-extra-js current-chat)))
-
-(reg-sub
  :get-photo-path
  :<- [:get-contacts]
  (fn [contacts [_ id]]
