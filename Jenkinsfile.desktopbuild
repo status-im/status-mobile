@@ -40,12 +40,12 @@ node ('macos1') {
       sh 'cd ./node_modules/react-native/react-native-cli && npm install -g && cd ../../../'
     }
 
-    /*stage('Build ClojureScript') {
-      sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
+    stage('Build ClojureScript') {
+      sh 'rm -f index.desktop.js'
+      //sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
       sh 'lein prod-build-desktop'
       sh 'react-native bundle --entry-file index.desktop.js --bundle-output $WORKFOLDER/StatusIm.jsbundle --dev false --platform desktop --assets-dest $WORKFOLDER/assets'
-      sh 'rm index.desktop.js'
-    }*/
+    }
 
     stage('Build MacOS bundle') {
       // sh 'react-native desktop'
