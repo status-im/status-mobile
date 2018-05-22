@@ -20,6 +20,7 @@
             [status-im.ui.screens.wallet.send.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.money :as money]
+            [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -56,7 +57,7 @@
          :secure-text-entry      true
          :placeholder            (i18n/label :t/enter-password)
          :placeholder-text-color components.styles/color-gray4
-         :on-change-text         #(re-frame/dispatch [:wallet.send/set-password %])
+         :on-change-text         #(re-frame/dispatch [:wallet.send/set-password (security/mask-data %)])
          :style                  styles/password
          :accessibility-label    :enter-password-input}]
        (when wrong-password?
