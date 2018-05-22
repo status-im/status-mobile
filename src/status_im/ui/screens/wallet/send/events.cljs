@@ -74,6 +74,7 @@
    (let [{:keys [value error]} (wallet.db/parse-amount amount)]
      {:db (-> db
               (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
+              (assoc-in [:wallet :send-transaction :amount-text] amount)
               (assoc-in [:wallet :send-transaction :amount-error] error))})))
 
 (handlers/register-handler-fx

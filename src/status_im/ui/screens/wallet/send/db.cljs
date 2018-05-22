@@ -7,6 +7,7 @@
 (spec/def ::to (spec/nilable string?))
 (spec/def ::to-name (spec/nilable string?))
 (spec/def ::amount-error (spec/nilable string?))
+(spec/def ::amount-text (spec/nilable string?))
 (spec/def ::password (spec/nilable string?))
 (spec/def ::wrong-password? (spec/nilable boolean?))
 (spec/def ::id (spec/nilable string?))
@@ -26,7 +27,7 @@
 (spec/def ::method (spec/nilable string?))
 
 (spec/def :wallet/send-transaction (allowed-keys
-                                    :opt-un [::amount ::to ::to-name ::amount-error ::password
+                                    :opt-un [::amount ::to ::to-name ::amount-error ::amount-text ::password
                                              ::waiting-signal? ::signing? ::id ::later?
                                              ::camera-flashlight ::in-progress?
                                              ::wrong-password? ::from-chat? ::symbol ::advanced?

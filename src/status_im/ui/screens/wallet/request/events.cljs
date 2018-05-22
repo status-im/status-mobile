@@ -38,4 +38,5 @@
    (let [{:keys [value error]} (wallet-db/parse-amount amount)]
      {:db (-> db
               (assoc-in [:wallet :request-transaction :amount] (money/ether->wei value))
+              (assoc-in [:wallet :request-transaction :amount-text] amount)
               (assoc-in [:wallet :request-transaction :amount-error] error))})))
