@@ -9,6 +9,7 @@ def installJSDeps() {
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
         sh 'npm install'
+        sh 'npm install metro'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
     }
