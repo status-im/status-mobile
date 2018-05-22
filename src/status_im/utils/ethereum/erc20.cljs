@@ -149,9 +149,8 @@
 (defn get-token-transfer-logs
   ;; NOTE(goranjovic): here we use direct JSON-RPC calls to get event logs because of web3 event issues with infura
   ;; we still use web3 to get other data, such as block info
-  [web3 current-block-number network contracts direction address cb]
-  (let [chain (ethereum/network->chain-keyword network)
-        [from to] (if (= :inbound direction)
+  [web3 current-block-number chain contracts direction address cb]
+  (let [[from to] (if (= :inbound direction)
                     [nil (ethereum/normalized-address address)]
                     [(ethereum/normalized-address address) nil])
         args {:jsonrpc "2.0"
@@ -167,6 +166,6 @@
                               (response-handler web3 current-block-number chain direction ethereum/handle-error cb))))
 
 (defn get-token-transactions
-  [web3 network contracts direction address cb]
+  [web3 chain contracts direction address cb]
   (ethereum/get-block-number web3
-                             #(get-token-transfer-logs web3 % network contracts direction address cb)))
+                             #(get-token-transfer-logs web3 % chain contracts direction address cb)))
