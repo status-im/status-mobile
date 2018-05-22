@@ -30,6 +30,7 @@
 (spec/def :account/sharing-usage-data? (spec/nilable boolean?))
 (spec/def :account/dev-mode? (spec/nilable boolean?))
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
+(spec/def :account/wnode-payment (spec/nilable string?))
 (spec/def :account/wallet-set-up-passed? (spec/nilable boolean?))
 
 (spec/def :accounts/account (allowed-keys
@@ -40,7 +41,7 @@
                                       :account/networks :account/settings :account/wnode
                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
                                       :account/seed-backed-up? :account/mnemonic
-                                      :account/wallet-set-up-passed?]))
+                                      :account/wallet-set-up-passed? :account/wnode-payment]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

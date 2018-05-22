@@ -2,7 +2,8 @@
   (:require [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.types :as types]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.utils.money :as money]))
 
 (def ethereum-rpc-url "http://localhost:8545")
 
@@ -73,12 +74,18 @@
          mainnet-networks))
 
 (def default-wnodes
-  {:testnet {"mailserver-a" {:id      "mailserver-a"
-                             :name    "Status mailserver A"
-                             :address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"}
-             "mailserver-b" {:id      "mailserver-b"
-                             :name    "Status mailserver B"
-                             :address "enode://07ac64fe0e9b2d4ecbfe0ccaeab3d8d95fa8858754f511104bb403b19255d7bf47a8416bdd0df01f6720ff82164451b7a028c93d15ddd37b7e8382d74e91ebc2@167.99.209.72:30504"}}
+  {:testnet {"mailserver-a"    {:id      "mailserver-a"
+                                :name    "Status mailserver A"
+                                :address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"}
+             "mailserver-b"    {:id      "mailserver-b"
+                                :name    "Status mailserver B"
+                                :address "enode://07ac64fe0e9b2d4ecbfe0ccaeab3d8d95fa8858754f511104bb403b19255d7bf47a8416bdd0df01f6720ff82164451b7a028c93d15ddd37b7e8382d74e91ebc2@167.99.209.72:30504"}
+             "mailserver-paid" {:id      "mailserver-paid"
+                                :name    "Status mailserver paid, experimental"
+                                :address "enode://9f0a55f116aedb40d4036d9a385d505d9c183fd708ef1aa2f883895df97864f758eee911c26c86732ae13a57664a076de2527189f983ee24dda2a4cb5f5db777@127.0.0.1:30303"
+                                :payment {:address "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
+                                          :amount  (money/bignumber 500000000000)
+                                          :symbol  :STT}}}
    :mainnet {"mailserver-a" {:id      "mailserver-a"
                              :name    "Status mailserver A"
                              :address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"}

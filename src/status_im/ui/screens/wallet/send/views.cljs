@@ -199,7 +199,9 @@
     (reset! timeout (utils/set-timeout #(re-frame/dispatch [:wallet.send/set-and-validate-amount amount]) 500))))
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? symbol]}]
-  (let [{:keys [amount amount-text amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction
+  (let [{:keys [amount amount-text amount-error signing? to to-name token sufficient-funds? in-progress? from-chat?]} transaction
+        symbol  (or (:symbol token) symbol)
+        amount  (or (:value token) amount)
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}

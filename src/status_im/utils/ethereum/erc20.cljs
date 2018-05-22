@@ -46,7 +46,7 @@
                              (merge (ethereum/call-params contract "transfer(address,uint256)" (ethereum/normalized-address address) (ethereum/int->hex value))
                                     {:from from}
                                     params)
-                             #(cb %1 (ethereum/hex->boolean %2))))
+                             #(cb %2)))
 
 (defn transfer-from [web3 contract from-address to-address value cb]
   (ethereum/call web3

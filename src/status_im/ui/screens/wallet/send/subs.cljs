@@ -75,10 +75,17 @@
                   :<- [::unsigned-transaction]
                   :<- [:get-contacts-by-address]
                   :<- [:balance]
-                  (fn [[{:keys [value to symbol] :as transaction} contacts balance]]
+                  (fn [[{:keys [value to symbol token] :as transaction} contacts balance]]
                     (when transaction
-                      (let [contact           (contacts (utils.hex/normalize-hex to))
-                            sufficient-funds? (money/sufficient-funds? value (get balance symbol))]
+                      (let [contact                 (contacts (utils.hex/normalize-hex to))
+                            sufficient-base-funds?  (money/sufficient-funds?
+                                                     value (get balance symbol))
+                            sufficient-token-funds? (money/sufficient-funds?
+                                                     (:value token) (get balance (:symbol token)))
+                            sufficient-funds?       (and sufficient-base-funds?
+                                                         (if (nil? token)
+                                                           true
+                                                           sufficient-token-funds?))]
                         (cond-> (assoc transaction
                                        :amount value
                                        :sufficient-funds? sufficient-funds?)

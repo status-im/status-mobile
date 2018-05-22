@@ -105,10 +105,15 @@
  (fn [_ _]
    {::show-transaction-moved  true}))
 
-(defn prepare-transaction [{:keys [id message_id method args]} now]
+(defn prepare-transaction [{:keys [id message_id method args]} now db]
   ;;NOTE(goranjovic): the transactions started from chat using /send command
   ;; are only in ether, so this parameter defaults to ETH
-  (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args]
+  (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args
+        network     (get (:networks (:account/account db)) (:network db))
+        chain       (ethereum/network->chain-keyword network)
+        token       (tokens/address->token chain to)
+        token-value (when token
+                      (ethereum/hex->bignumber (str "0x" (string/join (take-last 64 data)))))]
     {:id         id
      :from       from
      :to         to
@@ -118,6 +123,8 @@
      :method     method
      :value      (money/bignumber (or value 0))
      :data       data
+     :token      (when token
+                   {:symbol (:symbol token) :value token-value})
      :gas        (when (seq gas)
                    (money/bignumber (money/to-decimal gas)))
      :gas-price  (when (seq gasPrice)
@@ -145,7 +152,7 @@
          (= method constants/web3-send-transaction)
 
          (let [{:keys [gas gasPrice]}    args
-               transaction               (prepare-transaction queued-transaction now)
+               transaction               (prepare-transaction queued-transaction now db)
                sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
                new-db                    (assoc-in db' [:wallet :transactions-unsigned id] transaction)
                sending-db                {:id         id
