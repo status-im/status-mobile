@@ -192,9 +192,11 @@
                         (= views current-view))
 
         style (if current-view?
-                {:flex 1}
+                {:flex   1
+                 :zIndex 0}
                 {:opacity 0
-                 :flex    0})
+                 :flex    0
+                 :zIndex -1})
 
         component' (if (fn? component) [component] component)]
 
