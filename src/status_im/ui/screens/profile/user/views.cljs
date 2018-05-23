@@ -152,6 +152,11 @@
            {:label-kw            :t/offline-messaging
             :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
             :accessibility-label :offline-messages-settings-button}])
+        (when config/bootnodes-settings-enabled?
+          [profile.components/settings-item
+           {:label-kw            :t/bootnodes
+            :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+            :accessibility-label :bootnodes-settings-button}])
         [profile.components/settings-item-separator]
         [profile.components/settings-item
          {:label-kw            :t/help-improve?

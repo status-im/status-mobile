@@ -63,12 +63,32 @@
     (assoc db :node/after-start nil)
     address password)))
 
+(defn add-custom-bootnodes [config network all-bootnodes]
+  (let [bootnodes (as-> all-bootnodes $
+                    (get $ network)
+                    (vals $)
+                    (map :address $))]
+    (if (seq bootnodes)
+      (assoc config :ClusterConfig {:Enabled   true
+                                    :BootNodes bootnodes})
+      config)))
+
 (defn get-network-by-address [db address]
   (let [accounts (get db :accounts/accounts)
-        {:keys [network networks]} (get accounts address)
-        config   (get-in networks [network :config])]
-    {:network network
-     :config  config}))
+        {:keys [network
+                settings
+                bootnodes
+                networks]} (get accounts address)
+        use-custom-bootnodes (get-in settings [:bootnodes network])
+        config   (cond-> (get-in networks [network :config])
+
+                   (and
+                    config/bootnodes-settings-enabled?
+                    use-custom-bootnodes)
+                   (add-custom-bootnodes network bootnodes))]
+    {:use-custom-bootnodes use-custom-bootnodes
+     :network              network
+     :config               config}))
 
 (defn wrap-with-initialize-geth-fx [db address password]
   (let [{:keys [network config]} (get-network-by-address db address)]
@@ -87,21 +107,31 @@
   {:db         (assoc db :node/after-stop [::start-node address password])
    ::stop-node nil})
 
+(defn- restart-node? [account-network network use-custom-bootnodes]
+  (or (not= account-network network)
+      (and config/bootnodes-settings-enabled?
+           use-custom-bootnodes)))
+
+(defn login-account [{{:keys [network status-node-started?] :as db} :db} [_ address password]]
+  (let [{use-custom-bootnodes :use-custom-bootnodes
+         account-network :network} (get-network-by-address db address)
+        db'     (-> db
+                    (assoc-in [:accounts/login :processing] true))
+        wrap-fn (cond (not status-node-started?)
+                      wrap-with-initialize-geth-fx
+
+                      (not (restart-node? account-network
+                                          network
+                                          use-custom-bootnodes))
+                      wrap-with-login-account-fx
+
+                      :else
+                      wrap-with-stop-node-fx)]
+    (wrap-fn db' address password)))
+
 (register-handler-fx
  :login-account
- (fn [{{:keys [network status-node-started?] :as db} :db} [_ address password]]
-   (let [{account-network :network} (get-network-by-address db address)
-         db'     (-> db
-                     (assoc-in [:accounts/login :processing] true))
-         wrap-fn (cond (not status-node-started?)
-                       wrap-with-initialize-geth-fx
-
-                       (= account-network network)
-                       wrap-with-login-account-fx
-
-                       :else
-                       wrap-with-stop-node-fx)]
-     (wrap-fn db' address password))))
+ login-account)
 
 (register-handler-fx
  :login-handler

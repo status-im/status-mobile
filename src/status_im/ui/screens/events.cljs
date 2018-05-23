@@ -24,6 +24,7 @@
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.browser.events
             status-im.ui.screens.offline-messaging-settings.events
+            status-im.ui.screens.bootnodes-settings.events
             status-im.ui.screens.currency-settings.events
             status-im.ui.screens.usage-data.events
             [re-frame.core :as re-frame]

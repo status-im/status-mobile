@@ -10,9 +10,22 @@
       (core/single-clj :account)
       (update :settings core/deserialize)))
 
+(defn- deserialize-bootnodes [bootnodes]
+  (reduce-kv
+   (fn [acc id {:keys [chain] :as bootnode}]
+     (assoc-in acc [chain id] bootnode))
+   {}
+   bootnodes))
+
+(defn- serialize-bootnodes [bootnodes]
+  (->> bootnodes
+       vals
+       (mapcat vals)))
+
 (defn- deserialize-account [account]
   (-> account
       (update :settings core/deserialize)
+      (update :bootnodes deserialize-bootnodes)
       (update :networks (partial reduce-kv
                                  (fn [acc network-id props]
                                    (assoc acc network-id
@@ -31,6 +44,7 @@
 (defn- serialize-account [account]
   (-> account
       (update :settings core/serialize)
+      (update :bootnodes serialize-bootnodes)
       (update :networks (partial map (fn [[_ props]]
                                        (update props :config types/clj->json))))))
 

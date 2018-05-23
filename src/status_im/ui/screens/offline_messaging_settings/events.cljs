@@ -5,6 +5,7 @@
             [status-im.ui.screens.accounts.events :as accounts-events]
             [status-im.i18n :as i18n]
             [status-im.transport.core :as transport]
+            status-im.ui.screens.offline-messaging-settings.edit-mailserver.events
             [status-im.utils.ethereum.core :as ethereum]))
 
 (handlers/register-handler-fx

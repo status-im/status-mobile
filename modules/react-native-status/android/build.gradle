@@ -17,7 +17,7 @@ dependencies {
     implementation 'com.github.ericwlange:AndroidJSCore:3.0.1'
     implementation 'status-im:function:0.0.1'
 
-    String statusGoVersion = 'develop-g5aae87ab'
+    String statusGoVersion = 'develop-gbc14e6fa'
     final String statusGoGroup = 'status-im', statusGoName = 'status-go'
 
     // Check if the local status-go jar exists, and compile against that if it does

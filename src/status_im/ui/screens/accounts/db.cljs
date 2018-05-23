@@ -3,6 +3,7 @@
   (:require [cljs.spec.alpha :as spec]
             status-im.utils.db
             status-im.ui.screens.network-settings.db
+            status-im.ui.screens.bootnodes-settings.db
             [status-im.constants :as const]))
 
 (defn valid-length? [password]
@@ -24,6 +25,7 @@
 (spec/def :account/status (spec/nilable string?))
 (spec/def :account/network (spec/nilable string?))
 (spec/def :account/networks (spec/nilable :networks/networks))
+(spec/def :account/bootnodes (spec/nilable :bootnodes/bootnodes))
 (spec/def :account/wnode (spec/nilable string?))
 (spec/def :account/settings (spec/nilable (spec/map-of keyword? any?)))
 (spec/def :account/signing-phrase :global/not-empty-string)
@@ -41,7 +43,8 @@
                                       :account/networks :account/settings :account/wnode
                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
                                       :account/seed-backed-up? :account/mnemonic
-                                      :account/wallet-set-up-passed? :account/last-request]))
+                                      :account/wallet-set-up-passed? :account/last-request
+                                      :account/bootnodes]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 
