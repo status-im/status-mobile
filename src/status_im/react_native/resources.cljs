@@ -3,7 +3,6 @@
 (def contacts
   {:mkr-market         (js/require "./resources/images/contacts/mkr-market.png")
    :oaken-water-meter  (js/require "./resources/images/contacts/oaken-water-meter.png")
-   :jarrad             (js/require "./resources/images/contacts/jarrad.png")
    :gnosis             (js/require "./resources/images/contacts/gnosis.png")
    :melonport          (js/require "./resources/images/contacts/melonport.png")
    :bchat              (js/require "./resources/images/contacts/bchat.png")
