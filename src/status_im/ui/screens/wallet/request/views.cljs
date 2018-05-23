@@ -19,7 +19,6 @@
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.money :as money]
             [status-im.utils.utils :as utils]))
 
 ;; Request screen
@@ -42,17 +41,11 @@
         [components/asset-selector {:disabled? true
                                     :symbol    :ETH}]
         [components/amount-selector {:error         amount-error
+                                     :amount amount
+                                     :amount-text amount-text
                                      :input-options {:max-length     21
                                                      :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])
-                                                     ;; (similarly to status-im.ui.screens.wallet.send.views `send-transaction-panel`)
-                                                     ;; We only auto-correct and prettify user's input when it is valid and positive.
-                                                     ;; Otherwise, user might want to fix his input and autocorrection will give more harm than good.
-                                                     ;; Positive check is because we don't want to replace unfinished 0.000 with just plain 0, that is annoying and
-                                                     ;; potentially dangerous on this screen (e.g. sending 7 ETH instead of 0.0007)
-                                                     :default-value (if (pos? amount)
-                                                                      (str (money/to-fixed (money/wei->ether amount)))
-                                                                      amount-text)}}]]]
+                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
       [bottom-buttons/bottom-buttons styles/bottom-buttons
        nil ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
        [button/button {:disabled?           (not (and to amount))

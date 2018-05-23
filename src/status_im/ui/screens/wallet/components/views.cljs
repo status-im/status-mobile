@@ -20,6 +20,7 @@
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.utils.utils :as utils]))
@@ -184,18 +185,23 @@
       [recipient-contact address name request?]
       [recipient-address address])]])
 
-(defn- amount-input [{:keys [input-options disabled?]}]
+(defn- amount-input [{:keys [input-options amount amount-text disabled?]}]
   [react/view {:style               components.styles/flex
                :accessibility-label :specify-amount-button}
    [components/text-input
     (merge
+     input-options
+     ;; We only auto-correct and prettify user's input when it is valid and positive.
+     ;; Otherwise, user might want to fix his input and autocorrection will give more harm than good.
+     ;; Positive check is because we don't want to replace unfinished 0.000 with just plain 0, that is annoying and
+     ;; potentially dangerous on this screen (e.g. sending 7 ETH instead of 0.0007)
+     {:default-value  (if (empty? amount-text) (str (money/to-fixed (money/wei->ether amount))) amount-text)}
      (if disabled?
        {:editable false}
        {:keyboard-type       :numeric
         :placeholder         (i18n/label :t/amount-placeholder)
         :style               components.styles/flex
-        :accessibility-label :amount-input})
-     input-options)]])
+        :accessibility-label :amount-input}))]])
 
 (defn amount-selector [{:keys [error disabled?] :as m}]
   [react/view
