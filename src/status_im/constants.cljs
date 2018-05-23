@@ -68,9 +68,14 @@
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
 
+(defn network-enabled? [network]
+  (if config/rpc-networks-only?
+    (get-in (val network) [:config :UpstreamConfig :Enabled])
+    true))
+
 (def default-networks
-  (merge testnet-networks
-         mainnet-networks))
+  (into {} (filter network-enabled?
+                   (merge testnet-networks mainnet-networks))))
 
 (def default-wnodes
   {:testnet {"mailserver-a" {:id      "mailserver-a"

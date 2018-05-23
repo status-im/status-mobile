@@ -32,6 +32,8 @@
 (def compile-views-enabled? (enabled? (get-config :COMPILE_VIEWS_ENABLED 0)))
 (def mixpanel-token (get-config :MIXPANEL_TOKEN))
 (def default-network (get-config :DEFAULT_NETWORK))
+;; the default value should be a string for `enabled?` to work correctly.
+(def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def testfairy-token (get-config :TESTFAIRY_TOKEN))
 (def instabug-token (get-config :INSTABUG_TOKEN))
 (def instabug-surveys-enabled? (get-config :INSTABUG_SURVEYS))
