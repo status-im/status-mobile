@@ -76,6 +76,34 @@ class DeleteChatButton(BaseButton):
         self.locator = self.Locator.xpath_selector('//*[@text="Delete chat"]')
 
 
+class ClearHistoryButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ClearHistoryButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Clear history"]')
+
+
+class LeaveChatButton(BaseButton):
+
+    def __init__(self, driver):
+        super(LeaveChatButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Leave public chat"]')
+
+
+class ClearButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ClearButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="CLEAR"]')
+
+
+class LeaveButton(BaseButton):
+
+    def __init__(self, driver):
+        super(LeaveButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="LEAVE"]')
+
+
 class ChatSettings(BaseButton):
     def __init__(self, driver):
         super(ChatSettings, self).__init__(driver)
@@ -171,6 +199,10 @@ class ChatView(BaseView):
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
+        self.clear_history_button = ClearHistoryButton(self.driver)
+        self.clear_button = ClearButton(self.driver)
+        self.leave_chat_button = LeaveChatButton(self.driver)
+        self.leave_button = LeaveButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)

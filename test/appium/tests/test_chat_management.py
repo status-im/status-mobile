@@ -1,9 +1,11 @@
 import time
 import pytest
+import random
+import string
+import emoji
 from tests import transaction_users, marks, group_chat_users, get_current_time
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
-
 
 @marks.all
 @marks.chat_management
@@ -71,7 +73,65 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
         device_1_chat_view = device_1_home_view.start_1_1_chat(self.senders['h_user']['username'])
         if not device_1_chat_view.no_messages_in_chat.is_element_present():
             pytest.fail('Message history is shown in a chat which was previously deleted')
+        self.verify_no_errors()
 
+    @marks.testrail_case_id(3419)
+    def test_public_chat_management(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        users = []
+        chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(19))
+        for sign_in in device_1, device_2:
+            users.append(sign_in.create_user())
+            home = sign_in.get_home_view()
+            home.join_public_chat(chat_name)
+        chat_1, chat_2 = device_1.get_chat_view(), device_2.get_chat_view()
+        message_1, message_2, message_3, message_4, message_5 = 'm1', 'm2', 'm3', 'm4', 'm5'
+        chat_1.chat_message_input.send_keys(message_1)
+        chat_1.send_message_button.click()
+        chat_2.element_by_text(message_1).is_element_present()
+
+        chat_2.chat_message_input.send_keys(message_2)
+        chat_2.send_message_button.click()
+        chat_1.element_by_text(message_2).is_element_present()
+        chat_1.chat_options.click()
+        chat_1.clear_history_button.click()
+        chat_1.clear_button.click()
+        chat_2.chat_message_input.send_keys(message_3)
+        chat_2.send_message_button.click()
+        chat_1.element_by_text(message_3).is_element_present()
+        for message in message_1, message_2:
+            if chat_1.element_starts_with_text(message).is_element_present():
+                self.errors.append("Message '%s' is shown, but public chat history has been cleared" % message)
+        chat_2.chat_options.click()
+        chat_2.delete_chat_button.click()
+        chat_2.delete_button.click()
+        chat_1.chat_message_input.send_keys(message_4)
+        chat_1.send_message_button.click()
+        public_chat_name = '#' + chat_name
+        chat_2.element_by_text(public_chat_name).click()
+        for message in message_1, message_2, message_3, message_4:
+            if not chat_2.element_starts_with_text(message).is_element_present():
+                self.errors.append("Message '%s' is not shown in public chat which has been deleted" % message)
+        chat_1.chat_options.click()
+        chat_1.leave_chat_button.click()
+        chat_1.leave_button.click()
+        chat_2.chat_message_input.send_keys(message_5)
+        chat_2.send_message_button.click()
+        if chat_1.element_starts_with_text(message_5).is_element_present(20):
+            self.errors.append("Message '%s' is shown, but the user left public chat" % message_5)
+
+        chat_2.get_back_to_home_view()
+        home_2, home_1 = chat_2.get_home_view(), chat_1.get_home_view()
+        home_2.swipe_and_delete_chat('#' + chat_name)
+
+        for home in home_2, home_1:
+            home.relogin()
+        if home_1.element_by_text(public_chat_name).is_element_present(20):
+            self.errors.append("Public chat '%s' is shown, but the user left public chat" % public_chat_name)
+        if home_2.element_by_text(public_chat_name).is_element_present(20):
+            self.errors.append("Public chat '%s' is shown, but the chat has been deleted via 'swipe to delete'"
+                               % public_chat_name)
         self.verify_no_errors()
 
 
@@ -96,6 +156,7 @@ class TestChatManagement(SingleDeviceTestCase):
             pytest.fail('The chat is present after re-login')
 
     @marks.testrail_case_id(3418)
+    @marks.skip
     def test_swipe_and_delete_group_chat(self):
         recipient = group_chat_users['A_USER']
         sign_in_view = SignInView(self.driver)

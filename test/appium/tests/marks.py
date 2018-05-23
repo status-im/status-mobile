@@ -8,3 +8,4 @@ chat = pytest.mark.chat
 chat_management = pytest.mark.chat_management
 transaction = pytest.mark.transaction
 wallet = pytest.mark.wallet
+skip = pytest.mark.skip

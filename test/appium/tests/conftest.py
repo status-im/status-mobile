@@ -42,10 +42,10 @@ def pytest_addoption(parser):
                      action='store',
                      default=None,
                      help='Pull Request number')
-    parser.addoption('--nightly',
+    parser.addoption('--testrail_report',
                      action='store',
                      default=False,
-                     help='boolean; For running extended test suite against nightly build')
+                     help='boolean; For creating testrail report per run')
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
@@ -74,7 +74,7 @@ def pytest_configure(config):
     test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
                                              if '.apk' in i]])[0]
     if is_master(config):
-        if config.getoption('nightly'):
+        if config.getoption('testrail_report'):
             testrail_report.add_run(test_suite_data.apk_name)
         if config.getoption('env') == 'sauce':
             if not is_uploaded():
@@ -99,7 +99,7 @@ def pytest_unconfigure(config):
             repo = Github(github_token).get_user('status-im').get_repo('status-react')
             pull = repo.get_pull(int(config.getoption('pr_number')))
             pull.create_issue_comment(github_report.build_html_report())
-        if config.getoption('nightly'):
+        if config.getoption('testrail_report'):
             testrail_report.add_results()
 
 

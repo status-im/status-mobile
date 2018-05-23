@@ -66,6 +66,7 @@ class TestTransaction(SingleDeviceTestCase):
         send_transaction_view.find_full_text('Wrong password', 20)
 
     @marks.pr
+    @marks.skip
     @marks.testrail_case_id(3403)
     def test_transaction_send_command_group_chat(self):
         recipient = transaction_users['A_USER']
@@ -218,6 +219,7 @@ class TestTransactions(MultipleDeviceTestCase):
 
     @marks.pr
     @marks.testrail_case_id(3408)
+    @marks.skip
     def test_send_eth_to_request_in_group_chat(self):
         recipient = transaction_users['E_USER']
         sender = self.senders['f_user'] = transaction_users['F_USER']

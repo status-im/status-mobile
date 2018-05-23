@@ -32,7 +32,7 @@ def find_transaction_on_ropsten(address: str, transaction_hash: str):
     pytest.fail('Transaction is not found in Ropsten network')
 
 
-def verify_balance_is_updated(initial_balance, recipient_address, wait_time=240):
+def verify_balance_is_updated(initial_balance, recipient_address, wait_time=360):
     counter = 0
     while True:
         if counter >= wait_time:

@@ -112,6 +112,7 @@ class HomeView(BaseView):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
         start_new_chat.chat_name_editbox.send_keys(chat_name)
+        time.sleep(2)
         start_new_chat.confirm()
 
     def get_public_key(self):

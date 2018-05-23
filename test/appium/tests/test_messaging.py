@@ -79,6 +79,7 @@ class TestMessages(MultipleDeviceTestCase):
 
     @marks.pr
     @marks.testrail_case_id(3391)
+    @marks.skip
     def test_group_chat_messages_and_delete_chat(self):
         self.create_drivers(3)
 
@@ -212,19 +213,20 @@ class TestMessages(MultipleDeviceTestCase):
         if not chat_1.contact_profile_picture.is_element_image_equals_template(file_name):
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
 
-        home_1.get_back_to_home_view()
-        chat_name = 'a_chat_%s' % get_current_time()
-        home_1.create_group_chat([username_2], chat_name)
-        group_chat_1 = home_1.get_chat_view()
+        # home_1.get_back_to_home_view()
+        # chat_name = 'a_chat_%s' % get_current_time()
+        # home_1.create_group_chat([username_2], chat_name)
+        # group_chat_1 = home_1.get_chat_view()
+        #
+        # home_2.get_back_to_home_view()
+        # group_chat_2 = home_2.get_chat_with_user(chat_name).click()
+        # message_text = 'test message'
+        # group_chat_2.chat_message_input.send_keys(message_text)
+        # group_chat_2.send_message_button.click()
+        #
+        # group_chat_1.wait_for_messages(username_2, message_text, self.errors)
+        # group_chat_1.verify_username_is_shown_per_message(username_2, message_text, self.errors)
 
-        home_2.get_back_to_home_view()
-        group_chat_2 = home_2.get_chat_with_user(chat_name).click()
-        message_text = 'test message'
-        group_chat_2.chat_message_input.send_keys(message_text)
-        group_chat_2.send_message_button.click()
-
-        group_chat_1.wait_for_messages(username_2, message_text, self.errors)
-        group_chat_1.verify_username_is_shown_per_message(username_2, message_text, self.errors)
         self.verify_no_errors()
 
     @marks.testrail_case_id(3429)
@@ -300,6 +302,7 @@ class TestOfflineMessages(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_case_id(3430)
+    @marks.skip
     def test_offline_messaging_group_chat(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
