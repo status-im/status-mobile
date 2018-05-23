@@ -85,6 +85,7 @@
      [toolbar.view/toolbar {}
       [toolbar.view/nav-button-with-count
        (actions/close (fn []
+                        (.sendToBridge @webview "navigate-to-blank")
                         (re-frame/dispatch [:navigate-back])
                         (when error?
                           (re-frame/dispatch [:remove-browser browser-id]))))]

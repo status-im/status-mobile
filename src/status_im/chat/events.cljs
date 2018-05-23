@@ -25,8 +25,7 @@
             status-im.chat.events.requests
             status-im.chat.events.send-message
             status-im.chat.events.receive-message
-            status-im.chat.events.console
-            status-im.chat.events.webview-bridge))
+            status-im.chat.events.console))
 
 ;;;; Effects
 
