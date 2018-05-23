@@ -171,6 +171,8 @@
                           (keep :js-obj)
                           (apply array))]
      (when (pos? (.-length js-messages))
-       (.. web3
-           -shh
-           (confirmMessagesProcessed js-messages (fn [_ _])))))))
+       (.confirmMessagesProcessed (transport.utils/shh web3)
+                                  js-messages
+                                  (fn [err resp]
+                                    (when err
+                                      (log/info "Confirming message processed failed"))))))))

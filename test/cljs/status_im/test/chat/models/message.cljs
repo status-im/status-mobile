@@ -34,7 +34,7 @@
         message      {:chat-id "chat-id"
                       :from "a"
                       :message-id "1"}
-        extract-seen (comp :payload :message :shh/post)]
+        extract-seen (comp :payload :message first :shh/post)]
     (testing "it send a seen message when the chat is 1-to-1 and is open"
       (is (instance? protocol/MessagesSeen
                      (extract-seen (message/receive message db))))

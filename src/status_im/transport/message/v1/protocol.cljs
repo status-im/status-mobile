@@ -33,25 +33,25 @@
   ;; we assume that the chat contains the contact public-key
   (let [{:keys [current-public-key web3]} db
         {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])]
-    {:shh/post {:web3          web3
-                :success-event success-event
-                :message       (merge {:sig      current-public-key
-                                       :symKeyID sym-key-id
-                                       :payload  payload
-                                       :topic    topic}
-                                      whisper-opts)}}))
+    {:shh/post [{:web3          web3
+                 :success-event success-event
+                 :message       (merge {:sig      current-public-key
+                                        :symKeyID sym-key-id
+                                        :payload  payload
+                                        :topic    topic}
+                                       whisper-opts)}]}))
 
 (defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
   [{:keys [payload chat-id success-event]} {:keys [db] :as cofx}]
   (let [{:keys [current-public-key web3]} db]
-    {:shh/post {:web3          web3
-                :success-event success-event
-                :message       (merge {:sig     current-public-key
-                                       :pubKey  chat-id
-                                       :payload payload
-                                       :topic   (transport.utils/get-topic constants/contact-discovery)}
-                                      whisper-opts)}}))
+    {:shh/post [{:web3          web3
+                 :success-event success-event
+                 :message       (merge {:sig     current-public-key
+                                        :pubKey  chat-id
+                                        :payload payload
+                                        :topic   (transport.utils/get-topic constants/contact-discovery)}
+                                       whisper-opts)}]}))
 
 (defn- prepare-recipients [public-keys db]
   (map (fn [public-key]
