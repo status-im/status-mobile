@@ -225,6 +225,18 @@
    (-> messages sort-messages intersperse-datemarks messages-stream)))
 
 (reg-sub
+ :chat-page
+ :<- [:get-current-chat]
+ (fn [{:keys [page]}] page))
+
+(reg-sub
+ :get-current-chat-messages-by-page
+ :<- [:get-current-chat-messages]
+ :<- [:chat-page]
+ (fn [[messages page]]
+   (take (* 20 (inc page)) messages)))
+
+(reg-sub
  :get-commands-for-chat
  :<- [:get-commands-responses-by-access-scope]
  :<- [:get-current-account]

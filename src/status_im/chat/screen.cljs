@@ -100,7 +100,7 @@
        message-view]]]))
 
 (defview messages-view [group-chat]
-  (letsubs [messages           [:get-current-chat-messages]
+  (letsubs [messages           [:get-current-chat-messages-by-page]
             chat-id            [:get-current-chat-id]
             current-public-key [:get-current-public-key]]
     {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
@@ -111,16 +111,18 @@
         (if (= chat-id constants/console-chat-id)
           (i18n/label :t/empty-chat-description-console)
           (i18n/label :t/empty-chat-description))]]
-      [list/flat-list {:data                      messages
-                       :key-fn                    #(or (:message-id %) (:value %))
-                       :render-fn                 (fn [message]
-                                                    [message-row {:group-chat         group-chat
-                                                                  :current-public-key current-public-key
-                                                                  :row                message}])
-                       :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps :handled}])))
+      [list/flat-list
+       {:data                      messages
+        :key-fn                    #(or (:message-id %) (:value %))
+        :render-fn                 (fn [message]
+                                     [message-row
+                                      {:group-chat         group-chat
+                                       :current-public-key current-public-key
+                                       :row                message}])
+        :inverted                  true
+        :onEndReached              #(re-frame/dispatch [:load-more-messages])
+        :enableEmptySections       true
+        :keyboardShouldPersistTaps :handled}])))
 
 (defview chat []
   (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
