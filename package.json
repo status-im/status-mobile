@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "postinstall": "mkdir metro; cd metro; git init; git remote add -f origin https://github.com/MaxRis/metro-bundler.git; git config core.sparseCheckout true; echo \"packages/metro\" >> .git/info/sparse-checkout; git pull --depth=1 origin react-native-desktop-0.24.7; cd ..; npm i ./metro/packages/metro/"
+    "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "desktopExternalModules": [
     "node_modules/react-native-i18n/desktop",
