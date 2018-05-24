@@ -45,72 +45,7 @@
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
             [status-im.ui.screens.usage-data.views :refer [usage-data]]
-            [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
-            [status-im.utils.config :as config]))
-
-;;; defines hierarchy of views, when parent screen is opened children screens
-;;; are pre-rendered, currently it is:
-;;;
-;;; root-
-;;;      |
-;;;      - main-tabs -
-;;;      |           |
-;;;      - chat      |
-;;;                  wallet
-;;;                  - wallet-send-transaction -
-;;;                  |                         |
-;;;                  |                         - choose-recipient
-;;;                  |                         |
-;;;                  |                         - wallet-transaction-sent
-;;;                  |
-;;;                  - transactions-history, unsigned-transactions
-;;;                  |
-;;;                  - wallet-request-transaction -
-;;;                  |                            |
-;;;                  |                            - choose-recipient
-;;;                  |
-;;;                  my-profile
-;;;                  - edit-my-profile -
-;;;                                    |
-;;;                                    - profile-photo-capture
-(views/compile-views
- root-view
- [{:views     #{:home :wallet :my-profile}
-   :component main-tabs}
-
-  {:view      :chat
-   :hide?     (not android?)
-   :component chat}
-
-  {:view      :wallet-send-transaction
-   :parent    :wallet
-   :hide?     (not android?)
-   :component send-transaction}
-
-  {:view      :wallet-request-transaction
-   :parent    :wallet
-   :component request-transaction}
-
-  {:view      :wallet-request-assets
-   :parent    :wallet-request-transaction
-   :component wallet.components/request-assets}
-
-  {:view      :choose-recipient
-   :parent    :wallet-send-transaction
-   :hide?     true
-   :component choose-recipient}
-
-  {:view      :wallet-transaction-sent
-   :parent    :wallet-send-transaction
-   :component transaction-sent}
-
-  {:views     #{:transactions-history :unsigned-transactions}
-   :parent    :wallet
-   :component wallet-transactions/transactions}
-
-  {:view      :profile-photo-capture
-   :parent    :my-profile
-   :component profile-photo-capture}])
+            [status-im.ui.screens.profile.seed.views :refer [backup-seed]]))
 
 (defn get-main-component [view-id]
   (case view-id
@@ -188,13 +123,5 @@
       (let [component        (get-main-component view-id)
             main-screen-view (create-main-screen-view view-id)]
         [main-screen-view common-styles/flex
-         (if (and config/compile-views-enabled?
-                  signed-up?
-                  (#{:home :wallet :my-profile :chat :wallet-send-transaction
-                     :choose-recipient :wallet-transaction-sent :transactions-history
-                     :unsigned-transactions :wallet-request-transaction :edit-my-profile
-                     :profile-photo-capture :wallet-request-assets}
-                   view-id))
-           [root-view]
-           [component])
+         [component]
          [main-modal]]))))
