@@ -111,12 +111,8 @@ def getVersionName = { ->
         if (project.hasProperty("releaseVersion")) {
             return project.releaseVersion
         }
-
-        exec {
-            commandLine "git", "describe", "--tags", "--always", "--dirty=+"
-            standardOutput = stdOut
-        }
-        return stdOut.toString().replaceAll("\\s","")
+        version = new File('../../VERSION').text
+        return version.replaceAll("\\s","")
     }
 }
 
