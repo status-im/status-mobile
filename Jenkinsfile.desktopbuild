@@ -45,7 +45,7 @@ node ('macos1') {
 
     stage('Build ClojureScript') {
       sh 'rm -f index.desktop.js'
-      //sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
+      sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
       sh 'lein prod-build-desktop'
       sh 'react-native bundle --entry-file index.desktop.js --bundle-output $WORKFOLDER/StatusIm.jsbundle --dev false --platform desktop --assets-dest $WORKFOLDER/assets'
     }
