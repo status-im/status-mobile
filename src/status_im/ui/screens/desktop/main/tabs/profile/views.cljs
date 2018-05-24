@@ -16,9 +16,10 @@
     [react/text
      label]
     [react/view {:height 10}]
+    [react/touchable-opacity {:on-press #(react/copy-to-clipboard value)}
     [react/text {:number-of-lines 1
                  :ellipsizeMode   :middle}
-     value]]])
+     value]]]])
 
 (defn my-profile-info [{:keys [public-key]}]
   [react/view
