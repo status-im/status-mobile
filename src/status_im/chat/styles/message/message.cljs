@@ -61,6 +61,12 @@
   (assoc (message-timestamp false)
          :color styles/color-white))
 
+(def message-expand-button
+  {:color         colors/gray
+   :font-size     12
+   :opacity       0.7
+   :margin-bottom 1})
+
 (def selected-message
   {:margin-top  18
    :margin-left 40
@@ -125,9 +131,10 @@
   {:padding-top 4})
 
 (defn text-message
-  [{:keys [outgoing group-chat incoming-group]}]
+  [{:keys [incoming-group]} collapsed?]
   (merge style-message-text
-         {:margin-top (if incoming-group 4 0)}))
+         {:margin-top    (if incoming-group 4 0)
+          :margin-bottom (if collapsed? 2 0)}))
 
 (defnstyle emoji-message
   [{:keys [incoming-group]}]

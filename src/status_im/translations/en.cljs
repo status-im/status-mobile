@@ -243,6 +243,8 @@
    :empty-chat-description               "There are no messages \nin this chat yet"
    :empty-chat-description-console       "Look under the hood! Console is a javascript runtime environment that exposes the whole web3 API. Type \"web3.\" to get started."
    :counter-99-plus                      "99+"
+   :show-more                            "Show more"
+   :show-less                            "Show less"
 
    ;;discover
    :discover                             "Discover"

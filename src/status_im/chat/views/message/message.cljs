@@ -178,13 +178,42 @@
 
 (def cached-parse-text (memoize parse-text))
 
+(def ^:private ^:const number-of-lines 20)
+(def ^:private ^:const number-of-chars 600)
+
+(defn- should-collapse? [text group-chat?]
+  (and group-chat?
+       (or (<= number-of-chars (count text))
+           (<= number-of-lines (count (re-seq #"\n" text))))))
+
+(defn- expand-button [collapsed? on-press]
+  [react/text {:style    style/message-expand-button
+               :on-press on-press}
+   (i18n/label (if @collapsed? :show-more :show-less))])
+
 (defn text-message
-  [{:keys [content timestamp-str] :as message}]
+  [{:keys [content timestamp-str group-chat] :as message}]
   [message-view message
-   (let [parsed-text (cached-parse-text content :browse-link-from-message)]
-     [react/text {:style (style/text-message message)}
-      parsed-text
-      [react/text {:style style/message-timestamp-placeholder} (timestamp-with-padding timestamp-str)]])
+   (let [parsed-text (cached-parse-text content :browse-link-from-message)
+         ref (reagent/atom nil)
+         collapsible? (should-collapse? content group-chat)
+         collapsed? (reagent/atom collapsible?)
+         on-press (when collapsible?
+                    #(do
+                       (.setNativeProps @ref
+                                        (clj->js {:numberOfLines
+                                                  (when-not @collapsed?
+                                                    number-of-lines)}))
+                       (reset! collapsed? (not @collapsed?))))]
+     [react/view
+      [react/text {:style           (style/text-message message collapsible?)
+                   :number-of-lines (when collapsible? number-of-lines)
+                   :ref             (partial reset! ref)
+                   :on-press        on-press}
+       parsed-text
+       [react/text {:style style/message-timestamp-placeholder} (timestamp-with-padding timestamp-str)]]
+      (when collapsible?
+        [expand-button collapsed? on-press])])
    {:justify-timestamp? true}])
 
 (defn emoji-message
