@@ -29,15 +29,14 @@
   (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
                            transport.utils/to-utf8
-                           transit/deserialize
-                           (assoc :js-obj js-message))]
+                           transit/deserialize)]
     (when (and sig status-message)
       (handlers-macro/merge-fx
-       cofx
+       (assoc cofx :js-obj js-message)
        (message/receive status-message (or chat-id sig) sig)
        (update-last-received-from-inbox now-in-s timestamp ttl)))))
 
-(defn- js-array->list [array]
+(defn- js-array->seq [array]
   (for [i (range (.-length array))]
     (aget array i)))
 
@@ -47,7 +46,7 @@
      cofx
      (fn [message temp-cofx]
        (receive-message temp-cofx now-in-s chat-id message))
-     (js-array->list js-messages))))
+     (js-array->seq js-messages))))
 
 (handlers/register-handler-fx
  :protocol/receive-whisper-message
@@ -173,9 +172,8 @@
        fx))))
 
 (re-frame/reg-fx
- ;; TODO(rasom): confirmMessagesProcessed should be called after :data-store/tx
- ;; effect, so this effect should be rewritten/removed
- :confirm-message-processed
+ ;; TODO(janherich): this should be called after `:data-store/tx` actually
+ :confirm-messages-processed
  (fn [messages]
    (let [{:keys [web3]} (first messages)
          js-messages (->> messages
@@ -186,4 +184,4 @@
                                   js-messages
                                   (fn [err resp]
                                     (when err
-                                      (log/info "Confirming message processed failed"))))))))
+                                      (log/info "Confirming messages processed failed"))))))))

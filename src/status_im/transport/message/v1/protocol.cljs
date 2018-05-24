@@ -101,7 +101,8 @@
              :message-id (transport.utils/message-id this)
              :show?      true
              :chat-id    chat-id
-             :from       signature)]}))
+             :from       signature
+             :js-obj     (:js-obj cofx))]}))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

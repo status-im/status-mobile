@@ -21,9 +21,7 @@
   (data-source/change-account address new-account? encryption-key handler))
 
 (defn- perform-transactions [raw-transactions realm]
-  (let [success-events (->> raw-transactions
-                            (map :success-event)
-                            (filter identity))
+  (let [success-events (keep :success-event raw-transactions)
         transactions   (map (fn [{:keys [transaction] :as f}]
                               (or transaction f)) raw-transactions)]
     (data-source/write realm #(doseq [transaction transactions]

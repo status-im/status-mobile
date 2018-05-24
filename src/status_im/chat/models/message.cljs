@@ -128,8 +128,8 @@
                                                        request-command)
         add-message-fn                            (if batch? add-batch-message add-single-message)]
     (handlers-macro/merge-fx cofx
-                             {:confirm-message-processed [{:web3   web3
-                                                           :js-obj js-obj}]}
+                             {:confirm-messages-processed [{:web3   web3
+                                                            :js-obj js-obj}]}
                              (add-message-fn (cond-> message
                                                public-key
                                                (assoc :user-statuses {public-key (if current-chat? :seen :received)})
