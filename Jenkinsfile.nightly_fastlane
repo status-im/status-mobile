@@ -81,8 +81,7 @@ timeout(90) {
           def buildInfo = server.upload(uploadSpec)
           apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
 
-          //todo: handle version differently instead of exit 0
-          sh ('bundle exec fastlane android nightly || exit 0')
+          sh ('bundle exec fastlane android nightly')
           sh ('echo ARTIFACT Android: ' + apkUrl)
         }
 
@@ -93,8 +92,7 @@ timeout(90) {
             def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
             ipaUrl = 'https://i.diawi.com/' + hash
 
-            //todo: handle version differently instead of exit 0
-            sh ('bundle exec fastlane ios nightly || exit 0')
+            sh ('bundle exec fastlane ios nightly')
             sh ('echo ARTIFACT iOS: ' + ipaUrl)
           }
         }
