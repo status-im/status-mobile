@@ -39,11 +39,12 @@ timeout(90) {
           sh 'rm -rf node_modules'
           sh 'cp .env.nightly .env'
           sh 'lein deps'
+
           installJSDeps()
 
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
-            sh 'cd ios && pod install && cd ..'
-          }
+          sh 'cd ios && pod install && cd ..'
+        }
 
         stage('Tests') {
           sh 'lein test-cljs'
