@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.accounts.recover.events
   (:require
    status-im.ui.screens.accounts.recover.navigation
+   [clojure.string :as string]
    [re-frame.core :as re-frame]
    [status-im.native-module.core :as status]
    [status-im.ui.screens.accounts.events :as accounts-events]
    [status-im.utils.types :as types]
    [status-im.utils.identicon :as identicon]
-   [clojure.string :as string]
    [status-im.utils.handlers :as handlers]
    [status-im.utils.gfycat.core :as gfycat]
    [status-im.utils.signing-phrase.core :as signing-phrase]
@@ -28,20 +28,24 @@
 (handlers/register-handler-fx
  :account-recovered
  (fn [{:keys [db]} [_ result password]]
-   (let [data       (types/json->clj result)
-         public-key (:pubkey data)
-         address    (-> data :address utils.hex/normalize-hex)
-         phrase     (signing-phrase/generate)
-         account    {:public-key            public-key
-                     :address               address
-                     :name                  (gfycat/generate-gfy public-key)
-                     :photo-path            (identicon/identicon public-key)
-                     :mnemonic              ""
-                     :signed-up?            true
-                     :signing-phrase        phrase
-                     :settings              (constants/default-account-settings)
-                     :wallet-set-up-passed? true}]
-     (when-not (string/blank? public-key)
+   (let [{:keys [error] :as data} (types/json->clj result)
+         public-key               (:pubkey data)
+         address                  (-> data :address utils.hex/normalize-hex)
+         phrase                   (signing-phrase/generate)
+         account                  {:public-key            public-key
+                                   :address               address
+                                   :name                  (gfycat/generate-gfy public-key)
+                                   :photo-path            (identicon/identicon public-key)
+                                   :mnemonic              ""
+                                   :signed-up?            true
+                                   :signing-phrase        phrase
+                                   :settings              (constants/default-account-settings)
+                                   :wallet-set-up-passed? true}]
+     (cond
+       (not (string/blank? error))
+       (assoc {:db db} :show-error error)
+
+       (not (string/blank? public-key))
        (-> db
            (accounts-events/add-account account)
            (assoc :dispatch [:login-account address password])
