@@ -34,7 +34,10 @@ timeout(90) {
           checkout scm
 
           sh 'git fetch --tags'
-          latest_tag = sh(returnStdout: true, script: 'git describe --tags `git rev-list --tags=release --max-count=1`').trim()
+          latest_tag = sh(
+            returnStdout: true,
+            script: 'git describe --tags `git rev-list --tags=\'[0-9]*.[0-9]*.[0-9]*\' --max-count=1`'
+          ).trim()
           sh 'rm -rf node_modules'
           sh 'cp .env.nightly .env'
           sh 'lein deps'
@@ -81,8 +84,7 @@ timeout(90) {
           def buildInfo = server.upload(uploadSpec)
           apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
 
-          //todo: handle version differently instead of exit 0
-          sh ('bundle exec fastlane android nightly || exit 0')
+          sh ('bundle exec fastlane android nightly')
           sh ('echo ARTIFACT Android: ' + apkUrl)
         }
 
@@ -93,8 +95,7 @@ timeout(90) {
             def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
             ipaUrl = 'https://i.diawi.com/' + hash
 
-            //todo: handle version differently instead of exit 0
-            sh ('bundle exec fastlane ios nightly || exit 0')
+            sh ('bundle exec fastlane ios nightly')
             sh ('echo ARTIFACT iOS: ' + ipaUrl)
           }
         }
