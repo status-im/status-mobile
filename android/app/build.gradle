@@ -111,7 +111,7 @@ def getVersionName = { ->
         if (project.hasProperty("releaseVersion")) {
             return project.releaseVersion
         }
-        version = new File('../../VERSION').text
+        version = new File('../VERSION').text
         return version.replaceAll("\\s","")
     }
 }
