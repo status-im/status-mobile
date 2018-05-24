@@ -29,7 +29,7 @@
                     #()))
 
 (defn- send-tokens [{:keys [web3 from to value gas gas-price symbol network]}]
-  (let [contract (:address (tokens/symbol->token (ethereum/network->chain-keyword network) symbol))]
+  (let [contract (:address (tokens/symbol->token (keyword (ethereum/network-names network)) symbol))]
     (erc20/transfer web3 contract from to value {:gas gas :gasPrice gas-price} #())))
 
 (re-frame/reg-fx
@@ -68,22 +68,25 @@
   (re-frame/dispatch [::transaction-completed {:id (name (key result)) :response (second result)} modal?]))
 ;;;; Handlers
 
-(defn set-and-validate-amount-db [db amount]
-  (let [{:keys [value error]} (wallet.db/parse-amount amount)]
+(defn set-and-validate-amount-db [db amount symbol decimals]
+  (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
     (-> db
-        (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
+        (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
         (assoc-in [:wallet :send-transaction :amount-text] amount)
         (assoc-in [:wallet :send-transaction :amount-error] error))))
 
 (handlers/register-handler-fx
  :wallet.send/set-and-validate-amount
- (fn [{:keys [db]} [_ amount]]
-   {:db (set-and-validate-amount-db db amount)}))
+ (fn [{:keys [db]} [_ amount symbol decimals]]
+   {:db (set-and-validate-amount-db db amount symbol decimals)}))
 
 (handlers/register-handler-fx
  :wallet.send/set-symbol
  (fn [{:keys [db]} [_ symbol]]
-   {:db (-> (assoc-in db [:wallet :send-transaction :symbol] symbol)
+   {:db (-> db
+            (assoc-in [:wallet :send-transaction :symbol] symbol)
+            (assoc-in [:wallet :send-transaction :amount] nil)
+            (assoc-in [:wallet :send-transaction :amount-text] nil)
             (assoc-in [:wallet :send-transaction :gas] (ethereum/estimate-gas symbol)))}))
 
 (handlers/register-handler-fx

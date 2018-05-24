@@ -14,7 +14,7 @@
 
 (defn send-shortcut-fx [db contact params]
   (merge {:db (-> db
-                  (send.events/set-and-validate-amount-db (:amount params))
+                  (send.events/set-and-validate-amount-db (:amount params) :ETH 18)
                   (choose-recipient.events/fill-request-details (transaction-details contact))
                   (navigation/navigate-to :wallet-send-transaction-chat))}
          (send.events/update-gas-price db false)))

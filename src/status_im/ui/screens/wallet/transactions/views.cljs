@@ -10,7 +10,9 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (defn history-action [filter?]
   (cond->
@@ -44,12 +46,13 @@
     (:postponed :pending)   (transaction-icon :icons/arrow-right components.styles/color-gray4-transparent components.styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol] :as transaction}]
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol] :as transaction} network]
   (let [[label contact address
          contact-accessibility-label
          address-accessibility-label] (if (inbound? type)
                                         [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
-                                        [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])]
+                                        [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
+        {:keys [decimals]}   (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
     [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
      [react/view {:accessibility-label :transaction-item}
       [list/item
@@ -60,7 +63,7 @@
                       :ellipsize-mode  "tail"
                       :number-of-lines 1}
           [react/text {:accessibility-label :amount-text}
-           (->> value (money/wei-> :eth) money/to-fixed str)]
+           (-> value  (money/internal->formatted symbol decimals) money/to-fixed str)]
           " "
           [react/text {:accessibility-label :currency-text}
            (clojure.string/upper-case (name symbol))]]
@@ -91,11 +94,12 @@
 
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
-            filter-data               [:wallet.transactions/filters]]
+            filter-data               [:wallet.transactions/filters]
+            network                   [:get-current-account-network]]
     [react/view components.styles/flex
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :key-fn          :hash
-                         :render-fn       render-transaction
+                         :render-fn       #(render-transaction % network)
                          :empty-component [react/text {:style styles/empty-text}
                                            (i18n/label :t/transactions-history-empty)]
                          :on-refresh      #(re-frame/dispatch [:update-transactions])

@@ -35,7 +35,7 @@
 (handlers/register-handler-fx
  :wallet.request/set-and-validate-amount
  (fn [{:keys [db]} [_ amount]]
-   (let [{:keys [value error]} (wallet-db/parse-amount amount)]
+   (let [{:keys [value error]} (wallet-db/parse-amount amount :ETH)]
      {:db (-> db
               (assoc-in [:wallet :request-transaction :amount] (money/ether->wei value))
               (assoc-in [:wallet :request-transaction :amount-text] amount)

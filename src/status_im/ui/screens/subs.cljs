@@ -86,3 +86,7 @@
          (fn [db [_ item-id]]
            (let [item-animation (get-in db [:chat-animations item-id])]
              (if (some? item-animation) (:delete-swiped item-animation) nil))))
+
+(reg-sub :get-current-account-network
+         (fn [{:keys [network] :as db} [_]]
+           (get-in db [:account/account :networks network])))

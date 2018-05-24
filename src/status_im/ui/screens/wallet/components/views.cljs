@@ -185,7 +185,8 @@
       [recipient-contact address name request?]
       [recipient-address address])]])
 
-(defn- amount-input [{:keys [input-options amount amount-text disabled?]}]
+(defn- amount-input [{:keys [input-options amount amount-text disabled?]}
+                     {:keys [symbol decimals]}]
   [react/view {:style               components.styles/flex
                :accessibility-label :specify-amount-button}
    [components/text-input
@@ -195,7 +196,9 @@
      ;; Otherwise, user might want to fix his input and autocorrection will give more harm than good.
      ;; Positive check is because we don't want to replace unfinished 0.000 with just plain 0, that is annoying and
      ;; potentially dangerous on this screen (e.g. sending 7 ETH instead of 0.0007)
-     {:default-value  (if (empty? amount-text) (str (money/to-fixed (money/wei->ether amount))) amount-text)}
+     {:default-value  (if (empty? amount-text)
+                        (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
+                        amount-text)}
      (if disabled?
        {:editable false}
        {:keyboard-type       :numeric
@@ -203,7 +206,7 @@
         :style               components.styles/flex
         :accessibility-label :amount-input}))]])
 
-(defn amount-selector [{:keys [error disabled?] :as m}]
+(defn amount-selector [{:keys [error disabled?] :as m} token]
   [react/view
    [components/cartouche {:disabled? disabled?}
     (i18n/label :t/amount)

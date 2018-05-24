@@ -21,7 +21,9 @@
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.money :as money]
             [status-im.utils.utils :as utils]
-            [status-im.transport.utils :as transport.utils]))
+            [status-im.transport.utils :as transport.utils]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (defn sign-later-popup
   [from-chat?]
@@ -192,8 +194,9 @@
    (when advanced?
      [advanced-cartouche transaction modal?])])
 
-(defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? symbol]}]
-  (let [{:keys [amount amount-text amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction
+(defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? network]}]
+  (let [{:keys [amount amount-text amount-error signing? to to-name sufficient-funds? in-progress? from-chat? symbol]} transaction
+        {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}
@@ -219,7 +222,7 @@
                                      :amount-text amount-text
                                      :input-options {:max-length     21
                                                      :on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])}}]
+                                                     :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
         [advanced-options advanced? transaction modal? scroll]]]
       (if signing?
         [signing-buttons
@@ -244,16 +247,20 @@
   (letsubs [transaction [:wallet.send/transaction]
             symbol [:wallet.send/symbol]
             advanced? [:wallet.send/advanced?]
+            network [:get-current-account-network]
             scroll (atom nil)]
-    [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]))
+    [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced?
+                             :symbol symbol :network network}]))
 
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
             symbol [:wallet.send/symbol]
             advanced? [:wallet.send/advanced?]
+            network [:get-current-account-network]
             scroll (atom nil)]
     (if transaction
-      [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]
+      [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced?
+                               symbol symbol :network network}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]

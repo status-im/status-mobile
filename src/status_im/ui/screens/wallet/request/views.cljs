@@ -45,7 +45,9 @@
                                      :amount-text amount-text
                                      :input-options {:max-length     21
                                                      :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
+                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}
+         {:decimals 18
+          :symbol  :ETH}]]]
       [bottom-buttons/bottom-buttons styles/bottom-buttons
        nil ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
        [button/button {:disabled?           (not (and to amount))
