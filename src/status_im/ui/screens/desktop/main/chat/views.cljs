@@ -148,8 +148,8 @@
                                                   modifiers (js->clj (.-modifiers native-event))
                                                   should-send (and (= key "Enter") (not (contains? (set modifiers) "shift")))]
                                               (when should-send
-                                                (do (.clear @inp-ref)
-                                                    (.focus @inp-ref))
+                                                (.clear @inp-ref)
+                                                (.focus @inp-ref)
                                                 (re-frame/dispatch [:send-current-message]))))
                           :on-change      (fn [e]
                                             (let [native-event (.-nativeEvent e)
