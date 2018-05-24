@@ -70,15 +70,23 @@
 (handlers/register-handler-fx
  :load-more-messages
  [(re-frame/inject-cofx :data-store/get-messages)]
- (fn [{{:keys [current-chat-id] :as db} :db get-stored-messages :get-stored-messages} _]
+ (fn [{{:keys [current-chat-id] :as db} :db get-stored-messages :get-stored-messages}]
    (when-not (get-in db [:chats current-chat-id :all-loaded?])
-     (let [loaded-count (count (get-in db [:chats current-chat-id :messages]))
-           new-messages (index-messages (get-stored-messages current-chat-id loaded-count))]
-       {:db (-> db
-                (update-in [:chats current-chat-id :messages] merge new-messages)
-                (update-in [:chats current-chat-id :not-loaded-message-ids] #(apply disj % (keys new-messages)))
-                (assoc-in [:chats current-chat-id :all-loaded?]
-                          (> constants/default-number-of-messages (count new-messages))))}))))
+     (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
+           page             (inc (get-in db [:chats current-chat-id :page]))
+           enough-messages? (> loaded-count (* 20 (inc page)))]
+       {:db
+        (cond->
+         (assoc-in db [:chats current-chat-id :page] page)
+
+          (not enough-messages?)
+          (as-> $
+                (let [new-messages (index-messages (get-stored-messages current-chat-id loaded-count))]
+                  (-> $
+                      (update-in [:chats current-chat-id :messages] merge new-messages)
+                      (update-in [:chats current-chat-id :not-loaded-message-ids] #(apply disj % (keys new-messages)))
+                      (assoc-in [:chats current-chat-id :all-loaded?]
+                                (> constants/default-number-of-messages (count new-messages)))))))}))))
 
 (handlers/register-handler-db
  :message-appeared
@@ -267,7 +275,8 @@
   [chat-id {:keys [db] :as cofx}]
   (handlers-macro/merge-fx cofx
                            {:db (-> (assoc db :current-chat-id chat-id)
-                                    (models/set-chat-ui-props {:validation-messages nil}))}
+                                    (models/set-chat-ui-props {:validation-messages nil})
+                                    (assoc-in [:chats chat-id :page] 0))}
                            (fire-off-chat-loaded-event chat-id)
                            (mark-messages-seen chat-id)))
 

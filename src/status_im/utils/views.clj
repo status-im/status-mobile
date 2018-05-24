@@ -16,7 +16,7 @@
   (let [pairs     (map (fn [[form sub]]
                          {:form form
                           :sub  sub
-                          :sym  (if (atom? sub)
+                          :sym  (if (vector? sub)
                                   (gensym (str (if (map? form) "keys" form)))
                                   form)})
                        (partition 2 subs))
@@ -30,7 +30,7 @@
                  [form (walk-sub sub form->sym)]))
              pairs)
      (apply concat (keep (fn [{:keys [sym form sub]}]
-                           (when (atom? sub)
+                           (when (vector? sub)
                              [form `(deref ~sym)]))
                          pairs))]))
 
