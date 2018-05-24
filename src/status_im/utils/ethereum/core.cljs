@@ -3,8 +3,7 @@
             [status-im.js-dependencies :as dependencies]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]
-            [taoensso.timbre :as log]
-            [status-im.utils.types :as types]))
+            [taoensso.timbre :as log]))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 
@@ -32,6 +31,28 @@
 
 (defn network-with-upstream-rpc? [network]
   (get-in network [:config :UpstreamConfig :Enabled]))
+
+(defn passphrase->words [s]
+  (when s
+    (-> (string/trim s)
+        (string/replace-all #"\s+" " ")
+        (string/split #" "))))
+
+(defn words->passphrase [v]
+  (string/join " " v))
+
+(def valid-word-counts #{12 15 18 21 24})
+
+(defn valid-word-counts? [v]
+  (boolean (valid-word-counts (count v))))
+
+(defn- valid-word? [s]
+  (re-matches #"^[A-z]+$" s))
+
+(defn valid-words? [v]
+  (and
+   (valid-word-counts? v)
+   (every? valid-word? v)))
 
 (def hex-prefix "0x")
 
