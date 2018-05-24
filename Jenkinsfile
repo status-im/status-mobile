@@ -55,13 +55,12 @@ timeout(90) {
 
         // Android
         stage('Build (Android)') {
-          sh 'node --expose-gc --max_old_space_size=4096 ./node_modules/react-native/local-cli/cli.js bundle --platform android --dev false --entry-file index.android.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/debug/res'
-          sh 'cd android && ./gradlew assembleDebug'
+          sh 'cd android && ./gradlew assembleRelease'
         }
 
         stage('Deploy (Android)') {
           withCredentials([string(credentialsId: 'diawi-token', variable: 'token'), string(credentialsId: 'GIT_HUB_TOKEN', variable: 'githubToken')] ) {     
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/debug/app-debug.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
             sh 'sleep 10'
             def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
             apkUrl = 'https://i.diawi.com/' + hash
