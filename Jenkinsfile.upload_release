@@ -39,8 +39,6 @@ timeout(90) {
 
           version = readFile "${env.WORKSPACE}/VERSION"
 
-          sh 'echo "' + version + '" > .version'
-
           sh 'git fetch --tags'
 
           sh 'rm -rf node_modules'
