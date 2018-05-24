@@ -37,7 +37,8 @@ timeout(90) {
 
           checkout scm
 
-          version = BRANCH_NAME.substring(8)
+          version = readFile "${env.WORKSPACE}/VERSION"
+
           sh 'echo "' + version + '" > .version'
 
           sh 'git fetch --tags'
