@@ -33,7 +33,8 @@ else
         LATEST_TAG="0.0.$COMMIT_COUNT"
         COMMIT_COUNT_SINCE_TAG=0
     else
-        COMMIT_COUNT_SINCE_TAG=$(git rev-list --count ${LATEST_TAG}..)
+        VERSION_CHANGE_COMMIT=$(git log -n 1 --pretty=format:%H -- ../../VERSION)
+        COMMIT_COUNT_SINCE_TAG=$(git rev-list --count ${VERSION_CHANGE_COMMIT}..)
         LATEST_TAG=${LATEST_TAG##v} # Remove the "v" from the front of the tag
     fi
     if [ $COMMIT_COUNT_SINCE_TAG = 0 ]; then
