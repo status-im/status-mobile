@@ -27,7 +27,6 @@ timeout(90) {
       load "$HOME/env.groovy"
 
       try {
-
         stage('Git & Dependencies') {
           slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
 
@@ -58,10 +57,6 @@ timeout(90) {
           sh 'lein prod-build'
         }
 
-        stage('Build (Android)') {
-          sh 'cd android && ./gradlew assembleRelease -PreleaseVersion=' + version
-        }
-
         stage('Build (iOS)') {
           withCredentials([string(credentialsId: 'jenkins_pass', variable: 'password')]) {
             def build_no = sh(returnStdout: true, script: './scripts/build_no.sh --tag').trim()
@@ -73,14 +68,9 @@ timeout(90) {
           }
         }
 
-        stage('Deploy (Android)') {
-          sh ('bundle exec fastlane android release')
-        }
-
         stage('Deploy (iOS)') {
           sh ('bundle exec fastlane ios release')
         }
-
 
         stage('Push build tag') {
           withCredentials([[
@@ -93,12 +83,12 @@ timeout(90) {
           }
         }
       } catch (e) {
-        slackSend color: 'bad', message: 'Release build failed uploading to iTC/Play Market. ' + env.BUILD_URL
+        slackSend color: 'bad', message: 'Release build failed uploading to iTunes Connect. ' + env.BUILD_URL
         throw e
       }
 
       stage('Slack Notification') {
-        slackSend color: 'good', message: 'Release build ' + version + ' succesfully aploade to iTC/Play Market'
+        slackSend color: 'good', message: 'Release build ' + version + ' succesfully aploade to iTunes Connect'
       }
     }
 }
