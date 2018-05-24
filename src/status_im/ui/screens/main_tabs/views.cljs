@@ -66,7 +66,8 @@
 
 (views/defview main-tabs []
   (views/letsubs [view-id          [:get :view-id]
-                  tab-bar-visible? [:tab-bar-visible?]]
+                  tab-bar-visible? [:tab-bar-visible?]
+                  {:keys [wallet-set-up-passed?]} [:get-current-account]]
     [react/view common.styles/flex
      [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
      [react/view common.styles/main-container
@@ -84,6 +85,7 @@
         :preview  [react/view {}]}
        [react/navigation-wrapper
         {:component    wallet/wallet
+         :hide?        (not wallet-set-up-passed?)
          :views        :wallet
          :current-view view-id}]]
 
