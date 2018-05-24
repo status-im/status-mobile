@@ -55,9 +55,14 @@ timeout(90) {
         sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
       }
 
-      stage('Build MacOS bundle') {
+      stage('Build MacOS binaries') {
         // sh 'react-native desktop'
         sh 'react-native build-desktop'
+      }
+
+      stage('Prepare Bundle') {
+        sh ('cd ' + packageFolder + ' && ../scripts/download-mac-bundle-files.sh && unzip ./StatusIm.app.zip')
+
       }
 
     } catch (e) {
