@@ -17,46 +17,48 @@ def installJSDeps() {
     }
 }
 
-node ('macos1') {
-  def apkUrl = ''
-  def ipaUrl = ''
-  def testPassed = true
-  def branch;
-  def scriptOutput = ''
+timeout(90) {
+  node ('macos1') {
+    def apkUrl = ''
+    def ipaUrl = ''
+    def testPassed = true
+    def branch;
+    def scriptOutput = ''
 
-  load "$HOME/env.groovy"
+    load "$HOME/env.groovy"
 
-  try {
+    try {
 
-    stage('Git & Dependencies') {
-      //slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+      stage('Git & Dependencies') {
+        //slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
-      checkout scm
-      sh 'git rebase origin/desktop'
+        checkout scm
+        sh 'git rebase origin/desktop'
 
-      sh 'rm -rf node_modules'
-      sh 'cp .env.jenkins .env'
-      sh 'lein deps'
+        sh 'rm -rf node_modules'
+        sh 'cp .env.jenkins .env'
+        sh 'lein deps'
 
-      installJSDeps()
+        installJSDeps()
 
-      sh 'cd ./node_modules/react-native/react-native-cli && npm install -g && cd ../../../'
+        sh 'cd ./node_modules/react-native/react-native-cli && npm install -g && cd ../../../'
+      }
+
+      stage('Build ClojureScript') {
+        sh 'rm -f index.desktop.js'
+        // sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
+        sh 'lein prod-build-desktop'
+        sh 'react-native bundle --entry-file index.desktop.js --bundle-output $WORKFOLDER/StatusIm.jsbundle --dev false --platform desktop --assets-dest $WORKFOLDER/assets'
+      }
+
+      stage('Build MacOS bundle') {
+        // sh 'react-native desktop'
+        sh 'react-native build-desktop'
+      }
+
+    } catch (e) {
+      //slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+      throw e
     }
-
-    stage('Build ClojureScript') {
-      sh 'rm -f index.desktop.js'
-      sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
-      sh 'lein prod-build-desktop'
-      sh 'react-native bundle --entry-file index.desktop.js --bundle-output $WORKFOLDER/StatusIm.jsbundle --dev false --platform desktop --assets-dest $WORKFOLDER/assets'
-    }
-
-    stage('Build MacOS bundle') {
-      // sh 'react-native desktop'
-      sh 'react-native build-desktop'
-    }
-
-  } catch (e) {
-    //slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
-    throw e
   }
 }
