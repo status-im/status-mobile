@@ -23,11 +23,11 @@ if [[ $(git ls-files -m "StatusIm/Info.plist") = *"Info.plist"* ]]; then
     echo "version was set in Info.plist"
 else
     # Build version (closest-tag-or-branch "-" commits-since-tag "-" short-hash dirty-flag)
-    BUILD_VERSION=$(git describe --tags --always --dirty=+ --match='[0-9]*.[0-9]*.[0-9]*')
+    BUILD_VERSION="$(cat ../../VERSION)-$(git describe --always --dirty=+)"
 
     # Use the latest tag for short version (expected tag format "vn[.n[.n]]")
     # or if there are no tags, we make up version 0.0.<commit count>
-    LATEST_TAG=$(git describe --tags --abbrev=0 --match='[0-9]*.[0-9]*.[0-9]*' 2>/dev/null) || LATEST_TAG="HEAD"
+    LATEST_TAG=$(cat ../../VERSION) || LATEST_TAG="HEAD"
     if [ $LATEST_TAG = "HEAD" ]
     then COMMIT_COUNT=$(git rev-list --count HEAD)
         LATEST_TAG="0.0.$COMMIT_COUNT"
