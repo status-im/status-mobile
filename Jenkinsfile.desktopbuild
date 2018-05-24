@@ -24,6 +24,7 @@ timeout(90) {
     def testPassed = true
     def branch;
     def scriptOutput = ''
+    def packageFolder = './StatusImPackage'
 
     load "$HOME/env.groovy"
 
@@ -48,7 +49,10 @@ timeout(90) {
         sh 'rm -f index.desktop.js'
         // sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
         sh 'lein prod-build-desktop'
-        sh 'react-native bundle --entry-file index.desktop.js --bundle-output $WORKFOLDER/StatusIm.jsbundle --dev false --platform desktop --assets-dest $WORKFOLDER/assets'
+
+        sh ( 'rm -rf ' + packageFolder )
+        sh ( 'mkdir ' + packageFolder )
+        sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
       }
 
       stage('Build MacOS bundle') {
