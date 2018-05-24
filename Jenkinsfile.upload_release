@@ -75,11 +75,11 @@ timeout(90) {
         }
 
         stage('Deploy (Android)') {
-          sh ('bundle exec fastlane android release || exit 0')
+          sh ('bundle exec fastlane android release')
         }
 
         stage('Deploy (iOS)') {
-          sh ('bundle exec fastlane ios release || exit 0')
+          sh ('bundle exec fastlane ios release')
         }
 
 
