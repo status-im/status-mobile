@@ -26,7 +26,7 @@
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
-  (-> (.requestPermissions (.-default rn/react-native-fcm))
+  (-> (.requestPermission (.messaging (object/get rn/react-native-firebase "default")))
       (.then
        (fn [_]
          (log/debug "notifications-granted")
@@ -36,27 +36,25 @@
          (dispatch [:request-notifications-denied {}])))))
 
 (defn get-fcm-token []
-  (-> (.getFCMToken (object/get rn/react-native-fcm "default"))
+  (-> (.getToken (.messaging (object/get rn/react-native-firebase "default")))
       (.then (fn [x]
                (log/debug "get-fcm-token: " x)
                (dispatch [:update-fcm-token x])))))
 
 (defn on-refresh-fcm-token []
-  (.on (.-default rn/react-native-fcm)
-       (.-RefreshToken (.-FCMEvent rn/react-native-fcm))
-       (fn [x]
-         (log/debug "on-refresh-fcm-token: " x)
-         (dispatch [:update-fcm-token x]))))
+  (.onTokenRefresh (.messaging (object/get rn/react-native-firebase "default"))
+                   (fn [x]
+                     (log/debug "on-refresh-fcm-token: " x)
+                     (dispatch [:update-fcm-token x]))))
 
 ;; TODO(oskarth): Only called in background on iOS right now.
 ;; NOTE(oskarth): Hardcoded data keys :sum and :msg in status-go right now.
 (defn on-notification []
-  (.on (.-default rn/react-native-fcm)
-       (.-Notification (.-FCMEvent rn/react-native-fcm))
-       (fn [event-js]
-         (let [event (js->clj event-js :keywordize-keys true)
-               data  (select-keys event [:sum :msg])
-               aps   (:aps event)]
-           (log/debug "on-notification event: " (pr-str event))
-           (log/debug "on-notification aps: "   (pr-str aps))
-           (log/debug "on-notification data: "  (pr-str data))))))
+  (.onNotification (.notifications (object/get rn/react-native-firebase "default"))
+                   (fn [event-js]
+                     (let [event (js->clj event-js :keywordize-keys true)
+                           data  (select-keys event [:sum :msg])
+                           aps   (:aps event)]
+                       (log/debug "on-notification event: " (pr-str event))
+                       (log/debug "on-notification aps: "   (pr-str aps))
+                       (log/debug "on-notification data: "  (pr-str data))))))

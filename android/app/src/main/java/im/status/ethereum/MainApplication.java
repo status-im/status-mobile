@@ -4,11 +4,12 @@ import android.support.multidex.MultiDexApplication;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.horcrux.svg.SvgPackage;
-import com.evollu.react.fcm.FIRMessagingPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -56,10 +57,11 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
+                    new RNFirebasePackage(),
+                    new RNFirebaseMessagingPackage(),
                     new RNSecureRandomPackage(),
                     new BackgroundTimerPackage(),
                     new SvgPackage(),
-                    new FIRMessagingPackage(),
                     new HttpServerReactPackage(),
                     new NfcReactNativePackage(),
                     new SplashScreenReactPackage(),

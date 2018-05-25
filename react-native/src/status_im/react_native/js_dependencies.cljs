@@ -19,7 +19,7 @@
 (def realm                  (js/require "realm"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    (js/require "react-native-svg"))
-(def react-native-fcm       (js/require "react-native-fcm"))
+(def react-native-firebase  (js/require "react-native-firebase"))
 (def secure-random          (.-generateSecureRandom (js/require "react-native-securerandom")))
 (def snoopy                 (js/require "rn-snoopy"))
 (def snoopy-filter          (js/require "rn-snoopy/stream/filter"))
