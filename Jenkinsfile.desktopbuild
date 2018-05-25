@@ -11,7 +11,6 @@ def installJSDeps() {
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
         sh 'npm install'
-        //sh 'npm install metro'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
     }
@@ -25,7 +24,7 @@ timeout(90) {
     def branch;
     def scriptOutput = ''
     def packageFolder = './StatusImPackage'
-    def scriptPath = sh ('pwd -P')
+    def scriptPath = ''
 
     load "$HOME/env.groovy"
 
@@ -33,6 +32,9 @@ timeout(90) {
 
       stage('Git & Dependencies') {
         //slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+
+        scriptPath = sh ('pwd -P')
+        sh ('echo ' + scriptPath)
 
         checkout scm
         sh 'git rebase origin/desktop'
@@ -57,7 +59,6 @@ timeout(90) {
       }
 
       stage('Build MacOS binaries') {
-        // sh 'react-native desktop'
         sh 'react-native build-desktop'
       }
 
