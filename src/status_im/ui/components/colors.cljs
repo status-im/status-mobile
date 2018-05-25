@@ -17,6 +17,8 @@
 (def gray-border "#ececf0")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
 (def blue-dark "#3147ac") ;; Used as secondary wallet color (icon background)
+(def hawkes-blue "#dce2fb") ;; Outgoing chat messages background
+(def wild-blue-yonder "#707caf") ;; Text color for outgoing messages timestamp
 (def red "#ff2d55") ;; Used to highlight errors or "dangerous" actions
 (def red-light "#ffe5ea") ;; error tooltip
 (def text-light-gray "#212121") ;; Used for labels (home items)

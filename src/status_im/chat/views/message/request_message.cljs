@@ -74,7 +74,7 @@
               [icon command-icon st/command-request-image])]]))})))
 
 (defview message-content-command-request
-  [{:keys [message-id content] :as message}]
+  [{:keys [message-id content outgoing] :as message}]
   (letsubs [command             [:get-command (:request-command-ref content)]
             answered?           [:is-request-answered? message-id]
             status-initialized? [:get :status-module-initialized?]
@@ -94,7 +94,7 @@
       [view st/command-request-view
        [touchable-highlight
         {:on-press on-press-handler}
-        [view st/command-request-message-view
+        [view (st/command-request-message-view outgoing)
          (if (:markup preview)
            [view (commands-utils/generate-hiccup (:markup preview))
             (when network-mismatch?

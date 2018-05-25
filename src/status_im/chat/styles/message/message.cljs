@@ -48,18 +48,22 @@
             :align-self     align
             :align-items    align})))
 
-(defn message-timestamp [justify-timestamp?]
-  (merge {:color      colors/gray
-          :font-size  10
-          :align-self :flex-end
-          :opacity    0.5}
+(def message-timestamp
+  {:font-size  10
+   :align-self :flex-end
+   :opacity    0.5})
+
+(defn message-timestamp-text [justify-timestamp? outgoing]
+  (merge message-timestamp
+         {:color (if outgoing colors/wild-blue-yonder colors/gray)}
          (when justify-timestamp? {:position :absolute
                                    :bottom   10
                                    :right    12})))
 
-(def message-timestamp-placeholder
-  (assoc (message-timestamp false)
-         :color styles/color-white))
+(defn message-timestamp-placeholder-text [outgoing]
+  (assoc message-timestamp
+         :color
+         (if outgoing colors/hawkes-blue styles/color-white)))
 
 (def message-expand-button
   {:color         colors/gray
@@ -105,22 +109,23 @@
    :margin-top     2
    :opacity       0.5})
 
-(defstyle delivery-text
-  {:color      styles/color-gray4
+(def delivery-text
+  {:color       styles/color-gray4
    :margin-left 5
-   :android    {:font-size 13}
-   :ios        {:font-size 14}})
+   :font-size   14})
 
 (def not-sent-view
-  (assoc delivery-view :opacity       1
+  (assoc delivery-view
+         :opacity 1
          :margin-bottom 2
-         :padding-top   2))
+         :padding-top 2))
 
 (def not-sent-text
-  (assoc delivery-text  :color       styles/color-red
-         :opacity     1
-         :font-size   12
-         :text-align  :right
+  (assoc delivery-text
+         :color styles/color-red
+         :opacity 1
+         :font-size 12
+         :text-align :right
          :padding-top 4))
 
 (def not-sent-icon
@@ -145,31 +150,35 @@
    :margin-top (if incoming-group 4 0)})
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat selected]}]
+  [{:keys [content-type outgoing group-chat first-in-group?]}]
   (merge {:padding-top        6
           :padding-horizontal 12
           :padding-bottom     8
-          :border-radius      8}
+          :border-radius      8
+          :margin-top         (if (and first-in-group?
+                                       (or outgoing
+                                           (not group-chat)))
+                                16
+                                4)}
          (when-not (= content-type constants/content-type-emoji)
-           {:background-color styles/color-white})
+           {:background-color (if outgoing colors/hawkes-blue styles/color-white)})
          (when (= content-type constants/content-type-command)
            {:padding-top    10
             :padding-bottom 14})))
 
-(defstyle author
+(def author
   {:color         styles/color-gray4
-   :margin-bottom 5
-   :android       {:font-size 13}
-   :ios           {:font-size 14}})
+   :margin-bottom 4
+   :font-size     12})
 
 (def command-request-view
   {:padding-right 16})
 
-(def command-request-message-view
+(defn command-request-message-view [outgoing]
   {:border-radius    14
    :padding-vertical 10
    :padding-right    28
-   :background-color styles/color-white})
+   :background-color (if outgoing colors/hawkes-blue styles/color-white)})
 
 (def command-request-from-text
   (merge style-sub-text {:margin-bottom 2}))
@@ -311,5 +320,6 @@
 (def message-author-name
   {:font-size      12
    :letter-spacing -0.2
+   :padding-top    6
    :padding-bottom 4
    :color          colors/gray})
