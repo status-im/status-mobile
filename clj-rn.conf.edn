@@ -16,7 +16,7 @@
               "react-native-image-crop-picker"
               "react-native-securerandom"
               "react-native-webview-bridge"
-              "react-native-fcm"
+              "react-native-firebase"
               "homoglyph-finder"
               "web3"
               "chance"
