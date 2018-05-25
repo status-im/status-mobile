@@ -75,8 +75,9 @@ timeout(90) {
 
       stage('Archive built artifact') {
         archiveArtifacts "./StatusImPackage/StatusIm.dmg"
-        slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
       }
+
+      slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
     } catch (e) {
       slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
       throw e
