@@ -3,12 +3,12 @@ import sys
 import re
 import subprocess
 import asyncio
-
+from support.network_api import NetworkApi
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
 from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads, api_requests
+from tests import test_suite_data, start_threads
 from views.base_view import BaseView
 
 
@@ -105,6 +105,8 @@ class AbstractTestCase:
         return 8
 
     errors = []
+
+    network_api = NetworkApi()
 
     def verify_no_errors(self):
         if self.errors:
@@ -210,6 +212,6 @@ class MultipleDeviceTestCase(environments[pytest.config.getoption('env')]):
 
     def teardown_method(self, method):
         for user in self.senders:
-            api_requests.faucet(address=self.senders[user]['address'])
+            self.network_api.faucet(address=self.senders[user]['address'])
         super(MultipleDeviceTestCase, self).teardown_method(method)
 

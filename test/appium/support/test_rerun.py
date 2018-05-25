@@ -6,7 +6,9 @@ RERUN_ERRORS = [
     'The server returned an invalid or incomplete response.',
     '502 Bad Gateway',
     'Unexpected server error',
-    '504 Gateway Time-out'
+    '504 Gateway Time-out',
+    'Internal Server Error',
+    'Invalid message: ERROR Internal Server Error'
 ]
 
 

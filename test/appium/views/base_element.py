@@ -80,6 +80,16 @@ class BaseElement(object):
                                                                                                seconds)
             raise exception
 
+    def wait_for_invisibility_of_element(self, seconds=10):
+        try:
+            return WebDriverWait(self.driver, seconds) \
+                .until(expected_conditions.invisibility_of_element_located((self.locator.by, self.locator.value)))
+        except TimeoutException as exception:
+            exception.msg = "'%s' is still present on screen, using: '%s', during '%s' seconds" % (self.name,
+                                                                                                   self.locator,
+                                                                                                   seconds)
+            raise exception
+
     def scroll_to_element(self):
         for _ in range(9):
             try:

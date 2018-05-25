@@ -37,9 +37,14 @@ class ChatElement(BaseButton):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+    def click(self):
+        from views.chat_view import ChatMessageInput
+        desired_element = ChatMessageInput(self.driver)
+        self.click_until_presence_of_element(desired_element=desired_element)
+        return self.navigate()
+
     @property
     def swipe_delete_button(self):
-
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)

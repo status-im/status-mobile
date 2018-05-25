@@ -2,10 +2,10 @@ import time
 import pytest
 import random
 import string
-import emoji
 from tests import transaction_users, marks, group_chat_users, get_current_time
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
+
 
 @marks.all
 @marks.chat_management
@@ -63,7 +63,7 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
         device_1_chat_view.delete_chat(self.senders['h_user']['username'], self.errors)
         device_1_profile_view = device_1_sign_in_view.profile_button.click()
         device_1_sign_in_view = device_1_profile_view.logout()
-        time.sleep(5) # Prevent stale element exception for first_account_button
+        time.sleep(5)  # Prevent stale element exception for first_account_button
         device_1_sign_in_view.account_button.click()
         device_1_sign_in_view.sign_in(self.senders['g_user']['password'])
         if device_1_home_view.get_chat_with_user(self.senders['h_user']['username']).is_element_present(20):

@@ -1,4 +1,4 @@
-from tests import api_requests, transaction_users_wallet, marks
+from tests import transaction_users_wallet, marks
 from selenium.common.exceptions import TimeoutException
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -72,8 +72,8 @@ class TestWallet(SingleDeviceTestCase):
                                     password=transaction_users_wallet['A_USER']['password'])
         wallet = sign_in_view.wallet_button.click()
         address = transaction_users_wallet['A_USER']['address']
-        balance = api_requests.get_balance(address) / 1000000000000000000
-        eth_rate = api_requests.get_ethereum_price_in_usd()
+        balance = self.network_api.get_balance(address) / 1000000000000000000
+        eth_rate = self.network_api.get_ethereum_price_in_usd()
         wallet_balance = wallet.get_eth_value()
         if wallet_balance != balance:
             errors.append('Balance %s is not equal to the expected %s' % (wallet_balance, balance))
@@ -87,7 +87,7 @@ class TestWallet(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         sender_public_key = home_view.get_public_key()
         sender_address = home_view.public_key_to_address(sender_public_key)
-        api_requests.get_donate(sender_address)
+        self.network_api.get_donate(sender_address)
         wallet_view = sign_in_view.wallet_button.click()
         sign_in_phrase = wallet_view.set_up_wallet()
 
