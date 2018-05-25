@@ -46,7 +46,7 @@
 (defn- filter-dapps [v dev-mode?]
   (remove #(when-not dev-mode? (true? (:developer? %))) v))
 
-(reg-sub :all-dapp-with-url-contacts
+(reg-sub :all-dapps
          :<- [:get-dapps]
          :<- [:get-current-account]
          (fn [[dapps {:keys [dev-mode?]}]]
@@ -65,6 +65,11 @@
          :<- [:get-contacts]
          (fn [contacts [_ identity]]
            (get contacts identity)))
+
+(reg-sub :get-dapp-by-name
+         :<- [:get-dapps]
+         (fn [dapps [_ name]]
+           (first (filter #(= (:name %) name) (apply concat (map :data dapps))))))
 
 (reg-sub :get-contact-name-by-identity
          :<- [:get-contacts]

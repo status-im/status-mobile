@@ -14,14 +14,14 @@
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.open-dapp.styles :as styles]))
 
-(defn- render-contact [contact]
-  [contact-view/contact-view {:contact             contact
-                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description contact])
+(defn- render-dapp [dapp]
+  [contact-view/contact-view {:contact             dapp
+                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description dapp])
                               :show-forward?       true
                               :accessibility-label :dapp-item}])
 
 (views/defview open-dapp []
-  (views/letsubs [dapps [:all-dapp-with-url-contacts]
+  (views/letsubs [dapps [:all-dapps]
                   url-text (atom nil)]
     [react/keyboard-avoiding-view styles/main-container
      [status-bar/status-bar]
@@ -40,7 +40,7 @@
                          :return-key-type     :go}]]
      [list/section-list {:sections                  dapps
                          :key-fn                    :dapp-url
-                         :render-fn                 render-contact
+                         :render-fn                 render-dapp
                          :default-separator?        true
                          :enableEmptySections       true
                          :keyboardShouldPersistTaps :always}]]))

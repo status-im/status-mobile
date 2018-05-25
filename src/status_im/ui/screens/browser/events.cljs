@@ -34,12 +34,11 @@
 (handlers/register-handler-fx
  :open-dapp-in-browser
  [re-frame/trim-v]
- (fn [cofx [{:keys [name dapp-url] :as contact}]]
-   (let [browser {:browser-id (:whisper-identity contact)
+ (fn [cofx [{:keys [name dapp-url]}]]
+   (let [browser {:browser-id name
                   :name       name
                   :dapp?      true
-                  :url        dapp-url
-                  :contact    (:whisper-identity contact)}]
+                  :url        dapp-url}]
      (merge (add-browser-fx cofx browser)
             {:dispatch [:navigate-to :browser {:browser/browser-id (:browser-id browser)}]}))))
 

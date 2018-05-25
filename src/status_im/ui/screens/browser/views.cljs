@@ -18,17 +18,17 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.tooltip.views :as tooltip]))
 
-(views/defview toolbar-content-dapp [contact-identity]
-  (views/letsubs [contact [:get-contact-by-identity contact-identity]]
+(views/defview toolbar-content-dapp [name]
+  (views/letsubs [dapp [:get-dapp-by-name name]]
     [react/view
      [react/view styles/toolbar-content-dapp
-      [chat-icon.screen/dapp-icon-browser contact 36]
+      [chat-icon.screen/dapp-icon-browser dapp 36]
       [react/view styles/dapp-name
        [react/text {:style               styles/dapp-name-text
                     :number-of-lines     1
                     :font                :toolbar-title
                     :accessibility-label :dapp-name-text}
-        (:name contact)]
+        name]
        [react/text {:style styles/dapp-text}
         (i18n/label :t/dapp)]]]]))
 
@@ -76,7 +76,7 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   {:keys [address]} [:get-current-account]
-                  {:keys [dapp? contact url browser-id] :as browser} [:get-current-browser]
+                  {:keys [dapp? url browser-id name] :as browser} [:get-current-browser]
                   {:keys [can-go-back? can-go-forward? error?]} [:get :browser/options]
                   rpc-url [:get :rpc-url]
                   network-id [:get-network-id]]
@@ -89,7 +89,7 @@
                         (when error?
                           (re-frame/dispatch [:remove-browser browser-id]))))]
       (if dapp?
-        [toolbar-content-dapp contact]
+        [toolbar-content-dapp name]
         [toolbar-content browser])]
      (if url
        [components.webview-bridge/webview-bridge
