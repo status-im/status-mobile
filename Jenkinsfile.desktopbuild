@@ -24,7 +24,7 @@ timeout(90) {
     def branch;
     def scriptOutput = ''
     def packageFolder = './StatusImPackage'
-    def scriptPath = ''
+    def scriptPath = sh(script: 'pwd -P', returnStdout: true)
 
     load "$HOME/env.groovy"
 
@@ -33,7 +33,6 @@ timeout(90) {
       stage('Git & Dependencies') {
         //slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
-        scriptPath = sh ('pwd -P')
         sh ('echo ' + scriptPath)
 
         checkout scm
