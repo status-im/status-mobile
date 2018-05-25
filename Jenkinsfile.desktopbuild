@@ -1,0 +1,86 @@
+env.LANG="en_US.UTF-8"
+env.LANGUAGE="en_US.UTF-8"
+env.LC_ALL="en_US.UTF-8"
+
+def installJSDeps() {
+    def attempt = 1
+    def maxAttempts = 10
+    def installed = false
+    sh 'node -v'
+    sh 'npm -v'
+    while (!installed && attempt <= maxAttempts) {
+        println "#${attempt} attempt to install npm deps"
+        sh 'npm install'
+        installed = fileExists('node_modules/web3/index.js')
+        attemp = attempt + 1
+    }
+}
+
+timeout(90) {
+  node ('macos1') {
+    def apkUrl = ''
+    def ipaUrl = ''
+    def testPassed = true
+    def branch;
+    def scriptOutput = ''
+    def packageFolder = './StatusImPackage'
+    def scriptPath = sh(script: 'pwd -P', returnStdout: true).trim()
+
+    load "$HOME/env.groovy"
+
+    try {
+
+      stage('Git & Dependencies') {
+        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+
+        sh ('echo ' + scriptPath)
+
+        checkout scm
+        sh 'git rebase origin/desktop'
+
+        sh 'rm -rf node_modules'
+        sh 'cp .env.jenkins .env'
+        sh 'lein deps'
+
+        installJSDeps()
+
+        sh 'cd ./node_modules/react-native/react-native-cli && npm install -g && cd ../../../'
+      }
+
+      stage('Build ClojureScript') {
+        sh 'rm -f index.desktop.js'
+        // sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
+        sh 'lein prod-build-desktop'
+
+        sh ( 'rm -rf ' + packageFolder )
+        sh ( 'mkdir ' + packageFolder )
+        sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
+      }
+
+      stage('Build MacOS binaries') {
+        sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
+        sh 'cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
+         -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
+
+        //sh 'react-native build-desktop'
+      }
+
+      stage('Prepare and create MacOS Bundle') {
+        sh ('cd ' + packageFolder + ' && ../scripts/download-mac-bundle-files.sh && unzip ./StatusIm.app.zip')
+        sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
+        sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
+
+        sh ('macdeployqt ' + packageFolder + '/StatusIm.app -verbose=3 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/" -dmg')
+      }
+
+      stage('Archive built artifact') {
+        archiveArtifacts "StatusImPackage/*.dmg"
+      }
+
+      slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
+    } catch (e) {
+      slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+      throw e
+    }
+  }
+}
