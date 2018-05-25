@@ -210,7 +210,7 @@
   [react/view
    [components/cartouche {:disabled? disabled?}
     (i18n/label :t/amount)
-    [amount-input m]]
+    [amount-input m token]]
    (when error
      [tooltip/tooltip error])])
 

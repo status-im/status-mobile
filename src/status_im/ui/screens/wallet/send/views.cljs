@@ -115,9 +115,11 @@
 
 (defview transaction-fee []
   (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
+            network [:get-current-account-network]
             edit [:wallet/edit]]
     (let [gas (or (:gas edit) (:gas transaction))
-          gas-price (or (:gas-price edit) (:gas-price transaction))]
+          gas-price (or (:gas-price edit) (:gas-price transaction))
+          {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
        [toolbar true act/close-white
         (i18n/label :t/wallet-transaction-fee)]
@@ -151,7 +153,7 @@
           (i18n/label :t/amount)
           [react/view {:accessibility-label :amount-input}
            [wallet.components/cartouche-text-content
-            (str (money/to-fixed (money/wei->ether amount)))
+            (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
             (name symbol)]]]
          [wallet.components/cartouche {:disabled? true}
           (i18n/label :t/wallet-transaction-total-fee)
@@ -280,7 +282,7 @@
          (i18n/label :t/message)
          [components/amount-input {:disabled?     true
                                    :input-options {:multiline     true
-                                                   :default-value data}}]]]]
+                                                   :default-value data}} nil]]]]
       [signing-buttons
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
        #(re-frame/dispatch [:wallet/sign-transaction-modal])
