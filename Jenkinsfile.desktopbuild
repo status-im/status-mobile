@@ -60,7 +60,7 @@ timeout(90) {
       stage('Build MacOS binaries') {
         sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
         sh 'cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
-         -DJS_BUNDLE_PATH="' + scriptPath + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
+         -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
 
         //sh 'react-native build-desktop'
       }
@@ -73,8 +73,9 @@ timeout(90) {
         sh ('macdeployqt ' + packageFolder + '/StatusIm.app -verbose=3 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/" -dmg')
       }
 
+      slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
     } catch (e) {
-      //slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+      slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
       throw e
     }
   }
