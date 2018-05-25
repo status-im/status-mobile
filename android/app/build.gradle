@@ -193,6 +193,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
@@ -207,7 +208,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:26.1.0"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
-    compile ("com.facebook.react:react-native:0.53.3") { force = true }  // From node_modules
+    implementation ("com.facebook.react:react-native:0.53.3") { force = true }  // From node_modules
     implementation project(':react-native-i18n')
     implementation project(':react-native-camera')
     implementation project(':react-native-status')
@@ -216,9 +217,11 @@ dependencies {
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-config')
-    implementation project(':react-native-fcm')
-    implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
-    compile project(':react-native-testfairy')
+    implementation 'com.google.android.gms:play-services-base:15.0.0'
+    implementation 'com.google.firebase:firebase-core:15.0.2' //this decides your firebase SDK version
+    implementation "com.google.firebase:firebase-messaging:15.0.2"
+    implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
+    implementation project(':react-native-testfairy')
     implementation project(':react-native-keychain')
     implementation project(':instabug-reactnative')
 
