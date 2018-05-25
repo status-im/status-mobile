@@ -31,7 +31,7 @@ timeout(90) {
     try {
 
       stage('Git & Dependencies') {
-        //slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
         sh ('echo ' + scriptPath)
 
@@ -59,7 +59,7 @@ timeout(90) {
 
       stage('Build MacOS binaries') {
         sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
-        sh 'cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop,node_modules/react-native-config/desktop,node_modules/react-native-fs/desktop,node_modules/react-native-http-bridge/desktop,node_modules/react-native-webview-bridge/desktop,modules/react-native-status/desktop"\
+        sh 'cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
          -DJS_BUNDLE_PATH="' + scriptPath + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
 
         //sh 'react-native build-desktop'
