@@ -22,7 +22,8 @@
                        fetching? :t/fetching-messages
                        :else nil)]
       (let [pending? (and (:pending current-chat-contact) (= :chat view-id))]
-        [react/view {:style (styles/text-wrapper top 1.0 window-width pending?)}
+        [react/view {:style               (styles/text-wrapper top 1.0 window-width pending?)
+                     :accessibility-label :connection-status-text}
          [react/text {:style    styles/text
                       :on-press (when mailserver-error?
                                   #(re-frame/dispatch [:inbox/reconnect]))}
