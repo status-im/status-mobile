@@ -144,18 +144,20 @@
                           :ref            #(reset! inp-ref %)
                           :on-key-press   (fn [e]
                                             (let [native-event (.-nativeEvent e)
-                                                  key (.-key native-event)]
-                                              (when (= key "Enter")
-                                                (js/setTimeout #(do
-                                                                  (.clear @inp-ref)
-                                                                  (.focus @inp-ref)) 200)
+                                                  key (.-key native-event)
+                                                  modifiers (js->clj (.-modifiers native-event))
+                                                  should-send (and (= key "Enter") (not (contains? (set modifiers) "shift")))]
+                                              (when should-send
+                                                (.clear @inp-ref)
+                                                (.focus @inp-ref)
                                                 (re-frame/dispatch [:send-current-message]))))
                           :on-change      (fn [e]
                                             (let [native-event (.-nativeEvent e)
                                                   text (.-text native-event)]
                                               (re-frame/dispatch [:set-chat-input-text text])))}]]
       [react/touchable-highlight {:on-press (fn []
-                                              (js/setTimeout #(do (.clear @inp-ref)(.focus @inp-ref)) 200)
+                                              (.clear @inp-ref)
+                                              (.focus @inp-ref)
                                               (re-frame/dispatch [:send-current-message]))}
        [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
                             :justify-content :center :transform [{ :rotate "90deg"}]}}
