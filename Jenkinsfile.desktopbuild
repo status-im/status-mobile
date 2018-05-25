@@ -25,6 +25,7 @@ timeout(90) {
     def branch;
     def scriptOutput = ''
     def packageFolder = './StatusImPackage'
+    def scriptPath = sh ('pwd -P')
 
     load "$HOME/env.groovy"
 
@@ -60,9 +61,12 @@ timeout(90) {
         sh 'react-native build-desktop'
       }
 
-      stage('Prepare Bundle') {
+      stage('Prepare and create MacOS Bundle') {
         sh ('cd ' + packageFolder + ' && ../scripts/download-mac-bundle-files.sh && unzip ./StatusIm.app.zip')
+        sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
+        sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
 
+        sh ('$MACDEPLOYQT ' + packageFolder + '/StatusIm.app -verbose=3 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/" -dmg')
       }
 
     } catch (e) {
