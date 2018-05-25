@@ -73,7 +73,10 @@ timeout(90) {
         sh ('macdeployqt ' + packageFolder + '/StatusIm.app -verbose=3 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/" -dmg')
       }
 
-      slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
+      stage('Archive built artifact') {
+        archiveArtifacts "./StatusImPackage/StatusIm.dmg"
+        slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
+      }
     } catch (e) {
       slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
       throw e
