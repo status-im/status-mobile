@@ -66,7 +66,7 @@ timeout(90) {
         sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
         sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
 
-        sh ('$MACDEPLOYQT ' + packageFolder + '/StatusIm.app -verbose=3 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/" -dmg')
+        sh ('macdeployqt ' + packageFolder + '/StatusIm.app -verbose=3 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/" -dmg')
       }
 
     } catch (e) {
