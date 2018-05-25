@@ -38,11 +38,14 @@
                                         :headers {"Cache-Control" "no-cache"}
                                         :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [response]
-                (let [ok?  (.-ok response)
-                      ok?' (if valid-response?
-                             (and ok? (valid-response? response))
-                             ok?)]
-                  [(.-_bodyText response) ok?'])))
+                (->
+                 (.text response)
+                 (.then (fn [response-body]
+                          (let [ok?  (.-ok response)
+                                ok?' (if valid-response?
+                                       (and ok? (valid-response? response))
+                                       ok?)]
+                            [response-body ok?']))))))
        (.then (fn [[response ok?]]
                 (cond
                   (and on-success ok?)
