@@ -34,7 +34,8 @@
             [status-im.test.utils.async]
             [status-im.test.utils.datetime]
             [status-im.test.utils.mixpanel]
-            [status-im.test.utils.prices]))
+            [status-im.test.utils.prices]
+            [status-im.test.ui.screens.network-settings.edit-network.events]))
 
 (enable-console-print!)
 
@@ -79,4 +80,5 @@
  'status-im.test.utils.transducers
  'status-im.test.utils.datetime
  'status-im.test.utils.mixpanel
- 'status-im.test.utils.prices)
+ 'status-im.test.utils.prices
+ 'status-im.test.ui.screens.network-settings.edit-network.events)

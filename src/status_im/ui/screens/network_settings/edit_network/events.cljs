@@ -15,8 +15,7 @@
                                    :URL     upstream-url}}]
     {:id         (string/replace random-id "-" "")
      :name       network-name
-     :config     (types/clj->json config)
-     :raw-config config}))
+     :config     config}))
 
 (handlers/register-handler-fx
  :save-new-network
