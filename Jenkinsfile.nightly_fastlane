@@ -33,7 +33,7 @@ timeout(90) {
 
           checkout scm
 
-          version = readFile "${env.WORKSPACE}/VERSION"
+          version = readFile("${env.WORKSPACE}/VERSION").trim()
 
           sh 'git fetch --tags'
           sh 'rm -rf node_modules'
