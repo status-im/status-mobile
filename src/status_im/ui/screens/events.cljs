@@ -405,12 +405,13 @@
 (handlers/register-handler-fx
  :discovery/summary
  (fn [{:keys [db] :as cofx} [_ peers-summary]]
-   (let [peers-count (count peers-summary)]
+   (let [previous-summary (:peers-summary db)
+         peers-count      (count peers-summary)]
      (handlers-macro/merge-fx cofx
                               {:db (assoc db
                                           :peers-summary peers-summary
                                           :peers-count peers-count)}
-                              (inbox/peers-summary-change-fx)))))
+                              (inbox/peers-summary-change-fx previous-summary)))))
 
 (handlers/register-handler-fx
  :signal-event

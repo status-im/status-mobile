@@ -73,7 +73,8 @@
                         (success-fn resp)
                         (error-fn err)))))
 
-(defn request-inbox-messages [web3 wnode topics to from sym-key-id success-fn error-fn]
+(defn request-inbox-messages
+  [web3 wnode topics to from sym-key-id success-fn error-fn]
   (let [opts (merge {:mailServerPeer wnode
                      :symKeyID       sym-key-id}
                     (when from {:from from})
@@ -136,34 +137,46 @@
    A connection-check is made after `connection timeout` is reached and
    mailserver-status is changed to error if it is not connected by then"
   [{:keys [db] :as cofx}]
-  (let [web3     (:web3 db)
-        wnode    (get-current-wnode-address db)]
+  (let [web3          (:web3 db)
+        wnode         (get-current-wnode-address db)
+        peers-summary (:peers-summary db)
+        connected?    (registered-peer? peers-summary wnode)]
     (when config/offline-inbox-enabled?
-      (handlers-macro/merge-fx cofx
-                               {::add-peer {:wnode wnode}
-                                :utils/dispatch-later [{:ms connection-timeout
-                                                        :dispatch [:inbox/connection-check]}]}
-                               (update-mailserver-status :connecting)
-                               (generate-mailserver-symkey)))))
+      (if connected?
+        (handlers-macro/merge-fx cofx
+                                 (update-mailserver-status :connected)
+                                 (generate-mailserver-symkey))
+        (handlers-macro/merge-fx cofx
+                                 {::add-peer {:wnode wnode}
+                                  :utils/dispatch-later [{:ms connection-timeout
+                                                          :dispatch [:inbox/connection-check]}]}
+                                 (update-mailserver-status :connecting)
+                                 (generate-mailserver-symkey))))))
 
 (defn peers-summary-change-fx
-  "Called when a peer summary signal is received or we want to try to connect
-   to mailserver ie. after login.
-   Marks the mailserver as trusted peer if it is already added to the list of
-   peers or connects to it if it's not the case"
-  [{:keys [db] :as cofx}]
+  "There is only 2 summary changes that require offline inboxing action:
+  - mailserver disconnected: we try to reconnect
+  - mailserver connected: we mark the mailserver as trusted peer"
+  [previous-summary {:keys [db] :as cofx}]
   (when (and (:account/account db)
              config/offline-inbox-enabled?)
-    (let [{:keys [peers-summary peers-count]} db]
-      (if (zero? peers-count)
-        (update-mailserver-status :disconnected cofx)
-        (let [wnode (get-current-wnode-address db)]
-          (if (registered-peer? peers-summary wnode)
-            (handlers-macro/merge-fx cofx
-                                     {::mark-trusted-peer {:web3  (:web3 db)
-                                                           :wnode wnode}}
-                                     (generate-mailserver-symkey))
-            (connect-to-mailserver cofx)))))))
+    (let [{:keys [peers-summary peers-count]} db
+          wnode                               (get-current-wnode-address db)
+          mailserver-was-registered?          (registered-peer? previous-summary
+                                                                wnode)
+          mailserver-is-registered?           (registered-peer? peers-summary
+                                                                wnode)
+          mailserver-connected?               (and mailserver-is-registered?
+                                                   (not mailserver-was-registered?))
+          mailserver-disconnected?            (and mailserver-was-registered?
+                                                   (not mailserver-is-registered?))]
+      (cond
+        mailserver-disconnected?
+        (connect-to-mailserver cofx)
+
+        mailserver-connected?
+        {::mark-trusted-peer {:web3  (:web3 db)
+                              :wnode wnode}}))))
 
 (defn get-topics
   [db topics discover?]

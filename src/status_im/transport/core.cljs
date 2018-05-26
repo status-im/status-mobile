@@ -34,7 +34,7 @@
                                 :shh/restore-sym-keys {:web3       web3
                                                        :transport  (:transport/chats db)
                                                        :on-success sym-key-added-callback}}
-                               (inbox/peers-summary-change-fx)))))
+                               (inbox/connect-to-mailserver)))))
 
 ;;TODO (yenda) remove once go implements persistence
 ;;Since symkeys are not persisted, we restore them via add sym-keys,
