@@ -44,9 +44,9 @@ timeout(90) {
 
         installJSDeps()
 
-        sh 'rm -rf react-native-desktop'
-        sh 'npm uninstall -g react-native-cli'
-        sh 'git clone https://github.com/status-im/react-native-desktop.git && cd ./react-native-desktop/react-native-cli && npm install -g && cd ../../ && rm -rf react-native-desktop'
+        //sh 'rm -rf react-native-desktop'
+        //sh 'npm uninstall -g react-native-cli'
+        //sh 'git clone https://github.com/status-im/react-native-desktop.git && cd ./react-native-desktop/react-native-cli && npm install -g && cd ../../ && rm -rf react-native-desktop'
       }
 
       stage('Build ClojureScript') {
