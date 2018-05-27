@@ -18,25 +18,36 @@
             [status-im.transport.message.v1.group-chat :as v1.group-chat]
             [status-im.data-store.transport :as transport-store]))
 
-(defn receive-message [cofx chat-id js-message]
-  (let [{:keys [payload sig]} (js->clj js-message :keywordize-keys true)
+(defn update-last-received-from-inbox
+  "Distinguishes messages that are expired from those that are not
+   Expired messages are coming from offline inboxing"
+  [now-in-s timestamp ttl {:keys [db now] :as cofx}]
+  (when (> (- now-in-s timestamp) ttl)
+    {:db (assoc db :inbox/last-received now)}))
+
+(defn receive-message [cofx now-in-s chat-id js-message]
+  (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
                            transport.utils/to-utf8
                            transit/deserialize
                            (assoc :js-obj js-message))]
     (when (and sig status-message)
-      (message/receive status-message (or chat-id sig) sig cofx))))
+      (handlers-macro/merge-fx
+       cofx
+       (message/receive status-message (or chat-id sig) sig)
+       (update-last-received-from-inbox now-in-s timestamp ttl)))))
 
 (defn- js-array->list [array]
   (for [i (range (.-length array))]
     (aget array i)))
 
-(defn receive-whisper-messages [cofx [js-error js-messages chat-id]]
-  (handlers-macro/merge-effects
-   cofx
-   (fn [message temp-cofx]
-     (receive-message temp-cofx chat-id message))
-   (js-array->list js-messages)))
+(defn receive-whisper-messages [{:keys [now] :as cofx} [js-error js-messages chat-id]]
+  (let [now-in-s (quot now 1000)]
+    (handlers-macro/merge-effects
+     cofx
+     (fn [message temp-cofx]
+       (receive-message temp-cofx now-in-s chat-id message))
+     (js-array->list js-messages))))
 
 (handlers/register-handler-fx
  :protocol/receive-whisper-message

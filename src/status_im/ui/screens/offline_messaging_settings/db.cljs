@@ -18,3 +18,4 @@
 (spec/def :inbox/wnodes (spec/nilable (spec/map-of keyword? (spec/map-of :wnode/id :wnode/wnode))))
 (spec/def :inbox/sym-key-id string?)
 (spec/def :inbox/last-request integer?)
+(spec/def :inbox/last-received integer?)

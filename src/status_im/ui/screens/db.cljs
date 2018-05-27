@@ -179,6 +179,7 @@
                  :inbox/password
                  :inbox/sym-key-id
                  :inbox/last-request
+                 :inbox/last-received
                  :inbox/fetching?
                  :browser/browsers
                  :browser/options
