@@ -24,23 +24,54 @@ var StatusHttpProvider = function (host, timeout) {
 
 StatusHttpProvider.prototype.isStatus = true;
 
-function syncResponse(payload, result){
+function web3Response (payload, result){
     return {id: payload.id,
             jsonrpc: "2.0",
             result: result};
 }
 
+function getSyncResponse (payload) {
+    if (payload.method == "eth_accounts"){
+        return web3Response(payload, [currentAccountAddress])
+    } else if (payload.method == "eth_coinbase"){
+        return web3Response(payload, currentAccountAddress)
+    } else if (payload.method == "net_version"){
+        return web3Response(payload, networkId)
+    } else {
+        return null;
+    }
+}
+
 StatusHttpProvider.prototype.send = function (payload) {
     //TODO to be compatible with MM https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#dizzy-all-async---think-of-metamask-as-a-light-client
-    if (payload.method == "eth_accounts"){
-        return syncResponse(payload, [currentAccountAddress])
-    } else if (payload.method == "eth_coinbase"){
-        return syncResponse(payload, currentAccountAddress)
-    } else if (payload.method == "net_version"){
-        return syncResponse(payload, networkId)
+    var syncResponse = getSyncResponse(payload);
+    if (syncResponse){
+        return syncResponse;
     } else {
         alert('You tried to send "' + payload.method + '" synchronously. Synchronous requests are not supported, sorry.');
         return null;
+    }
+};
+
+StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
+    var syncResponse = getSyncResponse(payload);
+    if (syncResponse){
+        callback(null, syncResponse);
+    }
+    else {
+        var messageId = callbackId++;
+        callbacks[messageId] = callback;
+        if (typeof StatusBridge == "undefined") {
+            var data = {
+                payload: JSON.stringify(payload),
+                callbackId: JSON.stringify(messageId),
+                host: this.host
+            };
+
+            webkit.messageHandlers.sendRequest.postMessage(JSON.stringify(data));
+        } else {
+            StatusBridge.sendRequest(this.host, JSON.stringify(messageId), JSON.stringify(payload));
+        }
     }
 };
 
@@ -51,24 +82,6 @@ StatusHttpProvider.prototype.prepareRequest = function () {
     request.setRequestHeader('Content-Type', 'application/json');
     return request;
 };
-
-function sendAsync(payload, callback) {
-    var messageId = callbackId++;
-    callbacks[messageId] = callback;
-    if (typeof StatusBridge == "undefined") {
-        var data = {
-            payload: JSON.stringify(payload),
-            callbackId: JSON.stringify(messageId),
-            host: this.host
-        };
-
-        webkit.messageHandlers.sendRequest.postMessage(JSON.stringify(data));
-    } else {
-        StatusBridge.sendRequest(this.host, JSON.stringify(messageId), JSON.stringify(payload));
-    }
-};
-
-StatusHttpProvider.prototype.sendAsync = sendAsync;
 
 /**
  * Synchronously tries to make Http request
