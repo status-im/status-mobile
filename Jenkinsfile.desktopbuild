@@ -44,12 +44,11 @@ timeout(90) {
 
         installJSDeps()
 
-        sh 'cd ./node_modules/react-native/react-native-cli && npm install -g && cd ../../../'
+        sh 'git clone https://github.com/status-im/react-native-desktop.git && cd ./react-native-desktop/react-native-cli && npm install -g && cd ../../ && rm -rf react-native-desktop'
       }
 
       stage('Build ClojureScript') {
         sh 'rm -f index.desktop.js'
-        // sh 'patch --verbose -d ./node_modules/metro/src -i ../../react-native/add-desktop-platform.patch'
         sh 'lein prod-build-desktop'
 
         sh ( 'rm -rf ' + packageFolder )
@@ -78,7 +77,7 @@ timeout(90) {
       }
 
       stage('Archive built artifact') {
-        archiveArtifacts "StatusImPackage/*.dmg"
+        // archiveArtifacts "StatusImPackage/*.dmg"
         archiveArtifacts "StatusImPackage/*.app.zip"
       }
 
