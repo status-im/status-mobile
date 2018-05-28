@@ -40,7 +40,8 @@
                      :signed-up?            true
                      :signing-phrase        phrase
                      :settings              (constants/default-account-settings)
-                     :wallet-set-up-passed? true}]
+                     :wallet-set-up-passed? false
+                     :seed-backed-up?       true}]
      (when-not (string/blank? public-key)
        (-> db
            (accounts-events/add-account account)
