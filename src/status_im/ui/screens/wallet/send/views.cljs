@@ -198,7 +198,7 @@
      [advanced-cartouche transaction modal?])])
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? network]}]
-  (let [{:keys [amount amount-text amount-error signing? to to-name sufficient-funds? in-progress? from-chat? symbol]} transaction
+  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? in-progress? from-chat? symbol]} transaction
         {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
@@ -216,6 +216,7 @@
                                         :address   to
                                         :name      to-name}]
         [components/asset-selector {:disabled? (or from-chat? modal?)
+                                    :error     asset-error
                                     :type      :send
                                     :symbol    symbol}]
         [components/amount-selector {:disabled?     (or from-chat? modal?)

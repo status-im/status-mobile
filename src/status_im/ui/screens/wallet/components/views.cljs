@@ -75,23 +75,26 @@
     :request :wallet-request-assets
     (throw (str "Unknown type: " k))))
 
-(views/defview asset-selector [{:keys [disabled? type symbol]}]
+(views/defview asset-selector [{:keys [disabled? type symbol error]}]
   (views/letsubs [balance  [:balance]
                   network  [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
-       (i18n/label :t/wallet-asset)
-       [react/view {:style               styles/asset-content-container
-                    :accessibility-label :choose-asset-button}
-        [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
-        [react/view styles/asset-text-content
-         [react/view styles/asset-label-content
-          [react/text {:style (merge styles/text-content styles/asset-label)}
-           name]
-          [react/text {:style styles/text-secondary-content}
-           (clojure.core/name symbol)]]
-         [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
-          (str (wallet.utils/format-amount (symbol balance) decimals))]]]])))
+      [react/view
+       [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+        (i18n/label :t/wallet-asset)
+        [react/view {:style               styles/asset-content-container
+                     :accessibility-label :choose-asset-button}
+         [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+         [react/view styles/asset-text-content
+          [react/view styles/asset-label-content
+           [react/text {:style (merge styles/text-content styles/asset-label)}
+            name]
+           [react/text {:style styles/text-secondary-content}
+            (clojure.core/name symbol)]]
+          [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
+           (str (wallet.utils/format-amount (symbol balance) decimals))]]]]
+       (when error
+         [tooltip/tooltip error {}])])))
 
 (defn- recipient-address [address]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
@@ -150,7 +153,7 @@
                                  :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
          [button/button {:disabled?    (string/blank? @content)
-                         :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content])
+                         :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content :code])
                          :fit-to-text? false}
           (i18n/label :t/done)]]]])))
 

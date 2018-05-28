@@ -8,6 +8,7 @@
 (spec/def ::to (spec/nilable string?))
 (spec/def ::to-name (spec/nilable string?))
 (spec/def ::amount-error (spec/nilable string?))
+(spec/def ::asset-error (spec/nilable string?))
 (spec/def ::amount-text (spec/nilable string?))
 (spec/def ::password (spec/nilable #(instance? security/MaskedData %)))
 (spec/def ::wrong-password? (spec/nilable boolean?))
@@ -28,7 +29,7 @@
 (spec/def ::method (spec/nilable string?))
 
 (spec/def :wallet/send-transaction (allowed-keys
-                                    :opt-un [::amount ::to ::to-name ::amount-error ::amount-text ::password
+                                    :opt-un [::amount ::to ::to-name ::amount-error ::asset-error ::amount-text ::password
                                              ::waiting-signal? ::signing? ::id ::later?
                                              ::camera-flashlight ::in-progress?
                                              ::wrong-password? ::from-chat? ::symbol ::advanced?

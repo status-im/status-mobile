@@ -63,7 +63,7 @@
                        :torchMode     (camera/set-torch camera-flashlight)
                        :onBarCodeRead #(when-not @read-once?
                                          (reset! read-once? true)
-                                         (re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil]))}]]
+                                         (re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) :qr]))}]]
       [viewfinder dimensions (size dimensions)]]
      [bottom-buttons/bottom-button
       [button/button {:disabled?           false

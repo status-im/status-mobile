@@ -573,6 +573,8 @@
    :wallet-address-from-clipboard        "Use Address From Clipboard"
    :wallet-invalid-address               "Invalid address: \n {{data}}"
    :wallet-invalid-chain-id              "Network does not match: \n {{data}} but current chain is {{chain}}"
+   :changed-asset-warning                "Asset was changed from {{old}} to {{new}}"
+   :changed-amount-warning               "Amount was changed from {{old}} to {{new}}"
    :wallet-browse-photos                 "Browse Photos"
    :wallet-advanced                      "Advanced"
    :wallet-transaction-fee               "Transaction Fee"
