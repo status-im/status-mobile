@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.accounts.recover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.react :as react]
@@ -14,7 +15,8 @@
             [status-im.utils.config :as config]
             [status-im.react-native.js-dependencies :as js-dependencies]
             [cljs.spec.alpha :as spec]
-            [status-im.ui.components.common.common :as components.common]))
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.utils.security :as security]))
 
 (defview passphrase-input [passphrase]
   (letsubs [error [:get-in [:accounts/recover :passphrase-error]]
@@ -65,4 +67,6 @@
          {:forward?  true
           :label     (i18n/label :t/sign-in)
           :disabled? (not valid-form?)
-          :on-press  #(re-frame/dispatch [:recover-account passphrase password])}]]])))
+          :on-press  (fn [_]
+                       (let [masked-passphrase (security/mask-data (string/trim passphrase))]
+                         (re-frame/dispatch [:recover-account masked-passphrase password])))}]]])))
