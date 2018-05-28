@@ -8,7 +8,8 @@ RERUN_ERRORS = [
     'Unexpected server error',
     '504 Gateway Time-out',
     'Internal Server Error',
-    'Invalid message: ERROR Internal Server Error'
+    'Invalid message: ERROR Internal Server Error',
+    "Message: 'CreateAccountButton' is not found on screen"
 ]
 
 

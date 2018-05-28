@@ -177,11 +177,9 @@ class TestMessages(MultipleDeviceTestCase):
 
         messages_from_user_2 = [emoji_unicode, '%s %s' % (message_with_emoji, emoji_unicode_1), message_with_new_line]
         chat_1.wait_for_messages(users[1], messages_from_user_2, self.errors)
-        chat_1.verify_username_is_shown_per_message(users[1], messages_from_user_2, self.errors)
 
         messages_from_user_1 = ['/command', '%s %s' % (unicode_text_message, unicode_chinese), 'This is text message.']
         chat_2.wait_for_messages(users[0], messages_from_user_1, self.errors)
-        chat_2.verify_username_is_shown_per_message(users[0], messages_from_user_1, self.errors)
 
         for chat in chat_1, chat_2:
             chat.delete_chat(chat_name, self.errors)

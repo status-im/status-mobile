@@ -44,6 +44,8 @@ class NetworkApi:
                 counter += 10
                 time.sleep(10)
                 transactions = self.get_transactions(address=address)
+                info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
+                     (amount, address))
                 for transaction in transactions:
                     if int(float(amount) * 10 ** 18) == int(transaction['value']):
                         info('Transaction with unique amount %s is found in list of transactions, address is %s' %

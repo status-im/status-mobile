@@ -122,10 +122,7 @@ class TestProfileView(SingleDeviceTestCase):
         chat_view.faucet_command.click()
         chat_view.faucet_send_command.click()
         chat_view.send_message_button.click()
-        chat_view.wait_for_message_in_one_to_one_chat('Faucet request has been received', self.errors)
-        self.verify_no_errors()
         chat_view.back_button.click()
-
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.wait_balance_changed_on_wallet_screen()
