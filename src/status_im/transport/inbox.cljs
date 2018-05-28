@@ -97,21 +97,31 @@
                         (success-fn resp)
                         (error-fn err)))))
 
+(def one-day (* 24 3600))
+(def seven-days (* 7 one-day))
+
 (defn request-inbox-messages
-  [web3 wnode topics to from sym-key-id success-fn error-fn]
-  (let [opts (merge {:mailServerPeer wnode
-                     :symKeyID       sym-key-id}
-                    (when from {:from from})
-                    (when to {:to to}))]
-    (log/info "offline inbox: request-messages request for topics " topics)
-    (doseq [topic topics]
-      (let [opts (assoc opts :topic topic)]
-        (.requestMessages (transport.utils/shh web3)
-                          (clj->js opts)
-                          (fn [err resp]
-                            (if-not err
-                              (success-fn resp)
-                              (error-fn err topic))))))))
+  [web3 wnode topics from to sym-key-id success-fn error-fn]
+  (loop [from       from
+         current-to to]
+    (let [current-to (if (> (- to from) one-day)
+                       (+ from one-day)
+                       to)
+          opts       (merge {:mailServerPeer wnode
+                             :symKeyID       sym-key-id
+                             :from           from
+                             :to             current-to})]
+      (log/info "offline inbox: request-messages request for topics " topics " from " from " to " current-to)
+      (doseq [topic topics]
+        (let [opts (assoc opts :topic topic)]
+          (.requestMessages (transport.utils/shh web3)
+                            (clj->js opts)
+                            (fn [err resp]
+                              (if-not err
+                                (success-fn resp topic)
+                                (error-fn err topic))))))
+      (when (< current-to to)
+        (recur current-to to)))))
 
 (re-frame/reg-fx
  ::add-peer
@@ -134,23 +144,25 @@
    (request-inbox-messages web3
                            wnode
                            topics
-                           to
                            from
+                           to
                            sym-key-id
-                           #(log/info "offline inbox: request-messages response" %)
-                           #(log/error "offline inbox: request-messages error" %1 %2 to from))))
+                           #(log/info "offline inbox: request-messages response" %1 %2 from to)
+                           #(log/error "offline inbox: request-messages error" %1 %2 from to))))
 
 (re-frame/reg-fx
  ::request-history
- (fn [{:keys [wnode topics to from sym-key-id web3]}]
-   (request-inbox-messages web3
-                           wnode
-                           topics
-                           to
-                           from
-                           sym-key-id
-                           #(log/info "offline inbox: request-messages response" %)
-                           #(log/error "offline inbox: request-messages error" %1 %2 to from))))
+ (fn [{:keys [wnode topics now-in-s sym-key-id web3]}]
+   (let [from (- now-in-s seven-days)
+         to   now-in-s]
+     (request-inbox-messages web3
+                             wnode
+                             topics
+                             from
+                             to
+                             sym-key-id
+                             #(log/info "offline inbox: request-messages response" %1 %2 from to)
+                             #(log/error "offline inbox: request-messages error" %1 %2 from to)))))
 
 (defn update-mailserver-status [transition {:keys [db]}]
   (let [state transition]
@@ -246,7 +258,7 @@
          sym-key-id              (:inbox/sym-key-id db)
          now-in-s                (quot now 1000)
          last-request            (get-in db [:account/account :last-request]
-                                         (- now-in-s (* 3600 24)))
+                                         (- now-in-s seven-days))
          request-messages-topics (get-request-messages-topics db)
          request-history-topics  (get-request-history-topics db)]
      (when (inbox-ready? cofx)
@@ -257,6 +269,7 @@
                             :sym-key-id sym-key-id
                             :web3       web3}
         ::request-history {:wnode      wnode
+                           :now-in-s   now-in-s
                            :topics     request-history-topics
                            :sym-key-id sym-key-id
                            :web3       web3}
@@ -276,6 +289,7 @@
     (when (inbox-ready? cofx)
       {::request-history {:wnode      wnode
                           :topics     [topic]
+                          :now-in-s   now-in-s
                           :sym-key-id sym-key-id
                           :web3       web3}
        :db                (assoc db :inbox/fetching? true)
