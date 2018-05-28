@@ -38,7 +38,6 @@ timeout(90) {
           checkout scm
 
           version = readFile("${env.WORKSPACE}/VERSION").trim()
-          sh 'echo "' + version + '" > .version'
 
           sh 'git fetch --tags'
 
