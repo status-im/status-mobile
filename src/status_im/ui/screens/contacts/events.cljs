@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.contacts.events
   (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.chat.events :as chat.events]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.transport.message.core :as transport]
@@ -10,7 +11,8 @@
             [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.js-resources :as js-res]))
+            [status-im.utils.js-resources :as js-res]
+            [status-im.utils.utils :as utils]))
 
 (re-frame/reg-cofx
  :get-default-contacts
@@ -89,9 +91,10 @@
  [(re-frame/inject-cofx :random-id)]
  (fn [{:keys [db] :as cofx} [_ _ contact-identity]]
    (let [current-account (:account/account db)
-         fx              {:db (assoc db :contacts/new-identity contact-identity)}]
-     (if (new-chat.db/validate-pub-key contact-identity current-account)
-       fx
+         fx              {:db (assoc db :contacts/new-identity contact-identity)}
+         validation-result (new-chat.db/validate-pub-key contact-identity current-account)]
+     (if (some? validation-result)
+       (utils/show-popup (i18n/label :t/unable-to-read-this-code) validation-result #(re-frame/dispatch [:navigate-to-clean :home]))
        (handlers-macro/merge-fx cofx
                                 fx
                                 (add-contact-and-open-chat contact-identity))))))
