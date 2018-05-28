@@ -126,12 +126,11 @@
         request-command                           (:request-command content)
         command-request?                          (and (= content-type constants/content-type-command-request)
                                                        request-command)
-        new-timestamp                             (or timestamp now)
         add-message-fn                            (if batch? add-batch-message add-single-message)]
     (handlers-macro/merge-fx cofx
                              {:confirm-message-processed [{:web3   web3
                                                            :js-obj js-obj}]}
-                             (add-message-fn (cond-> (assoc message :timestamp new-timestamp)
+                             (add-message-fn (cond-> message
                                                public-key
                                                (assoc :user-statuses {public-key (if current-chat? :seen :received)})
                                                (not clock-value)
@@ -383,11 +382,6 @@
                        :show?            true}
                       chat)))
 
-(defn- add-console-responses
-  [command handler-data {:keys [random-id-seq]}]
-  {:dispatch (->> (console-events/console-respond-command-messages command handler-data random-id-seq)
-                  (vector :chat-received-message/add))})
-
 (defn send-command
   [{{:keys [current-public-key chats network] :as db} :db :keys [now] :as cofx} params]
   (let [{{:keys [handler-data to-message command] :as content} :command chat-id :chat-id} params
@@ -396,7 +390,7 @@
         request (:request handler-data)]
     (handlers-macro/merge-fx cofx
                              (upsert-and-send (prepare-command-message current-public-key chat now request content network))
-                             (add-console-responses command handler-data)
+                             (console-events/console-respond-command-messages command handler-data)
                              (requests-events/request-answered chat-id to-message))))
 
 (defn invoke-console-command-handler

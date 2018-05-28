@@ -6,8 +6,7 @@
             [status-im.constants :as constants]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.random :as random]))
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 ;;;; Handlers
 
@@ -62,10 +61,11 @@
 ;; TODO(alwx): refactor this when status-im.commands.handlers.jail is refactored
 (handlers/register-handler-fx
  :chat-received-message/bot-response
- (fn [{:contacts/keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result bot-id] :as data}]]
+ message-model/receive-interceptors
+ (fn [{:keys [random-id now]} [{:keys [chat-id] :as params} {:keys [result bot-id] :as data}]]
    (let [{:keys [returned context]} result
          {:keys [markup text-message err]} returned
-         {:keys [log-messages update-db default-db]} context
+         {:keys [update-db default-db]} context
          content (or err text-message)]
      (when update-db
        (re-frame/dispatch [:update-bot-db {:bot bot-id
@@ -74,27 +74,15 @@
                                                      :bot-id bot-id
                                                      :result data
                                                      :default-db default-db)])
-     (doseq [message log-messages]
-       (let [{:keys [message type]} message]
-         (when (or (not= type "debug")
-                   js/goog.DEBUG
-                   (get-in contacts [chat-id :debug?]))
-           (re-frame/dispatch [:chat-received-message/add
-                               [{:message-id   (random/id)
-                                 :content      (str type ": " message)
-                                 :content-type constants/content-type-log-message
-                                 :outgoing     false
-                                 :clock-value  (utils.clocks/send 0)
-                                 :chat-id      chat-id
-                                 :from         chat-id
-                                 :to           "me"}]]))))
      (when content
        (re-frame/dispatch [:chat-received-message/add
-                           [{:message-id   (random/id)
+                           [{:message-id   random-id
+                             :timestamp    now
                              :content      (str content)
                              :content-type constants/text-content-type
                              :outgoing     false
                              :clock-value  (utils.clocks/send 0)
                              :chat-id      chat-id
                              :from         chat-id
-                             :to           "me"}]])))))
+                             :to           "me"
+                             :show?        true}]])))))
