@@ -3,40 +3,6 @@
             [status-im.transport.inbox :as inbox]
             [status-im.constants :as constants]))
 
-(deftest request-messages
-  (testing "mailserver not connected"
-    (is (= (inbox/request-messages {} {:db {:mailserver-status :connecting :inbox/sym-key-id :sym-key}})
-           {:db
-            {:mailserver-status :connecting,
-             :inbox/sym-key-id :sym-key,
-             :inbox/topics #{"0xf8946aac"}}}))
-    (is (= (inbox/request-messages {:discover? false :topics ["Oxaaaaaaaa"]} {:db {:mailserver-status :connecting :inbox/sym-key-id :sym-key}})
-           {:db
-            {:mailserver-status :connecting,
-             :inbox/sym-key-id :sym-key,
-             :inbox/topics #{"Oxaaaaaaaa"}}})))
-  (testing "mailserver is connected"
-    (is (= (inbox/request-messages {} {:db {:mailserver-status :connected :inbox/sym-key-id :sym-key}})
-           {:status-im.transport.inbox/request-messages
-            {:wnode nil, :topics ["0xf8946aac"], :sym-key-id :sym-key, :web3 nil},
-            :db
-            {:mailserver-status :connected,
-             :inbox/sym-key-id :sym-key,
-             :inbox/fetching? true,
-             :inbox/topics #{}},
-            :dispatch-later
-            [{:ms 5000, :dispatch [:inbox/remove-fetching-notification]}]})
-        (= (inbox/request-messages {:discover? false :topics ["Oxaaaaaaaa"]} {:db {:mailserver-status :connected :inbox/sym-key-id :sym-key}})
-           {:status-im.transport.inbox/request-messages
-            {:wnode nil, :topics ["Oxaaaaaaaa"], :sym-key-id :sym-key, :web3 nil},
-            :db
-            {:mailserver-status :connected,
-             :inbox/sym-key-id :sym-key,
-             :inbox/fetching? true,
-             :inbox/topics #{}},
-            :dispatch-later
-            [{:ms 5000, :dispatch [:inbox/remove-fetching-notification]}]}))))
-
 (defn cofx-fixtures [sym-key registered-peer?]
   {:db {:mailserver-status :connected
         :inbox/sym-key-id sym-key

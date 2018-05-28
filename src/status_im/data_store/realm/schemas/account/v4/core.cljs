@@ -1,12 +1,12 @@
-(ns status-im.data-store.realm.schemas.account.v3.core
+(ns status-im.data-store.realm.schemas.account.v4.core
   (:require [status-im.data-store.realm.schemas.account.v3.chat :as chat]
-            [status-im.data-store.realm.schemas.account.v1.transport :as transport]
+            [status-im.data-store.realm.schemas.account.v4.transport :as transport]
             [status-im.data-store.realm.schemas.account.v1.contact :as contact]
             [status-im.data-store.realm.schemas.account.v1.message :as message]
             [status-im.data-store.realm.schemas.account.v1.request :as request]
-            [status-im.data-store.realm.schemas.account.v2.mailserver :as mailserver]
             [status-im.data-store.realm.schemas.account.v1.user-status :as user-status]
             [status-im.data-store.realm.schemas.account.v1.local-storage :as local-storage]
+            [status-im.data-store.realm.schemas.account.v2.mailserver :as mailserver]
             [status-im.data-store.realm.schemas.account.v1.browser :as browser]
             [taoensso.timbre :as log]))
 
@@ -21,4 +21,4 @@
              browser/schema])
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating v3 account database: " old-realm new-realm))
+  (log/debug "migrating v4 account database: " old-realm new-realm))

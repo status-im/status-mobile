@@ -30,7 +30,7 @@
  (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id]}]]
    (let [{:keys [web3]} db
          topic          (transport.utils/get-topic chat-id)]
-     {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+     {:db             (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
       :shh/add-filter {:web3       web3
                        :sym-key-id sym-key-id
                        :topic      topic
@@ -41,6 +41,4 @@
                                       (assoc :sym-key-id sym-key-id)
                                       ;;TODO (yenda) remove once go implements persistence
                                       (assoc :sym-key sym-key))})]
-      :dispatch [:inbox/request-messages {:topics    [topic]
-                                          :discover? false
-                                          :from      0}]})))
+      :dispatch       [:inbox/request-chat-history chat-id]})))

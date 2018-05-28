@@ -12,16 +12,40 @@
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.data-store.accounts :as accounts-store]
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.data-store.core :as data-store]
+            [status-im.ui.screens.accounts.events :as accounts]
+            [status-im.data-store.transport :as transport-store]))
+
+;; How does offline inboxing work ?
+;;
+;; - We send a request to the mailserver, we are only interested in the
+;; messages since `last-request`, the time of the last successful request,
+;; and the last 7 days for topics that were just joined
+;; - The mailserver doesn't directly respond to the request and
+;; instead we start receiving messages in the filters for the requested
+;; topics.
+;; - These messages are expired that is how we differentiate them from
+;; normal whisper messages to update last-received
+;; - After fetching-timeout is reached since the last mailserver message
+;; was received without a connection incident, we consider the request
+;; successfull and update `last-request` and `fetch-history?` fields of each
+;; topic to false
+;; - If the mailserver was not ready when we tried for instance to request
+;; the history of a topic after joining a chat, the request will be done
+;; as soon as the mailserver becomes available
 
 (def connection-timeout
   "Time after which mailserver connection is considered to have failed"
   60000)
 
-(def fetching-messages-notification-timeout
-  "Time after which we consider mailserver is done fetching messages and we can
-  stop showing notification to user"
-  5000)
+(def fetching-timeout
+  "Time we should wait after last message was fetch from mailserver before we
+   consider it done
+   Needs to be at least 10 seconds because that is the time it takes for the app
+   to realize it was disconnected"
+  10000)
 
 (defn- parse-json
   ;; NOTE(dmitryn) Expects JSON response like:
@@ -102,7 +126,7 @@
    (mark-trusted-peer web3
                       wnode
                       #(re-frame/dispatch [:inbox/mailserver-trusted %])
-                      #(re-frame/dispatch [:inbox/connection-check]))))
+                      #(re-frame/dispatch [:inbox/check-connection]))))
 
 (re-frame/reg-fx
  ::request-messages
@@ -116,9 +140,23 @@
                            #(log/info "offline inbox: request-messages response" %)
                            #(log/error "offline inbox: request-messages error" %1 %2 to from))))
 
+(re-frame/reg-fx
+ ::request-history
+ (fn [{:keys [wnode topics to from sym-key-id web3]}]
+   (request-inbox-messages web3
+                           wnode
+                           topics
+                           to
+                           from
+                           sym-key-id
+                           #(log/info "offline inbox: request-messages response" %)
+                           #(log/error "offline inbox: request-messages error" %1 %2 to from))))
+
 (defn update-mailserver-status [transition {:keys [db]}]
   (let [state transition]
-    {:db (assoc db :mailserver-status state)}))
+    {:db (assoc db
+                :mailserver-status state
+                :inbox/fetching? false)}))
 
 (defn generate-mailserver-symkey [{:keys [db] :as cofx}]
   (when-not (:inbox/sym-key-id db)
@@ -149,7 +187,7 @@
         (handlers-macro/merge-fx cofx
                                  {::add-peer {:wnode wnode}
                                   :utils/dispatch-later [{:ms connection-timeout
-                                                          :dispatch [:inbox/connection-check]}]}
+                                                          :dispatch [:inbox/check-connection]}]}
                                  (update-mailserver-status :connecting)
                                  (generate-mailserver-symkey))))))
 
@@ -166,8 +204,10 @@
                                                                 wnode)
           mailserver-is-registered?           (registered-peer? peers-summary
                                                                 wnode)
+          ;; the mailserver just connected
           mailserver-connected?               (and mailserver-is-registered?
                                                    (not mailserver-was-registered?))
+          ;; the mailserver just disconnected
           mailserver-disconnected?            (and mailserver-was-registered?
                                                    (not mailserver-is-registered?))]
       (cond
@@ -178,40 +218,69 @@
         {::mark-trusted-peer {:web3  (:web3 db)
                               :wnode wnode}}))))
 
-(defn get-topics
-  [db topics discover?]
-  (let [inbox-topics    (:inbox/topics db)
-        discovery-topic (transport.utils/get-topic constants/contact-discovery)
-        topics          (or topics
-                            (map #(:topic %) (vals (:transport/chats db))))]
-    (cond-> (apply conj inbox-topics topics)
-      discover? (conj discovery-topic))))
+(defn inbox-ready? [{:keys [db]}]
+  (let [mailserver-status (:mailserver-status db)
+        sym-key-id        (:inbox/sym-key-id db)]
+    (and (= :connected mailserver-status)
+         sym-key-id)))
+
+(defn get-request-messages-topics
+  "Returns topics for which full history has already been recovered"
+  [db]
+  (conj (mapv :topic
+              (remove :fetch-history?
+                      (vals (:transport/chats db))))
+        (transport.utils/get-topic constants/contact-discovery)))
+
+(defn get-request-history-topics
+  "Returns topics for which full history has not been recovered"
+  [db]
+  (mapv :topic
+        (filter :fetch-history?
+                (vals (:transport/chats db)))))
 
 (defn request-messages
-  ([cofx]
-   (request-messages {} cofx))
-  ([{:keys [topics discover? should-recover?]
-     :or {should-recover? true
-          discover?       true}}
-    {:keys [db] :as cofx}]
-   (let [mailserver-status (:mailserver-status db)
-         sym-key-id        (:inbox/sym-key-id db)
-         wnode             (get-current-wnode-address db)
-         inbox-topics      (get-topics db topics discover?)
-         inbox-ready?      (and (= :connected mailserver-status)
-                                sym-key-id)]
-     (when should-recover?
-       (if inbox-ready?
-         {::request-messages {:wnode      wnode
-                              :topics     (into [] inbox-topics)
-                              :sym-key-id sym-key-id
-                              :web3       (:web3 db)}
-          :db                (assoc db
-                                    :inbox/fetching? true
-                                    :inbox/topics #{})
-          :dispatch-later    [{:ms fetching-messages-notification-timeout
-                               :dispatch [:inbox/remove-fetching-notification]}]}
-         {:db (assoc db :inbox/topics (into #{} inbox-topics))})))))
+  ([{:keys [db now] :as cofx}]
+   (let [wnode                   (get-current-wnode-address db)
+         web3                    (:web3 db)
+         sym-key-id              (:inbox/sym-key-id db)
+         now-in-s                (quot now 1000)
+         last-request            (get-in db [:account/account :last-request]
+                                         (- now-in-s (* 3600 24)))
+         request-messages-topics (get-request-messages-topics db)
+         request-history-topics  (get-request-history-topics db)]
+     (when (inbox-ready? cofx)
+       {::request-messages {:wnode      wnode
+                            :topics     request-messages-topics
+                            :from       last-request
+                            :to         now-in-s
+                            :sym-key-id sym-key-id
+                            :web3       web3}
+        ::request-history {:wnode      wnode
+                           :topics     request-history-topics
+                           :sym-key-id sym-key-id
+                           :web3       web3}
+        :db                (assoc db :inbox/fetching? true)
+        :dispatch-later    [{:ms fetching-timeout
+                             :dispatch [:inbox/check-fetching now-in-s]}]})))
+  ([should-recover? {:keys [db] :as cofx}]
+   (when should-recover?
+     (request-messages cofx))))
+
+(defn request-chat-history [chat-id {:keys [db now] :as cofx}]
+  (let [wnode             (get-current-wnode-address db)
+        web3              (:web3 db)
+        sym-key-id        (:inbox/sym-key-id db)
+        topic             (get-in db [:transport/chats chat-id :topic])
+        now-in-s          (quot now 1000)]
+    (when (inbox-ready? cofx)
+      {::request-history {:wnode      wnode
+                          :topics     [topic]
+                          :sym-key-id sym-key-id
+                          :web3       web3}
+       :db                (assoc db :inbox/fetching? true)
+       :dispatch-later    [{:ms fetching-timeout
+                            :dispatch [:inbox/check-fetching now-in-s chat-id]}]})))
 
 ;;;; Handlers
 
@@ -239,20 +308,68 @@
                             (request-messages))))
 
 (handlers/register-handler-fx
- :inbox/request-messages
- (fn [cofx [_ args]]
-   (request-messages args cofx)))
+ :inbox/request-chat-history
+ (fn [{:keys [db] :as cofx} [_ chat-id]]
+   (request-chat-history chat-id cofx)))
 
 (handlers/register-handler-fx
- :inbox/connection-check
+ :inbox/check-connection
  (fn [{:keys [db] :as cofx} [_ _]]
    (when (= :connecting (:mailserver-status db))
      (update-mailserver-status :error cofx))))
 
+(defn update-last-request [last-request {:keys [db]}]
+  (let [chats         (:transport/chats db)
+        transport-txs (reduce (fn [txs [chat-id chat]]
+                                (if (:fetch-history? chat)
+                                  (conj txs
+                                        (transport-store/save-transport-tx
+                                         {:chat-id chat-id
+                                          :chat    (assoc chat
+                                                          :fetch-history? false)}))
+                                  txs))
+                              []
+                              chats)
+        chats-update  (reduce (fn [acc [chat-id chat]]
+                                (if (:fetch-history? chat)
+                                  (assoc acc chat-id (assoc chat :fetch-history? false))
+                                  (assoc acc chat-id chat)))
+                              {}
+                              chats)]
+    {:db                 (-> db
+                             (assoc :transport/chats chats-update)
+                             (assoc-in [:account/account :last-request]
+                                       last-request))
+     :data-store/base-tx [(accounts-store/save-account-tx
+                           (assoc (:account/account db)
+                                  :last-request last-request))]
+     :data-store/tx      transport-txs}))
+
+(defn update-fetch-history [chat-id {:keys [db]}]
+  {:db            (assoc-in db
+                            [:transport/chats chat-id :fetch-history?]
+                            false)
+   :data-store/tx [(transport-store/save-transport-tx
+                    {:chat-id chat-id
+                     :chat (assoc (get-in db [:transport/chats chat-id])
+                                  :fetch-history? false)})]})
+
 (handlers/register-handler-fx
- :inbox/remove-fetching-notification
- (fn [{:keys [db] :as cofx} [_ _]]
-   {:db (dissoc db :inbox/fetching?)}))
+ :inbox/check-fetching
+ (fn [{:keys [db now] :as cofx} [_ last-request chat-id]]
+   (when (:inbox/fetching? db)
+     (let [time-since-last-received (- now (:inbox/last-received db))]
+       (if (> time-since-last-received fetching-timeout)
+         (if chat-id
+           (handlers-macro/merge-fx cofx
+                                    {:db (assoc db :inbox/fetching? false)}
+                                    (update-fetch-history chat-id))
+           (handlers-macro/merge-fx cofx
+                                    {:db (assoc db :inbox/fetching? false)}
+                                    (update-last-request last-request)))
+         {:dispatch-later [{:ms       (- fetching-timeout
+                                         time-since-last-received)
+                            :dispatch [:inbox/check-fetching last-request chat-id]}]})))))
 
 (handlers/register-handler-fx
  :inbox/reconnect

@@ -42,7 +42,6 @@
              :notifications               {}
              :network                     constants/default-network
              :networks/networks           constants/default-networks
-             :inbox/topics                #{}
              :inbox/wnodes                constants/default-wnodes
              :inbox/password              constants/inbox-password
              :my-profile/editing?         false
@@ -72,7 +71,6 @@
 (spec/def ::network-status (spec/nilable keyword?))
 
 (spec/def ::mailserver-status (spec/nilable keyword?))
-(spec/def :inbox/topics set?)
 
 ;;;;NODE
 
@@ -175,10 +173,8 @@
                  :node/after-start
                  :node/after-stop
                  :inbox/wnodes
-                 :inbox/topics
                  :inbox/password
                  :inbox/sym-key-id
-                 :inbox/last-request
                  :inbox/last-received
                  :inbox/fetching?
                  :browser/browsers

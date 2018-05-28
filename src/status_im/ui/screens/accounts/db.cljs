@@ -18,6 +18,7 @@
 (spec/def :account/signed-up? (spec/nilable boolean?))
 (spec/def :account/last-updated (spec/nilable int?))
 (spec/def :account/last-sign-in (spec/nilable int?))
+(spec/def :account/last-request (spec/nilable int?))
 (spec/def :account/photo-path (spec/nilable string?))
 (spec/def :account/debug? (spec/nilable boolean?))
 (spec/def :account/status (spec/nilable string?))
@@ -40,7 +41,7 @@
                                       :account/networks :account/settings :account/wnode
                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
                                       :account/seed-backed-up? :account/mnemonic
-                                      :account/wallet-set-up-passed?]))
+                                      :account/wallet-set-up-passed? :account/last-request]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

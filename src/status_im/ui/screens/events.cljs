@@ -456,8 +456,7 @@
    (let [app-coming-from-background? (= state "active")]
      (handlers-macro/merge-fx cofx
                               {::app-state-change-fx state}
-                              (inbox/request-messages {:should-recover? app-coming-from-background?
-                                                       :discover?       true})))))
+                              (inbox/request-messages app-coming-from-background?)))))
 
 (handlers/register-handler-fx
  :request-permissions
