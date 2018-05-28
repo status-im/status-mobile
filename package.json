@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "prepare": "patch-package"
   },
   "desktopExternalModules": [
     "node_modules/react-native-i18n/desktop",
@@ -41,7 +42,7 @@
     "re-natal": "git+https://github.com/status-im/re-natal.git#master",
     "react": "^16.2.0",
     "react-dom": "16.2.0",
-    "react-native": "git+https://github.com/status-im/react-native-desktop.git#master",
+    "react-native": "git+https://github.com/status-im/react-native-desktop.git",
     "react-native-background-timer": "2.0.0",
     "react-native-camera": "0.10.0",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git",
@@ -70,5 +71,8 @@
     "string_decoder": "0.10.31",
     "url": "0.10.3",
     "web3": "github:status-im/web3.js#status-develop"
+  },
+  "devDependencies": {
+    "patch-package": "^5.1.1"
   }
 }
