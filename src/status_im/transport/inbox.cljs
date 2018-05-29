@@ -75,11 +75,18 @@
        (error-fn error)
        (success-fn result)))))
 
-(defn get-current-wnode-address [db]
+(defn add-sym-key-id-to-wnode [{:keys [id]} sym-key-id {:keys [db]}]
+  (let [network  (get (:networks (:account/account db)) (:network db))
+        chain    (ethereum/network->chain-keyword network)]
+    {:db (assoc-in db [:inbox/wnodes chain id :sym-key-id] sym-key-id)}))
+
+(defn get-current-wnode [db]
   (let [network  (get (:networks (:account/account db)) (:network db))
         chain    (ethereum/network->chain-keyword network)
         wnode-id (get-in db [:account/account :settings :wnode chain])]
-    (get-in db [:inbox/wnodes chain wnode-id :address])))
+    (get-in db [:inbox/wnodes chain wnode-id])))
+
+(def get-current-wnode-address (comp :address get-current-wnode))
 
 (defn registered-peer? [peers enode]
   (let [peer-ids (into #{} (map :id) peers)
@@ -101,14 +108,14 @@
 (def seven-days (* 7 one-day))
 
 (defn request-inbox-messages
-  [web3 wnode topics from to sym-key-id success-fn error-fn]
+  [web3 wnode topics from to success-fn error-fn]
   (loop [from       from
          current-to to]
     (let [current-to (if (> (- to from) one-day)
                        (+ from one-day)
                        to)
-          opts       (merge {:mailServerPeer wnode
-                             :symKeyID       sym-key-id
+          opts       (merge {:mailServerPeer (:address wnode)
+                             :symKeyID       (:sym-key-id wnode)
                              :from           from
                              :to             current-to})]
       (log/info "offline inbox: request-messages request for topics " topics " from " from " to " current-to)
@@ -140,19 +147,18 @@
 
 (re-frame/reg-fx
  ::request-messages
- (fn [{:keys [wnode topics to from sym-key-id web3]}]
+ (fn [{:keys [wnode topics to from web3]}]
    (request-inbox-messages web3
                            wnode
                            topics
                            from
                            to
-                           sym-key-id
                            #(log/info "offline inbox: request-messages response" %1 %2 from to)
                            #(log/error "offline inbox: request-messages error" %1 %2 from to))))
 
 (re-frame/reg-fx
  ::request-history
- (fn [{:keys [wnode topics now-in-s sym-key-id web3]}]
+ (fn [{:keys [wnode topics now-in-s web3]}]
    (let [from (- now-in-s seven-days)
          to   now-in-s]
      (request-inbox-messages web3
@@ -160,7 +166,6 @@
                              topics
                              from
                              to
-                             sym-key-id
                              #(log/info "offline inbox: request-messages response" %1 %2 from to)
                              #(log/error "offline inbox: request-messages error" %1 %2 from to)))))
 
@@ -170,13 +175,13 @@
                 :mailserver-status state
                 :inbox/fetching? false)}))
 
-(defn generate-mailserver-symkey [{:keys [db] :as cofx}]
-  (when-not (:inbox/sym-key-id db)
+(defn generate-mailserver-symkey [wnode {:keys [db] :as cofx}]
+  (when-not (:sym-key-id wnode)
     {:shh/generate-sym-key-from-password
-     {:password   (:inbox/password db)
+     {:password   (:password wnode)
       :web3       (:web3 db)
       :on-success (fn [_ sym-key-id]
-                    (re-frame/dispatch [:inbox/get-sym-key-success sym-key-id]))
+                    (re-frame/dispatch [:inbox/get-sym-key-success wnode sym-key-id]))
       :on-error   #(log/error "offline inbox: get-sym-key error" %)}}))
 
 (defn connect-to-mailserver
@@ -187,21 +192,21 @@
    A connection-check is made after `connection timeout` is reached and
    mailserver-status is changed to error if it is not connected by then"
   [{:keys [db] :as cofx}]
-  (let [web3          (:web3 db)
-        wnode         (get-current-wnode-address db)
-        peers-summary (:peers-summary db)
-        connected?    (registered-peer? peers-summary wnode)]
+  (let [web3                        (:web3 db)
+        {:keys [address] :as wnode} (get-current-wnode db)
+        peers-summary               (:peers-summary db)
+        connected?                  (registered-peer? peers-summary address)]
     (when config/offline-inbox-enabled?
       (if connected?
         (handlers-macro/merge-fx cofx
                                  (update-mailserver-status :connected)
-                                 (generate-mailserver-symkey))
+                                 (generate-mailserver-symkey wnode))
         (handlers-macro/merge-fx cofx
-                                 {::add-peer {:wnode wnode}
+                                 {::add-peer {:wnode address}
                                   :utils/dispatch-later [{:ms connection-timeout
                                                           :dispatch [:inbox/check-connection]}]}
                                  (update-mailserver-status :connecting)
-                                 (generate-mailserver-symkey))))))
+                                 (generate-mailserver-symkey wnode))))))
 
 (defn peers-summary-change-fx
   "There is only 2 summary changes that require offline inboxing action:
@@ -230,9 +235,8 @@
         {::mark-trusted-peer {:web3  (:web3 db)
                               :wnode wnode}}))))
 
-(defn inbox-ready? [{:keys [db]}]
-  (let [mailserver-status (:mailserver-status db)
-        sym-key-id        (:inbox/sym-key-id db)]
+(defn inbox-ready? [{:keys [sym-key-id]} {:keys [db]}]
+  (let [mailserver-status (:mailserver-status db)]
     (and (= :connected mailserver-status)
          sym-key-id)))
 
@@ -253,25 +257,22 @@
 
 (defn request-messages
   ([{:keys [db now] :as cofx}]
-   (let [wnode                   (get-current-wnode-address db)
+   (let [wnode                   (get-current-wnode db)
          web3                    (:web3 db)
-         sym-key-id              (:inbox/sym-key-id db)
          now-in-s                (quot now 1000)
          last-request            (get-in db [:account/account :last-request]
                                          (- now-in-s seven-days))
          request-messages-topics (get-request-messages-topics db)
          request-history-topics  (get-request-history-topics db)]
-     (when (inbox-ready? cofx)
+     (when (inbox-ready? wnode cofx)
        {::request-messages {:wnode      wnode
                             :topics     request-messages-topics
                             :from       last-request
                             :to         now-in-s
-                            :sym-key-id sym-key-id
                             :web3       web3}
         ::request-history {:wnode      wnode
                            :now-in-s   now-in-s
                            :topics     request-history-topics
-                           :sym-key-id sym-key-id
                            :web3       web3}
         :db                (assoc db :inbox/fetching? true)
         :dispatch-later    [{:ms fetching-timeout
@@ -281,16 +282,14 @@
      (request-messages cofx))))
 
 (defn request-chat-history [chat-id {:keys [db now] :as cofx}]
-  (let [wnode             (get-current-wnode-address db)
+  (let [wnode             (get-current-wnode db)
         web3              (:web3 db)
-        sym-key-id        (:inbox/sym-key-id db)
         topic             (get-in db [:transport/chats chat-id :topic])
         now-in-s          (quot now 1000)]
-    (when (inbox-ready? cofx)
+    (when (inbox-ready? wnode cofx)
       {::request-history {:wnode      wnode
                           :topics     [topic]
                           :now-in-s   now-in-s
-                          :sym-key-id sym-key-id
                           :web3       web3}
        :db                (assoc db :inbox/fetching? true)
        :dispatch-later    [{:ms fetching-timeout
@@ -316,9 +315,9 @@
 
 (handlers/register-handler-fx
  :inbox/get-sym-key-success
- (fn [{:keys [db] :as cofx} [_ sym-key-id]]
+ (fn [{:keys [db] :as cofx} [_ wnode sym-key-id]]
    (handlers-macro/merge-fx cofx
-                            {:db (assoc db :inbox/sym-key-id sym-key-id)}
+                            (add-sym-key-id-to-wnode wnode sym-key-id)
                             (request-messages))))
 
 (handlers/register-handler-fx

@@ -22,6 +22,8 @@
 
 (def console-chat-id "console")
 
+(def inbox-password "status-offline-inbox")
+
 (def default-network config/default-network)
 
 (def system "system")
@@ -80,21 +82,27 @@
 (def default-wnodes
   {:testnet {"mailserver-a" {:id      "mailserver-a"
                              :name    "Status mailserver A"
+                             :password inbox-password
                              :address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"}
              "mailserver-b" {:id      "mailserver-b"
                              :name    "Status mailserver B"
+                             :password inbox-password
                              :address "enode://07ac64fe0e9b2d4ecbfe0ccaeab3d8d95fa8858754f511104bb403b19255d7bf47a8416bdd0df01f6720ff82164451b7a028c93d15ddd37b7e8382d74e91ebc2@167.99.209.72:30504"}}
    :mainnet {"mailserver-a" {:id      "mailserver-a"
                              :name    "Status mailserver A"
+                             :password inbox-password
                              :address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"}
              "mailserver-b" {:id      "mailserver-b"
                              :name    "Status mailserver B"
+                             :password inbox-password
                              :address "enode://07ac64fe0e9b2d4ecbfe0ccaeab3d8d95fa8858754f511104bb403b19255d7bf47a8416bdd0df01f6720ff82164451b7a028c93d15ddd37b7e8382d74e91ebc2@167.99.209.72:30504"}}
    :rinkeby {"mailserver-a" {:id     "mailserver-a"
                              :name   "Status mailserver A"
+                             :password inbox-password
                              :address "enode://43829580446ad138386dadb7fa50b6bd4d99f7c28659a0bc08115f8c0380005922a340962496f6af756a42b94a1522baa38a694fa27de59c3a73d4e08d5dbb31@206.189.6.48:30504"}
              "mailserver-b" {:id      "mailserver-b"
                              :name    "Status mailserver B"
+                             :password inbox-password
                              :address "enode://70a2004e78399075f566033c42e9a0b1d43c683d4742755bb5457d03191be66a1b48c2b4fb259696839f28646a5828a1958b900860e27897f984ad0fc8482404@206.189.56.154:30504"}}})
 
 (defn default-account-settings []
@@ -198,8 +206,6 @@
    :vnd {:id :vnd :code "VND" :display-name (i18n/label :t/currency-display-name-vnd) :symbol "₫"}
    :yer {:id :yer :code "YER" :display-name (i18n/label :t/currency-display-name-yer) :symbol "﷼"}
    :zar {:id :zar :code "ZAR" :display-name (i18n/label :t/currency-display-name-zar) :symbol "R"}})
-
-(def inbox-password "status-offline-inbox")
 
 ;; Used to generate topic for contact discoveries
 (def contact-discovery "contact-discovery")

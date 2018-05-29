@@ -3,18 +3,37 @@
    [clojure.string :as string]
    [status-im.utils.handlers-macro :as handlers-macro]
    [status-im.utils.ethereum.core :as ethereum]
-   [status-im.utils.inbox :as utils.inbox]
    [status-im.data-store.mailservers :as data-store.mailservers]))
+
+(def enode-address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
+(def enode-url-regex #"enode://[a-zA-Z0-9]+:(.+)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 
 (defn- extract-address-components [address]
   (rest (re-matches #"enode://(.*)@(.*)" address)))
+
+(defn- extract-url-components [address]
+  (rest (re-matches #"enode://(.*?):(.*)@(.*)" address)))
+
+(defn valid-enode-url? [address]
+  (re-matches enode-url-regex address))
+
+(defn valid-enode-address? [address]
+  (re-matches enode-address-regex address))
 
 (defn- get-chain [db]
   (let [network  (get (:networks (:account/account db)) (:network db))]
     (ethereum/network->chain-keyword network)))
 
+(defn- address->mailserver [address]
+  (let [[enode password url :as response] (extract-url-components address)]
+    (cond-> {:address      (if (seq response)
+                             (str "enode://" enode "@" url)
+                             address)
+             :user-defined true}
+      password (assoc :password password))))
+
 (defn- build [id mailserver-name address]
-  (assoc (utils.inbox/address->mailserver address)
+  (assoc (address->mailserver address)
          :id (string/replace id "-" "")
          :name mailserver-name))
 
@@ -32,7 +51,7 @@
          :error (case input-key
                   :id   false
                   :name (string/blank? value)
-                  :url  (not (utils.inbox/valid-enode-address? value)))})})
+                  :url  (not (valid-enode-url? value)))})})
 
 (defn connected? [id {:keys [db]}]
   (let [current-id (get-in db [:account/account :settings :wnode (get-chain db)])]

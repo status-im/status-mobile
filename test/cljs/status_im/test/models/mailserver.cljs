@@ -9,6 +9,39 @@
 (def valid-enode-address (str "enode://" enode-id "@" host))
 (def valid-enode-url (str "enode://" enode-id ":" password "@" host))
 
+(deftest valid-enode-address-test
+  (testing "url without password"
+    (let [address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"]
+      (is (model/valid-enode-address? address))))
+  (testing "url with password"
+    (let [address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40:somepasswordwith@and:@@167.99.209.61:30504"]
+      (is (not (model/valid-enode-address? address)))))
+  (testing "invalid url"
+    (is (not (model/valid-enode-address? "something not valid")))))
+
+(deftest valid-enode-url-test
+  (testing "url without password"
+    (let [address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40@167.99.209.61:30504"]
+      (is (not (model/valid-enode-url? address)))))
+  (testing "url with password"
+    (let [address "enode://1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40:somepasswordwith@and:@@167.99.209.61:30504"]
+      (is (model/valid-enode-url? address))))
+  (testing "invalid url"
+    (is (not (model/valid-enode-url? "something not valid")))))
+
+(deftest address->mailserver
+  (testing "with password"
+    (let [address "enode://some-id:the-password@206.189.56.154:30504"]
+      (is (= {:address "enode://some-id@206.189.56.154:30504"
+              :password "the-password"
+              :user-defined true}
+             (model/address->mailserver address)))))
+  (testing "without password"
+    (let [address "enode://some-id@206.189.56.154:30504"]
+      (is (= {:address "enode://some-id@206.189.56.154:30504"
+              :user-defined true}
+             (model/address->mailserver address))))))
+
 (deftest set-input
   (testing "it validates names"
     (testing "correct name"

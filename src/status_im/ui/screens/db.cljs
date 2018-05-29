@@ -43,7 +43,6 @@
              :network                     constants/default-network
              :networks/networks           constants/default-networks
              :inbox/wnodes                constants/default-wnodes
-             :inbox/password              constants/inbox-password
              :my-profile/editing?         false
              :transport/chats             {}
              :transport/message-envelopes {}
@@ -174,8 +173,6 @@
                  :node/after-start
                  :node/after-stop
                  :inbox/wnodes
-                 :inbox/password
-                 :inbox/sym-key-id
                  :inbox/last-received
                  :inbox/fetching?
                  :browser/browsers
