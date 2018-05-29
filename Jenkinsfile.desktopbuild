@@ -107,7 +107,7 @@ timeout(90) {
 
         sh ('echo ' + scriptPath)
 
-        sh ('cd ~/ && git clone https://github.com/status-im/react-native-desktop.git && cd react-native-desktop/react-native-cli && sudo npm install -g')
+        sh ('cd ~/ && rm -rf react-native-desktop && git clone https://github.com/status-im/react-native-desktop.git && cd react-native-desktop/react-native-cli && sudo npm install -g')
 
         checkout scm
         sh 'git rebase origin/desktop'
