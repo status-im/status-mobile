@@ -9,6 +9,7 @@
             status-im.data-store.browser
             status-im.data-store.accounts
             status-im.data-store.local-storage
+            status-im.data-store.mailservers
             status-im.data-store.requests))
 
 (defn init [encryption-key]
@@ -19,9 +20,16 @@
 (defn change-account [address new-account? encryption-key handler]
   (data-source/change-account address new-account? encryption-key handler))
 
-(defn- perform-transactions [transactions realm]
-  (data-source/write realm #(doseq [transaction transactions]
-                              (transaction realm))))
+(defn- perform-transactions [raw-transactions realm]
+  (let [success-events (->> raw-transactions
+                            (map :success-event)
+                            (filter identity))
+        transactions   (map (fn [{:keys [transaction] :as f}]
+                              (or transaction f)) raw-transactions)]
+    (data-source/write realm #(doseq [transaction transactions]
+                                (transaction realm)))
+    (doseq [event success-events]
+      (re-frame/dispatch event))))
 
 (re-frame/reg-fx
  :data-store/base-tx

@@ -1,6 +1,6 @@
 from tests import info
 import time
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from views.base_element import BaseButton, BaseText
 from views.base_view import BaseView
 
@@ -29,17 +29,22 @@ class ConsoleButton(BaseButton):
 
 
 class ChatElement(BaseButton):
-    def __init__(self, driver, username):
+    def __init__(self, driver, username_part):
         super(ChatElement, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % username)
+        self.locator = self.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % username_part)
 
     def navigate(self):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+    def click(self):
+        from views.chat_view import ChatMessageInput
+        desired_element = ChatMessageInput(self.driver)
+        self.click_until_presence_of_element(desired_element=desired_element)
+        return self.navigate()
+
     @property
     def swipe_delete_button(self):
-
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
@@ -112,6 +117,7 @@ class HomeView(BaseView):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
         start_new_chat.chat_name_editbox.send_keys(chat_name)
+        time.sleep(2)
         start_new_chat.confirm()
 
     def get_public_key(self):
@@ -124,13 +130,9 @@ class HomeView(BaseView):
 
     def swipe_and_delete_chat(self, chat_name: str):
         chat_element = self.get_chat_with_user(chat_name)
-        location = chat_element.find_element().location
-        x, y = location['x'], location['y']
-        size = chat_element.find_element().size
-        width, height = size['width'], size['height']
         counter = 0
         while counter < 10:
-            self.driver.swipe(start_x=x + width / 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+            chat_element.swipe_element()
             if chat_element.swipe_delete_button.is_element_present():
                 break
             time.sleep(10)

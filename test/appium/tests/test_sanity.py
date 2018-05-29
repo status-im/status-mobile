@@ -1,4 +1,5 @@
 import pytest
+from tests import marks
 from tests import transaction_users, transaction_users_wallet
 from tests.base_test_case import SingleDeviceTestCase
 from tests import basic_user
@@ -38,6 +39,7 @@ class TestSanity(SingleDeviceTestCase):
             pytest.fail('Password in logcat!!!', pytrace=False)
 
     @pytest.mark.group_chat
+    @marks.skip
     def test_group_chat_members(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()

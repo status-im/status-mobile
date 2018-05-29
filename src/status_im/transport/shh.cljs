@@ -60,15 +60,16 @@
 
 (re-frame/reg-fx
  :shh/post
- (fn [{:keys [web3 message success-event error-event]
-       :or {error-event :protocol/send-status-message-error}}]
-   (post-message {:web3            web3
-                  :whisper-message (update message :payload (comp transport.utils/from-utf8
-                                                                  transit/serialize))
-                  :on-success      (if success-event
-                                     #(re-frame/dispatch (conj success-event %))
-                                     #(log/debug :shh/post-success))
-                  :on-error        #(re-frame/dispatch [error-event %])})))
+ (fn [post-calls]
+   (doseq [{:keys [web3 message success-event error-event]
+            :or   {error-event :protocol/send-status-message-error}} post-calls]
+     (post-message {:web3            web3
+                    :whisper-message (update message :payload (comp transport.utils/from-utf8
+                                                                    transit/serialize))
+                    :on-success      (if success-event
+                                       #(re-frame/dispatch (conj success-event %))
+                                       #(log/debug :shh/post-success))
+                    :on-error        #(re-frame/dispatch [error-event %])}))))
 
 ;; This event params contain a recipients key because it's a vector of map with public-key and topic keys.
 ;; the :shh/post event has public-key and topic keys at the top level of the args map.

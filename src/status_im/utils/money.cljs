@@ -90,6 +90,32 @@
   (when-let [bn (bignumber n)]
     (.dividedBy bn (bignumber (from-decimal decimals)))))
 
+(defn unit->token [n decimals]
+  (when-let [bn (bignumber n)]
+    (.times bn (bignumber (from-decimal decimals)))))
+
+;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts: formatted and
+;; internal. Formatted representation is the one we show on screens and include in reports, whereas internal
+;; representation is the one that we pass on to ethereum network for execution, transfer, etc.
+;; The difference between the two depends on the number of decimals, i.e. internal representation is expressed in terms
+;; of a whole number of smallest divisible parts of the formatted value.
+;;
+;; E.g. for Ether, it's smallest part is wei or 10^(-18) of 1 ether
+;; for arbitrary ERC20 token the smallest part is 10^(-decimals) of 1 token
+;;
+;; Different tokens can have different number of allowed decimals, so it's neccessary to include the decimals parameter
+;; to get the amount scale right.
+
+(defn formatted->internal [n symbol decimals]
+  (if (= :ETH symbol)
+    (ether->wei n)
+    (unit->token n decimals)))
+
+(defn internal->formatted [n symbol decimals]
+  (if (= :ETH symbol)
+    (wei->ether n)
+    (token->unit n decimals)))
+
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
 

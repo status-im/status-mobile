@@ -48,7 +48,7 @@
   [command-name]
   (keyword (str "request-" (name command-name))))
 
-(defn request-button [message-id _ _]
+(defn request-button [message-id _ on-press-handler]
   (let [scale-anim-val (anim/create-value min-scale)
         answered?      (subscribe [:is-request-answered? message-id])
         loop?          (r/atom true)
@@ -59,7 +59,7 @@
     (r/create-class
      {:display-name "request-button"
       :component-did-mount
-      (if @answered? (fn []) #(request-button-animation-logic context))
+      (if (or (nil? on-press-handler) @answered?) (fn []) #(request-button-animation-logic context))
       :component-will-unmount
       #(reset! loop? false)
       :reagent-render
@@ -77,23 +77,28 @@
   [{:keys [message-id content] :as message}]
   (letsubs [command             [:get-command (:request-command-ref content)]
             answered?           [:is-request-answered? message-id]
-            status-initialized? [:get :status-module-initialized?]]
+            status-initialized? [:get :status-module-initialized?]
+            network             [:network-name]]
     (let [{:keys        [prefill prefill-bot-db prefillBotDb params preview]
            text-content :text} content
-          command          (if (and params command)
-                             (merge command {:prefill        prefill
-                                             :prefill-bot-db (or prefill-bot-db prefillBotDb)})
-                             command)
-          on-press-handler (if (:execute-immediately? command)
-                             #(dispatch [:execute-command-immediately command])
-                             (when (and (not answered?) status-initialized?)
-                               #(set-chat-command message-id command)))]
+          command           (if (and params command)
+                              (merge command {:prefill        prefill
+                                              :prefill-bot-db (or prefill-bot-db prefillBotDb)})
+                              command)
+          request-network   (:network params)
+          network-mismatch? (and request-network (not= request-network network))
+          on-press-handler  (cond
+                              network-mismatch? nil
+                              (:execute-immediately? command) #(dispatch [:execute-command-immediately command])
+                              (and (not answered?) status-initialized?) #(set-chat-command message-id command))]
       [view st/command-request-view
        [touchable-highlight
         {:on-press on-press-handler}
         [view st/command-request-message-view
          (if (:markup preview)
-           [view (commands-utils/generate-hiccup (:markup preview))]
+           [view (commands-utils/generate-hiccup (:markup preview))
+            (when network-mismatch?
+              [text request-network])]
            [text {:style st/style-message-text
                   :font  :default}
             (or preview text-content (:content content))])]]

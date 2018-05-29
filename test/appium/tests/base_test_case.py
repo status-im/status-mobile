@@ -3,12 +3,12 @@ import sys
 import re
 import subprocess
 import asyncio
-
+from support.network_api import NetworkApi
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
 from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads, api_requests
+from tests import test_suite_data, start_threads
 from views.base_view import BaseView
 
 
@@ -68,6 +68,11 @@ class AbstractTestCase:
         desired_caps['ignoreUnimportantViews'] = False
         return desired_caps
 
+    def update_capabilities_sauce_lab(self, key, value):
+        caps = self.capabilities_sauce_lab.copy()
+        caps[key] = value
+        return caps
+
     @property
     def capabilities_local(self):
         desired_caps = dict()
@@ -100,6 +105,8 @@ class AbstractTestCase:
         return 8
 
     errors = []
+
+    network_api = NetworkApi()
 
     def verify_no_errors(self):
         if self.errors:
@@ -167,10 +174,14 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         self.drivers = dict()
 
     def create_drivers(self, quantity=2):
+        if self.__class__.__name__ == 'TestOfflineMessages':
+            capabilities = self.update_capabilities_sauce_lab('platformVersion', '6.0')
+        else:
+            capabilities = self.capabilities_sauce_lab
         self.drivers = self.loop.run_until_complete(start_threads(quantity, webdriver.Remote,
                                                     self.drivers,
                                                     self.executor_sauce_lab,
-                                                    self.capabilities_sauce_lab))
+                                                    capabilities))
         for driver in range(quantity):
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
             BaseView(self.drivers[driver]).accept_agreements()
@@ -201,6 +212,6 @@ class MultipleDeviceTestCase(environments[pytest.config.getoption('env')]):
 
     def teardown_method(self, method):
         for user in self.senders:
-            api_requests.faucet(address=self.senders[user]['address'])
+            self.network_api.faucet(address=self.senders[user]['address'])
         super(MultipleDeviceTestCase, self).teardown_method(method)
 

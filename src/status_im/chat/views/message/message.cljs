@@ -60,9 +60,12 @@
 
 (defview message-content-command
   [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:command-ref content)]]
+  (letsubs [command [:get-command (:command-ref content)]
+            network [:network-name]]
     (let [preview (:preview content)
-          {:keys [color] icon-path :icon} command]
+          {:keys [color] icon-path :icon} command
+          send-network (get-in content [:params :network])
+          network-mismatch? (and (seq send-network) (not= network send-network))]
       [react/view style/content-command-view
        (when color
          [react/view style/command-container
@@ -75,7 +78,8 @@
           [react/icon icon-path style/command-image]])
        (if (:markup preview)
          ;; Markup was defined for command in jail, generate hiccup and render it
-         (commands.utils/generate-hiccup (:markup preview))
+         (cond-> (commands.utils/generate-hiccup (:markup preview))
+           network-mismatch? (conj [react/text send-network]))
          ;; Display preview if it's defined (as a string), in worst case, render params
          [react/text {:style style/command-text
                       :font  :default}
@@ -174,13 +178,42 @@
 
 (def cached-parse-text (memoize parse-text))
 
+(def ^:private ^:const number-of-lines 20)
+(def ^:private ^:const number-of-chars 600)
+
+(defn- should-collapse? [text group-chat?]
+  (and group-chat?
+       (or (<= number-of-chars (count text))
+           (<= number-of-lines (count (re-seq #"\n" text))))))
+
+(defn- expand-button [collapsed? on-press]
+  [react/text {:style    style/message-expand-button
+               :on-press on-press}
+   (i18n/label (if @collapsed? :show-more :show-less))])
+
 (defn text-message
-  [{:keys [content timestamp-str] :as message}]
+  [{:keys [content timestamp-str group-chat] :as message}]
   [message-view message
-   (let [parsed-text (cached-parse-text content :browse-link-from-message)]
-     [react/text {:style (style/text-message message)}
-      parsed-text
-      [react/text {:style style/message-timestamp-placeholder} (timestamp-with-padding timestamp-str)]])
+   (let [parsed-text (cached-parse-text content :browse-link-from-message)
+         ref (reagent/atom nil)
+         collapsible? (should-collapse? content group-chat)
+         collapsed? (reagent/atom collapsible?)
+         on-press (when collapsible?
+                    #(do
+                       (.setNativeProps @ref
+                                        (clj->js {:numberOfLines
+                                                  (when-not @collapsed?
+                                                    number-of-lines)}))
+                       (reset! collapsed? (not @collapsed?))))]
+     [react/view
+      [react/text {:style           (style/text-message message collapsible?)
+                   :number-of-lines (when collapsible? number-of-lines)
+                   :ref             (partial reset! ref)
+                   :on-press        on-press}
+       parsed-text
+       [react/text {:style style/message-timestamp-placeholder} (timestamp-with-padding timestamp-str)]]
+      (when collapsible?
+        [expand-button collapsed? on-press])])
    {:justify-timestamp? true}])
 
 (defn emoji-message
@@ -278,6 +311,15 @@
     [react/view style/not-sent-icon
      [vector-icons/icon :icons/warning {:color colors/red}]]]])
 
+(defview command-status [{{:keys [network]} :params}]
+  (letsubs [current-network [:network-name]]
+    (when (and network (not= current-network network))
+      [react/view style/not-sent-view
+       [react/text {:style style/not-sent-text}
+        (i18n/label :network-mismatch)]
+       [react/view style/not-sent-icon
+        [vector-icons/icon :icons/warning {:color colors/red}]]])))
+
 (defn message-delivery-status
   [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
   (let [outgoing-status (or (get user-statuses current-public-key) :not-sent)
@@ -291,11 +333,14 @@
     (case status
       :sending  [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]
-      (when last-outgoing?
-        (if (= message-type :group-user-message)
-          [group-message-delivery-status message]
-          (when outgoing
-            [text-status status]))))))
+      (if (and (not outgoing)
+               (:command content))
+        [command-status content]
+        (when last-outgoing?
+          (if (= message-type :group-user-message)
+            [group-message-delivery-status message]
+            (if outgoing
+              [text-status status])))))))
 
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
@@ -323,47 +368,11 @@
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}
       content]]]
-   [react/view style/delivery-status
+   [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn message-container-animation-logic [{:keys [to-value val callback]}]
-  (fn [_]
-    (let [to-value @to-value]
-      (when (pos? to-value)
-        (animation/start
-         (animation/timing val {:toValue  to-value
-                                :duration 250})
-         (fn [arg]
-           (when (.-finished arg)
-             (callback))))))))
-
-(defn message-container [message & children]
-  (if (:appearing? message)
-    (let [layout-height (reagent/atom 0)
-          anim-value    (animation/create-value 1)
-          anim-callback #(re-frame/dispatch [:message-appeared message])
-          context       {:to-value layout-height
-                         :val      anim-value
-                         :callback anim-callback}
-          on-update     (message-container-animation-logic context)]
-      (reagent/create-class
-       {:component-did-update
-        on-update
-        :display-name
-        "message-container"
-        :reagent-render
-        (fn [_ & children]
-          @layout-height
-          [react/animated-view {:style (style/message-animated-container anim-value)}
-           (into [react/view {:style    (style/message-container window-width)
-                              :onLayout (fn [event]
-                                          (let [height (.. event -nativeEvent -layout -height)]
-                                            (reset! layout-height height)))}]
-                 children)])}))
-    (into [react/view] children)))
-
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
-  [message-container message
+  [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
                                                 (react/dismiss-keyboard!))

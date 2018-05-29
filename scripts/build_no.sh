@@ -27,24 +27,12 @@ REGEX='^build-[0-9]\+$'
 # make sure we have all the tags
 git fetch --tags --quiet
 
-# check if current commit has a build tag
-BUILD=$(git tag --points-at HEAD | grep -e "$REGEX")
 
-# chech for multiple lines
-if [ 1 -lt $(echo "$BUILD" | grep -c -) ]; then
-    echo "Commit marked with one than one build tag!" >&2 
-    echo "$BUILD" >&2
-    exit 1
-fi
+# even if the current commit has a tag already, it is normal that the same commit
+# is built multiple times (with different build configurations, for instance),
+# so we increment the build number every time.
 
-# use already existing build number if applicable
-if [ -n "$BUILD" ]; then
-    echo "Current commit already tagged: $BUILD" >&2
-    getNumber $BUILD
-    exit 0
-fi
-
-# otherwise find the last used build number
+# find the last used build number
 BUILD=$(git tag -l --sort=-v:refname | grep -e "$REGEX" | head -n 1)
 # extract the number
 BUILD_NO=$(getNumber "$BUILD")

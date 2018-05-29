@@ -1,0 +1,94 @@
+// We need release builds for users who want to test apps, diawi removes old builds and limits downloads, hence the need for Artifactory.
+// To see env: echo sh(returnStdout: true, script: 'env')
+
+env.LANG="en_US.UTF-8"
+env.LANGUAGE="en_US.UTF-8"
+env.LC_ALL="en_US.UTF-8"
+
+def installJSDeps() {
+    def attempt = 1
+    def maxAttempts = 10
+    def installed = false
+    while (!installed && attempt <= maxAttempts) {
+        println "#${attempt} attempt to install npm deps"
+        sh 'npm install'
+        installed = fileExists('node_modules/web3/index.js')
+        attemp = attempt + 1
+    }
+}
+
+timeout(90) {
+    node ('macos'){
+      def apkUrl = ''
+      def ipaUrl = ''
+      def testPassed = true
+      def version
+
+      load "$HOME/env.groovy"
+
+      try {
+        stage('Git & Dependencies') {
+          slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
+
+          if (!BRANCH_NAME.startsWith("release/")){
+            error "Wrong branch name format: " + BRANCH_NAME + ", but it should be `release/version`"
+          }
+
+          checkout scm
+
+          version = readFile("${env.WORKSPACE}/VERSION").trim()
+
+          sh 'git fetch --tags'
+
+          sh 'rm -rf node_modules'
+          sh 'cp .env.prod .env'
+          sh 'lein deps'
+          installJSDeps()
+
+          sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
+            sh 'cd ios && pod install && cd ..'
+          }
+
+        stage('Tests') {
+          sh 'lein test-cljs'
+        }
+
+        stage('Build') {
+          sh 'lein prod-build'
+        }
+
+        stage('Build (iOS)') {
+          withCredentials([string(credentialsId: 'jenkins_pass', variable: 'password')]) {
+            def build_no = sh(returnStdout: true, script: './scripts/build_no.sh --tag').trim()
+            sh ('plutil -replace CFBundleShortVersionString  -string ' + version + ' ios/StatusIm/Info.plist')
+            sh ('plutil -replace CFBundleVersion  -string ' + build_no + ' ios/StatusIm/Info.plist')
+            sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
+            sh ('security unlock-keychain -p ' + password + ' login.keychain')
+            sh 'xcodebuild -exportArchive -exportPath status_appstore -archivePath status.xcarchive -exportOptionsPlist ~/archive-release.plist'
+          }
+        }
+
+        stage('Deploy (iOS)') {
+          sh ('bundle exec fastlane ios release')
+        }
+
+        stage('Push build tag') {
+          withCredentials([[
+            $class: 'UsernamePasswordMultiBinding',
+            credentialsId: 'jenkins-status-im',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_PASS'
+          ]]) {
+            sh ('git push --tags https://${GIT_USER}:${GIT_PASS}@github.com/status-im/status-react --tags')
+          }
+        }
+      } catch (e) {
+        slackSend color: 'bad', message: 'Release build failed uploading to iTunes Connect. ' + env.BUILD_URL
+        throw e
+      }
+
+      stage('Slack Notification') {
+        slackSend color: 'good', message: 'Release build ' + version + ' succesfully aploade to iTunes Connect'
+      }
+    }
+}

@@ -69,7 +69,7 @@ class OkButton(BaseButton):
 class ContinueButton(BaseButton):
     def __init__(self, driver):
         super(ContinueButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='CONTINUE']")
+        self.locator = self.Locator.xpath_selector("//*[@text='CONTINUE' or @text='Continue']")
 
 
 class HomeButton(BaseButton):
@@ -86,11 +86,6 @@ class WalletButton(BaseButton):
     def __init__(self, driver):
         super(WalletButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('wallet-tab-button')
-
-    def click(self):
-        from views.wallet_view import TransactionsButton
-        self.click_until_presence_of_element(desired_element=TransactionsButton(self.driver), attempts=3)
-        return self.navigate()
 
     def navigate(self):
         from views.wallet_view import WalletView
@@ -151,6 +146,12 @@ class SendMessageButton(BaseButton):
         info('Tap on %s' % self.name)
 
 
+class OfflineLabelText(BaseText):
+    def __init__(self, driver):
+        super(OfflineLabelText, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Offline')
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -171,6 +172,7 @@ class BaseView(object):
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)
+        self.offline_label = OfflineLabelText(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
@@ -219,13 +221,13 @@ class BaseView(object):
     def find_full_text(self, text, wait_time=60):
         info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
-        element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
+        element.locator = element.Locator.text_selector(text)
         return element.wait_for_element(wait_time)
 
     def find_text_part(self, text, wait_time=60):
         info("Looking for a text part: '%s'" % text)
         element = BaseElement(self.driver)
-        element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
+        element.locator = element.Locator.text_part_selector(text)
         return element.wait_for_element(wait_time)
 
     def element_by_text(self, text, element_type='button'):

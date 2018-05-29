@@ -1,7 +1,7 @@
 from tests import get_current_time
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
-
+import time
 
 class AccountButton(BaseButton):
 
@@ -104,11 +104,15 @@ class SignInView(BaseView):
         self.next_button.click()
         self.confirm_password_input.set_value(password)
         self.next_button.click()
-        self.name_input.wait_for_element(45)
-        self.name_input.send_keys('user_%s' % get_current_time())
+
+        self.element_by_text_part('Display name').wait_for_element(10)
+        username = 'user_%s' % get_current_time()
+        self.name_input.send_keys(username)
+
         self.next_button.click()
-        self.do_not_share.wait_for_element(10)
+        self.do_not_share.wait_for_visibility_of_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
+        return username
 
     def recover_access(self, passphrase, password):
         recover_access_view = self.i_have_account_button.click()

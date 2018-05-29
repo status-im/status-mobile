@@ -37,6 +37,8 @@
              :wallet.transactions         constants/default-wallet-transactions
              :wallet-selected-asset       {}
              :prices                      {}
+             :peers-count                 0
+             :peers-summary               []
              :notifications               {}
              :network                     constants/default-network
              :networks/networks           constants/default-networks
@@ -69,7 +71,6 @@
 (spec/def ::network-status (spec/nilable keyword?))
 
 (spec/def ::mailserver-status (spec/nilable keyword?))
-(spec/def ::peers-count (spec/nilable integer?))
 
 ;;;;NODE
 
@@ -124,6 +125,9 @@
 ;;;;NETWORK
 
 (spec/def ::network (spec/nilable string?))
+(spec/def ::peers-count (spec/nilable integer?))
+(spec/def ::peers-summary (spec/nilable vector?))
+(spec/def :inbox/fetching? (spec/nilable boolean?))
 
 ;;;;NODE
 
@@ -139,6 +143,7 @@
 (spec/def ::db (allowed-keys
                 :opt
                 [:contacts/contacts
+                 :contacts/dapps
                  :contacts/new-identity
                  :contacts/new-public-key-error
                  :contacts/identity
@@ -147,6 +152,7 @@
                  :contacts/click-handler
                  :contacts/click-action
                  :contacts/click-params
+                 :commands/stored-command
                  :group/selected-contacts
                  :accounts/accounts
                  :accounts/create
@@ -163,12 +169,14 @@
                  :networks/selected-network
                  :networks/networks
                  :networks/manage
+                 :mailservers/manage
                  :node/after-start
                  :node/after-stop
                  :inbox/wnodes
                  :inbox/password
                  :inbox/sym-key-id
-                 :inbox/last-request
+                 :inbox/last-received
+                 :inbox/fetching?
                  :browser/browsers
                  :browser/options
                  :new/open-dapp
@@ -193,6 +201,7 @@
                  ::network-status
                  ::mailserver-status
                  ::peers-count
+                 ::peers-summary
                  ::sync-listening-started
                  ::sync-state
                  ::sync-data
@@ -221,6 +230,7 @@
                  :chat/public-group-topic
                  :chat/public-group-topic-error
                  :chat/messages
+                 :chat/message-groups
                  :chat/not-loaded-message-ids
                  :chat/last-clock-value
                  :chat/loaded-chats

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
+            [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
             status-im.commands.subs
             status-im.ui.screens.accounts.subs
@@ -36,10 +37,16 @@
          (fn [current-account]
            (get (:networks current-account) (:network current-account))))
 
+(reg-sub :network-name (comp ethereum/network-names :network))
+
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)
 (reg-sub :peers-count :peers-count)
 (reg-sub :mailserver-status :mailserver-status)
+
+(reg-sub :fetching?
+         (fn [db]
+           (get db :inbox/fetching?)))
 
 (reg-sub :offline?
          :<- [:network-status]
@@ -48,12 +55,15 @@
            (or (= network-status :offline)
                (= sync-state :offline))))
 
-(reg-sub :connection-problem?
-         :<- [:mailserver-status]
+(reg-sub :disconnected?
          :<- [:peers-count]
-         (fn [[mailserver-status peers-count]]
-           (or (= :disconnected mailserver-status)
-               (zero? peers-count))))
+         (fn [peers-count]
+           (zero? peers-count)))
+
+(reg-sub :mailserver-error?
+         :<- [:mailserver-status]
+         (fn [mailserver-status]
+           (#{:error :disconnected} mailserver-status)))
 
 (reg-sub :syncing?
          :<- [:sync-state]
@@ -76,3 +86,7 @@
          (fn [db [_ item-id]]
            (let [item-animation (get-in db [:chat-animations item-id])]
              (if (some? item-animation) (:delete-swiped item-animation) nil))))
+
+(reg-sub :get-current-account-network
+         (fn [{:keys [network] :as db} [_]]
+           (get-in db [:account/account :networks network])))

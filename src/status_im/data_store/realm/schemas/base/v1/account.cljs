@@ -22,5 +22,4 @@
                           :sharing-usage-data?   {:type :bool :default false}
                           :dev-mode?             {:type :bool :default false}
                           :seed-backed-up?       {:type :bool :default false}
-                          :wallet-set-up-passed? {:type    :bool
-                                                  :default false}}})
+                          :wallet-set-up-passed? {:type :bool :default false}}})

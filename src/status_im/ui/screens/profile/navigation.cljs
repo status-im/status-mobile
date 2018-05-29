@@ -12,3 +12,7 @@
 (defmethod navigation/preload-data! :backup-seed
   [db]
   (assoc db :my-profile/seed {:step :intro}))
+
+(defmethod navigation/unload-data! :my-profile
+  [db]
+  (dissoc db :my-profile/editing?))

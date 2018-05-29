@@ -71,28 +71,10 @@
      [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
      [react/view common.styles/main-container
 
-      [react/with-activity-indicator
-       {:enabled? (= :home view-id)
-        :preview  [react/view {}]}
-       [react/navigation-wrapper
-        {:component    home/home
-         :views        :home
-         :current-view view-id}]]
+      (case view-id
+        :home [home/home]
+        :wallet [wallet/wallet]
+        :my-profile [profile.user/my-profile])
 
-      [react/with-activity-indicator
-       {:enabled? (= :wallet view-id)
-        :preview  [react/view {}]}
-       [react/navigation-wrapper
-        {:component    wallet/wallet
-         :views        :wallet
-         :current-view view-id}]]
-
-      [react/with-activity-indicator
-       {:enabled? (= :my-profile view-id)
-        :preview  [react/view {}]}
-       [react/navigation-wrapper
-        {:component    profile.user/my-profile
-         :views        :my-profile
-         :current-view view-id}]]
       (when tab-bar-visible?
         [tabs view-id])]]))

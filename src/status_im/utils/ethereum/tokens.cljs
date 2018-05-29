@@ -380,30 +380,26 @@
                     :symbol   :STT
                     :decimals 18
                     :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}
-                   {:name     "Aragon Test Token"
-                    :symbol   :ATT
-                    :decimals 1
-                    :address  "0x00a8e52df8f4f1f4b67bded9ae6090b35489a973"}
                    {:name     "Handy Test Token"
                     :symbol   :HND
-                    :decimals 18
-                    :address  "0x9e47fb3049f0d9c953f5428ce2e6c3a8321780bf"}
+                    :decimals 0
+                    :address  "0xdee43a267e8726efd60c2e7d5b81552dcd4fa35c"}
                    {:name     "Lucky XS Test"
                     :symbol   :LXS
-                    :decimals 18
-                    :address  "0xf29d2dc0687d7d49f57d4a731ac8bfb6edc23473"}
+                    :decimals 2
+                    :address  "0x703d7dc0bc8e314d65436adf985dda51e09ad43b"}
                    {:name     "Adi Test Token"
                     :symbol   :ADI
-                    :decimals 18
-                    :address  "0xd2a816110c1177478c7e644ae4853d8e80aaec35"}
+                    :decimals 7
+                    :address  "0xe639e24346d646e927f323558e6e0031bfc93581"}
                    {:name     "Wagner Test Token"
                     :symbol   :WGN
-                    :decimals 18
-                    :address  "0x65c69bc258afa0906683f42e576b272a95c203dd"}
+                    :decimals 10
+                    :address  "0x2e7cd05f437eb256f363417fd8f920e2efa77540"}
                    {:name     "Modest Test Token"
                     :symbol   :MDS
                     :decimals 18
-                    :address  "0x972b0570d9cd8b7c41aa8349f707ec7356daa825"}])})
+                    :address  "0x57cc9b83730e6d22b224e9dc3e370967b44a2de0"}])})
 
 (defn tokens-for [chain]
   (get all chain))

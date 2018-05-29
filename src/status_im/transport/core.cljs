@@ -34,7 +34,7 @@
                                 :shh/restore-sym-keys {:web3       web3
                                                        :transport  (:transport/chats db)
                                                        :on-success sym-key-added-callback}}
-                               (inbox/initialize-offline-inbox)))))
+                               (inbox/connect-to-mailserver)))))
 
 ;;TODO (yenda) remove once go implements persistence
 ;;Since symkeys are not persisted, we restore them via add sym-keys,
@@ -62,8 +62,6 @@
                             :topics   [topic]}
                            (fn [js-error js-message]
                              (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
-
-(def unsubscribe-from-chat transport.utils/unsubscribe-from-chat)
 
 (defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters

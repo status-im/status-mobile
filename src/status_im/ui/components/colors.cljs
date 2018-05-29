@@ -7,11 +7,13 @@
 (def white-lighter-transparent "rgba(255, 255, 255, 0.6)") ;; Used for input placeholder color
 (def black "#000000") ;; Used as the default text color
 (def black-transparent "#00000020") ;; Used as background color for rounded button on dark background
+(def black-darker-transparent "#00000033") ;; Used as background color for containers like "Backup seed phrase"
 (def gray "#939ba1") ;; Used as a background for a light foreground and as section header and secondary text color
 (def gray-icon "#6e777e") ;; Used for forward icon in accounts
 (def gray-light "#e8ebec") ;; Used as divider color
 (def gray-lighter "#eef2f5")  ;; Used as a background or shadow
 (def gray-transparent "rgba(184, 193, 199, 0.5)") ;; Used for tabs
+(def gray-notifications "#4A5054cc") ;; Used for notifications background
 (def gray-border "#ececf0")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
 (def blue-dark "#3147ac") ;; Used as secondary wallet color (icon background)

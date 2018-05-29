@@ -29,14 +29,11 @@
  ::update-connection-status
  [re-frame/trim-v]
  (fn [{{:keys [network-status mailserver-status] :as db} :db :as cofx} [is-connected?]]
-   (let [should-recover?    (and (= network-status :offline)
-                                 is-connected?
-                                 (not= mailserver-status :connecting))]
-     (cond-> (handlers-macro/merge-fx cofx
-                                      {:db (assoc db :network-status (if is-connected? :online :offline))}
-                                      (inbox/recover-offline-inbox should-recover?))
-       is-connected?
-       (assoc :drain-mixpanel-events nil)))))
+   (cond-> (handlers-macro/merge-fx cofx
+                                    {:db (assoc db :network-status (if is-connected? :online :offline))}
+                                    (inbox/request-messages))
+     is-connected?
+     (assoc :drain-mixpanel-events nil))))
 
 (handlers/register-handler-fx
  ::update-network-status

@@ -21,3 +21,10 @@
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
        (handlers-macro/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
        fx))))
+
+(defn clean-seed-phrase
+  "A helper function that removes seed phrase from storage."
+  [cofx]
+  (account-update {:seed-backed-up? true
+                   :mnemonic        nil}
+                  cofx))

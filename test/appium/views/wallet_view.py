@@ -118,6 +118,13 @@ class SetUpButton(BaseButton):
         self.locator = self.Locator.text_selector("LET’S GET SET UP")
 
 
+class SignInPhraseText(BaseText):
+    def __init__(self, driver):
+        super(SignInPhraseText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[contains(@text,'phrase')]/preceding-sibling::*[1]/android.widget.TextView")
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -141,6 +148,7 @@ class WalletView(BaseView):
         self.address_text = AddressText(self.driver)
 
         self.set_up_button = SetUpButton(self.driver)
+        self.sign_in_phrase = SignInPhraseText(self.driver)
 
     def get_usd_total_value(self):
         return float(self.usd_total_value.text)
@@ -172,7 +180,12 @@ class WalletView(BaseView):
                 info('Transaction received, balance updated!')
                 return
 
+    def get_sign_in_phrase(self):
+        return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])
+
     def set_up_wallet(self):
         self.set_up_button.click()
+        phrase = self.get_sign_in_phrase()
         self.done_button.click()
         self.yes_button.click()
+        return phrase

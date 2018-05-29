@@ -15,6 +15,7 @@
 (s/def :chat/public-group-topic (s/nilable string?))
 (s/def :chat/public-group-topic-error (s/nilable string?))
 (s/def :chat/messages (s/nilable map?))                           ; messages indexed by message-id
+(s/def :chat/message-groups (s/nilable map?))                     ; grouped/sorted messages
 (s/def :chat/not-loaded-message-ids (s/nilable set?))             ; set of message-ids not yet fully loaded from persisted state
 (s/def :chat/last-clock-value (s/nilable number?))                ; last logical clock value of messages in chat
 (s/def :chat/loaded-chats (s/nilable seq?))

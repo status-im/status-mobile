@@ -13,7 +13,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]))
 
-(defn- options-list [{:keys [address]}]
+(defn- options-list [{:keys [address dev-mode?]}]
   [react/view action-button.styles/actions-list
    [action-button/action-button
     {:label               (i18n/label :t/start-new-chat)
@@ -23,7 +23,7 @@
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
    ;; Hide behind flag (false by default), till everything is fixed in group chats
-   (when config/group-chats-enabled?
+   (when (or config/group-chats-enabled? dev-mode?)
      [action-button/action-button
       {:label               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button

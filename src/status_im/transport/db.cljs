@@ -9,6 +9,7 @@
 (spec/def ::pending-ack (spec/coll-of string? :kind vector?))
 (spec/def ::pending-send (spec/coll-of string? :kind vector?))
 (spec/def ::topic string?)
+(spec/def ::fetch-history? boolean?)
 
 ;; optional
 (spec/def ::sym-key-id string?)
@@ -16,7 +17,7 @@
 (spec/def ::sym-key string?)
 (spec/def ::filter any?)
 
-(spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
+(spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic ::fetch-history?]
                                         :opt-un [::sym-key-id ::sym-key ::filter]))
 
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
@@ -26,8 +27,9 @@
   "Initialize datastructure for chat representation at the transport level
   Currently only :topic is actually used"
   [topic]
-  {:ack          []
-   :seen         []
-   :pending-ack  []
-   :pending-send []
-   :topic        topic})
+  {:ack            []
+   :seen           []
+   :pending-ack    []
+   :pending-send   []
+   :fetch-history? true
+   :topic          topic})

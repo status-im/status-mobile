@@ -34,7 +34,7 @@ class TestProfileView(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.pr
-    @pytest.mark.testrail_case_id(3396)
+    @marks.testrail_case_id(3396)
     def test_contact_profile_view(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -58,7 +58,6 @@ class TestProfileView(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
-        profile_view.advanced_button.click()
         sign_in_view = profile_view.switch_network('Rinkeby with upstream RPC')
         sign_in_view.click_account_by_position(0)
         sign_in_view.password_input.set_value('qwerty1234')
@@ -69,7 +68,7 @@ class TestProfileView(SingleDeviceTestCase):
         desired_network.scroll_to_element()
         assert desired_network.is_element_displayed()
 
-    @pytest.mark.testrail_case_id(3398)
+    @marks.testrail_case_id(3398)
     def test_profile_picture(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -77,10 +76,11 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view.edit_profile_picture(file_name='sauce_logo.png')
         profile_view.relogin()
         sign_in_view.profile_button.click()
+        self.driver.swipe(500, 500, 500, 1000)
         if not profile_view.profile_picture.is_element_image_equals_template():
             pytest.fail('Profile picture was not updated')
 
-    @pytest.mark.testrail_case_id(3399)
+    @marks.testrail_case_id(3399)
     def test_backup_seed_phrase_and_recover_account(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user(password='qwerty1234')
@@ -109,7 +109,7 @@ class TestProfileView(SingleDeviceTestCase):
         public_key_1 = home_view.get_public_key()
         assert public_key == public_key_1
 
-    @pytest.mark.testrail_case_id(3411)
+    @marks.testrail_case_id(3411)
     def test_faucet_console_command(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -122,16 +122,12 @@ class TestProfileView(SingleDeviceTestCase):
         chat_view.faucet_command.click()
         chat_view.faucet_send_command.click()
         chat_view.send_message_button.click()
-        chat_view.wait_for_message_in_one_to_one_chat('Faucet request has been received', self.errors)
-        self.verify_no_errors()
         chat_view.back_button.click()
-
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.wait_balance_changed_on_wallet_screen()
 
-
-    @pytest.mark.testrail_case_id(3421)
+    @marks.testrail_case_id(3421)
     def test_switch_users(self):
         sign_in_view = SignInView(self.driver)
         for _ in range(3):
@@ -145,7 +141,7 @@ class TestProfileView(SingleDeviceTestCase):
         sign_in_view.sign_in_button.click()
         sign_in_view.home_button.wait_for_visibility_of_element()
 
-    @pytest.mark.testrail_case_id(3424)
+    @marks.testrail_case_id(3424)
     def test_incorrect_password(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_account_button.click()

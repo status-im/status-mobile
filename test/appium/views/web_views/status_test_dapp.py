@@ -13,10 +13,10 @@ class AssetsButton(BaseButton):
             self.locator = self.Locator.text_selector('Request STT')
 
 
-class SimpleDAppWebView(BaseWebView):
+class StatusTestDAppView(BaseWebView):
 
     def __init__(self, driver):
-        super(SimpleDAppWebView, self).__init__(driver)
+        super(StatusTestDAppView, self).__init__(driver)
         self.driver = driver
 
         self.assets_button = AssetsButton(self.driver)

@@ -11,6 +11,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
+            [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.constants :as constants]
@@ -20,8 +21,9 @@
 
 (re-frame/reg-fx
  ::accept-transaction
- (fn [{:keys [password id on-completed]}]
-   (status/approve-sign-requests (list id) password on-completed)))
+ (fn [{:keys [masked-password id on-completed]}]
+   ;; unmasking the password as late as possible to avoid being exposed from app-db
+   (status/approve-sign-requests (list id) (security/unmask masked-password) on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
   (.sendTransaction (.-eth web3)
@@ -29,7 +31,7 @@
                     #()))
 
 (defn- send-tokens [{:keys [web3 from to value gas gas-price symbol network]}]
-  (let [contract (:address (tokens/symbol->token (ethereum/network->chain-keyword network) symbol))]
+  (let [contract (:address (tokens/symbol->token (keyword (ethereum/network-names network)) symbol))]
     (erc20/transfer web3 contract from to value {:gas gas :gasPrice gas-price} #())))
 
 (re-frame/reg-fx
@@ -68,18 +70,25 @@
   (re-frame/dispatch [::transaction-completed {:id (name (key result)) :response (second result)} modal?]))
 ;;;; Handlers
 
+(defn set-and-validate-amount-db [db amount symbol decimals]
+  (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
+    (-> db
+        (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
+        (assoc-in [:wallet :send-transaction :amount-text] amount)
+        (assoc-in [:wallet :send-transaction :amount-error] error))))
+
 (handlers/register-handler-fx
  :wallet.send/set-and-validate-amount
- (fn [{:keys [db]} [_ amount]]
-   (let [{:keys [value error]} (wallet.db/parse-amount amount)]
-     {:db (-> db
-              (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
-              (assoc-in [:wallet :send-transaction :amount-error] error))})))
+ (fn [{:keys [db]} [_ amount symbol decimals]]
+   {:db (set-and-validate-amount-db db amount symbol decimals)}))
 
 (handlers/register-handler-fx
  :wallet.send/set-symbol
  (fn [{:keys [db]} [_ symbol]]
-   {:db (-> (assoc-in db [:wallet :send-transaction :symbol] symbol)
+   {:db (-> db
+            (assoc-in [:wallet :send-transaction :symbol] symbol)
+            (assoc-in [:wallet :send-transaction :amount] nil)
+            (assoc-in [:wallet :send-transaction :amount-text] nil)
             (assoc-in [:wallet :send-transaction :gas] (ethereum/estimate-gas symbol)))}))
 
 (handlers/register-handler-fx
@@ -163,9 +172,9 @@
              (let [{:keys [password]} (get-in db [:wallet :send-transaction])
                    new-db'            (update-in new-db [:wallet :send-transaction] merge sending-db)] ; just update sending state as we are in wallet flow
                {:db                  new-db'
-                ::accept-transaction {:id           id
-                                      :password     password
-                                      :on-completed on-transactions-completed}})))
+                ::accept-transaction {:id              id
+                                      :masked-password password
+                                      :on-completed    on-transactions-completed}})))
           ;;SIGN MESSAGE
          (= method constants/web3-personal-sign)
 
@@ -252,9 +261,9 @@
          network (:network db)
          {:keys [amount id password to symbol method gas gas-price]} (get-in db [:wallet :send-transaction])]
      (if id
-       {::accept-transaction {:id           id
-                              :password     password
-                              :on-completed on-transactions-completed}
+       {::accept-transaction {:id              id
+                              :masked-password password
+                              :on-completed    on-transactions-completed}
         :db                  (assoc-in db' [:wallet :send-transaction :in-progress?] true)}
        {:db                (update-in db' [:wallet :send-transaction] assoc
                                       :waiting-signal? true
@@ -275,9 +284,9 @@
  (fn [{db :db} _]
    (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
      {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
-      ::accept-transaction {:id           id
-                            :password     password
-                            :on-completed on-transactions-modal-completed}})))
+      ::accept-transaction {:id              id
+                            :masked-password password
+                            :on-completed    on-transactions-modal-completed}})))
 
 (defn discard-transaction
   [{:keys [db]}]
@@ -308,8 +317,8 @@
 
 (handlers/register-handler-fx
  :wallet.send/set-password
- (fn [{:keys [db]} [_ password]]
-   {:db (assoc-in db [:wallet :send-transaction :password] password)}))
+ (fn [{:keys [db]} [_ masked-password]]
+   {:db (assoc-in db [:wallet :send-transaction :password] masked-password)}))
 
 (handlers/register-handler-fx
  :wallet.send/set-signing?
@@ -346,10 +355,21 @@
                          assoc
                          :gas (ethereum/estimate-gas (get-in db [:wallet :send-transaction :symbol])))}))
 
+(defn update-gas-price [db edit?]
+  {:update-gas-price {:web3          (:web3 db)
+                      :success-event :wallet/update-gas-price-success
+                      :edit?         edit?}})
+
+(handlers/register-handler-fx
+ :wallet/update-gas-price
+ (fn [{:keys [db]} [_ edit?]]
+   (update-gas-price db edit?)))
+
 (handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [{:keys [db]} _]
-   {:dispatch (if (= :wallet-send-transaction (second (:navigation-stack db)))
-                [:navigate-to-clean :wallet]
-                [:navigate-back])
+ (fn [{:keys [db]} [_ chat-id]]
+   {:dispatch       (condp = (second (:navigation-stack db))
+                      :wallet-send-transaction [:navigate-to-clean :wallet]
+                      :wallet-send-transaction-chat [:execute-stored-command-and-return-to-chat chat-id]
+                      [:navigate-back])
     :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))

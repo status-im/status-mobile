@@ -84,7 +84,7 @@ class LogoutDialog(BaseView):
     class LogoutButton(BaseButton):
         def __init__(self, driver):
             super(LogoutDialog.LogoutButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('LOG OUT')
+            self.locator = self.Locator.xpath_selector("//*[@text='LOG OUT' or @text='Log out']")
 
         def navigate(self):
             from views.sign_in_view import SignInView
@@ -266,6 +266,8 @@ class ProfileView(BaseView):
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
 
     def switch_network(self, network):
+        self.advanced_button.click()
+        self.debug_mode_toggle.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
@@ -283,17 +285,16 @@ class ProfileView(BaseView):
         return dict(zip(map(int, text[::2]), text[1::2]))
 
     def edit_profile_picture(self, file_name: str):
-        if AbstractTestCase().environment == 'sauce':
-            self.profile_picture.template = file_name
-            self.edit_button.click()
-            self.edit_picture_button.click()
-            self.select_from_gallery_button.click()
-            if self.allow_button.is_element_displayed(sec=10):
-                self.allow_button.click()
-            self.element_by_text(file_name).click()
-            self.confirm_button.click()
-        else:
+        if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
+        self.profile_picture.template = file_name
+        self.edit_button.click()
+        self.edit_picture_button.click()
+        self.select_from_gallery_button.click()
+        if self.allow_button.is_element_displayed(sec=10):
+            self.allow_button.click()
+        self.element_by_text(file_name).click()
+        self.confirm_button.click()
 
     def logout(self):
         self.logout_button.click()

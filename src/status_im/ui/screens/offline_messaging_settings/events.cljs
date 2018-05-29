@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.offline-messaging-settings.events
-  (:require [re-frame.core :refer [dispatch]]
+  (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.events :as accounts-events]
@@ -12,8 +12,9 @@
  (fn [{:keys [db now] :as cofx} [_ chain wnode]]
    (let [settings (get-in db [:account/account :settings])]
      (handlers-macro/merge-fx cofx
-                              {:dispatch [:logout]}
-                              (accounts-events/update-settings (assoc-in settings [:wnode chain] wnode))))))
+                              (accounts-events/update-settings
+                               (assoc-in settings [:wnode chain] wnode)
+                               [:logout])))))
 
 (handlers/register-handler-fx
  :connect-wnode
@@ -24,5 +25,6 @@
                           :content             (i18n/label :t/connect-wnode-content
                                                            {:name (get-in db [:inbox/wnodes chain wnode :name])})
                           :confirm-button-text (i18n/label :t/close-app-button)
-                          :on-accept           #(dispatch [::save-wnode chain wnode])
+                          :on-accept           #(re-frame/dispatch [::save-wnode chain wnode])
                           :on-cancel           nil}})))
+

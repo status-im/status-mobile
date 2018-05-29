@@ -12,7 +12,7 @@
             status-im.ui.screens.contacts.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
-            status-im.ui.screens.navigation
+            [status-im.ui.screens.navigation :as navigation]
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
@@ -145,6 +145,13 @@
       (re-frame/dispatch [:initialize-app encryption-key])))))
 
 (re-frame/reg-fx
+ ::get-encryption-key-fx
+ (fn [event]
+   (keychain/get-encryption-key-then
+    (fn [encryption-key]
+      (re-frame/dispatch [event encryption-key])))))
+
+(re-frame/reg-fx
  ::got-encryption-key-fx
  (fn [{:keys [encryption-key callback]}]
    (callback encryption-key)))
@@ -158,7 +165,7 @@
       (if should-move?
         (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
                                                   :on-allowed  #(move-to-internal-storage config)}])
-        (status/start-node config))))))
+        (status/start-node (types/clj->json config)))))))
 
 (re-frame/reg-fx
  ::status-module-initialized-fx
@@ -248,28 +255,30 @@
 
 (handlers/register-handler-fx
  :logout
- (fn [{:keys [db] :as cofx} [_ encryption-key]]
-   (let [{:transport/keys [chats]} db
-         sharing-usage-data? (get-in db [:account/account :sharing-usage-data?])]
-     (handlers-macro/merge-fx cofx
-                              {:dispatch-n (concat [[:initialize-db encryption-key]
-                                                    [:load-accounts]
-                                                    [:listen-to-network-status]
-                                                    [:navigate-to :accounts]]
-                                                   (when sharing-usage-data?
-                                                     [[:unregister-mixpanel-tracking]]))}
-                              (transport/stop-whisper)))))
+ (fn [{:keys [db] :as cofx} [this-event encryption-key]]
+   (if encryption-key
+     (let [{:transport/keys [chats]} db]
+       (handlers-macro/merge-fx cofx
+                                {:dispatch-n [[:initialize-db encryption-key]
+                                              [:load-accounts]
+                                              [:listen-to-network-status]
+                                              [:navigate-to :accounts]]}
+                                (navigation/navigate-to-clean nil)
+                                (transport/stop-whisper)))
+     {::get-encryption-key-fx this-event})))
 
 (handlers/register-handler-fx
  :initialize-db
  (fn [{{:keys          [status-module-initialized? status-node-started?
-                        network-status network device-UUID]
+                        network-status network peers-count peers-summary device-UUID]
         :or {network (get app-db :network)}} :db}
       [_ encryption-key]]
    {::init-store encryption-key
     :db          (assoc app-db
                         :contacts/contacts {}
                         :network-status network-status
+                        :peers-count peers-count
+                        :peers-summary peers-summary
                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                         :status-node-started? status-node-started?
                         :network network
@@ -278,7 +287,7 @@
 (handlers/register-handler-db
  :initialize-account-db
  (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
-              network network-status view-id navigation-stack
+              network network-status peers-count peers-summary view-id navigation-stack
               access-scope->commands-responses
               status-module-initialized? status-node-started? device-UUID]
        :or   [network (get app-db :network)]} [_ address]]
@@ -296,6 +305,8 @@
                     :account/account current-account
                     :network-status network-status
                     :network network
+                    :peers-summary peers-summary
+                    :peers-count peers-count
                     :device-UUID device-UUID)
        console-contact
        (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
@@ -392,6 +403,17 @@
       (log/debug "Unknown jail signal " event))))
 
 (handlers/register-handler-fx
+ :discovery/summary
+ (fn [{:keys [db] :as cofx} [_ peers-summary]]
+   (let [previous-summary (:peers-summary db)
+         peers-count      (count peers-summary)]
+     (handlers-macro/merge-fx cofx
+                              {:db (assoc db
+                                          :peers-summary peers-summary
+                                          :peers-count peers-count)}
+                              (inbox/peers-summary-change-fx previous-summary)))))
+
+(handlers/register-handler-fx
  :signal-event
  (fn [_ [_ event-str]]
    (log/debug :event-str event-str)
@@ -400,12 +422,13 @@
          to-dispatch (case type
                        "sign-request.queued" [:sign-request-queued event]
                        "sign-request.failed" [:sign-request-failed event]
-                       "node.started"       [:status-node-started]
-                       "node.stopped"       [:status-node-stopped]
-                       "module.initialized" [:status-module-initialized]
-                       "jail.signal"        (handle-jail-signal event)
-                       "envelope.sent"      [:signals/envelope-status (:hash event) :sent]
-                       "envelope.expired"   [:signals/envelope-status (:hash event) :not-sent]
+                       "node.started"        [:status-node-started]
+                       "node.stopped"        [:status-node-stopped]
+                       "module.initialized"  [:status-module-initialized]
+                       "jail.signal"         (handle-jail-signal event)
+                       "envelope.sent"       [:signals/envelope-status (:hash event) :sent]
+                       "envelope.expired"    [:signals/envelope-status (:hash event) :not-sent]
+                       "discovery.summary"   [:discovery/summary event]
                        (log/debug "Event " type " not handled"))]
      (when to-dispatch
        {:dispatch to-dispatch}))))
@@ -430,13 +453,10 @@
 (handlers/register-handler-fx
  :app-state-change
  (fn [{{:keys [network-status mailserver-status]} :db :as cofx} [_ state]]
-   (let [app-coming-from-background? (= state "active")
-         should-recover? (and app-coming-from-background?
-                              (= network-status :online)
-                              (not= mailserver-status :connecting))]
+   (let [app-coming-from-background? (= state "active")]
      (handlers-macro/merge-fx cofx
                               {::app-state-change-fx state}
-                              (inbox/recover-offline-inbox should-recover?)))))
+                              (inbox/request-messages app-coming-from-background?)))))
 
 (handlers/register-handler-fx
  :request-permissions

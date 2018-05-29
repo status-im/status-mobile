@@ -73,7 +73,7 @@ transaction_users['D_USER']['public_key'] = "0x049191be3d0b0258732a4c3bd66d2e68c
                                             "f51345417e42f56e16926b685f99448ac05b9608b0d42cf65ee58853f104696"
 
 transaction_users['E_USER'] = dict()
-transaction_users['E_USER']['password'] = "qwerty"
+transaction_users['E_USER']['password'] = "newuniquepassword12"
 transaction_users['E_USER']['passphrase'] = "sea ill guard bounce gesture tomato walnut fitness plastic affair oven transfer"
 transaction_users['E_USER']['username'] = "Chartreuse Comfortable Spadefoot"
 transaction_users['E_USER']['address'] = "f7cb60839c0de25e37be0391c33bb34a8f0f8414"
@@ -81,7 +81,7 @@ transaction_users['E_USER']['public_key'] = "0x04d27bda317be9b3d943db5e098b3ab1c
                                             "09499522623dc686f5d0a3233c7f1f9724849127cedb5511945e12ca3b4d297"
 
 transaction_users['F_USER'] = dict()
-transaction_users['F_USER']['password'] = "qwerty"
+transaction_users['F_USER']['password'] = "newuniquepassword12"
 transaction_users['F_USER']['passphrase'] = "style case lazy pole general section dawn royal slice evoke crowd boat"
 transaction_users['F_USER']['username'] = "Happygolucky Zigzag Stoat"
 transaction_users['F_USER']['address'] = "a94a2a7584620677d290549a96046e59a18f09ef"

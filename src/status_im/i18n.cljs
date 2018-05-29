@@ -64,66 +64,66 @@
 (set! (.-defaultSeparator rn-dependencies/i18n) "/")
 
 ;; translations
-
-(def translations-by-locale {:af          af/translations
-                             :ar          ar/translations
-                             :be          be/translations
-                             :cs          cs/translations
-                             :da          da/translations
-                             :de          de/translations
-                             :de-ch       de-ch/translations
-                             :el          el/translations
-                             :en          en/translations
-                             :es          es/translations
-                             :es-ar       es-ar/translations
-                             :es-mx       es-mx/translations
-                             :fi          fi/translations
-                             :fr          fr/translations
-                             :fr-ch       fr-ch/translations
-                             :fy          fy/translations
-                             :he          he/translations
-                             :hi          hi/translations
-                             :hu          hu/translations
-                             :id          id/translations
-                             :it          it/translations
-                             :it-ch       it-ch/translations
-                             :ja          ja/translations
-                             :ko          ko/translations
-                             :la          la/translations
-                             :lt          lt/translations
-                             :lv          lv/translations
-                             :ms          ms/translations
-                             :nb          nb/translations
-                             :ne          ne/translations
-                             :nl          nl/translations
-                             :pl          pl/translations
-                             :pt-br       pt-br/translations
-                             :pt-pt       pt-pt/translations
-                             :ro          ro/translations
-                             :ru          ru/translations
-                             :sl          sl/translations
-                             :sr          sr-rs-cyrl/translations
-                             :sr-RS_#Latn sr-rs-latn/translations
-                             :sr-RS_#Cyrl sr-rs-cyrl/translations
-                             :sv          sv/translations
-                             :sw          sw/translations
-                             :th          th/translations
-                             :tr          tr/translations
-                             :uk          uk/translations
-                             :ur          ur/translations
-                             :vi          vi/translations
-                             :zh          zh-hans/translations
-                             :zh-hans     zh-hans/translations
-                             :zh-hans-cn  zh-hans/translations
-                             :zh-hans-mo  zh-hans/translations
-                             :zh-hant     zh-hant/translations
-                             :zh-hant-tw  zh-hant-tw/translations
-                             :zh-hant-sg  zh-hant-sg/translations
-                             :zh-hant-hk  zh-hant-hk/translations
-                             :zh-hant-cn  zh-hant/translations
-                             :zh-hant-mo  zh-hant/translations
-                             :zh-wuu      zh-wuu/translations
-                             :zh-yue      zh-yue/translations})
+#_(def translations-by-locale {:af          af/translations
+                               :ar          ar/translations
+                               :be          be/translations
+                               :cs          cs/translations
+                               :da          da/translations
+                               :de          de/translations
+                               :de-ch       de-ch/translations
+                               :el          el/translations
+                               :en          en/translations
+                               :es          es/translations
+                               :es-ar       es-ar/translations
+                               :es-mx       es-mx/translations
+                               :fi          fi/translations
+                               :fr          fr/translations
+                               :fr-ch       fr-ch/translations
+                               :fy          fy/translations
+                               :he          he/translations
+                               :hi          hi/translations
+                               :hu          hu/translations
+                               :id          id/translations
+                               :it          it/translations
+                               :it-ch       it-ch/translations
+                               :ja          ja/translations
+                               :ko          ko/translations
+                               :la          la/translations
+                               :lt          lt/translations
+                               :lv          lv/translations
+                               :ms          ms/translations
+                               :nb          nb/translations
+                               :ne          ne/translations
+                               :nl          nl/translations
+                               :pl          pl/translations
+                               :pt-br       pt-br/translations
+                               :pt-pt       pt-pt/translations
+                               :ro          ro/translations
+                               :ru          ru/translations
+                               :sl          sl/translations
+                               :sr          sr-rs-cyrl/translations
+                               :sr-RS_#Latn sr-rs-latn/translations
+                               :sr-RS_#Cyrl sr-rs-cyrl/translations
+                               :sv          sv/translations
+                               :sw          sw/translations
+                               :th          th/translations
+                               :tr          tr/translations
+                               :uk          uk/translations
+                               :ur          ur/translations
+                               :vi          vi/translations
+                               :zh          zh-hans/translations
+                               :zh-hans     zh-hans/translations
+                               :zh-hans-cn  zh-hans/translations
+                               :zh-hans-mo  zh-hans/translations
+                               :zh-hant     zh-hant/translations
+                               :zh-hant-tw  zh-hant-tw/translations
+                               :zh-hant-sg  zh-hant-sg/translations
+                               :zh-hant-hk  zh-hant-hk/translations
+                               :zh-hant-cn  zh-hant/translations
+                               :zh-hant-mo  zh-hant/translations
+                               :zh-wuu      zh-wuu/translations
+                               :zh-yue      zh-yue/translations})
+(def translations-by-locale {:en          en/translations}) ; Temporarily disable all languages except English
 
 ;; english as source of truth
 (def labels (set (keys en/translations)))
@@ -266,27 +266,28 @@
 (spec/def ::locales (spec/coll-of ::locale :kind set? :into #{}))
 
 ;; NOTE: Add new locale keywords here to indicate support for them.
-(def supported-locales (spec/assert ::locales #{:fr
-                                                :zh
-                                                :zh-hans
-                                                :zh-hans-cn
-                                                :zh-hans-mo
-                                                :zh-hant
-                                                :zh-hant-sg
-                                                :zh-hant-hk
-                                                :zh-hant-tw
-                                                :zh-hant-mo
-                                                :zh-hant-cn
-                                                :sr-RS_#Cyrl
-                                                :el
-                                                :en
-                                                :de
-                                                :lt
-                                                :sr-RS_#Latn
-                                                :sr
-                                                :sv
-                                                :ja
-                                                :uk}))
+#_(def supported-locales (spec/assert ::locales #{:fr
+                                                  :zh
+                                                  :zh-hans
+                                                  :zh-hans-cn
+                                                  :zh-hans-mo
+                                                  :zh-hant
+                                                  :zh-hant-sg
+                                                  :zh-hant-hk
+                                                  :zh-hant-tw
+                                                  :zh-hant-mo
+                                                  :zh-hant-cn
+                                                  :sr-RS_#Cyrl
+                                                  :el
+                                                  :en
+                                                  :de
+                                                  :lt
+                                                  :sr-RS_#Latn
+                                                  :sr
+                                                  :sv
+                                                  :ja
+                                                  :uk}))
+(def supported-locales (spec/assert ::locales #{:en}))
 
 (spec/def ::supported-locale supported-locales)
 (spec/def ::supported-locales (spec/coll-of ::supported-locale :kind set? :into #{}))

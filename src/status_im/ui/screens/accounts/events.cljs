@@ -70,15 +70,15 @@
  [re-frame/trim-v (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
  (fn [{:keys [signing-phrase status db] :as cofx} [{:keys [pubkey address mnemonic]} password]]
    (let [normalized-address (utils.hex/normalize-hex address)
-         account            {:public-key          pubkey
-                             :address             normalized-address
-                             :name                (generate-gfy pubkey)
-                             :status              status
-                             :signed-up?          true
-                             :photo-path          (identicon pubkey)
-                             :signing-phrase      signing-phrase
-                             :mnemonic            mnemonic
-                             :settings            constants/default-account-settings}]
+         account            {:public-key     pubkey
+                             :address        normalized-address
+                             :name           (generate-gfy pubkey)
+                             :status         status
+                             :signed-up?     true
+                             :photo-path     (identicon pubkey)
+                             :signing-phrase signing-phrase
+                             :mnemonic       mnemonic
+                             :settings       (constants/default-account-settings)}]
      (log/debug "account-created")
      (when-not (str/blank? pubkey)
        (-> (add-account db account)
@@ -107,10 +107,13 @@
      {:db                 (assoc-in db [:accounts/accounts id] new-account)
       :data-store/base-tx [(accounts-store/save-account-tx new-account)]})))
 
-(defn update-settings [settings {{:keys [account/account] :as db} :db :as cofx}]
-  (let [new-account (assoc account :settings settings)]
-    {:db                 (assoc db :account/account new-account)
-     :data-store/base-tx [(accounts-store/save-account-tx new-account)]}))
+(defn update-settings
+  ([settings cofx] (update-settings settings nil cofx))
+  ([settings success-event {{:keys [account/account] :as db} :db :as cofx}]
+   (let [new-account (assoc account :settings settings)]
+     {:db                 (assoc db :account/account new-account)
+      :data-store/base-tx [{:transaction (accounts-store/save-account-tx new-account)
+                            :success-event success-event}]})))
 
 (handlers/register-handler-fx
  :send-account-update-if-needed
@@ -128,13 +131,13 @@
  (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
    (handlers-macro/merge-fx cofx
                             {:db       db
-                             :dispatch [:navigate-to-clean :usage-data [:account-finalized]]}
+                             :dispatch [:navigate-to-clean :usage-data [:account-finalized true]]}
                             (accounts.utils/account-update {:name (:name create)}))))
 
 (handlers/register-handler-fx
  :account-finalized
- (fn [{db :db} _]
-   {:db (assoc db :accounts/create {:show-welcome? true})
+ (fn [{db :db} [_ show-welcome?]]
+   {:db (assoc db :accounts/create {:show-welcome? show-welcome?})
     :dispatch-n [[:navigate-to-clean :home]
                  [:request-notifications]]}))
 

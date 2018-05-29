@@ -99,13 +99,13 @@
           [message-content-text last-message]
           [unviewed-indicator chat-id]]]]])))
 
-(defview home-list-browser-item-inner-view [{:keys [browser-id name url dapp? contact] :as browser}]
-  (letsubs [contact' [:get-contact-by-identity contact]]
+(defview home-list-browser-item-inner-view [{:keys [name url] :as browser}]
+  (letsubs [dapp [:get-dapp-by-name name]]
     [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
      [react/view styles/chat-container
       [react/view styles/chat-icon-container
-       (if contact'
-         [chat-icon.screen/dapp-icon-browser contact' 36]
+       (if dapp
+         [chat-icon.screen/dapp-icon-browser dapp 36]
          [react/view styles/browser-icon-container
           [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
       [react/view styles/chat-info-container

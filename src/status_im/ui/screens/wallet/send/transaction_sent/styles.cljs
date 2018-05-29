@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.send.transaction-sent.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
+  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def transaction-sent-container
   {:align-items :center})
@@ -30,7 +31,7 @@
 
 (def transaction-details-container
   {:height            42
-   :background-color  "#00000033"
+   :background-color  colors/black-darker-transparent
    :margin-horizontal 16
    :opacity           0.2
    :align-items       :center

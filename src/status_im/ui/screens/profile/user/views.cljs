@@ -67,15 +67,15 @@
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
     [react/view styles/qr-code-viewer
-     [status-bar/status-bar {:type :modal}]
+     [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
      [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
       value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
 
 (defn- show-qr [contact source value]
-  #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
-                                                        :source  source
-                                                        :value   value}]))
+  #(re-frame/dispatch [:navigate-to-modal :profile-qr-viewer {:contact contact
+                                                              :source  source
+                                                              :value   value}]))
 
 (defn share-contact-code [current-account public-key]
   [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}

@@ -149,7 +149,7 @@
 
 (defn dapp-icon-browser [contact size]
   [contact-icon-view contact
-   {:container              {:width size :height size}
+   {:container              {:width size :height size :top 3 :margin-left 2}
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
     :online-dot-left        styles/online-dot-left

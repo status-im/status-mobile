@@ -9,7 +9,8 @@
 
 (def ^:private mergable-keys
   #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
-    :shh/add-new-sym-keys :call-jail :shh/get-new-sym-keys})
+    :shh/add-new-sym-keys :shh/get-new-sym-keys :shh/post
+    :confirm-message-processed :call-jail})
 
 (defn safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
@@ -24,11 +25,15 @@
                            (select-keys new-fx mergable-keys)))
         {:merging-fx-with-common-keys common-keys}))))
 
-(defn merge-effects [{:keys [db] :as initial-cofx} handler args]
-  (reduce (fn [fx arg]
-            (let [temp-cofx (update-db initial-cofx fx)]
-              (safe-merge
-               fx
-               (handler arg temp-cofx))))
-          {:db db}
-          args))
+(defn merge-effects
+  ([{:keys [db] :as cofx} handler args]
+   (merge-effects {:db db} cofx handler args))
+  ([initial-fx {:keys [db] :as cofx} handler args]
+   (reduce (fn [fx arg]
+             (let [temp-cofx (update-db cofx fx)]
+               (safe-merge
+                fx
+                (handler arg temp-cofx))))
+           (or initial-fx
+               {:db db})
+           args)))

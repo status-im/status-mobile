@@ -7,8 +7,10 @@
    :chat-name                            "Chat name"
    :notifications-title                  "Notifications and sounds"
    :offline                              "Offline"
+   :disconnected                         "Connecting to peers..."
    :connection-problem                   "Messages connection problem"
    :mailserver-reconnect                 "Could not connect to mailserver. Tap to reconnect"
+   :fetching-messages                    "Fetching messages..."
    :search-for                           "Search for..."
    :cancel                               "Cancel"
    :next                                 "Next"
@@ -91,6 +93,7 @@
    :suggestions-commands                 "Commands"
    :faucet-success                       "Faucet request has been received"
    :faucet-error                         "Faucet request error"
+   :network-mismatch                     "Network mismatch"
 
    ;;sync
    :sync-in-progress                     "Syncing..."
@@ -174,6 +177,8 @@
    :wallet-set-up-signing-phrase         "This is your personal transaction phrase that you’ll use everytime you make a transaction. Make sure to write it down on a piece of paper, store it somewhere, and only confirm transactions when you see these three words."
    :wallet-set-up-confirm-title          "Wrote it down?"
    :wallet-set-up-confirm-description    "You won’t be able to see your 3-word transaction phrase again after this."
+   :wallet-backup-seed-title             "Backup your Seed Phrase"
+   :wallet-backup-seed-description       "This will help you to keep your money safe"
 
    ;;make_photo
    :image-source-title                   "Edit picture"
@@ -238,6 +243,8 @@
    :empty-chat-description               "There are no messages \nin this chat yet"
    :empty-chat-description-console       "Look under the hood! Console is a javascript runtime environment that exposes the whole web3 API. Type \"web3.\" to get started."
    :counter-99-plus                      "99+"
+   :show-more                            "Show more"
+   :show-less                            "Show less"
 
    ;;discover
    :discover                             "Discover"
@@ -289,7 +296,7 @@
    :clear                                "Clear"
    :clear-history                        "Clear history"
    :clear-history-title                  "Clear history?"
-   :clear-group-history-confirmation     "Are you sure you want to clear this group's chat history?"
+   :clear-history-confirmation-content   "Are you sure you want to clear this chat history?"
    :clear-history-confirmation           "Clear history?"
    :clear-history-action                 "Clear"
    :mute-notifications                   "Mute notifications"
@@ -376,7 +383,7 @@
    :recipient                            "Recipient"
    :specify-recipient                    "Specify recipient..."
    :recipient-code                       "Enter recipient address"
-   :recent-recipients                    "Recent recipients"
+   :recent-recipients                    "Contacts"
    :to                                   "To"
    :from                                 "From"
    :data                                 "Data"
@@ -398,7 +405,7 @@
    :postponed                            "Postponed"
 
    ;;webview
-   :web-view-error                       "oops, error"
+   :web-view-error                       "Unable to load page"
 
    ;;testfairy warning
    :testfairy-title                      "Warning!"
@@ -586,6 +593,9 @@
    :delete-network-confirmation          "Are you sure you want to delete this network?"
    ;; TODO(dmitryn): come up with better description/naming. Suggested namings: Mailbox and Master Node
    :existing-wnodes                      "Existing mailservers"
+   :add-mailserver                       "Add Mailserver"
+   :mailserver-address                   "Mailserver address"
+   :specify-mailserver-address           "Specify a mailserver address"
    :add-json-file                        "Add a JSON file"
    :paste-json-as-text                   "Paste JSON as text"
    :paste-json                           "Paste JSON"
@@ -600,8 +610,8 @@
    :network-details                      "Network details"
    :remove-network                       "Remove network"
    :network-settings                     "Network settings"
-   :offline-messaging                    "Offline messages"
-   :offline-messaging-settings           "Offline messages settings"
+   :offline-messaging                    "Mailserver"
+   :offline-messaging-settings           "Mailserver settings"
    :edit-network-warning                 "Be careful, editing the network data may disable this network for you"
    :delete-network-error                 "Please connect to a different network before deleting this one"
    :connecting-requires-login            "Connecting to another network requires login"
@@ -627,4 +637,5 @@
    :enter-dapp-url                       "Enter a ÐApp URL"
    :dapp                                 "ÐApp"
    :selected                             "Selected"
-   :selected-dapps                       "Selected ÐApps"})
+   :selected-dapps                       "Selected ÐApps"
+   :browser-warning                      "Connection is not proven secure. Make sure you trust this site before signing transactions or entering personal data."})

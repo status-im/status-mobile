@@ -39,13 +39,14 @@
                      :mnemonic              ""
                      :signed-up?            true
                      :signing-phrase        phrase
-                     :settings              constants/default-account-settings
-                     :wallet-set-up-passed? true}]
+                     :settings              (constants/default-account-settings)
+                     :wallet-set-up-passed? false
+                     :seed-backed-up?       true}]
      (when-not (string/blank? public-key)
        (-> db
            (accounts-events/add-account account)
            (assoc :dispatch [:login-account address password])
-           (assoc :dispatch-later [{:ms 2000 :dispatch [:navigate-to :usage-data]}]))))))
+           (assoc :dispatch-later [{:ms 2000 :dispatch [:navigate-to :usage-data [:account-finalized false]]}]))))))
 
 (handlers/register-handler-fx
  :recover-account

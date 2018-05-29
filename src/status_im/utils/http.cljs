@@ -1,6 +1,5 @@
 (ns status-im.utils.http
-  (:require [status-im.constants :as const]
-            [status-im.utils.utils :as utils]
+  (:require [status-im.utils.utils :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies])
   (:refer-clojure :exclude [get]))
 
@@ -56,3 +55,6 @@
        (.catch (or on-error
                    (fn [error]
                      (utils/show-popup "Error" (str error))))))))
+
+(defn normalize-url [url]
+  (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))

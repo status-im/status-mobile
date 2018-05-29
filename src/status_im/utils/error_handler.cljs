@@ -41,6 +41,7 @@
 
 (defonce !error-handler-set? (atom false))
 
+;; Global Exception Handler
 (defn register-exception-handler!
   "Improve error messages printed to console.
    When js/goog.DEBUG is false, show a popup with an error summary; else rely on default `red` screen."
@@ -49,9 +50,18 @@
   (when-not @!error-handler-set?
     (reset! !error-handler-set? true)
     (let [orig-handler (some-> js/ErrorUtils .-getGlobalHandler (.call))]
-      (js/ErrorUtils.setGlobalHandler
+    (js/ErrorUtils.setGlobalHandler
        (fn [e isFatal]
-         (handle-error e isFatal)
+        (handle-error e isFatal)
          (if js/goog.DEBUG
            (some-> orig-handler (.call nil e isFatal))
-           (utils/show-popup "Error" (.-message e))))))))
+           (utils/show-popup "Error" (.-message e)))))
+
+;; Instabug manual exception reporting
+
+(try
+      (throw (js/SyntaxError.))
+      (catch js/error e)
+      (alert :name e)
+      (js/Instabug.reportJSException e))
+      

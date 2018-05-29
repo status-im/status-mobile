@@ -13,6 +13,14 @@
    :testnet {:id 3 :name "Ropsten"}
    :rinkeby {:id 4 :name "Rinkeby"}})
 
+(def network-names
+  {"mainnet"     "mainnet"
+   "mainnet_rpc" "mainnet"
+   "testnet"     "testnet"
+   "testnet_rpc" "testnet"
+   "rinkeby"     "rinkeby"
+   "rinkeby_rpc" "rinkeby"})
+
 (defn chain-id->chain-keyword [i]
   (some #(when (= i (:id (val %))) (key %)) chains))
 
@@ -22,11 +30,8 @@
 (defn testnet? [id]
   (contains? #{(chain-keyword->chain-id :testnet) (chain-keyword->chain-id :rinkeby)} id))
 
-(defn network-config [network]
-  (or (:raw-config network) (types/json->clj (:config network))))
-
 (defn network-with-upstream-rpc? [network]
-  (get-in (network-config network) [:UpstreamConfig :Enabled]))
+  (get-in network [:config :UpstreamConfig :Enabled]))
 
 (def hex-prefix "0x")
 
@@ -41,7 +46,7 @@
     (.isAddress dependencies/Web3.prototype s)))
 
 (defn network->chain-id [network]
-  (:NetworkId (network-config network)))
+  (get-in network [:config :NetworkId]))
 
 (defn network->chain-keyword [network]
   (chain-id->chain-keyword (network->chain-id network)))
@@ -109,24 +114,24 @@
 (defn get-block-number [web3 cb]
   (.getBlockNumber (.-eth web3)
                    (fn [error result]
-                     (if (seq error)
-                       (handle-error error)
-                       (cb result)))))
+                     (if-not error
+                       (cb result)
+                       (handle-error error)))))
 
 (defn get-block-info [web3 number cb]
   (.getBlock (.-eth web3) number (fn [error result]
-                                   (if (seq error)
-                                     (handle-error error)
-                                     (cb (js->clj result :keywordize-keys true))))))
+                                   (if-not error
+                                     (cb (js->clj result :keywordize-keys true))
+                                     (handle-error error)))))
 
 (defn get-transaction [web3 number cb]
   (.getTransaction (.-eth web3) number (fn [error result]
-                                         (if (seq error)
-                                           (handle-error error)
-                                           (cb (js->clj result :keywordize-keys true))))))
+                                         (if-not error
+                                           (cb (js->clj result :keywordize-keys true))
+                                           (handle-error error)))))
 
 (defn get-transaction-receipt [web3 number cb]
   (.getTransactionReceipt (.-eth web3) number (fn [error result]
-                                                (if (seq error)
-                                                  (handle-error error)
-                                                  (cb (js->clj result :keywordize-keys true))))))
+                                                (if-not error
+                                                  (cb (js->clj result :keywordize-keys true))
+                                                  (handle-error error)))))

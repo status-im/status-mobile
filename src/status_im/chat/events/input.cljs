@@ -10,10 +10,7 @@
             [status-im.chat.events.commands :as commands-events]
             [status-im.bots.events :as bots-events]
             [status-im.ui.components.react :as react-comp]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.random :as random]
-            [status-im.i18n :as i18n]))
+            [status-im.utils.handlers :as handlers]))
 
 ;;;; Effects
 
@@ -328,15 +325,23 @@
                   proceed-events)]
      {:dispatch-n events})))
 
+(defn cleanup-chat-command [db]
+  (-> (model/set-chat-ui-props db {:sending-in-progress? false})
+      (clear-seq-arguments)
+      (set-chat-input-metadata nil)
+      (set-chat-input-text nil)))
+
+(handlers/register-handler-fx
+ :cleanup-chat-command
+ (fn [{:keys [db]}]
+   {:db (cleanup-chat-command db)}))
+
 (handlers/register-handler-fx
  ::send-command
  message-model/send-interceptors
  (fn [{:keys [db] :as cofx} [command-message]]
    (let [{:keys [current-chat-id current-public-key]} db
-         new-db  (-> (model/set-chat-ui-props db {:sending-in-progress? false})
-                     (clear-seq-arguments)
-                     (set-chat-input-metadata nil)
-                     (set-chat-input-text nil))
+         new-db  (cleanup-chat-command db)
          address (get-in db [:account/account :address])]
      (merge {:db new-db}
             (message-model/process-command (assoc cofx :db new-db)

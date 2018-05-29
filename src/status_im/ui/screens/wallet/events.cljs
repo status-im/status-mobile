@@ -66,14 +66,14 @@
 
 (reg-fx
  :get-transactions
- (fn [{:keys [web3 network account-id token-addresses success-event error-event]}]
-   (transactions/get-transactions network
+ (fn [{:keys [web3 chain account-id token-addresses success-event error-event]}]
+   (transactions/get-transactions chain
                                   account-id
                                   #(re-frame/dispatch [success-event %])
                                   #(re-frame/dispatch [error-event %]))
    (doseq [direction [:inbound :outbound]]
      (erc20/get-token-transactions web3
-                                   network
+                                   chain
                                    token-addresses
                                    direction
                                    account-id
@@ -139,7 +139,7 @@
            token-addresses (map :address all-tokens)]
        {:get-transactions {:account-id      (get-in db [:account/account :address])
                            :token-addresses token-addresses
-                           :network         chain
+                           :chain           chain
                            :web3            web3
                            :success-event   :update-transactions-success
                            :error-event     :update-transactions-fail}
@@ -236,13 +236,6 @@
                                                         :method     method
                                                         :from-chat? from-chat?})
     :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
-
-(handlers/register-handler-fx
- :wallet/update-gas-price
- (fn [{:keys [db]} [_ edit?]]
-   {:update-gas-price {:web3          (:web3 db)
-                       :success-event :wallet/update-gas-price-success
-                       :edit?         edit?}}))
 
 (handlers/register-handler-db
  :wallet/update-gas-price-success

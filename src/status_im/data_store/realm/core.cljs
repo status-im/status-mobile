@@ -20,18 +20,24 @@
         (aset arr i (aget key i)))
       (.-buffer arr))))
 
-(defn realm-version
+(defn unencrypted-realm?
+  "Detect whether there is a unencrypted version of realm by checking whether
+  opening realm is successful"
+  [file-name]
+  (boolean
+   (.schemaVersion rn-dependencies/realm file-name)))
+
+(defn encrypted-realm-version
+  "Returns -1 if the file does not exists, the schema version if it successfully
+  decrypts it, nil otherwise."
+  ;; We don't throw here as we want to know whether the
+  ;; user is upgrading from an older version of the app (<= 0.9.18), in which case
+  ;; we need to reset the database, as it was unencrypted / wallet compatibility."
   [file-name encryption-key]
-  (if encryption-key
-    ;; we need to try this if previous version was using unencrypted database
-    (try
-      (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
-      (catch js/Object e
-        (log/info "Attempting to read encrypted file failes")))
-    (try
-      (.schemaVersion rn-dependencies/realm file-name)
-      (catch js/Object e
-        (log/info "Attempting to read unencrypted file failed")))))
+  (try
+    (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
+    (catch js/Object e
+      nil)))
 
 (defn open-realm
   [options file-name encryption-key]
@@ -51,31 +57,39 @@
   (when realm
     (.close realm)))
 
-(defn migrate-realm [file-name schemas encryption-key]
-  (let [current-version (realm-version file-name encryption-key)]
-    (doseq [schema schemas
-            :when (> (:schemaVersion schema) current-version)
-            :let [migrated-realm (open-realm schema file-name encryption-key)]]
-      (close migrated-realm)))
-  (open-realm (last schemas) file-name encryption-key))
-
-(defn reset-realm [file-name schemas encryption-key]
-  (utils/show-popup "Please note" "You must recover or create a new account with this upgrade. Also chatting with accounts in previous releases is incompatible")
+(defn reset-realm
+  "Delete realm & open a new database using encryption key"
+  [file-name schemas encryption-key]
   (delete-realm file-name)
   (open-realm (last schemas) file-name encryption-key))
 
+(defn- migrate-schemas
+  "Apply migrations in sequence and open database with the last schema"
+  [file-name schemas encryption-key current-version]
+  (doseq [schema schemas
+          :when (> (:schemaVersion schema) current-version)
+          :let [migrated-realm (open-realm schema file-name encryption-key)]]
+    (close migrated-realm))
+  (open-realm (last schemas) file-name encryption-key))
+
+(defn migrate-realm
+  "Migrate realm if is a compatible version or reset the database"
+  [file-name schemas encryption-key]
+  (let [encrypted-version (encrypted-realm-version file-name encryption-key)
+        ;; If it's unencrypted reset schema
+        unencrypted?      (and (not encrypted-version)
+                               (unencrypted-realm? file-name))]
+    (cond
+      ;; -1 if it's a new installation, n if encrypted and existing
+      encrypted-version (migrate-schemas file-name schemas encryption-key encrypted-version)
+      unencrypted?      (do
+                          (utils/show-popup "Important: Wallet Upgrade" "The Status Wallet will be upgraded in this release. The 12 mnemonic words will generate different addresses and whisper identities (public key). Given that we changed the algorithm used to generate keys and addresses, it will be impossible to re-import accounts created with the old algorithm in Status. Please create a new account.")
+                          (reset-realm file-name schemas encryption-key)
+                          (migrate-realm file-name schemas encryption-key)))))
+
 (defn open-migrated-realm
   [file-name schemas encryption-key]
-  ;; TODO: remove for release 0.9.20
-  ;; delete the realm file if its schema version is higher
-  ;; than existing schema version (this means the previous
-  ;; install has incompatible database schemas)
-  (if-let [current-version (realm-version file-name encryption-key)]
-    (if (> current-version
-           (apply max (map :schemaVersion base/schemas)))
-      (reset-realm file-name schemas encryption-key)
-      (migrate-realm file-name schemas encryption-key))
-    (reset-realm file-name schemas encryption-key)))
+  (migrate-realm file-name schemas encryption-key))
 
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))

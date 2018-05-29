@@ -87,7 +87,8 @@
                              (animation/anim-sequence
                               [(animation/anim-delay timeout)
                                (animation/spring opacity {:toValue  1
-                                                          :duration duration})])))}
+                                                          :duration duration
+                                                          :useNativeDriver true})])))}
     [react/with-activity-indicator
      {:style   style/message-view-preview
       :preview [react/view style/message-view-preview]}
@@ -99,7 +100,7 @@
        message-view]]]))
 
 (defview messages-view [group-chat]
-  (letsubs [messages           [:get-current-chat-messages]
+  (letsubs [messages           [:get-current-chat-messages-stream]
             chat-id            [:get-current-chat-id]
             current-public-key [:get-current-public-key]]
     {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
