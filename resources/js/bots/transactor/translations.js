@@ -20,9 +20,12 @@ I18n.translations = {
         validation_tx_failed: 'Transaction failed',
         validation_amount_specified: 'Amount must be specified',
         validation_invalid_number: 'Amount is not valid number',
-        validation_amount_is_too_small: 'Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)',
+        validation_amount_is_too_small: 'Amount is too precise. Max number of decimals is 18.',
         validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
-    },
+    }
+
+    /*
+    ,
     ru: {
         send_title: 'Отправить транзакцию',
         send_description: 'Отправить платеж',
@@ -479,4 +482,6 @@ I18n.translations = {
         validation_invalid_number: 'Số tiền không phải là một số hợp lệ',
         validation_insufficient_amount: 'Không đủ ETH trong số dư ('
     }
+
+    */
 };

@@ -29,7 +29,7 @@
         {:error (i18n/label :t/validation-amount-invalid-number) :value value}
 
         (too-precise-amount? normalized-amount decimals)
-        {:error (i18n/label :t/validation-amount-is-too-precise) :value value}
+        {:error (i18n/label :t/validation-amount-is-too-precise {:decimals decimals}) :value value}
 
         :else
         {:value value}))))

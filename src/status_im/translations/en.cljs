@@ -579,7 +579,7 @@
    :wallet-transaction-fee-details       "Gas limit is the amount of gas to send with your transaction. Increasing this number will not get your transaction processed faster"
    :wallet-transaction-total-fee         "Total Fee"
    :validation-amount-invalid-number     "Amount is not a valid number"
-   :validation-amount-is-too-precise     "Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)"
+   :validation-amount-is-too-precise     "Amount is too precise. Max number of decimals is {{decimals}}."
    :scan-qr-code                         "Scan a QR code with a wallet address"
    :reset-default                        "Reset to default"
 
