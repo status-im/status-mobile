@@ -27,10 +27,12 @@
                            transport.utils/to-utf8
                            transit/deserialize)]
     (when (and sig status-message)
-      (handlers-macro/merge-fx
-       (assoc cofx :js-obj js-message)
-       (message/receive status-message (or chat-id sig) sig)
-       (update-last-received-from-inbox now-in-s timestamp ttl)))))
+      (try
+        (handlers-macro/merge-fx
+         (assoc cofx :js-obj js-message)
+         (message/receive status-message (or chat-id sig) sig)
+         (update-last-received-from-inbox now-in-s timestamp ttl))
+        (catch :default e nil))))) ; ignore unknown message types
 
 (defn- js-array->seq [array]
   (for [i (range (.-length array))]

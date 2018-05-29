@@ -103,13 +103,7 @@
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image]]
-                                     (v1.contact/ContactUpdate. name profile-image))
-                              "g1" (fn [[chat-id sym-key message]]
-                                     (v1.group-chat/NewGroupKey. chat-id sym-key message))
-                              "g2" (fn [[chat-name participants]]
-                                     (v1.group-chat/GroupAdminUpdate. chat-name participants))
-                              "g3" (fn [_]
-                                     (v1.group-chat/GroupLeave.))}}))
+                                     (v1.contact/ContactUpdate. name profile-image))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"
