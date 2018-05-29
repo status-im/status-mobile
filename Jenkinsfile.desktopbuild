@@ -6,6 +6,7 @@ def installJSDeps() {
     def attempt = 1
     def maxAttempts = 10
     def installed = false
+    sh 'npm install npm@5.5.1 -g'
     sh 'node -v'
     sh 'npm -v'
     while (!installed && attempt <= maxAttempts) {
@@ -105,6 +106,8 @@ timeout(90) {
         slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build started. ' + env.BUILD_URL
 
         sh ('echo ' + scriptPath)
+
+        sh ('cd ~/ && git clone https://github.com/status-im/react-native-desktop.git && cd react-native-desktop/react-native-cli && npm install -g')
 
         checkout scm
         sh 'git rebase origin/desktop'
