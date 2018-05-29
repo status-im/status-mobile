@@ -374,6 +374,7 @@
    ;;validation
    :invalid-phone                        "Invalid phone number"
    :amount                               "Amount"
+   :invalid-number                       "Invalid number"
 
    ;;transactions
    :confirm                              "Confirm"

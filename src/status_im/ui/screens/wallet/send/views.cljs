@@ -24,7 +24,8 @@
             [status-im.utils.utils :as utils]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [clojure.string :as string]))
 
 (defn sign-later-popup
   [from-chat?]
@@ -117,31 +118,41 @@
 (defview transaction-fee []
   (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
             network [:get-current-account-network]
-            edit    [:wallet/edit]]
-    (let [gas       (or (:gas edit) (:gas transaction))
-          gas-price (or (:gas-price edit) (:gas-price transaction))
+            {gas-edit       :gas
+             gas-price-edit :gas-price} [:wallet/edit]]
+    (let [gas            (or (:value gas-edit) (:gas transaction))
+          gas-price      (or (:value gas-price-edit) (:gas-price transaction))
           {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
        [toolbar true act/close-white
         (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
         [react/view {:flex-direction :row}
-         [wallet.components/cartouche {}
-          (i18n/label :t/gas-limit)
-          [react/view styles/gas-input-wrapper
-           [react/text-input (merge styles/transaction-fee-input
-                                    {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-gas %])
-                                     :default-value       (str (money/to-fixed gas))
-                                     :accessibility-label :gas-limit-input})]]]
-         [wallet.components/cartouche {}
-          (i18n/label :t/gas-price)
-          [react/view styles/gas-input-wrapper
-           [react/text-input (merge styles/transaction-fee-input
-                                    {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-gas-price (money/->wei :gwei %)])
-                                     :default-value       (str (money/to-fixed (money/wei-> :gwei gas-price)))
-                                     :accessibility-label :gas-price-input})]
-           [wallet.components/cartouche-secondary-text
-            (i18n/label :t/gwei)]]]]
+
+         [react/view styles/gas-container-wrapper
+          [wallet.components/cartouche {}
+           (i18n/label :t/gas-limit)
+           [react/view styles/gas-input-wrapper
+            [react/text-input (merge styles/transaction-fee-input
+                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-value :gas %])
+                                      :default-value       (str (money/to-fixed gas))
+                                      :accessibility-label :gas-limit-input})]]]
+          (when (:invalid? gas-edit)
+            [tooltip/tooltip (i18n/label :t/invalid-number)])]
+
+         [react/view styles/gas-container-wrapper
+          [wallet.components/cartouche {}
+           (i18n/label :t/gas-price)
+           [react/view styles/gas-input-wrapper
+            [react/text-input (merge styles/transaction-fee-input
+                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-value :gas-price (money/->wei :gwei %)])
+                                      :default-value       (str (money/to-fixed (money/wei-> :gwei gas-price)))
+                                      :accessibility-label :gas-price-input})]
+            [wallet.components/cartouche-secondary-text
+             (i18n/label :t/gwei)]]]
+          (when (:invalid? gas-price-edit)
+            [tooltip/tooltip (i18n/label :t/invalid-number)])]]
+
         [react/view styles/transaction-fee-info
          [react/view styles/transaction-fee-info-icon
           [react/text {:style styles/transaction-fee-info-icon-text} "?"]]
@@ -162,12 +173,16 @@
            [wallet.components/cartouche-text-content
             (str (money/to-fixed (max-fee gas gas-price)))
             (i18n/label :t/eth)]]]]
+
         [bottom-buttons/bottom-buttons styles/fee-buttons
          [button/button {:on-press            #(re-frame/dispatch [:wallet.send/reset-gas-default])
                          :accessibility-label :reset-to-default-button}
           (i18n/label :t/reset-default)]
-         [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details gas gas-price]) (act/default-handler))
-                         :accessibility-label :done-button}
+         [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details gas gas-price])
+                                                   (act/default-handler))
+                         :accessibility-label :done-button
+                         :disabled?           (or (:invalid? gas-edit)
+                                                  (:invalid? gas-price-edit))}
           (i18n/label :t/done)]]]])))
 
 (defn- advanced-cartouche [{:keys [gas gas-price]} modal?]

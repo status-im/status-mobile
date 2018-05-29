@@ -327,14 +327,14 @@
    {:db (assoc-in db [:wallet :send-transaction :signing?] signing?)}))
 
 (handlers/register-handler-fx
- :wallet.send/edit-gas
- (fn [{:keys [db]} [_ gas]]
-   {:db (assoc-in db [:wallet :edit :gas] (money/bignumber gas))}))
-
-(handlers/register-handler-fx
- :wallet.send/edit-gas-price
- (fn [{:keys [db]} [_ gas-price]]
-   {:db (assoc-in db [:wallet :edit :gas-price] (money/bignumber gas-price))}))
+ :wallet.send/edit-value
+ (fn [{:keys [db]} [_ key value]]
+   (let [bn-value (money/bignumber value)
+         data     (if bn-value
+                    {:value    bn-value
+                     :invalid? false}
+                    {:invalid? true})]
+     {:db (update-in db [:wallet :edit key] merge data)})))
 
 (handlers/register-handler-fx
  :wallet.send/set-gas-details
@@ -352,9 +352,7 @@
  :wallet.send/reset-gas-default
  (fn [{:keys [db]}]
    {:dispatch [:wallet/update-gas-price true]
-    :db       (update-in db [:wallet :edit]
-                         assoc
-                         :gas (ethereum/estimate-gas (get-in db [:wallet :send-transaction :symbol])))}))
+    :db       (assoc-in db [:wallet :edit :gas] nil)}))
 
 (defn update-gas-price [db edit?]
   {:update-gas-price {:web3          (:web3 db)

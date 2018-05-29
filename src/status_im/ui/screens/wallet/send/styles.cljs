@@ -74,6 +74,10 @@
   {:margin-top    24
    :margin-bottom 16})
 
+(def gas-container-wrapper
+  {:flex           1
+   :flex-direction :row})
+
 (def gas-input-wrapper
   {:align-items     :center
    :justify-content :space-between
