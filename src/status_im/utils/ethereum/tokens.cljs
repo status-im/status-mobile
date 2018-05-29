@@ -41,7 +41,7 @@
                    {:symbol   :POWR
                     :name     "PowerLedger"
                     :address  "0x595832f8fc6bf59c85c527fec3740a1b7a361269"
-                    :decimals 18}
+                    :decimals 6}
                    {:symbol   :PAY
                     :name     "TenXPay"
                     :address  "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
@@ -293,7 +293,7 @@
                    {:symbol   :TGT
                     :name     "Target Coin"
                     :address  "0xac3da587eac229c9896d919abc235ca4fd7f72c1"
-                    :decimals 0}
+                    :decimals 1}
                    {:symbol   :EVX
                     :name     "Everex"
                     :address  "0xf3db5fa2c66b7af3eb0c0b782510816cbe4813b8"
@@ -333,7 +333,7 @@
                    {:symbol   :TIME
                     :name     "TIME"
                     :address  "0x6531f133e6deebe7f2dce5a0441aa7ef330b4e53"
-                    :decimals 18}
+                    :decimals 8}
                    {:symbol   :CND
                     :name     "Cindicator Token"
                     :address  "0xd4c435f5b09f855c3317c8524cb1f586e42795fa"
