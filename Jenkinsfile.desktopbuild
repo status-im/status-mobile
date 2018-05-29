@@ -107,12 +107,6 @@ timeout(90) {
 
         sh ('echo ' + scriptPath)
 
-        //sh('curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash')
-        //sh('. ~/.nvm/nvm.sh && sudo nvm install 8 --lts')
-        //sh('. ~/.nvm/nvm.sh && nvm use 8')
-        sh ('cd ~/ && rm -rf react-native-desktop && git clone https://github.com/status-im/react-native-desktop.git && cd react-native-desktop/react-native-cli && npm install -g')
-        
-
         checkout scm
         sh 'git rebase origin/desktop'
 
