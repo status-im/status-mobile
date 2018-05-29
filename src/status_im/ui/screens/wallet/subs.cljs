@@ -30,38 +30,41 @@
                     (get-in prices [fsym tsym :last-day])))
 
 (re-frame/reg-sub :asset-value
-                  (fn [[_ fsym tsym]]
+                  (fn [[_ fsym decimals tsym]]
                     [(re-frame/subscribe [:balance])
                      (re-frame/subscribe [:price fsym tsym])
                      (re-frame/subscribe [:wallet/currency])])
-                  (fn [[balance price currency] [_ fsym tsym]]
+                  (fn [[balance price currency] [_ fsym decimals tsym]]
                     (when (and balance price)
-                      (-> (money/wei->ether (get balance fsym))
-                          (money/eth->fiat price)
+                      (-> (money/internal->formatted (get balance fsym) fsym decimals)
+                          (money/crypto->fiat price)
                           (money/with-precision 2)
                           str
                           (i18n/format-currency (:code currency))))))
 
-(defn- get-balance-total-value [balance prices currency]
-  (->> balance
-       (reduce-kv (fn [acc symbol value]
-                    (if-let [price (get-in prices [symbol currency :price])]
-                      (+ acc (-> (money/wei->ether value)
-                                 (money/eth->fiat price)
-                                 .toNumber))
-                      acc)) 0)))
+(defn- get-balance-total-value [balance prices currency token->decimals]
+  (reduce-kv (fn [acc symbol value]
+               (if-let [price (get-in prices [symbol currency :price])]
+                 (+ acc (-> (money/internal->formatted value symbol (token->decimals symbol))
+                            (money/crypto->fiat price)
+                            .toNumber))
+                 acc)) 0 balance))
 
 (re-frame/reg-sub :portfolio-value
                   :<- [:balance]
                   :<- [:prices]
                   :<- [:wallet/currency]
-                  (fn [[balance prices currency] [_ currency-code]]
+                  :<- [:network]
+                  (fn [[balance prices currency network] [_ currency-code]]
                     (if (and balance prices)
-                      (let [balance-total-value
+                      (let [assets          (tokens/tokens-for (ethereum/network->chain-keyword network))
+                            token->decimals (into {} (map #(vector (:symbol %) (:decimals %)) assets))
+                            balance-total-value
                             (get-balance-total-value balance
                                                      prices
                                                      (or currency-code
-                                                         (-> currency :code keyword)))]
+                                                         (-> currency :code keyword))
+                                                     token->decimals)]
                         (-> balance-total-value
                             (money/with-precision 2)
                             str

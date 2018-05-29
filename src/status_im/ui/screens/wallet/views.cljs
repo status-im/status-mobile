@@ -61,7 +61,7 @@
 
 (defn- render-asset [currency]
   (fn [{:keys [symbol icon decimals amount]}]
-    (let [asset-value (re-frame/subscribe [:asset-value symbol (-> currency :code keyword)])]
+    (let [asset-value (re-frame/subscribe [:asset-value symbol decimals (-> currency :code keyword)])]
       [react/view {:style styles/asset-item-container}
        [list/item
         [list/item-image icon]

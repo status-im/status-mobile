@@ -119,8 +119,8 @@
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
 
-(defn eth->fiat [eth fiat-price]
-  (when-let [bn (bignumber eth)]
+(defn crypto->fiat [crypto fiat-price]
+  (when-let [bn (bignumber crypto)]
     (.times bn (bignumber fiat-price))))
 
 (defn percent-change [from to]
