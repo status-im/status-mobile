@@ -31,6 +31,12 @@
                                                                  chain))]
      :dispatch [:navigate-back]}))
 
+(defn set-input [input-key value {:keys [db]}]
+  {:db (update db :mailservers/manage assoc input-key {:value value
+                                                       :error (if (= input-key :name)
+                                                                (string/blank? value)
+                                                                (not (utils.inbox/valid-enode-address? value)))})})
+
 (handlers/register-handler-fx
  :save-new-mailserver
  [(re-frame/inject-cofx :random-id)]
@@ -38,11 +44,8 @@
 
 (handlers/register-handler-fx
  :mailserver-set-input
- (fn [{db :db} [_ input-key value]]
-   {:db (update db :mailservers/manage assoc input-key {:value value
-                                                        :error (if (= input-key :name)
-                                                                 (string/blank? value)
-                                                                 (not (utils.inbox/valid-enode-address? value)))})}))
+ (fn [cofx [_ input-key value]]
+   (set-input input-key value cofx)))
 
 (handlers/register-handler-fx
  :edit-mailserver
@@ -51,3 +54,9 @@
                          :name  {:error true}
                          :url   {:error true})
     :dispatch [:navigate-to :edit-mailserver]}))
+
+(handlers/register-handler-fx
+ :set-mailserver-from-qr
+ (fn [cofx [_ _ contact-identity]]
+   (assoc (set-input :url contact-identity cofx)
+          :dispatch [:navigate-back])))
