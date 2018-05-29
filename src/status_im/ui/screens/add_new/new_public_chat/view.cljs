@@ -31,7 +31,8 @@
        :auto-capitalize     :none
        :accessibility-label :chat-name-input
        :placeholder         nil
-       :return-key-type     :go}]]]
+       :return-key-type     :go
+       :auto-correct        false}]]]
    (when error
      [tooltip/tooltip error styles/tooltip])])
 
