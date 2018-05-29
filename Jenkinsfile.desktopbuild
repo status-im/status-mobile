@@ -81,7 +81,7 @@ timeout(90) {
 
       slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
     } catch (e) {
-      slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+      slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on MacOS. ' + env.BUILD_URL
       throw e
     }
   }
@@ -124,6 +124,9 @@ timeout(90) {
         sh ( 'mkdir ' + packageFolder )
         sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
       }
+    } catch (e) {
+      slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on Linux. ' + env.BUILD_URL
+      throw e
     }
   }
 }
