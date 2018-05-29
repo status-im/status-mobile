@@ -97,6 +97,8 @@ timeout(90) {
     def packageFolder = './StatusImPackage'
     def scriptPath = sh(script: 'pwd -P', returnStdout: true).trim()
 
+    env.PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
     try {
 
       stage('Git & Dependencies') {
