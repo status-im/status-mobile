@@ -86,3 +86,44 @@ timeout(90) {
     }
   }
 }
+
+timeout(90) {
+  node ('linux3') {
+    def apkUrl = ''
+    def ipaUrl = ''
+    def testPassed = true
+    def branch;
+    def scriptOutput = ''
+    def packageFolder = './StatusImPackage'
+    def scriptPath = sh(script: 'pwd -P', returnStdout: true).trim()
+
+    load "$HOME/env.groovy"
+
+    try {
+
+      stage('Git & Dependencies') {
+        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+
+        sh ('echo ' + scriptPath)
+
+        checkout scm
+        sh 'git rebase origin/desktop'
+
+        sh 'rm -rf node_modules'
+        sh 'cp .env.jenkins .env'
+        sh 'lein deps'
+
+        installJSDeps()
+      }
+
+      stage('Build ClojureScript') {
+        sh 'rm -f index.desktop.js'
+        sh 'lein prod-build-desktop'
+
+        sh ( 'rm -rf ' + packageFolder )
+        sh ( 'mkdir ' + packageFolder )
+        sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
+      }
+    }
+  }
+}
