@@ -6,7 +6,6 @@ def installJSDeps() {
     def attempt = 1
     def maxAttempts = 10
     def installed = false
-    sh 'npm install npm@5.5.1 -g'
     sh 'node -v'
     sh 'npm -v'
     while (!installed && attempt <= maxAttempts) {
