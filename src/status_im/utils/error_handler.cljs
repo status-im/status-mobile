@@ -48,10 +48,18 @@
   (downgrade-reagent-errors!)
   (when-not @!error-handler-set?
     (reset! !error-handler-set? true)
-    (let [orig-handler (some-> js/ErrorUtils .-getGlobalHandler (.call))]
+  (let [orig-handler (some-> js/ErrorUtils .-getGlobalHandler (.call))]
       (js/ErrorUtils.setGlobalHandler
        (fn [e isFatal]
          (handle-error e isFatal)
          (if js/goog.DEBUG
            (some-> orig-handler (.call nil e isFatal))
            (utils/show-popup "Error" (.-message e))))))))
+
+;; Instabug manual exception reporting
+
+(try 
+      (throw (js/SyntaxError))
+      (catch (js/error e)
+      (alert (:name e))
+      (js/Instabug.reportJSException (e))
