@@ -151,7 +151,8 @@ class WalletView(BaseView):
         self.sign_in_phrase = SignInPhraseText(self.driver)
 
     def get_usd_total_value(self):
-        return float(self.usd_total_value.text)
+        import re
+        return float(re.sub('[$,]', '', self.usd_total_value.text))
 
     def get_eth_value(self):
         return float(self.eth_asset.text)

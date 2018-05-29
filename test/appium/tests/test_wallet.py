@@ -16,6 +16,7 @@ class TestWallet(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         send_transaction = wallet_view.send_button.click()
 
         # Check valid amount
@@ -71,6 +72,7 @@ class TestWallet(SingleDeviceTestCase):
         sign_in_view.recover_access(passphrase=transaction_users_wallet['A_USER']['passphrase'],
                                     password=transaction_users_wallet['A_USER']['password'])
         wallet = sign_in_view.wallet_button.click()
+        wallet.set_up_wallet()
         address = transaction_users_wallet['A_USER']['address']
         balance = self.network_api.get_balance(address) / 1000000000000000000
         eth_rate = self.network_api.get_ethereum_price_in_usd()

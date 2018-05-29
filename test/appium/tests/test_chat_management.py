@@ -109,29 +109,21 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message_4)
         chat_1.send_message_button.click()
         public_chat_name = '#' + chat_name
-        chat_2.element_by_text(public_chat_name).click()
-        for message in message_1, message_2, message_3, message_4:
-            if not chat_2.element_starts_with_text(message).is_element_present():
-                self.errors.append("Message '%s' is not shown in public chat which has been deleted" % message)
-        chat_1.chat_options.click()
-        chat_1.leave_chat_button.click()
-        chat_1.leave_button.click()
-        chat_2.chat_message_input.send_keys(message_5)
-        chat_2.send_message_button.click()
-        if chat_1.element_starts_with_text(message_5).is_element_present(20):
-            self.errors.append("Message '%s' is shown, but the user left public chat" % message_5)
+        home_2 = chat_2.get_home_view()
+        if home_2.element_by_text(public_chat_name).is_element_present(sec=30):
+            self.errors.append("Public chat reappears after deleting")
 
-        chat_2.get_back_to_home_view()
-        home_2, home_1 = chat_2.get_home_view(), chat_1.get_home_view()
-        home_2.swipe_and_delete_chat('#' + chat_name)
+        chat_1.get_back_to_home_view()
+        home_1 = chat_1.get_home_view()
+        home_1.swipe_and_delete_chat(public_chat_name)
 
         for home in home_2, home_1:
             home.relogin()
         if home_1.element_by_text(public_chat_name).is_element_present(20):
-            self.errors.append("Public chat '%s' is shown, but the user left public chat" % public_chat_name)
-        if home_2.element_by_text(public_chat_name).is_element_present(20):
             self.errors.append("Public chat '%s' is shown, but the chat has been deleted via 'swipe to delete'"
                                % public_chat_name)
+        if home_2.element_by_text(public_chat_name).is_element_present(20):
+            self.errors.append("Public chat '%s' is shown, but the user deleted it" % public_chat_name)
         self.verify_no_errors()
 
 
