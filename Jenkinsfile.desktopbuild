@@ -125,6 +125,12 @@ timeout(90) {
         sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
       }
 
+      stage('Build MacOS binaries') {
+        sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
+        sh 'cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
+         -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
+      }
+
       slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build finished successfully. ' + env.BUILD_URL
     } catch (e) {
       slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on Linux. ' + env.BUILD_URL
