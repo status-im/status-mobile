@@ -16,7 +16,7 @@ def installJSDeps() {
     }
 }
 
-timeout(90) {
+/*timeout(90) {
   node ('macos1') {
     def apkUrl = ''
     def ipaUrl = ''
@@ -31,7 +31,7 @@ timeout(90) {
     try {
 
       stage('Git & Dependencies') {
-        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') MacOS build started. ' + env.BUILD_URL
 
         sh ('echo ' + scriptPath)
 
@@ -79,13 +79,13 @@ timeout(90) {
         archiveArtifacts "StatusImPackage/*.app.zip"
       }
 
-      slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build finished successfully. ' + env.BUILD_URL
+      slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') MacOS build finished successfully. ' + env.BUILD_URL
     } catch (e) {
       slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on MacOS. ' + env.BUILD_URL
       throw e
     }
   }
-}
+}*/
 
 timeout(90) {
   node ('linux3') {
@@ -97,12 +97,10 @@ timeout(90) {
     def packageFolder = './StatusImPackage'
     def scriptPath = sh(script: 'pwd -P', returnStdout: true).trim()
 
-    load "$HOME/env.groovy"
-
     try {
 
       stage('Git & Dependencies') {
-        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+        slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build started. ' + env.BUILD_URL
 
         sh ('echo ' + scriptPath)
 
@@ -124,6 +122,8 @@ timeout(90) {
         sh ( 'mkdir ' + packageFolder )
         sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
       }
+
+      slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build finished successfully. ' + env.BUILD_URL
     } catch (e) {
       slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on Linux. ' + env.BUILD_URL
       throw e
