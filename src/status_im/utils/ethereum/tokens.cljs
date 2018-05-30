@@ -102,10 +102,6 @@
                     :name     "Gnosis Token"
                     :address  "0x6810e776880c02933d47db1b9fc05908e5386b96"
                     :decimals 18}
-                   {:symbol   :ATMChain
-                    :name     "Attention Token of Media"
-                    :address  "0x9B11EFcAAA1890f6eE52C6bB7CF8153aC5d74139"
-                    :decimals 8}
                    {:symbol   :STORJ
                     :name     "StorjToken"
                     :address  "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac"
@@ -205,10 +201,6 @@
                    {:symbol   :PLR
                     :name     "PILLAR"
                     :address  "0xe3818504c1b32bf1557b16c238b2e01fd3149c17"
-                    :decimals 18}
-                   {:symbol   :Centra
-                    :name     "Centra Token"
-                    :address  "0x96A65609a7B84E8842732DEB08f56C3E21aC6f8a"
                     :decimals 18}
                    {:symbol   :QRL
                     :name     "QRL"
@@ -370,10 +362,26 @@
                     :name     "DomRaider Token"
                     :address  "0x9af4f26941677c706cfecf6d3379ff01bb85d5ab"
                     :decimals 8}
+                   ;; NOTE(goranjovic) : the following three tokens are removed from the Manage Assets list
+                   ;; and automatically removed from user's selection by a migration. However, we still need
+                   ;; them listed here in order to correctly display any previous transactions the user had
+                   ;; in their history prior to the upgrade. So, we're just hiding them, not actually deleting from the
+                   ;; app.
+                   {:symbol   :Centra
+                    :name     "Centra Token"
+                    :address  "0x96A65609a7B84E8842732DEB08f56C3E21aC6f8a"
+                    :decimals 18
+                    :hidden?  true}
                    {:symbol   :ROL
                     :name     "Dice"
                     :address  "0x2e071D2966Aa7D8dECB1005885bA1977D6038A65"
-                    :decimals 16}])
+                    :decimals 16
+                    :hidden?  true}
+                   {:symbol   :ATMChain
+                    :name     "Attention Token of Media"
+                    :address  "0x9B11EFcAAA1890f6eE52C6bB7CF8153aC5d74139"
+                    :decimals 8
+                    :hidden?  true}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
@@ -406,6 +414,7 @@
 
 (defn sorted-tokens-for [chain]
   (->> (tokens-for chain)
+       (filter #(not (:hidden? %)))
        (sort #(compare (string/lower-case (:name %1))
                        (string/lower-case (:name %2))))))
 
