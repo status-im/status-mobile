@@ -40,7 +40,7 @@
     "react-native-crypto": "2.1.1",
     "react-native-dialogs": "0.0.20",
     "react-native-fetch-polyfill": "1.1.2",
-    "react-native-firebase": "^4.2.0",
+    "react-native-firebase": "4.2.0",
     "react-native-fs": "2.8.1",
     "react-native-http": "github:tradle/react-native-http#834492d",
     "react-native-http-bridge": "github:status-im/react-native-http-bridge",
