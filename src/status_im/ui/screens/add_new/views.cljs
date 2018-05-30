@@ -23,7 +23,7 @@
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
    ;; Hide behind flag (false by default), till everything is fixed in group chats
-   (when (or config/group-chats-enabled? dev-mode?)
+   (when config/group-chats-enabled?
      [action-button/action-button
       {:label               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
