@@ -1,22 +1,18 @@
 (ns ^{:doc "Events for message handling"}
  status-im.transport.handlers
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]
+            [status-im.chat.models.message :as models.message]
+            [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.core :as message]
-            [status-im.transport.core :as transport]
-            [status-im.chat.models :as models.chat]
-            [status-im.utils.datetime :as datetime]
-            [taoensso.timbre :as log]
-            [status-im.transport.utils :as transport.utils]
-            [cljs.reader :as reader]
             [status-im.transport.message.transit :as transit]
-            [status-im.transport.shh :as shh]
-            [status-im.transport.filters :as filters]
-            [status-im.transport.message.core :as message]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.v1.contact :as v1.contact]
             [status-im.transport.message.v1.group-chat :as v1.group-chat]
-            [status-im.data-store.transport :as transport-store]))
+            [status-im.transport.shh :as shh]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [taoensso.timbre :as log]
+            [status-im.transport.message.v1.protocol :as protocol]))
 
 (defn update-last-received-from-inbox
   "Distinguishes messages that are expired from those that are not
@@ -70,11 +66,10 @@
  (fn [{:keys [db random-id] :as cofx} [_ {:keys [chat-id topic message sym-key sym-key-id]}]]
    (let [{:keys [web3 current-public-key]} db
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
-                                               (assoc :sym-key-id sym-key-id)
-                                               ;;TODO (yenda) remove once go implements persistence
-                                               (assoc :sym-key sym-key))]
+                                               (assoc :sym-key-id sym-key-id
+                                                      :sym-key sym-key))]
      (handlers-macro/merge-fx cofx
-                              {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+                              {:db (assoc-in db [:transport/chats chat-id] chat-transport-info)
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
                                                 :topic      topic
@@ -89,13 +84,12 @@
  (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id topic message]}]]
    (let [{:keys [web3 current-public-key]} db
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
-                                               (assoc :sym-key-id sym-key-id)
-                                               ;;TODO (yenda) remove once go implements persistence
-                                               (assoc :sym-key sym-key))]
+                                               (assoc :sym-key-id sym-key-id
+                                                      :sym-key sym-key))]
      (handlers-macro/merge-fx cofx
                               {:db             (assoc-in db
-                                                         [:transport/chats chat-id :sym-key-id]
-                                                         sym-key-id)
+                                                         [:transport/chats chat-id]
+                                                         chat-transport-info)
                                :dispatch       [:inbox/request-chat-history chat-id]
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
@@ -133,7 +127,10 @@
  (fn [{:keys [db] :as cofx} [{:keys [chat-id message sym-key sym-key-id]}]]
    (let [{:keys [web3]} db]
      (handlers-macro/merge-fx cofx
-                              {:db             (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
+                              {:db             (update-in db [:transport/chats chat-id]
+                                                          assoc
+                                                          :sym-key-id sym-key-id
+                                                          :sym-key    sym-key)
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
                                                 :topic      (transport.utils/get-topic chat-id)
@@ -185,3 +182,89 @@
                                   (fn [err resp]
                                     (when err
                                       (log/info "Confirming messages processed failed"))))))))
+
+(handlers/register-handler-fx
+ :transport/set-message-envelope-hash
+ [re-frame/trim-v]
+ ;; message-type is used for tracking
+ (fn [{:keys [db]} [chat-id message-id message-type envelope-hash]]
+   {:db (assoc-in db [:transport/message-envelopes envelope-hash]
+                  {:chat-id      chat-id
+                   :message-id   message-id
+                   :message-type message-type})}))
+
+(handlers/register-handler-fx
+ :transport/set-contact-message-envelope-hash
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [chat-id envelope-hash]]
+   {:db (assoc-in db [:transport/message-envelopes envelope-hash]
+                  {:chat-id      chat-id
+                   :message-type :contact-message})}))
+
+(defn remove-hash [envelope-hash {:keys [db] :as cofx}]
+  {:db (update db :transport/message-envelopes dissoc envelope-hash)})
+
+(defn update-resend-contact-message [chat-id {:keys [db] :as cofx}]
+  (let [chat         (get-in db [:transport/chats chat-id])
+        updated-chat (assoc chat :resend? nil)]
+    {:db            (assoc-in db [:transport/chats chat-id :resend?] nil)
+     :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
+                                                         :chat    updated-chat})]}))
+
+(handlers/register-handler-fx
+ :signals/envelope-status
+ [re-frame/trim-v]
+ (fn [{:keys [db] :as cofx} [envelope-hash status]]
+   (let [{:keys [chat-id message-type message-id]}
+         (get-in db [:transport/message-envelopes envelope-hash])]
+     (case message-type
+       :contact-message
+       (when (= :sent status)
+         (handlers-macro/merge-fx cofx
+                                  (remove-hash envelope-hash)
+                                  (update-resend-contact-message chat-id)))
+
+       (let [message (get-in db [:chats chat-id :messages message-id])
+             {:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
+         (handlers-macro/merge-fx cofx
+                                  (remove-hash envelope-hash)
+                                  (models.message/update-message-status message status)
+                                  (models.message/send-push-notification fcm-token status)))))))
+
+(defn- own-info [db]
+  (let [{:keys [name photo-path address]} (:account/account db)
+        fcm-token (get-in db [:notifications :fcm-token])]
+    {:name          name
+     :profile-image photo-path
+     :address       address
+     :fcm-token     fcm-token}))
+
+(defn resend-contact-request [own-info chat-id {:keys [sym-key topic]} cofx]
+  (message/send (v1.contact/NewContactKey. sym-key
+                                           topic
+                                           (v1.contact/map->ContactRequest own-info))
+                chat-id cofx))
+
+(defn resend-contact-messages
+  ([cofx]
+   (resend-contact-messages [] cofx))
+  ([previous-summary {:keys [db] :as cofx}]
+   (when (and (zero? (count previous-summary))
+              (= :online (:network-status db))
+              (pos? (count (:peers-summary db))))
+     (let [own-info (own-info db)]
+       (handlers-macro/merge-effects
+        cofx
+        (fn [[chat-id {:keys [resend?] :as chat}] temp-cofx]
+          (case resend?
+            "contact-request"
+            (resend-contact-request own-info chat-id chat temp-cofx)
+            "contact-request-confirmation"
+            (message/send (v1.contact/map->ContactRequestConfirmed own-info)
+                          chat-id temp-cofx)
+            "contact-update"
+            (protocol/send {:chat-id chat-id
+                            :payload (v1.contact/map->ContactUpdate own-info)}
+                           temp-cofx)
+            nil))
+        (:transport/chats db))))))

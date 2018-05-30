@@ -13,7 +13,6 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.message.v1.public-chat :as public-chat]
@@ -98,25 +97,6 @@
       :data-store/tx [(messages-store/update-message-tx
                        (-> (get-in new-db msg-path)
                            (select-keys [:message-id :user-statuses])))]})))
-
-(handlers/register-handler-fx
- :transport/set-message-envelope-hash
- [re-frame/trim-v]
- ;; message-type is used for tracking
- (fn [{:keys [db]} [chat-id message-id message-type envelope-hash]]
-   {:db (assoc-in db [:transport/message-envelopes envelope-hash] {:chat-id    chat-id
-                                                                   :message-id message-id})}))
-
-(handlers/register-handler-fx
- :signals/envelope-status
- [re-frame/trim-v]
- (fn [{:keys [db] :as cofx} [envelope-hash status]]
-   (let [{:keys [chat-id message-id]} (get-in db [:transport/message-envelopes envelope-hash])
-         message (get-in db [:chats chat-id :messages message-id])
-         {:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
-     (handlers-macro/merge-fx cofx
-                              (models.message/update-message-status message status)
-                              (models.message/send-push-notification fcm-token status)))))
 
 ;; Change status of messages which are still in "sending" status to "not-sent"
 ;; (If signal from status-go has not been received)

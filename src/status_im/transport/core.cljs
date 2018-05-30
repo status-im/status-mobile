@@ -1,18 +1,15 @@
 (ns ^{:doc "API to init and stop whisper messaging"}
  status-im.transport.core
-  (:require [cljs.spec.alpha :as spec]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.transport.message.core :as message]
-            [status-im.transport.filters :as filters]
-            [status-im.transport.utils :as transport.utils]
-            [taoensso.timbre :as log]
+            [status-im.data-store.transport :as transport-store]
+            [status-im.transport.handlers :as transport.handlers]
             [status-im.transport.inbox :as inbox]
+            status-im.transport.filters
+            [status-im.transport.utils :as transport.utils]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.transport.db :as transport.db]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.data-store.transport :as transport-store]))
+            [taoensso.timbre :as log]))
 
 (defn init-whisper
   "Initialises whisper protocol by:
@@ -34,7 +31,8 @@
                                 :shh/restore-sym-keys {:web3       web3
                                                        :transport  (:transport/chats db)
                                                        :on-success sym-key-added-callback}}
-                               (inbox/connect-to-mailserver)))))
+                               (inbox/connect-to-mailserver)
+                               (transport.handlers/resend-contact-messages)))))
 
 ;;TODO (yenda) remove once go implements persistence
 ;;Since symkeys are not persisted, we restore them via add sym-keys,

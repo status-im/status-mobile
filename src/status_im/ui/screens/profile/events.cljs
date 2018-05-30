@@ -52,7 +52,10 @@
  :my-profile/update-picture
  (fn [{:keys [db]} [this-event base64-image]]
    (if base64-image
-     {:db (assoc-in db [:my-profile/profile :photo-path] (str "data:image/jpeg;base64," base64-image))}
+     {:db       (-> db
+                    (assoc-in [:my-profile/profile :photo-path]
+                              (str "data:image/jpeg;base64," base64-image))
+                    (assoc :my-profile/editing? true))}
      {:open-image-picker this-event})))
 
 (defn clean-name [db edit-view]

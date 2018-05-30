@@ -23,7 +23,7 @@
                                {:shh/generate-sym-key-from-password {:web3       (:web3 db)
                                                                      :password   chat-id
                                                                      :on-success on-success}}
-                               (protocol/init-chat chat-id)))))
+                               (protocol/init-chat {:chat-id chat-id})))))
 
 (handlers/register-handler-fx
  ::add-new-sym-key

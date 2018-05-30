@@ -4,12 +4,12 @@
             status-im.commands.handlers.jail
             status-im.commands.events.loading
             status-im.network.events
-            status-im.transport.handlers
+            [status-im.transport.handlers :as transport.handlers]
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
             status-im.ui.screens.accounts.login.events
             status-im.ui.screens.accounts.recover.events
-            status-im.ui.screens.contacts.events
+            [status-im.ui.screens.contacts.events :as contacts]
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
@@ -412,6 +412,7 @@
                               {:db (assoc db
                                           :peers-summary peers-summary
                                           :peers-count peers-count)}
+                              (transport.handlers/resend-contact-messages previous-summary)
                               (inbox/peers-summary-change-fx previous-summary)))))
 
 (handlers/register-handler-fx

@@ -14,12 +14,14 @@
 
 (defn init-chat
   "Initialises chat on protocol layer.
-  2 arities are provided, 2arg arity initialises the chat with topic derived from first argument (`chat-id`),
-  using the 3arg arity, you can specify the topic as well (second argument)"
-  ([chat-id cofx]
-   (init-chat chat-id (transport.utils/get-topic chat-id) cofx))
-  ([chat-id topic {:keys [db] :as cofx}]
-   {:db (assoc-in db [:transport/chats chat-id] (transport.db/create-chat topic))}))
+  If topic is not passed as argument it is derived from `chat-id`"
+  [{:keys [chat-id topic resend?]
+    :or   {topic   (transport.utils/get-topic chat-id)}}
+   {:keys [db]}]
+  {:db (assoc-in db
+                 [:transport/chats chat-id]
+                 (transport.db/create-chat {:topic   topic
+                                            :resend? resend?}))})
 
 #_(defn requires-ack [message-id chat-id {:keys [db] :as cofx}]
     {:db (update-in db [:transport/chats chat-id :pending-ack] conj message-id)})

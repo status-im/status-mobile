@@ -33,7 +33,7 @@
                          :sym-key    sym-key
                          :sym-key-id sym-key-id
                          :message    message}]))}]}
-     (protocol/init-chat chat-id))))
+     (protocol/init-chat {:chat-id chat-id}))))
 
 (defn- user-is-group-admin? [chat-id cofx]
   (= (get-in cofx [:db :chats chat-id :group-admin])
@@ -52,7 +52,7 @@
 
 (defn- init-chat-if-new [chat-id cofx]
   (if (nil? (get-in cofx [:db :transport/chats chat-id]))
-    (protocol/init-chat chat-id cofx)))
+    (protocol/init-chat {:chat-id chat-id} cofx)))
 
 (defrecord GroupAdminUpdate [chat-name participants]
   message/StatusMessage
