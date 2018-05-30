@@ -99,12 +99,20 @@ timeout(90) {
 
     sh ('echo ' + scriptPath)
 
+    environment {
+        QTDIR=/opt/qt59
+        PATH=/opt/qt59/bin:$PATH
+        PKG_CONFIG_PATH=/opt/qt59/lib/pkgconfig:$PKG_CONFIG_PATH
+    }
+
     try {
 
       stage('Git & Dependencies') {
         slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build started. ' + env.BUILD_URL
 
         sh ('echo ' + scriptPath)
+
+        sh 'printenv'
 
         checkout scm
         sh 'git rebase origin/desktop'
