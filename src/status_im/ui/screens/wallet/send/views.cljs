@@ -36,11 +36,11 @@
                          [:wallet/sign-transaction true]))))
 
 (defview sign-panel [message?]
-  (letsubs [account [:get-current-account]
+  (letsubs [account         [:get-current-account]
             wrong-password? [:wallet.send/wrong-password?]
-            signing-phrase (:signing-phrase @account)
-            bottom-value (animation/create-value -250)
-            opacity-value (animation/create-value 0)]
+            signing-phrase  (:signing-phrase @account)
+            bottom-value    (animation/create-value -250)
+            opacity-value   (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
      [react/animated-view {:style (styles/sign-panel opacity-value)}
@@ -117,8 +117,8 @@
 (defview transaction-fee []
   (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
             network [:get-current-account-network]
-            edit [:wallet/edit]]
-    (let [gas (or (:gas edit) (:gas transaction))
+            edit    [:wallet/edit]]
+    (let [gas       (or (:gas edit) (:gas transaction))
           gas-price (or (:gas-price edit) (:gas-price transaction))
           {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
@@ -208,9 +208,9 @@
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
       [react/scroll-view {:keyboard-should-persist-taps :always
-                          :ref                           #(reset! scroll %)
-                          :on-content-size-change        #(when (and (not modal?) scroll @scroll)
-                                                            (.scrollToEnd @scroll))}
+                          :ref                          #(reset! scroll %)
+                          :on-content-size-change       #(when (and (not modal?) scroll @scroll)
+                                                           (.scrollToEnd @scroll))}
        [react/view styles/send-transaction-form
         [components/recipient-selector {:disabled? (or from-chat? modal?)
                                         :address   to
@@ -222,8 +222,8 @@
         [components/amount-selector {:disabled?     (or from-chat? modal?)
                                      :error         (or amount-error
                                                         (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
-                                     :amount amount
-                                     :amount-text amount-text
+                                     :amount        amount
+                                     :amount-text   amount-text
                                      :input-options {:max-length     21
                                                      :on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
@@ -249,22 +249,22 @@
 
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
-            symbol [:wallet.send/symbol]
-            advanced? [:wallet.send/advanced?]
-            network [:get-current-account-network]
-            scroll (atom nil)]
+            symbol      [:wallet.send/symbol]
+            advanced?   [:wallet.send/advanced?]
+            network     [:get-current-account-network]
+            scroll      (atom nil)]
     [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced?
                              :symbol symbol :network network}]))
 
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
-            symbol [:wallet.send/symbol]
-            advanced? [:wallet.send/advanced?]
-            network [:get-current-account-network]
-            scroll (atom nil)]
+            symbol      [:wallet.send/symbol]
+            advanced?   [:wallet.send/advanced?]
+            network     [:get-current-account-network]
+            scroll      (atom nil)]
     (if transaction
       [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced?
-                               symbol symbol :network network}]
+                               symbol  symbol :network network}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]
@@ -282,9 +282,11 @@
        [react/view styles/send-transaction-form
         [wallet.components/cartouche {:disabled? true}
          (i18n/label :t/message)
-         [components/amount-input {:disabled?     true
-                                   :input-options {:multiline     true
-                                                   :default-value data}} nil]]]]
+         [components/amount-input
+          {:disabled?     true
+           :input-options {:multiline true}
+           :amount-text   data}
+          nil]]]]
       [signing-buttons
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
        #(re-frame/dispatch [:wallet/sign-transaction-modal])
