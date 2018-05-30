@@ -14,9 +14,9 @@
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]
             [lein-cljfmt "0.5.7"]
-            [lein-githooks "0.1.0"]]
+            [rasom/lein-githooks "0.1.3"]]
   :githooks {:auto-install true
-             :pre-commit   ["lein cljfmt check"]}
+             :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --cached --name-only src test/cljs)"]}
   :cljfmt {:indents {letsubs [[:inner 0]]}}
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
