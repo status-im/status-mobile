@@ -125,20 +125,20 @@ timeout(90) {
         installJSDeps()
       }
 
-      /*stage('Build ClojureScript') {
+      stage('Build ClojureScript') {
         sh 'rm -f index.desktop.js'
         sh 'lein prod-build-desktop'
 
         sh ( 'rm -rf ' + packageFolder )
         sh ( 'mkdir ' + packageFolder )
         sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
-      }*/
+      }
 
-      /*stage('Build MacOS binaries') {
+      stage('Build MacOS binaries') {
         sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
         sh '. /opt/qt59/bin/qt59-env.sh && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
          -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
-      }*/
+      }
 
       stage('Prepare and create Linux AppImage') {
         sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
