@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -e
+
 #
 # This script manages app build numbers.
 # It returns the next build number to be used.
@@ -25,8 +27,7 @@ getNumber () {
 REGEX='^build-[0-9]\+$' 
 
 # make sure we have all the tags
-git fetch --tags --quiet
-
+git fetch --tags --quiet >/dev/null
 
 # even if the current commit has a tag already, it is normal that the same commit
 # is built multiple times (with different build configurations, for instance),
@@ -36,13 +37,19 @@ git fetch --tags --quiet
 BUILD=$(git tag -l --sort=-v:refname | grep -e "$REGEX" | head -n 1)
 # extract the number
 BUILD_NO=$(getNumber "$BUILD")
-# increment
-BUILD_NO="$((BUILD_NO+1))"
 
-if [ "$1" = "--tag" ]; then
+if [ "$1" = "--increment" ]; then
+    # These need to be provided by Jenkins
+    if [ -z "${GIT_USER}" ] || [ -z "${GIT_PASS}" ]; then
+        echo "Git credentials not specified! (GIT_USER, GIT_PASS)" >&2
+        exit 1
+    fi
+    # increment
+    BUILD_NO="$((BUILD_NO+1))"
+
     echo "Tagging HEAD: build-$BUILD_NO" >&2
-    echo "You will need to 'git push --tags' to make this tag take effect." >&2
     git tag "build-$BUILD_NO" HEAD
+    git push --tags https://${GIT_USER}:${GIT_PASS}@github.com/status-im/status-react
 fi
 
 # finally print build number
