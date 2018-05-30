@@ -6,6 +6,7 @@ import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
@@ -59,6 +60,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new MainReactPackage(),
                     new RNFirebasePackage(),
                     new RNFirebaseMessagingPackage(),
+                    new RNFirebaseNotificationsPackage(),
                     new RNSecureRandomPackage(),
                     new BackgroundTimerPackage(),
                     new SvgPackage(),
