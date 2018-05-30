@@ -46,6 +46,10 @@
              :my-profile/editing?         false
              :transport/chats             {}
              :transport/message-envelopes {}
+             :chat/cooldowns                     0
+             :chat/cooldown-enabled?             false
+             :chat/last-outgoing-message-sent-at 0
+             :chat/spam-messages-frequency       0
              :desktop/desktop             {:tab-view-id :home}})
 
 ;;;;GLOBAL
@@ -187,6 +191,10 @@
                  :browser/options
                  :new/open-dapp
                  :navigation/screen-params
+                 :chat/cooldowns
+                 :chat/cooldown-enabled?
+                 :chat/last-outgoing-message-sent-at
+                 :chat/spam-messages-frequency
                  :transport/message-envelopes
                  :transport/chats
                  :transport/discovery-filter

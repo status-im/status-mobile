@@ -8,6 +8,7 @@
             [status-im.chat.events.requests :as requests-events]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.commands :as commands-model]
+            [status-im.chat.models.input :as input]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.money :as money]
@@ -298,6 +299,7 @@
         message-id      (transport.utils/message-id send-record)
         message-with-id (assoc message :message-id message-id)]
     (handlers-macro/merge-fx cofx
+                             (input/process-cooldown)
                              (chat-model/upsert-chat {:chat-id chat-id
                                                       :timestamp now})
                              (add-single-message message-with-id true)

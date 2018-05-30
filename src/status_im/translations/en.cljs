@@ -249,6 +249,8 @@
    :counter-9-plus                       "9+"
    :show-more                            "Show more"
    :show-less                            "Show less"
+   :cooldown/warning-message             "Sorry, we limit sending several messages in quick succession to prevent spam. Please try again in a moment"
+   :cooldown/text-input-disabled         "Please wait a moment..."
 
    ;;discover
    :discover                             "Discover"

@@ -413,3 +413,16 @@
  :wallet-transaction-exists?
  (fn [db [_ tx-hash]]
    (not (nil? (get-in db [:wallet :transactions tx-hash])))))
+
+(reg-sub
+ :chat/cooldown-enabled?
+ (fn [db]
+   (:chat/cooldown-enabled? db)))
+
+(reg-sub
+ :chat-cooldown-enabled?
+ :<- [:get-current-chat]
+ :<- [:chat/cooldown-enabled?]
+ (fn [[{:keys [public?]} cooldown-enabled?]]
+   (and public?
+        cooldown-enabled?)))

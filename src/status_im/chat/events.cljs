@@ -13,6 +13,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.contacts :as utils.contacts]
+            [status-im.utils.utils :as utils]
             [status-im.transport.message.core :as transport.message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.message.v1.public-chat :as public-chat]
@@ -33,6 +34,13 @@
  :browse
  (fn [link]
    (list-selection/browse link)))
+
+(re-frame/reg-fx
+ :show-cooldown-warning
+ (fn [_]
+   (utils/show-popup nil
+                     (i18n/label :cooldown/warning-message)
+                     #())))
 
 ;;;; Handlers
 
@@ -411,3 +419,9 @@
  [re-frame/trim-v]
  (fn [cofx [chat-id message-id]]
    (models.message/delete-message chat-id message-id cofx)))
+
+(handlers/register-handler-db
+ :disable-cooldown
+ [re-frame/trim-v]
+ (fn [db]
+   (assoc db :chat/cooldown-enabled? false)))

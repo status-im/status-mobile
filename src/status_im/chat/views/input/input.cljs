@@ -10,6 +10,7 @@
             [status-im.chat.views.input.send-button :as send-button]
             [status-im.chat.views.input.suggestions :as suggestions]
             [status-im.chat.views.input.validation-messages :as validation-messages]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -27,49 +28,53 @@
 (defview basic-text-input [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
   (letsubs [{:keys [input-text]} [:get-current-chat]
             input-focused?       [:get-current-chat-ui-prop :input-focused?]
-            input-ref            (atom nil)]
+            input-ref            (atom nil)
+            cooldown-enabled?    [:chat-cooldown-enabled?]]
     [react/text-input
-     {:ref                    #(when %
-                                 (re-frame/dispatch [:set-chat-ui-props {:input-ref %}])
-                                 (reset! input-ref %))
-      :accessibility-label    :chat-message-input
-      :multiline              (not single-line-input?)
-      :default-value          (or input-text "")
-      :editable               true
-      :blur-on-submit         false
-      :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
-                                                                       :messages-focused? false}])
-      :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
-      :on-submit-editing      (fn [_]
-                                (if single-line-input?
-                                  (re-frame/dispatch [:send-current-message])
-                                  (when @input-ref
-                                    (.setNativeProps @input-ref (clj->js {:text input-text})))))
-      :on-layout              (fn [e]
-                                (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
-      :on-change              (fn [e]
-                                (let [native-event (.-nativeEvent e)
-                                      text (.-text native-event)
-                                      content-size (.. native-event -contentSize)]
-                                  (when (and (not single-line-input?)
-                                             content-size)
-                                    (set-layout-height-fn (.-height content-size)))
-                                  (when (not= text input-text)
-                                    (re-frame/dispatch [:set-chat-input-text text]))))
-      :on-content-size-change (when (and (not input-focused?)
-                                         (not single-line-input?))
-                                #(let [s (.-contentSize (.-nativeEvent %))
-                                       w (.-width s)
-                                       h (.-height s)]
-                                   (set-container-width-fn w)
-                                   (set-layout-height-fn h)))
-      :on-selection-change    #(let [s (-> (.-nativeEvent %)
-                                           (.-selection))
-                                     end (.-end s)]
-                                 (re-frame/dispatch [:update-text-selection end]))
-      :style                  (style/input-view single-line-input?)
-      :placeholder-text-color colors/gray
-      :auto-capitalize        :sentences}]))
+     (merge
+      {:ref                    #(when %
+                                  (re-frame/dispatch [:set-chat-ui-props {:input-ref %}])
+                                  (reset! input-ref %))
+       :accessibility-label    :chat-message-input
+       :multiline              (not single-line-input?)
+       :default-value          (or input-text "")
+       :editable               (not cooldown-enabled?)
+       :blur-on-submit         false
+       :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
+                                                                        :messages-focused? false}])
+       :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
+       :on-submit-editing      (fn [_]
+                                 (if single-line-input?
+                                   (re-frame/dispatch [:send-current-message])
+                                   (when @input-ref
+                                     (.setNativeProps @input-ref (clj->js {:text input-text})))))
+       :on-layout              (fn [e]
+                                 (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
+       :on-change              (fn [e]
+                                 (let [native-event (.-nativeEvent e)
+                                       text (.-text native-event)
+                                       content-size (.. native-event -contentSize)]
+                                   (when (and (not single-line-input?)
+                                              content-size)
+                                     (set-layout-height-fn (.-height content-size)))
+                                   (when (not= text input-text)
+                                     (re-frame/dispatch [:set-chat-input-text text]))))
+       :on-content-size-change (when (and (not input-focused?)
+                                          (not single-line-input?))
+                                 #(let [s (.-contentSize (.-nativeEvent %))
+                                        w (.-width s)
+                                        h (.-height s)]
+                                    (set-container-width-fn w)
+                                    (set-layout-height-fn h)))
+       :on-selection-change    #(let [s (-> (.-nativeEvent %)
+                                            (.-selection))
+                                      end (.-end s)]
+                                  (re-frame/dispatch [:update-text-selection end]))
+       :style                  (style/input-view single-line-input?)
+       :placeholder-text-color colors/gray
+       :auto-capitalize        :sentences}
+      (when cooldown-enabled?
+        {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
   (letsubs [{:keys [input-text]} [:get-current-chat]]

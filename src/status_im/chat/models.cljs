@@ -16,6 +16,9 @@
   (and (multi-user-chat? chat-id cofx)
        (not (get-in cofx [:db :chats chat-id :public?]))))
 
+(defn public-chat? [chat-id cofx]
+  (get-in cofx [:db :chats chat-id :public?]))
+
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"
   [{:keys [current-chat-id] :as db} kvs]

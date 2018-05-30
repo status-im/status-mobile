@@ -44,3 +44,4 @@
 (def use-sym-key (enabled? (get-config :USE_SYM_KEY 0)))
 
 (def group-chats-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED)))
+(def spam-button-detection-enabled? (enabled? (get-config :SPAM_BUTTON_DETECTION_ENABLED "0")))

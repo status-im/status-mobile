@@ -2,9 +2,11 @@
   (:require [clojure.string :as str]
             [goog.object :as object]
             [status-im.chat.constants :as const]
+            [status-im.chat.models :as chat-model]
             [status-im.chat.models.commands :as commands-model]
-            [status-im.js-dependencies :as dependencies]
-            [taoensso.timbre :as log]))
+            [status-im.utils.config :as config]
+            [status-im.utils.datetime :as datetime]
+            [status-im.js-dependencies :as dependencies]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -198,3 +200,34 @@
                         [(keyword (get-in params [i :name])) value]))
          (remove #(nil? (first %)))
          (into {}))))
+
+(defn- start-cooldown [{:keys [db]} cooldowns]
+  {:dispatch-later        [{:dispatch [:disable-cooldown]
+                            :ms       (const/cooldown-periods-ms cooldowns
+                                                                 const/default-cooldown-period-ms)}]
+   :show-cooldown-warning nil
+   :db                    (assoc db
+                                 :chat/cooldowns (if (= const/cooldown-reset-threshold cooldowns)
+                                                   0
+                                                   cooldowns)
+                                 :chat/spam-messages-frequency 0
+                                 :chat/cooldown-enabled? true)})
+
+(defn process-cooldown [{{:keys [chat/last-outgoing-message-sent-at
+                                 chat/cooldowns
+                                 chat/spam-messages-frequency
+                                 current-chat-id] :as db} :db :as cofx}]
+  (when (and
+         config/spam-button-detection-enabled?
+         (chat-model/public-chat? current-chat-id cofx))
+    (let [spamming-fast? (< (- (datetime/timestamp) last-outgoing-message-sent-at)
+                            (+ const/spam-interval-ms (* 1000 cooldowns)))
+          spamming-frequently? (= const/spam-message-frequency-threshold spam-messages-frequency)]
+      (cond-> {:db (assoc db
+                          :chat/last-outgoing-message-sent-at (datetime/timestamp)
+                          :chat/spam-messages-frequency (if spamming-fast?
+                                                          (inc spam-messages-frequency)
+                                                          0))}
+
+        (and spamming-fast? spamming-frequently?)
+        (start-cooldown (inc cooldowns))))))
