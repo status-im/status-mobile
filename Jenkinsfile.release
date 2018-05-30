@@ -73,7 +73,7 @@ timeout(90) {
           def artifact = (artifact_dir + 'app-release.apk')
           def server = Artifactory.server('artifacts')
           def shortCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(6)
-          def filename = 'im.status.ethereum-' + shortCommit + '.apk'
+          def filename = 'im.status.ethereum-' + shortCommit + '-rel' + '.apk'
           def newArtifact = (artifact_dir + filename)
           sh ('mv ' + artifact + ' '  + newArtifact)
           def uploadSpec = '{ "files": [ { "pattern": "*apk/release/' + filename + '", "target": "nightlies-local" }]}'
