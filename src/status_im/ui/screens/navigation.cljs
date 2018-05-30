@@ -90,23 +90,26 @@
  (fn [cofx [_ view-id]]
    (replace-view view-id cofx)))
 
+(defn navigate-back [{:keys [navigation-stack view-id modal] :as db}]
+  (cond
+    modal (assoc db :modal nil
+                 :was-modal? true)
+    (>= 1 (count navigation-stack)) db
+
+    :else
+    (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
+          first-in-stack (first navigation-stack)]
+      (if (= view-id first-in-stack)
+        (-> db
+            (assoc :view-id previous-view-id)
+            (assoc :navigation-stack navigation-stack'))
+        (assoc db :view-id first-in-stack)))))
+
 (handlers/register-handler-db
  :navigate-back
  (re-frame/enrich -preload-data!)
- (fn [{:keys [navigation-stack view-id modal] :as db} _]
-   (cond
-     modal (assoc db :modal nil
-                  :was-modal? true)
-     (>= 1 (count navigation-stack)) db
-
-     :else
-     (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
-           first-in-stack (first navigation-stack)]
-       (if (= view-id first-in-stack)
-         (-> db
-             (assoc :view-id previous-view-id)
-             (assoc :navigation-stack navigation-stack'))
-         (assoc db :view-id first-in-stack))))))
+ (fn [db _]
+   (navigate-back db)))
 
 (handlers/register-handler-fx
  :navigate-to-clean

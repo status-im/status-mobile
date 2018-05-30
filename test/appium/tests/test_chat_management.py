@@ -27,6 +27,10 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
 
         device_1_home_view = device_1_sign_in_view.get_home_view()
         device_2_home_view = device_2_sign_in_view.get_home_view()
+        for home in device_1_home_view, device_2_home_view:
+            wallet = home.wallet_button.click()
+            wallet.set_up_wallet()
+            wallet.home_button.click()
 
         # Device 1: Start new 1-1 chat
         device_1_home_view.add_contact(self.senders['h_user']['public_key'])

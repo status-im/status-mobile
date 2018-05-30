@@ -11,7 +11,8 @@
             [taoensso.timbre :as log]
             status-im.ui.screens.wallet.request.events
             [status-im.utils.money :as money]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.ui.screens.navigation :as navigation]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -48,21 +49,21 @@
 (reg-fx
  :get-balance
  (fn [{:keys [web3 account-id success-event error-event]}]
-   (get-balance {:web3           web3
-                 :account-id     account-id
-                 :on-success     #(re-frame/dispatch [success-event %])
-                 :on-error       #(re-frame/dispatch [error-event %])})))
+   (get-balance {:web3       web3
+                 :account-id account-id
+                 :on-success #(re-frame/dispatch [success-event %])
+                 :on-error   #(re-frame/dispatch [error-event %])})))
 
 (reg-fx
  :get-tokens-balance
  (fn [{:keys [web3 symbols chain account-id success-event error-event]}]
    (doseq [symbol symbols]
      (let [contract (:address (tokens/symbol->token chain symbol))]
-       (get-token-balance {:web3           web3
-                           :contract       contract
-                           :account-id     account-id
-                           :on-success     #(re-frame/dispatch [success-event symbol %])
-                           :on-error       #(re-frame/dispatch [error-event %])})))))
+       (get-token-balance {:web3       web3
+                           :contract   contract
+                           :account-id account-id
+                           :on-success #(re-frame/dispatch [success-event symbol %])
+                           :on-error   #(re-frame/dispatch [error-event %])})))))
 
 (reg-fx
  :get-transactions
@@ -109,25 +110,25 @@
          currency-id (or (get-in settings [:wallet :currency]) :usd)
          currency    (get constants/currencies currency-id)]
      (when (not= network-status :offline)
-       {:get-balance {:web3          web3
-                      :account-id    address
-                      :success-event :update-balance-success
-                      :error-event   :update-balance-fail}
+       {:get-balance        {:web3          web3
+                             :account-id    address
+                             :success-event :update-balance-success
+                             :error-event   :update-balance-fail}
         :get-tokens-balance {:web3          web3
                              :account-id    address
                              :symbols       symbols
                              :chain         chain
                              :success-event :update-token-balance-success
                              :error-event   :update-token-balance-fail}
-        :get-prices  {:from          (if mainnet? (conj symbols "ETH") ["ETH"])
-                      :to            [(:code currency)]
-                      :success-event :update-prices-success
-                      :error-event   :update-prices-fail}
-        :db          (-> db
-                         (clear-error-message :prices-update)
-                         (clear-error-message :balance-update)
-                         (assoc-in [:wallet :balance-loading?] true)
-                         (assoc :prices-loading? true))}))))
+        :get-prices         {:from          (if mainnet? (conj symbols "ETH") ["ETH"])
+                             :to            [(:code currency)]
+                             :success-event :update-prices-success
+                             :error-event   :update-prices-fail}
+        :db                 (-> db
+                                (clear-error-message :prices-update)
+                                (clear-error-message :balance-update)
+                                (assoc-in [:wallet :balance-loading?] true)
+                                (assoc :prices-loading? true))}))))
 
 (handlers/register-handler-fx
  :update-transactions
@@ -226,7 +227,7 @@
 (handlers/register-handler-fx
  :show-transaction-details
  (fn [{:keys [db]} [_ hash]]
-   {:db (assoc-in db [:wallet :current-transaction] hash)
+   {:db       (assoc-in db [:wallet :current-transaction] hash)
     :dispatch [:navigate-to :wallet-transaction-details]}))
 
 (handlers/register-handler-fx
@@ -258,3 +259,10 @@
  :wallet/show-error
  (fn []
    {:show-error (i18n/label :t/wallet-error)}))
+
+(handlers/register-handler-fx
+ :wallet-setup-navigate-back
+ (fn [{:keys [db]}]
+   {:db (-> db
+            (assoc-in [:wallet :send-transaction] {})
+            (navigation/navigate-back))}))

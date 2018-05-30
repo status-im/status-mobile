@@ -12,11 +12,14 @@
              :gas (ethereum/estimate-gas :ETH)
              :from-chat? true)))
 
-(defn send-shortcut-fx [db contact params]
+(defn send-shortcut-fx [{:account/keys [account] :as db} contact params]
   (merge {:db (-> db
                   (send.events/set-and-validate-amount-db (:amount params) :ETH 18)
                   (choose-recipient.events/fill-request-details (transaction-details contact))
-                  (navigation/navigate-to :wallet-send-transaction-chat))}
+                  (navigation/navigate-to
+                   (if (:wallet-set-up-passed? account)
+                     :wallet-send-transaction-chat
+                     :wallet-onboarding-setup)))}
          (send.events/update-gas-price db false)))
 
 (def shortcuts

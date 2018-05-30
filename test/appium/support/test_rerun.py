@@ -1,4 +1,5 @@
 RERUN_ERRORS = [
+    "can't receive further commands",
     'Original error: Error: ESOCKETTIMEDOUT',
     "The server didn't respond in time.",
     'An unknown server-side error occurred while processing the command.',

@@ -10,7 +10,8 @@
             [status-im.ui.screens.wallet.onboarding.setup.styles :as styles]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.toolbar.actions :as actions]))
 
 (defn signing-word [word]
   [react/view styles/signing-word
@@ -23,14 +24,16 @@
   (utils/show-question
    (i18n/label :t/wallet-set-up-confirm-title)
    (i18n/label :t/wallet-set-up-confirm-description)
-   #(do (re-frame/dispatch [:wallet-set-up-passed])
-        (re-frame/dispatch [:navigate-back]))))
+   #(re-frame/dispatch [:wallet-set-up-passed])))
 
 (views/defview screen []
   (views/letsubs [{:keys [signing-phrase]} [:get-current-account]]
     (let [signing-words (string/split signing-phrase #" ")]
       [comp/simple-screen {:avoid-keyboard? true}
-       [comp/toolbar (i18n/label :t/wallet-set-up-title)]
+       [comp/toolbar
+        {}
+        (actions/back-white #(re-frame/dispatch [:wallet-setup-navigate-back]))
+        (i18n/label :t/wallet-set-up-title)]
        [react/view components.styles/flex
         [react/view {:style styles/setup-image-container}
          [react/image {:source (:wallet-setup resources/ui)

@@ -51,6 +51,11 @@ class TestTransaction(SingleDeviceTestCase):
         chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.send_as_keyevent(transaction_amount)
+        wallet_view = chat_view.get_wallet_view()
+        chat_view.send_message_button.click_until_presence_of_element(wallet_view.sign_in_phrase)
+        wallet_view.done_button.click()
+        wallet_view.yes_button.click()
+
         send_transaction_view = chat_view.get_send_transaction_view()
         chat_view.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
         send_transaction_view.sign_transaction_button.click_until_presence_of_element(
@@ -276,11 +281,10 @@ class TestTransactions(MultipleDeviceTestCase):
         device_1_chat.send_as_keyevent(amount)
         device_1_chat.send_message_button.click()
         request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')
-        device_2_chat.send_eth_to_request(request_button, sender['password'])
+        device_2_chat.send_eth_to_request(request_button, sender['password'], wallet_set_up=True)
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         device_2_chat.back_button.click()
         device_2_wallet = device_2_home.wallet_button.click()
-        device_2_wallet.set_up_wallet()
         transactions_view = device_2_wallet.transactions_button.click()
         transactions_view.transactions_table.find_transaction(amount=amount)
 
@@ -317,5 +321,5 @@ class TestTransactions(MultipleDeviceTestCase):
         one_to_one_chat_device_2.wait_for_visibility_of_element(120)
         one_to_one_chat_device_2.click()
         request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')
-        device_2_chat.send_eth_to_request(request_button, sender['password'])
+        device_2_chat.send_eth_to_request(request_button, sender['password'], wallet_set_up=True)
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)

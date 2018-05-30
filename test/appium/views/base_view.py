@@ -278,6 +278,10 @@ class BaseView(object):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
+    def get_wallet_view(self):
+        from views.wallet_view import WalletView
+        return WalletView(self.driver)
+
     def get_unique_amount(self):
         return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
 

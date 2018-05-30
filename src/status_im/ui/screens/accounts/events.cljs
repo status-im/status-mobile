@@ -18,7 +18,8 @@
             status-im.ui.screens.accounts.create.navigation
             [status-im.chat.models :as chat.models]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
-            [status-im.data-store.accounts :as accounts-store]))
+            [status-im.data-store.accounts :as accounts-store]
+            [status-im.ui.screens.navigation :as navigation]))
 
 ;;;; COFX
 
@@ -46,16 +47,16 @@
 (handlers/register-handler-fx
  :create-account
  (fn [{{:accounts/keys [create] :as db} :db} _]
-   {:db (update db :accounts/create assoc :step :account-creating :error nil)
+   {:db              (update db :accounts/create assoc :step :account-creating :error nil)
     ::create-account (:password create)}))
 
 (defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
   [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
   (let [enriched-account (assoc account
-                                :network  network
+                                :network network
                                 :networks networks
-                                :address  address)]
+                                :address address)]
     {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
@@ -92,8 +93,8 @@
                        (map (fn [{:keys [address] :as account}]
                               [address account]))
                        (into {}))
-          ;;workaround for realm bug, migrating account v4
-         events (mapv #(when (empty? (:networks %)) [:account-update-networks (:address %)]) (vals accounts))]
+         ;;workaround for realm bug, migrating account v4
+         events   (mapv #(when (empty? (:networks %)) [:account-update-networks (:address %)]) (vals accounts))]
      (merge
       {:db (assoc db :accounts/accounts accounts)}
       (when-not (empty? events)
@@ -103,7 +104,7 @@
  :account-update-networks
  (fn [{{:accounts/keys [accounts] :networks/keys [networks] :as db} :db} [_ id]]
    (let [current-account (get accounts id)
-         new-account (assoc current-account :networks networks)]
+         new-account     (assoc current-account :networks networks)]
      {:db                 (assoc-in db [:accounts/accounts id] new-account)
       :data-store/base-tx [(accounts-store/save-account-tx new-account)]})))
 
@@ -112,18 +113,18 @@
   ([settings success-event {{:keys [account/account] :as db} :db :as cofx}]
    (let [new-account (assoc account :settings settings)]
      {:db                 (assoc db :account/account new-account)
-      :data-store/base-tx [{:transaction (accounts-store/save-account-tx new-account)
+      :data-store/base-tx [{:transaction   (accounts-store/save-account-tx new-account)
                             :success-event success-event}]})))
 
 (handlers/register-handler-fx
  :send-account-update-if-needed
  (fn [{:keys [db now] :as cofx} _]
    (let [{:keys [last-updated]} (:account/account db)
-         needs-update?          (> (- now last-updated) time/week)]
+         needs-update? (> (- now last-updated) time/week)]
      (log/info "Need to send account-update: " needs-update?)
      (when needs-update?
-        ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
-        ;; account with network update when last update was more then week ago
+       ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
+       ;; account with network update when last update was more then week ago
        (accounts.utils/account-update nil cofx)))))
 
 (handlers/register-handler-fx
@@ -137,7 +138,7 @@
 (handlers/register-handler-fx
  :account-finalized
  (fn [{db :db} [_ show-welcome?]]
-   {:db (assoc db :accounts/create {:show-welcome? show-welcome?})
+   {:db         (assoc db :accounts/create {:show-welcome? show-welcome?})
     :dispatch-n [[:navigate-to-clean :home]
                  [:request-notifications]]}))
 
@@ -161,7 +162,17 @@
  (fn [cofx [_ dev-mode]]
    (accounts.utils/account-update {:dev-mode? dev-mode} cofx)))
 
+(defn wallet-set-up-passed [db cofx]
+  (let [transaction (seq (get-in db [:wallet :send-transaction]))]
+    (merge
+     {:db (navigation/navigate-back db)}
+     (when transaction
+       {:dispatch [:navigate-to :wallet-send-transaction-chat]}))))
+
 (handlers/register-handler-fx
  :wallet-set-up-passed
- (fn [cofx]
-   (accounts.utils/account-update {:wallet-set-up-passed? true} cofx)))
+ (fn [{:keys [db] :as cofx}]
+   (handlers-macro/merge-fx
+    cofx
+    (wallet-set-up-passed db)
+    (accounts.utils/account-update {:wallet-set-up-passed? true}))))
