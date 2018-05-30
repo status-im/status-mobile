@@ -14,7 +14,8 @@
  ::received-message
  message-model/receive-interceptors
  (fn [cofx [message]]
-   (message-model/receive message cofx)))
+   (when (message-model/add-to-chat? cofx message)
+     (message-model/receive message cofx))))
 
 (re-frame.core/reg-fx
  :chat-received-message/add-fx
