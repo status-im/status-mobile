@@ -15,14 +15,19 @@
   [react/view (styles/wnode-icon connected?)
    [vector-icons/icon :icons/wnode {:color (if connected? :white :gray)}]])
 
-(defn navigate-to-add-mailserver []
-  (re-frame/dispatch [:edit-mailserver]))
+(defn connect-to-mailserver [id]
+  (re-frame/dispatch [:connect-wnode id]))
 
-(defn- render-row [current-wnode]
-  (fn [{:keys [name id]}]
-    (let [connected? (= id current-wnode)]
+(defn navigate-to-add-mailserver [wnode-id]
+  (re-frame/dispatch [:edit-mailserver wnode-id]))
+
+(defn- render-row [current-wnode-id]
+  (fn [{:keys [name id user-defined]}]
+    (let [connected? (= id current-wnode-id)]
       [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:connect-wnode id])
+       {:on-press            #(if user-defined
+                                (navigate-to-add-mailserver id)
+                                (connect-to-mailserver id))
         :accessibility-label :mailserver-item}
        [react/view styles/wnode-item
         [wnode-icon connected?]
@@ -31,8 +36,8 @@
           name]]]])))
 
 (views/defview offline-messaging-settings []
-  (views/letsubs [current-wnode  [:settings/current-wnode]
-                  wnodes         [:settings/network-wnodes]]
+  (views/letsubs [current-wnode-id [:settings/current-wnode]
+                  wnodes           [:settings/network-wnodes]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/toolbar {}
@@ -40,9 +45,9 @@
       [toolbar/content-title (i18n/label :t/offline-messaging-settings)]
       (when config/add-custom-mailservers-enabled?
         [toolbar/actions
-         [(toolbar.actions/add false navigate-to-add-mailserver)]])]
+         [(toolbar.actions/add false (partial navigate-to-add-mailserver nil))]])]
      [react/view styles/wrapper
       [list/flat-list {:data               (vals wnodes)
                        :default-separator? false
                        :key-fn             :id
-                       :render-fn          (render-row current-wnode)}]]]))
+                       :render-fn          (render-row current-wnode-id)}]]]))

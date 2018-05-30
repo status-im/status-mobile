@@ -14,6 +14,15 @@
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]))
 
+(defn connect-button [id]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:connect-wnode id])}
+   [react/view styles/connect-button-container
+    [react/view {:style               styles/connect-button
+                 :accessibility-label :mailserver-connect-button}
+     [react/text {:style      styles/connect-button-label
+                  :uppercase? true}
+      (i18n/label :t/connect)]]]])
+
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
                                                              {:toolbar-title (i18n/label :t/add-mailserver)}
@@ -25,32 +34,36 @@
 (views/defview edit-mailserver []
   (views/letsubs [manage-mailserver [:get-manage-mailserver]
                   is-valid?         [:manage-mailserver-valid?]]
-    [react/view components.styles/flex
-     [status-bar/status-bar]
-     [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar (i18n/label :t/add-mailserver)]
-      [react/scroll-view
-       [react/view styles/edit-mailserver-view
-        [text-input/text-input-with-label
-         {:label           (i18n/label :t/name)
-          :placeholder     (i18n/label :t/specify-name)
-          :style           styles/input
-          :container       styles/input-container
-          :default-value   (get-in manage-mailserver [:name :value])
-          :on-change-text  #(re-frame/dispatch [:mailserver-set-input :name %])
-          :auto-focus      true}]
-        [text-input/text-input-with-label
-         {:label           (i18n/label :t/mailserver-address)
-          :placeholder     (i18n/label :t/specify-mailserver-address)
-          :content         qr-code
-          :style           styles/input
-          :container       styles/input-container
-          :default-value   (get-in manage-mailserver [:url :value])
-          :on-change-text  #(re-frame/dispatch [:mailserver-set-input :url %])}]]]
-      [react/view styles/bottom-container
-       [react/view components.styles/flex]
-       [components.common/bottom-button
-        {:forward?  true
-         :label     (i18n/label :t/save)
-         :disabled? (not is-valid?)
-         :on-press  #(re-frame/dispatch [:save-new-mailserver])}]]]]))
+    (let [url  (get-in manage-mailserver [:url :value])
+          id   (get-in manage-mailserver [:id :value])
+          name (get-in manage-mailserver [:name :value])]
+      [react/view components.styles/flex
+       [status-bar/status-bar]
+       [react/keyboard-avoiding-view components.styles/flex
+        [toolbar/simple-toolbar (i18n/label :t/add-mailserver)]
+        [react/scroll-view
+         [react/view styles/edit-mailserver-view
+          [text-input/text-input-with-label
+           {:label           (i18n/label :t/name)
+            :placeholder     (i18n/label :t/specify-name)
+            :style           styles/input
+            :container       styles/input-container
+            :default-value   name
+            :on-change-text  #(re-frame/dispatch [:mailserver-set-input :name %])
+            :auto-focus      true}]
+          [text-input/text-input-with-label
+           {:label           (i18n/label :t/mailserver-address)
+            :placeholder     (i18n/label :t/specify-mailserver-address)
+            :content         qr-code
+            :style           styles/input
+            :container       styles/input-container
+            :default-value   url
+            :on-change-text  #(re-frame/dispatch [:mailserver-set-input :url %])}]
+          (when id [connect-button id])]]
+        [react/view styles/bottom-container
+         [react/view components.styles/flex]
+         [components.common/bottom-button
+          {:forward?  true
+           :label     (i18n/label :t/save)
+           :disabled? (not is-valid?)
+           :on-press  #(re-frame/dispatch [:upsert-mailserver])}]]]])))
