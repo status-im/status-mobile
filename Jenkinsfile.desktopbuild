@@ -99,17 +99,18 @@ timeout(90) {
 
     sh ('echo ' + scriptPath)
 
-    environment {
-        QTDIR="/opt/qt59"
-        PATH="/opt/qt59/bin:$PATH"
-        PKG_CONFIG_PATH="/opt/qt59/lib/pkgconfig:$PKG_CONFIG_PATH"
-    }
+
 
     try {
 
       stage('Git & Dependencies') {
         slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build started. ' + env.BUILD_URL
-
+        
+        environment {
+          QTDIR="/opt/qt59"
+          PATH="/opt/qt59/bin:$PATH"
+          PKG_CONFIG_PATH="/opt/qt59/lib/pkgconfig:$PKG_CONFIG_PATH"
+        }
         sh ('echo ' + scriptPath)
 
         sh 'printenv'
@@ -135,7 +136,7 @@ timeout(90) {
 
       stage('Build MacOS binaries') {
         sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
-        sh 'export PATH=/opt/qt59/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
+        sh '. sh /opt/qt59/bin/qt59-env.sh && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
          -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
       }
 
