@@ -61,12 +61,12 @@ def installJSDeps() {
       }
 
       stage('Prepare and create MacOS Bundle') {
-        sh ('cd ' + packageFolder + ' && ../scripts/download-mac-bundle-files.sh && unzip ./StatusIm.app.zip')
+        sh ('cd ' + packageFolder + ' && ../scripts/download-package-files.sh "StatusIm.app.zip" "1AVi8QvIB8zNF6oMsMBgOqmxa5nl1xdWC" && unzip ./StatusIm.app.zip')
         sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
 
         sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
 
-        sh ('macdeployqt ' + packageFolder + '/StatusIm.app -always-overwrite -verbose=1 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/application/src/" -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"') // do not forget about -dmg
+        sh ('macdeployqt ' + packageFolder + '/StatusIm.app -always-overwrite -verbose=1 -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"') // do not forget about -dmg
         sh ('python /Users/administrator/macdeployqtfix/macdeployqtfix/macdeployqtfix.py ' + packageFolder + '/StatusIm.app/Contents/MacOs/StatusIm /usr/local/Cellar/qt/5.9.1')
 
         sh 'rm -f StatusImBundle.app.zip'
@@ -134,10 +134,29 @@ timeout(90) {
         sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
       }*/
 
-      stage('Build MacOS binaries') {
+      /*stage('Build MacOS binaries') {
         sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
         sh '. /opt/qt59/bin/qt59-env.sh && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
          -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
+      }*/
+
+      stage('Prepare and create Linux AppImage') {
+        sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
+        sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
+
+        sh ('cp ./desktop/bin/StatusIm ' + packageFolder)
+        sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
+
+        sh ('linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder + '/StatusIm -always-overwrite -verbose=2 -appimage -no-strip -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
+        sh ('python /Users/administrator/macdeployqtfix/macdeployqtfix/macdeployqtfix.py ' + packageFolder + '/StatusIm.app/Contents/MacOs/StatusIm /usr/local/Cellar/qt/5.9.1')
+
+        sh 'rm -f StatusImAppImage.zip'
+        sh 'cp  ' + packageFolder + '/Application-x86_64.AppImage ' + packageFolder + '/StatusImAppImage'
+        sh ('cd ' + packageFolder + ' && zip -r StatusImAppImage.zip StatusImAppImage')
+      }
+
+      stage('Archive built artifact') {
+        archiveArtifacts "StatusImPackage/*.zip"
       }
 
       slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build finished successfully. ' + env.BUILD_URL
