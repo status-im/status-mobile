@@ -74,7 +74,8 @@
    (let [{:keys [web3 current-public-key]} db
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
                                                (assoc :sym-key-id sym-key-id
-                                                      :sym-key sym-key))]
+                                                      :sym-key sym-key
+                                                      :topic topic))]
      (handlers-macro/merge-fx cofx
                               {:db (assoc-in db [:transport/chats chat-id] chat-transport-info)
                                :shh/add-filter {:web3       web3
@@ -92,7 +93,8 @@
    (let [{:keys [web3 current-public-key]} db
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
                                                (assoc :sym-key-id sym-key-id
-                                                      :sym-key sym-key))]
+                                                      :sym-key sym-key
+                                                      :topic topic))]
      (handlers-macro/merge-fx cofx
                               {:db             (assoc-in db
                                                          [:transport/chats chat-id]

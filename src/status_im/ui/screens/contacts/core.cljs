@@ -7,14 +7,19 @@
   [public-key
    {:keys [name profile-image address fcm-token]}
    {{:contacts/keys [contacts] :as db} :db :as cofx}]
-  (when-not (get contacts public-key)
-    (let [contact-props {:whisper-identity public-key
-                         :public-key       public-key
-                         :address          address
-                         :photo-path       profile-image
-                         :name             name
-                         :fcm-token        fcm-token
-                         :pending?         true}]
+  (let [contact          (get contacts public-key)
+        contact-props    {:whisper-identity public-key
+                          :public-key       public-key
+                          :address          address
+                          :photo-path       profile-image
+                          :name             name
+                          :fcm-token        fcm-token
+                          ;;NOTE (yenda) in case of concurrent contact request
+                          :pending?         (get contact :pending? true)}]
+    ;;NOTE (yenda) only update if there is changes to the contact
+    (when-not (= contact-props
+                 (select-keys contact [:whisper-identity :public-key :address
+                                       :photo-path :name :fcm-token :pending?]))
       (handlers-macro/merge-fx cofx
                                {:db            (update-in db [:contacts/contacts public-key]
                                                           merge contact-props)

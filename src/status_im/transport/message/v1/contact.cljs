@@ -8,29 +8,6 @@
             [status-im.utils.handlers :as handlers]
             [status-im.data-store.transport :as transport-store]))
 
-(defrecord NewContactKey [sym-key topic message]
-  message/StatusMessage
-  (send [this chat-id cofx]
-    (let [success-event [:transport/set-contact-message-envelope-hash chat-id]]
-      (protocol/send-with-pubkey {:chat-id       chat-id
-                                  :payload       this
-                                  :success-event success-event}
-                                 cofx)))
-  (receive [this chat-id signature cofx]
-    (let [on-success (fn [sym-key sym-key-id]
-                       (re-frame/dispatch [:contact/add-new-sym-key
-                                           {:sym-key-id sym-key-id
-                                            :sym-key    sym-key
-                                            :chat-id    chat-id
-                                            :topic      topic
-                                            :message    message}]))]
-      (handlers-macro/merge-fx cofx
-                               {:shh/add-new-sym-keys [{:web3       (get-in cofx [:db :web3])
-                                                        :sym-key    sym-key
-                                                        :on-success on-success}]}
-                               (protocol/init-chat {:chat-id chat-id
-                                                    :topic   topic})))))
-
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id {:keys [db random-id] :as cofx}]
@@ -92,3 +69,54 @@
                                                     :payload       this
                                                     :success-event success-event}))))
        recipients))))
+
+(defn remove-chat-filter
+  "Stops the filter for the given chat-id"
+  [chat-id {:keys [db]}]
+  (when-let [filter (get-in db [:transport/chats chat-id :filter])]
+    {:shh/remove-filter filter}))
+
+(defn init-chat
+  [chat-id topic cofx]
+  (when-not (get-in cofx [:db :transport/chats chat-id])
+    (protocol/init-chat {:chat-id chat-id
+                         :topic   topic} cofx)))
+
+(defrecord NewContactKey [sym-key topic message]
+  message/StatusMessage
+  (send [this chat-id cofx]
+    (let [success-event [:transport/set-contact-message-envelope-hash chat-id]]
+      (protocol/send-with-pubkey {:chat-id       chat-id
+                                  :payload       this
+                                  :success-event success-event}
+                                 cofx)))
+  (receive [this chat-id signature {:keys [db] :as cofx}]
+    (let [current-sym-key (get-in db [:transport/chats chat-id :sym-key])
+          ;; NOTE(yenda) to support concurrent contact request without additional
+          ;; interactions we don't save the new key if these conditions are met:
+          ;; - the message is a contact request
+          ;; - we already have a sym-key
+          ;; - this sym-key is first in alphabetical order compared to the new one
+          save-key?       (not (and (= ContactRequest (type message))
+                                    current-sym-key
+                                    (= current-sym-key
+                                       (first (sort [current-sym-key sym-key])))))]
+      (if save-key?
+        (let [on-success (fn [sym-key sym-key-id]
+                           (re-frame/dispatch [:contact/add-new-sym-key
+                                               {:sym-key-id sym-key-id
+                                                :sym-key    sym-key
+                                                :chat-id    chat-id
+                                                :topic      topic
+                                                :message    message}]))]
+          (handlers-macro/merge-fx cofx
+                                   {:shh/add-new-sym-keys [{:web3       (:web3 db)
+                                                            :sym-key    sym-key
+                                                            :on-success on-success}]}
+                                   (init-chat chat-id topic)
+                                   ;; in case of concurrent contact request we want
+                                   ;; to stop the filter for the previous key before
+                                   ;; dereferrencing it
+                                   (remove-chat-filter chat-id)))
+        ;; if we don't save the key, we read the message directly
+        (message/receive message chat-id chat-id cofx)))))
