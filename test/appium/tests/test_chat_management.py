@@ -11,7 +11,7 @@ from views.sign_in_view import SignInView
 @marks.chat_management
 class TestChatManagementMultiple(MultipleDeviceTestCase):
 
-    @marks.testrail_case_id(3412)
+    @marks.skip
     def test_delete_1_1_chat(self):
         self.senders['g_user'] = transaction_users['G_USER']
         self.senders['h_user'] = transaction_users['H_USER']
@@ -146,6 +146,31 @@ class TestChatManagement(SingleDeviceTestCase):
         home_view.relogin()
         if home_view.get_chat_with_user(recipient['username']).is_element_present(20):
             pytest.fail('The chat is present after re-login')
+
+    @marks.testrail_case_id(3412)
+    def test_delete_1_1_chat(self):
+        sender = transaction_users['G_USER']
+        recipient = transaction_users['E_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(recipient['public_key'])
+        chat_view = home_view.get_chat_view()
+        chat_view.chat_message_input.send_keys('test message')
+        chat_view.send_message_button.click()
+        transaction_amount = '0.00001'
+        chat_view.request_transaction_in_1_1_chat(transaction_amount)
+        chat_view.send_transaction_in_1_1_chat(transaction_amount, sender['password'])
+        chat_view.delete_chat(recipient['username'], self.errors)
+        if home_view.get_chat_with_user(recipient['username']).is_element_present(5):
+            pytest.fail('Deleted chat is shown on Home screen')
+        home_view.relogin(sender['password'])
+        if home_view.get_chat_with_user(recipient['username']).is_element_present(20):
+            pytest.fail('Deleted chat is shown on Home screen after re-login')
+        home_view.start_1_1_chat(recipient['username'])
+        if not chat_view.no_messages_in_chat.is_element_present():
+            pytest.fail('Message history is shown in a chat which was previously deleted')
+        self.verify_no_errors()
 
     @marks.testrail_case_id(3418)
     @marks.skip

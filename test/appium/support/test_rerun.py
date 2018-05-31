@@ -9,6 +9,7 @@ RERUN_ERRORS = [
     '504 Gateway Time-out',
     'Internal Server Error',
     'Invalid message: ERROR Internal Server Error',
+    'ERROR The test with session id'
     "Message: 'CreateAccountButton' is not found on screen",
     "503 Service Unavailable",
     "AttributeError: 'NoneType' object has no attribute 'find_element'"

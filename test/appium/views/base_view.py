@@ -303,13 +303,13 @@ class BaseView(object):
             except (NoSuchElementException, TimeoutException):
                 counter += 1
 
-    def relogin(self):
+    def relogin(self, password='qwerty1234'):
         self.get_back_to_home_view()
         profile_view = self.profile_button.click()
         profile_view.logout_button.click()
         profile_view.confirm_logout_button.click()
         sign_in_view = self.get_sign_in_view()
         sign_in_view.click_account_by_position(0)
-        sign_in_view.password_input.send_keys('qwerty1234')
+        sign_in_view.password_input.send_keys(password)
         sign_in_view.sign_in_button.click()
         sign_in_view.home_button.wait_for_visibility_of_element()
