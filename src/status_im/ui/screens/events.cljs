@@ -278,8 +278,8 @@
     :db          (assoc app-db
                         :contacts/contacts {}
                         :network-status network-status
-                        :peers-count peers-count
-                        :peers-summary peers-summary
+                        :peers-count (or peers-count 0)
+                        :peers-summary (or peers-summary [])
                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                         :status-node-started? status-node-started?
                         :network network
