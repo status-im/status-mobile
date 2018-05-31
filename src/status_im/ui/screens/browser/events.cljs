@@ -23,7 +23,7 @@
     (not (:name browser))
     (assoc :name (i18n/label :t/browser))
     (:url browser)
-    (update :url http/normalize-url)))
+    (update :url (comp js/decodeURI http/normalize-url))))
 
 (defn add-browser-fx [{:keys [db now]} browser]
   (let [new-browser (get-new-browser browser now)]
