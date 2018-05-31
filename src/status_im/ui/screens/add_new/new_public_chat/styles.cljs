@@ -42,7 +42,8 @@
    :color     colors/white})
 
 (def input-container
-  {:padding-left     0
+  {:padding          0
+   :padding-right    16
    :background-color nil})
 
 (def tooltip
