@@ -208,8 +208,7 @@
      [react/view
       [react/text {:style           (style/text-message message collapsible?)
                    :number-of-lines (when collapsible? number-of-lines)
-                   :ref             (partial reset! ref)
-                   :on-press        on-press}
+                   :ref             (partial reset! ref)}
        parsed-text
        [react/text {:style (style/message-timestamp-placeholder-text outgoing)} (timestamp-with-padding timestamp-str)]]
       (when collapsible?
