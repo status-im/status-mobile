@@ -7,10 +7,11 @@
             [taoensso.timbre :as log]))
 
 (defn remove-filter! [filter]
-  (.stopWatching filter
-                 (fn [error _]
-                   (when error
-                     (log/warn :remove-filter-error filter error))))
+  (when filter
+    (.stopWatching filter
+                   (fn [error _]
+                     (when error
+                       (log/warn :remove-filter-error filter error)))))
   (log/debug :stop-watching filter))
 
 (defn add-shh-filter!
