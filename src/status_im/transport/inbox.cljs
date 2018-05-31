@@ -371,7 +371,10 @@
 (handlers/register-handler-fx
  :inbox/check-fetching
  (fn [{:keys [db now] :as cofx} [_ last-request chat-id]]
-   (when (:inbox/fetching? db)
+   (when (and (:inbox/fetching? db)
+              ;; if chat was removed before messages were fetched no need
+              ;; to proceed with further actions
+              (or (not chat-id) (contains? (:transport/chats db) chat-id)))
      (let [time-since-last-received (- now (:inbox/last-received db))]
        (if (> time-since-last-received fetching-timeout)
          (if chat-id
