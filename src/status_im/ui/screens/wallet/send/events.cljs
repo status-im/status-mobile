@@ -191,6 +191,7 @@
 (defn this-transaction-signing? [id signing-id view-id modal]
   (and (= signing-id id)
        (or (= view-id :wallet-send-transaction)
+           (= view-id :wallet-send-transaction-chat)
            (= modal :wallet-send-transaction-modal)
            (= modal :wallet-sign-message-modal))))
 

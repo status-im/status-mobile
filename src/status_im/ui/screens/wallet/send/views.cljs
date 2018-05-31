@@ -27,15 +27,6 @@
             [status-im.utils.ethereum.core :as ethereum]
             [clojure.string :as string]))
 
-(defn sign-later-popup
-  [from-chat?]
-  (utils/show-question
-   (i18n/label :t/sign-later-title)
-   (i18n/label :t/sign-later-text)
-   #(re-frame/dispatch (if from-chat?
-                         [:sign-later-from-chat]
-                         [:wallet/sign-transaction true]))))
-
 (defview sign-panel [message?]
   (letsubs [account         [:get-current-account]
             wrong-password? [:wallet.send/wrong-password?]
@@ -87,7 +78,7 @@
    (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
-(defn- sign-buttons [amount-error to amount sufficient-funds? sign-later-handler modal?]
+(defn- sign-buttons [amount-error to amount sufficient-funds? modal?]
   (let [sign-enabled?           (sign-enabled? amount-error to amount)
         immediate-sign-enabled? (or modal? (and sign-enabled? sufficient-funds?))]
     [bottom-buttons/bottom-buttons
@@ -247,17 +238,7 @@
         [signing-buttons
          #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
          #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))]
-        [sign-buttons
-         amount-error
-         to
-         amount
-         sufficient-funds?
-         (if modal?
-           (if from-chat?
-             #(sign-later-popup true)
-             #(re-frame/dispatch [:navigate-back]))
-           #(sign-later-popup false))
-         modal?])
+        [sign-buttons amount-error to amount sufficient-funds? modal?])
       (when signing?
         [sign-panel])
       (when in-progress? [react/view styles/processing-view])]]))
