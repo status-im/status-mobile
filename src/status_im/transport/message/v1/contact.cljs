@@ -68,7 +68,13 @@
 (defrecord ContactUpdate [name profile-image]
   message/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    (let [public-keys (into #{} (remove nil? (map :public-key (vals (:contacts/contacts db)))))
+    (let [public-keys (reduce (fn [acc [_ {:keys [public-key pending?]}]]
+                                (if (and public-key
+                                         (not pending?))
+                                  (conj acc public-key)
+                                  acc))
+                              #{}
+                              (:contacts/contacts db))
           recipients  (filter #(public-keys (first %)) (:transport/chats db))]
       (handlers-macro/merge-effects
        cofx
