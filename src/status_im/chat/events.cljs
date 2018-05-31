@@ -340,7 +340,7 @@
  [re-frame/trim-v]
  (fn [_ [chat-id group?]]
    {:show-confirmation {:title               (i18n/label :t/delete-confirmation)
-                        :content             (i18n/label (if group? :t/delete-group-chat-confirmation :t/delete-chat-confirmation))
+                        :content             (i18n/label :t/delete-chat-confirmation)
                         :confirm-button-text (i18n/label :t/delete)
                         :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
 
