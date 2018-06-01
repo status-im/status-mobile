@@ -4,6 +4,7 @@
    [re-frame.core :as re-frame]
    [status-im.ui.components.react :as react]
    [status-im.i18n :as i18n]
+   [status-im.utils.utils :as utils]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.styles :as components.styles]
@@ -14,14 +15,29 @@
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]))
 
+(defn handle-delete [id]
+  (utils/show-confirmation (i18n/label :t/delete-mailserver-title)
+                           (i18n/label :t/delete-mailserver-are-you-sure)
+                           (i18n/label :t/delete-mailserver)
+                           #(re-frame/dispatch [:delete-mailserver id])))
+
 (defn connect-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:connect-wnode id])}
-   [react/view styles/connect-button-container
+   [react/view styles/button-container
     [react/view {:style               styles/connect-button
                  :accessibility-label :mailserver-connect-button}
-     [react/text {:style      styles/connect-button-label
+     [react/text {:style      styles/button-label
                   :uppercase? true}
       (i18n/label :t/connect)]]]])
+
+(defn delete-button [id]
+  [react/touchable-highlight {:on-press #(handle-delete id)}
+   [react/view styles/button-container
+    [react/view {:style               styles/delete-button
+                 :accessibility-label :mailserver-delete-button}
+     [react/text {:style      styles/button-label
+                  :uppercase? true}
+      (i18n/label :t/delete)]]]])
 
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
@@ -33,6 +49,7 @@
 
 (views/defview edit-mailserver []
   (views/letsubs [manage-mailserver [:get-manage-mailserver]
+                  connected?        [:get-connected-mailserver]
                   is-valid?         [:manage-mailserver-valid?]]
     (let [url  (get-in manage-mailserver [:url :value])
           id   (get-in manage-mailserver [:id :value])
@@ -59,7 +76,11 @@
             :container       styles/input-container
             :default-value   url
             :on-change-text  #(re-frame/dispatch [:mailserver-set-input :url %])}]
-          (when id [connect-button id])]]
+          (when (and id
+                     (not connected?))
+            [react/view
+             [connect-button id]
+             [delete-button id]])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
          [components.common/bottom-button

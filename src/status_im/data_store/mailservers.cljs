@@ -9,7 +9,7 @@
                                            (core/get-all :mailserver)
                                            (core/all-clj :mailserver)))))
 
-(defn save-mailserver-tx
+(defn save-tx
   "Returns tx function for saving a mailserver"
   [{:keys [id] :as mailserver}]
   (fn [realm]
@@ -17,3 +17,10 @@
                  :mailserver
                  mailserver
                  (core/exists? realm :mailserver :id id))))
+
+(defn delete-tx
+  "Returns tx function for deleting a mailserver"
+  [id]
+  (fn [realm]
+    (core/delete realm
+                 (core/get-by-field realm :mailserver :id id))))

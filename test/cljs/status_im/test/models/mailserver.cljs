@@ -1,6 +1,6 @@
-(ns status-im.test.offline-messaging-settings.events
+(ns status-im.test.models.mailserver
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.ui.screens.offline-messaging-settings.edit-mailserver.events :as events]))
+            [status-im.models.mailserver :as model]))
 
 (def enode-id "1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40")
 (def password "password")
@@ -14,20 +14,20 @@
     (testing "correct name"
       (is (= {:db {:mailservers/manage {:name {:value "value"
                                                :error false}}}}
-             (events/set-input :name "value" {}))))
+             (model/set-input :name "value" {}))))
     (testing "blank name"
       (is (= {:db {:mailservers/manage {:name {:value ""
                                                :error true}}}}
-             (events/set-input :name "" {})))))
+             (model/set-input :name "" {})))))
   (testing "it validates enodes url"
     (testing "correct url"
       (is (= {:db {:mailservers/manage {:url {:value valid-enode-url
                                               :error false}}}}
-             (events/set-input :url valid-enode-url {}))))
+             (model/set-input :url valid-enode-url {}))))
     (testing "broken url"
       (is (= {:db {:mailservers/manage {:url {:value "broken"
                                               :error true}}}}
-             (events/set-input :url "broken" {}))))))
+             (model/set-input :url "broken" {}))))))
 
 (deftest edit-mailserver
   (let [db {:network "mainnet_rpc"
@@ -40,7 +40,7 @@
                             :name    "name"}}}}
         cofx {:db db}]
     (testing "when no id is given"
-      (let [actual (events/edit-mailserver nil cofx)]
+      (let [actual (model/edit nil cofx)]
         (testing "it resets :mailserver/manage"
           (is (= {:id   {:value nil
                          :error false}
@@ -54,7 +54,7 @@
                  (-> actual :dispatch))))))
     (testing "when an id is given"
       (testing "when the wnode is in the list"
-        (let [actual (events/edit-mailserver "a" cofx)]
+        (let [actual (model/edit "a" cofx)]
           (testing "it populates the fields with the correct values"
             (is (= {:id   {:value "a"
                            :error false}
@@ -67,7 +67,7 @@
             (is (= [:navigate-to :edit-mailserver]
                    (-> actual :dispatch))))))
       (testing "when the wnode is not in the list"
-        (let [actual (events/edit-mailserver "not-existing" cofx)]
+        (let [actual (model/edit "not-existing" cofx)]
           (testing "it populates the fields with the correct values"
             (is (= {:id   {:value nil
                            :error false}
@@ -80,6 +80,66 @@
             (is (= [:navigate-to :edit-mailserver]
                    (-> actual :dispatch)))))))))
 
+(deftest connected-mailserver
+  (testing "it returns true when set in settings"
+    (let [cofx {:db {:network "mainnet_rpc"
+                     :account/account {:settings {:wnode {:mainnet "a"}}
+                                       :networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/wnodes {:mainnet {"a" {:id      "a"
+                                                   :name    "old-name"
+                                                   :address "enode://old-id:old-password@url:port"}}}}}]
+      (is (model/connected? "a" cofx)))))
+
+(deftest fetch-mailserver
+  (testing "it fetches the mailserver from the db"
+    (let [cofx {:db {:network "mainnet_rpc"
+                     :account/account {:networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/wnodes {:mainnet {"a" {:id      "a"
+                                                   :name    "old-name"
+                                                   :address "enode://old-id:old-password@url:port"}}}}}]
+      (is (model/fetch "a" cofx)))))
+
+(deftest delete-mailserver
+  (testing "the user is not connected to the mailserver"
+    (let [cofx {:random-id "random-id"
+                :db {:network "mainnet_rpc"
+                     :account/account {:networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/wnodes {:mainnet {"a" {:id           "a"
+                                                   :name         "old-name"
+                                                   :user-defined true
+                                                   :address      "enode://old-id:old-password@url:port"}}}}}
+          actual (model/delete "a" cofx)]
+      (testing "it removes the mailserver from the list"
+        (is (not (model/fetch "a" actual))))
+      (testing "it stores it in the db"
+        (is (= 1 (count (:data-store/tx actual)))))))
+  (testing "the mailserver is not user-defined"
+    (let [cofx {:random-id "random-id"
+                :db {:network "mainnet_rpc"
+                     :account/account {:networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/wnodes {:mainnet {"a" {:id      "a"
+                                                   :name    "old-name"
+                                                   :address "enode://old-id:old-password@url:port"}}}}}
+          actual (model/delete "a" cofx)]
+      (testing "it does not delete the mailserver"
+        (is (nil? actual)))))
+  (testing "the user is connected to the mailserver"
+    (let [cofx {:random-id "random-id"
+                :db {:network "mainnet_rpc"
+                     :account/account {:settings {:wnode {:mainnet "a"}}
+                                       :networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/wnodes {:mainnet {"a" {:id      "a"
+                                                   :name    "old-name"
+                                                   :address "enode://old-id:old-password@url:port"}}}}}
+          actual (model/delete "a" cofx)]
+      (testing "it does not remove the mailserver from the list"
+        (is (nil? actual))))))
+
 (deftest upsert-mailserver
   (testing "new mailserver"
     (let [cofx {:random-id "random-id"
@@ -90,7 +150,7 @@
                                           :url  {:value "enode://test-id:test-password@url:port"}}
 
                      :inbox/wnodes {}}}
-          actual (events/upsert-mailserver cofx nil)]
+          actual (model/upsert cofx)]
 
       (testing "it adds the enode to inbox/wnodes"
         (is (= {:mainnet {"randomid" {:password "test-password"
@@ -116,7 +176,7 @@
                      :inbox/wnodes {:mainnet {"a" {:id      "a"
                                                    :name    "old-name"
                                                    :address "enode://old-id:old-password@url:port"}}}}}
-          actual (events/upsert-mailserver cofx nil)]
+          actual (model/upsert cofx)]
       (testing "it navigates back"
         (is (= [:navigate-back]
                (:dispatch actual))))
@@ -130,9 +190,9 @@
       (testing "it stores it in the db"
         (is (= 1 (count (:data-store/tx actual)))))
       (testing "it logs the user out if connected to the current mailserver"
-        (let [actual (events/upsert-mailserver (assoc-in cofx
-                                                         [:db :account/account :settings]
-                                                         {:wnode
-                                                          {:mainnet "a"}}) nil)]
+        (let [actual (model/upsert (assoc-in cofx
+                                             [:db :account/account :settings]
+                                             {:wnode
+                                              {:mainnet "a"}}))]
           (is (= [:logout]
                  (-> actual :data-store/tx first :success-event))))))))

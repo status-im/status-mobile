@@ -597,6 +597,9 @@
    ;; TODO(dmitryn): come up with better description/naming. Suggested namings: Mailbox and Master Node
    :existing-wnodes                      "Existing mailservers"
    :add-mailserver                       "Add Mailserver"
+   :delete-mailserver-title              "Delete mailserver"
+   :delete-mailserver-are-you-sure       "Are you sure you want to delete this mailserver?"
+   :delete-mailserver                    "Delete mailserver"
    :mailserver-address                   "Mailserver address"
    :specify-mailserver-address           "Specify a mailserver address"
    :add-json-file                        "Add a JSON file"

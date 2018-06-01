@@ -30,30 +30,28 @@
    :margin-horizontal 12
    :margin-vertical   15})
 
-(def connect-button-container
+(def button-container
   {:margin-top        8
    :margin-bottom     16
    :margin-horizontal 16})
 
-(defstyle connect-button
+(def button
   {:height           52
    :align-items      :center
    :justify-content  :center
-   :background-color colors/blue
    :border-radius    8
    :ios              {:opacity 0.9}})
 
-(defstyle connect-button-label
+(defstyle connect-button
+  (assoc button
+         :background-color colors/blue))
+
+(defstyle delete-button
+  (assoc button
+         :background-color colors/red))
+
+(defstyle button-label
   {:color   colors/white
    :ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 14}})
-
-(defstyle connect-button-description
-  {:color   colors/gray
-   :ios     {:margin-top     8
-             :height         20
-             :font-size      14
-             :letter-spacing -0.2}
-   :android {:margin-top 12
-             :font-size  12}})
