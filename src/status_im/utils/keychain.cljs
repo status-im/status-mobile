@@ -19,7 +19,7 @@
                                                       :callback       resolve}])))))
       (.catch
        (fn [err]
-         (log/debug err)))))
+         (log/error err)))))
 
 (defn encryption-key-reset []
   (log/debug "Resetting key...")
@@ -42,7 +42,7 @@
                                                    (encryption-key-fetch {:resolve callback})))
                                                 (.catch
                                                  (fn [err]
-                                                   (log/debug err))))))
+                                                   (log/error err))))))
                                          (.catch
                                           (fn [err]
-                                            (log/debug err)))))}))
+                                            (log/error err)))))}))

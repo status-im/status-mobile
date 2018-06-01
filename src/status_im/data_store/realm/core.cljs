@@ -75,7 +75,8 @@
 (defn migrate-realm
   "Migrate realm if is a compatible version or reset the database"
   [file-name schemas encryption-key]
-  (let [encrypted-version (encrypted-realm-version file-name encryption-key)
+  (let [encrypted-version (and encryption-key
+                               (encrypted-realm-version file-name encryption-key))
         ;; If it's unencrypted reset schema
         unencrypted?      (and (not encrypted-version)
                                (unencrypted-realm? file-name))]
