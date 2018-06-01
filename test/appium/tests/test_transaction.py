@@ -1,6 +1,6 @@
 import pytest
 from selenium.common.exceptions import TimeoutException
-from tests import transaction_users, get_current_time, transaction_users_wallet, marks
+from tests import transaction_users, get_current_time, transaction_users_wallet, marks, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.web_views.base_web_view import BaseWebView
@@ -28,7 +28,7 @@ class TestTransaction(SingleDeviceTestCase):
         wallet_view.home_button.click()
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_with_user(recipient['username']).click()
-        chat_view.send_transaction_in_1_1_chat(transaction_amount, 'qwerty1234')
+        chat_view.send_transaction_in_1_1_chat(transaction_amount, common_password)
         send_transaction_view = chat_view.get_send_transaction_view()
         send_transaction_view.back_button.click()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], transaction_amount)

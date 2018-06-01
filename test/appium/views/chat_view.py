@@ -281,14 +281,18 @@ class ChatView(BaseView):
                 self.element_by_text(chat_name).is_element_present():
             errors.append('Chat was not deleted')
 
-    def send_transaction_in_1_1_chat(self, amount, password):
+    def send_transaction_in_1_1_chat(self, amount, password, wallet_set_up=False):
         self.commands_button.click()
         self.send_command.click()
         self.send_as_keyevent(amount)
-        self.send_message_button.click()
-
         send_transaction_view = self.get_send_transaction_view()
-        self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+        if wallet_set_up:
+            wallet_view = self.get_wallet_view()
+            self.send_message_button.click_until_presence_of_element(wallet_view.sign_in_phrase)
+            wallet_view.done_button.click()
+            wallet_view.yes_button.click()
+        else:
+            self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
         send_transaction_view.sign_transaction(password)
         send_transaction_view.find_full_text(amount)
         try:

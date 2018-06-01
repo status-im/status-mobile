@@ -159,3 +159,5 @@ group_chat_users['C_USER']['passphrase'] = "you salmon ticket antique spray pant
 group_chat_users['C_USER']['username'] = "Optimistic Gigantic Bagworm"
 group_chat_users['C_USER']['public_key'] = "0x04dcdb5cac266328c41bdb0e33a266544a4ac1f2655a68170e5fe4452baff1a413a1d40" \
                                            "3dba7e295445505ee55ea03ee99cb7d26bee05e6b486a9bdaaf6be73a0b"
+
+common_password = 'qwerty'

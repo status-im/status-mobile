@@ -1,7 +1,7 @@
 import time
 import base64
 import zbarlight
-from tests import info
+from tests import info, common_password
 from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from PIL import Image
@@ -307,7 +307,7 @@ class BaseView(object):
             except (NoSuchElementException, TimeoutException):
                 counter += 1
 
-    def relogin(self, password='qwerty1234'):
+    def relogin(self, password=common_password):
         self.get_back_to_home_view()
         profile_view = self.profile_button.click()
         profile_view.logout_button.click()

@@ -164,7 +164,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.send_message_button.click()
         transaction_amount = '0.00001'
         chat_view.request_transaction_in_1_1_chat(transaction_amount)
-        chat_view.send_transaction_in_1_1_chat(transaction_amount, sender['password'])
+        chat_view.send_transaction_in_1_1_chat(transaction_amount, sender['password'], wallet_set_up=True)
         chat_view.delete_chat(recipient['username'], self.errors)
         if home_view.get_chat_with_user(recipient['username']).is_element_present(5):
             pytest.fail('Deleted chat is shown on Home screen')

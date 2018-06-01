@@ -288,7 +288,7 @@ class TestOfflineMessages(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message_text)
         chat_1.send_message_button.click()
         sign_in_2.click_account_by_position(0)
-        sign_in_2.sign_in('qwerty1234')
+        sign_in_2.sign_in()
         sign_in_2.home_button.wait_for_visibility_of_element()
         if not home_2.offline_label.is_element_displayed():
             self.errors.append('Offline label is not shown on Home view while being offline')

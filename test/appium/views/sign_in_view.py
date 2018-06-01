@@ -1,4 +1,4 @@
-from tests import get_current_time
+from tests import get_current_time, common_password
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
@@ -98,7 +98,7 @@ class SignInView(BaseView):
         self.name_input = NameInput(self.driver)
         self.do_not_share = DonNotShare(self.driver)
 
-    def create_user(self, username: str = '', password='qwerty'):
+    def create_user(self, username: str = '', password=common_password):
         self.create_account_button.click()
         self.password_input.set_value(password)
         self.next_button.click()
@@ -124,7 +124,7 @@ class SignInView(BaseView):
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
 
-    def sign_in(self, password):
+    def sign_in(self, password=common_password):
         self.password_input.set_value(password)
         self.sign_in_button.click()
 
