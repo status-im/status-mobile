@@ -4,7 +4,7 @@ import re
 import subprocess
 import asyncio
 
-from support.message_reliability_chart import create_chart_one_to_one_chat, create_chart_public_chat
+from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
 from support.network_api import NetworkApi
 from os import environ
 from appium import webdriver
@@ -227,6 +227,7 @@ class MessageReliabilityTestCase(MultipleDeviceTestCase):
 
     def teardown_method(self, method):
         if self.one_to_one_chat_data:
-            create_chart_one_to_one_chat(self.one_to_one_chat_data)
+            create_one_to_one_chat_report(self.one_to_one_chat_data)
         if self.public_chat_data:
-            create_chart_public_chat(self.public_chat_data)
+            create_public_chat_report(self.public_chat_data)
+        super(MultipleDeviceTestCase, self).teardown_method(method)

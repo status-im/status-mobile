@@ -1,4 +1,9 @@
-def create_chart_one_to_one_chat(one_to_one_chat_data: dict):
+def write_data_to_file(sent: int, received: int):
+    with open('messages.txt', 'a') as f:
+        f.write("['sent': %s, 'received': %s]" % (sent, received))
+
+
+def create_one_to_one_chat_report(one_to_one_chat_data: dict):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -13,7 +18,10 @@ def create_chart_one_to_one_chat(one_to_one_chat_data: dict):
     time_2 = sorted(user_b['message_time'])
     ax.plot([i / 60 for i in time_2], [user_b['message_time'][i] for i in time_2],
             'o-', color='#f61e06', label='user_b')
+
     sent_messages = user_a['sent_messages'] + user_b['sent_messages']
+    received_messages = len(user_a['message_time']) + len(user_b['message_time'])
+
     title = "User A: sent messages: {}, received messages: {}" \
             "\nUser B: sent messages: {}, received messages: {}".format(user_a['sent_messages'],
                                                                         len(user_a['message_time']),
@@ -22,14 +30,17 @@ def create_chart_one_to_one_chat(one_to_one_chat_data: dict):
     if sent_messages:
         title += "\nReceived messages: {}%".format(
             round((len(user_a['message_time']) + len(user_b['message_time'])) / sent_messages * 100, ndigits=2))
+
     plt.title(title)
     plt.xlabel('chat session duration, minutes')
     plt.ylabel('time to receive a message, seconds')
     plt.legend()
     fig.savefig('chart.png')
 
+    write_data_to_file(sent=sent_messages, received=received_messages)
 
-def create_chart_public_chat(public_chat_data: dict):
+
+def create_public_chat_report(public_chat_data: dict):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -46,3 +57,5 @@ def create_chart_public_chat(public_chat_data: dict):
     plt.ylabel('time to receive a message, seconds')
     plt.legend()
     fig.savefig('chart.png')
+
+    write_data_to_file(sent=sent_messages, received=len(message_time))
