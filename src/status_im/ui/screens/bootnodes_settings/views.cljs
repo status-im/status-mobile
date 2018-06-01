@@ -13,12 +13,13 @@
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.bootnodes-settings.styles :as styles]))
 
-(defn navigate-to-add-bootnode []
-  (re-frame/dispatch [:edit-bootnode]))
+(defn navigate-to-add-bootnode [id]
+  (re-frame/dispatch [:edit-bootnode id]))
 
 (defn render-row [{:keys [name id]}]
-  [react/view
-   {:accessibility-label :bootnode-item}
+  [react/touchable-highlight
+   {:on-press            #(navigate-to-add-bootnode id)
+    :accessibility-label :bootnode-item}
    [react/view styles/bootnode-item
     [react/view styles/bootnode-item-inner
      [react/text {:style styles/bootnode-item-name-text}
@@ -33,7 +34,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/bootnodes-settings)]
       [toolbar/actions
-       [(toolbar.actions/add false navigate-to-add-bootnode)]]]
+       [(toolbar.actions/add false #(navigate-to-add-bootnode nil))]]]
      [react/view styles/switch-container
       [profile.components/settings-switch-item
        {:label-kw  :t/bootnodes-enabled

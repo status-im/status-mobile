@@ -8,7 +8,7 @@
  :save-new-bootnode
  [(re-frame/inject-cofx :random-id)]
  (fn [cofx _]
-   (models.bootnode/save cofx)))
+   (models.bootnode/upsert cofx)))
 
 (handlers/register-handler-fx
  :bootnode-set-input
@@ -19,6 +19,12 @@
  :edit-bootnode
  (fn [cofx [_ bootnode-id]]
    (models.bootnode/edit bootnode-id cofx)))
+
+(handlers/register-handler-fx
+ :delete-bootnode
+ (fn [cofx [_ bootnode-id]]
+   (assoc (models.bootnode/delete bootnode-id cofx)
+          :dispatch [:navigate-back])))
 
 (handlers/register-handler-fx
  :set-bootnode-from-qr

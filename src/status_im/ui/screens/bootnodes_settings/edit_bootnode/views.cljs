@@ -4,6 +4,7 @@
    [re-frame.core :as re-frame]
    [status-im.ui.components.react :as react]
    [status-im.i18n :as i18n]
+   [status-im.utils.utils :as utils]
    [status-im.ui.components.styles :as components.styles]
    [status-im.ui.components.common.common :as components.common]
    [status-im.ui.components.colors :as colors]
@@ -12,6 +13,21 @@
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]))
+
+(defn handle-delete [id]
+  (utils/show-confirmation (i18n/label :t/delete-bootnode-title)
+                           (i18n/label :t/delete-bootnode-are-you-sure)
+                           (i18n/label :t/delete-bootnode)
+                           #(re-frame/dispatch [:delete-bootnode id])))
+
+(defn delete-button [id]
+  [react/touchable-highlight {:on-press #(handle-delete id)}
+   [react/view styles/button-container
+    [react/view {:style               styles/delete-button
+                 :accessibility-label :bootnode-delete-button}
+     [react/text {:style      styles/button-label
+                  :uppercase? true}
+      (i18n/label :t/delete)]]]])
 
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
@@ -25,12 +41,13 @@
   (views/letsubs [manage-bootnode [:get-manage-bootnode]
                   is-valid?       [:manage-bootnode-valid?]]
     (let [url  (get-in manage-bootnode [:url :value])
+          id   (get-in manage-bootnode [:id :value])
           name (get-in manage-bootnode [:name :value])]
 
       [react/view components.styles/flex
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label :t/add-bootnode)]
+        [toolbar/simple-toolbar (i18n/label (if id :t/bootnode-details :t/add-bootnode))]
         [react/scroll-view
          [react/view styles/edit-bootnode-view
           [text-input/text-input-with-label
@@ -48,7 +65,9 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   url
-            :on-change-text  #(re-frame/dispatch [:bootnode-set-input :url %])}]]]
+            :on-change-text  #(re-frame/dispatch [:bootnode-set-input :url %])}]
+          (when id
+            [delete-button id])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
          [components.common/bottom-button

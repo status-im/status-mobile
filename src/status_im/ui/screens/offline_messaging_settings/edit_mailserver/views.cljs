@@ -57,7 +57,7 @@
       [react/view components.styles/flex
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label :t/add-mailserver)]
+        [toolbar/simple-toolbar (i18n/label (if id :t/mailserver-details :t/add-mailserver))]
         [react/scroll-view
          [react/view styles/edit-mailserver-view
           [text-input/text-input-with-label
