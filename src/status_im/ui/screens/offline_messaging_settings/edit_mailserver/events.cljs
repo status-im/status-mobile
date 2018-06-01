@@ -27,6 +27,6 @@
 
 (handlers/register-handler-fx
  :set-mailserver-from-qr
- (fn [cofx [_ _ contact-identity]]
-   (assoc (models.mailserver/set-input :url contact-identity cofx)
+ (fn [cofx [_ _ url]]
+   (assoc (models.mailserver/set-input :url url cofx)
           :dispatch [:navigate-back])))

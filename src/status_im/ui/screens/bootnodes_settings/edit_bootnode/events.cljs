@@ -2,50 +2,26 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.accounts.utils :as accounts.utils]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.types :as types]
-            [status-im.utils.inbox :as utils.inbox]))
-
-(defn- new-bootnode [id bootnode-name address chain]
-  {:address address
-   :chain   chain
-   :id      (string/replace id "-" "")
-   :name    bootnode-name})
-
-(defn save-new-bootnode [{{:bootnodes/keys [manage] :account/keys [account] :as db} :db :as cofx} _]
-  (let [{:keys [name url]} manage
-        network            (:network db)
-        bootnode           (new-bootnode
-                            (:random-id cofx)
-                            (:value name)
-                            (:value url)
-                            network)
-        new-bootnodes      (assoc-in (:bootnodes account) [network (:id bootnode)] bootnode)]
-
-    (handlers-macro/merge-fx cofx
-                             {:db       (dissoc db :bootnodes/manage)
-                              :dispatch [:navigate-back]}
-                             (accounts.utils/account-update {:bootnodes new-bootnodes}))))
+            [status-im.models.bootnode :as models.bootnode]))
 
 (handlers/register-handler-fx
  :save-new-bootnode
  [(re-frame/inject-cofx :random-id)]
- save-new-bootnode)
+ (fn [cofx _]
+   (models.bootnode/save cofx)))
 
 (handlers/register-handler-fx
  :bootnode-set-input
- (fn [{db :db} [_ input-key value]]
-   {:db (update db :bootnodes/manage assoc input-key {:value value
-                                                      :error (if (= input-key :name)
-                                                               (string/blank? value)
-                                                               (not (utils.inbox/valid-enode-address? value)))})}))
+ (fn [cofx [_ input-key value]]
+   (models.bootnode/set-input input-key value cofx)))
 
 (handlers/register-handler-fx
  :edit-bootnode
- (fn [{db :db} _]
-   {:db       (update-in db [:bootnodes/manage] assoc
-                         :name  {:error true}
-                         :url   {:error true})
-    :dispatch [:navigate-to :edit-bootnode]}))
+ (fn [cofx [_ bootnode-id]]
+   (models.bootnode/edit bootnode-id cofx)))
+
+(handlers/register-handler-fx
+ :set-bootnode-from-qr
+ (fn [cofx [_ _ url]]
+   (assoc (models.bootnode/set-input :url url cofx)
+          :dispatch [:navigate-back])))

@@ -11,6 +11,7 @@
             [status-im.test.profile.events]
             [status-im.test.bots.events]
             [status-im.test.models.mailserver]
+            [status-im.test.models.bootnode]
             [status-im.test.transport.core]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
@@ -36,7 +37,6 @@
             [status-im.test.utils.mixpanel]
             [status-im.test.utils.prices]
             [status-im.test.ui.screens.network-settings.edit-network.events]
-            [status-im.test.ui.screens.bootnodes-settings.edit-bootnode.events]
             [status-im.test.ui.screens.accounts.login.events]))
 
 (enable-console-print!)
@@ -58,6 +58,7 @@
  'status-im.test.profile.events
  'status-im.test.data-store.realm.core
  'status-im.test.models.mailserver
+ 'status-im.test.models.bootnode
  'status-im.test.bots.events
  'status-im.test.transport.core
  'status-im.test.wallet.subs
@@ -84,5 +85,4 @@
  'status-im.test.utils.mixpanel
  'status-im.test.utils.prices
  'status-im.test.ui.screens.network-settings.edit-network.events
- 'status-im.test.ui.screens.bootnodes-settings.edit-bootnode.events
  'status-im.test.ui.screens.accounts.login.events)
