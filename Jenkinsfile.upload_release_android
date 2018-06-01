@@ -59,6 +59,8 @@ timeout(90) {
         }
 
         stage('Build (Android)') {
+          sh 'echo "Updating build number"'
+          sh './scripts/build_no.sh --tag'
           sh 'cd android && ./gradlew assembleRelease -PreleaseVersion=' + version
         }
 
