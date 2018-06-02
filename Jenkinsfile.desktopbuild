@@ -157,6 +157,7 @@ timeout(90) {
         sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
         sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
         sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
+        sh ('rm -rf ' + packageFolder +'/StatusImAppImage/StatusIm.AppImage')
         sh ('cp -f ./StatusIm-x86_64.AppImage ' + packageFolder + '/StatusImAppImage/StatusIm.AppImage')
         
         sh ('cd ' + packageFolder + ' && rm -f StatusImAppImage.zip && zip -r StatusImAppImage.zip StatusImAppImage')
