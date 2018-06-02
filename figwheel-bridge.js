@@ -5,7 +5,7 @@
  */
 
 var CLOSURE_UNCOMPILED_DEFINES = null;
-var debugEnabled = false;
+var debugEnabled = true;
 
 var config = {
     basePath: "target/",
@@ -47,7 +47,7 @@ function formatCompileError(msg) {
     return errorStr;
 }
 
-/* This is simply demonstrating that we can receive and react to 
+/* This is simply demonstrating that we can receive and react to
  * arbitrary messages from Figwheel this will enable creating a nicer
  * feedback system in the Figwheel top level React component.
  */
@@ -103,27 +103,35 @@ var isChrome = function () {
     return typeof importScripts === "function"
 };
 
-function asyncImportScripts(url, success, error) {
-    logDebug('(asyncImportScripts) Importing: ' + url);
-    asyncImportChain =
-	asyncImportChain
-	.then(function (v) {return fetch(url);})
-        .then(function (response) {
-	    if(response.ok) 
-		return response.text();
-	    throw new Error("Failed to Fetch: " + url + " - Perhaps your project was cleaned and you haven't recompiled?")
-        })
-        .then(function (responseText) {
-	    evaluate(responseText);
-	    fireEvalListenters(url);
-            success();
-	    return true;
-        })
-        .catch(function (e) {
-            console.error(e);
-            error();
-	    return true;
-        });
+async function getUrlText(url) {
+    const text = await fetch(url).then(response => {
+      if(!response.ok) {
+         throw new Error("Failed to Fetch: " + url + " - Perhaps your project was cleaned and you haven't recompiled?");
+      }
+      return response.text()
+    });
+    return text;
+}
+
+var ATTEMPTS_COUNT = 3;
+async function asyncImportScripts(url, success, error) {
+
+    var attempt = 0;
+    var text = await getUrlText(url);
+
+    while(attempt < ATTEMPTS_COUNT && text.length === 0)
+    {
+        text = await getUrlText(url);
+        ++attempt;
+    }
+
+    if(!text || 0 === text.length) {
+      console.log("Can't fetch file: ", url)
+      return;
+    }
+    evaluate(text);
+    fireEvalListenters(url);
+    success();
 }
 
 function syncImportScripts(url, success, error) {
@@ -147,7 +155,7 @@ function importJs(src, success, error) {
     if (isChrome()) {
         syncImportScripts(src, success, error);
     } else {
-        asyncImportScripts(src, success, error);
+      asyncImportChain = asyncImportChain.then(function (v) {return asyncImportScripts(src, success, error);})
     }
 }
 
