@@ -146,8 +146,8 @@ timeout(90) {
 
         sh ('cp ./desktop/bin/StatusIm ' + packageFolder)
         sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder)
-        sh ('cp -f ' + packageFolder +'/StatusImAppImage/default.png '  + packageFolder)
-        sh ('chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage')
+        sh ('cp -f ' + packageFolder + '/StatusImAppImage/default.png '  + packageFolder)
+        sh ('chmod a+x ' + packageFolder + ' ./linuxdeployqt-continuous-x86_64.AppImage')
 
         sh 'rm -f Application-x86_64.AppImage'
         sh ('. /opt/qt59/bin/qt59-env.sh && cd ' + packageFolder + ' && ./linuxdeployqt-continuous-x86_64.AppImage ./StatusIm -always-overwrite -verbose=2 -appimage -no-strip -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
