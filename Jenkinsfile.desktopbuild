@@ -106,14 +106,7 @@ timeout(90) {
       stage('Git & Dependencies') {
         slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build started. ' + env.BUILD_URL
         
-        environment {
-          QTDIR="/opt/qt59"
-          PATH="/opt/qt59/bin:$PATH"
-          PKG_CONFIG_PATH="/opt/qt59/lib/pkgconfig:$PKG_CONFIG_PATH"
-        }
         sh ('echo ' + scriptPath)
-
-        sh 'printenv'
 
         checkout scm
         sh 'git rebase origin/desktop'
@@ -136,7 +129,7 @@ timeout(90) {
 
       stage('Build Linux binaries') {
         sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
-        sh '. /opt/qt59/bin/qt59-env.sh && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
+        sh 'export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
          -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
       }
 
@@ -144,8 +137,8 @@ timeout(90) {
         sh ('rm -rf ' + packageFolder + '/AppDir && mkdir ' + packageFolder + '/AppDir')
         sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
         sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
-        sh ('cp /opt/qt59/lib/libQt*.so ' + packageFolder+ '/AppDir/usr/lib/')
-        sh ('mkdir ' + packageFolder + '/AppDir/usr/qml && cp -r /opt/qt59/qml/Qt* ' + packageFolder + '/AppDir/usr/qml/')
+        //sh ('cp /opt/qt59/lib/libQt*.so ' + packageFolder+ '/AppDir/usr/lib/')
+        //sh ('mkdir ' + packageFolder + '/AppDir/usr/qml && cp -r /opt/qt59/qml/Qt* ' + packageFolder + '/AppDir/usr/qml/')
 
         sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
         //sh ('cp -f ' + packageFolder + '/StatusImAppImage/default.png '  + packageFolder)
@@ -155,9 +148,9 @@ timeout(90) {
         sh 'rm -f StatusIm-x86_64.AppImage'
         
         sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
-        sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/opt/qt59/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
+        sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
         sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
-        sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/opt/qt59/bin/qmake')
+        sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
         sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
 
         sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
