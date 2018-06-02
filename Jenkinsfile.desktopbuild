@@ -145,7 +145,7 @@ timeout(90) {
         sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
         sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
         sh ('cp /opt/qt59/lib/libQt*.so ' + packageFolder+ '/AppDir/usr/lib/')
-        sh ('cp -r /opt/qt59/qml/Qt* ' + packageFolder+ '/AppDir/usr/qml/')
+        sh ('mkdir ' + packageFolder + '/AppDir/usr/qml && cp -r /opt/qt59/qml/Qt* ' + packageFolder + '/AppDir/usr/qml/')
 
         sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
         //sh ('cp -f ' + packageFolder + '/StatusImAppImage/default.png '  + packageFolder)
