@@ -134,6 +134,9 @@ timeout(90) {
       }
 
       stage('Prepare and create Linux AppImage') {
+        sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
+        sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
+
         sh ('rm -rf ' + packageFolder + '/AppDir && mkdir ' + packageFolder + '/AppDir')
         sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
         sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
@@ -150,12 +153,16 @@ timeout(90) {
         sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
         sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
         sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
+
+        sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/AppDir/usr/bin')
+        sh ('cp -rf ' + packageFolder + '/StatusImAppImage/* ' + packageFolder +'/AppDir/usr/bin')
+        sh ('cp .env ' + packageFolder +'/AppDir')
+
         sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
         sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
 
-        sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
-        sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
         sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
+        
         sh ('rm -rf ' + packageFolder +'/StatusImAppImage/StatusIm.AppImage')
         sh ('cp -f ./StatusIm-x86_64.AppImage ' + packageFolder + '/StatusImAppImage/StatusIm.AppImage')
         
