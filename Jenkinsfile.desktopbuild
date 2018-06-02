@@ -151,7 +151,7 @@ timeout(90) {
 
         sh 'rm -f Application-x86_64.AppImage'
         sh 'rm -f StatusIm-x86_64.AppImage'
-        sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
+        sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
         sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage')
 
         sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
