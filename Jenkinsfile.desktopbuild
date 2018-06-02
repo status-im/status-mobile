@@ -141,19 +141,26 @@ timeout(90) {
       }
 
       stage('Prepare and create Linux AppImage') {
-        sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
-        sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
+        sh ('rm -rf ' + packageFolder + '/AppDir && mkdir ' + packageFolder + '/AppDir')
+        sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
+        sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
 
-        sh ('cp ./desktop/bin/StatusIm ' + packageFolder)
-        sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder)
-        sh ('cp -f ' + packageFolder + '/StatusImAppImage/default.png '  + packageFolder)
-        sh ('chmod a+x ' + packageFolder + '/linuxdeployqt-continuous-x86_64.AppImage')
+        sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
+        //sh ('cp -f ' + packageFolder + '/StatusImAppImage/default.png '  + packageFolder)
+        sh ('chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage')
 
         sh 'rm -f Application-x86_64.AppImage'
-        sh ('. /opt/qt59/bin/qt59-env.sh && cd ' + packageFolder + ' && ./linuxdeployqt-continuous-x86_64.AppImage ./StatusIm -always-overwrite -verbose=2 -appimage -no-strip -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
+        sh 'rm -f StatusIm-x86_64.AppImage'
+        sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -always-overwrite -verbose=1 -appimage -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
 
+
+        sh ('rm -rf ' + packageFolder + './StatusImAppImage')
+        sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
+        sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
+        sh 'cd ' + packageFolder + ' && cp -f ./StatusIm-x86_64.AppImage ./StatusImAppImage/StatusIm.AppImage'
+        
         sh 'rm -f StatusImAppImage.zip'
-        sh 'cd ' + packageFolder + ' && cp  ./Application-x86_64.AppImage /StatusImAppImage/StatusIm.AppImage'
+        
         sh ('cd ' + packageFolder + ' && zip -r StatusImAppImage.zip StatusImAppImage')
       }
 
