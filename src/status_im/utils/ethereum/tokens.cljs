@@ -373,7 +373,11 @@
                    {:symbol   :ROL
                     :name     "Dice"
                     :address  "0x2e071D2966Aa7D8dECB1005885bA1977D6038A65"
-                    :decimals 16}])
+                    :decimals 16}
+                   {:symbol   :SPANK
+                    :name     "SpankChain"
+                    :address  "0x42d6622deCe394b54999Fbd73D108123806f6a18"
+                    :decimals 18}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
