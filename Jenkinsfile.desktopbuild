@@ -154,14 +154,12 @@ timeout(90) {
         sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=1 -no-translations -bundle-non-qt-libs -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
         sh ('. /opt/qt59/bin/qt59-env.sh && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=1 -appimage -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
 
-        sh ('rm -rf ' + packageFolder + './StatusImAppImage')
+        sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
         sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
         sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
-        sh 'cd ' + packageFolder + ' && cp -f ./StatusIm-x86_64.AppImage ./StatusImAppImage/StatusIm.AppImage'
+        sh ('cp -f ./StatusIm-x86_64.AppImage ' + packageFolder + '/StatusImAppImage/StatusIm.AppImage')
         
-        sh 'rm -f StatusImAppImage.zip'
-        
-        sh ('cd ' + packageFolder + ' && zip -r StatusImAppImage.zip StatusImAppImage')
+        sh ('cd ' + packageFolder + ' && rm -f StatusImAppImage.zip && zip -r StatusImAppImage.zip StatusImAppImage')
       }
 
       stage('Archive built artifact') {
