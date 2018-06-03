@@ -40,8 +40,11 @@
 (defn login [address password callback]
   (module-interface/-login rns-module address password callback))
 
-(defn approve-sign-requests [hashes password callback]
-  (module-interface/-approve-sign-requests rns-module hashes password callback))
+(defn approve-sign-request [id password callback]
+  (module-interface/-approve-sign-request rns-module id password callback))
+
+(defn approve-sign-request-with-args [id password gas gas-price callback]
+  (module-interface/-approve-sign-request-with-args rns-module id password gas gas-price callback))
 
 (defn discard-sign-request [id]
   (module-interface/-discard-sign-request rns-module id))

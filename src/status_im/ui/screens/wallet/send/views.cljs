@@ -92,30 +92,39 @@
       (i18n/label :t/transactions-sign-transaction)
       [vector-icons/icon :icons/forward {:color (if immediate-sign-enabled? :white :gray)}]]]))
 
-(defn handler [discard?]
-  (if discard?
-    #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-    act/default-handler))
-
-(defn- toolbar [discard? action title]
-  [toolbar/toolbar {:style wallet.styles/toolbar}
-   [toolbar/nav-button (action (handler discard?))]
-   [toolbar/content-title {:color :white} title]])
-
 (defn- max-fee [gas gas-price]
   (when (and gas gas-price)
     (money/wei->ether (.times gas gas-price))))
 
+(defn return-to-transaction [dapp-transaction?]
+  (if dapp-transaction?
+    (re-frame/dispatch [:navigate-to-modal :wallet-send-transaction-modal])
+    (act/default-handler)))
+
+(defn handler [discard? dapp-transaction?]
+  (if discard?
+    #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
+    #(return-to-transaction dapp-transaction?)))
+
+(defn- toolbar [discard? dapp-transaction? action title]
+  [toolbar/toolbar {:style wallet.styles/toolbar}
+   [toolbar/nav-button (action (handler discard? dapp-transaction?))]
+   [toolbar/content-title {:color :white} title]])
+
 (defview transaction-fee []
-  (letsubs [{:keys [amount symbol] :as transaction} [:wallet.send/transaction]
-            network [:get-current-account-network]
+  (letsubs [send-transaction            [:wallet.send/transaction]
+            unsigned-transaction        [:wallet.send/unsigned-transaction]
+            network                     [:get-current-account-network]
             {gas-edit       :gas
              gas-price-edit :gas-price} [:wallet/edit]]
-    (let [gas            (or (:value gas-edit) (:gas transaction))
+    (let [modal?         (:id send-transaction)
+          ;;TODO(goranjovic) - unify unsigned and regular transaction subs
+          {:keys [amount symbol] :as transaction} (if modal? unsigned-transaction send-transaction)
+          gas            (or (:value gas-edit) (:gas transaction))
           gas-price      (or (:value gas-price-edit) (:gas-price transaction))
           {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [wallet.components/simple-screen {:status-toolbar-type :modal-wallet}
-       [toolbar true act/close-white
+      [wallet.components/simple-screen {:status-bar-type :modal-wallet}
+       [toolbar false modal? act/close-white
         (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
         [react/view {:flex-direction :row}
@@ -170,7 +179,7 @@
                          :accessibility-label :reset-to-default-button}
           (i18n/label :t/reset-default)]
          [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details gas gas-price])
-                                                   (act/default-handler))
+                                                   (return-to-transaction modal?))
                          :accessibility-label :done-button
                          :disabled?           (or (:invalid? gas-edit)
                                                   (:invalid? gas-price-edit))}
@@ -178,8 +187,7 @@
 
 (defn- advanced-cartouche [{:keys [gas gas-price]} modal?]
   [react/view
-   [wallet.components/cartouche {:disabled? modal?
-                                 :on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
+   [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
                                                  (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
     (i18n/label :t/wallet-transaction-fee)
     [react/view {:style               styles/advanced-options-text-wrapper
@@ -209,7 +217,7 @@
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}
-     [toolbar from-chat? (if modal? act/close-white act/back-white)
+     [toolbar from-chat? false (if modal? act/close-white act/back-white)
       (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
@@ -264,14 +272,14 @@
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]
-        [toolbar false act/close-white
+        [toolbar false false act/close-white
          (i18n/label :t/send-transaction)]
         [react/text {:style styles/empty-text} (i18n/label :t/unsigned-transaction-expired)]]])))
 
 (defview sign-message-modal []
   (letsubs [{:keys [data in-progress?]} [:wallet.send/unsigned-transaction]]
     [wallet.components/simple-screen {:status-bar-type :modal-wallet}
-     [toolbar true act/close-white
+     [toolbar true false act/close-white
       (i18n/label :t/sign-message)]
      [react/view components.styles/flex
       [react/scroll-view
@@ -285,7 +293,7 @@
           nil]]]]
       [signing-buttons
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-       #(re-frame/dispatch [:wallet/sign-transaction-modal])
+       #(re-frame/dispatch [:wallet/sign-message-modal])
        :t/transactions-sign]
       [sign-panel true]
       (when in-progress?

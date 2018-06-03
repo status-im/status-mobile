@@ -51,8 +51,8 @@
                                                          (:id send-transaction))]
                       (merge send-transaction
                              unsigned-transaction
-                             {:gas       (or (:gas unsigned-transaction) (:gas send-transaction))
-                              :gas-price (or (:gas-price unsigned-transaction) (:gas-price send-transaction))}))))
+                             {:gas       (or (:gas send-transaction) (:gas unsigned-transaction))
+                              :gas-price (or (:gas-price send-transaction) (:gas-price unsigned-transaction))}))))
 
 (re-frame/reg-sub :wallet/edit
                   :<- [:wallet]

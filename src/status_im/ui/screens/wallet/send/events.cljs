@@ -15,15 +15,28 @@
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.constants :as constants]
-            [status-im.transport.utils :as transport.utils]))
+            [status-im.transport.utils :as transport.utils]
+            [taoensso.timbre :as log]))
 
 ;;;; FX
 
 (re-frame/reg-fx
  ::accept-transaction
  (fn [{:keys [masked-password id on-completed]}]
+  ;; unmasking the password as late as possible to avoid being exposed from app-db
+   (status/approve-sign-request id
+                                (security/unmask masked-password)
+                                on-completed)))
+
+(re-frame/reg-fx
+ ::accept-transaction-with-changed-gas
+ (fn [{:keys [masked-password id on-completed gas gas-price]}]
    ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (status/approve-sign-requests (list id) (security/unmask masked-password) on-completed)))
+   (status/approve-sign-request-with-args id
+                                          (security/unmask masked-password)
+                                          (money/to-fixed gas)
+                                          (money/to-fixed gas-price)
+                                          on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
   (.sendTransaction (.-eth web3)
@@ -67,7 +80,7 @@
   (or (and to (utils.hex/valid-hex? to)) (and data (not= data "0x"))))
 
 (defn dispatch-transaction-completed [result & [modal?]]
-  (re-frame/dispatch [::transaction-completed {:id (name (key result)) :response (second result)} modal?]))
+  (re-frame/dispatch [::transaction-completed {:id (:id result) :response result} modal?]))
 ;;;; Handlers
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
@@ -105,9 +118,8 @@
                                       :password        nil})
 
 (defn on-transactions-completed [raw-results]
-  (let [results (:results (types/json->clj raw-results))]
-    (doseq [result results]
-      (dispatch-transaction-completed result))))
+  (let [result (types/json->clj raw-results)]
+    (dispatch-transaction-completed result)))
 
 (handlers/register-handler-fx
  :sign-later-from-chat
@@ -231,7 +243,7 @@
 
 (handlers/register-handler-fx
  ::transaction-completed
- (fn [{db :db now :now} [_ {:keys [id response]} modal?]]
+ (fn [{db :db now :now} [_ {:keys [id response] :as params} modal?]]
    (let [{:keys [hash error]} response
          {:keys [method]} (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
@@ -252,9 +264,8 @@
           {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
-  (let [results (:results (types/json->clj raw-results))]
-    (doseq [result results]
-      (dispatch-transaction-completed result true))))
+  (let [result (types/json->clj raw-results)]
+    (dispatch-transaction-completed result true)))
 
 (handlers/register-handler-fx
  :wallet/sign-transaction
@@ -280,15 +291,27 @@
                             :symbol    symbol
                             :method    method
                             :network   network}}))))
-
 (handlers/register-handler-fx
- :wallet/sign-transaction-modal
+ :wallet/sign-message-modal
  (fn [{db :db} _]
    (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
      {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
       ::accept-transaction {:id              id
                             :masked-password password
                             :on-completed    on-transactions-modal-completed}})))
+
+(handlers/register-handler-fx
+ :wallet/sign-transaction-modal
+ (fn [{db :db} _]
+   ;;TODO(goranjovic) - unify send-transaction and unsigned-transaction
+   (let [{:keys [id password] :as send-transaction}   (get-in db [:wallet :send-transaction])
+         {:keys [gas gas-price]} [:wallet.send/unsigned-transaction]]
+     {:db                                   (assoc-in db [:wallet :send-transaction :in-progress?] true)
+      ::accept-transaction-with-changed-gas {:id              id
+                                             :masked-password password
+                                             :gas             (or gas (:gas send-transaction))
+                                             :gas-price       (or gas-price (:gas-price send-transaction))
+                                             :on-completed    on-transactions-modal-completed}})))
 
 (defn discard-transaction
   [{:keys [db]}]
