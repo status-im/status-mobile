@@ -17,7 +17,7 @@ def installJSDeps() {
 }
 
 parallel (
-  "stream 1" : {
+  "MacOS parallel build stream" : {
     timeout(90) {
       node ('macos1') {
         def apkUrl = ''
@@ -89,7 +89,7 @@ parallel (
       }
     }
   },
-  "stream 2" : {
+  "Linux parallel build stream" : {
     timeout(90) {
       node ('linux1') {
         def apkUrl = ''
@@ -132,7 +132,7 @@ parallel (
 
           stage('Build Linux binaries') {
             sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
-            sh 'export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
+            sh 'export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;modules/react-native-status/desktop"\
             -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
           }
 
@@ -155,7 +155,7 @@ parallel (
             sh 'rm -f StatusIm-x86_64.AppImage'
             
             sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
-            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
+            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
             sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
 
             sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/AppDir/usr/bin')
@@ -163,7 +163,7 @@ parallel (
             sh ('rm -f ' + packageFolder +'/AppDir/usr/bin/StatusIm.AppImage')
             //sh ('cp .env ' + packageFolder +'/AppDir')
 
-            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
+            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
             sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
 
             //sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
