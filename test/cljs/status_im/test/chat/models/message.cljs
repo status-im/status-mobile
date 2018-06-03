@@ -97,21 +97,27 @@
                                                             :content     "d"
                                                             :clock-value 3
                                                             :timestamp   3}}}}}}
-        new-messages '({:message-id  1
-                        :content     "b"
-                        :clock-value 1
-                        :timestamp   1
-                        :show?       false}
-                       {:message-id  2
-                        :content     "c"
-                        :clock-value 2
-                        :timestamp   2
-                        :show?       true}
-                       {:message-id  3
-                        :content     "d"
-                        :clock-value 3
-                        :timestamp   3
-                        :show?       true})]
+        new-messages [{:message-id  1
+                       :content     "b"
+                       :clock-value 1
+                       :timestamp   1
+                       :show?       false}
+                      ;; TODO(janherich) : rewrite this so `receive-many` is
+                      ;; tested instead
+                      ;; dont' owerwrite existing timestamp
+                      (message/ensure-timestamp 4
+                                                {:message-id  2
+                                                 :content     "c"
+                                                 :clock-value 2
+                                                 :timestamp   2
+                                                 :show?       true})
+                      ;; provide timestmap if not present
+                      (message/ensure-timestamp 3
+                                                {:message-id  3
+                                                 :content     "d"
+                                                 :clock-value 3
+                                                 :timestamp   3
+                                                 :show?       true})]]
     (testing "New messages are grouped/sorted correctly, hidden messages are not grouped"
       (is (= '(2 3)
              (map :message-id

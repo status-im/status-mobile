@@ -124,8 +124,8 @@
     (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
 
 (defn- add-received-message
-  [batch?
-   {:keys [from message-id chat-id content content-type timestamp clock-value to-clock-value js-obj] :as message}
+  [batch? 
+   {:keys [from message-id chat-id content content-type clock-value to-clock-value js-obj] :as message}
    {:keys [db now] :as cofx}]
   (let [{:keys [web3 current-chat-id view-id access-scope->commands-responses]
          :contacts/keys [contacts]} db
@@ -158,6 +158,9 @@
 (def ^:private add-single-received-message (partial add-received-message false))
 (def ^:private add-batch-received-message (partial add-received-message true))
 
+(defn ensure-timestamp [now message]
+  (update message :timestamp (fnil identity now)))
+
 (defn receive
   [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
   (handlers-macro/merge-fx cofx
@@ -165,11 +168,11 @@
                                                     ;; We activate a chat again on new messages
                                                     :is-active true
                                                     :timestamp now})
-                           (add-single-received-message message)))
+                           (add-single-received-message (ensure-timestamp now message))))
 
 (defn receive-many
-  [messages {:keys [now] :as cofx}]
-  (let [chat-ids        (into #{} (map :chat-id) messages)
+  [raw-messages {:keys [now] :as cofx}]
+  (let [chat-ids        (into #{} (map :chat-id) raw-messages)
         chat-effects    (handlers-macro/merge-effects cofx
                                                       (fn [chat-id cofx]
                                                         (chat-model/upsert-chat {:chat-id   chat-id
@@ -177,6 +180,7 @@
                                                                                  :timestamp now}
                                                                                 cofx))
                                                       chat-ids)
+        messages        (map (partial ensure-timestamp now) raw-messages)
         message-effects (handlers-macro/merge-effects chat-effects cofx add-batch-received-message messages)]
     (handlers-macro/merge-effects message-effects
                                   cofx
