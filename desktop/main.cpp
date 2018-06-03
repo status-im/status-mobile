@@ -204,14 +204,15 @@ int main(int argc, char **argv) {
 
 void writeLogsToFile() {
   QFile logFile(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/StatusIm.log");
-  logFile.open(QIODevice::WriteOnly | QIODevice::Append);
-  for (QString message : consoleOutputStrings) {
-    logFile.write(message.toStdString().c_str());
-  }
-  consoleOutputStrings.clear();
+  if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+    for (QString message : consoleOutputStrings) {
+      logFile.write(message.toStdString().c_str());
+    }
+    consoleOutputStrings.clear();
 
-  logFile.flush();
-  logFile.close();
+    logFile.flush();
+    logFile.close();
+  }
 }
 
 void runUbuntuServer() {
