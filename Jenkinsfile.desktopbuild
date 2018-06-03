@@ -102,8 +102,6 @@ parallel (
 
         sh ('echo ' + scriptPath)
 
-
-
         try {
 
           stage('Git & Dependencies') {
@@ -144,11 +142,8 @@ parallel (
             sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
             sh ('cp  ./deployment/linux/.env  ' + packageFolder + '/AppDir')
             sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
-            //sh ('cp /opt/qt59/lib/libQt*.so ' + packageFolder+ '/AppDir/usr/lib/')
-            //sh ('mkdir ' + packageFolder + '/AppDir/usr/qml && cp -r /opt/qt59/qml/Qt* ' + packageFolder + '/AppDir/usr/qml/')
 
             sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
-            //sh ('cp -f ' + packageFolder + '/StatusImAppImage/default.png '  + packageFolder)
             sh ('chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage')
 
             sh 'rm -f Application-x86_64.AppImage'
@@ -161,17 +156,13 @@ parallel (
             sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/AppDir/usr/bin')
             sh ('cp -rf ' + packageFolder + '/StatusImAppImage/* ' + packageFolder +'/AppDir/usr/bin')
             sh ('rm -f ' + packageFolder +'/AppDir/usr/bin/StatusIm.AppImage')
-            //sh ('cp .env ' + packageFolder +'/AppDir')
 
             sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
             sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
-
-            //sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusImAppImage')
             
             sh ('rm -rf ' + packageFolder +'/StatusIm.AppImage')
             sh ('cp -f ./StatusIm-x86_64.AppImage ' + packageFolder + '/StatusIm.AppImage')
             
-            //sh ('cd ' + packageFolder + ' && rm -f StatusImAppImage.zip && zip -r StatusImAppImage.zip StatusImAppImage')
           }
 
           stage('Archive built artifact') {
