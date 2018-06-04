@@ -84,30 +84,6 @@ class TestTransaction(SingleDeviceTestCase):
         chat_view.send_transaction_in_group_chat(transaction_amount, 'qwerty1234', recipient)
         self.network_api.find_transaction_by_unique_amount(transaction_amount, recipient['address'])
 
-    @marks.pr
-    @marks.testrail_case_id(3404)
-    def test_send_transaction_from_daap(self):
-        sender = transaction_users['B_USER']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
-        address = transaction_users['B_USER']['address']
-        initial_balance = self.network_api.get_balance(address)
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.advanced_button.click()
-        profile_view.debug_mode_toggle.click()
-        home_view = profile_view.home_button.click()
-        start_new_chat_view = home_view.plus_button.click()
-        start_new_chat_view.open_d_app_button.click()
-        start_new_chat_view.status_test_dapp_button.scroll_to_element()
-        status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
-        start_new_chat_view.open_button.click()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.assets_button.click()
-        status_test_dapp.request_stt_button.click()
-        send_transaction_view = home_view.get_send_transaction_view()
-        send_transaction_view.sign_transaction(sender['password'])
-        self.network_api.verify_balance_is_updated(initial_balance, address)
-
     @pytest.mark.transactions
     @pytest.mark.testrail_case_id(3422)
     def test_open_transaction_on_etherscan(self):

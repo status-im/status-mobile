@@ -33,7 +33,7 @@ class NetworkApi:
                 return
         pytest.fail('Transaction is not found in Ropsten network')
 
-    def find_transaction_by_unique_amount(self, address, amount, wait_time=240):
+    def find_transaction_by_unique_amount(self, address, amount, wait_time=600):
         counter = 0
         while True:
             if counter >= wait_time:

@@ -2,7 +2,6 @@ from tests import get_current_time, common_password
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
-
 class AccountButton(BaseButton):
 
     def __init__(self, driver):
@@ -123,6 +122,18 @@ class SignInView(BaseView):
         recover_access_view.sign_in_button.click()
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
+
+    def open_status_test_dapp(self):
+        profile_view = self.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        home_view = profile_view.home_button.click()
+        start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.open_d_app_button.click()
+        start_new_chat_view.status_test_dapp_button.scroll_to_element()
+        status_test_daap = start_new_chat_view.status_test_dapp_button.click()
+        start_new_chat_view.open_button.click()
+        return status_test_daap
 
     def sign_in(self, password=common_password):
         self.password_input.set_value(password)
