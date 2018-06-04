@@ -353,7 +353,9 @@
  :wallet.send/reset-gas-default
  (fn [{:keys [db]}]
    {:dispatch [:wallet/update-gas-price true]
-    :db       (assoc-in db [:wallet :edit :gas] nil)}))
+    :db       (assoc-in db [:wallet :edit :gas]
+                        {:value    (ethereum/estimate-gas (-> db :wallet :send-transaction :symbol))
+                         :invalid? false})}))
 
 (defn update-gas-price [db edit?]
   {:update-gas-price {:web3          (:web3 db)

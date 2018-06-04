@@ -241,7 +241,9 @@
 (handlers/register-handler-db
  :wallet/update-gas-price-success
  (fn [db [_ price edit?]]
-   (assoc-in db [:wallet (if edit? :edit :send-transaction) :gas-price] price)))
+   (if edit?
+     (assoc-in db [:wallet :edit :gas-price] {:value price :invalid? false})
+     (assoc-in db [:wallet :send-transaction :gas-price] price))))
 
 (handlers/register-handler-fx
  :wallet/update-estimated-gas
