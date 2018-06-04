@@ -47,7 +47,7 @@ class NetworkApi:
                 info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
                      (amount, address))
                 for transaction in transactions:
-                    if int(float(amount) * 10 ** 18) == int(transaction['value']):
+                    if float(int(transaction['value']) / 10 ** 18) == float(amount):
                         info('Transaction with unique amount %s is found in list of transactions, address is %s' %
                              (amount, address))
                         return
