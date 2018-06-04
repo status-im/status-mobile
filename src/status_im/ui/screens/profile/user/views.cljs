@@ -153,6 +153,8 @@
             :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
             :accessibility-label :offline-messages-settings-button}])
         (when config/bootnodes-settings-enabled?
+          [profile.components/settings-item-separator])
+        (when config/bootnodes-settings-enabled?
           [profile.components/settings-item
            {:label-kw            :t/bootnodes
             :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
