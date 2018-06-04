@@ -12,4 +12,4 @@
 (reg-sub
  :get-app-version
  (fn [{:keys [web3-node-version]}]
-   (str build/version " (" (or web3-node-version "N/A") ")")))
+   (str build/version " (" build/build-no ")\nnode " (or web3-node-version "N/A") "")))

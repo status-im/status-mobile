@@ -21,6 +21,11 @@
         (println (analyzer/message env (str "\u001B[31mWARNING\u001B[0m: " s))))
       (System/exit 1))))
 
+(defmacro get-build-no []
+  (-> (shell/sh "bash" "-c" "sh ./scripts/build_no.sh")
+      :out
+      (string/replace "\n" "")))
+
 (defmacro git-short-version []
   (let [version-file-path "VERSION"
         version-file      (io/file version-file-path)]
