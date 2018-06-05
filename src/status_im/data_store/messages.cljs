@@ -73,7 +73,7 @@
                               (core/get-by-fields
                                :user-status
                                :and {:whisper-identity (:current-public-key db)
-                                     :status           :received})
+                                     :status           "received"})
                               (core/all-clj :user-status)))))))
 
 (defn- prepare-content [content]

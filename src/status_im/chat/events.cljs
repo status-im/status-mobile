@@ -70,13 +70,16 @@
    (when-not (get-in db [:chats current-chat-id :all-loaded?])
      (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
            new-messages     (get-stored-messages current-chat-id loaded-count)
-           indexed-messages (index-messages new-messages)]
+           indexed-messages (index-messages new-messages)
+           new-message-ids  (keys indexed-messages)]
        (handlers-macro/merge-fx
         cofx
         {:db (-> db
                  (update-in [:chats current-chat-id :messages] merge indexed-messages)
                  (update-in [:chats current-chat-id :not-loaded-message-ids]
-                            #(apply disj % (keys indexed-messages)))
+                            #(apply disj % new-message-ids))
+                 (update-in [:chats current-chat-id :unviewed-messages]
+                            #(apply disj % new-message-ids))
                  (assoc-in [:chats current-chat-id :all-loaded?]
                            (> constants/default-number-of-messages (count new-messages))))}
         (models.message/group-messages current-chat-id new-messages))))))

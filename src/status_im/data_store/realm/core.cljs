@@ -235,14 +235,14 @@
   [results schema-name]
   (realm-list->clj-coll results [] #(realm-obj->clj (object/get results %) schema-name)))
 
-(defn- field-type [realm schema-name field]
+(defn- field-type [schema-name field]
   (let [field-def (get-in entity->schemas [schema-name :properties field])]
     (or (:type field-def) field-def)))
 
-(defmulti to-query (fn [_ _ operator _ _] operator))
+(defmulti to-query (fn [_ operator _ _] operator))
 
-(defmethod to-query :eq [schema schema-name _ field value]
-  (let [field-type    (field-type schema schema-name field)
+(defmethod to-query :eq [schema-name _ field value]
+  (let [field-type    (field-type schema-name field)
         escaped-value (when value (gstr/escapeString (str value)))
         query         (str (name field) "=" (if (= "string" (name field-type))
                                               (str "\"" escaped-value "\"")
@@ -252,7 +252,7 @@
 (defn get-by-field
   "Selects objects from realm identified by schema-name based on value of field"
   [realm schema-name field value]
-  (let [q (to-query realm schema-name :eq field value)]
+  (let [q (to-query schema-name :eq field value)]
     (.filtered (.objects realm (name schema-name)) q)))
 
 (defn- and-query [queries]
@@ -266,7 +266,7 @@
   combined by `:and`/`:or` operator"
   [realm schema-name op fields]
   (let [queries (map (fn [[k v]]
-                       (to-query realm schema-name :eq k v))
+                       (to-query schema-name :eq k v))
                      fields)]
     (.filtered (.objects realm (name schema-name))
                (case op
