@@ -74,40 +74,42 @@
    :height        40
    :margin-right  8})
 
-(def photo-style-toolbar
-  {:border-radius 32
-   :width         32
-   :height        32
-   :margin-right  8})
+(def chat-icon
+  {:width         34
+   :border-radius 34
+   :height        34
+   :margin-right  12})
 
 (defn topic-image [color]
-  (merge photo-style-toolbar
+  (merge chat-icon
          {:background-color color
           :align-items      :center
           :justify-content  :center}))
 
 (def topic-text
-  {:font-size 18
+  {:font-size 18.7
    :color     colors/white})
 
 (def toolbar-chat-view
-  {:margin-left     11
-   :justify-content :center})
-
-(def toolbar-chat-name
-  {:font-size   16
-   :color       :black
-   :font-weight "300"})
-
-(def add-contact
-  {:background-color :white
-   :border-radius    6
-   :margin-top       3
-   :padding-top      1})
+  {:align-items        :center
+   :padding-vertical   17
+   :padding-horizontal 24
+   :height             68
+   :flex-direction     :row
+   :justify-content    :space-between})
 
 (def add-contact-text
-  {:font-size 14
+  {:font-size 12
    :color     colors/blue})
+
+(def public-chat-text
+  {:font-size 12
+   :color colors/gray})
+
+(defn profile-actions-text [color]
+  {:font-size 12
+   :color color
+   :margin-bottom 4})
 
 (def message-text
   {:font-size 14})
@@ -169,3 +171,13 @@
   {:color         colors/gray
    :margin-top    10
    :margin-bottom 5})
+
+(defn chat-title-and-type [pending?]
+  {:flex 1
+   :justify-content (if pending? :flex-start :center)})
+
+(def chat-title
+  {:margin-bottom  4
+   :font-size      14
+   :color          colors/black
+   :font-weight    "600"})

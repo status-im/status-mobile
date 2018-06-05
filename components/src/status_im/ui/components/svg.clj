@@ -27,15 +27,15 @@
     `(fn [~color]
        ~(into []
               (clojure.walk/postwalk-replace
-                {:viewbox :viewBox} ;; See https://github.com/jhy/jsoup/issues/272
-                (clojure.walk/prewalk
-                  (fn [node]
-                    (if (svg-tags node)
-                      (symbol (name node))
-                      (if (vector? node)
-                        (let [[k v] node]
-                          (if (and (= :fill k) v)
-                            [k color]
-                            node))
-                        node)))
-                  svg-hiccup))))))
+               {:viewbox :viewBox} ;; See https://github.com/jhy/jsoup/issues/272
+               (clojure.walk/prewalk
+                (fn [node]
+                  (if (svg-tags node)
+                    (symbol (name node))
+                    (if (vector? node)
+                      (let [[k v] node]
+                        (if (and (= :fill k) v)
+                          [k color]
+                          node))
+                      node)))
+                svg-hiccup))))))

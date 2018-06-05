@@ -76,7 +76,6 @@
         (dissoc :font)
         (assoc style-key (merge style font)))))
 
-
 (defn transform-to-uppercase [{:keys [uppercase? force-uppercase?] :as opts} ts]
   (if (or force-uppercase? (and uppercase? platform/android?))
     (vec (map string/upper-case ts))
@@ -95,13 +94,13 @@
                    :or   {font :default}} text]
   (let [font (get-in platform/platform-specific [:fonts (keyword font)])]
     [text-input-class (merge
-                        {:underline-color-android :transparent
-                         :placeholder-text-color  styles/text2-color
-                         :placeholder             (i18n/label :t/type-a-message)
-                         :value                   text}
-                        (-> opts
-                            (dissoc :font)
-                            (assoc :style (merge style font))))]))
+                       {:underline-color-android :transparent
+                        :placeholder-text-color  styles/text2-color
+                        :placeholder             (i18n/label :t/type-a-message)
+                        :value                   text}
+                       (-> opts
+                           (dissoc :font)
+                           (assoc :style (merge style font))))]))
 
 (defn i18n-text
   [{:keys [style key]}]
@@ -122,9 +121,9 @@
    content])
 
 (defn touchable-without-feedback [props content]
- [touchable-without-feedback-class
-  props
-  content])
+  [touchable-without-feedback-class
+   props
+   content])
 
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
@@ -245,20 +244,20 @@
                              (:qr-viewer
                               :recipient-qr-code) "#2f3031"
                              (:accounts :login
-                              :wallet-transactions-filter) styles/color-white
+                                        :wallet-transactions-filter) styles/color-white
                              :transparent)})
           children (cond-> children
-                           (#{:wallet
-                              :recent-recipients
-                              :wallet-send-assets
-                              :wallet-request-assets} current-view)
-                           (conj [view {:background-color styles/color-white
-                                        :position         :absolute
-                                        :bottom           0
-                                        :right            0
-                                        :left             0
-                                        :height           100
-                                        :z-index          -1000}]))]
+                     (#{:wallet
+                        :recent-recipients
+                        :wallet-send-assets
+                        :wallet-request-assets} current-view)
+                     (conj [view {:background-color styles/color-white
+                                  :position         :absolute
+                                  :bottom           0
+                                  :right            0
+                                  :left             0
+                                  :height           100
+                                  :z-index          -1000}]))]
       (apply vector safe-area-view props children))))
 
 (defmethod create-main-screen-view :default [_]
