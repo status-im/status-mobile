@@ -61,6 +61,14 @@ def pytest_addoption(parser):
                      action='store',
                      default=5,
                      help='Public chat participants number')
+    parser.addoption('--chat_name',
+                     action='store',
+                     default=None,
+                     help='Public chat name')
+    parser.addoption('--user_public_key',
+                     action='store',
+                     default=None,
+                     help='Public key of user for 1-1 chat')
 
 
 def get_rerun_count():
@@ -166,3 +174,13 @@ def message_wait_time():
 @pytest.fixture
 def participants_number():
     return int(pytest.config.getoption('participants_number'))
+
+
+@pytest.fixture
+def chat_name():
+    return pytest.config.getoption('chat_name')
+
+
+@pytest.fixture
+def user_public_key():
+    return pytest.config.getoption('user_public_key')

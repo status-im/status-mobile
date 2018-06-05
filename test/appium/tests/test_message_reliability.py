@@ -78,14 +78,26 @@ class TestMessageReliability(MessageReliabilityTestCase):
             self.one_to_one_chat_data['user_b'] = {'sent_messages': user_b_sent_messages,
                                                    'message_time': user_b_message_time}
 
-    def test_message_reliability_public_chat(self, messages_number, message_wait_time, participants_number):
+    def test_message_reliability_1_1_chat_with_predefined_user(self, messages_number, user_public_key):
+        self.create_drivers(1, max_duration=10800, custom_implicitly_wait=2)
+        sign_in_view = SignInView(self.drivers[0])
+        sign_in_view.create_user(username='user_a')
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(user_public_key)
+        chat_view = home_view.get_chat_view()
+        for i in range(messages_number):
+            message_text = '%s %s' % (i + 1, ''.join(random.sample(string.ascii_lowercase, k=10)))
+            chat_view.chat_message_input.send_keys(message_text)
+            chat_view.send_message_button.click()
+
+    def test_message_reliability_public_chat(self, messages_number, message_wait_time, participants_number, chat_name):
         self.public_chat_data['sent_messages'] = int()
         self.public_chat_data['message_time'] = dict()
 
         self.create_drivers(participants_number, max_duration=10800, custom_implicitly_wait=2)
         users = list()
         chat_views = list()
-        chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
+        chat_name = chat_name if chat_name else ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
         for i in range(participants_number):
             device = SignInView(self.drivers[i])
             users.append(device.create_user())
@@ -95,23 +107,26 @@ class TestMessageReliability(MessageReliabilityTestCase):
 
         start_time = time.time()
         repeat = cycle(range(participants_number))
-        for i in repeat:
-            message_text = ''.join(random.sample(string.ascii_lowercase, k=10))
-            chat_views[i].chat_message_input.send_keys(message_text)
-            chat_views[i].send_message_button.click()
+        next_user = next(repeat)
+        while self.public_chat_data['sent_messages'] <= messages_number:
+            this_user, next_user = next_user, next(repeat)
+            message_text = '%s %s' % (self.public_chat_data['sent_messages'] + 1,
+                                      ''.join(random.sample(string.ascii_lowercase, k=10)))
+            chat_views[this_user].chat_message_input.send_keys(message_text)
+            chat_views[this_user].send_message_button.click()
             self.public_chat_data['sent_messages'] += 1
             try:
-                user_b_receive_time = timeit(wrapper(chat_views[next(repeat)].wait_for_element_starts_with_text,
-                                                     message_text, message_wait_time),
-                                             number=1)
+                receive_time = timeit(wrapper(chat_views[next_user].wait_for_element_starts_with_text,
+                                              message_text, message_wait_time),
+                                      number=1)
                 duration_time = round(time.time() - start_time, ndigits=2)
-                self.public_chat_data['message_time'][duration_time] = user_b_receive_time
+                self.public_chat_data['message_time'][duration_time] = receive_time
             except TimeoutException:
                 pass
             if self.public_chat_data['sent_messages'] == messages_number:
                 break
 
-    def test_message_reliability_offline_public_chat(self, messages_number, message_wait_time):
+    def test_message_reliability_offline_public_chat(self, messages_number, message_wait_time, chat_name):
         self.public_chat_data['sent_messages'] = int()
         self.public_chat_data['message_time'] = dict()
 
@@ -120,7 +135,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
         sign_in_view = SignInView(driver)
         sign_in_view.create_user()
         home_view = sign_in_view.get_home_view()
-        chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
+        chat_name = chat_name if chat_name else ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
         home_view.join_public_chat(chat_name)
 
         start_time = time.time()
@@ -138,10 +153,10 @@ class TestMessageReliability(MessageReliabilityTestCase):
             chat_view = home_view.get_chat_view()
             for message in sent_messages_texts:
                 try:
-                    user_b_receive_time = timeit(wrapper(chat_view.wait_for_element_starts_with_text,
-                                                         message, message_wait_time),
-                                                 number=1)
+                    receive_time = timeit(wrapper(chat_view.wait_for_element_starts_with_text,
+                                                  message, message_wait_time),
+                                          number=1)
                     duration_time = round(time.time() - start_time, ndigits=2)
-                    self.public_chat_data['message_time'][duration_time] = user_b_receive_time
+                    self.public_chat_data['message_time'][duration_time] = receive_time
                 except TimeoutException:
                     pass
