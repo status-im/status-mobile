@@ -18,6 +18,7 @@
             [status-im.test.chat.models.message]
             [status-im.test.chat.subs]
             [status-im.test.chat.views.message]
+            [status-im.test.chat.views.photos]
             [status-im.test.i18n]
             [status-im.test.transport.inbox]
             [status-im.test.protocol.web3.inbox]
@@ -66,6 +67,7 @@
  'status-im.test.chat.models.input
  'status-im.test.chat.models.message
  'status-im.test.chat.views.message
+ 'status-im.test.chat.views.photos
  'status-im.test.i18n
  'status-im.test.transport.inbox
  'status-im.test.protocol.web3.inbox

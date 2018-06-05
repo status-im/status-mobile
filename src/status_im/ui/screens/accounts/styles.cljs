@@ -15,10 +15,7 @@
 (def bottom-actions-container
   {:margin-bottom 16})
 
-(def photo-image
-  {:height        40
-   :width         40
-   :border-radius 20})
+(def account-image-size 40)
 
 (defstyle account-title-text
   {:color     :black

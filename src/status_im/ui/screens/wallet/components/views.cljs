@@ -6,7 +6,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.chat.views.photos :as photos]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list.styles :as list.styles]
             [status-im.ui.components.list-selection :as list-selection]
@@ -106,7 +106,7 @@
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon
-        [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]]
+        [photos/photo (:photo-path contact) {:size list.styles/image-size}]]
        [react/view {:style styles/recipient-name}
         [react/text {:style               (styles/participant true)
                      :accessibility-label (if request? :contact-name-text :recipient-name-text)
@@ -119,7 +119,7 @@
 (defn render-contact [contact]
   [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
    [list/item
-    [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]
+    [photos/photo (:photo-path contact) {:size list.styles/image-size}]
     [list/item-content
      [list/item-primary {:accessibility-label :contact-name-text}
       (:name contact)]

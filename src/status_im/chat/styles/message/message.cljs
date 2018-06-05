@@ -101,7 +101,7 @@
      :padding-left  16}))
 
 (def message-author
-  {:width      photos/photo-size
+  {:width      photos/default-size
    :align-self :flex-end})
 
 (def delivery-view

@@ -171,10 +171,7 @@
    :padding-top    4
    :padding-bottom 4})
 
-(def bottom-info-row-photo
-  {:width         42
-   :height        42
-   :border-radius 21})
+(def bottom-info-row-photo-size 42)
 
 (def bottom-info-row-text-container
   {:margin-left  16

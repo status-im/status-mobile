@@ -31,7 +31,7 @@
   (let [name (get-in db [:contacts/contacts chat-id :name])]
     {:chat-id            chat-id
      :name               (or name (gfycat/generate-gfy chat-id))
-     :color              styles/default-chat-color
+     :color              (styles/random-chat-color)
      :group-chat         false
      :is-active          true
      :timestamp          now

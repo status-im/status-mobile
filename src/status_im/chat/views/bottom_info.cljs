@@ -8,6 +8,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.list.views :as list]
+            [status-im.chat.views.photos :as photos]
             [status-im.utils.core :as utils]
             [status-im.utils.identicon :as identicon]))
 
@@ -41,8 +42,9 @@
 
 (defn- message-status-row [{:keys [photo-path name]} {:keys [whisper-identity status]}]
   [react/view styles/bottom-info-row
-   [react/image {:source {:uri (or photo-path (identicon/identicon whisper-identity))}
-                 :style  styles/bottom-info-row-photo}]
+   [photos/photo
+    (or photo-path (identicon/identicon whisper-identity))
+    styles/bottom-info-row-photo-size]
    [react/view styles/bottom-info-row-text-container
     [react/text {:style           styles/bottom-info-row-text1
                  :number-of-lines 1}

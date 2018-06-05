@@ -23,6 +23,14 @@
 (def red-light "#ffe5ea") ;; error tooltip
 (def text-light-gray "#212121") ;; Used for labels (home items)
 (def cyan "#7adcfb") ;; Used by wallet transaction filtering icon
+(def photo-border-color "#ccd3d6")
+
+(def chat-colors ["#fa6565"
+                  "#7cda00"
+                  "#887af9"
+                  "#51d0f0"
+                  "#fe8f59"
+                  "#d37ef4"])
 
 (defn alpha [hex opacity]
   (let [hex (string/replace hex #"#" "")
