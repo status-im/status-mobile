@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
+            [status-im.chat.models :as models.chat]
             [status-im.chat.styles.screen :as style]
             [status-im.utils.platform :as platform]
             [status-im.chat.views.toolbar-content :as toolbar-content]
@@ -38,7 +39,7 @@
 
 (defview add-contact-bar [contact-identity]
   (letsubs [{:keys [pending?] :as contact} [:get-contact-by-identity contact-identity]]
-    (when (or pending? (not contact)) ;; contact is pending or not in contact list at all
+    (when (or pending? (nil? pending?)) ;; contact is pending or not in contact list at all
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
@@ -99,18 +100,34 @@
       [react/animated-view {:style (style/message-view-animated opacity)}
        message-view]]]))
 
+(defview empty-chat-container [{:keys [group-chat chat-id]}]
+  (letsubs [contact [:get-contact-by-identity chat-id]]
+    (let [one-to-one (and (not group-chat)
+                          (not (:dapp? contact)))]
+      [react/view style/empty-chat-container
+       (when one-to-one
+         [vector-icons/icon :icons/lock])
+       [react/text {:style style/empty-chat-text}
+        (cond
+          (= chat-id constants/console-chat-id)
+          (i18n/label :t/empty-chat-description-console)
+
+          one-to-one
+          [react/text style/empty-chat-container-one-to-one
+           (i18n/label :t/empty-chat-description-one-to-one)
+           [react/text {:style style/empty-chat-text-name} (:name contact)]]
+
+          :else
+          (i18n/label :t/empty-chat-description))]])))
+
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages-stream]
-            chat-id            [:get-current-chat-id]
+            chat               [:get-current-chat]
             current-public-key [:get-current-public-key]]
     {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
                                                                    :input-focused? false}])}
     (if (empty? messages)
-      [react/view style/empty-chat-container
-       [react/text {:style style/empty-chat-text}
-        (if (= chat-id constants/console-chat-id)
-          (i18n/label :t/empty-chat-description-console)
-          (i18n/label :t/empty-chat-description))]]
+      [empty-chat-container chat]
       [list/flat-list {:data                      messages
                        :key-fn                    #(or (:message-id %) (:value %))
                        :render-fn                 (fn [message]

@@ -61,6 +61,7 @@
             :icons/hamburger           (components.svg/slurp-svg "./resources/icons/hamburger.svg")
             :icons/hidden              (components.svg/slurp-svg "./resources/icons/hidden.svg")
             :icons/in-contacts         (components.svg/slurp-svg "./resources/icons/in_contacts.svg")
+            :icons/lock                (components.svg/slurp-svg "./resources/icons/lock.svg")
             :icons/mic                 (components.svg/slurp-svg "./resources/icons/mic.svg")
             :icons/ok                  (components.svg/slurp-svg "./resources/icons/ok.svg")
             :icons/public              (components.svg/slurp-svg "./resources/icons/public.svg")

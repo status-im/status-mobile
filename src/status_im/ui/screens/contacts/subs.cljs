@@ -64,7 +64,9 @@
 (reg-sub :get-contact-by-identity
          :<- [:get-contacts]
          (fn [contacts [_ identity]]
-           (get contacts identity)))
+           (or
+            (get contacts identity)
+            (utils.contacts/whisper-id->new-contact identity))))
 
 (reg-sub :get-dapp-by-name
          :<- [:get-dapps]

@@ -209,9 +209,12 @@
   {:opacity opacity
    :flex    1})
 
+(def empty-chat-container-one-to-one
+  {:margin-top 10})
+
 (def empty-chat-container
   {:flex             1
-   :flex-direction   :row
+   :flex-direction   :column
    :justify-content  :center
    :align-items      :center
    :padding-vertical 50
@@ -219,7 +222,11 @@
 
 (def empty-chat-text
   {:color          colors/gray
-   :font-size      14
-   :line-height    20
+   :width          280
+   :font-size      15
+   :line-height    22
    :letter-spacing -0.2
    :text-align     :center})
+
+(def empty-chat-text-name
+  {:color colors/black})
