@@ -224,31 +224,33 @@
 ;;TODO (yenda) find a more elegant solution for system messages
 (defn- mark-messages-seen
   [chat-id {:keys [db] :as cofx}]
-  (let [me                         (:current-public-key db)
-        messages-path              [:chats chat-id :messages]
-        unseen-messages-ids        (into #{}
-                                         (comp (filter (fn [[_ {:keys [from user-statuses outgoing]}]]
-                                                         (and (not outgoing)
-                                                              (not= constants/system from)
-                                                              (not= (get user-statuses me) :seen))))
-                                               (map first))
-                                         (get-in db messages-path))
-        unseen-system-messages-ids (into #{}
-                                         (comp (filter (fn [[_ {:keys [from user-statuses]}]]
-                                                         (and (= constants/system from)
-                                                              (not= (get user-statuses me) :seen))))
-                                               (map first))
-                                         (get-in db messages-path))]
-    (when (or (seq unseen-messages-ids)
-              (seq unseen-system-messages-ids))
-      (handlers-macro/merge-fx cofx
-                               {:db (-> (reduce (fn [new-db message-id]
-                                                  (assoc-in new-db (into messages-path [message-id :user-statuses me]) :seen))
-                                                db
-                                                (into unseen-messages-ids unseen-system-messages-ids))
-                                        (update-in [:chats chat-id :unviewed-messages] set/difference unseen-messages-ids unseen-system-messages-ids))}
-                               (persist-seen-messages chat-id (into unseen-messages-ids unseen-system-messages-ids))
-                               (send-messages-seen chat-id unseen-messages-ids)))))
+  (if (get-in db [:chats chat-id :public?])
+    {:db (assoc-in db [:chats chat-id :unviewed-messages] #{})}
+    (let [me                         (:current-public-key db)
+          messages-path              [:chats chat-id :messages]
+          unseen-messages-ids        (into #{}
+                                           (comp (filter (fn [[_ {:keys [from user-statuses outgoing]}]]
+                                                           (and (not outgoing)
+                                                                (not= constants/system from)
+                                                                (not= (get user-statuses me) :seen))))
+                                                 (map first))
+                                           (get-in db messages-path))
+          unseen-system-messages-ids (into #{}
+                                           (comp (filter (fn [[_ {:keys [from user-statuses]}]]
+                                                           (and (= constants/system from)
+                                                                (not= (get user-statuses me) :seen))))
+                                                 (map first))
+                                           (get-in db messages-path))]
+      (when (or (seq unseen-messages-ids)
+                (seq unseen-system-messages-ids))
+        (handlers-macro/merge-fx cofx
+                                 {:db (-> (reduce (fn [new-db message-id]
+                                                    (assoc-in new-db (into messages-path [message-id :user-statuses me]) :seen))
+                                                  db
+                                                  (into unseen-messages-ids unseen-system-messages-ids))
+                                          (update-in [:chats chat-id :unviewed-messages] set/difference unseen-messages-ids unseen-system-messages-ids))}
+                                 (persist-seen-messages chat-id (into unseen-messages-ids unseen-system-messages-ids))
+                                 (send-messages-seen chat-id unseen-messages-ids))))))
 
 (defn- fire-off-chat-loaded-event
   [chat-id {:keys [db]}]
