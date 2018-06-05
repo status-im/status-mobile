@@ -25,11 +25,13 @@
 
    ; Push notification settings
 
-   {:label   "Granted push notifications"
-    :trigger [:request-notifications-granted]}
+   {:label      "Tap"
+    :trigger    [:request-notifications-granted]
+    :properties {:target :granted-push-notifications}}
 
-   {:label   "Denied push notifications"
-    :trigger [:request-notifications-denied]}
+   {:label      "Tap"
+    :trigger    [:request-notifications-denied]
+    :properties {:target :denied-push-notifications}}
 
    ;; Tab navigation
 
@@ -51,7 +53,7 @@
 
    ;; New
    {:label      "Tap"
-    :trigger    [:navigate-to-tab :new]
+    :trigger    [:navigate-to :new]
     :properties {:target :new}}
    {:label      "Tap"
     :trigger    [:navigate-to :new-chat]
@@ -136,6 +138,9 @@
    {:label      "Tap"
     :trigger    [:wallet/sign-transaction]
     :properties {:target :wallet-sign-transaction}}
+   {:label      "Tap"
+    :trigger    [:wallet/sign-transaction-modal]
+    :properties {:target :dapp-sign-transaction}}
    {:label      "Tap"
     :trigger    [:navigate-to-clean :wallet]
     :properties {:target :wallet-got-it}}

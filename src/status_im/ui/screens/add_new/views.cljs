@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.colors :as colors]
@@ -11,9 +10,11 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]))
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.utils.config :as config]
+            [status-im.utils.mixpanel :as mixpanel]))
 
-(defn- options-list [{:keys [address]}]
+(defn- options-list [{:keys [address anon-id]}]
   [react/view action-button.styles/actions-list
    [action-button/action-button
     {:label               (i18n/label :t/start-new-chat)
@@ -50,12 +51,14 @@
      :accessibility-label :invite-friends-button
      :icon                :icons/share
      :icon-opts           {:color colors/blue}
-     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})})}]])
+     :on-press            #(do (mixpanel/track anon-id "Tap" {:target :invite-friends} false)
+                               (list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})}))}]])
 
 (views/defview add-new []
-  (views/letsubs [account  [:get-current-account]]
+  (views/letsubs [account     [:get-current-account]
+                  device-UUID [:get-device-UUID]]
     [react/view {:flex 1 :background-color :white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/new)]
      [common/separator]
-     [options-list account]]))
+     [options-list (assoc account :anon-id device-UUID)]]))
