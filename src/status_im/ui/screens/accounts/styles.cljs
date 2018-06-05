@@ -48,9 +48,9 @@
    :letter-spacing -0.2
    :color          common/color-black})
 
-(def account-badge-pub-key-text
+(defstyle account-badge-pub-key-text
   {:font-size      14
-   :letter-spacing -0.2
+   :ios            {:letter-spacing -0.2}
    :color          colors/gray
    :margin-top     4})
 
