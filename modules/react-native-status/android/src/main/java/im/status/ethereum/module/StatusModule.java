@@ -703,7 +703,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.CallRPC(payload);
+                String res = Statusgo.CallPrivateRPC(payload);
                 callback.invoke(res);
             }
         };

@@ -375,7 +375,7 @@ RCT_EXPORT_METHOD(clearStorageAPIs) {
 RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        char * result = CallRPC((char *) [payload UTF8String]);
+        char * result = CallPrivateRPC((char *) [payload UTF8String]);
         dispatch_async( dispatch_get_main_queue(), ^{
             callback(@[[NSString stringWithUTF8String: result]]);
         });
