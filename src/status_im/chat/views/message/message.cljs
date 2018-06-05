@@ -264,11 +264,11 @@
 (defview group-message-delivery-status [{:keys [message-id current-public-key user-statuses] :as msg}]
   (letsubs [{participants :contacts} [:get-current-chat]
             contacts                 [:get-contacts]]
-    (let [outgoing-status         (or (get user-statuses current-public-key) :sending)
+    (let [outgoing-status         (or (get-in user-statuses [current-public-key :status]) :sending)
           delivery-statuses       (dissoc user-statuses current-public-key)
           delivery-statuses-count (count delivery-statuses)
           seen-by-everyone        (and (= delivery-statuses-count (count participants))
-                                       (every? (comp (partial = :seen) second) delivery-statuses)
+                                       (every? (comp (partial = :seen) :status second) delivery-statuses)
                                        :seen-by-everyone)]
       (if (or seen-by-everyone (zero? delivery-statuses-count))
         [text-status (or seen-by-everyone outgoing-status)]
@@ -321,8 +321,8 @@
 
 (defn message-delivery-status
   [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
-  (let [outgoing-status (or (get user-statuses current-public-key) :not-sent)
-        delivery-status (get user-statuses chat-id)
+  (let [outgoing-status (or (get-in user-statuses [current-public-key :status]) :not-sent)
+        delivery-status (get-in user-statuses [chat-id :status])
         status          (cond (and (= constants/console-chat-id chat-id)
                                    (not (console/commands-with-delivery-status (:command content))))
                               :seen

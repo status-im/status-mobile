@@ -229,6 +229,7 @@
                  :chat/public-group-topic-error
                  :chat/messages
                  :chat/message-groups
+                 :chat/message-statuses
                  :chat/not-loaded-message-ids
                  :chat/last-clock-value
                  :chat/loaded-chats

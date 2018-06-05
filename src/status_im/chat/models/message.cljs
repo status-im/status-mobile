@@ -13,7 +13,8 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]
-            [status-im.data-store.messages :as messages-store]))
+            [status-im.data-store.messages :as messages-store]
+            [status-im.data-store.user-statuses :as user-statuses-store]))
 
 (def receive-interceptors
   [(re-frame/inject-cofx :random-id)
@@ -85,6 +86,18 @@
                (group-by (comp time/day-relative :timestamp)
                          (filter :show? messages)))})
 
+(defn- add-own-status
+  [chat-id message-id status {:keys [db]}]
+  (let [me     (:current-public-key db)
+        status {:chat-id          chat-id
+                :message-id       message-id
+                :whisper-identity me
+                :status           status}]
+    {:db            (assoc-in db
+                              [:chats chat-id :message-statuses message-id me]
+                              status)
+     :data-store/tx [(user-statuses-store/save-status-tx status)]}))
+
 (defn- add-message
   [batch? {:keys [chat-id message-id clock-value content] :as message} current-chat? {:keys [db] :as cofx}]
   (let [prepared-message (prepare-message message chat-id current-chat?)]
@@ -114,25 +127,20 @@
   [batch?
    {:keys [from message-id chat-id content content-type timestamp clock-value to-clock-value js-obj] :as message}
    {:keys [db now] :as cofx}]
-  (let [{:keys [web3
-                current-chat-id
-                view-id
-                access-scope->commands-responses]
-         :contacts/keys [contacts]}               db
-        {:keys [public-key] :as current-account}  (:account/account db)
-        current-chat?                             (and (= :chat view-id) (= current-chat-id chat-id))
+  (let [{:keys [web3 current-chat-id view-id access-scope->commands-responses]
+         :contacts/keys [contacts]} db
+        current-account            (:account/account db)
+        current-chat?              (and (= :chat view-id) (= current-chat-id chat-id))
         {:keys [last-clock-value
-                public?] :as chat}                (get-in db [:chats chat-id])
-        request-command                           (:request-command content)
-        command-request?                          (and (= content-type constants/content-type-command-request)
-                                                       request-command)
-        add-message-fn                            (if batch? add-batch-message add-single-message)]
+                public?] :as chat} (get-in db [:chats chat-id])
+        request-command            (:request-command content)
+        command-request?           (and (= content-type constants/content-type-command-request)
+                                        request-command)
+        add-message-fn             (if batch? add-batch-message add-single-message)]
     (handlers-macro/merge-fx cofx
                              {:confirm-messages-processed [{:web3   web3
                                                             :js-obj js-obj}]}
                              (add-message-fn (cond-> message
-                                               public-key
-                                               (assoc :user-statuses {public-key (if current-chat? :seen :received)})
                                                (not clock-value)
                                                (assoc :clock-value (utils.clocks/send last-clock-value)) ; TODO (cammeelos): for backward compatibility, we use received time to be removed when not an issue anymore
                                                command-request?
@@ -140,9 +148,9 @@
                                                          (lookup-response-ref access-scope->commands-responses
                                                                               current-account chat contacts request-command)))
                                              current-chat?)
+                             (add-own-status chat-id message-id (if current-chat? :seen :received))
                              (requests-events/add-request chat-id message-id)
-                             (send-message-seen chat-id message-id (and public-key
-                                                                        (not public?)
+                             (send-message-seen chat-id message-id (and (not public?)
                                                                         current-chat?
                                                                         (not (chat-model/bot-only-chat? db chat-id))
                                                                         (not (= constants/system from)))))))
@@ -205,9 +213,6 @@
       (not (or (get messages message-id)
                (get not-loaded-message-ids message-id)
                (>= deleted-at-clock-value clock-value))))))
-
-(defn message-seen-by? [message user-pk]
-  (= :seen (get-in message [:user-statuses user-pk])))
 
 ;;;; Send message
 
@@ -278,8 +283,7 @@
                      :outgoing         true
                      :timestamp        now
                      :clock-value     (utils.clocks/send last-clock-value)
-                     :show?            true
-                     :user-statuses   {identity :sending}}
+                     :show?            true}
                     chat))
 
 (def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp])
@@ -292,6 +296,7 @@
                              (chat-model/upsert-chat {:chat-id chat-id
                                                       :timestamp now})
                              (add-single-message message-with-id true)
+                             (add-own-status chat-id message-id :sending)
                              (send chat-id message-id send-record))))
 
 (defn send-push-notification [fcm-token status cofx]
@@ -300,10 +305,14 @@
                          :payload {:title "Status" :body "You have a new message"}
                          :tokens  [fcm-token]}}))
 
-(defn update-message-status [{:keys [chat-id message-id from] :as message} status {:keys [db]}]
-  (let [updated-message (assoc-in message [:user-statuses from] status)]
-    {:db            (assoc-in db [:chats chat-id :messages message-id] updated-message)
-     :data-store/tx [(messages-store/update-message-tx updated-message)]}))
+(defn update-message-status [{:keys [chat-id message-id from]} status {:keys [db]}]
+  (let [updated-status (-> db
+                           (get-in [:chats chat-id :message-statuses message-id from])
+                           (assoc :status status))]
+    {:db            (assoc-in db
+                              [:chats chat-id :message-statuses message-id from]
+                              updated-status)
+     :data-store/tx [(user-statuses-store/save-status-tx updated-status)]}))
 
 (defn resend-message [chat-id message-id cofx]
   (let [message (get-in cofx [:db :chats chat-id :messages message-id])

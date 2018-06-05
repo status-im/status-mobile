@@ -44,8 +44,21 @@
       ;; regular non command message, we can add it right away
       (message-model/receive message cofx))))
 
+(defn- filter-messages [messages cofx]
+  (:accumulated (reduce (fn [{:keys [seen-ids] :as acc}
+                             {:keys [message-id] :as message}]
+                          (if (and (message-model/add-to-chat? cofx message)
+                                   (not (seen-ids message-id)))
+                            (-> acc
+                                (update :seen-ids conj message-id)
+                                (update :accumulated conj message))
+                            acc))
+                        {:seen-ids    #{}
+                         :accumulated []}
+                        messages)))
+
 (defn add-messages [messages {:keys [db] :as cofx}]
-  (let [messages-to-add  (filter (partial message-model/add-to-chat? cofx) messages)
+  (let [messages-to-add  (filter-messages messages cofx)
         plain-messages   (remove (comp :command :content) messages-to-add)
         command-messages (filter (comp :command :content) messages-to-add)]
     (handlers-macro/merge-effects (message-model/receive-many plain-messages cofx)

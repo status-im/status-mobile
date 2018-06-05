@@ -19,6 +19,7 @@
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
+            [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.chat.events.commands :as events.commands]
             status-im.chat.events.requests
@@ -65,17 +66,22 @@
 
 (handlers/register-handler-fx
  :load-more-messages
- [(re-frame/inject-cofx :data-store/get-messages)]
- (fn [{{:keys [current-chat-id] :as db} :db get-stored-messages :get-stored-messages :as cofx} _]
+ [(re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)]
+ (fn [{{:keys [current-chat-id] :as db} :db
+       get-stored-messages :get-stored-messages
+       get-stored-user-statuses :get-stored-user-statuses :as cofx} _]
    (when-not (get-in db [:chats current-chat-id :all-loaded?])
      (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
            new-messages     (get-stored-messages current-chat-id loaded-count)
            indexed-messages (index-messages new-messages)
-           new-message-ids  (keys indexed-messages)]
+           new-message-ids  (keys indexed-messages)
+           new-statuses     (get-stored-user-statuses current-chat-id new-message-ids)]
        (handlers-macro/merge-fx
         cofx
         {:db (-> db
                  (update-in [:chats current-chat-id :messages] merge indexed-messages)
+                 (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
                  (update-in [:chats current-chat-id :not-loaded-message-ids]
                             #(apply disj % new-message-ids))
                  (update-in [:chats current-chat-id :unviewed-messages]
@@ -94,33 +100,37 @@
  :update-message-status
  [re-frame/trim-v]
  (fn [{:keys [db]} [chat-id message-id user-id status]]
-   (let [msg-path [:chats chat-id :messages message-id]
-         new-db   (update-in db (conj msg-path :user-statuses) assoc user-id status)]
-     {:db            new-db
-      :data-store/tx [(messages-store/update-message-tx
-                       (-> (get-in new-db msg-path)
-                           (select-keys [:message-id :user-statuses])))]})))
+   (let [new-status {:chat-id          chat-id
+                     :message-id       message-id
+                     :whisper-identity user-id
+                     :status           status}]
+     {:db            (assoc-in db
+                               [:chats chat-id :message-statuses message-id user-id]
+                               new-status)
+      :data-store/tx [(user-statuses-store/save-status-tx new-status)]})))
 
-;; Change status of messages which are still in "sending" status to "not-sent"
+;; Change status of own messages which are still in "sending" status to "not-sent"
 ;; (If signal from status-go has not been received)
 (handlers/register-handler-fx
  :process-pending-messages
  [re-frame/trim-v]
  (fn [{:keys [db]} []]
-   (let [pending-messages (->> db
-                               :chats
-                               vals
-                               (mapcat (comp vals :messages))
-                               (filter (fn [{:keys [from user-statuses]}] (= :sending (get user-statuses from)))))
-         updated-messages (map (fn [{:keys [from] :as message}]
-                                 (assoc-in message [:user-statuses from] :not-sent))
-                               pending-messages)]
-     {:data-store/tx [(messages-store/update-messages-tx updated-messages)]
-      :db            (reduce (fn [m {:keys [chat-id message-id from]}]
-                               (assoc-in m [:chats chat-id :messages message-id
-                                            :user-statuses from] :not-sent))
-                             db
-                             pending-messages)})))
+   (let [me               (:current-public-key db)
+         pending-statuses (->> (vals (:chats db))
+                               (mapcat :message-statuses)
+                               (mapcat (fn [[_ user-id->status]]
+                                         (filter (comp (partial = :sending) :status)
+                                                 (get user-id->status me)))))
+         updated-statuses (map #(assoc % :status :not-sent) pending-statuses)]
+     {:data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]
+      :db            (reduce
+                      (fn [acc {:keys [chat-id message-id status whisper-identity]}]
+                        (assoc-in acc
+                                  [:chats chat-id :message-status message-id
+                                   whisper-identity :status]
+                                  status))
+                      db
+                      updated-statuses)})))
 
 (defn init-console-chat
   [{:keys [db]}]
@@ -171,6 +181,7 @@
   (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)
   (re-frame/inject-cofx :data-store/unviewed-messages)
   (re-frame/inject-cofx :data-store/message-ids)
   (re-frame/inject-cofx :data-store/get-unanswered-requests)
@@ -180,6 +191,7 @@
               all-stored-chats
               stored-unanswered-requests
               get-stored-messages
+              get-stored-user-statuses
               stored-unviewed-messages
               stored-message-ids] :as cofx} _]
    (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
@@ -187,14 +199,17 @@
                                            {}
                                            stored-unanswered-requests)
          chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                         (let [chat-messages (index-messages (get-stored-messages chat-id))]
+                         (let [chat-messages (index-messages (get-stored-messages chat-id))
+                               message-ids   (keys chat-messages)
+                               unviewed-ids  (get stored-unviewed-messages chat-id)]
                            (assoc acc chat-id
                                   (assoc chat
-                                         :unviewed-messages (get stored-unviewed-messages chat-id)
+                                         :unviewed-messages unviewed-ids
                                          :requests (get chat->message-id->request chat-id)
                                          :messages chat-messages
+                                         :message-statuses (get-stored-user-statuses chat-id message-ids)
                                          :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
-                                                                                 (-> chat-messages keys set))))))
+                                                                                 (set message-ids))))))
                        {}
                        all-stored-chats)]
      (handlers-macro/merge-fx cofx
@@ -210,48 +225,36 @@
  (fn [_ [_ link]]
    {:browse link}))
 
-(defn- persist-seen-messages
-  [chat-id unseen-messages-ids {:keys [db]}]
-  {:data-store/tx [(messages-store/update-messages-tx
-                    (map (fn [message-id]
-                           (-> (get-in db [:chats chat-id :messages message-id])
-                               (select-keys [:message-id :user-statuses])))
-                         unseen-messages-ids))]})
-
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
   (when (and (not (get-in db [:chats chat-id :public?]))
-             (seq message-ids)
              (not (models/bot-only-chat? db chat-id)))
     (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
-;;TODO (yenda) find a more elegant solution for system messages
+;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
 (defn- mark-messages-seen
   [chat-id {:keys [db] :as cofx}]
-  (let [me                         (:current-public-key db)
-        messages-path              [:chats chat-id :messages]
-        unseen-messages-ids        (into #{}
-                                         (comp (filter (fn [[_ {:keys [from user-statuses outgoing]}]]
-                                                         (and (not outgoing)
-                                                              (not= constants/system from)
-                                                              (not= (get user-statuses me) :seen))))
-                                               (map first))
-                                         (get-in db messages-path))
-        unseen-system-messages-ids (into #{}
-                                         (comp (filter (fn [[_ {:keys [from user-statuses]}]]
-                                                         (and (= constants/system from)
-                                                              (not= (get user-statuses me) :seen))))
-                                               (map first))
-                                         (get-in db messages-path))]
-    (when (or (seq unseen-messages-ids)
-              (seq unseen-system-messages-ids))
-      (handlers-macro/merge-fx cofx
-                               {:db (-> (reduce (fn [new-db message-id]
-                                                  (assoc-in new-db (into messages-path [message-id :user-statuses me]) :seen))
-                                                db
-                                                (into unseen-messages-ids unseen-system-messages-ids))
-                                        (update-in [:chats chat-id :unviewed-messages] set/difference unseen-messages-ids unseen-system-messages-ids))}
-                               (persist-seen-messages chat-id (into unseen-messages-ids unseen-system-messages-ids))
-                               (send-messages-seen chat-id unseen-messages-ids)))))
+  (when-let [all-unviewed-ids (seq (get-in db [:chats chat-id :unviewed-messages]))]
+    (let [me                  (:current-public-key db)
+          updated-statuses    (keep (fn [message-id]
+                                      (some-> db
+                                              (get-in [:chats chat-id :message-statuses
+                                                       message-id me])
+                                              (assoc :status :seen)))
+                                    all-unviewed-ids)
+          loaded-unviewed-ids (map :message-id updated-statuses)]
+      (when (seq loaded-unviewed-ids)
+        (handlers-macro/merge-fx
+         cofx
+         {:db            (-> (reduce (fn [acc {:keys [message-id status]}]
+                                       (assoc-in acc [:chats chat-id :message-statuses
+                                                      message-id me :status]
+                                                 status))
+                                     db
+                                     updated-statuses)
+                             (update-in [:chats chat-id :unviewed-messages]
+                                        #(apply disj % loaded-unviewed-ids)))
+          :data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]}
+         (send-messages-seen chat-id loaded-unviewed-ids))))))
 
 (defn- fire-off-chat-loaded-event
   [chat-id {:keys [db]}]

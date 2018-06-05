@@ -12,11 +12,7 @@
    type))
 
 (defn- transform-message [{:keys [content-type] :as message}]
-  (cond-> (-> message
-              (update :message-type keyword)
-              (update :user-statuses (partial into {}
-                                              (map (fn [[_ {:keys [whisper-identity status]}]]
-                                                     [whisper-identity (keyword status)])))))
+  (cond-> (update message :message-type keyword)
     (command-type? content-type)
     (update :content reader/read-string)))
 
@@ -84,20 +80,8 @@
      ;; option for command params instead
      (update content :params dissoc :password :password-confirmation))))
 
-(defn- prepare-statuses [{:keys [chat-id message-id] :as message}]
-  (utils/update-if-present message
-                           :user-statuses
-                           (partial map (fn [[whisper-identity status]]
-                                          {:status-id        (str message-id "-" whisper-identity)
-                                           :whisper-identity whisper-identity
-                                           :status           status
-                                           :chat-id          chat-id
-                                           :message-id       message-id}))))
-
 (defn- prepare-message [message]
-  (-> message
-      prepare-statuses
-      (utils/update-if-present :content prepare-content)))
+  (utils/update-if-present message :content prepare-content))
 
 (defn save-message-tx
   "Returns tx function for saving message"
@@ -114,19 +98,16 @@
   "Returns tx function for deleting message"
   [message-id]
   (fn [realm]
-    (when-let [message (core/single
-                        (core/get-by-field realm :message :message-id message-id))]
-      (core/delete realm message))))
+    (when-let [message (core/get-by-field realm :message :message-id message-id)]
+      (core/delete realm message)
+      (core/delete realm (core/get-by-field realm :user-status :message-id message-id)))))
 
 (defn update-message-tx
   "Returns tx function for updating message"
   [{:keys [message-id] :as message}]
   (fn [realm]
-    (when-let [{:keys [chat-id] :as loaded}
-               (some-> (core/get-by-field realm :message :message-id message-id)
-                       (core/single-clj :message))]
-      (core/create realm :message
-                   (prepare-message (assoc message :chat-id chat-id)) true))))
+    (when (core/exists? realm :message :message-id message-id)
+      (core/create realm :message (prepare-message message) true))))
 
 (defn update-messages-tx
   "Returns tx function for updating messages"

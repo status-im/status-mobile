@@ -78,12 +78,7 @@
       (is (nil? (extract-seen
                  (message/receive
                   message
-                  (assoc-in db [:db :view-id] :home))))))
-    (testing "it does not send any when no public key is in account"
-      (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :account/account :public-key] nil))))))))
+                  (assoc-in db [:db :view-id] :home))))))))
 
 (deftest group-messages
   (let [cofx         {:db {:chats {"chat-id" {:messages {0 {:message-id  0

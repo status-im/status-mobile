@@ -124,6 +124,12 @@
  (fn [{:keys [message-groups]}]
    (or message-groups {})))
 
+(reg-sub
+ :get-current-chat-message-statuses
+ :<- [:get-current-chat]
+ (fn [{:keys [message-statuses]}]
+   (or message-statuses {})))
+
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group "
   [message-groups messages]
@@ -131,16 +137,18 @@
    (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
    message-groups))
 
-(defn messages-with-datemarks
-  "Converts message groups into sequence of messages interspersed with datemarks"
-  [message-groups messages]
+(defn messages-with-datemarks-and-statuses
+  "Converts message groups into sequence of messages interspersed with datemarks,
+  with correct user statuses associated into message"
+  [message-groups messages message-statuses]
   (mapcat (fn [[datemark message-references]]
             (into (list {:value datemark
                          :type  :datemark})
                   (map (fn [{:keys [message-id timestamp-str]}]
                          (assoc (get messages message-id)
                                 :datemark      datemark
-                                :timestamp-str timestamp-str)))
+                                :timestamp-str timestamp-str
+                                :user-statuses (get message-statuses message-id))))
                   message-references))
           message-groups))
 
@@ -213,9 +221,10 @@
  :get-current-chat-messages-stream
  :<- [:get-current-chat-messages]
  :<- [:get-current-chat-message-groups]
- (fn [[messages message-groups]]
+ :<- [:get-current-chat-message-statuses]
+ (fn [[messages message-groups message-statuses]]
    (-> (sort-message-groups message-groups messages)
-       (messages-with-datemarks messages)
+       (messages-with-datemarks-and-statuses messages message-statuses)
        messages-stream)))
 
 (reg-sub
@@ -391,4 +400,4 @@
  :get-chats-unread-messages-number
  :<- [:get-active-chats]
  (fn [chats _]
-   (apply + (map #(count (:unviewed-messages %)) (vals chats)))))
+   (apply + (map (comp count :unviewed-messages) (vals chats)))))
