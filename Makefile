@@ -111,8 +111,13 @@ repl-android: ##@repl Start REPL for Android
 run-android: ##@run Run Android build
 	react-native run-android --appIdSuffix debug
 
+SIMULATOR = ""
 run-ios: ##@run Run iOS build
+ifneq ("$(SIMULATOR)", "")
+	react-native run-ios --simulator="$(SIMULATOR)"
+else
 	react-native run-ios
+endif
 
 #--------------
 # Tests
