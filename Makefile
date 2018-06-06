@@ -31,7 +31,7 @@ setup: ##@prepare Install all the requirements for status-react
 
 prepare: ##@prepare Install dependencies and prepare workspace
 	lein deps
-	npm install
+	yarn install
 	./re-natal deps
 	./re-natal use-figwheel
 	./re-natal enable-source-maps

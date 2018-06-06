@@ -18,7 +18,7 @@
   :githooks {:auto-install true
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
   :cljfmt {:indents {letsubs [[:inner 0]]}}
-  :clean-targets ["target/" "index.ios.js" "index.android.js"]
+  :clean-targets ["target/" "index2.ios.js" "index2.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
@@ -92,7 +92,7 @@
              :prod     {:cljsbuild {:builds
                                     {:ios
                                      {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
-                                      :compiler         {:output-to          "index.ios.js"
+                                      :compiler         {:output-to          "index2.ios.js"
                                                          :main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
                                                          :static-fns         true
@@ -105,7 +105,7 @@
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
                                      {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
-                                      :compiler         {:output-to          "index.android.js"
+                                      :compiler         {:output-to          "index2.android.js"
                                                          :main               "env.android.main"
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true

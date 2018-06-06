@@ -8,7 +8,7 @@ def installJSDeps() {
     def installed = false
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
-        sh 'npm install'
+        sh 'yarn install'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
     }

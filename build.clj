@@ -27,7 +27,7 @@
    :prod
    {:ios
     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
-     :compiler         {:output-to          "index.ios.js"
+     :compiler         {:output-to          "index2.ios.js"
                         :output-dir         "target/ios-prod"
                         :static-fns         true
                         :optimize-constants true
@@ -39,7 +39,7 @@
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
-     :compiler         {:output-to          "index.android.js"
+     :compiler         {:output-to          "index2.android.js"
                         :output-dir         "target/android-prod"
                         :static-fns         true
                         :optimize-constants true

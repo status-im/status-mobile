@@ -144,11 +144,11 @@ function install_maven() {
 function install_react_native_cli() {
   cd "$(repo_path)"
 
-  local npm_command="npm"
+  local npm_command="yarn"
 
   if is_linux && ! nvm_installed; then
     # aptitude version of node requires sudo for global install
-    npm_command="sudo npm"
+    npm_command="sudo yarn"
   fi
 
   if npm list -g | grep -q react-native-cli; then
