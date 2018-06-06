@@ -39,16 +39,21 @@
     (aget array i)))
 
 (defn receive-whisper-messages [{:keys [now] :as cofx} [js-error js-messages chat-id]]
-  (let [now-in-s (quot now 1000)]
-    (handlers-macro/merge-effects
-     cofx
-     (fn [message temp-cofx]
-       (receive-message temp-cofx now-in-s chat-id message))
-     (js-array->seq js-messages))))
+  (if (and (not js-error)
+           js-messages)
+    (let [now-in-s (quot now 1000)]
+      (handlers-macro/merge-effects
+       cofx
+       (fn [message temp-cofx]
+         (receive-message temp-cofx now-in-s chat-id message))
+       (js-array->seq js-messages)))
+    (log/error "Something went wrong" js-error js-messages)))
 
 (handlers/register-handler-fx
  :protocol/receive-whisper-message
- [re-frame/trim-v (re-frame/inject-cofx :random-id)]
+ [re-frame/trim-v
+  handlers/logged-in
+  (re-frame/inject-cofx :random-id)]
  receive-whisper-messages)
 
 (handlers/register-handler-fx

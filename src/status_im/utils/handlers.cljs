@@ -5,6 +5,7 @@
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.utils.instabug :as instabug]
             [status-im.utils.mixpanel :as mixpanel]
+            [status-im.models.account :as models.account]
             [cljs.core.async :as async]
             [taoensso.timbre :as log]))
 
@@ -36,6 +37,15 @@
                (@pre-event-callback (get-coeffect context :event)))
              (log/debug "Handling re-frame event: " (pretty-print-event context))
              context)))
+
+(def logged-in
+  "Interceptor which stops the event chain if the user is logged out"
+  (->interceptor
+   :id     :logged-in
+   :before (fn logged-in-before
+             [context]
+             (when (models.account/logged-in? (:coeffects context))
+               context))))
 
 (defn- check-spec-msg-path-problem [problem]
   (str "Spec: " (-> problem :via last) "\n"
