@@ -11,14 +11,16 @@
 
 (def usage-data-view
   {:flex               1
+   :margin-top         (scaled-y 90)
    :background-color   colors/white
    :align-items        :center})
 
 (def image-container
   {:flex            1
+   ;; on screens less tall than iPhone 5, let's not show the image at all
+   :display (if (>= window-height 568) "flex" "none")
    :align-items     :center
    :justify-content :center
-   :margin-top    (scaled-y 90)
    :margin-bottom (scaled-y 90)})
 
 (def usage-data-image
@@ -68,4 +70,6 @@
 
 (def dont-share-button
   {:padding-horizontal  18
+   ;; don't do text wrap on super small devices
+   :min-width           130
    :width               (scaled-x 138)})
