@@ -266,10 +266,15 @@
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [chat-id {:keys [db] :as cofx}]
   (handlers-macro/merge-fx cofx
-                           {:db (-> (assoc db :current-chat-id chat-id)
-                                    (models/set-chat-ui-props {:validation-messages nil}))}
-                           (fire-off-chat-loaded-event chat-id)
-                           (mark-messages-seen chat-id)))
+                           {:db             (-> (assoc db :current-chat-id chat-id)
+                                                (models/set-chat-ui-props {:validation-messages nil}))}
+                           (fire-off-chat-loaded-event chat-id)))
+
+(handlers/register-handler-fx
+ :mark-unseen
+ [re-frame/trim-v]
+ (fn [cofx [chat-id]]
+   (mark-messages-seen chat-id cofx)))
 
 (handlers/register-handler-fx
  :add-chat-loaded-event
