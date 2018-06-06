@@ -121,8 +121,8 @@ android {
 
     defaultConfig {
         applicationId "im.status.ethereum"
-        minSdkVersion 18
-        targetSdkVersion 26
+        minSdkVersion 23
+        targetSdkVersion 27
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
