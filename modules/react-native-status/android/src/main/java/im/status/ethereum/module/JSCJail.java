@@ -95,7 +95,7 @@ class JSCJail implements Jail {
 
         JSFunction web3send = new JSFunction(context, "web3send") {
             public String web3send(String payload) {
-                return Statusgo.CallPrivateRPC(payload);
+                return Statusgo.CallRPC(payload);
             }
         };
         context.property("web3send", web3send);
@@ -105,7 +105,7 @@ class JSCJail implements Jail {
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
-                        String result = Statusgo.CallPrivateRPC(payload);
+                        String result = Statusgo.CallRPC(payload);
                         callback.toFunction().call(null, result);
                     }
                 };

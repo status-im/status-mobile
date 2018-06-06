@@ -13,7 +13,7 @@
 
 - (NSString *)send:(JSValue *)payload
 {
-    char * result = CallPrivateRPC((char *) [[payload toString] UTF8String]);
+    char * result = CallRPC((char *) [[payload toString] UTF8String]);
     
     return [NSString stringWithUTF8String: result];
 }
