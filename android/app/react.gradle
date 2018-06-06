@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 def config = project.hasProperty("react") ? project.react : [];
 
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
-def entryFile = config.entryFile ?: "index.android.js"
+def entryFile = config.entryFile ?: "index2.android.js"
 
 // because elvis operator
 def elvisFile(thing) {

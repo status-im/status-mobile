@@ -1,3 +1,4 @@
 {
-  "presets": ["react-native"]
+  "presets": ["react-native"],
+  "ignore":  ["../index2.android.js", "../index2.ios.js", "./index2.android.js", "./index2.ios.js"]
 }
