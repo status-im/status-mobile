@@ -13,6 +13,7 @@
             [status-im.test.models.mailserver]
             [status-im.test.models.bootnode]
             [status-im.test.models.account]
+            [status-im.test.models.contact]
             [status-im.test.transport.core]
             [status-im.test.transport.inbox]
             [status-im.test.transport.handlers]
@@ -62,6 +63,7 @@
  'status-im.test.models.mailserver
  'status-im.test.models.bootnode
  'status-im.test.models.account
+ 'status-im.test.models.contact
  'status-im.test.bots.events
  'status-im.test.wallet.subs
  'status-im.test.wallet.transactions.subs

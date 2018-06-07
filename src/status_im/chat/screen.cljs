@@ -5,6 +5,7 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.chat.models :as models.chat]
+            [status-im.models.contact :as models.contact]
             [status-im.chat.styles.screen :as style]
             [status-im.utils.platform :as platform]
             [status-im.chat.views.toolbar-content :as toolbar-content]
@@ -38,8 +39,8 @@
     [vector-icons/icon :icons/dots-horizontal]]])
 
 (defview add-contact-bar [contact-identity]
-  (letsubs [{:keys [pending?] :as contact} [:get-contact-by-identity contact-identity]]
-    (when (or pending? (nil? pending?)) ;; contact is pending or not in contact list at all
+  (letsubs [contact [:get-contact-by-identity contact-identity]]
+    (when (models.contact/can-add-to-contacts? contact)
       [react/touchable-highlight
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
