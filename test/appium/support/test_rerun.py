@@ -13,7 +13,8 @@ RERUN_ERRORS = [
     'ERROR The test with session id'
     "Message: 'CreateAccountButton' is not found on screen",
     "503 Service Unavailable",
-    "AttributeError: 'NoneType' object has no attribute 'find_element'"
+    "AttributeError: 'NoneType' object has no attribute 'find_element'",
+    "[Errno 104] Connection reset by peer"
 ]
 
 
