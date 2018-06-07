@@ -101,105 +101,6 @@ function handleSend(params, context) {
 
 }
 
-function previewSend(showRecipient, params, context) {
-    var amountStyle = {
-        fontSize: 36,
-        color: "#000000",
-        height: 40
-    };
-
-    var amount = status.components.view(
-        {
-            flexDirection: "column",
-            alignItems: "flex-end",
-            maxWidth: 250
-        },
-        [status.components.text(
-            {
-                style: amountStyle,
-                numberOfLines: 1,
-                ellipsizeMode: "tail",
-                font: "light"
-            },
-            status.localizeNumber(params.amount, context.delimiter, context.separator)
-        )]);
-
-    var currency = status.components.view(
-        {
-            style: {
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                paddingBottom: 0
-            }
-        },
-        [status.components.text(
-            {
-                style: {
-                    color: "#9199a0",
-                    fontSize: 16,
-                    lineHeight: 18,
-                    marginLeft: 7.5
-                }
-            },
-            I18n.t('eth')
-        )]
-    );
-
-    var amountRow = status.components.view(
-        {
-            style: {
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: 8,
-                marginBottom: 8
-            }
-        },
-        [amount, currency]
-    );
-
-    var markup = [amountRow];
-
-    if (showRecipient
-        && params["bot-db"]
-        && params["bot-db"]["public"]
-        && params["bot-db"]["public"]["recipient"]
-        && context["chat"]["group-chat"] === true) {
-        var recipientRow = status.components.text(
-            {
-                style: {
-                    color: "#9199a0",
-                    fontSize: 14,
-                    lineHeight: 18
-                }
-            },
-            I18n.t('send_sending_to') + " " + params["bot-db"]["public"]["recipient"]["name"]
-        );
-        markup.push(recipientRow);
-    }
-
-    return {
-        markup: status.components.view(
-            {
-                style: {
-                    flexDirection: "column"
-                }
-            },
-            markup
-        )
-    };
-}
-
-function shortPreviewSend(params, context) {
-    return {
-        markup: status.components.chatPreviewText(
-            {},
-            I18n.t('send_title') + ": "
-            + status.localizeNumber(params.amount, context.delimiter, context.separator)
-            + " ETH"
-        )
-    };
-}
-
 var personalSend = {
     name: "send",
     scope: ["global", "personal-chats", "registered", "humans"],
@@ -210,9 +111,7 @@ var personalSend = {
     params: paramsPersonalSend,
     validator: validateSend.bind(this, false),
     handler: handleSend.bind(this),
-    asyncHandler: false,
-    preview: previewSend.bind(this, false),
-    shortPreview: shortPreviewSend
+    asyncHandler: false
 };
 
 var groupSend = {
@@ -225,9 +124,7 @@ var groupSend = {
     params: paramsGroupSend,
     validator: validateSend.bind(this, true),
     handler: handleSend.bind(this),
-    asyncHandler: false,
-    preview: previewSend.bind(this, true),
-    shortPreview: shortPreviewSend
+    asyncHandler: false
 };
 
 status.command(personalSend);
@@ -294,58 +191,6 @@ function handleGroupRequest(params, context) {
                 }
             }
         }
-    };
-}
-
-function previewRequest(showRecipient, params, context) {
-    var amountRow = status.components.text(
-        {},
-        I18n.t('request_requesting') + " "
-        + status.localizeNumber(params.amount, context.delimiter, context.separator)
-        + " ETH"
-    );
-
-    var markup = [amountRow];
-
-    if (showRecipient
-        && params["bot-db"]
-        && params["bot-db"]["public"]
-        && params["bot-db"]["public"]["recipient"]
-        && context["chat"]["group-chat"] === true) {
-
-        var recipientRow = status.components.text(
-            {
-                style: {
-                    color: "#9199a0",
-                    fontSize: 14,
-                    lineHeight: 18
-                }
-            },
-            I18n.t('request_requesting_from') + " " + params["bot-db"]["public"]["recipient"]["name"]
-        );
-        markup.push(recipientRow);
-    }
-
-    return {
-        markup: status.components.view(
-            {
-                style: {
-                    flexDirection: "column"
-                }
-            },
-            markup
-        )
-    };
-}
-
-function shortPreviewRequest(params, context) {
-    return {
-        markup: status.components.chatPreviewText(
-            {},
-            I18n.t('request_requesting') + " "
-            + status.localizeNumber(params.amount, context.delimiter, context.separator)
-            + " ETH"
-        )
     };
 }
 
@@ -418,8 +263,6 @@ status.command({
     description: I18n.t('request_description'),
     params: paramsPersonalRequest,
     handler: handlePersonalRequest,
-    preview: previewRequest.bind(null, false),
-    shortPreview: shortPreviewRequest,
     validator: validateRequest.bind(null, false)
 });
 
@@ -432,7 +275,5 @@ status.command({
     description: I18n.t('request_description'),
     params: paramsGroupRequest,
     handler: handleGroupRequest,
-    preview: previewRequest.bind(null, true),
-    shortPreview: shortPreviewRequest,
     validator: validateRequest.bind(null, true)
 });

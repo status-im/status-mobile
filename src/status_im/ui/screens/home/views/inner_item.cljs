@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [clojure.string :as str]
+            [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.styles :as component.styles]
@@ -12,9 +13,21 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as const]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.chat-preview :as chat-preview]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]))
+
+(defn command-short-preview
+  [{:keys [command] {:keys [amount]} :params}]
+  [chat-preview/text {}
+   (str
+    (i18n/label (if (= command constants/command-request)
+                  :command-requesting
+                  :command-sending))
+    (i18n/label-number amount)
+    " "
+    (i18n/label :eth))])
 
 (defn message-content-text [{:keys [content] :as message}]
   [react/view styles/last-message-container
@@ -37,6 +50,9 @@
 
      (and (:command content) (-> content :short-preview :markup))
      (commands-utils/generate-hiccup (-> content :short-preview :markup))
+
+     (contains? #{constants/command-request constants/command-send} (:command content))
+     [command-short-preview content]
 
      :else
      [react/text {:style               styles/last-message-text

@@ -10,6 +10,7 @@
             [status-im.chat.models.commands :as commands-model]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.money :as money]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]
@@ -362,7 +363,9 @@
     :keys           [prefill prefillBotDb]
     :as             request}
    {:keys [params command handler-data content-type]}
-   network]
+   network
+   prices
+   tx-hash]
   (let [content (if request
                   {:request-command     request-command
                    ;; TODO janherich this is technically not correct, but works for now
@@ -371,8 +374,10 @@
                    :prefill             prefill
                    :prefill-bot-db      prefillBotDb}
                   {:params (cond-> params
-                             (= (:name command) "send")
-                             (assoc :network (ethereum/network-names network)))})
+                             (= (:name command) constants/command-send)
+                             (assoc :network (ethereum/network-names network)
+                                    :fiat-amount (money/usd-amount (:amount params) prices)
+                                    :tx-hash tx-hash))})
         content' (assoc content
                         :command               (:name command)
                         :handler-data          handler-data
@@ -395,16 +400,29 @@
                        :show?            true}
                       chat)))
 
+;; dispatch :update-transactions to update confirmations count
+;; to verify tx initiated with /send command is confirmed
+(defn update-transactions [command-name tx-hash {:keys [with-delay?]} _]
+  (when (and tx-hash
+             (= command-name constants/command-send))
+    (cond-> {:dispatch [:update-transactions]}
+      with-delay?
+      (assoc :dispatch-later [{:ms       constants/command-send-status-update-interval-ms
+                               :dispatch [:update-transactions]}]))))
+
 (defn send-command
-  [{{:keys [current-public-key chats network] :as db} :db :keys [now] :as cofx} params]
+  [{{:keys [current-public-key chats network prices] :as db} :db :keys [now] :as cofx} params]
   (let [{{:keys [handler-data to-message command] :as content} :command chat-id :chat-id} params
         ;; We send commands to deleted chats as well, i.e. signed later transactions
         chat    (or (get chats chat-id) {:chat-id chat-id})
-        request (:request handler-data)]
+        request (:request handler-data)
+        command-name (:name command)
+        tx-hash (get-in db [:wallet :send-transaction :tx-hash])]
     (handlers-macro/merge-fx cofx
-                             (upsert-and-send (prepare-command-message current-public-key chat now request content network))
+                             (upsert-and-send (prepare-command-message current-public-key chat now request content network prices tx-hash))
                              (console-events/console-respond-command-messages command handler-data)
-                             (requests-events/request-answered chat-id to-message))))
+                             (requests-events/request-answered chat-id to-message)
+                             (update-transactions command-name tx-hash {:with-delay? false}))))
 
 (defn invoke-console-command-handler
   [{:keys [db] :as cofx} {:keys [command] :as command-params}]

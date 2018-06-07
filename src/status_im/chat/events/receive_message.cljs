@@ -22,6 +22,20 @@
  (fn [messages]
    (re-frame/dispatch [:chat-received-message/add messages])))
 
+(defn- request-command-message-data [message {:keys [db]}]
+  (commands-events/request-command-message-data
+   db message
+   {:data-type             :short-preview
+    :proceed-event-creator (fn [short-preview]
+                             [:request-command-message-data
+                              message
+                              {:data-type             :preview
+                               :proceed-event-creator (fn [preview]
+                                                        [::received-message
+                                                         (update message :content merge
+                                                                 {:short-preview short-preview
+                                                                  :preview       preview})])}])}))
+
 (defn add-message [{:keys [content] :as message} {:keys [db] :as cofx}]
   (when (message-model/add-to-chat? cofx message)
     (if (:command content)
@@ -29,18 +43,11 @@
       ;; we first need to fetch short-preview + preview and add it only after we already have those.
       ;; note that `request-command-message-data` implicitly wait till jail is ready and
       ;; calls are made only after that
-      (commands-events/request-command-message-data
-       db message
-       {:data-type             :short-preview
-        :proceed-event-creator (fn [short-preview]
-                                 [:request-command-message-data
-                                  message
-                                  {:data-type             :preview
-                                   :proceed-event-creator (fn [preview]
-                                                            [::received-message
-                                                             (update message :content merge
-                                                                     {:short-preview short-preview
-                                                                      :preview       preview})])}])})
+      (let [{:keys [command params]} content
+            tx-hash (:tx-hash params)]
+        (handlers-macro/merge-fx cofx
+                                 (message-model/update-transactions command tx-hash {:with-delay? true})
+                                 (request-command-message-data message)))
       ;; regular non command message, we can add it right away
       (message-model/receive message cofx))))
 

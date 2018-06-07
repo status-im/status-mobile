@@ -9,6 +9,7 @@
             [status-im.chat.models.message :as message-model]
             [status-im.chat.events.commands :as commands-events]
             [status-im.bots.events :as bots-events]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.ui.components.react :as react-comp]
             [status-im.utils.handlers :as handlers]))
 

@@ -261,7 +261,7 @@
                true
                (update-in [:wallet :transactions-unsigned] dissoc id)
                true
-               (update-in [:wallet :send-transaction] merge clear-send-properties))}
+               (update-in [:wallet :send-transaction] merge clear-send-properties {:tx-hash hash}))}
         (if modal?
           (cond-> {:dispatch [:navigate-back]}
             (= method constants/web3-send-transaction)

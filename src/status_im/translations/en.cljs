@@ -102,7 +102,9 @@
    ;;messages
    :status-sending                       "Sending..."
    :status-pending                       "Pending"
+   :status-confirmed                     "Confirmed"
    :status-sent                          "Sent"
+   :status-tx-not-found                  "TX not found"
    :status-seen-by-everyone              "Seen by everyone"
    :status-seen                          "Seen"
    :status-delivered                     "Delivered"
@@ -111,6 +113,7 @@
    :message-not-sent                     "Message not sent"
    :resend-message                       "Resend"
    :delete-message                       "Delete message"
+   :sent-at                              "Sent at"
 
    ;;datetime
    :datetime-ago-format                  "{{number}} {{time-intervals}} {{ago}}"
@@ -317,6 +320,13 @@
 
    ;;commands
    :chat-send-eth                        "{{amount}} ETH"
+   :transaction-request                  "Transaction Request"
+   :command-button-send                  "Send"
+   :command-button-sent                  "Sent"
+   :command-requesting                   "Requesting "
+   :command-sending                      "Send transaction "
+   :request-requesting-from              "from "
+   :send-sending-to                      "to "
 
    ;;new-group
    :new-group                            "New group"
@@ -389,6 +399,7 @@
    :recent-recipients                    "Contacts"
    :to                                   "To"
    :from                                 "From"
+   :at                                   "at"
    :data                                 "Data"
    :got-it                               "Got it"
    :block                                "Block"

@@ -401,3 +401,15 @@
  :<- [:get-active-chats]
  (fn [chats _]
    (apply + (map (comp count :unviewed-messages) (vals chats)))))
+
+(reg-sub
+ :transaction-confirmed?
+ (fn [db [_ tx-hash]]
+   (-> (get-in db [:wallet :transactions tx-hash :confirmations] "0")
+       (js/parseInt)
+       (pos?))))
+
+(reg-sub
+ :wallet-transaction-exists?
+ (fn [db [_ tx-hash]]
+   (not (nil? (get-in db [:wallet :transactions tx-hash])))))

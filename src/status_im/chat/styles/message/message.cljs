@@ -43,21 +43,20 @@
         direction (if outgoing :row-reverse :row)]
     (merge message-body-base
            {:flex-direction direction
-            :width          260
+            :width          230
             :padding-top    (message-padding-top message)
             :align-self     align
             :align-items    align})))
 
 (def message-timestamp
   {:font-size  10
-   :align-self :flex-end
-   :opacity    0.5})
+   :align-self :flex-end})
 
 (defn message-timestamp-text [justify-timestamp? outgoing]
   (merge message-timestamp
          {:color (if outgoing colors/wild-blue-yonder colors/gray)}
          (when justify-timestamp? {:position :absolute
-                                   :bottom   10
+                                   :bottom   6
                                    :right    12})))
 
 (defn message-timestamp-placeholder-text [outgoing]
@@ -106,13 +105,13 @@
 
 (def delivery-view
   {:flex-direction :row
-   :margin-top     2
-   :opacity       0.5})
+   :margin-top     4
+   :opacity        0.5})
 
 (def delivery-text
   {:color       styles/color-gray4
    :margin-left 5
-   :font-size   14})
+   :font-size   12})
 
 (def not-sent-view
   (assoc delivery-view
@@ -163,21 +162,17 @@
          (when-not (= content-type constants/content-type-emoji)
            {:background-color (if outgoing colors/hawkes-blue styles/color-white)})
          (when (= content-type constants/content-type-command)
-           {:padding-top    10
-            :padding-bottom 14})))
+           {:padding-top    12
+            :padding-bottom 10})))
 
 (def author
   {:color         styles/color-gray4
    :margin-bottom 4
    :font-size     12})
 
-(def command-request-view
-  {:padding-right 16})
-
 (defn command-request-message-view [outgoing]
   {:border-radius    14
-   :padding-vertical 10
-   :padding-right    28
+   :padding-vertical 4
    :background-color (if outgoing colors/hawkes-blue styles/color-white)})
 
 (def command-request-from-text
@@ -214,9 +209,67 @@
    :width    12
    :height   13})
 
+(def command-request-separator-line
+  {:background-color colors/gray-light
+   :height           1
+   :border-radius    8
+   :margin-top       10})
+
+(def command-request-button
+  {:align-items :center
+   :padding-top 8})
+
+(defn command-request-button-text [answered?]
+  {:font-size 15
+   :color     (if answered? colors/gray colors/blue)})
+
 (def command-request-text-view
   {:margin-top 4
    :height     14})
+
+(defn command-request-header-text [outgoing]
+  {:font-size 12
+   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+
+(def command-request-network-text
+  {:color colors/red})
+
+(def command-request-row
+  {:flex-direction :row
+   :margin-top     6})
+
+(def command-request-fiat-amount-row
+  {:margin-top 6})
+
+(def command-request-fiat-amount-text
+  {:font-size 12
+   :color     colors/black})
+
+(def command-request-timestamp-row
+  {:margin-top 6})
+
+(defn command-request-timestamp-text [outgoing]
+  {:font-size 12
+   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+
+(defstyle command-request-amount-text
+  {:font-size   22
+   :ios         {:letter-spacing -0.5}
+   :color       colors/black})
+
+(defn command-amount-currency-separator [outgoing]
+  {:opacity 0
+   :color (if outgoing colors/hawkes-blue colors/white)})
+
+(defn command-request-currency-text [outgoing]
+  {:font-size      22
+   :letter-spacing 1
+   :color          (if outgoing colors/wild-blue-yonder colors/gray)})
+
+(def command-request-recipient-text
+  {:color       colors/blue
+   :font-size   14
+   :line-height 18})
 
 (def content-command-view
   {:flex-direction :column
@@ -237,6 +290,74 @@
   (merge style-message-text
          {:margin-top        8
           :margin-horizontal 0}))
+
+(def command-send-message-view
+  {:flex-direction :column
+   :align-items    :flex-start})
+
+(def command-send-amount-row
+  {:flex-direction  :row
+   :justify-content :space-between})
+
+(def command-send-amount
+  {:flex-direction :column
+   :align-items    :flex-end
+   :max-width      250})
+
+(defstyle command-send-amount-text
+  {:font-size   22
+   :color       colors/blue
+   :ios         {:letter-spacing -0.5}})
+
+(def command-send-currency
+  {:flex-direction :column
+   :align-items    :flex-end})
+
+(defn command-send-currency-text [outgoing]
+  {:font-size      22
+   :margin-left    4
+   :letter-spacing 1
+   :color          (if outgoing colors/wild-blue-yonder colors/blue-transparent-40)})
+
+(def command-send-fiat-amount
+  {:flex-direction  :column
+   :justify-content :flex-end
+   :margin-top      6})
+
+(def command-send-fiat-amount-text
+  {:font-size 12
+   :color     colors/black})
+
+(def command-send-recipient-text
+  {:color       colors/blue
+   :font-size   14
+   :line-height 18})
+
+(defn command-send-timestamp [outgoing]
+  {:color      (if outgoing colors/wild-blue-yonder colors/gray)
+   :margin-top 6
+   :font-size  12})
+
+(def command-send-status-container
+  {:margin-top     6
+   :flex-direction :row})
+
+(defn command-send-status-icon [outgoing]
+  {:background-color (if outgoing
+                       colors/blue-darker
+                       colors/blue-transparent)
+   :width            24
+   :height           24
+   :border-radius    16
+   :padding-top      4
+   :padding-left     4})
+
+(defstyle command-send-status-text
+  {:color       colors/blue
+   :android     {:margin-top 3}
+   :ios         {:margin-top 4}
+   :margin-left 6
+   :font-size   12})
 
 (def audio-container
   {:flex-direction :row

@@ -14,6 +14,10 @@
 (def content-type-placeholder "placeholder")
 (def content-type-emoji "emoji")
 
+(def command-send "send")
+(def command-request "request")
+(def command-send-status-update-interval-ms 60000)
+
 (def min-password-length 6)
 (def max-chat-name-length 20)
 (def response-suggesstion-resize-duration 100)

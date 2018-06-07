@@ -27,10 +27,11 @@
 (spec/def ::advanced? boolean?)
 (spec/def ::whisper-identity (spec/nilable string?))
 (spec/def ::method (spec/nilable string?))
+(spec/def ::tx-hash (spec/nilable string?))
 
 (spec/def :wallet/send-transaction (allowed-keys
                                     :opt-un [::amount ::to ::to-name ::amount-error ::asset-error ::amount-text ::password
                                              ::waiting-signal? ::signing? ::id ::later?
                                              ::camera-flashlight ::in-progress?
                                              ::wrong-password? ::from-chat? ::symbol ::advanced?
-                                             ::gas ::gas-price ::whisper-identity ::method]))
+                                             ::gas ::gas-price ::whisper-identity ::method ::tx-hash]))

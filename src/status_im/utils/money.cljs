@@ -138,3 +138,11 @@
 (defn sufficient-funds? [amount balance]
   (when (and amount balance)
     (.greaterThanOrEqualTo balance amount)))
+
+(defn usd-amount [amount-str prices]
+  (-> amount-str
+      (js/parseFloat)
+      bignumber
+      (crypto->fiat (get-in prices [:ETH :USD :price]))
+      (with-precision 2)
+      str))

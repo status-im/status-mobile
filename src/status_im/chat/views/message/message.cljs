@@ -58,14 +58,64 @@
                  :font  :default}
      "03:39"]]])
 
-(defview message-content-command
-  [{:keys [content params] :as message}]
-  (letsubs [command [:get-command (:command-ref content)]
-            network [:network-name]]
-    (let [preview (:preview content)
-          {:keys [color] icon-path :icon} command
-          send-network (get-in content [:params :network])
+(defview send-command-status [tx-hash outgoing]
+  (letsubs [confirmed? [:transaction-confirmed? tx-hash]
+            tx-exists? [:wallet-transaction-exists? tx-hash]]
+    [react/touchable-highlight {:on-press #(when tx-exists?
+                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
+     [react/view style/command-send-status-container
+      [vector-icons/icon (if confirmed? :icons/check :icons/dots)
+       {:color           colors/blue
+        :container-style (style/command-send-status-icon outgoing)}]
+      [react/view
+       [react/text {:style style/command-send-status-text}
+        (i18n/label (cond
+                      confirmed? :status-confirmed
+                      tx-exists? :status-pending
+                      :else :status-tx-not-found))]]]]))
+
+(defview message-content-command-send
+  [{:keys [content timestamp-str outgoing group-chat]}]
+  (letsubs [network [:network-name]]
+    (let [{{:keys [amount fiat-amount tx-hash] send-network :network} :params} content
+          recipient-name (get-in content [:params :bot-db :public :recipient])
           network-mismatch? (and (seq send-network) (not= network send-network))]
+      [react/view style/command-send-message-view
+       [react/view
+        [react/view style/command-send-amount-row
+         [react/view style/command-send-amount
+          [react/text {:style style/command-send-amount-text
+                       :font  :medium}
+           amount
+           [react/text {:style (style/command-amount-currency-separator outgoing)}
+            "."]
+           [react/text {:style (style/command-send-currency-text outgoing)
+                        :font  :default}
+            (i18n/label :eth)]]]]
+        (when fiat-amount
+          [react/view style/command-send-fiat-amount
+           [react/text {:style style/command-send-fiat-amount-text}
+            (str "~ " fiat-amount " " (i18n/label :usd-currency))]])
+        (when (and group-chat
+                   recipient-name)
+          [react/text {:style style/command-send-recipient-text}
+           (str
+            (i18n/label :send-sending-to)
+            " "
+            recipient-name)])
+        [react/view
+         [react/text {:style (style/command-send-timestamp outgoing)}
+          (str (i18n/label :sent-at) " " timestamp-str)]]
+        [send-command-status tx-hash outgoing]
+        (when network-mismatch?
+          [react/text send-network])]])))
+
+;; Used for command messages with markup generated on JS side
+(defview message-content-command-with-markup
+  [{:keys [content params]}]
+  (letsubs [command [:get-command (:command-ref content)]]
+    (let [preview (:preview content)
+          {:keys [color] icon-path :icon} command]
       [react/view style/content-command-view
        (when color
          [react/view style/command-container
@@ -78,21 +128,29 @@
           [react/icon icon-path style/command-image]])
        (if (:markup preview)
          ;; Markup was defined for command in jail, generate hiccup and render it
-         (cond-> (commands.utils/generate-hiccup (:markup preview))
-           network-mismatch? (conj [react/text send-network]))
+         (commands.utils/generate-hiccup (:markup preview))
          ;; Display preview if it's defined (as a string), in worst case, render params
          [react/text {:style style/command-text
                       :font  :default}
           (or preview (str params))])])))
 
-(defview message-timestamp [t justify-timestamp? outgoing]
-  [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing)} t])
+(defn message-content-command
+  [message]
+  (let [{{:keys [command preview]} :content} message]
+    (if (and (= command constants/command-send)
+             (nil? preview))
+      [message-content-command-send message]
+      [message-content-command-with-markup message])))
+
+(defview message-timestamp [t justify-timestamp? outgoing command?]
+  (when-not command?
+    [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing)} t]))
 
 (defn message-view
   [{:keys [timestamp-str outgoing] :as message} content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
    content
-   [message-timestamp timestamp-str justify-timestamp? outgoing]])
+   [message-timestamp timestamp-str justify-timestamp? outgoing (get-in message [:content :command])]])
 
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
@@ -381,4 +439,5 @@
      (let [incoming-group (and group-chat (not outgoing))]
        [message-content message-body (merge message
                                             {:current-public-key current-public-key
+                                             :group-chat         group-chat
                                              :incoming-group     incoming-group})])]]])
