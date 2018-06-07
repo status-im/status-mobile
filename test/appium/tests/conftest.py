@@ -32,7 +32,7 @@ def pytest_addoption(parser):
     parser.addoption('--env',
                      action='store',
                      default='sauce',
-                     help='Specify environment: local/sauce')
+                     help='Specify environment: local/sauce/api')
     parser.addoption('--log',
                      action='store',
                      default=False,
@@ -90,25 +90,26 @@ def pytest_configure(config):
     if config.getoption('log'):
         import logging
         logging.basicConfig(level=logging.INFO)
-    test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
-                                             if '.apk' in i]])[0]
-    if is_master(config):
-        if config.getoption('testrail_report'):
-            testrail_report.add_run(test_suite_data.apk_name)
-        if config.getoption('env') == 'sauce':
-            if not is_uploaded():
-                if 'http' in config.getoption('apk'):
-                    response = requests.get(config.getoption('apk'), stream=True)
-                    response.raise_for_status()
-                    file = BytesIO(response.content)
-                    del response
-                    requests.post('http://saucelabs.com/rest/v1/storage/'
-                                  + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
-                                  auth=(sauce_username, sauce_access_key),
-                                  data=file,
-                                  headers={'Content-Type': 'application/octet-stream'})
-                else:
-                    sauce.storage.upload_file(config.getoption('apk'))
+    if config.getoption('env') != 'api':
+        test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
+                                                 if '.apk' in i]])[0]
+        if is_master(config):
+            if config.getoption('testrail_report'):
+                testrail_report.add_run(test_suite_data.apk_name)
+            if config.getoption('env') == 'sauce':
+                if not is_uploaded():
+                    if 'http' in config.getoption('apk'):
+                        response = requests.get(config.getoption('apk'), stream=True)
+                        response.raise_for_status()
+                        file = BytesIO(response.content)
+                        del response
+                        requests.post('http://saucelabs.com/rest/v1/storage/'
+                                      + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
+                                      auth=(sauce_username, sauce_access_key),
+                                      data=file,
+                                      headers={'Content-Type': 'application/octet-stream'})
+                    else:
+                        sauce.storage.upload_file(config.getoption('apk'))
 
 
 def pytest_unconfigure(config):

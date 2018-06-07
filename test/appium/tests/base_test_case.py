@@ -5,7 +5,7 @@ import subprocess
 import asyncio
 
 from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
-from support.network_api import NetworkApi
+from support.api.network_api import NetworkApi
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
@@ -202,11 +202,10 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         cls.loop.close()
 
 
-environments = {'local': LocalMultipleDeviceTestCase,
-                'sauce': SauceMultipleDeviceTestCase}
+environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == 'local' else SauceMultipleDeviceTestCase
 
 
-class MultipleDeviceTestCase(environments[pytest.config.getoption('env')]):
+class MultipleDeviceTestCase(environment):
 
     def setup_method(self, method):
         super(MultipleDeviceTestCase, self).setup_method(method)

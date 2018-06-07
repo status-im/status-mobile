@@ -7,18 +7,20 @@ from tests import info
 class NetworkApi:
 
     def __init__(self):
-        self.url = 'http://api-ropsten.etherscan.io/api?'
+        self.etherscan_url = 'http://api-ropsten.etherscan.io/api?'
+        self.faucet_url = 'http://51.15.45.169:3001/donate'
+        self.chat_bot_url = 'http://offsite.chat:8099'
 
     def get_transactions(self, address: str) -> dict:
-        method = self.url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
+        method = self.etherscan_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
-        method = self.url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
+        method = self.etherscan_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
         return not int(requests.request('GET', url=method).json()['result']['isError'])
 
     def get_balance(self, address):
-        method = self.url + 'module=account&action=balance&address=0x%s&tag=latest' % address
+        method = self.etherscan_url + 'module=account&action=balance&address=0x%s&tag=latest' % address
         for i in range(5):
             try:
                 return int(requests.request('GET', method).json()["result"])
@@ -66,7 +68,7 @@ class NetworkApi:
                 return
 
     def faucet(self, address):
-        return requests.request('GET', 'http://51.15.45.169:3001/donate/0x%s' % address).json()
+        return requests.request('GET', '%s/0x%s' % (self.faucet_url, address)).json()
 
     def get_donate(self, address, wait_time=300):
         initial_balance = self.get_balance(address)
@@ -84,11 +86,7 @@ class NetworkApi:
                     info('Got %s for %s' % (response["amount_eth"], address))
                     return
 
-    def get_ethereum_price_in_usd(self) -> float:
-        url = 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
-        return float(requests.request('GET', url).json()['USD'])
-
     def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:
-        url = 'http://offsite.chat:8099/ping/%s?count=%s&interval=%s' % (chat_name, messages_number, interval)
+        url = '%s/ping/%s?count=%s&interval=%s' % (self.chat_bot_url, chat_name, messages_number, interval)
         text = requests.request('GET', url).text
         return [i.split(maxsplit=5)[-1].strip('*') for i in text.splitlines()]
