@@ -39,7 +39,7 @@ Related to https://github.com/rjeczalik/notify/issues/139. Solution: re-run.
 
 ## App issues
 
-### Node server crashing
+### Eth node crashing
 `node ./ubuntu_server.js` log:
 ```
 DEBUG [status-im.utils.handlers:36] - Handling re-frame event:  :signal-event {"type":"node.crashed","event":{"error":"node is already running"}}
@@ -47,7 +47,7 @@ DEBUG [status-im.ui.screens.events:350] - :event-str {"type":"node.crashed","eve
 DEBUG [status-im.utils.instabug:8] - Signal event: {"type":"node.crashed","event":{"error":"node is already running"}}
 DEBUG [status-im.ui.screens.events:362] - Event  node.crashed  not handled
 ```
-Solution: prevent starting Node when there is an instance already running.
+Solution: prevent starting Ethereum local node when there is an instance already running.
 
 ### Reload JS - blank screen
 Console log for `react-native run-desktop` shows error 533.
