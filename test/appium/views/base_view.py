@@ -254,6 +254,9 @@ class BaseView(object):
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
 
+    def swipe_down(self):
+        self.driver.swipe(500, 500, 500, 1000)
+
     def get_home_view(self):
         from views.home_view import HomeView
         return HomeView(self.driver)

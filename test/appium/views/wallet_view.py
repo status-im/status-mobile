@@ -175,7 +175,7 @@ class WalletView(BaseView):
             elif self.get_eth_value() == initial_balance:
                 counter += 10
                 time.sleep(10)
-                self.driver.swipe(500, 500, 500, 1000)
+                self.swipe_down()
                 info('Waiting %s seconds for ETH update' % counter)
             else:
                 info('Transaction received, balance updated!')

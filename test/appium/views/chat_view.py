@@ -166,7 +166,8 @@ class ViewProfileButton(BaseButton):
 class NoMessagesInChatText(BaseText):
     def __init__(self, driver):
         super(NoMessagesInChatText, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('There are no messages')
+        self.locator = self.Locator.text_part_selector(
+            'Any messages you send here are encrypted and can only be read by you and')
 
 
 class ProfileSendMessageButton(BaseButton):

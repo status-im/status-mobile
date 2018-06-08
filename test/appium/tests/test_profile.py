@@ -75,7 +75,7 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view.edit_profile_picture(file_name='sauce_logo.png')
         profile_view.relogin()
         sign_in_view.profile_button.click()
-        self.driver.swipe(500, 500, 500, 1000)
+        profile_view.swipe_down()
         if not profile_view.profile_picture.is_element_image_equals_template():
             pytest.fail('Profile picture was not updated')
 

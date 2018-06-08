@@ -102,7 +102,7 @@ class UserNameText(BaseText):
     def __init__(self, driver):
         super(UserNameText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView')
 
 
 class ShareMyContactKeyButton(BaseButton):
