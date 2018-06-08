@@ -67,7 +67,7 @@
                                            (.-selection))
                                      end (.-end s)]
                                  (re-frame/dispatch [:update-text-selection end]))
-      :style                  (style/input-view height single-line-input?)
+      :style                  (style/input-view single-line-input?)
       :placeholder-text-color colors/gray
       :auto-capitalize        :sentences}]))
 
@@ -146,7 +146,7 @@
           set-container-width-fn #(reagent/set-state component {:container-width %})
           {:keys [width height container-width]} (reagent/state component)]
       [react/view {:style style/input-root}
-       [react/animated-view {:style (style/input-animated height)}
+       [react/animated-view {:style style/input-animated}
         [invisible-input {:set-layout-width-fn set-layout-width-fn}]
         [invisible-input-height {:set-layout-height-fn set-layout-height-fn
                                  :container-width      container-width}]
