@@ -52,7 +52,7 @@
             :icons/delete              (components.svg/slurp-svg "./resources/icons/delete.svg")
             :icons/dots-horizontal     (components.svg/slurp-svg "./resources/icons/dots_horizontal.svg")
             :icons/dots-vertical       (components.svg/slurp-svg "./resources/icons/dots_vertical.svg")
-            :icons/exclamation_mark    (components.svg/slurp-svg "./resources/icons/exclamation_mark.svg")
+            :icons/exclamation-mark    (components.svg/slurp-svg "./resources/icons/exclamation_mark.svg")
             :icons/filter              (components.svg/slurp-svg "./resources/icons/filter.svg")
             :icons/fullscreen          (components.svg/slurp-svg "./resources/icons/fullscreen.svg")
             :icons/group-big           (components.svg/slurp-svg "./resources/icons/group_big.svg")

@@ -78,16 +78,24 @@
          (fn [{:keys [postponed]}]
            (when postponed
              {:title "Postponed"
-              :key :postponed
-              :data postponed})))
+              :key   :postponed
+              :data  postponed})))
 
 (reg-sub :wallet.transactions/pending-transactions-list
          :<- [:wallet.transactions/grouped-transactions]
          (fn [{:keys [pending]}]
            (when pending
              {:title "Pending"
-              :key :pending
-              :data pending})))
+              :key   :pending
+              :data  pending})))
+
+(reg-sub :wallet.transactions/failed-transactions-list
+         :<- [:wallet.transactions/grouped-transactions]
+         (fn [{:keys [failed]}]
+           (when failed
+             {:title "Failed"
+              :key   :failed
+              :data  failed})))
 
 (defn group-transactions-by-date [transactions]
   (->> transactions
@@ -101,8 +109,8 @@
 
 (reg-sub :wallet.transactions/completed-transactions-list
          :<- [:wallet.transactions/grouped-transactions]
-         (fn [{:keys [inbound outbound]}]
-           (group-transactions-by-date (into inbound outbound))))
+         (fn [{:keys [inbound outbound failed]}]
+           (group-transactions-by-date (concat inbound outbound failed))))
 
 (reg-sub :wallet.transactions/transactions-history-list
          :<- [:wallet.transactions/postponed-transactions-list]

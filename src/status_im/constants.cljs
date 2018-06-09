@@ -33,6 +33,7 @@
    {:type [{:id :inbound   :label (i18n/label :t/incoming)  :checked? true}
            {:id :outbound  :label (i18n/label :t/outgoing)  :checked? true}
            {:id :pending   :label (i18n/label :t/pending)   :checked? true}
+           {:id :failed    :label (i18n/label :t/failed)    :checked? true}
            ;; TODO(jeluard) Restore once we support postponing transaction
            #_{:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 

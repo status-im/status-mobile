@@ -25,23 +25,26 @@
     (str "https://" network-subdomain ".etherscan.io/api?module=account&action=txlist&address=0x"
          account "&startblock=0&endblock=99999999&sort=desc&apikey=" etherscan-api-key "?q=json")))
 
-(defn- format-transaction [account {:keys [value timeStamp blockNumber hash from to gas gasPrice gasUsed nonce confirmations input]}]
-  (let [inbound? (= (str "0x" account) to)]
-    {:value value
+(defn- format-transaction [account {:keys [value timeStamp blockNumber hash from to gas gasPrice gasUsed nonce confirmations input isError]}]
+  (let [inbound? (= (str "0x" account) to)
+        error?   (= "1" isError)]
+    {:value         value
      ;; timestamp is in seconds, we convert it in ms
-     :timestamp (str timeStamp "000")
-     :symbol :ETH
-     :type (if inbound? :inbound :outbound)
-     :block blockNumber
-     :hash  hash
-     :from from
-     :to to
-     :gas-limit gas
-     :gas-price gasPrice
-     :gas-used gasUsed
-     :nonce nonce
+     :timestamp     (str timeStamp "000")
+     :symbol        :ETH
+     :type          (cond error?   :failed
+                          inbound? :inbound
+                          :else    :outbound)
+     :block         blockNumber
+     :hash          hash
+     :from          from
+     :to            to
+     :gas-limit     gas
+     :gas-price     gasPrice
+     :gas-used      gasUsed
+     :nonce         nonce
      :confirmations confirmations
-     :data input}))
+     :data          input}))
 
 (defn- format-transactions-response [response account]
   (->> response
