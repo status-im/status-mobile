@@ -22,7 +22,11 @@
 (def all
   {:mainnet
    (resolve-icons :mainnet
-                  [{:symbol   :EOS
+                  [{:symbol   :DAI
+                    :name     "DAI"
+                    :address  "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
+                    :decimals 18}
+                   {:symbol   :EOS
                     :name     "EOS"
                     :address  "0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0"
                     :decimals 18}
