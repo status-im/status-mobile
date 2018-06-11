@@ -13,17 +13,18 @@
   (views/letsubs [next [:get-screen-params]]
     [react/view {:style styles/usage-data-view}
      [status-bar/status-bar {:flat? true}]
-     [react/view {:style styles/image-container}
-      [react/image {:source (:analytics-image resources/ui)
-                    :style  styles/usage-data-image}]]
-     [react/text {:style styles/help-improve-text}
-      (i18n/label :t/help-improve)]
      [react/view
-      [react/text {:style styles/help-improve-text-description}
-       (i18n/label :t/help-improve-description)]]
-     [react/text {:style styles/learn-what-we-collect-link
-                  :on-press #(.openURL react/linking "https://wiki.status.im/Help_Improve_Status#Help_Improve_Status")}
-      (i18n/label :t/learn-what-we-collect-link)]
+      [react/view {:style styles/image-container}
+       [react/image {:source (:analytics-image resources/ui)
+                     :style  styles/usage-data-image}]]
+      [react/text {:style styles/help-improve-text}
+       (i18n/label :t/help-improve)]
+      [react/view
+       [react/text {:style styles/help-improve-text-description}
+        (i18n/label :t/help-improve-description)]]
+      [react/text {:style    styles/learn-what-we-collect-link
+                   :on-press #(.openURL react/linking "https://wiki.status.im/Help_Improve_Status#Help_Improve_Status")}
+       (i18n/label :t/learn-what-we-collect-link)]]
      [react/view styles/bottom-button-container
       [components.common/button {:button-style      styles/share-button
                                  :uppercase?        false

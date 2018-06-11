@@ -11,21 +11,20 @@
 
 (def usage-data-view
   {:flex               1
-   :margin-top         (scaled-y 90)
    :background-color   colors/white
-   :align-items        :center})
+   :align-items        :center
+   :justify-content    :center})
 
 (def image-container
-  {:flex            1
-   ;; on screens less tall than iPhone 5, let's not show the image at all
-   :display (if (>= window-height 568) "flex" "none")
+  {;; on screens less tall than iPhone 5, let's not show the image at all
+   :display         (if (>= window-height 568) "flex" "none")
    :align-items     :center
    :justify-content :center
-   :margin-bottom (scaled-y 90)})
+   :margin-bottom   (scaled-y 30)})
 
 (def usage-data-image
-  {:width         (* (/ 390 432) (scaled-y 138))
-   :height        (scaled-y 138)})
+  {:width  (* (/ 390 432) (scaled-y 138))
+   :height (scaled-y 138)})
 
 (defstyle help-improve-text
   {:text-align    :center
@@ -53,15 +52,17 @@
 (def learn-what-we-collect-link
   {:text-align    :center
    :color         colors/blue
-   :margin-bottom (scaled-y 109)
    :margin-left   61
    :margin-right  63})
 
 (def bottom-button-container
-  {:flex-direction  :row
-   :margin-bottom   (scaled-y (if platform/ios? 96 48))
-   :margin-left     41
-   :margin-right    42})
+  {:flex-direction :row
+   ;; we need to make a margin smaller on iPhone 5(s)
+   :margin-top     (scaled-y (if (and platform/ios?
+                                      (> window-height 568))
+                               96 48))
+   :margin-left    41
+   :margin-right   42})
 
 (def share-button
   {:padding-horizontal  18
