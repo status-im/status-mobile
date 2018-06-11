@@ -11,6 +11,10 @@ usage() {
     printf "    %s develop-g12345678\n" "$(basename "$0")"
 }
 
+sedi () {
+    sed --version >/dev/null 2>&1 && sed -i -- "$@" || sed -i "" "$@"
+}
+
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     usage
     exit 1
@@ -23,5 +27,5 @@ fi
 
 STATUSGO_VERSION=$1
 
-sed -i '' -e "s/\(<version>\).*\(<\/version>\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/ios/RCTStatus/pom.xml
-sed -i '' -e "s/\(statusGoVersion = '\).*\('\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/android/build.gradle
+sedi "s/\(<version>\).*\(<\/version>\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/ios/RCTStatus/pom.xml
+sedi "s/\(statusGoVersion = '\).*\('\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/android/build.gradle
