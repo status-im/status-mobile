@@ -128,6 +128,7 @@
 (defview advanced [{:keys [network networks dev-mode?]}]
   (letsubs [advanced? [:get :my-profile/advanced?]
             {:keys [sharing-usage-data?]} [:get-current-account]]
+    {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
     [react/view
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
                                  :style    styles/advanced-button}
