@@ -102,7 +102,7 @@
                   :<- [:wallet/visible-tokens-symbols]
                   (fn [[network visible-tokens-symbols]]
                     (conj (filter #(contains? visible-tokens-symbols (:symbol %))
-                                  (tokens/tokens-for (ethereum/network->chain-keyword network)))
+                                  (tokens/sorted-tokens-for (ethereum/network->chain-keyword network)))
                           tokens/ethereum)))
 
 (re-frame/reg-sub :wallet/visible-assets-with-amount
