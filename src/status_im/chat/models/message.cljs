@@ -124,7 +124,7 @@
     (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
 
 (defn- add-received-message
-  [batch? 
+  [batch?
    {:keys [from message-id chat-id content content-type clock-value to-clock-value js-obj] :as message}
    {:keys [db now] :as cofx}]
   (let [{:keys [web3 current-chat-id view-id access-scope->commands-responses]
@@ -158,9 +158,6 @@
 (def ^:private add-single-received-message (partial add-received-message false))
 (def ^:private add-batch-received-message (partial add-received-message true))
 
-(defn ensure-timestamp [now message]
-  (update message :timestamp (fnil identity now)))
-
 (defn receive
   [{:keys [chat-id message-id] :as message} {:keys [now] :as cofx}]
   (handlers-macro/merge-fx cofx
@@ -168,27 +165,30 @@
                                                     ;; We activate a chat again on new messages
                                                     :is-active true
                                                     :timestamp now})
-                           (add-single-received-message (ensure-timestamp now message))))
+                           (add-single-received-message message)))
 
 (defn receive-many
-  [raw-messages {:keys [now] :as cofx}]
-  (let [chat-ids        (into #{} (map :chat-id) raw-messages)
-        chat-effects    (handlers-macro/merge-effects cofx
-                                                      (fn [chat-id cofx]
-                                                        (chat-model/upsert-chat {:chat-id   chat-id
-                                                                                 :is-active true
-                                                                                 :timestamp now}
-                                                                                cofx))
-                                                      chat-ids)
-        messages        (map (partial ensure-timestamp now) raw-messages)
-        message-effects (handlers-macro/merge-effects chat-effects cofx add-batch-received-message messages)]
-    (handlers-macro/merge-effects message-effects
-                                  cofx
-                                  (fn [chat-id cofx]
-                                    (handlers-macro/merge-fx cofx
-                                                             (re-index-message-groups chat-id)
-                                                             (group-messages chat-id messages)))
-                                  chat-ids)))
+  [messages {:keys [now] :as cofx}]
+  (let [chat->message   (group-by :chat-id messages)
+        chat-ids        (keys chat->message)
+        chat-effects    (handlers-macro/merge-effects
+                         cofx
+                         (fn [chat-id cofx]
+                           (chat-model/upsert-chat {:chat-id   chat-id
+                                                    :is-active true
+                                                    :timestamp now}
+                                                   cofx))
+                         chat-ids)
+        message-effects (handlers-macro/merge-effects
+                         chat-effects cofx add-batch-received-message messages)]
+    (handlers-macro/merge-effects
+     message-effects
+     cofx
+     (fn [chat-id cofx]
+       (handlers-macro/merge-fx cofx
+                                (re-index-message-groups chat-id)
+                                (group-messages chat-id (get chat->message chat-id))))
+     chat-ids)))
 
 (defn system-message [chat-id message-id timestamp content]
   {:message-id   message-id
