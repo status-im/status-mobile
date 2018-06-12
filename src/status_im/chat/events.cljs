@@ -286,6 +286,11 @@
   (fn [cofx [chat-id opts]]
     (navigate-to-chat chat-id opts cofx)))
 
+(handlers/register-handler-db
+ :add-pending-contact
+ (fn [db [_ chat-id]]
+   (assoc-in db [:contacts/contacts chat-id :pending?] false)))
+
 (defn start-chat
   "Start a chat, making sure it exists"
   [chat-id opts {:keys [db] :as cofx}]
