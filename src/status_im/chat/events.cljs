@@ -64,32 +64,6 @@
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
 
-(handlers/register-handler-fx
- :load-more-messages
- [(re-frame/inject-cofx :data-store/get-messages)
-  (re-frame/inject-cofx :data-store/get-user-statuses)]
- (fn [{{:keys [current-chat-id] :as db} :db
-       get-stored-messages :get-stored-messages
-       get-stored-user-statuses :get-stored-user-statuses :as cofx} _]
-   (when-not (get-in db [:chats current-chat-id :all-loaded?])
-     (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
-           new-messages     (get-stored-messages current-chat-id loaded-count)
-           indexed-messages (index-messages new-messages)
-           new-message-ids  (keys indexed-messages)
-           new-statuses     (get-stored-user-statuses current-chat-id new-message-ids)]
-       (handlers-macro/merge-fx
-        cofx
-        {:db (-> db
-                 (update-in [:chats current-chat-id :messages] merge indexed-messages)
-                 (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
-                 (update-in [:chats current-chat-id :not-loaded-message-ids]
-                            #(apply disj % new-message-ids))
-                 (update-in [:chats current-chat-id :unviewed-messages]
-                            #(apply disj % new-message-ids))
-                 (assoc-in [:chats current-chat-id :all-loaded?]
-                           (> constants/default-number-of-messages (count new-messages))))}
-        (models.message/group-messages current-chat-id new-messages))))))
-
 (handlers/register-handler-db
  :message-appeared
  [re-frame/trim-v]
@@ -297,6 +271,31 @@
  [re-frame/trim-v]
  (fn [cofx [chat-id opts]]
    (navigate-to-chat chat-id opts cofx)))
+
+(handlers/register-handler-fx
+ :load-more-messages
+ [(re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)]
+ (fn [{{:keys [current-chat-id] :as db} :db
+       get-stored-messages :get-stored-messages
+       get-stored-user-statuses :get-stored-user-statuses :as cofx} _]
+   (when-not (get-in db [:chats current-chat-id :all-loaded?])
+     (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
+           new-messages     (get-stored-messages current-chat-id loaded-count)
+           indexed-messages (index-messages new-messages)
+           new-message-ids  (keys indexed-messages)
+           new-statuses     (get-stored-user-statuses current-chat-id new-message-ids)]
+       (handlers-macro/merge-fx
+        cofx
+        {:db (-> db
+                 (update-in [:chats current-chat-id :messages] merge indexed-messages)
+                 (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
+                 (update-in [:chats current-chat-id :not-loaded-message-ids]
+                            #(apply disj % new-message-ids))
+                 (assoc-in [:chats current-chat-id :all-loaded?]
+                           (> constants/default-number-of-messages (count new-messages))))}
+        (models.message/group-messages current-chat-id new-messages)
+        (mark-messages-seen current-chat-id))))))
 
 (handlers/register-handler-fx
  :execute-stored-command-and-return-to-chat
