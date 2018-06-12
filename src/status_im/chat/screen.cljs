@@ -122,10 +122,15 @@
 
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages-stream]
-            chat               [:get-current-chat]
+            {:keys [chat-id] :as chat} [:get-current-chat]
             current-public-key [:get-current-public-key]]
-    {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
-                                                                   :input-focused? false}])}
+    {:component-did-mount (fn []
+                            (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
+                                                                    :input-focused?    false}])
+                            (status-im.utils.utils/set-timeout
+                             (fn []
+                               (re-frame/dispatch [:mark-unseen chat-id]))
+                             100))}
     (if (empty? messages)
       [empty-chat-container chat]
       [list/flat-list {:data                      messages
