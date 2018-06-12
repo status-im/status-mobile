@@ -260,8 +260,9 @@
    (let [wnode                   (get-current-wnode db)
          web3                    (:web3 db)
          now-in-s                (quot now 1000)
-         last-request            (get-in db [:account/account :last-request]
-                                         (- now-in-s seven-days))
+         last-request            (or
+                                  (get-in db [:account/account :last-request])
+                                  (- now-in-s seven-days))
          request-messages-topics (get-request-messages-topics db)
          request-history-topics  (get-request-history-topics db)]
      (when (inbox-ready? wnode cofx)

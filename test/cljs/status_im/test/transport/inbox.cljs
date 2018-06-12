@@ -66,3 +66,33 @@
       (testing "it does not generate a sym key if already present"
         (is (not (-> (inbox/connect-to-mailserver {:db wnode-with-sym-key-db})
                      :shh/generate-sym-key-from-password)))))))
+
+(deftest request-messages
+  (let [db {:network "mainnet"
+            :mailserver-status :connected
+            :inbox/wnodes
+            {:mainnet {"wnodeid" {:address    "wnode-address"
+                                  :sym-key-id "something"
+                                  :password   "wnode-password"}}}
+            :account/account
+            {:settings {:wnode {:mainnet "wnodeid"}}
+             :networks {"mainnet" {:config {:NetworkId 1}}}}}
+        cofx {:db db :now 1000000000}]
+    (testing "inbox is ready"
+      (testing "last-request is set"
+        (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 2)
+              actual (inbox/request-messages cofx-with-last-request)]
+          (testing "it uses last request"
+            (is (= 2 (get-in actual [::inbox/request-messages :from]))))))
+      (testing "last-request is not set"
+        (let [actual (inbox/request-messages cofx)]
+          (testing "it defaults to the last 7 days"
+            (is (= 395200 (get-in actual [::inbox/request-messages :from]))))))
+      (testing "last-request is nil"
+        (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] nil)
+              actual (inbox/request-messages cofx-with-last-request)]
+          (testing "it defaults to the last 7 days"
+            (is (= 395200 (get-in actual [::inbox/request-messages :from])))))))
+    (testing "inbox is not ready"
+      (testing "it does not do anything"
+        (is (nil? (inbox/request-messages {})))))))
