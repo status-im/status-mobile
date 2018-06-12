@@ -23,6 +23,7 @@ timeout(90) {
       def ipaUrl = ''
       def testPassed = true
       def version
+      def build_no
 
       load "$HOME/env.groovy"
 
@@ -56,7 +57,7 @@ timeout(90) {
             usernameVariable: 'GIT_USER',
             passwordVariable: 'GIT_PASS'
           ]]) {
-            def build_no = sh(
+            build_no = sh(
               returnStdout: true,
               script: './scripts/build_no.sh --increment'
             ).trim()
