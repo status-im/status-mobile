@@ -16,6 +16,8 @@
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
    :cryptokitties      (js/require "./resources/images/contacts/cryptokitties.png")
+   :etheremon          (js/require "./resources/images/contacts/etheremon.png")
+   :cryptostrikers     (js/require "./resources/images/contacts/cryptostrikers.png")
    :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")
    :erc-dex            (js/require "./resources/images/contacts/erc-dex.png")
    :cent               (js/require "./resources/images/contacts/cent.png")

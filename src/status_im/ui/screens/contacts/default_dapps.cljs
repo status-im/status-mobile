@@ -55,7 +55,15 @@
            {:name        "Etherbots"
             :dapp-url    "https://etherbots.io/"
             :photo-path  "contacts://etherbots"
-            :description "Robot wars on the Ethereum Platform"}]}
+            :description "Robot wars on the Ethereum Platform"}
+           {:name        "Etheremon"
+            :dapp-url    "https://www.etheremon.com/"
+            :photo-path  "contacts://etheremon"
+            :description "Decentralized World of Ether Monsters"}
+           {:name        "CryptoStrikers"
+            :dapp-url    "https://www.cryptostrikers.com/"
+            :photo-path  "contacts://cryptostrikers"
+            :description "The Beautiful (card) Game"}]}
    {:title "Social Networks"
     :data [{:name        "Cent"
             :dapp-url    "https://beta.cent.co"
