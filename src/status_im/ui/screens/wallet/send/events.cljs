@@ -30,13 +30,17 @@
 
 (re-frame/reg-fx
  ::accept-transaction-with-changed-gas
- (fn [{:keys [masked-password id on-completed gas gas-price]}]
+ (fn [{:keys [masked-password id on-completed gas gas-price default-gas-price]}]
    ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (status/approve-sign-request-with-args id
-                                          (security/unmask masked-password)
-                                          (money/to-fixed gas)
-                                          (money/to-fixed gas-price)
-                                          on-completed)))
+   (if gas
+     (status/approve-sign-request-with-args id
+                                            (security/unmask masked-password)
+                                            (money/to-fixed gas)
+                                            (money/to-fixed (or gas-price default-gas-price))
+                                            on-completed)
+     (status/approve-sign-request id
+                                  (security/unmask masked-password)
+                                  on-completed))))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
   (.sendTransaction (.-eth web3)
@@ -300,18 +304,39 @@
                             :masked-password password
                             :on-completed    on-transactions-modal-completed}})))
 
+(defn update-gas-price
+  ([db edit? success-event]
+   {:update-gas-price {:web3          (:web3 db)
+                       :success-event (or success-event :wallet/update-gas-price-success)
+                       :edit?         edit?}})
+  ([db edit?] (update-gas-price db edit? :wallet/update-gas-price-success)))
+
+(handlers/register-handler-fx
+ :wallet/update-gas-price
+ (fn [{:keys [db]} [_ edit?]]
+   (update-gas-price db edit?)))
+
+(defn sign-transaction-modal [{:keys [db]} default-gas-price]
+  ;;TODO(goranjovic) - unify send-transaction and unsigned-transaction
+  (let [{:keys [id password] :as send-transaction}   (get-in db [:wallet :send-transaction])
+        {:keys [gas gas-price]} [:wallet.send/unsigned-transaction]]
+    {:db                                   (assoc-in db [:wallet :send-transaction :in-progress?] true)
+     ::accept-transaction-with-changed-gas {:id                id
+                                            :masked-password   password
+                                            :gas               (or gas (:gas send-transaction))
+                                            :gas-price         (or gas-price (:gas-price send-transaction))
+                                            :default-gas-price default-gas-price
+                                            :on-completed      on-transactions-modal-completed}}))
+
+(handlers/register-handler-fx
+ :wallet/sign-transaction-modal-update-gas-success
+ (fn [cofx [_ default-gas-price]]
+   (sign-transaction-modal cofx default-gas-price)))
+
 (handlers/register-handler-fx
  :wallet/sign-transaction-modal
- (fn [{db :db} _]
-   ;;TODO(goranjovic) - unify send-transaction and unsigned-transaction
-   (let [{:keys [id password] :as send-transaction}   (get-in db [:wallet :send-transaction])
-         {:keys [gas gas-price]} [:wallet.send/unsigned-transaction]]
-     {:db                                   (assoc-in db [:wallet :send-transaction :in-progress?] true)
-      ::accept-transaction-with-changed-gas {:id              id
-                                             :masked-password password
-                                             :gas             (or gas (:gas send-transaction))
-                                             :gas-price       (or gas-price (:gas-price send-transaction))
-                                             :on-completed    on-transactions-modal-completed}})))
+ (fn [{:keys [db]} _]
+   (update-gas-price db false :wallet/sign-transaction-modal-update-gas-success)))
 
 (defn discard-transaction
   [{:keys [db]}]
@@ -379,16 +404,6 @@
     :db       (assoc-in db [:wallet :edit :gas]
                         {:value    (ethereum/estimate-gas (-> db :wallet :send-transaction :symbol))
                          :invalid? false})}))
-
-(defn update-gas-price [db edit?]
-  {:update-gas-price {:web3          (:web3 db)
-                      :success-event :wallet/update-gas-price-success
-                      :edit?         edit?}})
-
-(handlers/register-handler-fx
- :wallet/update-gas-price
- (fn [{:keys [db]} [_ edit?]]
-   (update-gas-price db edit?)))
 
 (handlers/register-handler-fx
  :close-transaction-sent-screen
