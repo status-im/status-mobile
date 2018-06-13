@@ -4,7 +4,10 @@
             [status-im.transport.core :as transport]))
 
 (deftest init-whisper
-  (let [cofx {:db {:account/account {:public-key "1"}}}]
+  (let [cofx {:db {:network "mainnet_rpc"
+                   :account/account
+                   {:networks {"mainnet_rpc" {:config {:NetworkId 1}}}
+                    :public-key "1"}}}]
     (testing "it adds the discover filter"
       (is (= (:shh/add-discovery-filter (protocol.handlers/initialize-protocol cofx [])))))
     (testing "it restores the sym-keys"
@@ -40,4 +43,6 @@
                                     ms-2
                                     ms-3])]
         (is (= expected-wnodes
-               (get-in (protocol.handlers/initialize-protocol cofx-with-ms []) [:db :inbox/wnodes])))))))
+               (get-in
+                (protocol.handlers/initialize-protocol cofx-with-ms [])
+                [:db :inbox/wnodes])))))))

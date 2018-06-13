@@ -9,8 +9,8 @@
         :peers-summary (if registered-peer?
                          [{:id "wnode-id"}]
                          [])
-        :account/account {:networks constants/default-networks
-                          :settings {:wnode {:mainnet "mailserver-a"}}}
+        :account/account {:networks constants/default-networks}
+        :inbox/current-id "mailserver-a"
         :inbox/wnodes {:mainnet {"mailserver-a" {:sym-key-id sym-key
                                                  :address "enode://wnode-id@ip"}}}}})
 
@@ -46,6 +46,7 @@
 
 (deftest connect-to-mailserver
   (let [db {:network "mainnet"
+            :inbox/current-id "wnodeid"
             :inbox/wnodes
             {:mainnet {"wnodeid" {:address  "wnode-address"
                                   :password "wnode-password"}}}
@@ -70,13 +71,13 @@
 (deftest request-messages
   (let [db {:network "mainnet"
             :mailserver-status :connected
+            :inbox/current-id "wnodeid"
             :inbox/wnodes
             {:mainnet {"wnodeid" {:address    "wnode-address"
                                   :sym-key-id "something"
                                   :password   "wnode-password"}}}
             :account/account
-            {:settings {:wnode {:mainnet "wnodeid"}}
-             :networks {"mainnet" {:config {:NetworkId 1}}}}}
+            {:networks {"mainnet" {:config {:NetworkId 1}}}}}
         cofx {:db db :now 1000000000}]
     (testing "inbox is ready"
       (testing "last-request is set"

@@ -4,11 +4,8 @@
             [status-im.utils.ethereum.core :as ethereum]))
 
 (re-frame/reg-sub :settings/current-wnode
-                  :<- [:network]
-                  :<- [:get-current-account]
-                  (fn [[network current-account]]
-                    (let [chain (ethereum/network->chain-keyword network)]
-                      (get-in current-account [:settings :wnode chain]))))
+                  (fn [db _]
+                    (:inbox/current-id db)))
 
 (re-frame/reg-sub :settings/network-wnodes
                   :<- [:network]

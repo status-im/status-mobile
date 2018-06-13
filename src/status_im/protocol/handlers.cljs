@@ -43,7 +43,7 @@
                                        :web3 web3
                                        :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url)
                                        :transport/chats transport)}
-                           (transport.inbox/add-custom-mailservers mailservers)
+                           (transport.inbox/initialize-offline-inbox mailservers)
                            (transport/init-whisper current-account-id)))
 ;;; INITIALIZE PROTOCOL
 (handlers/register-handler-fx

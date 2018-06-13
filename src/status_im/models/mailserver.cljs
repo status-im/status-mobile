@@ -3,6 +3,7 @@
    [clojure.string :as string]
    [status-im.utils.handlers-macro :as handlers-macro]
    [status-im.utils.ethereum.core :as ethereum]
+   [status-im.models.network :as models.network]
    [status-im.data-store.mailservers :as data-store.mailservers]))
 
 (def enode-address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
@@ -20,23 +21,6 @@
 (defn valid-enode-address? [address]
   (re-matches enode-address-regex address))
 
-(defn- get-chain [db]
-  (let [network  (get (:networks (:account/account db)) (:network db))]
-    (ethereum/network->chain-keyword network)))
-
-(defn- address->mailserver [address]
-  (let [[enode password url :as response] (extract-url-components address)]
-    (cond-> {:address      (if (seq response)
-                             (str "enode://" enode "@" url)
-                             address)
-             :user-defined true}
-      password (assoc :password password))))
-
-(defn- build [id mailserver-name address]
-  (assoc (address->mailserver address)
-         :id (string/replace id "-" "")
-         :name mailserver-name))
-
 (defn build-url [address password]
   (let [[initial host] (extract-address-components address)]
     (str "enode://" initial ":" password "@" host)))
@@ -53,12 +37,37 @@
                   :name (string/blank? value)
                   :url  (not (valid-enode-url? value)))})})
 
-(defn connected? [id {:keys [db]}]
-  (let [current-id (get-in db [:account/account :settings :wnode (get-chain db)])]
-    (= current-id id)))
+(defn- address->mailserver [address]
+  (let [[enode password url :as response] (extract-url-components address)]
+    (cond-> {:address      (if (seq response)
+                             (str "enode://" enode "@" url)
+                             address)
+             :user-defined true}
+      password (assoc :password password))))
 
-(defn fetch [id {:keys [db]}]
-  (get-in db [:inbox/wnodes (get-chain db) id]))
+(defn- build [id mailserver-name address]
+  (assoc (address->mailserver address)
+         :id (string/replace id "-" "")
+         :name mailserver-name))
+
+(defn connected? [id {:keys [db]}]
+  (= (:inbox/current-id db) id))
+
+(defn fetch [id {:keys [db] :as cofx}]
+  (get-in db [:inbox/wnodes (models.network/get-chain cofx) id]))
+
+(defn fetch-current [{:keys [db] :as cofx}]
+  (fetch (:inbox/current-id db) cofx))
+
+(defn selected-or-random-id
+  "Use the preferred mailserver if set & exists, otherwise picks one randomly"
+  [{:keys [db] :as cofx}]
+  (let [chain (models.network/get-chain cofx)
+        preference (get-in db [:account/account :settings :wnode chain])]
+    (if (and preference
+             (fetch preference cofx))
+      preference
+      (-> db :inbox/wnodes chain keys rand-nth))))
 
 (def default? (comp not :user-defined fetch))
 
@@ -66,8 +75,20 @@
   (when-not (or
              (default? id cofx)
              (connected? id cofx))
-    {:db            (update-in db [:inbox/wnodes (get-chain db)] dissoc id)
+    {:db            (update-in db [:inbox/wnodes (models.network/get-chain cofx)] dissoc id)
      :data-store/tx [(data-store.mailservers/delete-tx id)]}))
+
+(defn set-current-mailserver [{:keys [db] :as cofx}]
+  {:db (assoc db :inbox/current-id (selected-or-random-id cofx))})
+
+(defn add-custom-mailservers [mailservers {:keys [db]}]
+  {:db (reduce (fn [db {:keys [id chain] :as mailserver}]
+                 (assoc-in db [:inbox/wnodes (keyword chain) id]
+                           (-> mailserver
+                               (dissoc :chain)
+                               (assoc :user-defined true))))
+               db
+               mailservers)})
 
 (defn edit [id {:keys [db] :as cofx}]
   (let [{:keys [id

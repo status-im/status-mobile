@@ -15,6 +15,7 @@
             [status-im.data-store.accounts :as accounts-store]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.data-store.core :as data-store]
+            [status-im.models.mailserver :as models.mailserver]
             [status-im.ui.screens.accounts.events :as accounts]
             [status-im.data-store.transport :as transport-store]))
 
@@ -79,14 +80,6 @@
   (let [network  (get (:networks (:account/account db)) (:network db))
         chain    (ethereum/network->chain-keyword network)]
     {:db (assoc-in db [:inbox/wnodes chain id :sym-key-id] sym-key-id)}))
-
-(defn get-current-wnode [db]
-  (let [network  (get (:networks (:account/account db)) (:network db))
-        chain    (ethereum/network->chain-keyword network)
-        wnode-id (get-in db [:account/account :settings :wnode chain])]
-    (get-in db [:inbox/wnodes chain wnode-id])))
-
-(def get-current-wnode-address (comp :address get-current-wnode))
 
 (defn registered-peer? [peers enode]
   (let [peer-ids (into #{} (map :id) peers)
@@ -193,7 +186,7 @@
    mailserver-status is changed to error if it is not connected by then"
   [{:keys [db] :as cofx}]
   (let [web3                        (:web3 db)
-        {:keys [address] :as wnode} (get-current-wnode db)
+        {:keys [address] :as wnode} (models.mailserver/fetch-current cofx)
         peers-summary               (:peers-summary db)
         connected?                  (registered-peer? peers-summary address)]
     (when config/offline-inbox-enabled?
@@ -216,7 +209,7 @@
   (when (and (:account/account db)
              config/offline-inbox-enabled?)
     (let [{:keys [peers-summary peers-count]} db
-          wnode                               (get-current-wnode-address db)
+          wnode                               (:address (models.mailserver/fetch-current cofx))
           mailserver-was-registered?          (registered-peer? previous-summary
                                                                 wnode)
           mailserver-is-registered?           (registered-peer? peers-summary
@@ -257,7 +250,7 @@
 
 (defn request-messages
   ([{:keys [db now] :as cofx}]
-   (let [wnode                   (get-current-wnode db)
+   (let [wnode                   (models.mailserver/fetch-current cofx)
          web3                    (:web3 db)
          now-in-s                (quot now 1000)
          last-request            (or
@@ -283,7 +276,7 @@
      (request-messages cofx))))
 
 (defn request-chat-history [chat-id {:keys [db now] :as cofx}]
-  (let [wnode             (get-current-wnode db)
+  (let [wnode             (models.mailserver/fetch-current cofx)
         web3              (:web3 db)
         topic             (get-in db [:transport/chats chat-id :topic])
         now-in-s          (quot now 1000)]
@@ -304,15 +297,6 @@
    (handlers-macro/merge-fx cofx
                             (update-mailserver-status :connected)
                             (request-messages))))
-
-(defn add-custom-mailservers [mailservers {:keys [db]}]
-  {:db (reduce (fn [db {:keys [id chain] :as mailserver}]
-                 (assoc-in db [:inbox/wnodes (keyword chain) id]
-                           (-> mailserver
-                               (dissoc :chain)
-                               (assoc :user-defined true))))
-               db
-               mailservers)})
 
 (handlers/register-handler-fx
  :inbox/get-sym-key-success
@@ -367,6 +351,11 @@
                     {:chat-id chat-id
                      :chat (assoc (get-in db [:transport/chats chat-id])
                                   :fetch-history? false)})]})
+
+(defn initialize-offline-inbox [custom-mailservers cofx]
+  (handlers-macro/merge-fx cofx
+                           (models.mailserver/add-custom-mailservers custom-mailservers)
+                           (models.mailserver/set-current-mailserver)))
 
 (handlers/register-handler-fx
  :inbox/check-fetching

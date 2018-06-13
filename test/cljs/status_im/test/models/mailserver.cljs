@@ -114,15 +114,11 @@
                    (-> actual :dispatch)))))))))
 
 (deftest connected-mailserver
-  (testing "it returns true when set in settings"
-    (let [cofx {:db {:network "mainnet_rpc"
-                     :account/account {:settings {:wnode {:mainnet "a"}}
-                                       :networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/wnodes {:mainnet {"a" {:id      "a"
-                                                   :name    "old-name"
-                                                   :address "enode://old-id:old-password@url:port"}}}}}]
-      (is (model/connected? "a" cofx)))))
+  (testing "it returns true when set in inbox/current-id"
+    (let [cofx {:db {:inbox/current-id "a"}}]
+      (is (model/connected? "a" cofx))))
+  (testing "it returns false otherwise"
+    (is (not (model/connected? "a" {})))))
 
 (deftest fetch-mailserver
   (testing "it fetches the mailserver from the db"
@@ -133,6 +129,48 @@
                                                    :name    "old-name"
                                                    :address "enode://old-id:old-password@url:port"}}}}}]
       (is (model/fetch "a" cofx)))))
+
+(deftest fetch-current-mailserver
+  (testing "it fetches the mailserver from the db with corresponding id"
+    (let [cofx {:db {:network "mainnet_rpc"
+                     :account/account {:networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/current-id "a"
+                     :inbox/wnodes {:mainnet {"a" {:id      "a"
+                                                   :name    "old-name"
+                                                   :address "enode://old-id:old-password@url:port"}}}}}]
+      (is (model/fetch-current cofx)))))
+
+(deftest set-current-mailserver
+  (with-redefs [rand-nth (comp last sort)]
+    (let [cofx {:db {:network "mainnet_rpc"
+                     :account/account {:networks {"mainnet_rpc"
+                                                  {:config {:NetworkId 1}}}}
+                     :inbox/current-id "a"
+                     :inbox/wnodes {:mainnet {"a" {}
+                                              "b" {}
+                                              "c" {}
+                                              "d" {}}}}}]
+      (testing "the user has already a preference"
+        (let [cofx (assoc-in cofx
+                             [:db :account/account :settings]
+                             {:wnode {:mainnet "a"}})]
+          (testing "the mailserver exists"
+            (testing "it sets the preferred mailserver"
+              (is (= "a" (-> (model/set-current-mailserver cofx)
+                             :db
+                             :inbox/current-id)))))
+          (testing "the mailserver does not exists"
+            (let [cofx (update-in cofx [:db :inbox/wnodes :mainnet] dissoc "a")]
+              (testing "sets a random mailserver"
+                (is (= "d" (-> (model/set-current-mailserver cofx)
+                               :db
+                               :inbox/current-id))))))))
+      (testing "the user has not set an explicit preference"
+        (testing "it sets a random mailserver"
+          (is (= "d" (-> (model/set-current-mailserver cofx)
+                         :db
+                         :inbox/current-id))))))))
 
 (deftest delete-mailserver
   (testing "the user is not connected to the mailserver"
@@ -224,8 +262,6 @@
         (is (= 1 (count (:data-store/tx actual)))))
       (testing "it logs the user out if connected to the current mailserver"
         (let [actual (model/upsert (assoc-in cofx
-                                             [:db :account/account :settings]
-                                             {:wnode
-                                              {:mainnet "a"}}))]
+                                             [:db :inbox/current-id] "a"))]
           (is (= [:logout]
                  (-> actual :data-store/tx first :success-event))))))))

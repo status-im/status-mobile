@@ -45,6 +45,10 @@
      :name       network-name
      :config     config}))
 
+(defn get-chain [{:keys [db]}]
+  (let [network  (get (:networks (:account/account db)) (:network db))]
+    (ethereum/network->chain-keyword network)))
+
 (defn set-input [input-key value {:keys [db]}]
   {:db (-> db
            (update-in [:networks/manage input-key] assoc :value value)

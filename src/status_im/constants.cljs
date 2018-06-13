@@ -140,10 +140,7 @@
 
 (defn default-account-settings []
   {:wallet {:visible-tokens {:testnet #{:STT :ATT}
-                             :mainnet #{:SNT}}}
-   :wnode {:testnet (rand-nth (keys (:testnet default-wnodes)))
-           :mainnet (rand-nth (keys (:mainnet default-wnodes)))
-           :rinkeby (rand-nth (keys (:rinkeby default-wnodes)))}})
+                             :mainnet #{:SNT}}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

@@ -127,6 +127,7 @@
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
 (spec/def :inbox/fetching? (spec/nilable boolean?))
+(spec/def :inbox/current-id (spec/nilable string?))
 
 ;;;;NODE
 
@@ -174,6 +175,7 @@
                  :node/after-stop
                  :inbox/wnodes
                  :inbox/last-received
+                 :inbox/current-id
                  :inbox/fetching?
                  :browser/browsers
                  :browser/options
