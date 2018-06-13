@@ -103,11 +103,7 @@
              "mailserver-f" {:id      "mailserver-f" ;mail-03.gc-us-central1-a.eth.beta
                              :name    "Status mailserver F"
                              :password inbox-password
-                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}
-             "mailserver-g" {:id      "mailserver-g" ;mail-03.eth.beta
-                             :name    "Status mailserver G"
-                             :password inbox-password
-                             :address "enode://505935d249a6ff85698dde5566d041d53ffcfea5a55d740ef224524d69b7a53058b99a5276ac913d797e0640e644d0f0f0a1a30f8f162d2d7f2abb3064c869b2@185.156.42.129:30504"}}
+                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}
    :mainnet {"mailserver-a" {:id      "mailserver-a" ;mail-01.do-ams3.eth.beta
                              :name    "Status mailserver A"
                              :password inbox-password
@@ -131,11 +127,7 @@
              "mailserver-f" {:id      "mailserver-f" ;mail-03.gc-us-central1-a.eth.beta
                              :name    "Status mailserver F"
                              :password inbox-password
-                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}
-             "mailserver-g" {:id      "mailserver-g" ;mail-03.eth.beta
-                             :name    "Status mailserver G"
-                             :password inbox-password
-                             :address "enode://505935d249a6ff85698dde5566d041d53ffcfea5a55d740ef224524d69b7a53058b99a5276ac913d797e0640e644d0f0f0a1a30f8f162d2d7f2abb3064c869b2@185.156.42.129:30504"}}
+                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}
    :rinkeby {"mailserver-a" {:id     "mailserver-a"
                              :name   "Status mailserver A"
                              :password inbox-password
