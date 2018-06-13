@@ -27,5 +27,5 @@ fi
 
 STATUSGO_VERSION=$1
 
-sedi "s/\(<version>\).*\(<\/version>\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/ios/RCTStatus/pom.xml
+sedi "s/\([[:blank:]]\{28,\}<version>\).*\(<\/version>\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/ios/RCTStatus/pom.xml
 sedi "s/\(statusGoVersion = '\).*\('\)/\1$STATUSGO_VERSION\2/" modules/react-native-status/android/build.gradle
