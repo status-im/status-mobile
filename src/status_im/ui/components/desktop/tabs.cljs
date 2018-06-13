@@ -1,6 +1,8 @@
 (ns status-im.ui.components.desktop.tabs
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.icons.vector-icons :as icons]
+            [taoensso.timbre :as log]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.main-tabs.styles :as tabs.styles])
   (:require-macros [status-im.utils.views :as views]))
@@ -26,7 +28,7 @@
     [react/view {:style tabs.styles/tab-container}
      (let [icon (if active? icon-active icon-inactive)]
        [react/view
-        [icons/icon icon {:color (:color (tabs.styles/tab-icon active?))}]])
+        [icons/icon icon {:style {:tint-color (if active? colors/blue colors/gray-icon)}}]])
      [react/view
       [react/text {:style (tabs.styles/tab-title active?)}
        title]]]))
@@ -43,7 +45,7 @@
     [content active?]]])
 
 (views/defview main-tabs []
-  (views/letsubs [current-tab [:get :left-view-id]]
+  (views/letsubs [current-tab [:get-in [:desktop/desktop :tab-view-id]]]
     [react/view
      [react/view {:style tabs.styles/tabs-container}
       (for [[index {:keys [content view-id]}] tabs-list-indexed]

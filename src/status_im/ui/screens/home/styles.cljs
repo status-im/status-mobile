@@ -107,6 +107,7 @@
 (defstyle datetime-text
   {:color   component.styles/text4-color
    :android {:font-size 14}
+   :desktop {:font-size 14}
    :ios     {:font-size 15}})
 
 (def new-messages-container
