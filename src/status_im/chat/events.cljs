@@ -302,7 +302,7 @@
  (fn [cofx [_ chat-id]]
    (handlers-macro/merge-fx cofx
                             (events.commands/execute-stored-command)
-                            (navigate-to-chat chat-id {}))))
+                            (navigate-to-chat chat-id {:navigation-replace? true}))))
 
 (defn start-chat
   "Start a chat, making sure it exists"

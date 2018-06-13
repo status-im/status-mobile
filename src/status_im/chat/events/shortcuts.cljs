@@ -16,6 +16,7 @@
   (merge {:db (-> db
                   (send.events/set-and-validate-amount-db (:amount params) :ETH 18)
                   (choose-recipient.events/fill-request-details (transaction-details contact))
+                  (update-in [:wallet :send-transaction] dissoc :id :password :wrong-password?)
                   (navigation/navigate-to
                    (if (:wallet-set-up-passed? account)
                      :wallet-send-transaction-chat
