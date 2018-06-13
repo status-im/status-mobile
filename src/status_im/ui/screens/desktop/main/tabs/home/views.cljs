@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.utils.gfycat.core :as gfycat]
+            [taoensso.timbre :as log]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]))
 
@@ -43,5 +44,5 @@
      [react/scroll-view
       [react/view
        (for [[index chat] (map-indexed vector home-items)]
-         ^{:key (str chat index)}
+         ^{:key (first chat)}
          [chat-list-item chat])]]]))
