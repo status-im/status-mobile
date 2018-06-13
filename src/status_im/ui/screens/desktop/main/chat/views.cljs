@@ -21,13 +21,11 @@
                         (gfycat.core/generate-gfy public-key)
                         (or name
                             "Chat name")))]
-      [react/view {:style {:align-items :center :padding 11 :justify-content :center}}
-       [react/view {:style {:flex-direction :row}}
-        (when public?
-          [icons/icon :icons/public-chat])
+      [react/view {:style {:height 45}}
+       [react/view {:style {:flex 1 :flex-direction :row :justify-content :center :align-items :center}}
         (when (and group-chat (not public?))
           [icons/icon :icons/group-chat])
-        [react/text {:style {:font-size 16 :color :black :font-weight "600"}}
+        [react/text {:style {:font-size 16 :color :black :font-weight "300"}}
          chat-name]]
        (when pending?
          [react/touchable-highlight
@@ -71,7 +69,7 @@
                                 from current-public-key content-type group-chat type value] :as message}]
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
-    [react/view {:style {:margin-vertical 20}}
+    [react/view
      [react/text
       (string/capitalize (last (string/split value #"-")))]
      [react/view {:style {:height 1 :background-color "#e8ebec"}}]]
@@ -125,7 +123,7 @@
                            :on-content-size-change #(when (or (not @scroll-height) (< (- %2 @scroll-height) 500))
                                                       (.scrollToEnd @scroll-ref))
                            :ref                    #(reset! scroll-ref %)}
-        [react/view {:style {:padding-vertical 60}}
+        [react/view 
          (doall
            (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
              ^{:key (str message index)}
