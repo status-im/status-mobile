@@ -669,10 +669,6 @@
    :delete-bootnode-are-you-sure         "Are you sure you want to delete this bootnode?"
    :delete-bootnode                      "Delete bootnode"
 
-   :mainnet-warning-title                "Warning!"
-   :mainnet-warning-text                 "While we highly appreciate your contribution as a tester of Status, we’d like to point out the dangers. You’re switching to Mainnet mode which is still in Alpha. This means it is still in development and has not been audited yet. Some of the risks you may be exposed to include:\n\n- Accounts may be unrecoverable due to breaking changes\n- Loss of ETH and tokens\n- Failure to send or receive messages\n\nSwitching to Mainnet should be done for testing purposes only. By tapping \"I understand\", you confirm that you assume the full responsibility for all risks concerning your data and funds. "
-   :mainnet-warning-ok-text              "I understand"
-
    :main-networks                        "Main networks"
    :test-networks                        "Test networks"
    :custom-networks                      "Custom networks"

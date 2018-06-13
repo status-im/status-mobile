@@ -10,10 +10,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.screens.network-settings.styles :as styles]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]))
+            [status-im.ui.screens.network-settings.styles :as styles]))
 
 (defn- network-icon [connected? size]
   [react/view (styles/network-icon connected? size)
@@ -38,20 +35,10 @@
 (defn navigate-to-add-network []
   (re-frame/dispatch [:edit-network]))
 
-(defn wrap-mainnet-warning [network cb]
-  (fn []
-    (if (and config/mainnet-warning-enabled?
-             (mainnet? (:id network)))
-      (utils/show-confirmation (i18n/label :t/mainnet-warning-title)
-                               (i18n/label :t/mainnet-warning-text)
-                               (i18n/label :t/mainnet-warning-ok-text)
-                               #(cb network))
-      (cb network))))
-
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]
     (let [connected? (= id current-network)]
-      [list/touchable-item (wrap-mainnet-warning network navigate-to-network)
+      [list/touchable-item #(navigate-to-network network)
        [react/view styles/network-item
         [network-icon connected? 40]
         [react/view {:padding-horizontal 16}
