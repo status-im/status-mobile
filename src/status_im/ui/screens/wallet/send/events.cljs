@@ -118,7 +118,6 @@
                                       :signing?        false
                                       :wrong-password? false
                                       :waiting-signal? false
-                                      :from-chat?      false
                                       :password        nil})
 
 (defn on-transactions-completed [raw-results]
@@ -175,7 +174,9 @@
                new-db                    (assoc-in db' [:wallet :transactions-unsigned id] transaction)
                sending-db                {:id         id
                                           :method     method
-                                          :from-chat? sending-from-bot-or-dapp?}]
+                                          :from-chat? (or
+                                                       sending-from-bot-or-dapp?
+                                                       (get-in db [:wallet :send-transaction :from-chat?]))}]
            (if sending-from-bot-or-dapp?
               ;;SENDING FROM BOT (CHAT) OR DAPP
              {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
