@@ -149,19 +149,19 @@
    :text-align     :center
    :color          colors/blue})
 
-(defn counter-container [size]
-  {:width            size
+(defn counter-container [size more-than-nine]
+  {:width            (if more-than-nine (+ 2 size) size)
    :height           size
    :border-radius    (/ size 2)
    :background-color colors/blue
    :align-items      :center
    :justify-content  :center})
 
-(defn counter-label [size]
-  {:font-size      (/ size 2)
-   :letter-spacing -0.2
-   :text-align     :center
-   :color          colors/white})
+(defnstyle counter-label [size]
+  {:font-size  (/ size 2)
+   :color      colors/white
+   :android    {:line-height (+ (/ size 2) 2)}
+   :text-align :center})
 
 (def image-contain
   {:align-self :stretch})

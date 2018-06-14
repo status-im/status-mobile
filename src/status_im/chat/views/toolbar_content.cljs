@@ -41,6 +41,7 @@
 (defview last-activity [{:keys [sync-state accessibility-label]}]
   (letsubs [state [:get :sync-data]]
     [react/text {:style               st/last-activity-text
+                 :font                :toolbar-subtitle
                  :accessibility-label accessibility-label}
      (case sync-state
        :in-progress (in-progress-text state)
@@ -52,10 +53,12 @@
     [last-activity {:sync-state sync-state}]
     (if public?
       [react/view {:flex-direction :row}
-       [react/text {:style st/toolbar-subtitle}
+       [react/text {:style st/toolbar-subtitle
+                    :font  :toolbar-subtitle}
         (i18n/label :t/public-group-status)]]
       [react/view {:flex-direction :row}
-       [react/text {:style st/toolbar-subtitle}
+       [react/text {:style st/toolbar-subtitle
+                    :font  :toolbar-subtitle}
         (if public?
           (i18n/label :t/public-group-status)
           (let [cnt (inc (count contacts))]

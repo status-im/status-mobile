@@ -54,8 +54,9 @@
    :margin-bottom   2})
 
 (def chat-name-text
-  {:color     component.styles/color-gray6
-   :font-size 16})
+  {:color       component.styles/color-black
+   :line-height 18
+   :font-size   15})
 
 (def group-icon
   {:margin-top    4
@@ -68,16 +69,17 @@
    :height 8})
 
 (defstyle toolbar-subtitle
-  {:color   component.styles/text4-color
-   :ios     {:font-size  14
-             :margin-top 4}
-   :android {:font-size 13}})
+  {:color       component.styles/text4-color
+   :line-height 15
+   :font-size   13
+   :ios         {:margin-top 4}})
 
 (defstyle last-activity-text
-  {:color   component.styles/text4-color
-   :ios     {:font-size  14
-             :margin-top 4}
-   :android {:font-size 13}})
+  {:color       component.styles/text4-color
+   :line-height 15
+   :ios         {:font-size  14
+                 :margin-top 4}
+   :android     {:font-size 13}})
 
 (defn actions-wrapper [status-bar-height]
   {:background-color component.styles/color-white

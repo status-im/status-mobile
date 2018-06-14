@@ -26,7 +26,9 @@
 (defn nav-button
   [{:keys [icon icon-opts unread-messages?] :as props}]
   [nav-item (merge {:style (styles/nav-item-button unread-messages?)} props)
-   [vector-icons/icon icon icon-opts]])
+   [vector-icons/icon icon (if unread-messages?
+                             (assoc icon-opts :color :active)
+                             icon-opts)]])
 
 (defview nav-button-with-count [props]
   (letsubs [unread-messages-number [:get-chats-unread-messages-number]]
