@@ -67,6 +67,7 @@ class AbstractTestCase:
         desired_caps['automationName'] = 'UiAutomator2'
         desired_caps['setWebContentDebuggingEnabled'] = True
         desired_caps['ignoreUnimportantViews'] = False
+        desired_caps['enableNotificationListener'] = True
         return desired_caps
 
     def update_capabilities_sauce_lab(self, new_capabilities: dict):

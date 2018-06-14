@@ -52,11 +52,15 @@ class BaseElement(object):
 
     def find_element(self):
         info('Looking for %s' % self.name)
-        try:
-            return self.driver.find_element(self.locator.by, self.locator.value)
-        except NoSuchElementException as exception:
-            exception.msg = "'%s' is not found on screen, using: '%s'" % (self.name, self.locator)
-            raise exception
+        for _ in range(3):
+            try:
+                return self.driver.find_element(self.locator.by, self.locator.value)
+            except NoSuchElementException as exception:
+                exception.msg = "'%s' is not found on screen, using: '%s'" % (self.name, self.locator)
+                raise exception
+            except Exception as e:
+                if 'Internal Server Error' in str(e):
+                    continue
 
     def find_elements(self):
         info('Looking for %s' % self.name)

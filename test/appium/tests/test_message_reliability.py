@@ -4,10 +4,15 @@ import time
 
 from itertools import cycle
 from timeit import timeit
+
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 from tests import info, marks
 from tests.base_test_case import MessageReliabilityTestCase
+from views.base_element import BaseButton
 from views.sign_in_view import SignInView
 
 
@@ -160,3 +165,111 @@ class TestMessageReliability(MessageReliabilityTestCase):
                     self.public_chat_data['message_time'][duration_time] = receive_time
                 except TimeoutException:
                     pass
+
+    def test_message_reliability_offline_1_1_chat(self, messages_number, message_wait_time):
+        user_a_sent_messages = 0
+        user_a_received_messages = 0
+        user_b_sent_messages = 0
+        user_b_received_messages = 0
+        user_a_message_time = dict()
+        user_b_message_time = dict()
+        try:
+            self.create_drivers(2, max_duration=10800, custom_implicitly_wait=2, offline_mode=True)
+            device_1, device_2 = self.drivers[0], self.drivers[1]
+            sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+            sign_in_1.create_user(username='user_a')
+            sign_in_2.create_user(username='user_b')
+            device_1_home, device_2_home = sign_in_1.get_home_view(), sign_in_2.get_home_view()
+            device_2_public_key = device_2_home.get_public_key()
+            device_2_home.home_button.click()
+            device_1_home.add_contact(device_2_public_key)
+            device_1_chat = device_1_home.get_chat_view()
+            device_1_chat.chat_message_input.send_keys('hello')
+            device_1_chat.send_message_button.click()
+            device_2_home.element_by_text('hello').click()
+            device_2_chat = device_2_home.get_chat_view()
+            device_2_chat.add_to_contacts.click()
+
+            iterations = int((messages_number / 10 if messages_number > 10 else messages_number) / 2)
+            start_time = time.time()
+            for i in range(iterations):
+                device_2.set_network_connection(1)  # airplane mode
+
+                messages_1 = list()
+                for _ in range(10):
+                    message_1 = '%s %s' % (user_a_sent_messages + 1, ''.join(random.sample(string.ascii_lowercase,
+                                                                                           k=10)))
+                    device_1_chat.chat_message_input.send_keys(message_1)
+                    device_1_chat.send_message_button.click()
+                    messages_1.append(messages_1)
+                    user_a_sent_messages += 1
+
+                device_2.set_network_connection(2)  # turning on WiFi connection
+
+                for message in messages_1:
+                    try:
+                        user_b_receive_time = timeit(wrapper(device_2_chat.wait_for_element_starts_with_text,
+                                                             message, message_wait_time),
+                                                     number=1)
+                        duration_time = round(time.time() - start_time, ndigits=2)
+                        user_b_message_time[duration_time] = user_b_receive_time
+                        user_b_received_messages += 1
+                    except TimeoutException:
+                        info("Message with text '%s' was not received by user_b" % message)
+
+                messages_2 = list()
+                for _ in range(10):
+                    message_2 = '%s %s' % (user_b_sent_messages + 1, ''.join(random.sample(string.ascii_lowercase,
+                                                                                           k=10)))
+                    device_2_chat.chat_message_input.send_keys(message_2)
+                    device_2_chat.send_message_button.click()
+                    messages_2.append(message_2)
+                    user_b_sent_messages += 1
+                    for message in messages_2:
+                        try:
+                            user_a_receive_time = timeit(wrapper(device_1_chat.wait_for_element_starts_with_text,
+                                                                 message, message_wait_time),
+                                                         number=1)
+                            duration_time = round(time.time() - start_time, ndigits=2)
+                            user_a_message_time[duration_time] = user_a_receive_time
+                            user_a_received_messages += 1
+                        except TimeoutException:
+                            info("Message with text '%s' was not received by user_a" % message)
+        finally:
+            self.one_to_one_chat_data['user_a'] = {'sent_messages': user_a_sent_messages,
+                                                   'message_time': user_a_message_time}
+            self.one_to_one_chat_data['user_b'] = {'sent_messages': user_b_sent_messages,
+                                                   'message_time': user_b_message_time}
+
+    def test_message_reliability_push_notifications(self, message_wait_time):
+        self.create_drivers(2, max_duration=10800, custom_implicitly_wait=2)
+        device_1, device_2 = self.drivers[0], self.drivers[1]
+        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        sign_in_1.create_user(username='user_a')
+        sign_in_2.create_user(username='user_b')
+        device_1_home, device_2_home = sign_in_1.get_home_view(), sign_in_2.get_home_view()
+        device_2_public_key = device_2_home.get_public_key()
+        device_2_home.home_button.click()
+
+        device_2.close_app()
+
+        device_1_home.add_contact(device_2_public_key)
+        device_1_chat = device_1_home.get_chat_view()
+        device_1_chat.chat_message_input.send_keys('hello')
+        device_1_chat.send_message_button.click()
+
+        device_2.open_notifications()
+        try:
+            WebDriverWait(device_2, message_wait_time) \
+                .until(expected_conditions.presence_of_element_located((MobileBy.XPATH, '//*[contains(@text, "Status")]')))
+            element = BaseButton(device_2)
+            element.locator = element.Locator.xpath_selector("//*[contains(@text,'Status')]")
+            element.click()
+        except TimeoutException as exception:
+            exception.msg = "Push notification is not received during '%s' seconds" % message_wait_time
+            raise exception
+
+        sign_in_2.sign_in()
+        device_2_home.element_by_text('hello').click()
+        device_2_chat = device_2_home.get_chat_view()
+        device_2_chat.wait_for_element_starts_with_text('hello')
