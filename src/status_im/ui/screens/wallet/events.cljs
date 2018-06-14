@@ -8,6 +8,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
+            [status-im.models.wallet :as models.wallet]
             [taoensso.timbre :as log]
             status-im.ui.screens.wallet.request.events
             [status-im.utils.money :as money]
@@ -248,7 +249,11 @@
  :wallet/update-gas-price-success
  (fn [db [_ price edit?]]
    (if edit?
-     (assoc-in db [:wallet :edit :gas-price] {:value price :invalid? false})
+     (:db (models.wallet/edit-value
+           :gas-price
+           (money/to-fixed
+            (money/wei-> :gwei price))
+           {:db db}))
      (assoc-in db [:wallet :send-transaction :gas-price] price))))
 
 (handlers/register-handler-fx

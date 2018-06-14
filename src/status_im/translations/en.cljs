@@ -454,6 +454,7 @@
    :share                                "Share"
    :eth                                  "ETH"
    :gwei                                 "Gwei"
+   :wallet-send-min-wei                  "Min 1 wei"
    :currency                             "Currency"
    :usd-currency                         "USD"
    :currency-display-name-aed            "Emirati Dirham"

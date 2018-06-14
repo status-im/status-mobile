@@ -14,6 +14,7 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
+            [status-im.models.wallet :as models.wallet]
             [status-im.constants :as constants]
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]))
@@ -378,13 +379,8 @@
 
 (handlers/register-handler-fx
  :wallet.send/edit-value
- (fn [{:keys [db]} [_ key value]]
-   (let [bn-value (money/bignumber value)
-         data     (if bn-value
-                    {:value    bn-value
-                     :invalid? false}
-                    {:invalid? true})]
-     {:db (update-in db [:wallet :edit key] merge data)})))
+ (fn [cofx [_ key value]]
+   (models.wallet/edit-value key value cofx)))
 
 (handlers/register-handler-fx
  :wallet.send/set-gas-details
@@ -400,11 +396,15 @@
 
 (handlers/register-handler-fx
  :wallet.send/reset-gas-default
- (fn [{:keys [db]}]
-   {:dispatch [:wallet/update-gas-price true]
-    :db       (assoc-in db [:wallet :edit :gas]
-                        {:value    (ethereum/estimate-gas (-> db :wallet :send-transaction :symbol))
-                         :invalid? false})}))
+ (fn [{:keys [db] :as cofx}]
+   (let [gas-estimate (money/to-fixed
+                       (ethereum/estimate-gas
+                        (-> db :wallet :send-transaction :symbol)))]
+     (assoc (models.wallet/edit-value
+             :gas
+             gas-estimate
+             cofx)
+            :dispatch [:wallet/update-gas-price true]))))
 
 (handlers/register-handler-fx
  :close-transaction-sent-screen

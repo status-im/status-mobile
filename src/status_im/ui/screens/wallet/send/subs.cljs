@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.send.subs
   (:require [re-frame.core :as re-frame]
             [status-im.utils.money :as money]
+            [status-im.models.wallet :as models.wallet]
             [status-im.utils.hex :as utils.hex]))
 
 (re-frame/reg-sub ::send-transaction
@@ -54,9 +55,30 @@
                              {:gas       (or (:gas send-transaction) (:gas unsigned-transaction))
                               :gas-price (or (:gas-price send-transaction) (:gas-price unsigned-transaction))}))))
 
+(defn edit-or-transaction-data
+  "Set up edit data structure, defaulting to transaction when not available"
+  [transaction edit]
+  (cond-> edit
+    (not (get-in edit [:gas-price :value]))
+    (models.wallet/build-edit
+     :gas-price
+     (money/to-fixed (money/wei-> :gwei (:gas-price transaction))))
+
+    (not (get-in edit [:gas :value]))
+    (models.wallet/build-edit
+     :gas
+     (money/to-fixed (:gas transaction)))))
+
 (re-frame/reg-sub :wallet/edit
+                  :<- [::send-transaction]
+                  :<- [::unsigned-transaction]
                   :<- [:wallet]
-                  :edit)
+                  (fn [[send-transaction unsigned-transaction {:keys [edit]}]]
+                    (edit-or-transaction-data
+                     (if (:id send-transaction)
+                       unsigned-transaction
+                       send-transaction)
+                     edit)))
 
 (defn sign-enabled? [amount-error to amount]
   (and
@@ -68,8 +90,11 @@
                   :<- [::send-transaction]
                   :<- [:balance]
                   (fn [[{:keys [amount symbol] :as transaction} balance]]
-                    (assoc transaction :sufficient-funds? (or (nil? amount)
-                                                              (money/sufficient-funds? amount (get balance symbol))))))
+                    (-> transaction
+                        (models.wallet/add-max-fee)
+                        (assoc :sufficient-funds?
+                               (or (nil? amount)
+                                   (money/sufficient-funds? amount (get balance symbol)))))))
 
 (re-frame/reg-sub :wallet.send/unsigned-transaction
                   :<- [::unsigned-transaction]
@@ -79,7 +104,7 @@
                     (when transaction
                       (let [contact           (contacts (utils.hex/normalize-hex to))
                             sufficient-funds? (money/sufficient-funds? value (get balance symbol))]
-                        (cond-> (assoc transaction
+                        (cond-> (assoc (models.wallet/add-max-fee transaction)
                                        :amount value
                                        :sufficient-funds? sufficient-funds?)
                           contact                 (assoc :to-name (:name contact)))))))
