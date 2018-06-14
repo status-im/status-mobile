@@ -116,7 +116,15 @@
       [view common-styles/modal
        [modal {:animation-type   :slide
                :transparent      true
-               :on-request-close #(dispatch [:navigate-back])}
+               :on-request-close (fn []
+                                   (cond
+                                     (#{:wallet-send-transaction-modal
+                                        :wallet-transaction-fee}
+                                      modal-view)
+                                     (dispatch [:wallet/discard-transaction-navigate-back])
+
+                                     :else
+                                     (dispatch [:navigate-back])))}
         (let [component (get-modal-component modal-view)]
           [react/main-screen-modal-view modal-view
            [component]])]])))
