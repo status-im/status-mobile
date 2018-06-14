@@ -185,12 +185,16 @@ class BaseView(object):
         }
 
     def accept_agreements(self):
-        for button in self.ok_button, self.continue_button:
-            try:
-                button.wait_for_element(15)
-                button.click()
-            except (NoSuchElementException, TimeoutException):
-                pass
+        iterations = int()
+        from views.sign_in_view import CreateAccountButton
+        while iterations <= 3 and not CreateAccountButton(self.driver).is_element_displayed():
+            for button in self.ok_button, self.continue_button:
+                try:
+                    button.wait_for_element(15)
+                    button.click()
+                except (NoSuchElementException, TimeoutException):
+                    pass
+            iterations += 1
 
     @property
     def logcat(self):
