@@ -264,7 +264,7 @@
                                                     number-of-lines)}))
                        (reset! collapsed? (not @collapsed?))))]
      [react/view
-      [react/text {:style           (style/text-message message collapsible?)
+      [react/text {:style           (style/text-message collapsible?)
                    :number-of-lines (when collapsible? number-of-lines)
                    :ref             (partial reset! ref)}
        parsed-text

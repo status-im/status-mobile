@@ -6,10 +6,11 @@
             [status-im.constants :as constants]))
 
 (defstyle style-message-text
-  {:font-size 15
-   :color     styles/text1-color
-   :android   {:line-height 22}
-   :ios       {:line-height 23}})
+  {:font-size      15
+   :color          styles/text1-color
+   :letter-spacing -0.2
+   :android        {:line-height 22}
+   :ios            {:line-height 23}})
 
 (def style-sub-text
   {:top         -2
@@ -49,14 +50,15 @@
             :align-items    align})))
 
 (def message-timestamp
-  {:font-size  10
-   :align-self :flex-end})
+  {:font-size      10
+   :letter-spacing 0.1
+   :align-self     :flex-end})
 
 (defn message-timestamp-text [justify-timestamp? outgoing]
   (merge message-timestamp
          {:color (if outgoing colors/wild-blue-yonder colors/gray)}
          (when justify-timestamp? {:position :absolute
-                                   :bottom   6
+                                   :bottom   8
                                    :right    12})))
 
 (defn message-timestamp-placeholder-text [outgoing]
@@ -105,25 +107,20 @@
 
 (def delivery-view
   {:flex-direction :row
-   :margin-top     4
-   :opacity        0.5})
+   :margin-top     2})
 
 (def delivery-text
   {:color       styles/color-gray4
-   :margin-left 5
    :font-size   12})
 
 (def not-sent-view
   (assoc delivery-view
-         :opacity 1
          :margin-bottom 2
          :padding-top 2))
 
 (def not-sent-text
   (assoc delivery-text
          :color styles/color-red
-         :opacity 1
-         :font-size 12
          :text-align :right
          :padding-top 4))
 
@@ -135,10 +132,8 @@
   {:padding-top 4})
 
 (defn text-message
-  [{:keys [incoming-group]} collapsed?]
-  (merge style-message-text
-         {:margin-top    (if incoming-group 4 0)
-          :margin-bottom (if collapsed? 2 0)}))
+  [collapsed?]
+  (assoc style-message-text :margin-bottom (if collapsed? 2 0)))
 
 (defnstyle emoji-message
   [{:keys [incoming-group]}]
@@ -150,9 +145,8 @@
 
 (defn message-view
   [{:keys [content-type outgoing group-chat first-in-group?]}]
-  (merge {:padding-top        6
+  (merge {:padding-vertical   6
           :padding-horizontal 12
-          :padding-bottom     8
           :border-radius      8
           :margin-top         (if (and first-in-group?
                                        (or outgoing
@@ -440,7 +434,5 @@
 
 (def message-author-name
   {:font-size      12
-   :letter-spacing -0.2
    :padding-top    6
-   :padding-bottom 4
    :color          colors/gray})
