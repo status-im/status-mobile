@@ -145,7 +145,7 @@
     :trigger    [:navigate-to-clean :wallet]
     :properties {:target :wallet-got-it}}
    {:label      "Tap"
-    :trigger    [:navigate-to :wallet-transaction-sent]
+    :trigger    [:navigation-replace :wallet-transaction-sent]
     :properties {:target :wallet-transaction-sent}}
 
    ;;Profile

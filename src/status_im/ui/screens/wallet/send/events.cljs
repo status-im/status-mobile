@@ -267,7 +267,7 @@
           (cond-> {:dispatch [:navigate-back]}
             (= method constants/web3-send-transaction)
             (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
-          {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
+          {:dispatch [:navigation-replace :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [result (types/json->clj raw-results)]
@@ -410,7 +410,6 @@
  :close-transaction-sent-screen
  (fn [{:keys [db]} [_ chat-id]]
    {:dispatch       (condp = (second (:navigation-stack db))
-                      :wallet-send-transaction [:navigate-to-clean :wallet]
-                      :wallet-send-transaction-chat [:execute-stored-command-and-return-to-chat chat-id]
+                      :chat [:execute-stored-command-and-return-to-chat chat-id]
                       [:navigate-back])
     :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))
