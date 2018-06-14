@@ -205,7 +205,7 @@
     (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
 ;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
-(defn- mark-messages-seen
+(defn mark-messages-seen
   [chat-id {:keys [db] :as cofx}]
   (when-let [all-unviewed-ids (seq (get-in db [:chats chat-id :unviewed-messages]))]
     (let [me                  (:current-public-key db)
