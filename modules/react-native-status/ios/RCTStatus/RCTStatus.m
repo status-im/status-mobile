@@ -179,7 +179,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSURL *logUrl = [networkDirUrl URLByAppendingPathComponent:@"geth.log"];
     [resultingConfigJson setValue:newKeystoreUrl.path forKey:@"KeyStoreDir"];
     [resultingConfigJson setValue:[NSNumber numberWithBool:[logLevel length] != 0] forKey:@"LogEnabled"];
-    [resultingConfigJson setValue:logUrl.path forKey:@"LogFile"];
+    [resultingConfigJson setValue:([logLevel length] == 0 ? [NSNull null] : logUrl.path) forKey:@"LogFile"];
     [resultingConfigJson setValue:([logLevel length] == 0 ? [NSString stringWithUTF8String: "ERROR"] : logLevel) forKey:@"LogLevel"];
 
     [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKeyPath:@"WhisperConfig.LightClient"];
