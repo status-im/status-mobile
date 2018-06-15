@@ -77,7 +77,7 @@
 (defview message-content-command-send
   [{:keys [content timestamp-str outgoing group-chat]}]
   (letsubs [network [:network-name]]
-    (let [{{:keys [amount fiat-amount tx-hash] send-network :network} :params} content
+    (let [{{:keys [amount fiat-amount tx-hash asset] send-network :network} :params} content
           recipient-name (get-in content [:params :bot-db :public :recipient])
           network-mismatch? (and (seq send-network) (not= network send-network))]
       [react/view style/command-send-message-view
@@ -91,7 +91,7 @@
             "."]
            [react/text {:style (style/command-send-currency-text outgoing)
                         :font  :default}
-            (i18n/label :eth)]]]]
+            asset]]]]
         (when fiat-amount
           [react/view style/command-send-fiat-amount
            [react/text {:style style/command-send-fiat-amount-text}

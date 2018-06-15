@@ -6,6 +6,9 @@ I18n.translations = {
         send_specify_amount: 'Specify amount',
         send_sending_to: 'to ',
 
+        currency_placeholder: 'Currency',
+        amount_placeholder: 'Amount',
+
         eth: 'ETH',
 
         request_title: 'Request ETH',
@@ -20,7 +23,7 @@ I18n.translations = {
         validation_tx_failed: 'Transaction failed',
         validation_amount_specified: 'Amount must be specified',
         validation_invalid_number: 'Amount is not valid number',
-        validation_amount_is_too_small: 'Amount is too precise. Max number of decimals is 18.',
+        validation_amount_is_too_small: 'Max number of decimals is ',
         validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
     }
 

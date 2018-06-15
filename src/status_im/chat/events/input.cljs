@@ -208,6 +208,7 @@
               (not prevent-auto-focus?)
               (merge fx' (chat-input-focus (:db fx') :seq-input-ref)))))))
 
+;; TODO(goranjovic) - generalize setting something as a command argument
 (defn set-contact-as-command-argument
   "Sets contact as command argument for active chat"
   [db {:keys [bot-db-key contact arg-index]}]
@@ -219,6 +220,31 @@
         (bots-events/set-in-bot-db {:bot   command-owner
                                     :path  [:public (keyword bot-db-key)]
                                     :value contact})
+        (as-> fx
+              (let [{:keys [current-chat-id]
+                     :as new-db}             (:db fx)
+                    arg-position             (input-model/argument-position new-db)
+                    input-text               (get-in new-db [:chats current-chat-id :input-text])
+                    command-args             (cond-> (input-model/split-command-args input-text)
+                                               (input-model/text-ends-with-space? input-text) (conj ""))
+                    new-selection            (->> command-args
+                                                  (take (+ 3 arg-position))
+                                                  (input-model/join-command-args)
+                                                  count
+                                                  (min (count input-text)))]
+                (merge fx (update-text-selection new-db new-selection)))))))
+
+;; TODO(goranjovic) - generalize setting something as a command argument
+(defn set-asset-as-command-argument
+  "Sets asset as command argument for active chat"
+  [db {:keys [bot-db-key asset arg-index]}]
+  (let [name          (string/replace (name (:symbol asset)) (re-pattern constants/arg-wrapping-char) "")
+        command-owner (get-in (input-model/selected-chat-command db) [:command :owner-id])]
+    (-> db
+        (set-command-argument arg-index name true)
+        (bots-events/set-in-bot-db {:bot   command-owner
+                                    :path  [:public (keyword bot-db-key)]
+                                    :value asset})
         (as-> fx
               (let [{:keys [current-chat-id]
                      :as new-db}             (:db fx)
@@ -467,6 +493,12 @@
  [re-frame/trim-v]
  (fn [{:keys [db]} [params]]
    (set-contact-as-command-argument db params)))
+
+(handlers/register-handler-fx
+ :set-asset-as-command-argument
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [params]]
+   (set-asset-as-command-argument db params)))
 
 (handlers/register-handler-db
  :show-suggestions

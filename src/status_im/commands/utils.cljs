@@ -5,6 +5,7 @@
             [status-im.ui.components.react :as components]
             [status-im.chat.views.input.validation-messages :as chat-validation-messages]
             [status-im.chat.views.api.choose-contact :as choose-contact]
+            [status-im.chat.views.api.choose-asset :as choose-asset]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.chat-preview :as chat-preview]
             [status-im.utils.handlers :refer [register-handler]]
@@ -32,6 +33,7 @@
    :activity-indicator   components/activity-indicator
    :validation-message   chat-validation-messages/validation-message
    :choose-contact       choose-contact/choose-contact-view
+   :choose-asset         choose-asset/choose-asset-view
    :separator            parameter-box-separator})
 
 (defn get-element [n]

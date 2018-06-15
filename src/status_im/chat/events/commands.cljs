@@ -6,24 +6,39 @@
             [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]
-            [status-im.chat.events.shortcuts :as shortcuts]))
+            [status-im.chat.events.shortcuts :as shortcuts]
+            [status-im.utils.ethereum.tokens :as tokens]))
 
 ;;;; Helper fns
 
+;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
+;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
+;; if we were to update all balances.
+(defn- allowed-assets [network account]
+  (let [chain                 (keyword (ethereum/network-names network))
+        visible-token-symbols (get-in account [:settings :wallet :visible-tokens chain])]
+    (->> (tokens/tokens-for chain)
+         (filter #(not (:nft? %)))
+         (filter #(contains? visible-token-symbols (:symbol %)))
+         (map #(vector (-> % :symbol clojure.core/name)
+                       (:decimals %)))
+         (into {"ETH" 18}))))
+
 (defn- generate-context
   "Generates context for jail call"
-  [current-account-id chat-id group-chat? to network]
-  (merge {:platform     platform/os
-          :network      (ethereum/network-names network)
-          :from         current-account-id
-          :to           to
-          :chat         {:chat-id    chat-id
-                         :group-chat (boolean group-chat?)}}
+  [account current-account-id chat-id group-chat? to network]
+  (merge {:platform       platform/os
+          :network        (ethereum/network-names network)
+          :from           current-account-id
+          :to             to
+          :allowed-assets (clj->js (allowed-assets network account))
+          :chat           {:chat-id    chat-id
+                           :group-chat (boolean group-chat?)}}
          i18n/delimeters))
 
 (defn request-command-message-data
   "Requests command message data from jail"
-  [{:contacts/keys [contacts] :keys [network] :as db}
+  [{:contacts/keys [contacts] :account/keys [account] :keys [network] :as db}
    {{:keys [command command-scope-bitmask bot params type]} :content
     :keys [chat-id group-id] :as message}
    {:keys [data-type] :as opts}]
@@ -36,7 +51,7 @@
             to          (get-in contacts [chat-id :address])
             address     (get-in db [:account/account :address])
             jail-params {:parameters params
-                         :context    (generate-context address chat-id (models.message/group-message? message) to network)}]
+                         :context    (generate-context account address chat-id (models.message/group-message? message) to network)}]
         {:db        db
          :call-jail [{:jail-id                bot
                       :path                   path

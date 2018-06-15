@@ -19,7 +19,7 @@
             [status-im.ui.components.common.common :as components.common]))
 
 (defn command-short-preview
-  [{:keys [command] {:keys [amount]} :params}]
+  [{:keys [command] {:keys [amount asset]} :params}]
   [chat-preview/text {}
    (str
     (i18n/label (if (= command constants/command-request)
@@ -27,7 +27,7 @@
                   :command-sending))
     (i18n/label-number amount)
     " "
-    (i18n/label :eth))])
+    asset)])
 
 (defn message-content-text [{:keys [content] :as message}]
   [react/view styles/last-message-container

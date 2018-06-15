@@ -43,6 +43,12 @@ class RequestCommand(BaseButton):
         self.locator = self.Locator.accessibility_id('request-payment-button')
 
 
+class EthAsset(BaseButton):
+    def __init__(self, driver):
+        super(EthAsset, self).__init__(driver)
+        self.locator = self.Locator.text_selector('ETH')
+
+
 class FaucetCommand(BaseButton):
     def __init__(self, driver):
         super(FaucetCommand, self).__init__(driver)
@@ -200,6 +206,7 @@ class ChatView(BaseView):
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
+        self.eth_asset = EthAsset(self.driver)
         self.faucet_command = FaucetCommand(self.driver)
         self.faucet_send_command = FaucetSendCommand(self.driver)
 
@@ -292,6 +299,7 @@ class ChatView(BaseView):
     def send_transaction_in_1_1_chat(self, amount, password, wallet_set_up=False):
         self.commands_button.click()
         self.send_command.click()
+        self.eth_asset.click()
         self.send_as_keyevent(amount)
         send_transaction_view = self.get_send_transaction_view()
         if wallet_set_up:
@@ -327,6 +335,7 @@ class ChatView(BaseView):
     def request_transaction_in_1_1_chat(self, amount):
         self.commands_button.click()
         self.request_command.click()
+        self.eth_asset.click()
         self.send_as_keyevent(amount)
         self.send_message_button.click()
 

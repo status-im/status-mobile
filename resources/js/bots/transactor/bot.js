@@ -1,30 +1,17 @@
+
 // Send command/response
 
+var assetSendParam = {
+        name: "asset",
+        type: status.types.TEXT,
+        suggestions: function (params) {
+            return {
+                    markup: status.components.chooseAsset("asset", 0)
+            };
+        },
+        placeholder: I18n.t('currency_placeholder')
+};
 
-function amountParameterBox(params, context) {
-
-
-    return {
-        title: I18n.t('send_title'),
-        showBack: true,
-        markup: status.components.view({
-            flex: 1
-        }, [
-            status.components.text({
-                    style: {
-                        fontSize: 14,
-                        color: "rgb(147, 155, 161)",
-                        paddingTop: 12,
-                        paddingLeft: 16,
-                        paddingRight: 16,
-                        paddingBottom: 20
-                    }
-                },
-                I18n.t('send_specify_amount')
-            )
-        ])
-    };
-}
 
 var recipientSendParam = {
     name: "recipient",
@@ -41,15 +28,26 @@ function amountSendParam() {
     return {
         name: "amount",
         type: status.types.NUMBER,
-        suggestions: amountParameterBox.bind(this)
+        placeholder: I18n.t('amount_placeholder')
     };
 }
 
-var paramsPersonalSend = [amountSendParam()];
+var paramsPersonalSend = [assetSendParam, amountSendParam()];
 var paramsGroupSend = [recipientSendParam, amountSendParam()];
 
 function validateSend(validateRecipient, params, context) {
 
+    var allowedAssets = context["allowed-assets"];
+    var asset = params["asset"];
+
+    if(!allowedAssets.hasOwnProperty(asset)){
+        return {
+            markup: status.components.validationMessage(
+                "Invalid asset",
+                "Unknown token - " + asset
+            )
+        };
+    }
 
     if (!params["amount"]) {
         return {
@@ -62,11 +60,12 @@ function validateSend(validateRecipient, params, context) {
 
     var amount = params["amount"].replace(",", ".");
     var amountSplitted = amount.split(".");
-    if (amountSplitted.length === 2 && amountSplitted[1].length > 18) {
+    var decimals = allowedAssets[asset];
+    if (amountSplitted.length === 2 && amountSplitted[1].length > decimals) {
         return {
             markup: status.components.validationMessage(
                 I18n.t('validation_title'),
-                I18n.t('validation_amount_is_too_small')
+                I18n.t('validation_amount_is_too_small') + decimals
             )
         };
     }
@@ -135,6 +134,17 @@ status.response(groupSend);
 
 // Request command
 
+var assetRequestParam = {
+    name: "asset",
+    type: status.types.TEXT,
+    suggestions: function (params) {
+        return {
+            markup: status.components.chooseAsset("asset", 0)
+        };
+    },
+    placeholder: I18n.t('currency_placeholder')
+};
+
 var recipientRequestParam = {
     name: "recipient",
     type: status.types.TEXT,
@@ -148,15 +158,17 @@ var recipientRequestParam = {
 
 var amountRequestParam = {
     name: "amount",
-    type: status.types.NUMBER
+    type: status.types.NUMBER,
+    placeholder: I18n.t('amount_placeholder')
 };
 
-var paramsPersonalRequest = [amountRequestParam];
+var paramsPersonalRequest = [assetRequestParam, amountRequestParam];
 var paramsGroupRequest = [recipientRequestParam, amountRequestParam];
 
 function handlePersonalRequest(params, context) {
     var val = params["amount"].replace(",", ".");
     var network = context["network"];
+    var asset = params["asset"];
 
     return {
         event: "request",
@@ -165,8 +177,9 @@ function handlePersonalRequest(params, context) {
             params: {
                 network: network,
                 amount: val,
+                asset: asset
             },
-            prefill: [val]
+            prefill: [asset, val]
         }
     };
 }
@@ -194,7 +207,7 @@ function handleGroupRequest(params, context) {
     };
 }
 
-function validateRequest(validateRecipient, params) {
+function validateRequest(validateRecipient, params, context) {
     if (!params["bot-db"]) {
         params["bot-db"] = {};
     }
@@ -210,6 +223,18 @@ function validateRequest(validateRecipient, params) {
         }
     }
 
+    var allowedAssets = context["allowed-assets"];
+    var asset = params["asset"];
+
+    if(!allowedAssets.hasOwnProperty(asset)){
+        return {
+            markup: status.components.validationMessage(
+                "Invalid asset",
+                "Unknown token - " + asset
+            )
+        };
+    }
+
     if (!params["amount"]) {
         return {
             markup: status.components.validationMessage(
@@ -221,11 +246,12 @@ function validateRequest(validateRecipient, params) {
 
     var amount = params.amount.replace(",", ".");
     var amountSplitted = amount.split(".");
-    if (amountSplitted.length === 2 && amountSplitted[1].length > 18) {
+    var decimals = allowedAssets[asset];
+    if (amountSplitted.length === 2 && amountSplitted[1].length > decimals) {
         return {
             markup: status.components.validationMessage(
                 I18n.t('validation_title'),
-                I18n.t('validation_amount_is_too_small')
+                I18n.t('validation_amount_is_too_small') + decimals
             )
         };
     }

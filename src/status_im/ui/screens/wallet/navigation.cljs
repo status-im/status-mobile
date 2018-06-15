@@ -19,12 +19,15 @@
     {:gas    (ethereum/estimate-gas symbol)
      :symbol symbol}))
 
+(def transaction-request-default
+  {:symbol :ETH})
+
 (defmethod navigation/preload-data! :wallet-request-transaction
   [db [event]]
   (if (= event :navigate-back)
     db
     (-> db
-        (update :wallet dissoc :request-transaction)
+        (assoc-in [:wallet :request-transaction] transaction-request-default)
         (assoc-in [:wallet :send-transaction] transaction-send-default))))
 
 (defmethod navigation/preload-data! :wallet-send-transaction

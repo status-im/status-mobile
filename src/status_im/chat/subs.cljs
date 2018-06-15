@@ -288,15 +288,13 @@
  (fn [[{:keys [input-text]} command]]
    (when (and (string/ends-with? (or input-text "") chat-constants/spacing-char)
               (not (get-in command [:command :sequential-params])))
-     (let [input     (string/trim (or input-text ""))
-           real-args (remove string/blank? (:args command))]
+     (let [real-args (remove string/blank? (:args command))]
        (cond
          (and command (empty? real-args))
          (get-in command [:command :params 0 :placeholder])
 
          (and command
-              (= (count real-args) 1)
-              (input-model/text-ends-with-space? input))
+              (= (count real-args) 1))
          (get-in command [:command :params 1 :placeholder]))))))
 
 (reg-sub

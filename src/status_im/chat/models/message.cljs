@@ -378,7 +378,7 @@
                   {:params (cond-> params
                              (= (:name command) constants/command-send)
                              (assoc :network (ethereum/network-names network)
-                                    :fiat-amount (money/usd-amount (:amount params) prices)
+                                    :fiat-amount (money/usd-amount (:amount params) (-> params :asset keyword) prices)
                                     :tx-hash tx-hash))})
         content' (assoc content
                         :command               (:name command)

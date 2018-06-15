@@ -2,26 +2,31 @@
   (:require [status-im.ui.screens.wallet.send.events :as send.events]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [taoensso.timbre :as log]))
 
 ;; TODO(goranjovic) - update to include tokens in https://github.com/status-im/status-react/issues/3233
-(defn- transaction-details [contact]
+(defn- transaction-details [contact symbol]
   (-> contact
       (select-keys [:name :address :whisper-identity])
-      (assoc :symbol :ETH
-             :gas (ethereum/estimate-gas :ETH)
+      (assoc :symbol symbol
+             :gas (ethereum/estimate-gas symbol)
              :from-chat? true)))
 
 (defn send-shortcut-fx [{:account/keys [account] :as db} contact params]
-  (merge {:db (-> db
-                  (send.events/set-and-validate-amount-db (:amount params) :ETH 18)
-                  (choose-recipient.events/fill-request-details (transaction-details contact))
-                  (update-in [:wallet :send-transaction] dissoc :id :password :wrong-password?)
-                  (navigation/navigate-to
-                   (if (:wallet-set-up-passed? account)
-                     :wallet-send-transaction-chat
-                     :wallet-onboarding-setup)))}
-         (send.events/update-gas-price db false)))
+  (let [chain              (keyword (ethereum/network-names (:network db)))
+        symbol             (-> params :asset keyword)
+        {:keys [decimals]} (tokens/asset-for chain symbol)]
+    (merge {:db (-> db
+                    (send.events/set-and-validate-amount-db (:amount params) symbol decimals)
+                    (choose-recipient.events/fill-request-details (transaction-details contact symbol))
+                    (update-in [:wallet :send-transaction] dissoc :id :password :wrong-password?)
+                    (navigation/navigate-to
+                     (if (:wallet-set-up-passed? account)
+                       :wallet-send-transaction-chat
+                       :wallet-onboarding-setup)))}
+           (send.events/update-gas-price db false))))
 
 (def shortcuts
   {"send" send-shortcut-fx})
