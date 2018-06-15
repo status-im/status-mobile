@@ -603,7 +603,11 @@
    :reset-default                        "Reset to default"
 
    :view-cryptokitties                   "View in CryptoKitties"
-   :cryptokitty-name                     "CryptoKitty #"
+   :cryptokitty-name                     "CryptoKitty #{{id}}"
+
+   :view-etheremon                       "View in Etheremon"
+
+   :view-cryptostrikers                  "View in CryptoStrikers"
 
    ;; network settings
    :new-network                          "New network"

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.events
-  (:require [re-frame.core :as re-frame :refer [dispatch reg-fx]]
+  (:require [clojure.set :as set]
+            [re-frame.core :as re-frame :refer [dispatch reg-fx]]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.navigation]
             [status-im.utils.ethereum.core :as ethereum]
@@ -11,11 +12,11 @@
             [status-im.models.wallet :as models.wallet]
             [taoensso.timbre :as log]
             status-im.ui.screens.wallet.request.events
-            [status-im.utils.money :as money]
             [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
-            [clojure.set :as set]))
+            [status-im.utils.ethereum.erc721 :as erc721]
+            [status-im.utils.money :as money]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -282,7 +283,19 @@
 
 (handlers/register-handler-fx
  :wallet/show-collectibles
- (fn [_ [_ address {:keys [symbol] :as m}]]
-   (if-let [fx (collectibles/load-collectibles-fx symbol address)]
-     (assoc fx :dispatch [:navigate-to :display-collectible m])
-     {:show-error (str "Missing implementation for " (name symbol))})))
+ (fn [{:keys [db]} [_ i address {:keys [symbol] :as m}]]
+   (assoc (collectibles/load-collectibles-fx (:web3 db) symbol i address)
+          :dispatch [:navigate-to :display-collectible m])))
+
+(re-frame/reg-fx
+ :load-collectibles
+ (fn [[web3 symbol i address]]
+   (dotimes [n i]
+     (erc721/token-of-owner-by-index web3 (:address (tokens/symbol->token :mainnet symbol)) address n
+                                     #(re-frame/dispatch [:load-collectible symbol (.toNumber %2)])))))
+
+(handlers/register-handler-fx
+ :load-collectible
+ (fn [{db :db} [_ symbol id]]
+   (assoc (collectibles/load-collectible-fx symbol id)
+          :db db)))

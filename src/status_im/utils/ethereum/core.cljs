@@ -95,7 +95,7 @@
 
 (defn format-param [param]
   (if (number? param)
-    (zero-pad-64 (hex->int param))
+    (zero-pad-64 (str (hex->int param)))
     (zero-pad-64 (subs param 2))))
 
 (defn format-call-params [method-id & params]

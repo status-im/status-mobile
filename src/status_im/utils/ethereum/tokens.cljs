@@ -392,7 +392,7 @@
                     :address  "0x06012c8cf97bead5deae237070f9587f8e7a266d"}
                    {:symbol   :EMONA
                     :nft?     true
-                    :name     "EtheremonAsset"
+                    :name     "Etheremon"
                     :address  "0xB2c0782ae4A299f7358758B2D15dA9bF29E1DD99"}
                    {:symbol   :STRK
                     :nft?     true

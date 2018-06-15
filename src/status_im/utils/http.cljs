@@ -1,6 +1,7 @@
 (ns status-im.utils.http
   (:require [status-im.utils.utils :as utils]
-            [status-im.react-native.js-dependencies :as rn-dependencies])
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms
@@ -61,3 +62,11 @@
 
 (defn normalize-url [url]
   (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
+
+(defn parse-payload [o]
+  (when o
+    (try
+      (js->clj (js/JSON.parse o)
+               :keywordize-keys true)
+      (catch :default _
+        (log/debug (str "Failed to parse " o))))))

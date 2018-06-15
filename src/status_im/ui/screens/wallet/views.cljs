@@ -11,7 +11,9 @@
             [status-im.ui.screens.wallet.styles :as styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.money :as money]
-            status-im.ui.screens.wallet.collectibles.cryptokitties))
+            status-im.ui.screens.wallet.collectibles.cryptokitties
+            status-im.ui.screens.wallet.collectibles.cryptostrikers
+            status-im.ui.screens.wallet.collectibles.etheremon))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style styles/toolbar :flat? true}
@@ -86,11 +88,11 @@
   [list/item-icon {:icon      :icons/forward
                    :icon-opts {:color :gray}}])
 
-(defn- render-collectible [address-hex {:keys [symbol icon amount] :as m}]
+(defn- render-collectible [address-hex {:keys [symbol name icon amount] :as m}]
   (let [i        (money/to-fixed amount)
         details? (pos? i)]
     [react/touchable-highlight (when details?
-                                 {:on-press #(re-frame/dispatch [:wallet/show-collectibles address-hex m])})
+                                 {:on-press #(re-frame/dispatch [:wallet/show-collectibles i address-hex m])})
      [react/view {:style styles/asset-item-container}
       [list/item
        [list/item-image icon]
@@ -98,12 +100,11 @@
         [react/text {:style               styles/asset-item-value
                      :number-of-lines     1
                      :ellipsize-mode      :tail
-                     :accessibility-label (str (-> symbol name clojure.string/lower-case) "-collectible-value-text")}
+                     :accessibility-label (str (-> symbol clojure.core/name clojure.string/lower-case) "-collectible-value-text")}
          (or i 0)]
         [react/text {:style           styles/asset-item-currency
-                     :uppercase?      true
                      :number-of-lines 1}
-         (name symbol)]]
+         name]]
        (when details?
          item-icon-forward)]]]))
 

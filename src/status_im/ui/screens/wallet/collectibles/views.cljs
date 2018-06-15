@@ -9,9 +9,14 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.collectibles.styles :as styles]))
 
-(defmulti load-collectibles-fx (fn [symbol _] symbol))
+(defmulti load-collectible-fx (fn [symbol _] symbol))
 
-(defmethod load-collectibles-fx :default [_ _] nil)
+(defmethod load-collectible-fx :default [_ _] nil)
+
+(defmulti load-collectibles-fx (fn [_ symbol _ _] symbol))
+
+(defmethod load-collectibles-fx :default [web3 symbol i address]
+  {:load-collectibles [web3 symbol i address]})
 
 (defmulti render-collectible (fn [symbol _] symbol))
 
