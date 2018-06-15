@@ -37,6 +37,7 @@
 		4CA4DA1B206D105D006A98B0 /* libRNInstabug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3F1C121DDAE781005E4779 /* libRNInstabug.a */; };
 		5974D2035B8B47E0946B63B6 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F752F17B1E04216B1337A72 /* libRNFIRMessaging.a */; };
 		63AE4174241B852A045FAE1F /* InstabugCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA36FD18BC2ECACF0A8B83DE /* InstabugCore.framework */; };
+		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
 		81C6E6AE0AA739BE9D87C1D0 /* libPods-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8E55E6877F950B81C8D711C5 /* libPods-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 101A4045637A2ADF57D28EF5 /* libPods-StatusIm.a */; };
@@ -572,6 +573,7 @@
 		5535217F57E44D77AA9CF083 /* libRCTOrientation.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTOrientation.a; sourceTree = "<group>"; };
 		5E5A7625B76441D984EA8C0D /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTImageResizer.xcodeproj; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; };
 		674B3D9595A047AB8D518F4E /* libRNFS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFS.a; sourceTree = "<group>"; };
+		74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "launch-image-universal.storyboard"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7F752F17B1E04216B1337A72 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
@@ -802,6 +804,7 @@
 			children = (
 				2028E0111D4275BD00227DCD /* SF */,
 				B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */,
+				74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1778,6 +1781,7 @@
 				9ED2F4611D9D579900B36508 /* SF-UI-Text-Bold.otf in Resources */,
 				9E0B01A11DDC5DA7002B0359 /* SF-UI-Text-Light.otf in Resources */,
 				9ED2F45E1D9D535A00B36508 /* SF-UI-Text-Regular.otf in Resources */,
+				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
 				9ED2F45F1D9D535A00B36508 /* SF-UI-Text-Medium.otf in Resources */,
 				2028DFFA1D4275B600227DCD /* SF-UI-Display-Regular.otf in Resources */,
 				2028DFF91D4275B600227DCD /* SF-UI-Display-Medium.otf in Resources */,
@@ -1997,7 +2001,6 @@
 			baseConfigurationReference = ACA66A8F16CD2FE21F38738B /* Pods-StatusIm.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				BUNDLE_ID_SUFFIX = .debug;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2050,7 +2053,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
@@ -2060,7 +2063,6 @@
 			baseConfigurationReference = 38A44830EC5708E89387F641 /* Pods-StatusIm.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				BUNDLE_ID_SUFFIX = "";
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2113,7 +2115,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
