@@ -16,9 +16,10 @@
   {:flex-direction      :row
    :align-items         :center
    :height              item-height
-   :padding-horizontal  14
+   :margin-left         14
+   :padding-right       14
    :border-bottom-color colors/gray-light
-   :border-bottom-width border-height})
+   :border-bottom-width (if last? 0 border-height)})
 
 (def item-suggestion-name
   {:color     common/color-black
