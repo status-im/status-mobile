@@ -81,10 +81,16 @@
         cofx {:db db :now 1000000000}]
     (testing "inbox is ready"
       (testing "last-request is set"
-        (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 2)
-              actual (inbox/request-messages cofx-with-last-request)]
-          (testing "it uses last request"
-            (is (= 2 (get-in actual [::inbox/request-messages :from]))))))
+        (testing "last request is > the 7 days ago"
+          (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 400000)
+                actual (inbox/request-messages cofx-with-last-request)]
+            (testing "it uses last request"
+              (is (= 400000 (get-in actual [::inbox/request-messages :from]))))))
+        (testing "last request is < the 7 days ago"
+          (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 2)
+                actual (inbox/request-messages cofx-with-last-request)]
+            (testing "it uses last 7 days"
+              (is (= 395200 (get-in actual [::inbox/request-messages :from])))))))
       (testing "last-request is not set"
         (let [actual (inbox/request-messages cofx)]
           (testing "it defaults to the last 7 days"
