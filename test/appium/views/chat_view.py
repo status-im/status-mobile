@@ -182,6 +182,12 @@ class ProfileSendTransactionButton(BaseButton):
         self.locator = self.Locator.accessibility_id('send-transaction-button')
 
 
+class SendRequestButton(BaseButton):
+    def __init__(self, driver, amount):
+        super(SendRequestButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[contains(@text, "%s.ETH")]/../*[@text="Send"]' % amount)
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -260,9 +266,10 @@ class ChatView(BaseView):
                     errors.append("Message '%s' was received but username is '%s' instead of %s" %
                                   (message, element.text, username))
 
-    def send_eth_to_request(self, request, sender_password, wallet_set_up=False):
+    def send_eth_to_request(self, amount, sender_password, wallet_set_up=False):
         gas_popup = self.element_by_text_part('Specify amount')
-        request.click_until_presence_of_element(gas_popup)
+        send_request_button = SendRequestButton(self.driver, amount)
+        send_request_button.click_until_presence_of_element(gas_popup)
         send_transaction = self.get_send_transaction_view()
         if wallet_set_up:
             wallet_view = self.get_wallet_view()
@@ -295,7 +302,7 @@ class ChatView(BaseView):
         else:
             self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
         send_transaction_view.sign_transaction(password)
-        send_transaction_view.find_full_text(amount)
+        send_transaction_view.find_text_part(amount)
         try:
             self.find_full_text('Sent', 10)
         except TimeoutException:

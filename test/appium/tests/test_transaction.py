@@ -221,8 +221,7 @@ class TestTransactions(MultipleDeviceTestCase):
         device_1_chat.first_recipient_button.click()
         device_1_chat.send_as_keyevent(amount)
         device_1_chat.send_message_button.click()
-        request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')
-        device_2_chat.send_eth_to_request(request_button, sender['password'])
+        device_2_chat.send_eth_to_request(amount, sender['password'])
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
 
     @marks.pr
@@ -251,13 +250,12 @@ class TestTransactions(MultipleDeviceTestCase):
         except TimeoutException:
             device_1_chat.chat_message_input.send_keys('ping')
             device_1_chat.send_message_button.click()
-        one_to_one_chat_device_2.click()
+        one_to_one_chat_device_2.click_until_presence_of_element(device_2_chat.commands_button)
         device_1_chat.commands_button.click_until_presence_of_element(device_1_chat.request_command)
         device_1_chat.request_command.click()
         device_1_chat.send_as_keyevent(amount)
         device_1_chat.send_message_button.click()
-        request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')
-        device_2_chat.send_eth_to_request(request_button, sender['password'], wallet_set_up=True)
+        device_2_chat.send_eth_to_request(amount, sender['password'], wallet_set_up=True)
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         device_2_chat.back_button.click()
         device_2_wallet = device_2_home.wallet_button.click()
@@ -296,6 +294,5 @@ class TestTransactions(MultipleDeviceTestCase):
         one_to_one_chat_device_2 = device_2_chat.element_by_text_part(recipient['username'][:25], 'button')
         one_to_one_chat_device_2.wait_for_visibility_of_element(120)
         one_to_one_chat_device_2.click()
-        request_button = device_2_chat.element_by_text_part('Requesting  %s ETH' % amount, 'button')
-        device_2_chat.send_eth_to_request(request_button, sender['password'], wallet_set_up=True)
+        device_2_chat.send_eth_to_request(amount, sender['password'], wallet_set_up=True)
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
