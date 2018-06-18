@@ -28,13 +28,17 @@
             status-im.ui.screens.bootnodes-settings.events
             status-im.ui.screens.currency-settings.events
             status-im.ui.screens.usage-data.events
+            status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.constants :as constants]
             [status-im.data-store.core :as data-store]
+            [status-im.data-store.realm.core :as realm]
+            [status-im.utils.keychain.core :as keychain]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
+            [status-im.ui.components.react :as react]
             [status-im.transport.core :as transport]
             [status-im.transport.inbox :as inbox]
             [status-im.ui.screens.db :refer [app-db]]
@@ -47,7 +51,6 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.instabug :as instabug]
-            [status-im.utils.keychain :as keychain]
             [status-im.utils.mixpanel :as mixpanel]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -140,25 +143,6 @@
    #(status/start-node config)))
 
 (re-frame/reg-fx
- ::initialize-keychain-fx
- (fn []
-   (keychain/get-encryption-key-then
-    (fn [encryption-key]
-      (re-frame/dispatch [:initialize-app encryption-key])))))
-
-(re-frame/reg-fx
- ::get-encryption-key-fx
- (fn [event]
-   (keychain/get-encryption-key-then
-    (fn [encryption-key]
-      (re-frame/dispatch [event encryption-key])))))
-
-(re-frame/reg-fx
- ::got-encryption-key-fx
- (fn [{:keys [encryption-key callback]}]
-   (callback encryption-key)))
-
-(re-frame/reg-fx
  :initialize-geth-fx
  (fn [config]
     ;;TODO get rid of this, because we don't need this anymore
@@ -237,23 +221,31 @@
 (handlers/register-handler-fx
  :initialize-keychain
  (fn [_ _]
-   {::initialize-keychain-fx nil}))
+   {:get-encryption-key [:initialize-app]}))
 
-(handlers/register-handler-fx
- :got-encryption-key
- (fn [_ [_ opts]]
-   {::got-encryption-key-fx opts}))
+(def handle-invalid-key-parameters
+  {:title               (i18n/label :invalid-key-title)
+   :content             (i18n/label :invalid-key-content)
+   :confirm-button-text (i18n/label :invalid-key-confirm)
+   :on-cancel           #(.exitApp react/back-handler)
+   :on-accept (fn []
+                (realm/delete-realms)
+                (.. (keychain/reset)
+                    (then
+                     #(re-frame/dispatch [:initialize-keychain]))))})
 
 (handlers/register-handler-fx
  :initialize-app
- (fn [_ [_ encryption-key]]
-   {::init-device-UUID nil
-    ::testfairy-alert  nil
-    :dispatch-n        [[:initialize-db encryption-key]
-                        [:load-accounts]
-                        [:initialize-views]
-                        [:listen-to-network-status]
-                        [:initialize-geth]]}))
+ (fn [_ [_ encryption-key error]]
+   (if (= error :invalid-key)
+     {:show-confirmation handle-invalid-key-parameters}
+     {::init-device-UUID nil
+      ::testfairy-alert  nil
+      :dispatch-n        [[:initialize-db encryption-key]
+                          [:load-accounts]
+                          [:initialize-views]
+                          [:listen-to-network-status]
+                          [:initialize-geth]]})))
 
 (handlers/register-handler-fx
  :logout
@@ -267,7 +259,7 @@
                                               [:navigate-to :accounts]]}
                                 (navigation/navigate-to-clean nil)
                                 (transport/stop-whisper)))
-     {::get-encryption-key-fx this-event})))
+     {:get-encryption-key [this-event]})))
 
 (handlers/register-handler-fx
  :initialize-db

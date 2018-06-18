@@ -12,6 +12,8 @@
             [status-im.utils.utils :as utils])
   (:refer-clojure :exclude [exists?]))
 
+(def new-account-filename "new-account")
+
 (defn to-buffer [key]
   (when key
     (let [length (.-length key)
@@ -20,24 +22,11 @@
         (aset arr i (aget key i)))
       (.-buffer arr))))
 
-(defn unencrypted-realm?
-  "Detect whether there is a unencrypted version of realm by checking whether
-  opening realm is successful"
-  [file-name]
-  (boolean
-   (.schemaVersion rn-dependencies/realm file-name)))
-
 (defn encrypted-realm-version
   "Returns -1 if the file does not exists, the schema version if it successfully
-  decrypts it, nil otherwise."
-  ;; We don't throw here as we want to know whether the
-  ;; user is upgrading from an older version of the app (<= 0.9.18), in which case
-  ;; we need to reset the database, as it was unencrypted / wallet compatibility."
+  decrypts it, error otherwise."
   [file-name encryption-key]
-  (try
-    (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
-    (catch js/Object e
-      nil)))
+  (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key)))
 
 (defn open-realm
   [options file-name encryption-key]
@@ -52,6 +41,15 @@
 (defn- delete-realm
   [file-name]
   (.deleteFile rn-dependencies/realm (clj->js {:path file-name})))
+
+(defn- delete-realms []
+  (log/warn "realm: deleting all realms")
+  (try
+    (do
+      (delete-realm (.-defaultPath rn-dependencies/realm))
+      (delete-realm new-account-filename))
+    (catch :default ex
+      (log/warn "failed to delete realm" ex))))
 
 (defn- close [realm]
   (when realm
@@ -75,17 +73,9 @@
 (defn migrate-realm
   "Migrate realm if is a compatible version or reset the database"
   [file-name schemas encryption-key]
-  (let [encrypted-version (encrypted-realm-version file-name encryption-key)
-        ;; If it's unencrypted reset schema
-        unencrypted?      (and (not encrypted-version)
-                               (unencrypted-realm? file-name))]
-    (cond
-      ;; -1 if it's a new installation, n if encrypted and existing
-      encrypted-version (migrate-schemas file-name schemas encryption-key encrypted-version)
-      unencrypted?      (do
-                          (utils/show-popup "Important: Wallet Upgrade" "The Status Wallet will be upgraded in this release. The 12 mnemonic words will generate different addresses and whisper identities (public key). Given that we changed the algorithm used to generate keys and addresses, it will be impossible to re-import accounts created with the old algorithm in Status. Please create a new account.")
-                          (reset-realm file-name schemas encryption-key)
-                          (migrate-realm file-name schemas encryption-key)))))
+  (migrate-schemas file-name schemas encryption-key (encrypted-realm-version
+                                                     file-name
+                                                     encryption-key)))
 
 (defn open-migrated-realm
   [file-name schemas encryption-key]
@@ -93,8 +83,6 @@
 
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
-
-(def new-account-filename "new-account")
 
 (def base-realm (atom nil))
 (def account-realm (atom nil))

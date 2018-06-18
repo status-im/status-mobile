@@ -41,6 +41,7 @@
             [status-im.test.utils.datetime]
             [status-im.test.utils.mixpanel]
             [status-im.test.utils.prices]
+            [status-im.test.utils.keychain.core]
             [status-im.test.ui.screens.accounts.login.events]))
 
 (enable-console-print!)
@@ -93,4 +94,5 @@
  'status-im.test.utils.datetime
  'status-im.test.utils.mixpanel
  'status-im.test.utils.prices
+ 'status-im.test.utils.keychain.core
  'status-im.test.ui.screens.accounts.login.events)

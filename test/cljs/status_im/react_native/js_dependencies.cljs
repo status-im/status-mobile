@@ -42,3 +42,6 @@
                                  :setInterval js/setInterval
                                  :clearTimeout js/clearTimeout
                                  :clearInterval js/clearInterval})
+
+(def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))})
+(def secure-random #(.resolve js/Promise (clj->js (range 0 %))))

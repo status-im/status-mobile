@@ -681,6 +681,12 @@
    :ropsten-network                      "Ropsten test network"
    :rinkeby-network                      "Rinkeby test network"
 
+   ;; invalid-key
+
+   :invalid-key-title                    "Invalid key detected"
+   :invalid-key-content                  "The key used to encrypt your data is invalid. Clicking on 'Reset database' will delete any existing realm and create a new one with a stronger key. If you would like to backup you data please click on cancel and the app will quit. Ensure the data directory of the app is clean and make sure no data is backed up by your cloud provider."
+   :invalid-key-confirm                  "Reset database"
+
    ;; browser
    :browser                              "Browser"
    :enter-dapp-url                       "Enter a ÐApp URL"
