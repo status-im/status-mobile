@@ -1,6 +1,7 @@
 (ns status-im.chat.styles.animations
   (:require [status-im.ui.components.styles :as common]))
 
+(def color-root-border "rgba(192, 198, 202, 0.28)")
 (def header-draggable-icon "rgba(73, 84, 93, 0.23)")
 
 (def overlap-container
@@ -17,6 +18,8 @@
    :right            0
    :bottom           bottom
    :position         :absolute
+   :border-top-color color-root-border
+   :border-top-width 1
    :elevation        2
    :max-height       max-height})
 
