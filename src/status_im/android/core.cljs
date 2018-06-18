@@ -21,7 +21,8 @@
                        (let [stack      (subscribe [:get :navigation-stack])
                              result-box (subscribe [:get-current-chat-ui-prop :result-box])
                              webview    (subscribe [:get :webview-bridge])
-                             view-id    (subscribe [:get :view-id])]
+                             view-id    (subscribe [:get :view-id])
+                             chat-id    (subscribe [:get-current-chat-id])]
                          (cond
 
                            (and @webview (:can-go-back? @result-box))
@@ -29,6 +30,9 @@
 
                            (#{:home :wallet :my-profile} view-id)
                            (do (.exitApp react/back-handler))
+
+                           (= :wallet-transaction-sent @view-id)
+                           (do (dispatch [:execute-stored-command-and-return-to-chat @chat-id]) true)
 
                            (< 1 (count @stack))
                            (do (dispatch [:navigate-back]) true)
