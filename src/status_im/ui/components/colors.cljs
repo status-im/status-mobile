@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]))
 
 (def white "#ffffff")
+(def transparent "transparent")
 (def white-light-transparent "rgba(255, 255, 255, 0.1)") ;; Used as icon background color for a dark foreground
 (def white-transparent "rgba(255, 255, 255, 0.2)") ;; Used as icon color on dark background
 (def white-lighter-transparent "rgba(255, 255, 255, 0.6)") ;; Used for input placeholder color
