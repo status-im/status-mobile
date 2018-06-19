@@ -41,11 +41,15 @@
    :margin-left   48
    :margin-bottom 4})
 
-(def chat-text-input
+(def chat-box
   {:height            68
-   :margin-horizontal 16
    :background-color  :white
    :border-radius     12})
+
+(def chat-text-input
+  {:flex              1
+   :margin-horizontal 24
+   :margin-vertical   15})
 
 (def messages-view
   {:flex             1
@@ -55,4 +59,41 @@
   {:borderRadius 20
    :width        40
    :height       40
-   :margin-right 8  })
+   :margin-right 8})
+
+(def toolbar-chat-view
+  {:align-items     :center
+   :padding         11
+   :justify-content :center})
+
+(def toolbar-chat-name
+  {:font-size    16
+   :color       :black
+   :font-weight "600"})
+
+(def add-contact
+  {:background-color :white
+   :border-radius    6
+   :margin-top       3
+   :padding          4})
+
+(def add-contact-text
+  {:font-size 14
+   :color     "#939ba1"})
+
+(def message-text
+  {:font-size 14})
+
+(def send-icon
+  {:margin-left      16
+   :width            30
+   :height           30
+   :border-radius    15
+   :background-color "#eef2f5"
+   :align-items      :center
+   :justify-content  :center
+   :transform        [{:rotate "90deg"}]})
+
+(def chat-view
+  {:flex             1
+   :background-color :white})
