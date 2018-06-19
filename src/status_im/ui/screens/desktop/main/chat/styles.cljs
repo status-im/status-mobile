@@ -46,10 +46,10 @@
    :background-color  :white
    :border-radius     12
    :margin-horizontal 24
-   :padding-vertical   15})
+   :padding-vertical  15})
 
 (def chat-text-input
-  {:flex              1})
+  {:flex 1})
 
 (def messages-view
   {:flex             1
@@ -67,7 +67,7 @@
    :justify-content :center})
 
 (def toolbar-chat-name
-  {:font-size    16
+  {:font-size   16
    :color       :black
    :font-weight "600"})
 
