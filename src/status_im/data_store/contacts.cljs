@@ -16,7 +16,7 @@
     (core/create realm
                  :contact
                  (dissoc contact :command :response :subscriptions :jail-loaded-events)
-                 (core/exists? realm :contact :whisper-identity whisper-identity))))
+                 true)))
 
 (defn save-contacts-tx
   "Returns tx function for saving contacts"

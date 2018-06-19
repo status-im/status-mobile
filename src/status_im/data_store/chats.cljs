@@ -25,7 +25,7 @@
   "Returns tx function for saving chat"
   [{:keys [chat-id] :as chat}]
   (fn [realm]
-    (core/create realm :chat chat (core/exists? realm :chat :chat-id chat-id))))
+    (core/create realm :chat chat true)))
 
 ;; Only used in debug mode
 (defn delete-chat-tx

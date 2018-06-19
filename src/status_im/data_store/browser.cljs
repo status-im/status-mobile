@@ -14,7 +14,7 @@
   "Returns tx function for saving browser"
   [{:keys [browser-id] :as browser}]
   (fn [realm]
-    (core/create realm :browser browser (core/exists? realm :browser :browser-id browser-id))))
+    (core/create realm :browser browser true)))
 
 (defn remove-browser-tx
   "Returns tx function for removing browser"

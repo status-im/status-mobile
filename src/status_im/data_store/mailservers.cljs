@@ -16,7 +16,7 @@
     (core/create realm
                  :mailserver
                  mailserver
-                 (core/exists? realm :mailserver :id id))))
+                 true)))
 
 (defn delete-tx
   "Returns tx function for deleting a mailserver"

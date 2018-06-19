@@ -9,8 +9,7 @@
             [status-im.utils.async :as utils.async]
             [cognitect.transit :as transit]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.utils.utils :as utils])
-  (:refer-clojure :exclude [exists?]))
+            [status-im.utils.utils :as utils]))
 
 (def new-account-filename "new-account")
 
@@ -35,7 +34,7 @@
     (when encryption-key
       (log/debug "Using encryption key...")
       (set! (.-encryptionKey options-js) (to-buffer encryption-key)))
-    (when (cljs.core/exists? js/window)
+    (when (exists? js/window)
       (rn-dependencies/realm. options-js))))
 
 (defn- delete-realm
@@ -231,9 +230,8 @@
 
 (defmethod to-query :eq [schema-name _ field value]
   (let [field-type    (field-type schema-name field)
-        escaped-value (when value (gstr/escapeString (str value)))
         query         (str (name field) "=" (if (= "string" (name field-type))
-                                              (str "\"" escaped-value "\"")
+                                              (str "\"" value "\"")
                                               value))]
     query))
 
@@ -260,9 +258,3 @@
                (case op
                  :and (and-query queries)
                  :or (or-query queries)))))
-
-(defn exists?
-  "Returns true if object/s identified by schema-name and field and value
-  exists in realm"
-  [realm schema-name field value]
-  (pos? (.-length (get-by-field realm schema-name field value))))

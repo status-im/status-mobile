@@ -35,7 +35,7 @@
                      (update :seen pr-str)
                      (update :pending-ack pr-str)
                      (update :pending-send pr-str))
-                 (core/exists? realm :transport :chat-id chat-id))))
+                 true)))
 
 (defn delete-transport-tx
   "Returns tx function for deleting transport"
