@@ -12,14 +12,18 @@
   ([new-account-fields after-update-event {:keys [db] :as cofx}]
    (let [current-account (:account/account db)
          new-account     (merge current-account new-account-fields)
+         fcm-token       (get-in db [:notifications :fcm-token])
          fx              {:db                 (assoc db :account/account new-account)
                           :data-store/base-tx [(accounts-store/save-account-tx
                                                 (assoc new-account
                                                        :after-update-event
                                                        after-update-event))]}
-         {:keys [name photo-path]} new-account]
+         {:keys [name photo-path address]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
-       (handlers-macro/merge-fx cofx fx (transport/send (message.contact/ContactUpdate. name photo-path) nil))
+       (handlers-macro/merge-fx
+        cofx
+        fx
+        (transport/send (message.contact/ContactUpdate. name photo-path address fcm-token) nil))
        fx))))
 
 (defn clean-seed-phrase

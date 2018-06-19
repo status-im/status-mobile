@@ -34,8 +34,7 @@
        (map #(select-keys % [:content :timestamp]))))
 
 (def default-values
-  {:outgoing       false
-   :to             nil})
+  {:to             nil})
 
 (re-frame/reg-cofx
  :data-store/get-messages

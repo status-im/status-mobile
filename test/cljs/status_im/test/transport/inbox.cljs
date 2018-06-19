@@ -77,29 +77,32 @@
                                   :sym-key-id "something"
                                   :password   "wnode-password"}}}
             :account/account
-            {:networks {"mainnet" {:config {:NetworkId 1}}}}}
+            {:networks {"mainnet" {:config {:NetworkId 1}}}}
+            :transport/chats
+            {:dont-fetch-history {:topic "dont-fetch-history"}
+             :fetch-history      {:topic "fetch-history"
+                                  :fetch-history? true}}}
         cofx {:db db :now 1000000000}]
     (testing "inbox is ready"
-      (testing "last-request is set"
-        (testing "last request is > the 7 days ago"
-          (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 400000)
-                actual (inbox/request-messages cofx-with-last-request)]
-            (testing "it uses last request"
-              (is (= 400000 (get-in actual [::inbox/request-messages :from]))))))
-        (testing "last request is < the 7 days ago"
-          (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 2)
-                actual (inbox/request-messages cofx-with-last-request)]
-            (testing "it uses last 7 days"
-              (is (= 395200 (get-in actual [::inbox/request-messages :from])))))))
-      (testing "last-request is not set"
-        (let [actual (inbox/request-messages cofx)]
-          (testing "it defaults to the last 7 days"
-            (is (= 395200 (get-in actual [::inbox/request-messages :from]))))))
-      (testing "last-request is nil"
-        (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] nil)
+      (testing "last request is > the 7 days ago"
+        (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 400000)
               actual (inbox/request-messages cofx-with-last-request)]
-          (testing "it defaults to the last 7 days"
-            (is (= 395200 (get-in actual [::inbox/request-messages :from])))))))
+          (testing "it uses last request"
+            (is (= 400000 (get-in actual [::inbox/request-messages 0 :from]))))))
+      (testing "last request is < the 7 days ago"
+        (let [cofx-with-last-request (assoc-in cofx [:db :account/account :last-request] 2)
+              actual (inbox/request-messages cofx-with-last-request)]
+          (testing "it uses last 7 days for catching up"
+            (is (= 395200 (get-in actual [::inbox/request-messages 0 :from]))))
+          (testing "it only uses topics that dont have fetch history set"
+            (is (= ["0xf8946aac" "dont-fetch-history"]
+                   (get-in actual [::inbox/request-messages 0 :topics]))))
+          (testing "it uses the last 24 hours to request history"
+            (is (= 913600
+                   (get-in actual [::inbox/request-messages 1 :from]))))
+          (testing "it fetches the right topic for history"
+            (is (= ["fetch-history"]
+                   (get-in actual [::inbox/request-messages 1 :topics])))))))
     (testing "inbox is not ready"
       (testing "it does not do anything"
         (is (nil? (inbox/request-messages {})))))))
@@ -159,3 +162,29 @@
                 :from           86400
                 :to             90000}}
              (into #{} (inbox/request-inbox-messages-params mailserver 0 90000 ["a" "b"])))))))
+
+(deftest initialize-offline-inbox
+  (let [db {:network "mainnet"
+            :mailserver-status :connected
+            :inbox/current-id "wnodeid"
+            :inbox/wnodes
+            {:mainnet {"wnodeid" {:address    "wnode-address"
+                                  :sym-key-id "something"
+                                  :password   "wnode-password"}}}
+            :account/account
+            {:networks {"mainnet" {:config {:NetworkId 1}}}}}]
+    (testing "last-request is not set"
+      (testing "it sets it to now in seconds"
+        (is (= 10
+               (get-in
+                (inbox/initialize-offline-inbox [] {:now 10000 :db db})
+                [:db :account/account :last-request])))))
+    (testing "last-request is set"
+      (testing "leaves it unchanged"
+        (is (= "sometimeago"
+               (get-in
+                (inbox/initialize-offline-inbox
+                 []
+                 {:now "now"
+                  :db (assoc-in db [:account/account :last-request] "sometimeago")})
+                [:db :account/account :last-request])))))))

@@ -23,7 +23,7 @@
 ;;
 ;; - We send a request to the mailserver, we are only interested in the
 ;; messages since `last-request`, the time of the last successful request,
-;; and the last 7 days for topics that were just joined
+;; and the last 24 hours for topics that were just joined
 ;; - The mailserver doesn't directly respond to the request and
 ;; instead we start receiving messages in the filters for the requested
 ;; topics.
@@ -149,20 +149,8 @@
 
 (re-frame/reg-fx
  ::request-messages
- (fn [{:keys [wnode topics to from web3]}]
-   (request-inbox-messages web3
-                           wnode
-                           topics
-                           from
-                           to
-                           #(log/info "offline inbox: request-messages response" %1 %2 from to)
-                           #(log/error "offline inbox: request-messages error" %1 %2 from to))))
-
-(re-frame/reg-fx
- ::request-history
- (fn [{:keys [wnode topics now-in-s web3]}]
-   (let [from (- now-in-s seven-days)
-         to   now-in-s]
+ (fn [params]
+   (doseq [{:keys [wnode topics to from web3]} params]
      (request-inbox-messages web3
                              wnode
                              topics
@@ -245,17 +233,20 @@
 (defn get-request-messages-topics
   "Returns topics for which full history has already been recovered"
   [db]
-  (conj (mapv :topic
-              (remove :fetch-history?
-                      (vals (:transport/chats db))))
+  (conj (map :topic
+             (remove :fetch-history?
+                     (vals (:transport/chats db))))
         (transport.utils/get-topic constants/contact-discovery)))
 
 (defn get-request-history-topics
   "Returns topics for which full history has not been recovered"
   [db]
-  (mapv :topic
-        (filter :fetch-history?
-                (vals (:transport/chats db)))))
+  (map :topic
+       (filter :fetch-history?
+               (vals (:transport/chats db)))))
+
+(defn request-history-span [now-in-s]
+  (- now-in-s one-day))
 
 (defn request-messages
   ([{:keys [db now] :as cofx}]
@@ -268,15 +259,16 @@
          request-messages-topics (get-request-messages-topics db)
          request-history-topics  (get-request-history-topics db)]
      (when (inbox-ready? wnode cofx)
-       {::request-messages {:wnode      wnode
-                            :topics     request-messages-topics
-                            :from       last-request
-                            :to         now-in-s
-                            :web3       web3}
-        ::request-history {:wnode      wnode
-                           :now-in-s   now-in-s
-                           :topics     request-history-topics
-                           :web3       web3}
+       {::request-messages [{:wnode      wnode
+                             :topics     request-messages-topics
+                             :from       last-request
+                             :to         now-in-s
+                             :web3       web3}
+                            {:wnode      wnode
+                             :from       (request-history-span now-in-s)
+                             :to         now-in-s
+                             :topics     request-history-topics
+                             :web3       web3}]
         :db                (assoc db :inbox/fetching? true)
         :dispatch-later    [{:ms fetching-timeout
                              :dispatch [:inbox/check-fetching now-in-s]}]})))
@@ -290,10 +282,11 @@
         topic             (get-in db [:transport/chats chat-id :topic])
         now-in-s          (quot now 1000)]
     (when (inbox-ready? wnode cofx)
-      {::request-history {:wnode      wnode
-                          :topics     [topic]
-                          :now-in-s   now-in-s
-                          :web3       web3}
+      {::request-messages [{:wnode      wnode
+                            :topics     [topic]
+                            :from       (request-history-span now-in-s)
+                            :to         now-in-s
+                            :web3       web3}]
        :db                (assoc db :inbox/fetching? true)
        :dispatch-later    [{:ms fetching-timeout
                             :dispatch [:inbox/check-fetching now-in-s chat-id]}]})))
@@ -364,6 +357,7 @@
 (defn initialize-offline-inbox [custom-mailservers cofx]
   (handlers-macro/merge-fx cofx
                            (models.mailserver/add-custom-mailservers custom-mailservers)
+                           (models.mailserver/set-initial-last-request)
                            (models.mailserver/set-current-mailserver)))
 
 (handlers/register-handler-fx

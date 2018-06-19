@@ -38,11 +38,11 @@
                                                          "contact-request-confirmation")
                                 :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
                                                                                     :chat    updated-chat})]}
-                               (protocol/send {:chat-id chat-id
-                                               :payload this
-                                               :success-event success-event})))))
+                               (protocol/send-with-pubkey {:chat-id chat-id
+                                                           :payload this
+                                                           :success-event success-event})))))
 
-(defrecord ContactUpdate [name profile-image]
+(defrecord ContactUpdate [name profile-image address fcm-token]
   message/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
     (let [public-keys (reduce (fn [acc [_ {:keys [public-key pending?]}]]
@@ -65,9 +65,9 @@
                                                               [:transport/chats chat-id :resend?]
                                                               "contact-update")
                                      :data-store/tx tx}
-                                    (protocol/send {:chat-id       chat-id
-                                                    :payload       this
-                                                    :success-event success-event}))))
+                                    (protocol/send-with-pubkey {:chat-id       chat-id
+                                                                :payload       this
+                                                                :success-event success-event}))))
        recipients))))
 
 (defn remove-chat-filter
@@ -90,7 +90,7 @@
                                   :payload       this
                                   :success-event success-event}
                                  cofx)))
-  (receive [this chat-id signature {:keys [db] :as cofx}]
+  (receive [this chat-id _ timestamp {:keys [db] :as cofx}]
     (let [current-sym-key (get-in db [:transport/chats chat-id :sym-key])
           ;; NOTE(yenda) to support concurrent contact request without additional
           ;; interactions we don't save the new key if these conditions are met:
@@ -105,6 +105,7 @@
         (let [on-success (fn [sym-key sym-key-id]
                            (re-frame/dispatch [:contact/add-new-sym-key
                                                {:sym-key-id sym-key-id
+                                                :timestamp  timestamp
                                                 :sym-key    sym-key
                                                 :chat-id    chat-id
                                                 :topic      topic
@@ -119,4 +120,4 @@
                                    ;; dereferrencing it
                                    (remove-chat-filter chat-id)))
         ;; if we don't save the key, we read the message directly
-        (message/receive message chat-id chat-id cofx)))))
+        (message/receive message chat-id chat-id timestamp cofx)))))

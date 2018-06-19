@@ -30,7 +30,7 @@
       (try
         (handlers-macro/merge-fx
          (assoc cofx :js-obj js-message)
-         (message/receive status-message (or chat-id sig) sig)
+         (message/receive status-message (or chat-id sig) sig timestamp)
          (update-last-received-from-inbox now-in-s timestamp ttl))
         (catch :default e nil))))) ; ignore unknown message types
 
@@ -89,7 +89,7 @@
 
 (handlers/register-handler-fx
  :contact/add-new-sym-key
- (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id topic message]}]]
+ (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id topic timestamp message]}]]
    (let [{:keys [web3 current-public-key]} db
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
                                                (assoc :sym-key-id sym-key-id
@@ -106,7 +106,7 @@
                                                 :chat-id    chat-id}
                                :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
                                                                                     :chat    chat-transport-info})]}
-                              (message/receive message chat-id chat-id)))))
+                              (message/receive message chat-id chat-id timestamp)))))
 
 #_(handlers/register-handler-fx
    :send-test-message
@@ -155,7 +155,7 @@
 (handlers/register-handler-fx
  :group/add-new-sym-key
  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [{:keys [db] :as cofx} [{:keys [sym-key-id sym-key chat-id signature message]}]]
+ (fn [{:keys [db] :as cofx} [{:keys [sym-key-id sym-key chat-id signature timestamp message]}]]
    (let [{:keys [web3 current-public-key]} db
          topic                            (transport.utils/get-topic chat-id)
          fx {:db             (assoc-in db
@@ -174,7 +174,7 @@
                                              (assoc :sym-key sym-key))})]}]
      ;; if new sym-key is wrapping some message, call receive on it as well, if not just update the transport layer
      (if message
-       (handlers-macro/merge-fx cofx fx (message/receive message chat-id signature))
+       (handlers-macro/merge-fx cofx fx (message/receive message chat-id signature timestamp))
        fx))))
 
 (re-frame/reg-fx

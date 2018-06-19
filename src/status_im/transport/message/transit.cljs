@@ -40,8 +40,8 @@
 (deftype ContactUpdateHandler []
   Object
   (tag [this v] "c6")
-  (rep [this {:keys [name profile-image]}]
-    #js [name profile-image]))
+  (rep [this {:keys [name profile-image address fcm-token]}]
+    #js [name profile-image address fcm-token]))
 
 (deftype MessageHandler []
   Object
@@ -102,8 +102,8 @@
                                      (v1.protocol/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
-                              "c6" (fn [[name profile-image]]
-                                     (v1.contact/ContactUpdate. name profile-image))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
+                              "c6" (fn [[name profile-image address fcm-token]]
+                                     (v1.contact/ContactUpdate. name profile-image address fcm-token))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

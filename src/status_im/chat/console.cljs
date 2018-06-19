@@ -6,7 +6,6 @@
 
 (defn console-message [{:keys [timestamp message-id content content-type]}]
   {:message-id   message-id
-   :outgoing     false
    :chat-id      constants/console-chat-id
    :from         constants/console-chat-id
    :to           "me"

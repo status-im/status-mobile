@@ -76,12 +76,12 @@
 (defrecord Ack [message-ids]
   message/StatusMessage
   (send [this cofx chat-id])
-  (receive [this db chat-id sig]))
+  (receive [this chat-id sig timestamp cofx]))
 
 (defrecord Seen [message-ids]
   message/StatusMessage
   (send [this cofx chat-id])
-  (receive [this cofx chat-id sig]))
+  (receive [this chat-id sig timestamp cofx]))
 
 (defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
@@ -97,7 +97,7 @@
               config/use-sym-key)
         (send params cofx)
         (send-with-pubkey params cofx))))
-  (receive [this chat-id signature cofx]
+  (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
              :message-id (transport.utils/message-id this)
@@ -112,5 +112,5 @@
     (send {:chat-id chat-id
            :payload this}
           cofx))
-  (receive [this chat-id signature cofx]
+  (receive [this chat-id signature _ cofx]
     (chat/receive-seen chat-id signature this cofx)))

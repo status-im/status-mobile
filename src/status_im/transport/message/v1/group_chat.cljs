@@ -19,7 +19,7 @@
                                       :chat-id     chat-id
                                       :payload     this}
                                      cofx)))
-  (receive [this _ signature {:keys [db] :as cofx}]
+  (receive [this _ signature timestamp {:keys [db] :as cofx}]
     (handlers-macro/merge-fx
      cofx
      {:shh/add-new-sym-keys
@@ -30,6 +30,7 @@
                        [:group/add-new-sym-key
                         {:chat-id    chat-id
                          :signature  signature
+                         :timestamp  timestamp
                          :sym-key    sym-key
                          :sym-key-id sym-key-id
                          :message    message}]))}]}

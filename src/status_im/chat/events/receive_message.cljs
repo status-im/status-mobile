@@ -101,7 +101,6 @@
                              :timestamp    now
                              :content      (str content)
                              :content-type constants/text-content-type
-                             :outgoing     false
                              :clock-value  (utils.clocks/send 0)
                              :chat-id      chat-id
                              :from         chat-id
