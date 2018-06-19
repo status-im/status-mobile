@@ -2,7 +2,11 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.user.views :as profile]))
+            [status-im.ui.screens.profile.user.views :as profile]
+            [status-im.utils.build :as build]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
+            [status-im.i18n :as i18n]))
 
 (defn profile-badge [{:keys [name]}]
   [react/view {:margin-vertical 10}
@@ -38,5 +42,7 @@
      [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])
                                  :style {:margin-top 60}}
-      [react/view
-       [react/text {:style {:color :red}} "Log out"]]]]))
+
+      [react/view {:style styles/logout-row}
+       [react/text {:style {:color colors/red}} (i18n/label :t/logout)]
+       [react/text {:style {:color colors/gray}} "V" build/version]]]]))

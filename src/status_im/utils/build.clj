@@ -22,7 +22,7 @@
       (System/exit 1))))
 
 (defmacro git-short-version []
-  (let [version-file-path ".version"
+  (let [version-file-path "VERSION"
         version-file      (io/file version-file-path)]
     (if (.exists version-file)
       (string/trim (slurp version-file-path))
