@@ -6,12 +6,13 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [status-im.ui.components.svgimage :as svgimage]))
 
 (def emona :EMONA)
 
 (defmethod collectibles/load-collectible-fx emona [_ id]
-  {:http-get {:url (str "https://www.etheremon.com/api/monster/get_data?monster_ids=" id)
+  {:http-get {:url                   (str "https://www.etheremon.com/api/monster/get_data?monster_ids=" id)
               :success-event-creator (fn [o]
                                        [:load-collectible-success emona (:data (http/parse-payload o))])
               :failure-event-creator (fn [o]
@@ -22,9 +23,11 @@
 (defmethod collectibles/render-collectible emona [_ {:keys [monster_id user_defined_name image]}]
   [react/view {:style styles/details}
    [react/view {:style styles/details-text}
-    [react/image {:style  styles/details-image
-                  :source {:uri image}}]
-    [react/view {:justify-content :center}
+    [react/view {:flex 1}
+     [svgimage/svgimage {:style  styles/details-image
+                         :source {:uri image
+                                  :k   2}}]]
+    [react/view {:flex 1 :justify-content :center}
      [react/text {:style styles/details-name}
       user_defined_name]]]
    [action-button/action-button {:label               (i18n/label :t/view-etheremon)

@@ -25,6 +25,5 @@
    :margin-bottom       10})
 
 (def details-image
-  {:width  80
-   :height 80
+  {:flex   1
    :margin 10})

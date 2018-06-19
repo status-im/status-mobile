@@ -7,7 +7,8 @@
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [status-im.ui.components.svgimage :as svgimage]))
 
 (def ck :CK)
 
@@ -46,9 +47,9 @@
 (defmethod collectibles/render-collectible ck [_ {:keys [id name bio image_url]}]
   [react/view {:style styles/details}
    [react/view {:style styles/details-text}
-    ;; TODO reenable image once SVG is supported
-    #_[react/image {:style {:width 80 :height 80 :margin 10 :background-color "red"} :source {:uri image_url}}]
-    [react/view {}
+    [svgimage/svgimage {:style styles/details-image
+                        :source {:uri image_url}}]
+    [react/view {:flex 1}
      [react/text {:style styles/details-name}
       (or name (i18n/label :t/cryptokitty-name {:id id}))]
      [react/text {:number-of-lines 3
