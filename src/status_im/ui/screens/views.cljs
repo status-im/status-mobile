@@ -43,6 +43,7 @@
             [status-im.ui.screens.bootnodes-settings.views :refer [bootnodes-settings]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
+            [status-im.ui.screens.help-center.views :refer [help-center]]
             [status-im.ui.screens.browser.views :refer [browser]]
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
@@ -92,6 +93,7 @@
     :bootnodes-settings bootnodes-settings
     :edit-bootnode edit-bootnode
     :currency-settings currency-settings
+    :help-center help-center
     :recent-recipients recent-recipients
     :recipient-qr-code recipient-qr-code
     :contact-code contact-code

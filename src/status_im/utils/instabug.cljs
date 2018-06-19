@@ -5,6 +5,17 @@
 
 (def instabug rn-dependencies/instabug)
 
+(defn submit-bug []
+  (.invokeWithInvocationMode
+   instabug
+   (.. instabug
+       -invocationMode
+       -newBug)))
+
+(defn request-feature []
+  (.showFeatureRequests
+   instabug))
+
 (defn- prepare-event-name [event {:keys [target]}]
   (str event " " target))
 

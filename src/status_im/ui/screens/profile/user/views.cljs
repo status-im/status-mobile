@@ -115,6 +115,10 @@
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw :t/need-help
+                                        :accessibility-label :help-button
+                                        :action-fn #(re-frame/dispatch [:navigate-to :help-center])}]
+     [profile.components/settings-item-separator]
      [react/view styles/my-profile-settings-logout-wrapper
       [react/view styles/my-profile-settings-logout
        [profile.components/settings-item {:label-kw            :t/logout
