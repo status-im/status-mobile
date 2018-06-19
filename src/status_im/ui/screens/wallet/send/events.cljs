@@ -252,7 +252,7 @@
  (fn [{db :db now :now} [_ {:keys [id response] :as params} modal?]]
    (let [{:keys [hash error]} response
          {:keys [method]} (get-in db [:wallet :send-transaction])
-         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+         db'             (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
        {:db db'}
        (merge
@@ -267,7 +267,7 @@
           (cond-> {:dispatch [:navigate-back]}
             (= method constants/web3-send-transaction)
             (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
-          {:dispatch [:navigation-replace :wallet-transaction-sent]}))))))
+          {:dispatch [:execute-stored-command]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [result (types/json->clj raw-results)]
@@ -409,7 +409,5 @@
 (handlers/register-handler-fx
  :close-transaction-sent-screen
  (fn [{:keys [db]} [_ chat-id]]
-   {:dispatch       (condp = (second (:navigation-stack db))
-                      :chat [:execute-stored-command-and-return-to-chat chat-id]
-                      [:navigate-back])
+   {:dispatch       [:navigate-back]
     :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))

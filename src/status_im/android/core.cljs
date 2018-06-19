@@ -31,9 +31,6 @@
                            (#{:home :wallet :my-profile} view-id)
                            (do (.exitApp react/back-handler))
 
-                           (= :wallet-transaction-sent @view-id)
-                           (do (dispatch [:execute-stored-command-and-return-to-chat @chat-id]) true)
-
                            (< 1 (count @stack))
                            (do (dispatch [:navigate-back]) true)
 

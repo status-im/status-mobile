@@ -306,6 +306,13 @@
         (mark-messages-seen current-chat-id))))))
 
 (handlers/register-handler-fx
+ :execute-stored-command
+ (fn [cofx _]
+   (handlers-macro/merge-fx cofx
+                            (events.commands/execute-stored-command)
+                            (navigation/replace-view :wallet-transaction-sent))))
+
+(handlers/register-handler-fx
  :execute-stored-command-and-return-to-chat
  (fn [cofx [_ chat-id]]
    (handlers-macro/merge-fx cofx
