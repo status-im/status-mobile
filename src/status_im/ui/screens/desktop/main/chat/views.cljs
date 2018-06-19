@@ -68,8 +68,7 @@
    [react/text {:style (styles/message-timestamp-placeholder)}
     (time/timestamp->time timestamp)]
    [react/text {:style (styles/message-timestamp)}
-    (time/timestamp->time timestamp)]
-   ]])
+    (time/timestamp->time timestamp)]]])
 
 
 (views/defview text-only-message [text message]
