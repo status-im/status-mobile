@@ -3,7 +3,7 @@
 
 (defn message-box [{:keys [outgoing] :as message}]
   (let [align (if outgoing :flex-end :flex-start)
-        color (if outgoing "#dce2fb" "white")]
+        color (if outgoing colors/hawkes-blue colors/white)]
     {:align-self       align
      :background-color color
      :border-radius    8
@@ -20,7 +20,7 @@
      :padding-top       padding-top-value}))
 
 (defn message-timestamp-placeholder []
-  {:color               "transparent"
+  {:color               colors/transparent
    :font-size           10
    :align-self          :flex-end
    :opacity             0.5
@@ -44,16 +44,16 @@
 (def chat-box
   {:height            68
    :background-color  :white
-   :border-radius     12})
+   :border-radius     12
+   :margin-horizontal 24
+   :padding-vertical   15})
 
 (def chat-text-input
-  {:flex              1
-   :margin-horizontal 24
-   :margin-vertical   15})
+  {:flex              1})
 
 (def messages-view
   {:flex             1
-   :background-color "#eef2f5"})
+   :background-color colors/gray-lighter})
 
 (def photo-style
   {:borderRadius 20
@@ -79,7 +79,7 @@
 
 (def add-contact-text
   {:font-size 14
-   :color     "#939ba1"})
+   :color     colors/gray})
 
 (def message-text
   {:font-size 14})
@@ -89,7 +89,7 @@
    :width            30
    :height           30
    :border-radius    15
-   :background-color "#eef2f5"
+   :background-color colors/gray-lighter
    :align-items      :center
    :justify-content  :center
    :transform        [{:rotate "90deg"}]})
