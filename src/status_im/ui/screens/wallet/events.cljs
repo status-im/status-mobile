@@ -67,7 +67,7 @@
                            :contract   contract
                            :account-id account-id
                            :on-success #(re-frame/dispatch [success-event symbol %])
-                           :on-error   #(re-frame/dispatch [error-event %])})))))
+                           :on-error   #(re-frame/dispatch [error-event symbol %])})))))
 
 (reg-fx
  :get-transactions
@@ -211,8 +211,8 @@
 
 (handlers/register-handler-db
  :update-token-balance-fail
- (fn [db [_ err]]
-   (log/debug "Unable to get token balance: " err)
+ (fn [db [_ symbol err]]
+   (log/debug "Unable to get token " symbol "balance: " err)
    (-> db
        (assoc-error-message :balance-update err)
        (assoc-in [:wallet :balance-loading?] false))))
