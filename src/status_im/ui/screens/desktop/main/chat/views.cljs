@@ -16,7 +16,7 @@
             [status-im.ui.screens.desktop.main.chat.styles :as desktop-message-styles]))
 
 (views/defview toolbar-chat-view []
-  (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat] 
+  (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat]
                   {:keys [pending?]}                                   [:get-current-chat-contact]]
     (let [chat-name (str
                       (if public? "#" "")
@@ -46,19 +46,10 @@
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
          [react/text {:style desktop-message-styles/author} name]])))
 
-(def photo-style
-  {:borderRadius 20
-   :width        40
-   :height       40
-   :margin-right 8  })
-
 (views/defview member-photo [from]
-  (views/letsubs [photo-path nil]
-    [react/view
-     [react/image {:source {:uri (if (string/blank? photo-path)
-                                   (identicon/identicon from)
-                                   photo-path)}
-                   :style  photo-style}]]))
+  [react/view
+   [react/image {:source {:uri (identicon/identicon from)}
+                 :style  desktop-message-styles/photo-style}]])
 
 (views/defview my-photo [from]
   (views/letsubs [account [:get-current-account]]
@@ -67,7 +58,7 @@
        [react/image {:source {:uri (if (string/blank? photo-path)
                                      (identicon/identicon from)
                                      photo-path)}
-                     :style  photo-style}]])))
+                     :style  desktop-message-styles/photo-style}]])))
 
 (views/defview message-with-timestamp [text {:keys [timestamp] :as message} style]
  [react/view {:style style}
@@ -86,7 +77,7 @@
     [message-with-timestamp text message (desktop-message-styles/message-box message)]])
 
 (views/defview photo-placeholder []
-  [react/view {:style photo-style}])
+  [react/view {:style desktop-message-styles/photo-style}])
 
 (views/defview message-with-name-and-avatar [text {:keys [from first-in-group? last-in-group?] :as message}]
      [react/view {:style (desktop-message-styles/message-row message)}
@@ -133,7 +124,7 @@
               (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
           messages (re-frame/subscribe [:get-current-chat-messages])
           current-public-key (re-frame/subscribe [:get-current-public-key])]
-      [react/view {:style {:flex 1 :background-color "#eef2f5"}}
+      [react/view {:style desktop-message-styles/messages-view}
        [react/scroll-view {:scrollEventThrottle    16
                            :on-scroll              (fn [e]
                                                     (let [ne (.-nativeEvent e)
@@ -154,7 +145,7 @@
 
 (views/defview chat-text-input []
   (views/letsubs [inp-ref (atom nil)]
-    [react/view {:style {:height 68 :margin-horizontal 16  :background-color :white :border-radius 12}}
+    [react/view {:style desktop-message-styles/chat-text-input}
      [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16 :flex 1 :margin-bottom 16}}
       [react/view {:style {:flex 1}}
        [react/text-input {:placeholder    "Type a message..."
