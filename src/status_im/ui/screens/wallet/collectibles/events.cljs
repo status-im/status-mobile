@@ -58,3 +58,9 @@
  [re-frame/trim-v]
  (fn [{db :db} [_]]
    {:db db}))
+
+(handlers/register-handler-fx
+ :open-collectible-in-browser
+ [re-frame/trim-v]
+ (fn [_ [data]]
+   {:dispatch [:open-browser data]}))

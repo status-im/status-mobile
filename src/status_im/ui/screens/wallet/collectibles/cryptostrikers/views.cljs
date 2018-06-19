@@ -24,4 +24,4 @@
      :icon                :icons/address
      :icon-opts           {:color colors/blue}
      :accessibility-label :open-collectible-button
-     :on-press            #(re-frame/dispatch [:open-browser {:url external_url}])}]])
+     :on-press            #(re-frame/dispatch [:open-collectible-in-browser {:url external_url}])}]])
