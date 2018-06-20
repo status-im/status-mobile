@@ -35,16 +35,20 @@
       (when (ethereum/address? s)
         {:address s :chain-id chain-id})))
 
-(defn changed-asset-warning [cofx old-symbol new-symbol]
-  (assoc-in cofx [:db :wallet :send-transaction :asset-error]
-            (i18n/label :t/changed-asset-warning {:old old-symbol :new new-symbol})))
+;; NOTE(janherich) - whenever changing assets, we want to clear the previusly set amount/amount-text
+(defn changed-asset [fx old-symbol new-symbol]
+  (-> fx
+      (assoc-in [:db :wallet :send-transaction :amount] nil)
+      (assoc-in [:db :wallet :send-transaction :amount-text] nil)
+      (assoc-in [:db :wallet :send-transaction :asset-error]
+                (i18n/label :t/changed-asset-warning {:old old-symbol :new new-symbol}))))
 
-(defn changed-amount-warning [cofx old-amount new-amount]
-  (assoc-in cofx [:db :wallet :send-transaction :amount-error]
+(defn changed-amount-warning [fx old-amount new-amount]
+  (assoc-in fx [:db :wallet :send-transaction :amount-error]
             (i18n/label :t/changed-amount-warning {:old old-amount :new new-amount})))
 
-(defn use-default-eth-gas [cofx]
-  (assoc-in cofx [:db :wallet :send-transaction :gas]
+(defn use-default-eth-gas [fx]
+  (assoc-in fx [:db :wallet :send-transaction :gas]
             ethereum/default-transaction-gas))
 
 (handlers/register-handler-fx
@@ -64,7 +68,7 @@
               :dispatch   [:navigate-back]}
        (and address (= :choose-recipient view-id)) (assoc :dispatch [:navigate-back])
        (and address valid-network?) (update :db #(fill-request-details % details))
-       (and old-symbol new-symbol (not= old-symbol new-symbol)) (changed-asset-warning old-symbol new-symbol)
+       (and old-symbol new-symbol (not= old-symbol new-symbol)) (changed-asset old-symbol new-symbol)
        (and old-amount new-amount (not= old-amount new-amount)) (changed-amount-warning old-amount new-amount)
        ;; NOTE(goranjovic) - the next line is there is because QR code scanning switches the amount to ETH
        ;; automatically, so we need to update the gas limit accordingly. The check for origin screen is there
