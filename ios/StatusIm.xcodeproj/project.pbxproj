@@ -1138,6 +1138,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "StatusIm" */;
 			buildPhases = (
+				74D5DDAF20DA55D6002897BC /* ShellScript */,
 				2EAC54E16AB243C3EBBFE1BA /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -1829,6 +1830,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		74D5DDAF20DA55D6002897BC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"RN-PATCH: Checking if iOS React patch is applied...\"\n\nif cmp ${PROJECT_DIR}/../react-native-patches/RCTUITextView.m ${PROJECT_DIR}/../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m; then\n    echo \"RN-PARCH: Patch was successfully applied\"\nelse\n    echo \"RN-PATCH: Patch was NOT successfully applied\"\n    exit 1\nfi";
 		};
 		967469AF8BA27D5CEC47B13C /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
