@@ -30,7 +30,9 @@
                                (re-frame/dispatch [:create-new-public-chat topic]))
        :auto-capitalize     :none
        :accessibility-label :chat-name-input
-       :placeholder         nil}]]]
+       :placeholder         nil
+       :return-key-type     :go
+       :auto-correct        false}]]]
    (when error
      [tooltip/tooltip error styles/tooltip])])
 
@@ -51,7 +53,7 @@
      [list/item-icon {:icon      :icons/forward
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats ["status" "openbounty" "edcon" "ethereum"])
+(def default-public-chats ["status" "cryptostrikers" "dapps" "ethereum" "openbounty"])
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
@@ -69,7 +71,8 @@
       [react/text {:style styles/section-title
                    :font  :medium}
        (i18n/label :t/selected)]]
-     [list/flat-list {:data               default-public-chats
-                      :key-fn             identity
-                      :render-fn          render-topic
-                      :default-separator? true}]]))
+     [list/flat-list {:data                         default-public-chats
+                      :key-fn                       identity
+                      :render-fn                    render-topic
+                      :keyboard-should-persist-taps :always
+                      :default-separator?           true}]]))

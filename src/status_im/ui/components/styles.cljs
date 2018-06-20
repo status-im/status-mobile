@@ -53,6 +53,9 @@
 (def separator-color "#0000001f")
 (def default-chat-color color-purple)
 
+(defn random-chat-color []
+  (rand-nth colors/chat-colors))
+
 ;;rgb 237 241 243
 
 (def flex
@@ -72,6 +75,11 @@
    :height 24})
 
 (def icon-add
+  {:width           24
+   :height          24
+   :color           colors/blue})
+
+(def icon-add-illuminated
   {:width           24
    :height          24
    :color           colors/blue

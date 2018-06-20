@@ -4,6 +4,7 @@ import android.support.multidex.MultiDexApplication;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
+import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.horcrux.svg.SvgPackage;
@@ -24,6 +25,7 @@ import im.status.ethereum.module.StatusPackage;
 import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
 import com.testfairy.react.TestFairyPackage;
+import com.oblador.keychain.KeychainPackage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,20 +47,16 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                 devCluster = true;
             }
 
-            boolean jscEnabled = false;
-            if (BuildConfig.JSC_ENABLED == "1") {
-                jscEnabled = true;
-            }
-
             boolean webViewDebugEnabled = false;
             if (BuildConfig.DEBUG_WEBVIEW == "1") {
                 webViewDebugEnabled = true;
             }
 
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled, BuildConfig.LOG_LEVEL_STATUS_GO);
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, BuildConfig.LOG_LEVEL_STATUS_GO);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
+                    new RNSecureRandomPackage(),
                     new BackgroundTimerPackage(),
                     new SvgPackage(),
                     new FIRMessagingPackage(),
@@ -76,6 +74,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new TestFairyPackage(),
                     new WebViewBridgePackage(webViewDebugEnabled, callRPC),
                     new ReactNativeConfigPackage(),
+                    new KeychainPackage(),
                     new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN,MainApplication.this)
                             .setInvocationEvent("shake")
                             .setPrimaryColor("#1D82DC")

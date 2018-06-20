@@ -1,11 +1,11 @@
 (ns status-im.ui.components.desktop.views
   (:require
-    [status-im.ui.components.icons.vector-icons :as icons]
-    [status-im.ui.components.common.styles :as styles]
-    [status-im.ui.components.action-button.styles :as st]
-    [status-im.ui.components.styles :as common]
-    [status-im.ui.components.checkbox.styles :as checkbox.styles]
-    [status-im.ui.components.react :as react]))
+   [status-im.ui.components.icons.vector-icons :as icons]
+   [status-im.ui.components.common.styles :as styles]
+   [status-im.ui.components.action-button.styles :as st]
+   [status-im.ui.components.styles :as common]
+   [status-im.ui.components.checkbox.styles :as checkbox.styles]
+   [status-im.ui.components.react :as react]))
 
 (defn checkbox [{:keys [on-value-change checked?]}]
   [react/touchable-highlight {:style checkbox.styles/wrapper :on-press #(do (when on-value-change (on-value-change (not checked?))))}

@@ -4,15 +4,6 @@ I18n.translations = {
         send_description: 'Send a payment',
         send_choose_recipient: 'Choose recipient',
         send_specify_amount: 'Specify amount',
-        send_fee: 'Fee',
-        send_cheaper: 'Cheaper',
-        send_faster: 'Faster',
-        send_explanation: 'This is the most amount of money that might be used to process this transaction. Your transaction will be mined ',
-        send_explanation_0: 'in a few minutes or more.',
-        send_explanation_1: 'likely within a few minutes.',
-        send_explanation_2: 'usually within a minute.',
-        send_explanation_3: 'probably within 30 seconds.',
-        send_explanation_4: 'probably within a few seconds.',
         send_sending_to: 'to ',
 
         eth: 'ETH',
@@ -29,9 +20,12 @@ I18n.translations = {
         validation_tx_failed: 'Transaction failed',
         validation_amount_specified: 'Amount must be specified',
         validation_invalid_number: 'Amount is not valid number',
-        validation_amount_is_too_small: 'Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)',
+        validation_amount_is_too_small: 'Amount is too precise. Max number of decimals is 18.',
         validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
-    },
+    }
+
+    /*
+    ,
     ru: {
         send_title: 'Отправить транзакцию',
         send_description: 'Отправить платеж',
@@ -488,4 +482,6 @@ I18n.translations = {
         validation_invalid_number: 'Số tiền không phải là một số hợp lệ',
         validation_insufficient_amount: 'Không đủ ETH trong số dư ('
     }
+
+    */
 };

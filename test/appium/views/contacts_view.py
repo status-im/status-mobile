@@ -2,16 +2,15 @@ from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
 
-class AuctionHouseButton(BaseButton):
+class StatusTestDAppButton(BaseButton):
 
     def __init__(self, driver):
-        super(AuctionHouseButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "(//android.widget.TextView[@text='Auction House'])[1]")
+        super(StatusTestDAppButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Status Test DApp')
 
     def navigate(self):
-        from views.web_views.auction_house import AuctionHouseWebView
-        return AuctionHouseWebView(self.driver)
+        from views.web_views.status_test_dapp import StatusTestDAppView
+        return StatusTestDAppView(self.driver)
 
 
 class PlusButton(BaseButton):
@@ -44,4 +43,4 @@ class ContactsView(BaseView):
         self.public_key_edit_box = PublicKeyEditBox(self.driver)
         self.confirm_public_key_button = ConfirmPublicKeyButton(self.driver)
 
-        self.auction_house_button = AuctionHouseButton(self.driver)
+        self.status_test_dapp_button = StatusTestDAppButton(self.driver)

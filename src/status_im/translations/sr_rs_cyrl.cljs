@@ -1,8 +1,7 @@
 (ns status-im.translations.sr-rs-cyrl)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Чланови"
    :not-implemented                       "!није имплементирано"
    :chat-name                             "Назив разговора"
@@ -329,8 +328,6 @@
    :wallet-browse-photos                  "Претражи слике"
    :validation-amount-invalid-number      "Износ није исправан број"
    :validation-amount-is-too-precise      "Износ има превише децимала. Најмања јединица коју можете послати је 1 Wei (1x10^-18 ETH)"
-
-
 
    ;; network settings
    :new-network                           "Нова мрежа"

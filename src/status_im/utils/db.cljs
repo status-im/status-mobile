@@ -13,12 +13,12 @@
 (defn valid-length? [identity]
   (let [length (count identity)]
     (and
-      (hex-string? identity)
-      (or
-        (and (= 128 length) (not (string/includes? identity "0x")))
-        (and (= 130 length) (string/starts-with? identity "0x"))
-        (and (= 132 length) (string/starts-with? identity "0x04"))
-        (ethereum/address? identity)))))
+     (hex-string? identity)
+     (or
+      (and (= 128 length) (not (string/includes? identity "0x")))
+      (and (= 130 length) (string/starts-with? identity "0x"))
+      (and (= 132 length) (string/starts-with? identity "0x04"))
+      (ethereum/address? identity)))))
 
 (spec/def :global/not-empty-string (spec/and string? not-empty))
 (spec/def :global/public-key (spec/and :global/not-empty-string valid-length?))

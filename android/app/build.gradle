@@ -98,8 +98,9 @@ def enableProguardInReleaseBuilds = false
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         exec {
-            commandLine "git", "rev-list", "--count", "HEAD"
+            commandLine "sh", "../../scripts/build_no.sh"
             standardOutput = stdOut
+            errorOutput = System.err
         }
         return stdOut.toString().toInteger()
     }
@@ -110,12 +111,8 @@ def getVersionName = { ->
         if (project.hasProperty("releaseVersion")) {
             return project.releaseVersion
         }
-
-        exec {
-            commandLine "git", "describe", "--tags", "--always", "--dirty=+"
-            standardOutput = stdOut
-        }
-        return stdOut.toString().replaceAll("\\s","")
+        version = new File('../VERSION').text
+        return version.replaceAll("\\s","")
     }
 }
 
@@ -124,13 +121,13 @@ android {
 
     defaultConfig {
         applicationId "im.status.ethereum"
-        minSdkVersion 18
-        targetSdkVersion 26
+        minSdkVersion 23
+        targetSdkVersion 27
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86"
         }
     }
     /**
@@ -141,6 +138,14 @@ android {
     */
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
+        exclude '/lib/mips64/**'
+        exclude '/lib/arm64-v8a/**'
+        exclude '/lib/x86_64/**'
+        /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
+        *   with recent version of ndk (17.0.4754217)
+        */
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
     }
     dexOptions {
         jumboMode true
@@ -164,7 +169,9 @@ android {
     }
     buildTypes {
         debug {
+            applicationIdSuffix ".debug"
             versionNameSuffix "-SNAPSHOT"
+            resValue "string", "build_config_package", "im.status.ethereum"
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
@@ -202,17 +209,21 @@ dependencies {
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:26.1.0"
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    // Force using exact RN version instead of relying on gradle dependency resolution
+    // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
+    compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-i18n')
     implementation project(':react-native-camera')
     implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
+    implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-config')
     implementation project(':react-native-fcm')
     implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
     compile project(':react-native-testfairy')
+    implementation project(':react-native-keychain')
     implementation project(':instabug-reactnative')
 
     implementation 'status-im:function:0.0.1'

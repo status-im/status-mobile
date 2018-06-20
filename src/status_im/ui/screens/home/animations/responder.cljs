@@ -30,6 +30,5 @@
                      :onPanResponderRelease       (on-release animated-offset-x end-offset-x chat-id swiped?)
                      :onPanResponderTerminate     (on-release animated-offset-x end-offset-x chat-id swiped?)})))
 
-
 (defn pan-handlers [pan-responder]
   (js->clj (.-panHandlers pan-responder)))

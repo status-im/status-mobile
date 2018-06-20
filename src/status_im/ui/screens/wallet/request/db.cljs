@@ -5,7 +5,8 @@
 
 (spec/def ::amount (spec/nilable money/valid?))
 (spec/def ::amount-error (spec/nilable string?))
+(spec/def ::amount-text (spec/nilable string?))
 (spec/def ::symbol (spec/nilable keyword?))
 
 (spec/def :wallet/request-transaction (allowed-keys
-                                        :opt-un [::amount ::amount-error ::symbol]))
+                                       :opt-un [::amount ::amount-error ::amount-text ::symbol]))

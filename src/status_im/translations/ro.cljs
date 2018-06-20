@@ -1,8 +1,7 @@
 (ns status-im.translations.ro)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Membri"
    :not-implemented                       "!nu a fost implementat"
    :chat-name                             "Nume chat"
@@ -134,7 +133,6 @@
    :can-not-add-yourself                  "Nu te poți adăuga pe tine"
    :unknown-address                       "Adresă necunoscută"
 
-
    ;;login
    :connect                               "Conectare"
    :address                               "Adresă"
@@ -204,8 +202,6 @@
    :send-transaction                      "Trimitere tranzacție"
    :delete-contact                        "Ștergere contact"
    :mute-notifications                    "Notificări silențioase"
-
-
    :contact-s                             {:one   "contact"
                                            :other "contacte"}
    :next                                  "Mai departe"
@@ -227,8 +223,6 @@
    :browsing-open-in-web-browser          "Deschide în browser web"
    :delete-group-prompt                   "Aceasta nu va afecta contactele"
    :edit-profile                          "Editare profil"
-
-
    :empty-topic                           "Subiect gol"
    :to                                    "Către"
    :data                                  "Date"})

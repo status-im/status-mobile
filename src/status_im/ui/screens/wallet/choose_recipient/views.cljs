@@ -25,7 +25,7 @@
 
 (defn- viewfinder [{:keys [height width]} size]
   (let [height (cond-> height
-                   platform/iphone-x? (- 78))]
+                 platform/iphone-x? (- 78))]
     [react/view {:style styles/viewfinder-port}
      [react/view {:style (styles/viewfinder-translucent height width size :top)}]
      [react/view {:style (styles/viewfinder-translucent height width size :right)}]
@@ -44,9 +44,9 @@
   (int (* 2 (/ (min height width) 3))))
 
 (defview choose-recipient []
-  (letsubs [dimensions        (react/get-dimensions "window")
-            camera-flashlight [:wallet.send/camera-flashlight]
-            view              [:get :view-id]]
+  (letsubs [read-once?        (atom false)
+            dimensions        (react/get-dimensions "window")
+            camera-flashlight [:wallet.send/camera-flashlight]]
     [react/view {:style styles/qr-code}
      [status-bar/status-bar {:type :transparent}]
      [toolbar-view camera-flashlight]
@@ -61,7 +61,9 @@
                        :aspect        :fill
                        :captureAudio  false
                        :torchMode     (camera/set-torch camera-flashlight)
-                       :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}]]
+                       :onBarCodeRead #(when-not @read-once?
+                                         (reset! read-once? true)
+                                         (re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) :qr]))}]]
       [viewfinder dimensions (size dimensions)]]
      [bottom-buttons/bottom-button
       [button/button {:disabled?           false

@@ -4,7 +4,8 @@
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.http :as http]))
 
 (defn- open-share [content]
   (when (or (:message content)
@@ -32,5 +33,5 @@
          :options     [{:label  (i18n/label :t/browsing-open-in-browser)
                         :action #(re-frame/dispatch [:open-browser {:url link}])}
                        {:label  (i18n/label :t/browsing-open-in-web-browser)
-                        :action #(.openURL react/linking link)}]
+                        :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))

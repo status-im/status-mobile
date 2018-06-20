@@ -1,8 +1,7 @@
 (ns status-im.translations.de-ch)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Mitglieder"
    :not-implemented                       "!nicht implementiert"
    :chat-name                             "Chat Name"
@@ -133,7 +132,6 @@
    :contact-already-added                 "Der Kontakt wurde bereits hinzugefügt"
    :can-not-add-yourself                  "Du kannst dich nicht selbst hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
-
 
    ;;login
    :connect                               "Verbinden"

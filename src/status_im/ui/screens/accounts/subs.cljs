@@ -6,31 +6,25 @@
             [cljs.spec.alpha :as spec]))
 
 (reg-sub :get-current-public-key
-  (fn [db]
-    (:current-public-key db)))
+         (fn [db]
+           (:current-public-key db)))
 
 (reg-sub :get-accounts
-  (fn [db]
-    (:accounts/accounts db)))
-
-(reg-sub :get-current-account-id
-  (fn [db]
-    (:accounts/current-account-id db)))
+         (fn [db]
+           (:accounts/accounts db)))
 
 (reg-sub :get-current-account
-  :<- [:get-current-account-id]
-  :<- [:get-accounts]
-  (fn [[account-id accounts]]
-    (some-> accounts (get account-id))))
+         (fn [db]
+           (:account/account db)))
 
 (reg-sub :get-current-account-hex
-  :<- [:get-current-account-id]
-  (fn [address]
-    (ethereum/normalized-address address)))
+         :<- [:get-current-account]
+         (fn [{:keys [address]}]
+           (ethereum/normalized-address address)))
 
 (reg-sub
-  :get-account-creation-next-enabled?
-  (fn [{:accounts/keys [create]}]
+ :get-account-creation-next-enabled?
+ (fn [{:accounts/keys [create]}]
    (let [{:keys [step password password-confirm name]} create]
      (or (and password (= :enter-password step) (spec/valid? ::db/password password))
          (and password-confirm (= :confirm-password step) (spec/valid? ::db/password password-confirm))

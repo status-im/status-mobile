@@ -1,5 +1,5 @@
 (require '[cljs.build.api :as api]
-         '[clojure.string :as string])
+         '[clojure.string :as str])
 
 ;; clj build.clj help # Prints details about tasks
 
@@ -12,6 +12,7 @@
      :compiler         {:output-to     "target/ios/app.js"
                         :main          "env.ios.main"
                         :output-dir    "target/ios"
+                        :npm-deps false
                         :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
@@ -19,6 +20,7 @@
      :compiler         {:output-to     "target/android/app.js"
                         :main          "env.android.main"
                         :output-dir    "target/android"
+                        :npm-deps false
                         :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}}
 
@@ -80,10 +82,9 @@
                       "[build-id] (optional): Build ID. When omitted, this task will compile all builds from the specified [env]."
                       "[type] (optional): Build type - value could be \"once\" or \"watch\". Default: \"once\"."]}
    :figwheel {:desc  "Start figwheel + CLJS REPL / nREPL"
-              :usage ["Usage: clj -R:repl build.clj figwheel [build-ids] [port]"
+              :usage ["Usage: clj -R:repl build.clj figwheel [options]"
                       ""
-                      "[build-ids] (optional): A comma-sparated list of build IDs, i.e. \"android,ios\". Default: \"android\"."
-                      "[port] (optional): nREPL port. When omitted, CLJS REPL will start without nREPL session. Otherwise, an nREPL server will start on port supplied."]}
+                      "[-h|--help] to see all available options"]}
    :test     {:desc  "Run tests"
               :usage ["Usage: clj -R:test build.clj test [build-id]"
                       ""
@@ -167,7 +168,7 @@
       (println)
       (->> usage
            (map #(str "  " %))
-           (string/join "\n")
+           (str/join "\n")
            println)
       (println))))
 
@@ -203,38 +204,84 @@
 
 ;;; Figwheeling task
 
-(defmethod task "figwheel" [[_ build-ids port]]
+(def figwheel-cli-opts
+  [["-p" "--platform BUILD-IDS" "CLJS Build IDs for platforms <android|ios>"
+    :id       :build-ids
+    :default  [:android]
+    :parse-fn #(->> (.split % ",")
+                    (map (comp keyword str/lower-case str/trim))
+                    vec)
+    :validate [(fn [build-ids] (every? #(some? (#{:android :ios} %)) build-ids)) "Allowed \"android\", and/or \"ios\""]]
+   ["-n" "--nrepl-port PORT" "nREPL Port"
+    :id       :port
+    :parse-fn #(if (string? %) (Integer/parseInt %) %)
+    :validate [#(or (true? %) (< 0 % 0x10000)) "Must be a number between 0 and 65536"]]
+   ["-a" "--android-device TYPE" "Android Device Type <avd|genymotion|real>"
+    :id       :android-device
+    :parse-fn #(keyword (str/lower-case %))
+    :validate [#(some? (#{:avd :genymotion :real} %)) "Must be \"avd\", \"genymotion\", or \"real\""]]
+   ["-i" "--ios-device TYPE" "iOS Device Type <simulator|real>"
+    :id       :ios-device
+    :parse-fn #(keyword (str/lower-case %))
+    :validate [#(some? (#{:simulator :real} %)) "Must be \"simulator\", or \"real\""]]
+   ["-h" "--help"]])
+
+(defn print-and-exit [msg]
+  (println msg)
+  (System/exit 1))
+
+(defn parse-figwheel-cli-opts [args]
+  (with-namespaces [[clojure.tools.cli :as cli]]
+    (let [{:keys [options errors summary]} (cli/parse-opts args figwheel-cli-opts)]
+      (cond
+        (:help options)     (print-and-exit summary)
+        (not (nil? errors)) (print-and-exit errors)
+        :else               options))))
+
+(defmethod task "figwheel" [[_ & args]]
   (with-namespaces [[figwheel-sidecar.repl-api :as ra]
                     [hawk.core :as hawk]
-                    [re-frisk-sidecar.core :as rfs]]
-    (hawk/watch! [{:paths   ["resources"]
-                   :handler (fn [ctx e]
-                              (let [path "src/status_im/utils/js_resources.cljs"
-                                    js-resourced (slurp path)]
-                                (spit path (str js-resourced " ;;"))
-                                (spit path js-resourced))
-                              ctx)}])
-    (ra/start-figwheel!
-     {:figwheel-options (cond-> {:builds-to-start (if build-ids
-                                                    (->> (.split build-ids ",")
-                                                         (map (comp keyword string/trim))
-                                                         vec)
-                                                    [:android])}
-                          port      (merge {:nrepl-port       (some-> port Long/parseLong)
-                                            :nrepl-middleware ["cider.nrepl/cider-middleware"
-                                                               "refactor-nrepl.middleware/wrap-refactor"
-                                                               "cemerick.piggieback/wrap-cljs-repl"]}))
-      :all-builds       (into [] (for [[build-id {:keys [source-paths compiler warning-handlers]}]
-                                       (get-cljsbuild-config :dev)]
-                                   {:id               build-id
-                                    :source-paths     (conj source-paths "env/dev")
-                                    :compiler         compiler
-                                    :warning-handlers warning-handlers
-                                    :figwheel         true}))})
-    (rfs/-main)
-    (if-not port
-      (ra/cljs-repl)
-      (spit ".nrepl-port" port))))
+                    [re-frisk-sidecar.core :as rfs]
+                    [clj-rn.core :as clj-rn]
+                    [clj-rn.main :refer [get-main-config] :rename {get-main-config get-cljrn-config}]]
+    (let [{:keys [build-ids
+                  port
+                  android-device
+                  ios-device]} (parse-figwheel-cli-opts args)
+          hosts-map            {:android (clj-rn/resolve-dev-host :android android-device)
+                                :ios     (clj-rn/resolve-dev-host :ios ios-device)}]
+      (clj-rn/enable-source-maps)
+      (clj-rn/write-env-dev hosts-map)
+      (doseq [build-id build-ids
+              :let     [host-ip                 (get hosts-map build-id)
+                        platform-name           (if (= build-id :ios) "iOS" "Android")
+                        {:keys [js-modules
+                                name
+                                resource-dirs]} (get-cljrn-config)]]
+        (clj-rn/rebuild-index-js build-id {:app-name      name
+                                           :host-ip       host-ip
+                                           :js-modules    js-modules
+                                           :resource-dirs resource-dirs})
+        (when (= build-id :ios)
+          (clj-rn/update-ios-rct-web-socket-executor host-ip)
+          (println-colorized "Host in RCTWebSocketExecutor.m was updated" green-color))
+        (println-colorized (format "Dev server host for %s: %s" platform-name host-ip) green-color))
+      (ra/start-figwheel!
+       {:figwheel-options (cond-> {:builds-to-start build-ids}
+                            port (merge {:nrepl-port       port
+                                         :nrepl-middleware ["cider.nrepl/cider-middleware"
+                                                            "refactor-nrepl.middleware/wrap-refactor"
+                                                            "cemerick.piggieback/wrap-cljs-repl"]}))
+        :all-builds       (into [] (for [[build-id {:keys [source-paths compiler warning-handlers]}]
+                                         (get-cljsbuild-config :dev)]
+                                     {:id           build-id
+                                      :source-paths (conj source-paths "env/dev")
+                                      :compiler     compiler
+                                      :figwheel     true}))})
+      (rfs/-main)
+      (if-not port
+        (ra/cljs-repl)
+        (spit ".nrepl-port" port)))))
 
 ;;; Help
 

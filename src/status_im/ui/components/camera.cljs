@@ -22,7 +22,7 @@
 
 (defn request-access-ios [then else]
   (-> (.checkVideoAuthorizationStatus default-camera)
-      (.then then)
+      (.then (fn [allowed?] (if allowed? (then) (else))))
       (.catch else)))
 
 (defn camera [props]

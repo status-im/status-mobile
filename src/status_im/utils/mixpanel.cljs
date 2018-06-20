@@ -10,7 +10,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.utils.mixpanel-events :as mixpanel-events]))
+            [status-im.utils.mixpanel-events :as mixpanel-events]
+            [status-im.utils.config :as config]))
 
 (def base-url "http://api.mixpanel.com/")
 (def base-track-url (str base-url "track/"))
@@ -62,8 +63,8 @@
                     (recur (conj accumulator event))
                     accumulator))]
      (async/go
-      (doseq [batch (partition-all max-batch-size events)]
-        (async/<! (callback batch)))))))
+       (doseq [batch (partition-all max-batch-size events)]
+         (async/<! (callback batch)))))))
 
 (defn track
   "Track or accumulate an event"
@@ -102,7 +103,7 @@
 (def event-by-trigger
   (event->triggers mixpanel-events/events))
 
-(defn matching-events [[event-name first-arg :as event] triggers]
+(defn matching-events [db [event-name first-arg :as event] triggers]
   (let [cnt      (count event)
         triggers (cond->
                   ;; first we get all events which are triggered by event name
@@ -113,15 +114,29 @@
                   ;; when event contains two or more elements we are trying
                   ;; to match by first two elements of :trigger
                   ;; {:trigger [:event-name :one-parameter]}
-                  (>= cnt 2)
-                  (concat (get-in triggers [event-name first-arg event-tag]))
+                   (>= cnt 2)
+                   (concat (get-in triggers [event-name first-arg event-tag]))
 
                   ;; also if event contains more than one parameter (more than
                   ;; two elements) we are trying to match it with equal :trigger
                   ;; {:trigger [:e-name :p1 :p2 :p3]}
                   ;; will match only with [:e-name :p1 :p2 :p3] event
-                  (> cnt 2)
-                  (concat (get-in triggers (conj event event-tag))))]
-    (filter (fn [{:keys [filter-fn]}]
-              (or (not filter-fn) (filter-fn {:event event})))
-            triggers)))
+                   (> cnt 2)
+                   (concat (get-in triggers (conj event event-tag))))]
+    (->> triggers
+
+         (filter (fn [{:keys [filter-fn]}]
+                   (or (not filter-fn) (filter-fn db event))))
+
+         (mapcat (fn [{:keys [data-fn] :as trigger}]
+                   (if data-fn
+                     (let [data (data-fn db event)]
+                       (if (map? data)
+                         [(update trigger :properties merge data)]
+                         (map (partial update trigger :properties merge) data)))
+                     [trigger]))))))
+
+(defn force-tracking? [event-name]
+  (and config/force-sr-ratio-tracking
+       (contains? #{:signals/envelope-status :chat-received-message/add}
+                  event-name)))

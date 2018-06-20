@@ -17,11 +17,12 @@
 
 (def text-input
   (merge text-content
-    {:font-size      15
-     :padding-bottom 0
-     :padding-top    0
-     :height         52
-     :letter-spacing -0.2}))
+         {:font-size      15
+          :flex           1
+          :padding-bottom 0
+          :padding-top    0
+          :height         52
+          :letter-spacing -0.2}))
 
 (def contact-code-text-input
   {:text-align-vertical :top
@@ -183,5 +184,4 @@
   {:color          :white
    :font-size      15
    :letter-spacing -0.2})
-
 
