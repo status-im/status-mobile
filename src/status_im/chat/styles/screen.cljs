@@ -3,7 +3,6 @@
   (:require [status-im.ui.components.styles :as component.styles]
             [status-im.ui.components.colors :as colors]))
 
-
 (def scroll-root
   {:flex 1})
 
@@ -12,8 +11,10 @@
    :background-color component.styles/chat-background})
 
 (def toolbar-container
-  {:flex 1
-   :flex-direction :row})
+  {:flex           1
+   :flex-direction :row
+   :align-items    :stretch
+   :margin-left    3})
 
 (def messages-container
   {:flex           1
@@ -47,17 +48,15 @@
   {:flex-direction :row
    :flex           1})
 
-(defnstyle chat-name-view [show-actions]
+(def chat-name-view
   {:flex            1
    :justify-content :center
-   :android         {:align-items    :flex-start
-                     :margin-left    (if show-actions 66 18)
-                     :padding-bottom 6}
-   :ios             {:align-items :center}})
+   :margin-bottom   2})
 
 (def chat-name-text
-  {:color     component.styles/color-gray6
-   :font-size 16})
+  {:color       component.styles/color-black
+   :line-height 18
+   :font-size   15})
 
 (def group-icon
   {:margin-top    4
@@ -69,17 +68,18 @@
   {:width  14
    :height 8})
 
-(defstyle members
-  {:color   component.styles/text4-color
-   :ios     {:font-size  14
-             :margin-top 4}
-   :android {:font-size 13}})
+(defstyle toolbar-subtitle
+  {:color       component.styles/text4-color
+   :line-height 15
+   :font-size   13
+   :ios         {:margin-top 4}})
 
 (defstyle last-activity-text
-  {:color   component.styles/text4-color
-   :ios     {:font-size  14
-             :margin-top 4}
-   :android {:font-size 13}})
+  {:color       component.styles/text4-color
+   :line-height 15
+   :ios         {:font-size  14
+                 :margin-top 4}
+   :android     {:font-size 13}})
 
 (defn actions-wrapper [status-bar-height]
   {:background-color component.styles/color-white
@@ -173,10 +173,7 @@
    :padding-top    4
    :padding-bottom 4})
 
-(def bottom-info-row-photo
-  {:width         42
-   :height        42
-   :border-radius 21})
+(def bottom-info-row-photo-size 42)
 
 (def bottom-info-row-text-container
   {:margin-left  16
@@ -211,9 +208,12 @@
   {:opacity opacity
    :flex    1})
 
+(def empty-chat-container-one-to-one
+  {:margin-top 10})
+
 (def empty-chat-container
   {:flex             1
-   :flex-direction   :row
+   :flex-direction   :column
    :justify-content  :center
    :align-items      :center
    :padding-vertical 50
@@ -221,7 +221,11 @@
 
 (def empty-chat-text
   {:color          colors/gray
-   :font-size      14
-   :line-height    20
+   :width          280
+   :font-size      15
+   :line-height    22
    :letter-spacing -0.2
    :text-align     :center})
+
+(def empty-chat-text-name
+  {:color colors/black})

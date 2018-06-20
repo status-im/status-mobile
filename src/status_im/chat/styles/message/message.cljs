@@ -5,12 +5,12 @@
             [status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]))
 
-
 (defstyle style-message-text
-  {:font-size 15
-   :color     styles/text1-color
-   :android   {:line-height 22}
-   :ios       {:line-height 23}})
+  {:font-size      15
+   :color          styles/text1-color
+   :letter-spacing -0.2
+   :android        {:line-height 22}
+   :ios            {:line-height 23}})
 
 (def style-sub-text
   {:top         -2
@@ -20,8 +20,9 @@
    :height      16})
 
 (defn message-padding-top
-  [{:keys [first-in-group?]}]
-  (if first-in-group?
+  [{:keys [first-in-group? display-username?]}]
+  (if (and display-username?
+           first-in-group?)
     8
     4))
 
@@ -43,23 +44,33 @@
         direction (if outgoing :row-reverse :row)]
     (merge message-body-base
            {:flex-direction direction
-            :width          260
+            :width          230
             :padding-top    (message-padding-top message)
             :align-self     align
             :align-items    align})))
 
-(defn message-timestamp [justify-timestamp?]
-  (merge {:color      colors/gray
-          :font-size  10
-          :align-self :flex-end
-          :opacity    0.5}
+(def message-timestamp
+  {:font-size      10
+   :letter-spacing 0.1
+   :align-self     :flex-end})
+
+(defn message-timestamp-text [justify-timestamp? outgoing]
+  (merge message-timestamp
+         {:color (if outgoing colors/wild-blue-yonder colors/gray)}
          (when justify-timestamp? {:position :absolute
-                                   :bottom   10
+                                   :bottom   8
                                    :right    12})))
 
-(def message-timestamp-placeholder
-  (assoc (message-timestamp false)
-         :color styles/color-white))
+(defn message-timestamp-placeholder-text [outgoing]
+  (assoc message-timestamp
+         :color
+         (if outgoing colors/hawkes-blue styles/color-white)))
+
+(def message-expand-button
+  {:color         colors/gray
+   :font-size     12
+   :opacity       0.7
+   :margin-bottom 1})
 
 (def selected-message
   {:margin-top  18
@@ -83,36 +94,35 @@
      :padding-right  10
      :align-items    align}))
 
-(def delivery-status
-  {:align-self    :flex-end
-   :padding-right 22})
+(defn delivery-status [outgoing]
+  (if outgoing
+    {:align-self    :flex-end
+     :padding-right 22}
+    {:align-self    :flex-start
+     :padding-left  16}))
 
 (def message-author
-  {:width      photos/photo-size
+  {:width      photos/default-size
    :align-self :flex-end})
 
 (def delivery-view
   {:flex-direction :row
-   :margin-top     2
-   :opacity       0.5})
+   :margin-top     2})
 
-(defstyle delivery-text
-  {:color      styles/color-gray4
-   :margin-left 5
-   :android    {:font-size 13}
-   :ios        {:font-size 14}})
+(def delivery-text
+  {:color       styles/color-gray4
+   :font-size   12})
 
 (def not-sent-view
-  (assoc delivery-view :opacity       1
-                       :margin-bottom 2
-                       :padding-top   2))
+  (assoc delivery-view
+         :margin-bottom 2
+         :padding-top 2))
 
 (def not-sent-text
-  (assoc delivery-text  :color       styles/color-red
-                        :opacity     1
-                        :font-size   12
-                        :text-align  :right
-                        :padding-top 4))
+  (assoc delivery-text
+         :color styles/color-red
+         :text-align :right
+         :padding-top 4))
 
 (def not-sent-icon
   {:padding-top  3
@@ -122,11 +132,10 @@
   {:padding-top 4})
 
 (defn text-message
-  [{:keys [outgoing group-chat incoming-group]}]
-  (merge style-message-text
-         {:margin-top (if incoming-group 4 0)}))
+  [collapsed?]
+  (assoc style-message-text :margin-bottom (if collapsed? 2 0)))
 
-(defn emoji-message
+(defnstyle emoji-message
   [{:keys [incoming-group]}]
   {:font-size 40
    :color     styles/text1-color
@@ -135,31 +144,30 @@
    :margin-top (if incoming-group 4 0)})
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat selected]}]
-  (merge {:padding-top        6
+  [{:keys [content-type outgoing group-chat first-in-group?]}]
+  (merge {:padding-vertical   6
           :padding-horizontal 12
-          :padding-bottom     8
-          :border-radius      8}
+          :border-radius      8
+          :margin-top         (if (and first-in-group?
+                                       (or outgoing
+                                           (not group-chat)))
+                                16
+                                4)}
          (when-not (= content-type constants/content-type-emoji)
-          {:background-color styles/color-white})
+           {:background-color (if outgoing colors/hawkes-blue styles/color-white)})
          (when (= content-type constants/content-type-command)
-           {:padding-top    10
-            :padding-bottom 14})))
+           {:padding-top    12
+            :padding-bottom 10})))
 
-(defstyle author
+(def author
   {:color         styles/color-gray4
-   :margin-bottom 5
-   :android       {:font-size 13}
-   :ios           {:font-size 14}})
+   :margin-bottom 4
+   :font-size     12})
 
-(def command-request-view
-  {:padding-right 16})
-
-(def command-request-message-view
+(defn command-request-message-view [outgoing]
   {:border-radius    14
-   :padding-vertical 10
-   :padding-right    28
-   :background-color styles/color-white})
+   :padding-vertical 4
+   :background-color (if outgoing colors/hawkes-blue styles/color-white)})
 
 (def command-request-from-text
   (merge style-sub-text {:margin-bottom 2}))
@@ -195,9 +203,67 @@
    :width    12
    :height   13})
 
+(def command-request-separator-line
+  {:background-color colors/gray-light
+   :height           1
+   :border-radius    8
+   :margin-top       10})
+
+(def command-request-button
+  {:align-items :center
+   :padding-top 8})
+
+(defn command-request-button-text [answered?]
+  {:font-size 15
+   :color     (if answered? colors/gray colors/blue)})
+
 (def command-request-text-view
   {:margin-top 4
    :height     14})
+
+(defn command-request-header-text [outgoing]
+  {:font-size 12
+   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+
+(def command-request-network-text
+  {:color colors/red})
+
+(def command-request-row
+  {:flex-direction :row
+   :margin-top     6})
+
+(def command-request-fiat-amount-row
+  {:margin-top 6})
+
+(def command-request-fiat-amount-text
+  {:font-size 12
+   :color     colors/black})
+
+(def command-request-timestamp-row
+  {:margin-top 6})
+
+(defn command-request-timestamp-text [outgoing]
+  {:font-size 12
+   :color     (if outgoing colors/wild-blue-yonder colors/gray)})
+
+(defstyle command-request-amount-text
+  {:font-size   22
+   :ios         {:letter-spacing -0.5}
+   :color       colors/black})
+
+(defn command-amount-currency-separator [outgoing]
+  {:opacity 0
+   :color (if outgoing colors/hawkes-blue colors/white)})
+
+(defn command-request-currency-text [outgoing]
+  {:font-size      22
+   :letter-spacing 1
+   :color          (if outgoing colors/wild-blue-yonder colors/gray)})
+
+(def command-request-recipient-text
+  {:color       colors/blue
+   :font-size   14
+   :line-height 18})
 
 (def content-command-view
   {:flex-direction :column
@@ -218,6 +284,74 @@
   (merge style-message-text
          {:margin-top        8
           :margin-horizontal 0}))
+
+(def command-send-message-view
+  {:flex-direction :column
+   :align-items    :flex-start})
+
+(def command-send-amount-row
+  {:flex-direction  :row
+   :justify-content :space-between})
+
+(def command-send-amount
+  {:flex-direction :column
+   :align-items    :flex-end
+   :max-width      250})
+
+(defstyle command-send-amount-text
+  {:font-size   22
+   :color       colors/blue
+   :ios         {:letter-spacing -0.5}})
+
+(def command-send-currency
+  {:flex-direction :column
+   :align-items    :flex-end})
+
+(defn command-send-currency-text [outgoing]
+  {:font-size      22
+   :margin-left    4
+   :letter-spacing 1
+   :color          (if outgoing colors/wild-blue-yonder colors/blue-transparent-40)})
+
+(def command-send-fiat-amount
+  {:flex-direction  :column
+   :justify-content :flex-end
+   :margin-top      6})
+
+(def command-send-fiat-amount-text
+  {:font-size 12
+   :color     colors/black})
+
+(def command-send-recipient-text
+  {:color       colors/blue
+   :font-size   14
+   :line-height 18})
+
+(defn command-send-timestamp [outgoing]
+  {:color      (if outgoing colors/wild-blue-yonder colors/gray)
+   :margin-top 6
+   :font-size  12})
+
+(def command-send-status-container
+  {:margin-top     6
+   :flex-direction :row})
+
+(defn command-send-status-icon [outgoing]
+  {:background-color (if outgoing
+                       colors/blue-darker
+                       colors/blue-transparent)
+   :width            24
+   :height           24
+   :border-radius    16
+   :padding-top      4
+   :padding-left     4})
+
+(defstyle command-send-status-text
+  {:color       colors/blue
+   :android     {:margin-top 3}
+   :ios         {:margin-top 4}
+   :margin-left 6
+   :font-size   12})
 
 (def audio-container
   {:flex-direction :row
@@ -300,7 +434,5 @@
 
 (def message-author-name
   {:font-size      12
-   :letter-spacing -0.2
-   :padding-bottom 4
+   :padding-top    6
    :color          colors/gray})
-

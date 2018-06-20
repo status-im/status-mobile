@@ -54,4 +54,3 @@
 (defstyle contact-profile-info-container
   {:padding-top      26
    :background-color colors/white})
-

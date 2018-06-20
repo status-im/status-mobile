@@ -1,8 +1,7 @@
 (ns status-im.translations.id)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "anggota"
    :not-implemented                       "tidak diimplementasikan !"
    :chat-name                             "nama obrolan"
@@ -133,7 +132,6 @@
    :contact-already-added                 "Kontak yang telah ditambahkan"
    :can-not-add-yourself                  "tidak dapat menambahkan anda sendiri"
    :unknown-address                       "alamat tidak diketahui"
-
 
    ;;login
    :connect                               "terhubung"

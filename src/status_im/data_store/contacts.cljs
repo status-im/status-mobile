@@ -1,42 +1,32 @@
 (ns status-im.data-store.contacts
-  (:require [cljs.core.async :as async]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]
-            [status-im.data-store.realm.contacts :as data-store])
-  (:refer-clojure :exclude [exists?]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]))
 
 (re-frame/reg-cofx
-  :data-store/get-all-contacts
-  (fn [coeffects _]
-    (assoc coeffects :all-contacts (data-store/get-all-as-list))))
+ :data-store/get-all-contacts
+ (fn [coeffects _]
+   (assoc coeffects :all-contacts (-> @core/account-realm
+                                      (core/get-all :contact)
+                                      (core/all-clj :contact)))))
 
-(defn- get-by-id
-  [whisper-identity]
-  (data-store/get-by-id-cljs whisper-identity))
+(defn save-contact-tx
+  "Returns tx function for saving contact"
+  [{:keys [whisper-identity] :as contact}]
+  (fn [realm]
+    (core/create realm
+                 :contact
+                 (dissoc contact :command :response :subscriptions :jail-loaded-events)
+                 (core/exists? realm :contact :whisper-identity whisper-identity))))
 
-(defn- save
-  [{:keys [whisper-identity pending?] :as contact}]
-  (let [{pending-db? :pending?
-         :as         contact-db} (get-by-id whisper-identity)
-        contact' (-> contact
-                     (assoc :pending? (boolean (if contact-db
-                                                 (if (nil? pending?) pending-db? pending?)
-                                                 pending?)))
-                     (dissoc :command :response :subscriptions :jail-loaded-events))]
-    (data-store/save contact' (boolean contact-db))))
-
-(re-frame/reg-fx
-  :data-store/save-contact
-  (fn [contact]
-    (async/go (async/>! core/realm-queue #(save contact)))))
-
-(re-frame/reg-fx
-  :data-store/save-contacts
-  (fn [contacts]
+(defn save-contacts-tx
+  "Returns tx function for saving contacts"
+  [contacts]
+  (fn [realm]
     (doseq [contact contacts]
-      (async/go (async/>! core/realm-queue #(save contact))))))
+      ((save-contact-tx contact) realm))))
 
-(re-frame/reg-fx
-  :data-store/delete-contact
-  (fn [contact]
-    (async/go (async/>! core/realm-queue #(data-store/delete contact)))))
+(defn delete-contact-tx
+  "Returns tx function for deleting contact"
+  [whisper-identity]
+  (fn [realm]
+    (core/delete realm (core/single (core/get-by-field realm :contact :whisper-identity whisper-identity)))))

@@ -1,5 +1,5 @@
 (ns status-im.test.protocol.core
-  (:require [cljs.test :refer-macros [deftest is testing async ]]
+  (:require [cljs.test :refer-macros [deftest is testing async]]
             [cljs.nodejs :as nodejs]
             re-frame.db
             status-im.ui.screens.events
@@ -29,24 +29,24 @@
 (deftest test-send-message!
   (testing "send contact request & message"
     (run-test-async
-      (let [web3          (make-web3)
-            shh  (transport.utils/shh web3)
-            from          (create-keys shh)]
-        (reset! re-frame.db/app-db {:web3 web3
-                                    :current-public-key from})
+     (let [web3          (make-web3)
+           shh  (transport.utils/shh web3)
+           from          (create-keys shh)]
+       (reset! re-frame.db/app-db {:web3 web3
+                                   :current-public-key from})
 
-        (rf/reg-fx :data-store/save-chat (constantly nil))
-        (rf/reg-fx :data-store/save-message (constantly nil))
-        (rf/reg-fx :data-store/save-contact (constantly nil))
-        (rf/reg-fx :data-store.transport/save (constantly nil))
-        (rf/reg-fx :data-store/update-message (constantly nil))
+       (rf/reg-fx :data-store/save-chat (constantly nil))
+       (rf/reg-fx :data-store/save-message (constantly nil))
+       (rf/reg-fx :data-store/save-contact (constantly nil))
+       (rf/reg-fx :data-store.transport/save (constantly nil))
+       (rf/reg-fx :data-store/update-message (constantly nil))
 
-        (rf/dispatch [:open-chat-with-contact {:whisper-identity contact-whisper-identity}])
-        (rf-test/wait-for [::transport.contact/send-new-sym-key]
-                          (rf/dispatch [:set-chat-input-text "test message"])
-                          (rf/dispatch [:send-current-message])
-                          (rf-test/wait-for [:update-message-status :protocol/send-status-message-error]
-                                            (is true)))))))
+       (rf/dispatch [:open-chat-with-contact {:whisper-identity contact-whisper-identity}])
+       (rf-test/wait-for [::transport.contact/send-new-sym-key]
+                         (rf/dispatch [:set-chat-input-text "test message"])
+                         (rf/dispatch [:send-current-message])
+                         (rf-test/wait-for [:update-message-status :protocol/send-status-message-error]
+                                           (is true)))))))
 
 (deftest test-whisper-version!
   (testing "Whisper version supported"

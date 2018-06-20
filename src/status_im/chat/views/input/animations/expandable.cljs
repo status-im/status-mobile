@@ -12,9 +12,9 @@
 (defn expandable-view-on-update [anim-value animation-height]
   (when animation-height
     (animation/start
-      (animation/spring anim-value {:toValue  animation-height
-                                    :friction 10
-                                    :tension  60}))))
+     (animation/spring anim-value {:toValue  animation-height
+                                   :friction 10
+                                   :tension  60}))))
 
 (defview expandable-view [{:keys [key]} & elements]
   (letsubs [anim-value         (animation/create-value 0)
@@ -35,5 +35,5 @@
         (into [react/scroll-view {:keyboard-should-persist-taps :always
                                   :on-content-size-change       #(expandable-view-on-update anim-value %2)
                                   :bounces                      false}]
-          (when (or input-focused? (not messages-focused?))
-            elements))]])))
+              (when (or input-focused? (not messages-focused?))
+                elements))]])))

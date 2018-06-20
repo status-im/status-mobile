@@ -17,7 +17,6 @@
    :signing-phrase      "baby atom limo"
    :public-key          "0x04f5722fba79eb36d73263417531007f43d13af76c6233573a8e3e60f667710611feba0785d751b50609bfc0b7cef35448875c5392c0a91948c95798a0ce600847"})
 
-
 (defn test-fixtures []
   (rf/reg-fx ::events/init-store #())
   (rf/reg-fx ::account-events/save-account #()))

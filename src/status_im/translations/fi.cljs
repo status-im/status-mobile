@@ -1,8 +1,7 @@
 (ns status-im.translations.fi)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Jäsenet"
    :not-implemented                       "!ei toteutettu"
    :chat-name                             "Keskustelun nimi"
@@ -200,7 +199,6 @@
    :contact-already-added                 "Tämä yhteystieto on jo lisätty"
    :can-not-add-yourself                  "Et voi lisätä itseäsi"
    :unknown-address                       "Tuntematon osoite"
-
 
    ;;login
    :connect                               "Yhdistä"

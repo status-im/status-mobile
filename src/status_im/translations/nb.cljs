@@ -1,8 +1,7 @@
 (ns status-im.translations.nb)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Medlemmer"
    :not-implemented                       "!ikke implementert"
    :chat-name                             "Kallenavn"

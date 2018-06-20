@@ -72,31 +72,33 @@
     (when forward?
       [icons/icon :icons/forward {:color colors/blue}])]])
 
-(defn button [{:keys [on-press label background? style] :or {background? true}}]
+(defn button [{:keys [on-press label background? uppercase? button-style label-style] :or {background? true uppercase? true}}]
   [react/touchable-highlight {:on-press on-press}
-   [react/view {:style (styles/button style background?)}
-    [react/text {:uppercase? true
-                 :style      styles/button-label}
+   [react/view {:style (styles/button button-style background?)}
+    [react/text {:uppercase? uppercase?
+                 :style      (merge styles/button-label label-style)}
      label]]])
 
 (defn counter
   ([value] (counter nil value))
   ([{:keys [size accessibility-label] :or {size 18}} value]
-   [react/view {:style (styles/counter-container size)}
-    [react/text (cond-> {:style (styles/counter-label size)}
-                  accessibility-label
-                  (assoc :accessibility-label accessibility-label))
-     value]]))
+   (let [more-than-9 (> value 9)]
+     [react/view {:style (styles/counter-container size more-than-9)}
+      [react/text (cond-> {:style (styles/counter-label size)
+                           :font  :toolbar-title}
+                    accessibility-label
+                    (assoc :accessibility-label accessibility-label))
+       (if more-than-9 (i18n/label :t/counter-9-plus) value)]])))
 
 (defn image-contain [_ _]
   (let [content-width (reagent/atom 0)]
     (reagent/create-class
-      {:reagent-render
-       (fn [{:keys [container-style style]} {:keys [image width height]}]
-         [react/view {:style     (merge styles/image-contain container-style)
-                      :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
-          [react/image {:source      image
-                        :resize-mode :contain
-                        :style       (merge style
-                                            {:width  @content-width
-                                             :height (/ (* @content-width height) width)})}]])})))
+     {:reagent-render
+      (fn [{:keys [container-style style]} {:keys [image width height]}]
+        [react/view {:style     (merge styles/image-contain container-style)
+                     :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+         [react/image {:source      image
+                       :resize-mode :contain
+                       :style       (merge style
+                                           {:width  @content-width
+                                            :height (/ (* @content-width height) width)})}]])})))

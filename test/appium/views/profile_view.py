@@ -1,6 +1,7 @@
 import time
 from tests import info
-from views.base_element import BaseText, BaseButton, BaseEditBox
+from tests.base_test_case import AbstractTestCase
+from views.base_element import BaseText, BaseButton, BaseEditBox, BaseElement
 from views.base_view import BaseView
 
 
@@ -74,21 +75,34 @@ class LogoutButton(BaseButton):
         super(LogoutButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('log-out-button')
 
-    def click(self):
-        self.scroll_to_element()
-        for _ in range(2):
-            self.find_element().click()
-            time.sleep(2)
-            info('Tap on %s' % self.name)
-        from views.sign_in_view import SignInView
-        return SignInView(self.driver)
+
+class LogoutDialog(BaseView):
+    def __init__(self, driver):
+        super(LogoutDialog, self).__init__(driver)
+        self.logout_button = LogoutDialog.LogoutButton(driver)
+
+    class LogoutButton(BaseButton):
+        def __init__(self, driver):
+            super(LogoutDialog.LogoutButton, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//*[@text='LOG OUT' or @text='Log out']")
+
+        def navigate(self):
+            from views.sign_in_view import SignInView
+            return SignInView(self.driver)
+
+
+class ConfirmLogoutButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ConfirmLogoutButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='LOG OUT']")
 
 
 class UserNameText(BaseText):
     def __init__(self, driver):
         super(UserNameText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView')
 
 
 class ShareMyContactKeyButton(BaseButton):
@@ -103,6 +117,19 @@ class EditButton(BaseButton):
     def __init__(self, driver):
         super(EditButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('edit-button')
+
+
+class ProfilePictureElement(BaseElement):
+    def __init__(self, driver):
+        super(ProfilePictureElement, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-icon')
+
+
+class EditPictureButton(BaseButton):
+
+    def __init__(self, driver):
+        super(EditPictureButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('edit-profile-photo-button')
 
 
 class ConfirmButton(BaseButton):
@@ -131,6 +158,72 @@ class AdvancedButton(BaseButton):
         return self.navigate()
 
 
+class BackupSeedPhraseButton(BaseButton):
+
+    def __init__(self, driver):
+        super(BackupSeedPhraseButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Backup your Seed Phrase']")
+
+
+class OkContinueButton(BaseButton):
+
+    def __init__(self, driver):
+        super(OkContinueButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, CONTINUE']")
+
+
+class SeedPhraseTable(BaseText):
+
+    def __init__(self, driver):
+        super(SeedPhraseTable, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '//android.widget.FrameLayout/android.view.ViewGroup[3]/android.widget.TextView')
+
+
+class SeedPhraseWordNumberText(BaseText):
+
+    def __init__(self, driver):
+        super(SeedPhraseWordNumberText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[contains(@text,'#')]")
+
+    @property
+    def number(self):
+        time.sleep(1)
+        return int(self.find_element().text.split('#')[1])
+
+
+class SeedPhraseWordInput(BaseEditBox):
+
+    def __init__(self, driver):
+        super(SeedPhraseWordInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+
+
+class OkGotItButton(BaseButton):
+
+    def __init__(self, driver):
+        super(OkGotItButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, GOT IT']")
+
+
+class DebugModeToggle(BaseButton):
+
+    def __init__(self, driver):
+        super(DebugModeToggle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.Switch")
+
+    def click(self):
+        self.scroll_to_element()
+        super(DebugModeToggle, self).click()
+
+
+class SelectFromGalleryButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SelectFromGalleryButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Select from gallery']")
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
@@ -148,17 +241,33 @@ class ProfileView(BaseView):
         self.network_settings_button = NetworkSettingsButton(self.driver)
         self.connect_button = NetworkSettingsButton.ConnectButton(self.driver)
         self.logout_button = LogoutButton(self.driver)
+        self.logout_dialog = LogoutDialog(self.driver)
+        self.confirm_logout_button = ConfirmLogoutButton(self.driver)
 
         # new design
 
         self.username_text = UserNameText(self.driver)
         self.share_my_contact_key_button = ShareMyContactKeyButton(self.driver)
         self.edit_button = EditButton(self.driver)
+        self.profile_picture = ProfilePictureElement(self.driver)
+        self.edit_picture_button = EditPictureButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)
         self.cross_icon = CrossIcon(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
+        self.debug_mode_toggle = DebugModeToggle(self.driver)
+
+        # Backup seed phrase
+        self.backup_seed_phrase_button = BackupSeedPhraseButton(self.driver)
+        self.ok_continue_button = OkContinueButton(self.driver)
+        self.seed_phrase_table = SeedPhraseTable(self.driver)
+        self.seed_phrase_word_number = SeedPhraseWordNumberText(self.driver)
+        self.seed_phrase_word_input = SeedPhraseWordInput(self.driver)
+        self.ok_got_it_button = OkGotItButton(self.driver)
+        self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
 
     def switch_network(self, network):
+        self.advanced_button.click()
+        self.debug_mode_toggle.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
@@ -170,3 +279,24 @@ class ProfileView(BaseView):
     def get_address(self):
         profile_view = self.profile_button.click()
         return profile_view.profile_address_text.text
+
+    def get_seed_phrase(self):
+        text = [i.text for i in self.seed_phrase_table.find_elements()]
+        return dict(zip(map(int, text[::2]), text[1::2]))
+
+    def edit_profile_picture(self, file_name: str):
+        if not AbstractTestCase().environment == 'sauce':
+            raise NotImplementedError('Test case is implemented to run on SauceLabs only')
+        self.profile_picture.template = file_name
+        self.edit_button.click()
+        self.edit_picture_button.click()
+        self.select_from_gallery_button.click()
+        if self.allow_button.is_element_displayed(sec=10):
+            self.allow_button.click()
+        self.element_by_text(file_name).click()
+        self.confirm_button.click()
+
+    def logout(self):
+        self.logout_button.click()
+        return self.logout_dialog.logout_button.click()
+

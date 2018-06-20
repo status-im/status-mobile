@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.chat.views.photos :as photos]
             [status-im.ui.screens.accounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -15,8 +16,7 @@
 (defn account-view [{:keys [address photo-path name public-key]}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-login address photo-path name])}
    [react/view styles/account-view
-    [react/image {:source {:uri (if (string/blank? photo-path) :avatar photo-path)}
-                  :style  styles/photo-image}]
+    [photos/photo photo-path {:size styles/account-image-size}]
     [react/view styles/account-badge-text-view
      [react/text {:style         styles/account-badge-text
                   :numberOfLines 1}

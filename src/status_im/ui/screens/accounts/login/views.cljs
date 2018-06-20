@@ -11,6 +11,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as components]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.chat.views.photos :as photos]
             [re-frame.core :as re-frame]
             [cljs.spec.alpha :as spec]
             [status-im.ui.screens.accounts.db :as db]))
@@ -41,8 +42,7 @@
 
 (defn account-login-badge [photo-path name]
   [react/view styles/login-badge
-   [react/image {:source {:uri (if (string/blank? photo-path) :avatar photo-path)}
-                 :style  styles/login-badge-image}]
+   [photos/photo photo-path {:size styles/login-badge-image-size}]
    [react/view
     [react/text {:style         styles/login-badge-name
                  :numberOfLines 1}

@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.accounts.recover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.react :as react]
@@ -9,12 +10,13 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.accounts.recover.styles :as styles]
-            [status-im.ui.screens.accounts.recover.db :as recover.db]
             [status-im.ui.screens.accounts.db :as db]
             [status-im.utils.config :as config]
+            [status-im.utils.ethereum.core :as ethereum]
             [status-im.react-native.js-dependencies :as js-dependencies]
             [cljs.spec.alpha :as spec]
-            [status-im.ui.components.common.common :as components.common]))
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.utils.security :as security]))
 
 (defview passphrase-input [passphrase]
   (letsubs [error [:get-in [:accounts/recover :passphrase-error]]
@@ -46,10 +48,11 @@
        :error             error}]]))
 
 (defview recover []
-  (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
-    (let [valid-form? (and
-                        (spec/valid? ::recover.db/passphrase passphrase)
-                        (spec/valid? ::db/password password))]
+  (letsubs [{:keys [passphrase password processing]} [:get :accounts/recover]]
+    (let [words       (ethereum/passphrase->words passphrase)
+          valid-form? (and
+                       (ethereum/valid-words? words)
+                       (spec/valid? ::db/password password))]
       [react/keyboard-avoiding-view {:style styles/screen-container}
        [status-bar/status-bar]
        [toolbar/toolbar nil toolbar/default-nav-back
@@ -59,10 +62,17 @@
         [passphrase-input (or passphrase "")]
         [password-input (or password "")]]
        [react/view {:flex 1}]
-       [react/view {:style styles/bottom-button-container}
-        [react/view {:style {:flex 1}}]
-        [components.common/bottom-button
-         {:forward?  true
-          :label     (i18n/label :t/sign-in)
-          :disabled? (not valid-form?)
-          :on-press  #(re-frame/dispatch [:recover-account passphrase password])}]]])))
+       (if processing
+         [react/view styles/processing-view
+          [react/activity-indicator {:animating true}]
+          [react/text {:style styles/sign-you-in}
+           (i18n/label :t/sign-you-in)]]
+         [react/view {:style styles/bottom-button-container}
+          [react/view {:style {:flex 1}}]
+          [components.common/bottom-button
+           {:forward?  true
+            :label     (i18n/label :t/sign-in)
+            :disabled? (not valid-form?)
+            :on-press  (fn [_]
+                         (let [masked-passphrase (security/mask-data (ethereum/words->passphrase words))]
+                           (re-frame/dispatch [:recover-account masked-passphrase password])))}]])])))
