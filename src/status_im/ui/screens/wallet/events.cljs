@@ -267,7 +267,9 @@
 (handlers/register-handler-db
  :wallet/update-estimated-gas-success
  (fn [db [_ gas]]
-   (assoc-in db [:wallet :send-transaction :gas] (money/bignumber gas))))
+   (if gas
+     (assoc-in db [:wallet :send-transaction :gas] (money/bignumber (int (* gas 1.2))))
+     db)))
 
 (handlers/register-handler-fx
  :wallet/show-error
