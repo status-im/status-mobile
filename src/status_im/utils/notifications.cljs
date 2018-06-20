@@ -18,11 +18,13 @@
 
 (handlers/register-handler-fx
  :request-notifications-granted
- (fn [_ _]))
+ (fn [_ _]
+   (re-frame.core/dispatch [:show-mainnet-is-default-alert])))
 
 (handlers/register-handler-fx
  :request-notifications-denied
- (fn [_ _]))
+ (fn [_ _]
+   (re-frame.core/dispatch [:show-mainnet-is-default-alert])))
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
