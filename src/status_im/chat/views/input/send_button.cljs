@@ -12,8 +12,12 @@
   (fn [_]
     (let [to-spin-value (if (some #{:complete :no-command} [@command-completion]) 1 0)]
       (animation/start
-        (animation/timing spin-value {:toValue  to-spin-value
-                                      :duration 300})))))
+       (animation/timing spin-value {:toValue  to-spin-value
+                                     :duration 300})))))
+
+(defn sendable? [input-text]
+  (let [trimmed (string/trim input-text)]
+    (not (or (string/blank? trimmed) (= trimmed "/")))))
 
 (defview send-button-view []
   (letsubs [command-completion                      [:command-completion]
@@ -24,10 +28,11 @@
                                                                                  :command-completion command-completion})]
     {:component-did-update on-update}
     (let [{:keys [hide-send-button sequential-params]} (:command selected-command)]
-      (when (and (not (string/blank? input-text))
-                 (or (not selected-command)
-                     (some #{:complete :less-than-needed} [command-completion]))
-                 (not hide-send-button))
+      (when
+       (and (sendable? input-text)
+            (or (not selected-command)
+                (some #{:complete :less-than-needed} [command-completion]))
+            (not hide-send-button))
         [react/touchable-highlight {:on-press #(if sequential-params
                                                  (do
                                                    (when-not (string/blank? seq-arg-input-text)

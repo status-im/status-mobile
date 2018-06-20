@@ -24,24 +24,27 @@
     [react/keyboard-avoiding-view open-dapp.styles/main-container
      [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat)]
-     [react/view add-new.styles/input-container
-      [react/text-input {:on-change-text      #(re-frame/dispatch [:set :contacts/new-identity %])
-                         :on-submit-editing   #(when-not error-message
-                                                 (re-frame/dispatch [:add-contact-handler]))
-                         :placeholder         (i18n/label :t/enter-contact-code)
-                         :style               add-new.styles/input
-                         :accessibility-label :enter-contact-code-input}]
+     [react/view add-new.styles/new-chat-container
+      [react/view add-new.styles/new-chat-input-container
+       [react/text-input {:on-change-text      #(re-frame/dispatch [:set :contacts/new-identity %])
+                          :on-submit-editing   #(when-not error-message
+                                                  (re-frame/dispatch [:add-contact-handler]))
+                          :placeholder         (i18n/label :t/enter-contact-code)
+                          :style               add-new.styles/input
+                          :accessibility-label :enter-contact-code-input
+                          :return-key-type     :go}]]
       [react/touchable-highlight {:on-press            #(re-frame/dispatch [:scan-qr-code
                                                                             {:toolbar-title (i18n/label :t/new-contact)}
                                                                             :set-contact-identity-from-qr])
-                                  :style               {:margin-right 14}
+                                  :style               add-new.styles/button-container
                                   :accessibility-label :scan-contact-code-button}
        [react/view
         [vector-icons/icon :icons/qr {:color colors/blue}]]]]
      [react/text {:style styles/error-message}
       error-message]
-     [react/text {:style open-dapp.styles/list-title}
-      (i18n/label :t/contacts)]
+     (when (seq contacts)
+       [react/text {:style open-dapp.styles/list-title}
+        (i18n/label :t/contacts)])
      [list/flat-list {:data                      contacts
                       :key-fn                    :address
                       :render-fn                 render-row

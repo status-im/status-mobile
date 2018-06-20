@@ -9,7 +9,8 @@
             [re-frame.core :as re-frame]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.list.views :as list]))
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.text :as text]))
 
 (defn profile-contact-toolbar []
   [toolbar/toolbar {}
@@ -42,9 +43,8 @@
     [react/text {:style styles/profile-info-title}
      label]
     [react/view styles/profile-setting-spacing]
-    [react/text {:style               styles/profile-setting-text
-                 :accessibility-label accessibility-label}
-     value]]])
+    [text/selectable-text {:value value
+                           :style styles/profile-setting-text}]]])
 
 (defn profile-info-contact-code-item [whisper-identity]
   [profile-info-item

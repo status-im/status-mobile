@@ -1,0 +1,42 @@
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+node ('linux1'){sauce('1be1b688-e0e7-4314-92a0-db11f52d3c00'){
+  def testPassed = true
+  try {
+
+    stage('Tests & Report'){
+      try {
+        withCredentials([string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GIT_HUB_TOKEN'),
+                        string(credentialsId: 'SOB_SAUCE_ACCESS_KEY', variable: 'SOB_SAUCE_ACCESS_KEY'),
+                        string(credentialsId: 'SOB_SAUCE_USERNAME', variable: 'SOB_SAUCE_USERNAME')]){
+                          sh 'cd test/appium/tests && python3 -m pytest test_message_reliability.py::TestMessageReliability::$test_to_run --messages_number=$messages_number --message_wait_time=$message_wait_time $apk' }
+      }
+      finally {
+        saucePublisher()
+        junit testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']],
+        testResults: 'test/appium/tests/*.xml'
+        archiveArtifacts 'test/appium/tests/*.png'
+      }
+    }
+  } catch(e) {
+    testPassed = false
+  }
+
+  stage('Slack notification'){
+    def c = (testPassed ? 'good' : 'warning')
+    def resultText = (testPassed ? '' : 'FAILED')
+    def fileData = readFile('test/appium/tests/messages.txt')
+    def map = evaluate(fileData)
+    def text = 'Sent messages: ' + map.sent + '\nReceived messages: ' + map.received + '\n<' + env.BUILD_URL + '/artifact/test/appium/tests/chart.png' + '|Test run chart>'
+    JSONArray attachments = new JSONArray();
+    JSONObject attachment = new JSONObject();
+
+    attachment.put('title','Message reliability job run, ' + test_to_run + ' ' + resultText);
+    attachment.put('title_link', env.BUILD_URL);
+    attachment.put('text', text);
+
+    attachments.add(attachment);
+    slackSend(color: c, channel: '#test-notifications', attachments: attachments.toString())
+  }
+}
+}

@@ -18,24 +18,19 @@
   {:label  (i18n/label :t/delete-chat)
    :action #(re-frame/dispatch [:remove-chat-and-navigate-home? chat-id group?])})
 
-(defn- leave-group-chat [chat-id public?]
-  {:label  (i18n/label (if public? :t/leave-public-chat :t/leave-group-chat))
-   :action #(re-frame/dispatch [:leave-group-chat? chat-id])})
-
 (defn- chat-actions [chat-id]
   [(view-profile chat-id)
+   (clear-history)
    (delete-chat chat-id false)])
 
 (defn- group-chat-actions [chat-id]
   [(group-info chat-id)
    (clear-history)
-   (delete-chat chat-id true)
-   (leave-group-chat chat-id false)])
+   (delete-chat chat-id true)])
 
 (defn- public-chat-actions [chat-id]
   [(clear-history)
-   (delete-chat chat-id true)
-   (leave-group-chat chat-id true)])
+   (delete-chat chat-id true)])
 
 (defn actions [group-chat? chat-id public?]
   (cond

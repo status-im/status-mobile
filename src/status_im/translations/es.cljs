@@ -1,8 +1,7 @@
 (ns status-im.translations.es)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Miembros"
    :not-implemented                       "¡No se ha implementado!"
    :chat-name                             "Nombre del chat"
@@ -328,8 +327,6 @@
    :wallet-browse-photos                  "Navegar Imágenes"
    :validation-amount-invalid-number      "La cantidad no es un número válido"
    :validation-amount-is-too-precise      "La cantidad es demasiado precisa. La mínima unidad que puedes enviar es 1 Wei (1x10^-18 ETH)"
-
-
 
    ;; network settings
    :new-network                           "Nueva red"

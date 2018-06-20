@@ -19,7 +19,6 @@
     {:gas    (ethereum/estimate-gas symbol)
      :symbol symbol}))
 
-
 (defmethod navigation/preload-data! :wallet-request-transaction
   [db [event]]
   (if (= event :navigate-back)

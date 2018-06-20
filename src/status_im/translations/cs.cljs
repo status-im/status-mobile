@@ -1,8 +1,7 @@
 (ns status-im.translations.cs)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Členové"
    :not-implemented                       "!není implementováno"
    :chat-name                             "Název chatu"
@@ -200,7 +199,6 @@
    :contact-already-added                 "Tento kontakt již byl přidán"
    :can-not-add-yourself                  "Nemůžeš přidat sebe"
    :unknown-address                       "Neznámá adresa"
-
 
    ;;login
    :connect                             "Připojit"

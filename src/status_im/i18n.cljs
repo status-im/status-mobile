@@ -1,129 +1,129 @@
 (ns status-im.i18n
   (:require
-    [cljs.spec.alpha :as spec]
-    [status-im.react-native.js-dependencies :as rn-dependencies]
-    [status-im.translations.af :as af]
-    [status-im.translations.ar :as ar]
-    [status-im.translations.bel :as be]
-    [status-im.translations.cs :as cs]
-    [status-im.translations.da :as da]
-    [status-im.translations.de :as de]
-    [status-im.translations.de-ch :as de-ch]
-    [status-im.translations.el :as el]
-    [status-im.translations.en :as en]
-    [status-im.translations.es :as es]
-    [status-im.translations.es-ar :as es-ar]
-    [status-im.translations.es-mx :as es-mx]
-    [status-im.translations.fi :as fi]
-    [status-im.translations.fr :as fr]
-    [status-im.translations.fr-ch :as fr-ch]
-    [status-im.translations.fy :as fy]
-    [status-im.translations.he :as he]
-    [status-im.translations.hi :as hi]
-    [status-im.translations.hu :as hu]
-    [status-im.translations.id :as id]
-    [status-im.translations.it :as it]
-    [status-im.translations.it-ch :as it-ch]
-    [status-im.translations.ja :as ja]
-    [status-im.translations.ko :as ko]
-    [status-im.translations.la :as la]
-    [status-im.translations.lt :as lt]
-    [status-im.translations.lv :as lv]
-    [status-im.translations.ms :as ms]
-    [status-im.translations.nb :as nb]
-    [status-im.translations.ne :as ne]
-    [status-im.translations.nl :as nl]
-    [status-im.translations.pl :as pl]
-    [status-im.translations.pt-br :as pt-br]
-    [status-im.translations.pt-pt :as pt-pt]
-    [status-im.translations.ro :as ro]
-    [status-im.translations.ru :as ru]
-    [status-im.translations.sl :as sl]
-    [status-im.translations.sr-rs-cyrl :as sr-rs-cyrl]
-    [status-im.translations.sr-rs-latn :as sr-rs-latn]
-    [status-im.translations.sv :as sv]
-    [status-im.translations.sw :as sw]
-    [status-im.translations.th :as th]
-    [status-im.translations.tr :as tr]
-    [status-im.translations.uk :as uk]
-    [status-im.translations.ur :as ur]
-    [status-im.translations.vi :as vi]
-    [status-im.translations.zh-hans :as zh-hans]
-    [status-im.translations.zh-hant :as zh-hant]
-    [status-im.translations.zh-hant-tw :as zh-hant-tw]
-    [status-im.translations.zh-hant-sg :as zh-hant-sg]
-    [status-im.translations.zh-hant-hk :as zh-hant-hk]
-    [status-im.translations.zh-wuu :as zh-wuu]
-    [status-im.translations.zh-yue :as zh-yue]
-    [status-im.utils.js-resources :refer [default-contacts]]
-    [taoensso.timbre :as log]
-    [clojure.string :as string]
-    [clojure.set :as set]))
+   [cljs.spec.alpha :as spec]
+   [status-im.react-native.js-dependencies :as rn-dependencies]
+   [status-im.translations.af :as af]
+   [status-im.translations.ar :as ar]
+   [status-im.translations.bel :as be]
+   [status-im.translations.cs :as cs]
+   [status-im.translations.da :as da]
+   [status-im.translations.de :as de]
+   [status-im.translations.de-ch :as de-ch]
+   [status-im.translations.el :as el]
+   [status-im.translations.en :as en]
+   [status-im.translations.es :as es]
+   [status-im.translations.es-ar :as es-ar]
+   [status-im.translations.es-mx :as es-mx]
+   [status-im.translations.fi :as fi]
+   [status-im.translations.fr :as fr]
+   [status-im.translations.fr-ch :as fr-ch]
+   [status-im.translations.fy :as fy]
+   [status-im.translations.he :as he]
+   [status-im.translations.hi :as hi]
+   [status-im.translations.hu :as hu]
+   [status-im.translations.id :as id]
+   [status-im.translations.it :as it]
+   [status-im.translations.it-ch :as it-ch]
+   [status-im.translations.ja :as ja]
+   [status-im.translations.ko :as ko]
+   [status-im.translations.la :as la]
+   [status-im.translations.lt :as lt]
+   [status-im.translations.lv :as lv]
+   [status-im.translations.ms :as ms]
+   [status-im.translations.nb :as nb]
+   [status-im.translations.ne :as ne]
+   [status-im.translations.nl :as nl]
+   [status-im.translations.pl :as pl]
+   [status-im.translations.pt-br :as pt-br]
+   [status-im.translations.pt-pt :as pt-pt]
+   [status-im.translations.ro :as ro]
+   [status-im.translations.ru :as ru]
+   [status-im.translations.sl :as sl]
+   [status-im.translations.sr-rs-cyrl :as sr-rs-cyrl]
+   [status-im.translations.sr-rs-latn :as sr-rs-latn]
+   [status-im.translations.sv :as sv]
+   [status-im.translations.sw :as sw]
+   [status-im.translations.th :as th]
+   [status-im.translations.tr :as tr]
+   [status-im.translations.uk :as uk]
+   [status-im.translations.ur :as ur]
+   [status-im.translations.vi :as vi]
+   [status-im.translations.zh-hans :as zh-hans]
+   [status-im.translations.zh-hant :as zh-hant]
+   [status-im.translations.zh-hant-tw :as zh-hant-tw]
+   [status-im.translations.zh-hant-sg :as zh-hant-sg]
+   [status-im.translations.zh-hant-hk :as zh-hant-hk]
+   [status-im.translations.zh-wuu :as zh-wuu]
+   [status-im.translations.zh-yue :as zh-yue]
+   [status-im.utils.js-resources :refer [default-contacts]]
+   [taoensso.timbre :as log]
+   [clojure.string :as string]
+   [clojure.set :as set]))
 
 (set! (.-fallbacks rn-dependencies/i18n) true)
 (set! (.-defaultSeparator rn-dependencies/i18n) "/")
 
 ;; translations
-
-(def translations-by-locale {:af          af/translations
-                             :ar          ar/translations
-                             :be          be/translations
-                             :cs          cs/translations
-                             :da          da/translations
-                             :de          de/translations
-                             :de-ch       de-ch/translations
-                             :el          el/translations
-                             :en          en/translations
-                             :es          es/translations
-                             :es-ar       es-ar/translations
-                             :es-mx       es-mx/translations
-                             :fi          fi/translations
-                             :fr          fr/translations
-                             :fr-ch       fr-ch/translations
-                             :fy          fy/translations
-                             :he          he/translations
-                             :hi          hi/translations
-                             :hu          hu/translations
-                             :id          id/translations
-                             :it          it/translations
-                             :it-ch       it-ch/translations
-                             :ja          ja/translations
-                             :ko          ko/translations
-                             :la          la/translations
-                             :lt          lt/translations
-                             :lv          lv/translations
-                             :ms          ms/translations
-                             :nb          nb/translations
-                             :ne          ne/translations
-                             :nl          nl/translations
-                             :pl          pl/translations
-                             :pt-br       pt-br/translations
-                             :pt-pt       pt-pt/translations
-                             :ro          ro/translations
-                             :ru          ru/translations
-                             :sl          sl/translations
-                             :sr          sr-rs-cyrl/translations
-                             :sr-RS_#Latn sr-rs-latn/translations
-                             :sr-RS_#Cyrl sr-rs-cyrl/translations
-                             :sv          sv/translations
-                             :sw          sw/translations
-                             :th          th/translations
-                             :tr          tr/translations
-                             :uk          uk/translations
-                             :ur          ur/translations
-                             :vi          vi/translations
-                             :zh          zh-hans/translations
-                             :zh-hans     zh-hans/translations
-                             :zh-hans-cn  zh-hans/translations
-                             :zh-hans-mo  zh-hans/translations
-                             :zh-hant     zh-hant/translations
-                             :zh-hant-tw  zh-hant-tw/translations
-                             :zh-hant-sg  zh-hant-sg/translations
-                             :zh-hant-hk  zh-hant-hk/translations
-                             :zh-hant-cn  zh-hant/translations
-                             :zh-hant-mo  zh-hant/translations
-                             :zh-wuu      zh-wuu/translations
-                             :zh-yue      zh-yue/translations})
+#_(def translations-by-locale {:af          af/translations
+                               :ar          ar/translations
+                               :be          be/translations
+                               :cs          cs/translations
+                               :da          da/translations
+                               :de          de/translations
+                               :de-ch       de-ch/translations
+                               :el          el/translations
+                               :en          en/translations
+                               :es          es/translations
+                               :es-ar       es-ar/translations
+                               :es-mx       es-mx/translations
+                               :fi          fi/translations
+                               :fr          fr/translations
+                               :fr-ch       fr-ch/translations
+                               :fy          fy/translations
+                               :he          he/translations
+                               :hi          hi/translations
+                               :hu          hu/translations
+                               :id          id/translations
+                               :it          it/translations
+                               :it-ch       it-ch/translations
+                               :ja          ja/translations
+                               :ko          ko/translations
+                               :la          la/translations
+                               :lt          lt/translations
+                               :lv          lv/translations
+                               :ms          ms/translations
+                               :nb          nb/translations
+                               :ne          ne/translations
+                               :nl          nl/translations
+                               :pl          pl/translations
+                               :pt-br       pt-br/translations
+                               :pt-pt       pt-pt/translations
+                               :ro          ro/translations
+                               :ru          ru/translations
+                               :sl          sl/translations
+                               :sr          sr-rs-cyrl/translations
+                               :sr-RS_#Latn sr-rs-latn/translations
+                               :sr-RS_#Cyrl sr-rs-cyrl/translations
+                               :sv          sv/translations
+                               :sw          sw/translations
+                               :th          th/translations
+                               :tr          tr/translations
+                               :uk          uk/translations
+                               :ur          ur/translations
+                               :vi          vi/translations
+                               :zh          zh-hans/translations
+                               :zh-hans     zh-hans/translations
+                               :zh-hans-cn  zh-hans/translations
+                               :zh-hans-mo  zh-hans/translations
+                               :zh-hant     zh-hant/translations
+                               :zh-hant-tw  zh-hant-tw/translations
+                               :zh-hant-sg  zh-hant-sg/translations
+                               :zh-hant-hk  zh-hant-hk/translations
+                               :zh-hant-cn  zh-hant/translations
+                               :zh-hant-mo  zh-hant/translations
+                               :zh-wuu      zh-wuu/translations
+                               :zh-yue      zh-yue/translations})
+(def translations-by-locale {:en          en/translations}) ; Temporarily disable all languages except English
 
 ;; english as source of truth
 (def labels (set (keys en/translations)))
@@ -266,27 +266,28 @@
 (spec/def ::locales (spec/coll-of ::locale :kind set? :into #{}))
 
 ;; NOTE: Add new locale keywords here to indicate support for them.
-(def supported-locales (spec/assert ::locales #{:fr
-                                                :zh
-                                                :zh-hans
-                                                :zh-hans-cn
-                                                :zh-hans-mo
-                                                :zh-hant
-                                                :zh-hant-sg
-                                                :zh-hant-hk
-                                                :zh-hant-tw
-                                                :zh-hant-mo
-                                                :zh-hant-cn
-                                                :sr-RS_#Cyrl
-                                                :el
-                                                :en
-                                                :de
-                                                :lt
-                                                :sr-RS_#Latn
-                                                :sr
-                                                :sv
-                                                :ja
-                                                :uk}))
+#_(def supported-locales (spec/assert ::locales #{:fr
+                                                  :zh
+                                                  :zh-hans
+                                                  :zh-hans-cn
+                                                  :zh-hans-mo
+                                                  :zh-hant
+                                                  :zh-hant-sg
+                                                  :zh-hant-hk
+                                                  :zh-hant-tw
+                                                  :zh-hant-mo
+                                                  :zh-hant-cn
+                                                  :sr-RS_#Cyrl
+                                                  :el
+                                                  :en
+                                                  :de
+                                                  :lt
+                                                  :sr-RS_#Latn
+                                                  :sr
+                                                  :sv
+                                                  :ja
+                                                  :uk}))
+(def supported-locales (spec/assert ::locales #{:en}))
 
 (spec/def ::supported-locale supported-locales)
 (spec/def ::supported-locales (spec/coll-of ::supported-locale :kind set? :into #{}))
@@ -326,7 +327,6 @@
 
 (defn supported-locales-that-are-not-considered-supported []
   (set/difference (actual-supported-locales) supported-locales))
-
 
 (set! (.-translations rn-dependencies/i18n)
       (clj->js translations-by-locale))
@@ -388,3 +388,75 @@
     (or (translation locale)
         (translation (subs locale 0 2))
         fallback)))
+
+(defn format-currency [value currency-code]
+  (.addTier2Support goog.i18n.currency)
+
+  (def currency-code-to-nfs-map
+    {"ZAR" (.-NumberFormatSymbols_af goog.i18n)
+     "ETB" (.-NumberFormatSymbols_am goog.i18n)
+     "EGP" (.-NumberFormatSymbols_ar goog.i18n)
+     "DZD" (.-NumberFormatSymbols_ar_DZ goog.i18n)
+     "AZN" (.-NumberFormatSymbols_az goog.i18n)
+     "BYN" (.-NumberFormatSymbols_be goog.i18n)
+     "BGN" (.-NumberFormatSymbols_bg goog.i18n)
+     "BDT" (.-NumberFormatSymbols_bn goog.i18n)
+     "EUR" (.-NumberFormatSymbols_br goog.i18n)
+     "BAM" (.-NumberFormatSymbols_bs goog.i18n)
+     "USD" (.-NumberFormatSymbols_en goog.i18n)
+     "CZK" (.-NumberFormatSymbols_cs goog.i18n)
+     "GBP" (.-NumberFormatSymbols_cy goog.i18n)
+     "DKK" (.-NumberFormatSymbols_da goog.i18n)
+     "CHF" (.-NumberFormatSymbols_de_CH goog.i18n)
+     "AUD" (.-NumberFormatSymbols_en_AU goog.i18n)
+     "CAD" (.-NumberFormatSymbols_en_CA goog.i18n)
+     "INR" (.-NumberFormatSymbols_en_IN goog.i18n)
+     "SGD" (.-NumberFormatSymbols_en_SG goog.i18n)
+     "MXN" (.-NumberFormatSymbols_es_419 goog.i18n)
+     "IRR" (.-NumberFormatSymbols_fa goog.i18n)
+     "PHP" (.-NumberFormatSymbols_fil goog.i18n)
+     "ILS" (.-NumberFormatSymbols_he goog.i18n)
+     "HRK" (.-NumberFormatSymbols_hr goog.i18n)
+     "HUF" (.-NumberFormatSymbols_hu goog.i18n)
+     "AMD" (.-NumberFormatSymbols_hy goog.i18n)
+     "IDR" (.-NumberFormatSymbols_id goog.i18n)
+     "ISK" (.-NumberFormatSymbols_is goog.i18n)
+     "JPY" (.-NumberFormatSymbols_ja goog.i18n)
+     "GEL" (.-NumberFormatSymbols_ka goog.i18n)
+     "KZT" (.-NumberFormatSymbols_kk goog.i18n)
+     "KHR" (.-NumberFormatSymbols_km goog.i18n)
+     "KRW" (.-NumberFormatSymbols_ko goog.i18n)
+     "KGS" (.-NumberFormatSymbols_ky goog.i18n)
+     "CDF" (.-NumberFormatSymbols_ln goog.i18n)
+     "LAK" (.-NumberFormatSymbols_lo goog.i18n)
+     "MKD" (.-NumberFormatSymbols_mk goog.i18n)
+     "MNT" (.-NumberFormatSymbols_mn goog.i18n)
+     "MDL" (.-NumberFormatSymbols_mo goog.i18n)
+     "MYR" (.-NumberFormatSymbols_ms goog.i18n)
+     "MMK" (.-NumberFormatSymbols_my goog.i18n)
+     "NOK" (.-NumberFormatSymbols_nb goog.i18n)
+     "NPR" (.-NumberFormatSymbols_ne goog.i18n)
+     "PLN" (.-NumberFormatSymbols_pl goog.i18n)
+     "BRL" (.-NumberFormatSymbols_pt goog.i18n)
+     "RON" (.-NumberFormatSymbols_ro goog.i18n)
+     "RUB" (.-NumberFormatSymbols_ru goog.i18n)
+     "RSD" (.-NumberFormatSymbols_sh goog.i18n)
+     "LKR" (.-NumberFormatSymbols_si goog.i18n)
+     "ALL" (.-NumberFormatSymbols_sq goog.i18n)
+     "SEK" (.-NumberFormatSymbols_sv goog.i18n)
+     "TZS" (.-NumberFormatSymbols_sw goog.i18n)
+     "THB" (.-NumberFormatSymbols_th goog.i18n)
+     "TRY" (.-NumberFormatSymbols_tr goog.i18n)
+     "UAH" (.-NumberFormatSymbols_uk goog.i18n)
+     "PKR" (.-NumberFormatSymbols_ur goog.i18n)
+     "UZS" (.-NumberFormatSymbols_uz goog.i18n)
+     "VND" (.-NumberFormatSymbols_vi goog.i18n)
+     "CNY" (.-NumberFormatSymbols_zh goog.i18n)
+     "HKD" (.-NumberFormatSymbols_zh_HK goog.i18n)
+     "TWD" (.-NumberFormatSymbols_zh_TW goog.i18n)})
+
+  (def custom-nfs (currency-code-to-nfs-map currency-code))
+  (set! (.-NumberFormatSymbols goog.i18n) (if custom-nfs custom-nfs (.-NumberFormatSymbols_en goog.i18n)))
+  (.format
+   (new goog.i18n.NumberFormat (.-CURRENCY goog.i18n.NumberFormat.Format) currency-code)
+   value))

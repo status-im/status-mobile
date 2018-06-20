@@ -3,56 +3,22 @@
             [status-im.constants :as const]
             [status-im.chat.subs :as s]))
 
-(deftest test-message-datemark-groups
-  (testing "it orders a map of messages by clock-values desc, breaking ties by message-id asc and removing hidden messages"
-    (let [message-1 {:show? true
-                     :message-id "doesn't matter 1"
-                     :clock-value 1}
-          message-2 {:show? true
-                     :message-id "doesn't matter 2"
-                     :clock-value 2}
-          message-3 {:show? true
-                     :message-id "does matter 2"
-                     :clock-value 3}
-          message-4 {:show? true
-                     :message-id "does matter 1"
-                     :clock-value 3}
-          hidden-message {:show? false
-                          :clock-value 1}
-          unordered-messages (->> [message-1
-                                   message-2
-                                   message-3
-                                   message-4
-                                   hidden-message]
-                                  (map (juxt :message-id identity))
-                                  shuffle ; clojure maps are sorted for n <= 32
-                                  (into {}))]
-      (is (= [message-4
-              message-3
-              message-2
-              message-1] (s/sort-messages unordered-messages))))))
-
-(deftest intersperse-datemarks
-  (testing "it mantains the order even when timestamps are across days"
-    (let [message-1 {:timestamp 946641600000} ; 1999}
-          message-2 {:timestamp 946728000000} ; 2000 this will displayed in 1999
-          message-3 {:timestamp 946641600000} ; 1999
-          message-4 {:timestamp 946728000000} ; 2000
-          ordered-messages [message-4
-                            message-3
-                            message-2
-                            message-1]
-          [m1 d1 m2 m3 m4 d2] (s/intersperse-datemarks ordered-messages)]
-      (is (= "Jan 1, 2000"
-             (:datemark m1)))
-      (is (= {:type :datemark
-              :value "Jan 1, 2000"} d1))
-      (is (= "Dec 31, 1999"
-             (:datemark m2)
-             (:datemark m3)
-             (:datemark m4)))
-      (is (= {:type :datemark
-              :value "Dec 31, 1999"} d2)))))
+(deftest chat-name
+  (testing "it prepends # if it's a public chat"
+    (is (= "#withhash" (s/chat-name {:group-chat true
+                                     :chat-id "1"
+                                     :public? true
+                                     :name "withhash"} nil))))
+  (testing "it leaves the name unchanged if it's a group chat"
+    (is (= "unchanged" (s/chat-name {:group-chat true
+                                     :chat-id "1"
+                                     :name "unchanged"} nil))))
+  (testing "it pulls the name from contact if it's a one-to-one"
+    (is (= "this-one" (s/chat-name {:chat-id "1"
+                                    :name "not-this-one"} {:name "this-one"}))))
+  (testing "it generates the name from chat id if no contact"
+    (is (= "Blond Cooperative Coelacanth" (s/chat-name {:chat-id "1"
+                                                        :name "not-this-one"} nil)))))
 
 (deftest message-stream-tests
   (testing "messages with no interspersed datemarks"
@@ -87,6 +53,14 @@
         (is (:first-in-group? actual-m1))
         (is (not (:first-in-group? actual-m2)))
         (is (:first-in-group? actual-m3)))
+      (testing "it marks messages with display-photo? when they are not outgoing and we are in a group chat"
+        (is (:display-photo? actual-m1))
+        (is (not (:display-photo? actual-m2)))
+        (is (not (:display-photo? actual-m3))))
+      (testing "it marks messages with display-username? when we display the photo and are the first in a group"
+        (is (:display-username? actual-m1))
+        (is (not (:display-username? actual-m2)))
+        (is (not (:display-username? actual-m3))))
       (testing "it marks the last message from the same author with :last-in-group?"
         (is (:last-in-group? actual-m1))
         (is (:last-in-group? actual-m2))

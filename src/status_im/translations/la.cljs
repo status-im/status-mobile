@@ -1,8 +1,7 @@
 (ns status-im.translations.la)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "sodalis"
    :not-implemented                       "ne attexit"
    :chat-name                             "nomen colloquii"
@@ -128,7 +127,6 @@
    :contact-already-added                 "iste contagio jam adjunctum esse"
    :can-not-add-yourself                  "ne potest adjungere ipse!"
    :unknown-address                       "ignotum adloquium"
-
 
    ;;login
    :connect                               "iungere"

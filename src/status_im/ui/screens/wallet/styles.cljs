@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as styles]))
 
 ;; wallet
@@ -35,15 +34,15 @@
 
 (defn cartouche-content-wrapper [disabled?]
   (merge
-    {:flex-direction     :row
-     :margin-top         8
-     :border-radius      styles/border-radius
-     :padding-left       14
-     :padding-right      8}
-    (if disabled?
-      {:border-color colors/white-light-transparent
-       :border-width 1}
-      {:background-color colors/white-transparent})))
+   {:flex-direction     :row
+    :margin-top         8
+    :border-radius      styles/border-radius
+    :padding-left       14
+    :padding-right      8}
+   (if disabled?
+     {:border-color colors/white-light-transparent
+      :border-width 1}
+     {:background-color colors/white-transparent})))
 
 (def cartouche-icon-wrapper
   {:flex            1
@@ -65,21 +64,45 @@
 
 ;; Main section
 
-(def main-section
-  {:flex 1})
+(defstyle main-section
+  {:flex 1
+   :ios  {:background-color colors/blue}})
 
-(def scroll-top
-  (let [height (:height (react/get-dimensions "window"))]
-    {:background-color colors/blue
-     :zIndex           -1
-     :position         :absolute
-     :height           height
-     :top              (- height)
-     :left             0
-     :right            0}))
+(defstyle scroll-bottom
+  {:background-color colors/white
+   :zIndex           -1
+   :position         :absolute
+   :left             0
+   :right            0
+   :android          {:height 0}
+   :ios              {:height 9999}})
 
 (def section
   {:background-color colors/blue})
+
+(def backup-seed-phrase-container
+  {:flex-direction   :row
+   :align-items      :center
+   :border-radius    8
+   :margin           16
+   :background-color colors/black-darker-transparent
+   :padding-top      10
+   :padding-bottom   10
+   :padding-left     14
+   :padding-right    12})
+
+(def backup-seed-phrase-text-container
+  {:flex 1})
+
+(def backup-seed-phrase-title
+  {:font-size   15
+   :line-height 20
+   :color       colors/white})
+
+(def backup-seed-phrase-description
+  {:font-size   14
+   :line-height 20
+   :color       colors/white-lighter-transparent})
 
 (def total-balance-container
   {:align-items     :center
@@ -129,10 +152,11 @@
    :padding-top      16
    :background-color colors/white})
 
-(def asset-section-title
-  {:font-size   14
-   :margin-left 16
-   :color       colors/gray})
+(def asset-item-container
+  {:flex            1
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between})
 
 (def asset-item-value-container
   {:flex           1
@@ -145,6 +169,11 @@
    :color     colors/black})
 
 (def asset-item-currency
+  {:font-size   16
+   :color       colors/gray
+   :margin-left 6})
+
+(def asset-item-price
   {:font-size   16
    :color       colors/gray
    :margin-left 6})

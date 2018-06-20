@@ -11,11 +11,11 @@
   (update-in db [:wallet.transactions :filters] f))
 
 (handlers/register-handler-db
-  :wallet.transactions/filter
-  (fn [db [_ path checked?]]
-    (update-filters db #(mark-checked % path checked?))))
+ :wallet.transactions/filter
+ (fn [db [_ path checked?]]
+   (update-filters db #(mark-checked % path checked?))))
 
 (handlers/register-handler-db
-  :wallet.transactions/filter-all
-  (fn [db]
-    (update-filters db mark-all-checked)))
+ :wallet.transactions/filter-all
+ (fn [db]
+   (update-filters db mark-all-checked)))

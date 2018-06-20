@@ -50,6 +50,9 @@
    :ios             {:padding-top 13}
    :android         {:padding-top 14}})
 
+(def amount-text
+  {:color colors/text})
+
 (def tx-amount
   {:flex-grow    1
    :flex-shrink  1
@@ -185,17 +188,26 @@
    :margin-vertical 10
    :height          2})
 
-(defn progress-bar-done [done]
+(defn progress-bar-done [done failed?]
   {:flex             done
-   :background-color colors/blue})
+   :background-color (if failed?
+                       colors/red
+                       colors/blue)})
 
-(defn progress-bar-todo [todo]
+(defn progress-bar-todo [todo failed?]
   {:flex             todo
-   :background-color colors/blue
+   :background-color (if failed?
+                       colors/red
+                       colors/blue)
    :opacity          0.30})
 
 (def details-confirmations-count
   {:color           colors/black
+   :font-size       15
+   :margin-vertical 2})
+
+(def details-failed
+  {:color           colors/red
    :font-size       15
    :margin-vertical 2})
 

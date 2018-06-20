@@ -26,19 +26,19 @@
 (defn view []
   (let [{:keys [chat-id message-id]} @(re-frame/subscribe [:get-current-chat-ui-prop :message-options])
         close-message-options-fn #(re-frame/dispatch [:set-chat-ui-props {:show-message-options? false}])]
-      [bottom-info/overlay {:on-click-outside close-message-options-fn}
-       [bottom-info/container (* styles/item-height 2)
-        [react/view
-         [react/view options.styles/title
-          [react/text {:style options.styles/title-text} (i18n/label :message-not-sent)]]
-         [action-item {:label    :resend-message
-                       :icon     :icons/refresh
-                       :on-press #(do
-                                    (close-message-options-fn)
-                                    (re-frame/dispatch [:resend-message chat-id message-id]))}]
-         [action-item {:label    :delete-message
-                       :icon     :icons/delete
-                       :style    {:color colors/red}
-                       :on-press #(do
-                                    (close-message-options-fn)
-                                    (re-frame/dispatch [:delete-message chat-id message-id]))}]]]]))
+    [bottom-info/overlay {:on-click-outside close-message-options-fn}
+     [bottom-info/container (* styles/item-height 2)
+      [react/view
+       [react/view options.styles/title
+        [react/text {:style options.styles/title-text} (i18n/label :message-not-sent)]]
+       [action-item {:label    :resend-message
+                     :icon     :icons/refresh
+                     :on-press #(do
+                                  (close-message-options-fn)
+                                  (re-frame/dispatch [:resend-message chat-id message-id]))}]
+       [action-item {:label    :delete-message
+                     :icon     :icons/delete
+                     :style    {:color colors/red}
+                     :on-press #(do
+                                  (close-message-options-fn)
+                                  (re-frame/dispatch [:delete-message chat-id message-id]))}]]]]))

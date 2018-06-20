@@ -1,14 +1,12 @@
-from tests import get_current_time
+from tests import get_current_time, common_password
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
-import time
 
-
-class FirstAccountButton(BaseButton):
+class AccountButton(BaseButton):
 
     def __init__(self, driver):
-        super(FirstAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.ScrollView//android.widget.TextView")
+        super(AccountButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[contains(@text,'0x')]")
 
 
 class PasswordInput(BaseEditBox):
@@ -44,7 +42,8 @@ class RecoverAccessButton(BaseButton):
 class CreateAccountButton(BaseButton):
     def __init__(self, driver):
         super(CreateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='CREATE ACCOUNT']")
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='CREATE ACCOUNT' or @text='CREATE NEW ACCOUNT']")
 
 
 class IHaveAccountButton(RecoverAccessButton):
@@ -68,14 +67,15 @@ class ConfirmPasswordInput(BaseEditBox):
 class NameInput(BaseEditBox):
     def __init__(self, driver):
         super(NameInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Name']")
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
 class DonNotShare(BaseButton):
 
     def __init__(self, driver):
         super(DonNotShare, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE"]' % "'")
+        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE" '
+                                                   'or @text="Do not share"]' % "'")
 
 
 class SignInView(BaseView):
@@ -84,7 +84,7 @@ class SignInView(BaseView):
         super(SignInView, self).__init__(driver)
         self.driver = driver
 
-        self.first_account_button = FirstAccountButton(self.driver)
+        self.account_button = AccountButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.sign_in_button = SignInButton(self.driver)
         self.recover_access_button = RecoverAccessButton(self.driver)
@@ -97,17 +97,21 @@ class SignInView(BaseView):
         self.name_input = NameInput(self.driver)
         self.do_not_share = DonNotShare(self.driver)
 
-    def create_user(self):
+    def create_user(self, username: str = '', password=common_password):
         self.create_account_button.click()
-        self.password_input.set_value('qwerty1234')
+        self.password_input.set_value(password)
         self.next_button.click()
-        self.confirm_password_input.set_value('qwerty1234')
+        self.confirm_password_input.set_value(password)
         self.next_button.click()
-        self.name_input.wait_for_element(45)
-        self.name_input.set_value('user_%s' % get_current_time())
+
+        self.element_by_text_part('Display name').wait_for_element(30)
+        username = username if username else 'user_%s' % get_current_time()
+        self.name_input.send_keys(username)
+
         self.next_button.click()
-        self.do_not_share.wait_for_element(10)
+        self.do_not_share.wait_for_visibility_of_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
+        return username
 
     def recover_access(self, passphrase, password):
         recover_access_view = self.i_have_account_button.click()
@@ -118,3 +122,22 @@ class SignInView(BaseView):
         recover_access_view.sign_in_button.click()
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
+
+    def open_status_test_dapp(self):
+        profile_view = self.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        home_view = profile_view.home_button.click()
+        start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.open_d_app_button.click()
+        start_new_chat_view.status_test_dapp_button.scroll_to_element()
+        status_test_daap = start_new_chat_view.status_test_dapp_button.click()
+        start_new_chat_view.open_button.click()
+        return status_test_daap
+
+    def sign_in(self, password=common_password):
+        self.password_input.set_value(password)
+        self.sign_in_button.click()
+
+    def click_account_by_position(self, position: int):
+        self.account_button.find_elements()[position].click()
