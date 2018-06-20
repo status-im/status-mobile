@@ -197,6 +197,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
@@ -220,9 +221,10 @@ dependencies {
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-config')
-    implementation project(':react-native-fcm')
-    implementation 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
-    compile project(':react-native-testfairy')
+    implementation 'com.google.android.gms:play-services-base:15.0.0'
+    implementation 'com.google.firebase:firebase-core:15.0.2' //this decides your firebase SDK version
+    implementation 'com.google.firebase:firebase-messaging:15.0.2'
+    implementation project(':react-native-testfairy')
     implementation project(':react-native-keychain')
     implementation project(':instabug-reactnative')
 
@@ -235,9 +237,6 @@ task copyDownloadableDepsToLibs(type: Copy) {
   from configurations.compile
   into 'libs'
 }
-
-// Must be at bottom to avoid dependency collision
-apply plugin: "com.google.gms.google-services"
 
 task hemroidBuild(type: Exec) {
     def rootDir = project.rootDir
@@ -255,3 +254,6 @@ task hemroidBuild(type: Exec) {
 }
 
 preBuild.dependsOn hemroidBuild
+
+// Must be at bottom to avoid dependency collision
+apply plugin: "com.google.gms.google-services"
