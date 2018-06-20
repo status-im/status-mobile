@@ -138,9 +138,9 @@
                                 (assoc-in [:wallet :balance-loading?] true)
                                 (assoc :prices-loading? true))}))))
 
-(handlers/register-handler-fx
- :update-transactions
- (fn [{{:keys [network network-status web3] :as db} :db} _]
+(re-frame/reg-fx
+ :update-transactions-fx
+ (fn [{{:keys [network network-status web3] :as db} :db}]
    (when (not= network-status :offline)
      (let [network         (get-in db [:account/account :networks network])
            chain           (ethereum/network->chain-keyword network)
@@ -155,6 +155,11 @@
         :db               (-> db
                               (clear-error-message :transactions-update)
                               (assoc-in [:wallet :transactions-loading?] true))}))))
+
+(handlers/register-handler-fx
+ :update-transactions
+ (fn [cofx _]
+   {:update-transactions-fx cofx}))
 
 (defn combine-entries [transaction token-transfer]
   (merge transaction (select-keys token-transfer
