@@ -55,6 +55,7 @@ public:
     Q_INVOKABLE void clearStorageAPIs();
     Q_INVOKABLE void sendWeb3Request(QString payload, double callbackId);
     Q_INVOKABLE void closeApplication();
+    Q_INVOKABLE void getDeviceUUID(double callbackId);
 
     Q_INVOKABLE static bool JSCEnabled();
     Q_INVOKABLE static void jailSignalEventCallback(const char* signal);
