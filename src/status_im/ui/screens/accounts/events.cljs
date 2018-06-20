@@ -6,6 +6,9 @@
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.random :as random]
             [clojure.string :as str]
+            [status-im.i18n :as i18n]
+            [status-im.utils.config :as config]
+            [status-im.utils.utils :as utils]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -151,6 +154,24 @@
  :update-sign-in-time
  (fn [{db :db now :now :as cofx} _]
    (accounts.utils/account-update {:last-sign-in now} cofx)))
+
+(handlers/register-handler-fx
+ :update-mainnet-warning-shown
+ (fn [cofx _]
+   (accounts.utils/account-update {:mainnet-warning-shown? true} cofx)))
+
+(handlers/register-handler-fx
+ :show-mainnet-is-default-alert
+ (fn [{:keys [db]}]
+   (let [enter-name-screen? (= :enter-name (get-in db [:accounts/create :step]))
+         shown? (get-in db [:account/account :mainnet-warning-shown?])]
+     (when (and config/mainnet-warning-enabled?
+                (not shown?)
+                (not enter-name-screen?))
+       (utils/show-popup
+        (i18n/label :mainnet-is-default-alert-title)
+        (i18n/label :mainnet-is-default-alert-text)
+        #(re-frame/dispatch [:update-mainnet-warning-shown]))))))
 
 (handlers/register-handler-fx
  :reset-account-creation

@@ -669,6 +669,9 @@
    :delete-bootnode-are-you-sure         "Are you sure you want to delete this bootnode?"
    :delete-bootnode                      "Delete bootnode"
 
+   :mainnet-is-default-alert-title       "Hello"
+   :mainnet-is-default-alert-text        "Thanks for choosing Status! We are now in Beta, which means new installs are automatically connected to the Mainnet. If you upgraded, you may still need to switch networks, which you can do easily by navigating to your Profile -> Advanced Mode -> Switch Developer Mode on -> Choose your network. Now just have fun! Browse DApps, exchange assets, start your own #chats, and message your friends, all from the world's first decentralised, mobile client for Ethereum.\n\nPlease note that this is a beta release and we advise you that using this app should be done for testing purposes only and you assume the full responsibility for all risks concerning your data and funds."
+
    :main-networks                        "Main networks"
    :test-networks                        "Test networks"
    :custom-networks                      "Custom networks"
