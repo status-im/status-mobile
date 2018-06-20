@@ -65,12 +65,16 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
-(views/defview profile []
-  (views/letsubs [current-account [:get-current-account]]
-    [react/view styles/profile-view
-     [profile-badge current-account]
-     [share-contact-code]
-     [react/view {:style styles/logout-row}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
-       [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
-      [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version]]]]))
+(views/defview profile [user]
+  [react/view styles/profile-view
+   [profile-badge user]
+   [share-contact-code]
+   [react/view {:style styles/logout-row}
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
+     [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
+    [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version]]]])
+
+(views/defview profile-data []
+  (views/letsubs
+   [user [:get-current-account]]
+   [profile user]))
