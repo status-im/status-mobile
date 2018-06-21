@@ -31,6 +31,14 @@
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
    :airswap            (js/require "./resources/images/contacts/airswap.png")
 
+   :dai                (js/require "./resources/images/contacts/dai.png")
+   :local-ethereum     (js/require "./resources/images/contacts/local-ethereum.png")
+   :eth2phone          (js/require "./resources/images/contacts/eth2phone.png")
+   :bounties-network   (js/require "./resources/images/contacts/bounties-network.png")
+   :cryptopurr         (js/require "./resources/images/contacts/cryptopurr.png")
+   :ethlend            (js/require "./resources/images/contacts/ethlend.png")
+   :smartz             (js/require "./resources/images/contacts/smartz.png")
+
    :console            (js/require "./resources/images/contacts/console.png")})
 
 (def assets

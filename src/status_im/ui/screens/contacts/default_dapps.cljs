@@ -21,7 +21,19 @@
            {:name        "Oasis Direct"
             :dapp-url    "https://oasis.direct/"
             :photo-path  "contacts://oasis-direct"
-            :description "The first decentralized instant exchange"}]}
+            :description "The first decentralized instant exchange"}
+           {:name        "DAI by MakerDao"
+            :dapp-url    "https://dai.makerdao.com"
+            :photo-path  "contacts://dai"
+            :description "Stability for the blockchain"}
+           {:name        "LocalEthereum"
+            :dapp-url    "https://localethereum.com/"
+            :photo-path  "contacts://local-ethereum"
+            :description "The smartest way to buy and sell Ether"}
+           {:name        "Eth2phone"
+            :dapp-url    "https://eth2.io"
+            :photo-path  "contacts://eth2phone"
+            :description "Send Ether by phone number"}]}
    {:title "Marketplaces"
     :data [{:name        "CryptoCribs"
             :dapp-url    "https://cryptocribs.com"
@@ -38,7 +50,11 @@
            {:name        "Name Bazaar"
             :dapp-url    "https://namebazaar.io"
             :photo-path  "contacts://name-bazaar"
-            :description "ENS name marketplace"}]}
+            :description "ENS name marketplace"}
+           {:name        "The Bounties Network"
+            :dapp-url    "https://beta.bounties.network/"
+            :photo-path  "contacts://bounties-network"
+            :description "Bounties on any task, paid in any token"}]}
    {:title "Fun & Games"
     :data [{:name        "CryptoKitties"
             :dapp-url    "https://www.cryptokitties.co"
@@ -72,12 +88,24 @@
            {:name        "Peepeth"
             :dapp-url    "http://peepeth.com/"
             :photo-path  "contacts://peepeth"
-            :description "Blockchain-powered microblogging"}]}
+            :description "Blockchain-powered microblogging"}
+           {:name        "Purrbook"
+            :dapp-url    "https://cryptopurr.co/"
+            :photo-path  "contacts://cryptopurr"
+            :description "A social network for CryptoKitties"}]}
    {:title "Utilities"
     :data [{:name        "Hexel"
             :dapp-url    "https://www.onhexel.com/"
             :photo-path  "contacts://hexel"
             :description "Create your own cryptocurrency"}
+           {:name        "ETHLend"
+            :dapp-url    "https://app.ethlend.io"
+            :photo-path  "contacts://ethlend"
+            :description "Decentralized lending on Ethereum"}
+           {:name        "Smartz"
+            :dapp-url    "https://smartz.io"
+            :photo-path  "contacts://smartz"
+            :description "Easy smart contract management"}
            {:name        "Status Test DApp"
             :dapp-url    "https://status-im.github.io/dapp/"
             :description "Request test assets and test basic web3 functionality."
