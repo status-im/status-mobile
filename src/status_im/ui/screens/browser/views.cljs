@@ -3,6 +3,7 @@
                    [status-im.utils.views :as views])
   (:require [cljs.reader :as reader]
             [re-frame.core :as re-frame]
+            [status-im.models.browser-history :as browser-history]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -64,10 +65,9 @@
     [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
-  (let [{:strs [url canGoBack canGoForward]} (js->clj event)]
-    (when (and (not (:dapp? browser)) (not= "about:blank" url))
-      (re-frame/dispatch [:update-browser (assoc browser :url url)]))
-    (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
+  (let [{:strs [url loading]} (js->clj event)]
+    (when (not= "about:blank" url)
+      (re-frame/dispatch [:update-browser-on-nav-change browser url loading]))))
 
 (defn get-inject-js [url]
   (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
@@ -115,16 +115,17 @@
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])
      [react/view styles/toolbar
-      [react/touchable-highlight {:on-press            #(.goBack @webview)
-                                  :disabled            (not can-go-back?)
+      [react/touchable-highlight {:on-press            #(browser-history/back browser)
+                                  :disabled            (not (browser-history/can-go-back? browser))
+                                  :style               (if (not (browser-history/can-go-back? browser)) styles/disabled-button)
                                   :accessibility-label :previou-page-button}
-       [react/view (when (not can-go-back?) {:opacity 0.4})
+       [react/view
         [vector-icons/icon :icons/arrow-left]]]
-      [react/touchable-highlight {:on-press            #(.goForward @webview)
-                                  :disabled            (not can-go-forward?)
-                                  :style               styles/forward-button
+      [react/touchable-highlight {:on-press            #(browser-history/forward browser)
+                                  :disabled            (not (browser-history/can-go-forward? browser))
+                                  :style               (merge styles/forward-button (if (not (browser-history/can-go-forward? browser)) styles/disabled-button))
                                   :accessibility-label :next-page-button}
-       [react/view (when (not can-go-forward?) {:opacity 0.4})
+       [react/view
         [vector-icons/icon :icons/arrow-right]]]]
      (when-not dapp?
        [tooltip/bottom-tooltip-info

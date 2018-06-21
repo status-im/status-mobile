@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.browser.events
   (:require status-im.ui.screens.browser.navigation
+            [status-im.models.browser-history :as browser-history]
             [status-im.utils.handlers :as handlers]
             [re-frame.core :as re-frame]
             [status-im.utils.random :as random]
@@ -72,6 +73,15 @@
    (let [new-browser (get-new-browser browser now)]
      (-> (add-browser-fx cofx new-browser)
          (update-in [:db :browser/options] #(assoc % :browser-id (:browser-id new-browser)))))))
+
+(handlers/register-handler-fx
+ :update-browser-on-nav-change
+ [re-frame/trim-v]
+ (fn [{:keys [db now] :as cofx} [browser url loading]]
+   (let [new-browser (get-new-browser browser now)
+         new-browser-with-history-updated (browser-history/record-history-in-browser-if-needed db new-browser url loading)]
+     (-> (add-browser-fx cofx new-browser-with-history-updated)
+         (update-in [:db :browser/options] assoc :browser-id (:browser-id new-browser-with-history-updated))))))
 
 (handlers/register-handler-fx
  :update-browser-options

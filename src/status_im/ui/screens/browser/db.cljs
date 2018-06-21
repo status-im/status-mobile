@@ -10,17 +10,17 @@
 (spec/def :browser/name (spec/nilable string?))
 (spec/def :browser/dapp? (spec/nilable boolean?))
 (spec/def :browser/fullscreen? (spec/nilable boolean?))
-(spec/def :browser/can-go-back? (spec/nilable boolean?))
-(spec/def :browser/can-go-forward? (spec/nilable boolean?))
 (spec/def :browser/error? (spec/nilable boolean?))
+(spec/def :browser/history (spec/nilable vector?))
+(spec/def :browser/history-index (spec/nilable int?))
+(spec/def :browser/dont-store-history-on-nav-change? (spec/nilable boolean?))
 
 (spec/def :browser/options
   (allowed-keys
    :opt-un [:browser/browser-id
-            :browser/can-go-back?
-            :browser/can-go-forward?
             :browser/fullscreen?
-            :browser/error?]))
+            :browser/error?
+            :browser/dont-store-history-on-nav-change?]))
 
 (spec/def :browser/browser
   (allowed-keys
@@ -29,6 +29,8 @@
    :opt-un [:browser/name
             :browser/dapp?
             :browser/url
-            :browser/contact]))
+            :browser/contact
+            :browser/history
+            :browser/history-index]))
 
 (spec/def :browser/browsers (spec/nilable (spec/map-of :global/not-empty-string :browser/browser)))

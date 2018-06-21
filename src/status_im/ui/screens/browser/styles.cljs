@@ -27,6 +27,9 @@
    :align-items        :center
    :padding-horizontal 32})
 
+(def disabled-button
+  {:opacity 0.4})
+
 (def forward-button
   {:margin-left 72})
 
