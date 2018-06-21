@@ -1,4 +1,6 @@
 import time
+
+import pytest
 from selenium.common.exceptions import TimeoutException
 from tests import info
 from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
@@ -342,14 +344,11 @@ class ChatView(BaseView):
         else:
             self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
         send_transaction_view.sign_transaction(password)
-        send_transaction_view.find_text_part(amount)
-        try:
-            self.find_full_text('Sent', 10)
-        except TimeoutException:
-            try:
-                self.find_full_text('Delivered', 10)
-            except TimeoutException:
-                self.find_full_text('Seen', 3)
+        chat_elem = self.chat_element_by_text(amount)
+        chat_elem.wait_for_visibility_of_element()
+        chat_elem.progress_bar.wait_for_invisibility_of_element()
+        if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
+            pytest.fail('Sent transaction message was not sent')
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()

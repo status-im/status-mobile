@@ -126,8 +126,8 @@ class HomeView(BaseView):
     def get_public_key(self):
         profile_view = self.profile_button.click()
         profile_view.share_my_contact_key_button.click()
-        time.sleep(4)
-        public_key = profile_view.get_text_from_qr()
+        profile_view.public_key_text.wait_for_visibility_of_element()
+        public_key = profile_view.public_key_text.text
         profile_view.cross_icon.click()
         return public_key
 

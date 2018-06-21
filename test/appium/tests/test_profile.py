@@ -163,6 +163,7 @@ class TestProfileView(SingleDeviceTestCase):
         sign_in_view.do_not_share.wait_for_element(10)
         sign_in_view.do_not_share.click_until_presence_of_element(sign_in_view.home_button)
         profile_view = sign_in_view.profile_button.click()
+        profile_view.swipe_down()
         assert profile_view.username_text.text == '%s %s' % (username, emoji.EMOJI_UNICODE[emoji_name])
         profile_view.logout_button.click()
         profile_view.confirm_logout_button.click()

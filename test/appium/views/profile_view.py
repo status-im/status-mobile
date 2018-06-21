@@ -289,6 +289,7 @@ class ProfileView(BaseView):
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         self.profile_picture.template = file_name
         self.edit_button.click()
+        self.swipe_down()
         self.edit_picture_button.click()
         self.select_from_gallery_button.click()
         if self.allow_button.is_element_displayed(sec=10):

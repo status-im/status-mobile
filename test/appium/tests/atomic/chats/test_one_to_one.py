@@ -74,7 +74,7 @@ class TestMessagesOneToOneChat(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
-    @marks.testrail_case_id(3701)
+    @marks.testrail_case_id(3741)
     def test_resend_message_offline(self):
         self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -93,7 +93,7 @@ class TestMessagesOneToOneChat(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
         progress_time = chat_1.chat_element_by_text(message).progress_bar.measure_time_while_element_is_shown()
-        if not 9 < progress_time < 11:
+        if not 9 < progress_time < 15:
             self.errors.append('Progress indicator is shown during %s seconds' % progress_time)
 
         device_1.set_network_connection(2)  # turning on WiFi connection
@@ -113,7 +113,7 @@ class TestMessagesOneToOneChat(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
-    @marks.testrail_case_id(3710)
+    @marks.testrail_case_id(3743)
     def test_messaging_in_different_networks(self):
         self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]

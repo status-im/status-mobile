@@ -29,8 +29,6 @@ class TestTransaction(SingleDeviceTestCase):
         home_view.add_contact(recipient['public_key'])
         chat_view = home_view.get_chat_with_user(recipient['username']).click()
         chat_view.send_transaction_in_1_1_chat(transaction_amount, common_password)
-        send_transaction_view = chat_view.get_send_transaction_view()
-        send_transaction_view.back_button.click()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], transaction_amount)
         chat_view.get_back_to_home_view()
         home_view.wallet_button.click()

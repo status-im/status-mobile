@@ -15,6 +15,7 @@ RERUN_ERRORS = [
     "503 Service Unavailable",
     "AttributeError: 'NoneType' object has no attribute 'find_element'",
     "[Errno 104] Connection reset by peer"
+    "AttributeError: 'NoneType' object has no attribute"
 ]
 
 
