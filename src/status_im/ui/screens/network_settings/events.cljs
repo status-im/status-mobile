@@ -14,7 +14,7 @@
 ;; handlers
 
 (handlers/register-handler-fx
- ::close-application
+ :close-application
  (fn [_ _]
    {:close-application nil}))
 
