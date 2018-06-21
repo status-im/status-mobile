@@ -87,36 +87,37 @@
         (keep identity
               (for [transfer transfers]
                 (if-let [token (->> transfer :address (tokens/address->token chain))]
-                  [(:transactionHash transfer)
-                   {:block         (-> block-info :number str)
-                    :hash          (:transactionHash transfer)
-                    :symbol        (:symbol token)
-                    :from          (-> transfer :topics second remove-padding)
-                    :to            (-> transfer :topics last remove-padding)
-                    :value         (-> transfer :data ethereum/hex->bignumber)
-                    :type          direction
+                  (when-not (:nft? token)
+                    [(:transactionHash transfer)
+                     {:block         (-> block-info :number str)
+                      :hash          (:transactionHash transfer)
+                      :symbol        (:symbol token)
+                      :from          (-> transfer :topics second remove-padding)
+                      :to            (-> transfer :topics last remove-padding)
+                      :value         (-> transfer :data ethereum/hex->bignumber)
+                      :type          direction
 
-                    :confirmations (str (- current-block-number (-> transfer :blockNumber ethereum/hex->int)))
+                      :confirmations (str (- current-block-number (-> transfer :blockNumber ethereum/hex->int)))
 
-                    :gas-price     nil
-                    :nonce         nil
-                    :data          nil
+                      :gas-price     nil
+                      :nonce         nil
+                      :data          nil
 
-                    :gas-limit     nil
-                    :timestamp     (-> block-info :timestamp (* 1000) str)
+                      :gas-limit     nil
+                      :timestamp     (-> block-info :timestamp (* 1000) str)
 
-                    :gas-used      nil
+                      :gas-used      nil
 
-                    ;; NOTE(goranjovic) - metadata on the type of token: contains name, symbol, decimas, address.
-                    :token         token
+                      ;; NOTE(goranjovic) - metadata on the type of token: contains name, symbol, decimas, address.
+                      :token         token
 
-                    ;; NOTE(goranjovic) - if an event has been emitted, we can say there was no error
-                    :error?        false
+                      ;; NOTE(goranjovic) - if an event has been emitted, we can say there was no error
+                      :error?        false
 
-                    ;; NOTE(goranjovic) - just a flag we need when we merge this entry with the existing entry in
-                    ;; the app, e.g. transaction info with gas details, or a previous transfer entry with old
-                    ;; confirmations count.
-                    :transfer      true}])))))
+                      ;; NOTE(goranjovic) - just a flag we need when we merge this entry with the existing entry in
+                      ;; the app, e.g. transaction info with gas details, or a previous transfer entry with old
+                      ;; confirmations count.
+                      :transfer      true}]))))))
 
 (defn add-block-info [web3 current-block-number chain direction result success-fn]
   (let [transfers-by-block (group-by :blockNumber result)]
