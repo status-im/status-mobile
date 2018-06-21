@@ -100,15 +100,34 @@
  (fn [{:keys [db]} [_ amount symbol decimals]]
    {:db (set-and-validate-amount-db db amount symbol decimals)}))
 
+(defn update-gas-price
+  ([db edit? success-event]
+   {:update-gas-price {:web3          (:web3 db)
+                       :success-event (or success-event :wallet/update-gas-price-success)
+                       :edit?         edit?}})
+  ([db edit?] (update-gas-price db edit? :wallet/update-gas-price-success))
+  ([db] (update-gas-price db false :wallet/update-gas-price-success)))
+
+(defn recalculate-gas [{:keys [db] :as fx} symbol]
+  (-> fx
+      (assoc-in [:db :wallet :send-transaction :gas] (ethereum/estimate-gas symbol))
+      (merge (update-gas-price db))))
+
+(handlers/register-handler-fx
+ :wallet/update-gas-price
+ (fn [{:keys [db]} [_ edit?]]
+   (update-gas-price db edit?)))
+
 (handlers/register-handler-fx
  :wallet.send/set-symbol
  (fn [{:keys [db]} [_ symbol]]
-   {:db (-> db
-            (assoc-in [:wallet :send-transaction :symbol] symbol)
-            (assoc-in [:wallet :send-transaction :amount] nil)
-            (assoc-in [:wallet :send-transaction :amount-text] nil)
-            (assoc-in [:wallet :send-transaction :asset-error] nil)
-            (assoc-in [:wallet :send-transaction :gas] (ethereum/estimate-gas symbol)))}))
+   (let [old-symbol (get-in db [:wallet :send-transaction :symbol])]
+     (cond-> {:db (-> db
+                      (assoc-in [:wallet :send-transaction :symbol] symbol)
+                      (assoc-in [:wallet :send-transaction :amount] nil)
+                      (assoc-in [:wallet :send-transaction :amount-text] nil)
+                      (assoc-in [:wallet :send-transaction :asset-error] nil))}
+       (not= old-symbol symbol) (recalculate-gas symbol)))))
 
 (handlers/register-handler-fx
  :wallet.send/toggle-advanced
@@ -312,18 +331,6 @@
       ::accept-transaction {:id              id
                             :masked-password password
                             :on-completed    on-transactions-modal-completed}})))
-
-(defn update-gas-price
-  ([db edit? success-event]
-   {:update-gas-price {:web3          (:web3 db)
-                       :success-event (or success-event :wallet/update-gas-price-success)
-                       :edit?         edit?}})
-  ([db edit?] (update-gas-price db edit? :wallet/update-gas-price-success)))
-
-(handlers/register-handler-fx
- :wallet/update-gas-price
- (fn [{:keys [db]} [_ edit?]]
-   (update-gas-price db edit?)))
 
 (defn sign-transaction-modal [{:keys [db]} default-gas-price]
   ;;TODO(goranjovic) - unify send-transaction and unsigned-transaction
