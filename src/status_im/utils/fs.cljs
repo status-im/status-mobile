@@ -10,3 +10,6 @@
   (-> (.readFile rn-dependencies/fs path encoding)
       (.then on-read)
       (.catch on-error)))
+
+(defn read-dir [path]
+  (.readDir rn-dependencies/fs path))

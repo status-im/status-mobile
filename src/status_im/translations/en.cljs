@@ -682,9 +682,9 @@
 
    ;; invalid-key
 
-   :invalid-key-title                    "Invalid key detected"
-   :invalid-key-content                  "The key used to encrypt your data is invalid. Clicking on 'Reset database' will delete any existing realm and create a new one with a stronger key. If you would like to backup you data please click on cancel and the app will quit. Ensure the data directory of the app is clean and make sure no data is backed up by your cloud provider."
-   :invalid-key-confirm                  "Reset database"
+   :invalid-key-title                    "We detected a problem with the encryption key"
+   :invalid-key-content                  "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your seed phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted."
+   :invalid-key-confirm                  "Apply"
 
    ;; browser
    :browser                              "Browser"
