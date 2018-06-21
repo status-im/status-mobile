@@ -119,6 +119,8 @@
                                       :signing?        false
                                       :wrong-password? false
                                       :waiting-signal? false
+                                      :from-chat?      false
+                                      :in-progress?    false
                                       :password        nil})
 
 (defn on-transactions-completed [raw-results]
@@ -213,6 +215,11 @@
            (= modal :wallet-send-transaction-modal)
            (= modal :wallet-sign-message-modal))))
 
+(defn handle-failed-tx [cofx error_message]
+  (-> cofx
+      (assoc ::show-transaction-error error_message)
+      (update-in [:db :wallet] dissoc :send-transaction)))
+
 ;;TRANSACTION FAILED signal from status-go
 (handlers/register-handler-fx
  :sign-request-failed
@@ -232,7 +239,7 @@
                                                (update-in [:wallet :send-transaction] merge clear-send-properties))
                   :dispatch                [:navigate-back]}
            (= method constants/web3-send-transaction)
-           (assoc ::show-transaction-error error_message))
+           (handle-failed-tx error_message))
          {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))
 
 (defn prepare-unconfirmed-transaction [db now hash id]
