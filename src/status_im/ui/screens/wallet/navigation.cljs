@@ -32,7 +32,8 @@
 
 (defmethod navigation/preload-data! :wallet-send-transaction
   [db [event]]
-  (re-frame/dispatch [:wallet/update-gas-price])
   (if (= event :navigate-back)
     db
-    (assoc-in db [:wallet :send-transaction] transaction-send-default)))
+    (do
+      (re-frame/dispatch [:wallet/update-gas-price])
+      (assoc-in db [:wallet :send-transaction] transaction-send-default))))
