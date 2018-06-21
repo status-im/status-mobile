@@ -41,14 +41,22 @@
   [file-name]
   (.deleteFile rn-dependencies/realm (clj->js {:path file-name})))
 
+(defn- default-realm-dir [path]
+  (string/replace path #"default\.realm$" ""))
+
+(defn- is-realm-file? [n]
+  (or (re-matches #".*/default\.realm$" n)
+      (re-matches #".*/new-account$" n)
+      (re-matches #".*/[0-9a-f]{40}$" n)))
+
 (defn- delete-realms []
   (log/warn "realm: deleting all realms")
-  (try
-    (do
-      (delete-realm (.-defaultPath rn-dependencies/realm))
-      (delete-realm new-account-filename))
-    (catch :default ex
-      (log/warn "failed to delete realm" ex))))
+  (..
+   (fs/read-dir (default-realm-dir (.-defaultPath rn-dependencies/realm)))
+   (then #(->> (js->clj % :keywordize-keys true)
+               (map :path)
+               (filter is-realm-file?)
+               (run! delete-realm)))))
 
 (defn- close [realm]
   (when realm

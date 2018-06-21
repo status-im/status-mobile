@@ -44,8 +44,7 @@
        (catch (fn [{:keys [error key]}]
                 ;; no need of further error handling as already taken care
                 ;; when starting the app
-                (when (= error :weak-key)
-                  (change-account address key)))))))
+                (change-account address (or key "")))))))
 
 ;;;; Handlers
 
