@@ -94,6 +94,7 @@ class HomeView(BaseView):
         start_new_chat.confirm()
         one_to_one_chat = self.get_chat_view()
         one_to_one_chat.chat_message_input.wait_for_element(60)
+        return one_to_one_chat
 
     def start_1_1_chat(self, username):
         start_new_chat = self.plus_button.click()
@@ -119,6 +120,8 @@ class HomeView(BaseView):
         start_new_chat.chat_name_editbox.send_keys(chat_name)
         time.sleep(2)
         start_new_chat.confirm()
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
     def get_public_key(self):
         profile_view = self.profile_button.click()

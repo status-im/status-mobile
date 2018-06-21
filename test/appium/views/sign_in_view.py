@@ -2,6 +2,7 @@ from tests import get_current_time, common_password
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
 
+
 class AccountButton(BaseButton):
 
     def __init__(self, driver):
@@ -137,7 +138,7 @@ class SignInView(BaseView):
 
     def sign_in(self, password=common_password):
         self.password_input.set_value(password)
-        self.sign_in_button.click()
+        return self.sign_in_button.click()
 
     def click_account_by_position(self, position: int):
         self.account_button.find_elements()[position].click()

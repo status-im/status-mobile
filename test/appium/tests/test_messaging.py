@@ -290,10 +290,10 @@ class TestOfflineMessages(MultipleDeviceTestCase):
         sign_in_2.click_account_by_position(0)
         sign_in_2.sign_in()
         sign_in_2.home_button.wait_for_visibility_of_element()
-        if not home_2.offline_label.is_element_displayed():
+        if home_2.connection_status.text != 'Offline':
             self.errors.append('Offline label is not shown on Home view while being offline')
         chat_2 = home_2.get_chat_with_user(username_1).click()
-        if not chat_2.offline_label.is_element_displayed():
+        if chat_2.connection_status.text != 'Offline':
             self.errors.append('Offline label is not shown on Chat view while being offline')
         device_2.set_network_connection(2)  # turning on WiFi connection
         chat_2.wait_for_message_in_one_to_one_chat(message_text, self.errors, wait_time=120)
@@ -326,10 +326,10 @@ class TestOfflineMessages(MultipleDeviceTestCase):
         chat_element_2.wait_for_visibility_of_element()
         device_2.set_network_connection(1)  # airplane mode
 
-        if not home_2.offline_label.is_element_displayed():
+        if home_2.connection_status.text != 'Offline':
             self.errors.append('Offline label is not shown on Home view while being offline')
         chat_2 = chat_element_2.click()
-        if not chat_2.offline_label.is_element_displayed():
+        if chat_2.connection_status.text != 'Offline':
             self.errors.append('Offline label is not shown on Chat view while being offline')
 
         message_text = 'test message'

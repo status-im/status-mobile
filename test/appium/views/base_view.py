@@ -146,10 +146,11 @@ class SendMessageButton(BaseButton):
         info('Tap on %s' % self.name)
 
 
-class OfflineLabelText(BaseText):
+class ConnectionStatusText(BaseText):
     def __init__(self, driver):
-        super(OfflineLabelText, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Offline')
+        super(ConnectionStatusText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='connection-status-text']/android.widget.TextView")
 
 
 class BaseView(object):
@@ -172,7 +173,7 @@ class BaseView(object):
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)
-        self.offline_label = OfflineLabelText(self.driver)
+        self.connection_status = ConnectionStatusText(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
@@ -186,8 +187,9 @@ class BaseView(object):
 
     def accept_agreements(self):
         iterations = int()
-        from views.sign_in_view import CreateAccountButton
-        while iterations <= 3 and not CreateAccountButton(self.driver).is_element_displayed():
+        from views.sign_in_view import CreateAccountButton, PasswordInput
+        while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed() or PasswordInput(
+                self.driver).is_element_displayed()):
             for button in self.ok_button, self.continue_button:
                 try:
                     button.wait_for_element(15)

@@ -1,7 +1,7 @@
 import time
 from selenium.common.exceptions import TimeoutException
 from tests import info
-from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView
 from views.profile_view import ProfilePictureElement
 
@@ -194,6 +194,37 @@ class SendRequestButton(BaseButton):
         self.locator = self.Locator.xpath_selector('//*[contains(@text, "%s.ETH")]/../*[@text="Send"]' % amount)
 
 
+class ChatElementByText(BaseText):
+    def __init__(self, driver, text):
+        super(ChatElementByText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[starts-with(@text,'%s')]/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % text)
+
+    @property
+    def status(self):
+        class StatusText(BaseText):
+            def __init__(self, driver, parent_locator: str):
+                super(StatusText, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + '/android.widget.TextView')
+
+        return StatusText(self.driver, self.locator.value)
+
+    @property
+    def progress_bar(self):
+        class ProgressBar(BaseElement):
+            def __init__(self, driver, parent_locator: str):
+                super(ProgressBar, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
+
+        return ProgressBar(self.driver, self.locator.value)
+
+    def contains_text(self, text) -> bool:
+        element = BaseText(self.driver)
+        element.locator = element.Locator.xpath_selector("//android.view.ViewGroup//android.widget.TextView[@text='%s']"
+                                                         % text)
+        return element.is_element_displayed()
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -244,7 +275,8 @@ class ChatView(BaseView):
 
     def wait_for_message_in_one_to_one_chat(self, expected_message: str, errors: list, wait_time: int = 20):
         try:
-            self.wait_for_element_starts_with_text(expected_message, wait_time=wait_time)
+            element = ChatElementByText(self.driver, expected_message)
+            element.wait_for_element(wait_time)
         except TimeoutException:
             errors.append('Message with text "%s" was not received' % expected_message)
 
@@ -341,7 +373,14 @@ class ChatView(BaseView):
 
     def chat_element_by_text(self, text):
         info("Looking for full text: '%s'" % text)
-        element = self.element_types['text'](self.driver)
-        element.locator = element.Locator.xpath_selector(
-            "//*[@content-desc='chat-item']//*[starts-with(@text,'%s')]" % text)
-        return element
+        return ChatElementByText(self.driver, text)
+
+    def verify_message_is_under_today_text(self, text, errors):
+        message_element = self.chat_element_by_text(text)
+        message_element.wait_for_visibility_of_element()
+        message_location = message_element.find_element().location['y']
+        today_text_element = self.element_by_text('Today').find_element()
+        today_location = today_text_element.location['y']
+        today_height = today_text_element.size['height']
+        if message_location < today_location + today_height:
+            errors.append("Message '%s' is not uder 'Today' text" % text)

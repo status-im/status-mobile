@@ -3,6 +3,8 @@ from io import BytesIO
 import os
 
 import time
+from timeit import timeit
+
 from PIL import Image, ImageChops
 from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
@@ -152,6 +154,16 @@ class BaseElement(object):
         info('Long press %s' % self.name)
         action = TouchAction(self.driver)
         action.long_press(element).release().perform()
+
+    def measure_time_before_element_appears(self, max_wait_time=30):
+        def wrapper():
+            return self.wait_for_visibility_of_element(max_wait_time)
+        return timeit(wrapper, number=1)
+
+    def measure_time_while_element_is_shown(self, max_wait_time=30):
+        def wrapper():
+            return self.wait_for_invisibility_of_element(max_wait_time)
+        return timeit(wrapper, number=1)
 
 
 class BaseEditBox(BaseElement):
