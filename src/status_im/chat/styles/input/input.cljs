@@ -74,7 +74,7 @@
    :text-align-vertical :center
    :flex                1
    :android             {:top -1}
-   :ios                 {:line-height 43}})
+   :ios                 {:line-height min-input-height}})
 
 (defnstyle seq-input-text [left container-width]
   {:min-width           (- container-width left)
