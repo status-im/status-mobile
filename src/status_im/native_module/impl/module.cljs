@@ -60,9 +60,7 @@
                                    rn-dependencies/i18n.locale
                                    "'; "
                                    js-res/web3])]
-; FIX!!!
-         (.initJail status init-js #(do (re-frame/dispatch [:initialize-app "64_bytes_encryption-key_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"]
-                                          )
+         (.initJail status init-js #(do (re-frame/dispatch [:initialize-keychain])
                                         (log/debug "JavaScriptCore jail initialized"))))))))
 
 (defonce listener-initialized (atom false))

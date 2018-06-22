@@ -39,15 +39,13 @@
  (fn [[address]]
    ;; if we don't add delay when running app without status-go
    ;; "null is not an object (evaluating 'realm.schema')" error appears
-   ; FIX!!!
-     (change-account address "64_bytes_encryption-key_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")))
-   ;(.. (keychain/get-encryption-key)
-   ;    (then (partial change-account address))
-   ;    (catch (fn [{:keys [error key]}]
-   ;             ;; no need of further error handling as already taken care
-   ;             ;; when starting the app
-   ;             (when (= error :weak-key)
-   ;               (change-account address key)))))))
+   (.. (keychain/get-encryption-key)
+       (then (partial change-account address))
+       (catch (fn [{:keys [error key]}]
+                ;; no need of further error handling as already taken care
+                ;; when starting the app
+                (when (= error :weak-key)
+                  (change-account address key)))))))
 
 ;;;; Handlers
 

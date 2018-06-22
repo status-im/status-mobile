@@ -54,14 +54,13 @@
 
 (defn get-encryption-key []
   (log/debug "initializing realm encryption key...")
-  ; FIX!!!
-      (handle-found  #js {:password "password"}))
-  ;(.. (.getGenericPassword rn/keychain)
-  ;    (then
-  ;     (fn [res]
-  ;       (if res
-  ;         (handle-found res)
-  ;         (handle-not-found))))))
+  (.. (.getGenericPassword rn/keychain)
+      (then
+       (fn [res]
+         (log/debug "getGenericPassword result: " (.-password res))
+         (if res
+           (handle-found res)
+           (handle-not-found))))))
 
 (defn reset []
   (log/debug "resetting key...")
