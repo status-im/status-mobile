@@ -5,23 +5,13 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
+            [status-im.chat.views.photos :as photos]
             [status-im.react-native.resources :as resources]))
 
 (defn default-chat-icon [name styles]
   [react/view (:default-chat-icon styles)
    [react/text {:style (:default-chat-icon-text styles)}
-    (first name)]])
-
-(defn chat-icon [photo-path {:keys [size accessibility-label]}]
-  (let [photo (when photo-path
-                (if (string/starts-with? photo-path "contacts://")
-                  (->> (string/replace photo-path #"contacts://" "")
-                       (keyword)
-                       (get resources/contacts))
-                  {:uri photo-path}))]
-    [react/image {:source              photo
-                  :style               (styles/image-style size)
-                  :accessibility-label (or accessibility-label :chat-icon)}]))
+    (string/capitalize (first name))]])
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [react/view online-view-wrapper
@@ -43,11 +33,26 @@
             dapp?      [:get-in [:contacts/contacts chat-id :dapp?]]]
     [react/view (:container styles)
      (if-not (string/blank? photo-path)
-       [chat-icon photo-path styles]
+       [photos/photo photo-path styles]
        [default-chat-icon name styles])
      (when (and dapp? (not hide-dapp?))
        [dapp-badge styles])
      [pending-contact-badge chat-id styles]]))
+
+(defn chat-icon-view-toolbar [chat-id group-chat name color online]
+  [chat-icon-view chat-id group-chat name online
+   {:container              styles/container-chat-list
+    :online-view-wrapper    styles/online-view-wrapper
+    :online-view            styles/online-view
+    :online-dot-left        styles/online-dot-left
+    :online-dot-right       styles/online-dot-right
+    :pending-wrapper        styles/pending-wrapper
+    :pending-outer-circle   styles/pending-outer-circle
+    :pending-inner-circle   styles/pending-inner-circle
+    :size                   40
+    :chat-icon              styles/chat-icon-chat-list
+    :default-chat-icon      (styles/default-chat-icon-chat-list color)
+    :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online & [hide-dapp?]]
   [chat-icon-view chat-id group-chat name online
@@ -115,7 +120,7 @@
   (let [photo-path photo-path]
     [react/view container
      (if-not (string/blank? photo-path)
-       [chat-icon photo-path styles]
+       [photos/photo photo-path styles]
        [default-chat-icon name styles])
      (when dapp?
        [dapp-badge styles])]))
@@ -134,7 +139,7 @@
 
 (defn dapp-icon-browser [contact size]
   [contact-icon-view contact
-   {:container              {:width size :height size}
+   {:container              {:width size :height size :top 3 :margin-left 2}
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
     :online-dot-left        styles/online-dot-left
@@ -158,10 +163,10 @@
        [react/view (styles/profile-icon-mask size)])
      (when edit?
        [react/view (styles/profile-icon-edit-text-containter size)
-         [react/text {:style styles/profile-icon-edit-text}
-          (i18n/label :t/edit)]])
+        [react/text {:style styles/profile-icon-edit-text}
+         (i18n/label :t/edit)]])
      (if (and photo-path (seq photo-path))
-       [chat-icon photo-path styles]
+       [photos/photo photo-path styles]
        [default-chat-icon name styles])]))
 
 (defn my-profile-icon [{{:keys [photo-path name]} :account

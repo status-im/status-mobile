@@ -1,8 +1,7 @@
 (ns status-im.translations.ja)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "メンバー"
    :not-implemented                       "実装されていません"
    :chat-name                             "チャット名"
@@ -339,7 +338,6 @@
    :wallet-transaction-total-fee          "合計料金"
    :validation-amount-invalid-number      "金額は有効な数字ではありません"
    :validation-amount-is-too-precise      "金額が高すぎます。送れる最小単位は1 Wei（1x10 ^ -18 ETH）です。"
-
 
    ;; network settings
    :new-network                           "新しいネットワーク"

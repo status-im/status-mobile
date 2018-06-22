@@ -16,7 +16,10 @@ I18n.translations = {
         faucet_title: 'Faucet',
         faucet_description: 'Get some ETH',
         faucet_placeholder: 'Faucet URL'
-    },
+    }
+
+    /*
+    ,
     ru: {
         password_description: 'Пароль',
         password_placeholder: 'Введите свой пароль',
@@ -410,5 +413,5 @@ I18n.translations = {
         password_error1: 'Xác nhận mật khẩu không khớp với mật khẩu.',
         password_validation_title: 'Mật khẩu'
 
-    }
+    } */
 };

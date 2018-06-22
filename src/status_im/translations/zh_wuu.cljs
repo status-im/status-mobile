@@ -1,8 +1,7 @@
 (ns status-im.translations.zh-wuu)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "会员"
    :not-implemented                       "!未实现"
    :chat-name                             "聊天名称"
@@ -200,7 +199,6 @@
    :contact-already-added                 "联系人已被添加"
    :can-not-add-yourself                  "您不能添加您自己"
    :unknown-address                       "未知地址"
-
 
    ;;login
    :connect                               "连接"

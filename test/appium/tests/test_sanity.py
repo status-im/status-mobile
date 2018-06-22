@@ -1,4 +1,5 @@
 import pytest
+from tests import marks
 from tests import transaction_users, transaction_users_wallet
 from tests.base_test_case import SingleDeviceTestCase
 from tests import basic_user
@@ -18,12 +19,8 @@ class TestSanity(SingleDeviceTestCase):
         new_username = 'NewUserName!'
         profile_view.username_input.send_keys(new_username)
         profile_view.confirm_button.click()
-        sign_in_view = profile_view.logout_button.click()
-        sign_in_view.first_account_button.click()
-        sign_in_view.password_input.send_keys('qwerty1234')
-        home_view = sign_in_view.sign_in_button.click()
-        home_view.find_full_text('Wallet', 60)
-        home_view.profile_button.click()
+        profile_view.relogin()
+        sign_in_view.profile_button.click()
         profile_view.edit_button.click()
         profile_view.find_full_text(new_username, 5)
 
@@ -32,7 +29,7 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
-        profile_view.logout_button.click()
+        profile_view.logout()
         recover_access_view = sign_in_view.add_existing_account_button.click()
         recover_access_view.passphrase_input.send_keys(basic_user['passphrase'])
         recover_access_view.password_input.send_keys(basic_user['password'])
@@ -42,6 +39,7 @@ class TestSanity(SingleDeviceTestCase):
             pytest.fail('Password in logcat!!!', pytrace=False)
 
     @pytest.mark.group_chat
+    @marks.skip
     def test_group_chat_members(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -86,7 +84,7 @@ class TestSanity(SingleDeviceTestCase):
         sign_in_view.status_app_icon.scroll_to_element()
         sign_in_view.status_app_icon.click()
         sign_in_view.ok_button.click()
-        sign_in_view.first_account_button.click()
+        sign_in_view.click_account_by_position(0)
         sign_in_view.password_input.send_keys('qwerty1234')
         sign_in_view.sign_in_button.click()
         contact_name.wait_for_element(30)
@@ -106,7 +104,7 @@ class TestSanity(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
         profile_view.logout_button.scroll_to_element()
         sign_in_view = profile_view.logout_button.click()
-        sign_in_view.first_account_button.click()
+        sign_in_view.click_account_by_position(0)
         sign_in_view.password_input.send_keys(input_text)
         sign_in_view.sign_in_button.click()
         sign_in_view.find_full_text(outcome, 60)
@@ -117,13 +115,8 @@ class TestSanity(SingleDeviceTestCase):
     def test_password_logcat(self):
         password = 'qwerty1234'
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_account_button.click()
-        sign_in_view.password_input.send_keys(password)
-        sign_in_view.next_button.click()
-        sign_in_view.confirm_password_input.send_keys(password)
-        sign_in_view.next_button.click()
-        sign_in_view.find_full_text(
-            "Creating your account on the blockchain. We can't touch it, no one can, except for you!")
+        sign_in_view.create_user(password=password)
+        sign_in_view.home_button.wait_for_visibility_of_element()
         if password in str(sign_in_view.logcat):
             pytest.fail('Password in logcat!!!', pytrace=False)
 

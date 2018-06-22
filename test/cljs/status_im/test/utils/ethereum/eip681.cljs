@@ -10,7 +10,7 @@
   (is (= nil (eip681/parse-uri "ethereum:")))
   (is (= nil (eip681/parse-uri "ethereum:?value=1")))
   (is (= nil (eip681/parse-uri "bitcoin:0x1234")))
-  (is (= nil(eip681/parse-uri "ethereum:0x1234")))
+  (is (= nil (eip681/parse-uri "ethereum:0x1234")))
   (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" :chain-id 1} (eip681/parse-uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7")))
   (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" :value "1" :chain-id 1} (eip681/parse-uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7?value=1")))
   (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7", :chain-id 1} (eip681/parse-uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7?unknown=1")))
@@ -60,7 +60,6 @@
   (let [uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3/transfer?uint256=5&address=0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
         {:keys [address] :as params} (eip681/parse-uri uri)]
     (is (= uri (eip681/generate-uri address (dissoc params :address))))))
-
 
 (deftest parse-eth-value
   (is (= nil (eip681/parse-eth-value nil)))

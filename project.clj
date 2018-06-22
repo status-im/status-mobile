@@ -3,16 +3,21 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.9.946"]
+                 [org.clojure/clojurescript "1.10.238"]
                  [org.clojure/core.async "0.4.474"]
                  [reagent "0.7.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]]
                  [status-im/re-frame "0.10.5"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
-                 [com.cognitect/transit-cljs "0.8.243"]]
+                 [com.cognitect/transit-cljs "0.8.248"]]
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-re-frisk "0.5.8"]]
+            [lein-re-frisk "0.5.8"]
+            [lein-cljfmt "0.5.7"]
+            [rasom/lein-githooks "0.1.3"]]
+  :githooks {:auto-install true
+             :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
+  :cljfmt {:indents {letsubs [[:inner 0]]}}
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
@@ -56,14 +61,14 @@
                         :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
-                        {:dependencies [[figwheel-sidecar "0.5.14"]
+                        {:dependencies [[figwheel-sidecar "0.5.16-SNAPSHOT"]
                                         [re-frisk-remote "0.5.5"]
                                         [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]
                                         [hawk "0.2.11"]]
                          :source-paths ["src" "env/dev" "react-native/src" "components/src"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
-                        :plugins      [[lein-doo "0.1.7"]]
+                        :plugins      [[lein-doo "0.1.9"]]
                         :cljsbuild    {:builds
                                        [{:id           "test"
                                          :source-paths ["components/src" "src" "test/cljs"]

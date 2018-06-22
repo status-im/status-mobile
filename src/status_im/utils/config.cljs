@@ -20,23 +20,27 @@
 
 (def testfairy-enabled? (enabled? (get-config :TESTFAIRY_ENABLED)))
 (def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
-(def mainnet-networks-enabled? (enabled? (get-config :MAINNET_NETWORKS_ENABLED 0)))
-(def offline-inbox-enabled? (enabled? (get-config :OFFLINE_INBOX_ENABLED 0)))
-(def offline-inbox-many-enabled? (enabled? (get-config :OFFLINE_INBOX_MANY_ENABLED 0)))
+(def offline-inbox-enabled? (enabled? (get-config :OFFLINE_INBOX_ENABLED "1")))
+(def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def log-level
   (-> (get-config :LOG_LEVEL "debug")
       string/lower-case
       keyword))
 
-(def jsc-enabled? (enabled? (get-config :JSC_ENABLED 0)))
-(def queue-message-enabled? (enabled? (get-config :QUEUE_MESSAGE_ENABLED 0)))
-(def many-whisper-topics-enabled? (enabled? (get-config :MANY_WHISPER_TOPICS_ENABLED 0)))
+(def add-custom-mailservers-enabled? (enabled? (get-config :ADD_CUSTOM_MAILSERVERS_ENABLED "1")))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
-(def compile-views-enabled? (enabled? (get-config :COMPILE_VIEWS_ENABLED 0)))
 (def mixpanel-token (get-config :MIXPANEL_TOKEN))
 (def default-network (get-config :DEFAULT_NETWORK))
+;; the default value should be a string for `enabled?` to work correctly.
+(def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def testfairy-token (get-config :TESTFAIRY_TOKEN))
 (def instabug-token (get-config :INSTABUG_TOKEN))
+(def instabug-surveys-enabled? (get-config :INSTABUG_SURVEYS))
+(def force-sr-ratio-tracking (get-config :FORCE_SENT_RECEIVED_TRACKING))
 
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.002")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
+(def use-sym-key (enabled? (get-config :USE_SYM_KEY 0)))
+
+(def group-chats-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED)))
+(def spam-button-detection-enabled? (enabled? (get-config :SPAM_BUTTON_DETECTION_ENABLED "0")))

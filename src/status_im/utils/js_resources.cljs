@@ -9,7 +9,6 @@
   (and (string? url) (s/starts-with? url local-protocol)))
 
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
-(def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
 
 (def transactor-js (slurp-bot :transactor))
 
@@ -30,16 +29,13 @@
                     (slurp "resources/js/i18n.js")))
 
 (def webview-js (slurp "resources/js/webview.js"))
-(def jquery (str
-              " if (typeof jQuery2 == 'undefined') {"
-              (slurp "resources/js/vendors/jquery-3.1.1.min.js")
-              "}"))
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "node_modules/web3/dist/web3.min.js")
                "}"))
-(defn web3-init [provider-address current-account-address]
+(defn web3-init [provider-address current-account-address network-id]
   (str "var providerAddress = \"" provider-address "\";"
        "var currentAccountAddress = \"" current-account-address "\";"
+       "var networkId = \"" network-id "\";"
        (slurp "resources/js/web3_init.js")))
 
 (defn local-storage-data [data]

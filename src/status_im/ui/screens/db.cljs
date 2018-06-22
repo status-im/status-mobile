@@ -21,11 +21,10 @@
 (def app-db {:current-public-key          nil
              :status-module-initialized?  (or platform/ios? js/goog.DEBUG platform/desktop?)
              :keyboard-height             0
-             :accounts/accounts           {}
+             :tab-bar-visible?            true
              :navigation-stack            '()
              :contacts/contacts           {}
              :qr-codes                    {}
-             :group/contact-groups        {}
              :group/selected-contacts     #{}
              :chats                       {}
              :current-chat-id             nil
@@ -38,14 +37,19 @@
              :wallet.transactions         constants/default-wallet-transactions
              :wallet-selected-asset       {}
              :prices                      {}
+             :peers-count                 0
+             :peers-summary               []
              :notifications               {}
              :network                     constants/default-network
              :networks/networks           constants/default-networks
              :inbox/wnodes                constants/default-wnodes
-             :inbox/password              constants/inbox-password
              :my-profile/editing?         false
              :transport/chats             {}
              :transport/message-envelopes {}
+             :chat/cooldowns                     0
+             :chat/cooldown-enabled?             false
+             :chat/last-outgoing-message-sent-at 0
+             :chat/spam-messages-frequency       0
              :desktop/desktop             {:tab-view-id :home}})
 
 ;;;;GLOBAL
@@ -57,6 +61,7 @@
 (spec/def ::rpc-url (spec/nilable string?))
 ;;object? doesn't work
 (spec/def ::web3 (spec/nilable any?))
+(spec/def ::web3-node-version (spec/nilable string?))
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
 (spec/def ::status-module-initialized? (spec/nilable boolean?))
@@ -64,11 +69,11 @@
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
+(spec/def ::tab-bar-visible? (spec/nilable boolean?))
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
 (spec/def ::mailserver-status (spec/nilable keyword?))
-(spec/def ::peers-count (spec/nilable integer?))
 
 ;;;;NODE
 
@@ -109,6 +114,8 @@
 
 (spec/def :navigation.screen-params/usage-data vector?)
 
+(spec/def :navigation.screen-params/display-collectible map?)
+
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
                                                                          :navigation.screen-params/profile-qr-viewer
@@ -116,13 +123,21 @@
                                                                          :navigation.screen-params/group-contacts
                                                                          :navigation.screen-params/edit-contact-group
                                                                          :navigation.screen-params/dapp-description
-                                                                         :navigation.screen-params/usage-data])))
+                                                                         :navigation.screen-params/usage-data
+                                                                         :navigation.screen-params/display-collectible])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 
 ;;;;NETWORK
 
 (spec/def ::network (spec/nilable string?))
+(spec/def ::peers-count (spec/nilable integer?))
+(spec/def ::peers-summary (spec/nilable vector?))
+(spec/def :inbox/fetching? (spec/nilable boolean?))
+(spec/def :inbox/current-id (spec/nilable string?))
+
+(spec/def ::collectible (spec/nilable map?))
+(spec/def ::collectibles (spec/nilable map?))
 
 ;;;;NODE
 
@@ -131,104 +146,123 @@
 
 (spec/def ::message-envelopes (spec/nilable map?))
 
+;;;;UUID
+
+(spec/def ::device-UUID (spec/nilable string?))
+
 (spec/def ::db (allowed-keys
-                 :opt
-                 [:contacts/contacts
-                  :contacts/new-identity
-                  :contacts/new-public-key-error
-                  :contacts/identity
-                  :contacts/ui-props
-                  :contacts/list-ui-props
-                  :contacts/click-handler
-                  :contacts/click-action
-                  :contacts/click-params
-                  :group/contact-groups
-                  :group/contact-group-id
-                  :group/group-type
-                  :group/selected-contacts
-                  :group/groups-order
-                  :accounts/accounts
-                  :accounts/create
-                  :accounts/current-account-id
-                  :accounts/recover
-                  :accounts/login
-                  :my-profile/profile
-                  :my-profile/default-name
-                  :my-profile/editing?
-                  :my-profile/advanced?
-                  :my-profile/seed
-                  :group-chat-profile/profile
-                  :group-chat-profile/editing?
-                  :networks/selected-network
-                  :networks/networks
-                  :node/after-start
-                  :node/after-stop
-                  :inbox/wnodes
-                  :inbox/password
-                  :browser/browsers
-                  :browser/options
-                  :new/open-dapp
-                  :navigation/screen-params
-                  :transport/message-envelopes
-                  :transport/chats
-                  :transport/discovery-filter
-                  :desktop/desktop]
-                 :opt-un
-                 [::current-public-key
-                  ::modal
-                  ::was-modal?
-                  ::rpc-url
-                  ::web3
-                  ::webview-bridge
-                  ::status-module-initialized?
-                  ::status-node-started?
-                  ::keyboard-height
-                  ::keyboard-max-height
-                  ::network-status
-                  ::mailserver-status
-                  ::peers-count
-                  ::sync-listening-started
-                  ::sync-state
-                  ::sync-data
-                  ::network
-                  :navigation/view-id
-                  :navigation/navigation-stack
-                  :navigation/prev-tab-view-id
-                  :navigation/prev-view-id
-                  :qr/qr-codes
-                  :qr/qr-modal
-                  :qr/current-qr-context
-                  :chat/chats
-                  :chat/current-chat-id
-                  :chat/chat-id
-                  :chat/new-chat
-                  :chat/new-chat-name
-                  :chat/chat-animations
-                  :chat/chat-ui-props
-                  :chat/chat-list-ui-props
-                  :chat/layout-height
-                  :chat/expandable-view-height-to-value
-                  :chat/message-data
-                  :chat/message-status
-                  :chat/selected-participants
-                  :chat/chat-loaded-callbacks
-                  :chat/public-group-topic
-                  :chat/public-group-topic-error
-                  :chat/messages
-                  :chat/not-loaded-message-ids
-                  :chat/last-clock-value
-                  :chat/loaded-chats
-                  :chat/bot-db
-                  :commands/access-scope->commands-responses
-                  :discoveries/discoveries
-                  :discoveries/discover-search-tags
-                  :discoveries/discover-current-dapp
-                  :discoveries/tags
-                  :discoveries/current-tag
-                  :discoveries/request-discoveries-timer
-                  :wallet/wallet
-                  :wallet/wallet.transactions
-                  :wallet/wallet-selected-asset
-                  :prices/prices
-                  :prices/prices-loading?
-                  :notifications/notifications]))
+                :opt
+                [:contacts/contacts
+                 :contacts/dapps
+                 :contacts/new-identity
+                 :contacts/new-public-key-error
+                 :contacts/identity
+                 :contacts/ui-props
+                 :contacts/list-ui-props
+                 :contacts/click-handler
+                 :contacts/click-action
+                 :contacts/click-params
+                 :commands/stored-command
+                 :group/selected-contacts
+                 :accounts/accounts
+                 :accounts/create
+                 :accounts/recover
+                 :accounts/login
+                 :account/account
+                 :my-profile/profile
+                 :my-profile/default-name
+                 :my-profile/editing?
+                 :my-profile/advanced?
+                 :my-profile/seed
+                 :group-chat-profile/profile
+                 :group-chat-profile/editing?
+                 :networks/selected-network
+                 :networks/networks
+                 :networks/manage
+                 :mailservers/manage
+                 :bootnodes/manage
+                 :node/after-start
+                 :node/after-stop
+                 :inbox/wnodes
+                 :inbox/last-received
+                 :inbox/current-id
+                 :inbox/fetching?
+                 :browser/browsers
+                 :browser/options
+                 :new/open-dapp
+                 :navigation/screen-params
+                 :chat/cooldowns
+                 :chat/cooldown-enabled?
+                 :chat/last-outgoing-message-sent-at
+                 :chat/spam-messages-frequency
+                 :transport/message-envelopes
+                 :transport/chats
+                 :transport/discovery-filter
+                 :desktop/desktop]
+                :opt-un
+                [::current-public-key
+                 ::modal
+                 ::was-modal?
+                 ::rpc-url
+                 ::web3
+                 ::web3-node-version
+                 ::webview-bridge
+                 ::status-module-initialized?
+                 ::status-node-started?
+                 ::keyboard-height
+                 ::keyboard-max-height
+                 ::tab-bar-visible?
+                 ::network-status
+                 ::mailserver-status
+                 ::peers-count
+                 ::peers-summary
+                 ::sync-listening-started
+                 ::sync-state
+                 ::sync-data
+                 ::network
+                 :navigation/view-id
+                 :navigation/navigation-stack
+                 :navigation/prev-tab-view-id
+                 :navigation/prev-view-id
+                 :qr/qr-codes
+                 :qr/qr-modal
+                 :qr/current-qr-context
+                 :chat/chats
+                 :chat/current-chat-id
+                 :chat/chat-id
+                 :chat/new-chat
+                 :chat/new-chat-name
+                 :chat/chat-animations
+                 :chat/chat-ui-props
+                 :chat/chat-list-ui-props
+                 :chat/layout-height
+                 :chat/expandable-view-height-to-value
+                 :chat/message-data
+                 :chat/message-status
+                 :chat/selected-participants
+                 :chat/chat-loaded-callbacks
+                 :chat/public-group-topic
+                 :chat/public-group-topic-error
+                 :chat/messages
+                 :chat/message-groups
+                 :chat/message-statuses
+                 :chat/not-loaded-message-ids
+                 :chat/last-clock-value
+                 :chat/loaded-chats
+                 :chat/bot-db
+                 :commands/access-scope->commands-responses
+                 :discoveries/discoveries
+                 :discoveries/discover-search-tags
+                 :discoveries/discover-current-dapp
+                 :discoveries/tags
+                 :discoveries/current-tag
+                 :discoveries/request-discoveries-timer
+                 :wallet/wallet
+                 :wallet/wallet.transactions
+                 :wallet/wallet-selected-asset
+                 :prices/prices
+                 :prices/prices-loading?
+                 :notifications/notifications
+                 ::device-UUID
+                 ::collectible
+                 ::collectibles]))

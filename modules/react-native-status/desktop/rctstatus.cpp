@@ -92,6 +92,13 @@ void RCTStatus::callJail(QString chatId, QString path, QString params, double ca
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
+void RCTStatus::getDeviceUUID(double callbackId) {
+  Q_D(RCTStatus);
+  qDebug() << "call of RCTStatus::getDeviceUUID";
+
+  d->bridge->invokePromiseCallback(callbackId, QVariantList{"com.status.StatusIm"});
+}
+
 
 void RCTStatus::startNode(QString configString) {
     Q_D(RCTStatus);
@@ -142,7 +149,7 @@ void RCTStatus::startNode(QString configString) {
 void RCTStatus::shouldMoveToInternalStorage(double callbackId) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::shouldMoveToInternalStorage with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{});
 }
 
 

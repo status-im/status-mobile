@@ -10,8 +10,7 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.contact.contact :as contact]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
-            [status-im.ui.screens.group.styles :as styles]
-            [status-im.ui.screens.group.db :as v]))
+            [status-im.ui.screens.group.styles :as styles]))
 
 (views/defview group-name-view []
   (views/letsubs [new-group-name [:get :new-chat-name]]
@@ -44,10 +43,11 @@
                                :accessibility-label :create-button}
           (i18n/label :t/create)])))])
 
+;; New Group Chat
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:get :new-chat-name]]
-    (let [save-btn-enabled? (and (spec/valid? ::v/name group-name) (pos? (count contacts)))]
+    (let [save-btn-enabled? (and (spec/valid? :global/not-empty-string group-name) (pos? (count contacts)))]
       [react/keyboard-avoiding-view (merge {:behavior :padding}
                                            styles/group-container)
        [status-bar/status-bar]
@@ -55,9 +55,9 @@
        [group-name-view]
        [list/list-with-label {:flex 1}
         (i18n/label :t/members-title)
-        [list/flat-list {:data                      contacts
-                         :key-fn                    :address
-                         :render-fn                 render-contact
-                         :bounces                   false
-                         :keyboardShouldPersistTaps :always
-                         :enableEmptySections       true}]]])))
+        [list/flat-list {:data                         contacts
+                         :key-fn                       :address
+                         :render-fn                    render-contact
+                         :bounces                      false
+                         :keyboard-should-persist-taps :always
+                         :enable-empty-sections        true}]]])))

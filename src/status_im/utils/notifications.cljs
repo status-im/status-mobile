@@ -6,7 +6,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :refer [copy-to-clipboard]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as platform]))
 
 ;; Work in progress namespace responsible for push notifications and interacting
 ;; with Firebase Cloud Messaging.
@@ -26,20 +27,23 @@
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
-  (-> (.requestPermissions (.-default rn/react-native-fcm))
-      (.then
-        (fn [_]
-          (log/debug "notifications-granted")
-          (dispatch [:request-notifications-granted {}]))
-        (fn [_]
-          (log/debug "notifications-denied")
-          (dispatch [:request-notifications-denied {}])))))
+  ; FIX!!!
+  (if platform/desktop?
+    (dispatch [:request-notifications-granted {}])
+    (-> (.requestPermissions (.-default rn/react-native-fcm))
+        (.then
+         (fn [_]
+           (log/debug "notifications-granted")
+           (dispatch [:request-notifications-granted {}]))
+         (fn [_]
+           (log/debug "notifications-denied")
+           (dispatch [:request-notifications-denied {}]))))))
 
 (defn get-fcm-token []
-    (-> (.getFCMToken (object/get rn/react-native-fcm "default"))
-        (.then (fn [x]
-                 (log/debug "get-fcm-token: " x)
-                 (dispatch [:update-fcm-token x])))))
+  (-> (.getFCMToken (object/get rn/react-native-fcm "default"))
+      (.then (fn [x]
+               (log/debug "get-fcm-token: " x)
+               (dispatch [:update-fcm-token x])))))
 
 (defn on-refresh-fcm-token []
   (.on (.-default rn/react-native-fcm)

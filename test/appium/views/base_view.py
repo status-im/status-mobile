@@ -1,7 +1,7 @@
 import time
 import base64
 import zbarlight
-from tests import info
+from tests import info, common_password
 from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from PIL import Image
@@ -25,7 +25,7 @@ class BackButton(BaseButton):
 class AllowButton(BaseButton):
     def __init__(self, driver):
         super(AllowButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Allow']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Allow' or @text='ALLOW']")
 
     def click(self):
         try:
@@ -69,7 +69,7 @@ class OkButton(BaseButton):
 class ContinueButton(BaseButton):
     def __init__(self, driver):
         super(ContinueButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='CONTINUE']")
+        self.locator = self.Locator.xpath_selector("//*[@text='CONTINUE' or @text='Continue']")
 
 
 class HomeButton(BaseButton):
@@ -86,11 +86,6 @@ class WalletButton(BaseButton):
     def __init__(self, driver):
         super(WalletButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('wallet-tab-button')
-
-    def click(self):
-        from views.wallet_view import TransactionsButton
-        self.click_until_presence_of_element(desired_element=TransactionsButton(self.driver), attempts=3)
-        return self.navigate()
 
     def navigate(self):
         from views.wallet_view import WalletView
@@ -151,6 +146,12 @@ class SendMessageButton(BaseButton):
         info('Tap on %s' % self.name)
 
 
+class OfflineLabelText(BaseText):
+    def __init__(self, driver):
+        super(OfflineLabelText, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Offline')
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -171,6 +172,7 @@ class BaseView(object):
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)
+        self.offline_label = OfflineLabelText(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
@@ -183,12 +185,16 @@ class BaseView(object):
         }
 
     def accept_agreements(self):
-        for button in self.ok_button, self.continue_button:
-            try:
-                button.wait_for_element(15)
-                button.click()
-            except (NoSuchElementException, TimeoutException):
-                pass
+        iterations = int()
+        from views.sign_in_view import CreateAccountButton
+        while iterations <= 3 and not CreateAccountButton(self.driver).is_element_displayed():
+            for button in self.ok_button, self.continue_button:
+                try:
+                    button.wait_for_element(15)
+                    button.click()
+                except (NoSuchElementException, TimeoutException):
+                    pass
+            iterations += 1
 
     @property
     def logcat(self):
@@ -208,8 +214,8 @@ class BaseView(object):
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
         time.sleep(3)
+        info("Enter '%s' using native keyboard" % string)
         for i in string:
-            info("Tap '%s' on native keyboard" % i)
             if type(keys[i]) is list:
                 keycode, metastate = keys[i][0], keys[i][1]
             else:
@@ -219,26 +225,41 @@ class BaseView(object):
     def find_full_text(self, text, wait_time=60):
         info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
-        element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
+        element.locator = element.Locator.text_selector(text)
         return element.wait_for_element(wait_time)
 
     def find_text_part(self, text, wait_time=60):
         info("Looking for a text part: '%s'" % text)
         element = BaseElement(self.driver)
-        element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
+        element.locator = element.Locator.text_part_selector(text)
         return element.wait_for_element(wait_time)
 
     def element_by_text(self, text, element_type='button'):
         info("Looking for an element by text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
-        element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
+        element.locator = element.Locator.text_selector(text)
         return element
 
     def element_by_text_part(self, text, element_type='base'):
         info("Looking for an element by text part: '%s'" % text)
         element = self.element_types[element_type](self.driver)
-        element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
+        element.locator = element.Locator.text_part_selector(text)
         return element
+
+    def element_starts_with_text(self, text, element_type='base'):
+        info("Looking for full text: '%s'" % text)
+        element = self.element_types[element_type](self.driver)
+        element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
+        return element
+
+    def wait_for_element_starts_with_text(self, text, wait_time=60):
+        info("Looking for full text: '%s'" % text)
+        element = BaseElement(self.driver)
+        element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
+        return element.wait_for_element(wait_time)
+
+    def swipe_down(self):
+        self.driver.swipe(500, 500, 500, 1000)
 
     def get_home_view(self):
         from views.home_view import HomeView
@@ -264,6 +285,10 @@ class BaseView(object):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
+    def get_wallet_view(self):
+        from views.wallet_view import WalletView
+        return WalletView(self.driver)
+
     def get_unique_amount(self):
         return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
 
@@ -278,3 +303,24 @@ class BaseView(object):
     def public_key_to_address(self, public_key):
         raw_public_key = bytearray.fromhex(public_key.replace('0x04', ''))
         return datatypes.PublicKey(raw_public_key).to_address()[2:]
+
+    def get_back_to_home_view(self):
+        counter = 0
+        while not self.home_button.is_element_displayed(2):
+            try:
+                if counter >= 5:
+                    return
+                self.back_button.click()
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+
+    def relogin(self, password=common_password):
+        self.get_back_to_home_view()
+        profile_view = self.profile_button.click()
+        profile_view.logout_button.click()
+        profile_view.confirm_logout_button.click()
+        sign_in_view = self.get_sign_in_view()
+        sign_in_view.click_account_by_position(0)
+        sign_in_view.password_input.send_keys(password)
+        sign_in_view.sign_in_button.click()
+        sign_in_view.home_button.wait_for_visibility_of_element()

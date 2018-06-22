@@ -53,7 +53,7 @@
   (str from ": " text ", "))
 
 (defn format-thread [thread]
-    (apply str (map format-message thread)))
+  (apply str (map format-message thread)))
 
 ;; Invariant we want to maintain.
 (defn ordered-increasing-text? [thread]

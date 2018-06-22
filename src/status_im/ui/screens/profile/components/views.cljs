@@ -39,7 +39,7 @@
      name]]])
 
 (defn- profile-header-edit [{:keys [name group-chat] :as contact}
-                           icon-options on-change-text-event allow-icon-change?]
+                            icon-options on-change-text-event allow-icon-change?]
   [react/view styles/profile-header-edit
    [react/touchable-highlight {:on-press            #(show-profile-icon-actions icon-options)
                                :accessibility-label :edit-profile-photo-button}

@@ -2,9 +2,21 @@ import time
 
 import pytest
 from selenium.common.exceptions import NoSuchElementException
-
+from appium.webdriver.common.mobileby import MobileBy
 from views.base_element import BaseElement, BaseButton, BaseText
 from views.base_view import BaseView
+
+
+class OptionsButton(BaseButton):
+    def __init__(self, driver):
+        super(OptionsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '(//android.view.ViewGroup[@content-desc="icon"])[2]')
+
+    class OpenOnEtherscanButton(BaseButton):
+        def __init__(self, driver):
+            super(OptionsButton.OpenOnEtherscanButton, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//*[@text='Open on Etherscan.io']")
 
 
 class TransactionTable(BaseElement):
@@ -14,17 +26,30 @@ class TransactionTable(BaseElement):
         self.locator = self.Locator.xpath_selector("//android.support.v4.view.ViewPager")
 
     class TransactionElement(BaseButton):
-        def __init__(self, driver, amount):
+        def __init__(self, driver):
             super(TransactionTable.TransactionElement, self).__init__(driver)
-            self.driver = driver
-            self.locator = self.Locator.xpath_selector(
+
+        @staticmethod
+        def by_amount(driver, amount: str):
+            element = TransactionTable.TransactionElement(driver)
+            element.locator = element.Locator.xpath_selector(
                 "(//android.widget.TextView[contains(@text,'%s ETH')])" % amount)
+            return element
+
+        @staticmethod
+        def by_index(driver, index: int):
+            element = TransactionTable.TransactionElement(driver)
+            element.locator = element.Locator.xpath_selector(
+                '(//android.view.ViewGroup[@content-desc="transaction-item"])[%d]' % (index + 1))
+            return element
 
         class TransactionDetailsView(BaseView):
             def __init__(self, driver):
                 super(TransactionTable.TransactionElement.TransactionDetailsView, self).__init__(driver)
                 self.driver = driver
                 self.locators = dict(transaction_hash="//android.widget.TextView[@text='Hash']/following-sibling::*[1]")
+                self.options_button = OptionsButton(driver)
+                self.open_transaction_on_etherscan_button = OptionsButton.OpenOnEtherscanButton(driver)
 
             class DetailsTextElement(BaseText):
                 def __init__(self, driver, locator):
@@ -38,19 +63,22 @@ class TransactionTable(BaseElement):
         def navigate(self):
             return self.TransactionDetailsView(self.driver)
 
-    def get_transaction_element(self, amount: str):
-        return self.TransactionElement(self.driver, amount=amount)
+    def get_first_transaction(self):
+        return self.TransactionElement.by_index(self.driver, 0)
 
     def find_transaction(self, amount: str) -> TransactionElement:
         for i in range(9):
             try:
-                element = self.get_transaction_element(amount=amount.replace(',', '.'))
+                element = self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'))
                 element.find_element()
                 return element
             except NoSuchElementException:
                 time.sleep(5)
-                self.driver.swipe(500, 500, 500, 1000)
+                self.refresh_transactions()
         pytest.fail('Transaction was not found on Wallet/Transaction screen')
+
+    def refresh_transactions(self):
+        self.driver.swipe(500, 500, 500, 1000)
 
 
 class HistoryTab(BaseButton):

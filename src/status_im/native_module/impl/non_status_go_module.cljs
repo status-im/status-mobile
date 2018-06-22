@@ -24,7 +24,8 @@
     (if (not= password wrong-password)
       (callback "{\"error\":\"\"}")
       (callback "{\"error\":\"cannot retrieve a valid key for a given account: could not decrypt key with given passphrase\"}")))
-  (-approve-sign-requests [this hashes password callback])
+  (-approve-sign-request [this id password callback])
+  (-approve-sign-request-with-args [this id password gas gas-price callback])
   (-discard-sign-request [this id])
   (-parse-jail [this chat-id file callback]
     (when (= chat-id constants/console-chat-id)
