@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.user.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.styles :as action-button.styles]
             [status-im.ui.components.colors :as colors]
@@ -34,14 +35,16 @@
                   :uppercase? true}
       (i18n/label :t/edit)]]]])
 
-(defn my-profile-edit-toolbar []
-  [toolbar/toolbar {}
-   nil
-   [toolbar/content-title ""]
-   [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
-                          :icon                :icons/ok
-                          :icon-opts           {:color colors/blue}
-                          :accessibility-label :done-button}]])
+(defn my-profile-edit-toolbar [on-show]
+  (reagent/create-class
+   {:component-did-mount on-show
+    :reagent-render (fn [] [toolbar/toolbar {}
+                            nil
+                            [toolbar/content-title ""]
+                            [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
+                                                   :icon                :icons/ok
+                                                   :icon-opts           {:color colors/blue}
+                                                   :accessibility-label :done-button}]])}))
 
 (def profile-icon-options
   [{:label  (i18n/label :t/image-source-gallery)
@@ -126,9 +129,44 @@
       [react/view styles/my-profile-settings-logout-version
        [react/text @(re-frame/subscribe [:get-app-version])]]]]))
 
-(defview advanced [{:keys [network networks dev-mode?]}]
-  (letsubs [advanced? [:get :my-profile/advanced?]
-            {:keys [sharing-usage-data?]} [:get-current-account]]
+(defview advanced-settings [{:keys [network networks dev-mode?]} on-show]
+  (letsubs [{:keys [sharing-usage-data?]} [:get-current-account]]
+    {:component-did-mount on-show}
+    [react/view
+     (when dev-mode?
+       [profile.components/settings-item
+        {:label-kw            :t/network
+         :value               (get-in networks [network :name])
+         :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
+         :accessibility-label :network-button}])
+     (when config/offline-inbox-enabled?
+       [profile.components/settings-item-separator])
+     (when config/offline-inbox-enabled?
+       [profile.components/settings-item
+        {:label-kw            :t/offline-messaging
+         :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+         :accessibility-label :offline-messages-settings-button}])
+     (when config/bootnodes-settings-enabled?
+       [profile.components/settings-item-separator])
+     (when config/bootnodes-settings-enabled?
+       [profile.components/settings-item
+        {:label-kw            :t/bootnodes
+         :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+         :accessibility-label :bootnodes-settings-button}])
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item
+      {:label-kw            :t/help-improve?
+       :value               (i18n/label (if sharing-usage-data? :on :off))
+       :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
+       :accessibility-label :help-improve}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-switch-item
+      {:label-kw  :t/dev-mode
+       :value     dev-mode?
+       :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]]))
+
+(defview advanced [params on-show]
+  (letsubs [advanced? [:get :my-profile/advanced?]]
     {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
     [react/view
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
@@ -140,58 +178,35 @@
           (i18n/label :t/wallet-advanced)]
          [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
      (when advanced?
-       [react/view
-        (when dev-mode?
-          [profile.components/settings-item
-           {:label-kw            :t/network
-            :value               (get-in networks [network :name])
-            :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
-            :accessibility-label :network-button}])
-        (when config/offline-inbox-enabled?
-          [profile.components/settings-item-separator])
-        (when config/offline-inbox-enabled?
-          [profile.components/settings-item
-           {:label-kw            :t/offline-messaging
-            :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
-            :accessibility-label :offline-messages-settings-button}])
-        (when config/bootnodes-settings-enabled?
-          [profile.components/settings-item-separator])
-        (when config/bootnodes-settings-enabled?
-          [profile.components/settings-item
-           {:label-kw            :t/bootnodes
-            :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
-            :accessibility-label :bootnodes-settings-button}])
-        [profile.components/settings-item-separator]
-        [profile.components/settings-item
-         {:label-kw            :t/help-improve?
-          :value               (i18n/label (if sharing-usage-data? :on :off))
-          :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
-          :accessibility-label :help-improve}]
-        [profile.components/settings-item-separator]
-        [profile.components/settings-switch-item
-         {:label-kw  :t/dev-mode
-          :value     dev-mode?
-          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]])]))
+       [advanced-settings params on-show])]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]
-            scroll          (atom nil)]
-    (let [shown-account (merge current-account changed-account)]
+            scroll          (reagent/atom nil)]
+    (let [shown-account    (merge current-account changed-account)
+          ;; We scroll on the component once rendered. setTimeout is necessary,
+          ;; likely to allow the animation to finish.
+          on-show-edit     (fn []
+                             (js/setTimeout
+                              #(.scrollTo @scroll {:x 0 :y 0 :animated false})
+                              300))
+          on-show-advanced (fn []
+                             (js/setTimeout
+                              #(.scrollToEnd @scroll {:animated false})
+                              300))]
       [react/view profile.components.styles/profile
        (if editing?
-         [my-profile-edit-toolbar]
+         [my-profile-edit-toolbar on-show-edit]
          [my-profile-toolbar])
        [react/scroll-view {:ref                          #(reset! scroll %)
-                           :keyboard-should-persist-taps :handled
-                           :on-content-size-change       #(when (and scroll @scroll)
-                                                            (.scrollToEnd @scroll))}
+                           :keyboard-should-persist-taps :handled}
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account currency]]
-        [advanced shown-account]]])))
+        [advanced shown-account on-show-advanced]]])))
