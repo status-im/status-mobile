@@ -43,7 +43,7 @@
     "punycode": "1.4.1",
     "querystring-es3": "0.2.1",
     "re-natal": "git+https://github.com/status-im/re-natal.git#master",
-    "react": "^16.3.1",
+    "react": "16.3.1",
     "react-dom": "16.3.1",
     "react-native": "git+https://github.com/status-im/react-native-desktop.git",
     "react-native-background-timer": "2.0.0",
