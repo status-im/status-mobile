@@ -277,7 +277,7 @@
  ::transaction-completed
  (fn [{db :db now :now} [_ {:keys [id response] :as params} modal?]]
    (let [{:keys [hash error]} response
-         {:keys [method]} (get-in db [:wallet :send-transaction])
+         {:keys [method from-chat?]} (get-in db [:wallet :send-transaction])
          db'             (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
        {:db db'}
@@ -289,11 +289,17 @@
                (update-in [:wallet :transactions-unsigned] dissoc id)
                true
                (update-in [:wallet :send-transaction] merge clear-send-properties {:tx-hash hash}))}
-        (if modal?
+        (cond
+          modal?
           (cond-> {:dispatch [:navigate-back]}
             (= method constants/web3-send-transaction)
             (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
-          {:dispatch [:execute-stored-command]}))))))
+
+          from-chat?
+          {:dispatch [:execute-stored-command]}
+
+          :else
+          {:dispatch [:navigation-replace :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [result (types/json->clj raw-results)]
