@@ -6,7 +6,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.chat.views.photos :as photos]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list.styles :as list.styles]
             [status-im.ui.components.list-selection :as list-selection]
@@ -20,8 +20,10 @@
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.utils.utils :as utils]))
 
 (defn view-asset [symbol]
   [react/view
@@ -73,23 +75,26 @@
     :request :wallet-request-assets
     (throw (str "Unknown type: " k))))
 
-(views/defview asset-selector [{:keys [disabled? type symbol]}]
+(views/defview asset-selector [{:keys [disabled? type symbol error]}]
   (views/letsubs [balance  [:balance]
                   network  [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
-       (i18n/label :t/wallet-asset)
-       [react/view {:style               styles/asset-content-container
-                    :accessibility-label :choose-asset-button}
-        [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
-        [react/view styles/asset-text-content
-         [react/view styles/asset-label-content
-          [react/text {:style (merge styles/text-content styles/asset-label)}
-           name]
-          [react/text {:style styles/text-secondary-content}
-           (clojure.core/name symbol)]]
-         [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
-          (str (wallet.utils/format-amount (symbol balance) decimals))]]]])))
+      [react/view
+       [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+        (i18n/label :t/wallet-asset)
+        [react/view {:style               styles/asset-content-container
+                     :accessibility-label :choose-asset-button}
+         [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+         [react/view styles/asset-text-content
+          [react/view styles/asset-label-content
+           [react/text {:style (merge styles/text-content styles/asset-label)}
+            name]
+           [react/text {:style styles/text-secondary-content}
+            (clojure.core/name symbol)]]
+          [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
+           (str (wallet.utils/format-amount (symbol balance) decimals))]]]]
+       (when error
+         [tooltip/tooltip error {}])])))
 
 (defn- recipient-address [address]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
@@ -101,7 +106,7 @@
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon
-        [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]]
+        [photos/photo (:photo-path contact) {:size list.styles/image-size}]]
        [react/view {:style styles/recipient-name}
         [react/text {:style               (styles/participant true)
                      :accessibility-label (if request? :contact-name-text :recipient-name-text)
@@ -114,7 +119,7 @@
 (defn render-contact [contact]
   [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
    [list/item
-    [chat-icon/chat-icon (:photo-path contact) {:size list.styles/image-size}]
+    [photos/photo (:photo-path contact) {:size list.styles/image-size}]
     [list/item-content
      [list/item-primary {:accessibility-label :contact-name-text}
       (:name contact)]
@@ -147,8 +152,9 @@
                                  :on-change-text      #(reset! content %)
                                  :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
-         [button/button {:disabled? (string/blank? @content)
-                         :on-press  #(re-frame/dispatch [:wallet/fill-request-from-url @content])}
+         [button/button {:disabled?    (string/blank? @content)
+                         :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content :code])
+                         :fit-to-text? false}
           (i18n/label :t/done)]]]])))
 
 (defn recipient-qr-code []
@@ -156,18 +162,20 @@
 
 (defn- request-camera-permissions []
   (re-frame/dispatch [:request-permissions {:permissions [:camera]
-                                            :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])}]))
+                                            :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])
+                                            :on-denied   #(utils/show-popup (i18n/label :t/error)
+                                                                            (i18n/label :t/camera-access-error))}]))
 
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
                         :options (concat
-                                   [{:label  (i18n/label :t/recent-recipients)
-                                     :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
-                                   (when-not contact-only?
-                                     [{:label  (i18n/label :t/scan-qr)
-                                       :action request-camera-permissions}
-                                      {:label  (i18n/label :t/recipient-code)
-                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
+                                  [{:label  (i18n/label :t/recent-recipients)
+                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                                  (when-not contact-only?
+                                    [{:label  (i18n/label :t/scan-qr)
+                                      :action request-camera-permissions}
+                                     {:label  (i18n/label :t/recipient-code)
+                                      :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
   [components/cartouche {:on-press  #(on-choose-recipient contact-only?)
@@ -180,24 +188,32 @@
       [recipient-contact address name request?]
       [recipient-address address])]])
 
-(defn- amount-input [{:keys [input-options disabled?]}]
+(defn- amount-input [{:keys [input-options amount amount-text disabled?]}
+                     {:keys [symbol decimals]}]
   [react/view {:style               components.styles/flex
                :accessibility-label :specify-amount-button}
    [components/text-input
     (merge
-      (if disabled?
-        {:editable false}
-        {:keyboard-type       :numeric
-         :placeholder         (i18n/label :t/amount-placeholder)
-         :style               components.styles/flex
-         :accessibility-label :amount-input})
-      input-options)]])
+     input-options
+     ;; We only auto-correct and prettify user's input when it is valid and positive.
+     ;; Otherwise, user might want to fix his input and autocorrection will give more harm than good.
+     ;; Positive check is because we don't want to replace unfinished 0.000 with just plain 0, that is annoying and
+     ;; potentially dangerous on this screen (e.g. sending 7 ETH instead of 0.0007)
+     {:default-value  (if (empty? amount-text)
+                        (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
+                        amount-text)}
+     (if disabled?
+       {:editable false}
+       {:keyboard-type       :numeric
+        :placeholder         (i18n/label :t/amount-placeholder)
+        :style               components.styles/flex
+        :accessibility-label :amount-input}))]])
 
-(defn amount-selector [{:keys [error disabled?] :as m}]
+(defn amount-selector [{:keys [error disabled?] :as m} token]
   [react/view
    [components/cartouche {:disabled? disabled?}
     (i18n/label :t/amount)
-    [amount-input m]]
+    [amount-input m token]]
    (when error
      [tooltip/tooltip error])])
 

@@ -1,6 +1,6 @@
 (ns status-im.ui.components.chat-icon.styles
-  (:require [status-im.ui.components.styles :refer [color-white
-                                                    online-color]]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :refer [online-color]]))
 
 (defn default-chat-icon [color]
   {:margin           0
@@ -36,14 +36,14 @@
           :border-radius 32}))
 
 (def default-chat-icon-text
-  {:margin-top  -2
-   :color       color-white
-   :font-size   16
-   :line-height 20})
+  {:color       colors/white
+   :font-size   20
+   :opacity     0.8
+   :line-height 24})
 
 (def message-status-icon-text
   {:margin-top -2
-   :color      color-white
+   :color      colors/white
    :font-size  24})
 
 (def chat-icon
@@ -134,7 +134,7 @@
    :width            3
    :height           3
    :border-radius    2
-   :background-color color-white})
+   :background-color colors/white})
 (def online-dot-left (merge online-dot {:left 2.8}))
 (def online-dot-right (merge online-dot {:left 7.2}))
 

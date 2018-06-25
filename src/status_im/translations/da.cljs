@@ -1,8 +1,7 @@
 (ns status-im.translations.da)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Medlemmere"
    :not-implemented                       "Ikke implementeret!"
    :chat-name                             "Chatnavn"
@@ -199,7 +198,6 @@
    :contact-already-added                 "Kontakten er allerede tilføjet"
    :can-not-add-yourself                  "Du kan ikke tilføje dig selv fjolle"
    :unknown-address                       "Ukendt adresse"
-
 
    ;;login
    :connect                               "Tilslut"

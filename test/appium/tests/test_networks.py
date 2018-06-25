@@ -16,7 +16,7 @@ class TestNetwork(SingleDeviceTestCase):
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
         profile_view.switch_network(network)
-        sign_in_view.first_account_button.click()
+        sign_in_view.click_account_by_position(0)
         sign_in_view.password_input.send_keys('qwerty1234')
         sign_in_view.sign_in_button.click()
         sign_in_view.find_full_text('Wallet', 20)
@@ -39,7 +39,7 @@ class TestNetworkChats(MultipleDeviceTestCase):
         device_1_public_key = device_1_profile_view.public_key_text.text
         if network[0] != 'Ropsten with upstream RPC':
             login_d1 = device_1_profile_view.switch_network(network[0])
-            login_d1.first_account_button.click()
+            login_d1.click_account_by_position(0)
             login_d1.password_input.send_keys('qwerty1234')
             login_d1.sign_in_button.click()
             login_d1.find_full_text('Wallet', 60)
@@ -49,7 +49,7 @@ class TestNetworkChats(MultipleDeviceTestCase):
         if network[1] != 'Ropsten with upstream RPC':
             device_2_profile_view = device_2.profile_button.click()
             device_2_sign_in = device_2_profile_view.switch_network(network[1])
-            device_2_sign_in.first_account_button.click()
+            device_2_sign_in.click_account_by_position(0)
             device_2_sign_in.password_input.send_keys('qwerty1234')
             device_2_home_view = device_2_sign_in.sign_in_button.click()
             device_2_home_view.find_full_text('Wallet', 60)

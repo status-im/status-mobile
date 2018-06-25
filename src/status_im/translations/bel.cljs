@@ -1,8 +1,7 @@
 (ns status-im.translations.bel)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Удзельнікі"
    :not-implemented                       "!не рэалізавана"
    :chat-name                             "Імя чата"
@@ -147,7 +146,6 @@
    :contact-already-added                 "Кантакт ўжо дададзены"
    :can-not-add-yourself                  "Вы не можаце дадаць сябе"
    :unknown-address                       "Невядомы адрас"
-
 
    ;;login
    :connect                               "Падлучыцца"

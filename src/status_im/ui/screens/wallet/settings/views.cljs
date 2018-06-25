@@ -33,6 +33,6 @@
       [toolbar/content-title {:color :white}
        (i18n/label :t/wallet-assets)]]
      [react/view {:style components.styles/flex}
-      [list/flat-list {:data      (tokens/tokens-for (ethereum/network->chain-keyword network))
+      [list/flat-list {:data      (tokens/sorted-tokens-for (ethereum/network->chain-keyword network))
                        :key-fn    (comp str :symbol)
                        :render-fn #(render-token % visible-tokens)}]]]))

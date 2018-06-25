@@ -9,10 +9,9 @@
   (fn [contact]
     [contact-view {:contact  contact
                    :on-press #(re-frame/dispatch
-                                [:set-contact-as-command-argument {:arg-index arg-index
-                                                                   :bot-db-key bot-db-key
-                                                                   :contact contact}])}]))
-
+                               [:set-contact-as-command-argument {:arg-index arg-index
+                                                                  :bot-db-key bot-db-key
+                                                                  :contact contact}])}]))
 
 (defview choose-contact-view [{title      :title
                                arg-index  :index

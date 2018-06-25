@@ -2,7 +2,6 @@
   (:require [status-im.utils.signing-phrase.dictionaries.en :as en]
             [clojure.string :as string]))
 
-
 ; In order to reduce phishing threat for Status.im users we want to have them
 ; recognize 3 predefined words when they sign transactions or make other sensitive operations.
 ;
@@ -24,5 +23,4 @@
 
 (defn generate []
   (string/join " " (pick-words en/dictionary)))
-
 

@@ -1,8 +1,7 @@
 (ns status-im.translations.pl)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Użytkownicy"
    :not-implemented                       "nie wprowadzono"
    :chat-name                             "Nazwa czatu"
@@ -134,7 +133,6 @@
    :can-not-add-yourself                  "Nie możesz dodać samego siebie"
    :unknown-address                       "Nieznany adres"
 
-
    ;;login
    :connect                               "Połącz"
    :address                               "Adres"
@@ -204,8 +202,6 @@
    :send-transaction                      "Wyślij transakcję"
    :delete-contact                        "Usuń kontakt"
    :mute-notifications                    "Wycisz powiadomienia"
-
-
    :contact-s                             {:one   "kontakt"
                                            :other "kontakty"}
    :next                                  "Dalej"
@@ -227,8 +223,6 @@
    :browsing-open-in-web-browser          "Otwórz w przeglądarce"
    :delete-group-prompt                   "To nie będzie miało wpływu na kontakty"
    :edit-profile                          "Edytuj profil"
-
-
    :empty-topic                           "Pusty temat"
    :to                                    "Do"
    :data                                  "Dane"})

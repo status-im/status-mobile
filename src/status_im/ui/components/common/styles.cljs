@@ -110,14 +110,14 @@
 
 (defn logo-container [size shadow?]
   (merge
-    {:width            size
-     :height           size
-     :border-radius    size
-     :background-color colors/blue
-     :align-items      :center
-     :justify-content  :center}
-    (when shadow?
-      logo-shaddow)))
+   {:width            size
+    :height           size
+    :border-radius    size
+    :background-color colors/blue
+    :align-items      :center
+    :justify-content  :center}
+   (when shadow?
+     logo-shaddow)))
 
 (defn logo [icon-size]
   {:color  :white
@@ -136,12 +136,12 @@
 
 (defn button [style background?]
   (merge
-    {:padding-vertical   12
-     :padding-horizontal 42
-     :border-radius      8}
-    style
-    (when background?
-      {:background-color (colors/alpha colors/blue 0.1)})))
+   {:padding-vertical   12
+    :padding-horizontal 42
+    :border-radius      8
+    :background-color   (when background?
+                          (colors/alpha colors/blue 0.1))}
+   style))
 
 (def button-label
   {:font-size      15
@@ -149,19 +149,19 @@
    :text-align     :center
    :color          colors/blue})
 
-(defn counter-container [size]
-  {:width            size
+(defn counter-container [size more-than-nine]
+  {:width            (if more-than-nine (+ 2 size) size)
    :height           size
    :border-radius    (/ size 2)
    :background-color colors/blue
    :align-items      :center
    :justify-content  :center})
 
-(defn counter-label [size]
-  {:font-size      (/ size 2)
-   :letter-spacing -0.2
-   :text-align     :center
-   :color          colors/white})
+(defnstyle counter-label [size]
+  {:font-size  (/ size 2)
+   :color      colors/white
+   :android    {:line-height (+ (/ size 2) 2)}
+   :text-align :center})
 
 (def image-contain
   {:align-self :stretch})

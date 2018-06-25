@@ -1,8 +1,7 @@
 (ns status-im.translations.sl)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Člani"
    :not-implemented                       "!ni implementirano"
    :chat-name                             "Ime za klepet"
@@ -134,7 +133,6 @@
    :can-not-add-yourself                  "Sebe ni mogoče dodati"
    :unknown-address                       "Neznan naslov"
 
-
    ;;login
    :connect                               "Poveži"
    :address                               "Naslov"
@@ -204,8 +202,6 @@
    :send-transaction                      "Pošlji transakcijo"
    :delete-contact                        "Izbriši stik"
    :mute-notifications                    "Utišaj obvestila"
-
-
    :contact-s                             {:one   "stik"
                                            :other "stiki"}
    :next                                  "Naprej"
@@ -227,8 +223,6 @@
    :browsing-open-in-web-browser          "Odpri v spletnem brskalniku"
    :delete-group-prompt                   "To ne bo vplivalo na stike"
    :edit-profile                          "Uredi profil"
-
-
    :empty-topic                           "Prazna tema"
    :to                                    "Za"
    :data                                  "Podatki"})

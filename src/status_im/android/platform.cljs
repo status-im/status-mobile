@@ -1,12 +1,13 @@
 (ns status-im.android.platform)
 
 (def fonts
-  {:light         {:font-family "Roboto-Light"}
-   :default       {:font-family "Roboto-Regular"}
-   :medium        {:font-family "Roboto-Medium"}
+  {:light            {:font-family "Roboto-Light"}
+   :default          {:font-family "Roboto-Regular"}
+   :medium           {:font-family "Roboto-Medium"}
 
-   :toolbar-title {:font-family "Roboto-Regular"}
-   :roboto-mono   {:font-family "RobotoMono-Medium"}})
+   :toolbar-title    {:font-family "Roboto-Medium"}
+   :toolbar-subtitle {:font-family "Roboto-Regular"}
+   :roboto-mono      {:font-family "RobotoMono-Medium"}})
 
 ;; Structure to be exported
 

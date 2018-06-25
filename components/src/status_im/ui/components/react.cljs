@@ -192,9 +192,11 @@
                         (= views current-view))
 
         style (if current-view?
-                {:flex 1}
+                {:flex   1
+                 :zIndex 0}
                 {:opacity 0
-                 :flex    0})
+                 :flex    0
+                 :zIndex -1})
 
         component' (if (fn? component) [component] component)]
 
@@ -209,9 +211,6 @@
    comp])
 
 ;; Platform-specific View
-
-(def platform-specific-view
-  (if platform/iphone-x? safe-area-view view))
 
 (defmulti create-main-screen-view #(cond
                                      platform/iphone-x? :iphone-x
@@ -240,8 +239,7 @@
                              (:qr-viewer
                               :recipient-qr-code) "#2f3031"
                              (:accounts :login
-                              :wallet-transactions-filter
-                              :contact-list-modal) styles/color-white
+                              :wallet-transactions-filter) styles/color-white
                              :transparent)})
           children (cond-> children
                            (#{:wallet

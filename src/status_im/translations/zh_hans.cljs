@@ -1,8 +1,7 @@
 (ns status-im.translations.zh-hans)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "成员"
    :not-implemented                       "!未实现"
    :chat-name                             "聊天名称"
@@ -329,8 +328,6 @@
    :wallet-browse-photos                  "浏览相册"
    :validation-amount-invalid-number      "金额不是一个有效的数字"
    :validation-amount-is-too-precise      "金额过于精确，所能发送的最小单位是1 Wei (1x10^-18 ETH)"
-
-
 
    ;; network settings
    :new-network                           "新建网络"

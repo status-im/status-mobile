@@ -3,7 +3,7 @@
             [status-im.bots.events :as bots-events]))
 
 (def ^:private initial-db
-  {:bot-db {} 
+  {:bot-db {}
    :contacts/contacts
    {"bot1" {:subscriptions
             {:feeExplanation
@@ -19,7 +19,7 @@
 (deftest add-active-bot-subscriptions-test
   (testing "That active bot subscriptions are correctly transformed and added to db"
     (let [db (update-in initial-db [:contacts/contacts "bot1" :subscriptions]
-                        bots-events/transform-bot-subscriptions)] 
+                        bots-events/transform-bot-subscriptions)]
       (is (= {[:sliderValue] {:feeExplanation {:fee [:sliderValue]
                                                :tx [:transaction]}}
               [:transaction] {:feeExplanation {:fee [:sliderValue]
@@ -41,7 +41,7 @@
                                               (bots-events/set-in-bot-db {:bot "bot1"
                                                                           :path [:sliderValue]
                                                                           :value 2}))
-        new-db (reduce fake-subscription-call db call-jail-function-n)] 
+        new-db (reduce fake-subscription-call db call-jail-function-n)]
     (testing "That setting in value in bot-db correctly updates bot-db"
       (is (= 2 (get-in new-db [:bot-db "bot1" :sliderValue]))))
     (testing "That subscriptions are fired-off"

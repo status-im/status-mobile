@@ -1,135 +1,122 @@
 (ns ^{:doc "Contact request and update API"}
-    status-im.transport.message.v1.contact
+ status-im.transport.message.v1.contact
   (:require [re-frame.core :as re-frame]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
-            [status-im.ui.screens.contacts.core :as contacts]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]))
-
-(defrecord NewContactKey [sym-key topic message]
-  message/StatusMessage
-  (send [this chat-id cofx]
-    (protocol/send-with-pubkey {:chat-id chat-id
-                                :payload this}
-                               cofx))
-  (receive [this chat-id signature cofx]
-    (let [on-success (fn [sym-key sym-key-id]
-                       (re-frame/dispatch [::add-new-sym-key {:sym-key-id sym-key-id
-                                                              :sym-key    sym-key
-                                                              :chat-id    chat-id
-                                                              :topic      topic
-                                                              :message    message}]))]
-      (handlers-macro/merge-fx cofx
-                         {:shh/add-new-sym-key {:web3       (get-in cofx [:db :web3])
-                                                :sym-key    sym-key
-                                                :on-success on-success}}
-                         (protocol/init-chat chat-id topic)))))
+            [status-im.data-store.transport :as transport-store]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id {:keys [db random-id] :as cofx}]
-    (let [message-id (transport.utils/message-id this)
-          topic      (transport.utils/get-topic random-id)
+    (let [topic      (transport.utils/get-topic random-id)
           on-success (fn [sym-key sym-key-id]
-                       (re-frame/dispatch [::send-new-sym-key {:sym-key-id sym-key-id
-                                                               :sym-key    sym-key
-                                                               :chat-id    chat-id
-                                                               :topic      topic
-                                                               :message    this}]))]
+                       (re-frame/dispatch [:contact/send-new-sym-key
+                                           {:sym-key-id sym-key-id
+                                            :sym-key    sym-key
+                                            :chat-id    chat-id
+                                            :topic      topic
+                                            :message    this}]))]
       (handlers-macro/merge-fx cofx
-                         {:shh/get-new-sym-key {:web3       (:web3 db)
-                                                :on-success on-success}}
-                         (protocol/init-chat chat-id topic)
-                         #_(protocol/requires-ack message-id chat-id))))
-  (receive [this chat-id signature {:keys [db] :as cofx}]
-    (let [message-id (transport.utils/message-id this)]
-      (when (protocol/is-new? message-id)
-        (handlers-macro/merge-fx cofx
-                           #_(protocol/ack message-id chat-id)
-                           (contacts/receive-contact-request signature
-                                                             this))))))
+                               {:shh/get-new-sym-keys [{:web3       (:web3 db)
+                                                        :on-success on-success}]}
+                               (protocol/init-chat {:chat-id chat-id
+                                                    :topic   topic
+                                                    :resend? "contact-request"})))))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage
-  (send [this chat-id cofx]
-    (let [message-id (transport.utils/message-id this)]
+  (send [this chat-id {:keys [db] :as cofx}]
+    (let [success-event [:transport/set-contact-message-envelope-hash chat-id]
+          chat         (get-in db [:transport/chats chat-id])
+          updated-chat (assoc chat :resend? "contact-request-confirmation")]
       (handlers-macro/merge-fx cofx
-                         #_(protocol/requires-ack message-id chat-id)
-                         (protocol/send {:chat-id chat-id
-                                         :payload this}))))
-  (receive [this chat-id signature cofx]
-    (let [message-id (transport.utils/message-id this)]
-      (when (protocol/is-new? message-id)
-        (handlers-macro/merge-fx cofx
-                           #_(protocol/ack message-id chat-id)
-                           (contacts/receive-contact-request-confirmation signature
-                                                                          this))))))
+                               {:db            (assoc-in db
+                                                         [:transport/chats chat-id :resend?]
+                                                         "contact-request-confirmation")
+                                :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
+                                                                                    :chat    updated-chat})]}
+                               (protocol/send {:chat-id chat-id
+                                               :payload this
+                                               :success-event success-event})))))
 
 (defrecord ContactUpdate [name profile-image]
   message/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    (let [message-id (transport.utils/message-id this)
-          public-keys (remove nil? (map :public-key (vals (:contacts/contacts db))))]
-      (handlers-macro/merge-fx cofx
-                         (protocol/multi-send-with-pubkey {:public-keys public-keys
-                                                           :payload     this}))))
-  (receive [this chat-id signature cofx]
-    (let [message-id (transport.utils/message-id this)]
-      (when (protocol/is-new? message-id)
-        (handlers-macro/merge-fx cofx
-                           (contacts/receive-contact-update chat-id
-                                                            signature
-                                                            this))))))
+    (let [public-keys (reduce (fn [acc [_ {:keys [public-key pending?]}]]
+                                (if (and public-key
+                                         (not pending?))
+                                  (conj acc public-key)
+                                  acc))
+                              #{}
+                              (:contacts/contacts db))
+          recipients  (filter #(public-keys (first %)) (:transport/chats db))]
+      (handlers-macro/merge-effects
+       cofx
+       (fn [[chat-id chat] temp-cofx]
+         (let [updated-chat  (assoc chat :resend? "contact-update")
+               tx            [(transport-store/save-transport-tx {:chat-id chat-id
+                                                                  :chat    updated-chat})]
+               success-event [:transport/set-contact-message-envelope-hash chat-id]]
+           (handlers-macro/merge-fx temp-cofx
+                                    {:db            (assoc-in db
+                                                              [:transport/chats chat-id :resend?]
+                                                              "contact-update")
+                                     :data-store/tx tx}
+                                    (protocol/send {:chat-id       chat-id
+                                                    :payload       this
+                                                    :success-event success-event}))))
+       recipients))))
 
-(handlers/register-handler-fx
-  ::send-new-sym-key
-  (fn [{:keys [db random-id] :as cofx} [_ {:keys [chat-id topic message sym-key sym-key-id]}]]
-    (let [{:keys [web3 current-public-key]} db
-          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
-                                                (assoc :sym-key-id sym-key-id)
-                                                ;;TODO (yenda) remove once go implements persistence
-                                                (assoc :sym-key sym-key))]
-      (handlers-macro/merge-fx cofx
-                         {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
-                          :shh/add-filter {:web3       web3
-                                           :sym-key-id sym-key-id
-                                           :topic      topic
-                                           :chat-id    chat-id}
-                          :data-store.transport/save {:chat-id chat-id
-                                                      :chat    chat-transport-info}}
-                         (message/send (NewContactKey. sym-key topic message)
-                                       chat-id)))))
+(defn remove-chat-filter
+  "Stops the filter for the given chat-id"
+  [chat-id {:keys [db]}]
+  (when-let [filter (get-in db [:transport/chats chat-id :filter])]
+    {:shh/remove-filter filter}))
 
-(handlers/register-handler-fx
-  ::add-new-sym-key
-  (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id topic message]}]]
-    (let [{:keys [web3 current-public-key]} db
-          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
-                                                (assoc :sym-key-id sym-key-id)
-                                                ;;TODO (yenda) remove once go implements persistence
-                                                (assoc :sym-key sym-key))]
-      (handlers-macro/merge-fx cofx
-                         {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
-                          :shh/add-filter {:web3       web3
-                                           :sym-key-id sym-key-id
-                                           :topic      topic
-                                           :chat-id    chat-id}
-                          :data-store.transport/save {:chat-id chat-id
-                                                      :chat    chat-transport-info}}
-                         (message/receive message chat-id chat-id)))))
+(defn init-chat
+  [chat-id topic cofx]
+  (when-not (get-in cofx [:db :transport/chats chat-id])
+    (protocol/init-chat {:chat-id chat-id
+                         :topic   topic} cofx)))
 
-#_(handlers/register-handler-fx
-    :send-test-message
-    (fn [cofx [this timer chat-id n]]
-      (if (zero? n)
-        (println  "Time: " (str (- (inst-ms (js/Date.)) @timer)))
-        (handlers-macro/merge-fx cofx
-                           {:dispatch [this timer chat-id (dec n)]}
-                           (message/send (protocol/map->Message {:content      (str n)
-                                                                 :content-type "text/plain"
-                                                                 :message-type :user-message
-                                                                 :clock-value  n
-                                                                 :timestamp    (str (inst-ms (js/Date.)))})
-                                         chat-id)))))
+(defrecord NewContactKey [sym-key topic message]
+  message/StatusMessage
+  (send [this chat-id cofx]
+    (let [success-event [:transport/set-contact-message-envelope-hash chat-id]]
+      (protocol/send-with-pubkey {:chat-id       chat-id
+                                  :payload       this
+                                  :success-event success-event}
+                                 cofx)))
+  (receive [this chat-id signature {:keys [db] :as cofx}]
+    (let [current-sym-key (get-in db [:transport/chats chat-id :sym-key])
+          ;; NOTE(yenda) to support concurrent contact request without additional
+          ;; interactions we don't save the new key if these conditions are met:
+          ;; - the message is a contact request
+          ;; - we already have a sym-key
+          ;; - this sym-key is first in alphabetical order compared to the new one
+          save-key?       (not (and (= ContactRequest (type message))
+                                    current-sym-key
+                                    (= current-sym-key
+                                       (first (sort [current-sym-key sym-key])))))]
+      (if save-key?
+        (let [on-success (fn [sym-key sym-key-id]
+                           (re-frame/dispatch [:contact/add-new-sym-key
+                                               {:sym-key-id sym-key-id
+                                                :sym-key    sym-key
+                                                :chat-id    chat-id
+                                                :topic      topic
+                                                :message    message}]))]
+          (handlers-macro/merge-fx cofx
+                                   {:shh/add-new-sym-keys [{:web3       (:web3 db)
+                                                            :sym-key    sym-key
+                                                            :on-success on-success}]}
+                                   (init-chat chat-id topic)
+                                   ;; in case of concurrent contact request we want
+                                   ;; to stop the filter for the previous key before
+                                   ;; dereferrencing it
+                                   (remove-chat-filter chat-id)))
+        ;; if we don't save the key, we read the message directly
+        (message/receive message chat-id chat-id cofx)))))

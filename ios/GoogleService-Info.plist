@@ -17,7 +17,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>im.status.ethereum</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)$(BUNDLE_ID_SUFFIX)</string>
 	<key>PROJECT_ID</key>
 	<string>status-react-app</string>
 	<key>STORAGE_BUCKET</key>

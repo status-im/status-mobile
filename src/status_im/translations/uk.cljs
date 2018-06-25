@@ -1,8 +1,7 @@
 (ns status-im.translations.uk)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Учасники"
    :not-implemented                       "!не реалізовано"
    :chat-name                             "Назва чату"
@@ -336,8 +335,6 @@
    :wallet-browse-photos                  "Переглянути Фотографії"
    :validation-amount-invalid-number      "Сума недійсна"
    :validation-amount-is-too-precise      "Занадто багато цифр після десяткової коми. Найменша сума, яку ви можете надіслати це 1 Wei (1x10^-18 ETH)"
-
-
 
    ;; network settings
    :new-network                           "Нова мережа"

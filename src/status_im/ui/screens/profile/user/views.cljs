@@ -66,15 +66,15 @@
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
     [react/view styles/qr-code-viewer
-     [status-bar/status-bar {:type :modal}]
+     [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
      [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
       value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
 
 (defn- show-qr [contact source value]
-  #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
-                                                        :source  source
-                                                        :value   value}]))
+  #(re-frame/dispatch [:navigate-to-modal :profile-qr-viewer {:contact contact
+                                                              :source  source
+                                                              :value   value}]))
 
 (defn share-contact-code [current-account public-key]
   [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
@@ -92,13 +92,14 @@
                            (i18n/label :t/logout-are-you-sure)
                            (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
 
-(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} sharing-usage-data?]
+(defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
-     [profile.components/settings-item {:label-kw :t/main-currency
-                                        :value    (i18n/label :usd-currency)
-                                        :active?  false}]
+     [profile.components/settings-item {:label-kw            :t/main-currency
+                                        :value               (:code currency)
+                                        :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
+                                        :accessibility-label :currency-button}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/notifications
                                         :accessibility-label :notifications-button
@@ -111,22 +112,27 @@
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
+     [profile.components/settings-item {:label-kw :t/need-help
+                                        :accessibility-label :help-button
+                                        :action-fn #(re-frame/dispatch [:navigate-to :help-center])}]
+     [profile.components/settings-item-separator]
      [react/view styles/my-profile-settings-logout-wrapper
-       [react/view styles/my-profile-settings-logout
-         [profile.components/settings-item {:label-kw            :t/logout
-                                            :accessibility-label :log-out-button
-                                            :destructive?        true
-                                            :hide-arrow?         true
-                                            :action-fn           #(handle-logout)}]]
-       [react/view styles/my-profile-settings-logout-version
-         [react/text build/version]]]]))
+      [react/view styles/my-profile-settings-logout
+       [profile.components/settings-item {:label-kw            :t/logout
+                                          :accessibility-label :log-out-button
+                                          :destructive?        true
+                                          :hide-arrow?         true
+                                          :action-fn           #(handle-logout)}]]
+      [react/view styles/my-profile-settings-logout-version
+       [react/text @(re-frame/subscribe [:get-app-version])]]]]))
 
 (defview advanced [{:keys [network networks dev-mode?]}]
-  (letsubs [advanced?                     [:get :my-profile/advanced?]
+  (letsubs [advanced? [:get :my-profile/advanced?]
             {:keys [sharing-usage-data?]} [:get-current-account]]
+    {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
     [react/view
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
-                                 :style styles/advanced-button}
+                                 :style    styles/advanced-button}
       [react/view {:style styles/advanced-button-container}
        [react/view {:style styles/advanced-button-container-background}
         [react/view {:style styles/advanced-button-row}
@@ -135,44 +141,57 @@
          [icons/icon (if advanced? :icons/up :icons/down) {:color colors/blue}]]]]]
      (when advanced?
        [react/view
-        [profile.components/settings-item
-         {:label-kw :t/network
-          :value (get-in networks [network :name])
-          :action-fn #(re-frame/dispatch [:navigate-to :network-settings])
-          :accessibility-label :network-button}]
+        (when dev-mode?
+          [profile.components/settings-item
+           {:label-kw            :t/network
+            :value               (get-in networks [network :name])
+            :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
+            :accessibility-label :network-button}])
         (when config/offline-inbox-enabled?
           [profile.components/settings-item-separator])
         (when config/offline-inbox-enabled?
           [profile.components/settings-item
-           {:label-kw :t/offline-messaging
-            :action-fn #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+           {:label-kw            :t/offline-messaging
+            :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
             :accessibility-label :offline-messages-settings-button}])
-        [profile.components/settings-item-separator]
-        [profile.components/settings-switch-item
-         {:label-kw :t/dev-mode
-          :value dev-mode?
-          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]
+        (when config/bootnodes-settings-enabled?
+          [profile.components/settings-item-separator])
+        (when config/bootnodes-settings-enabled?
+          [profile.components/settings-item
+           {:label-kw            :t/bootnodes
+            :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+            :accessibility-label :bootnodes-settings-button}])
         [profile.components/settings-item-separator]
         [profile.components/settings-item
          {:label-kw            :t/help-improve?
           :value               (i18n/label (if sharing-usage-data? :on :off))
           :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
-          :accessibility-label :help-improve}]])]))
+          :accessibility-label :help-improve}]
+        [profile.components/settings-item-separator]
+        [profile.components/settings-switch-item
+         {:label-kw  :t/dev-mode
+          :value     dev-mode?
+          :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]])]))
 
 (defview my-profile []
   (letsubs [{:keys [public-key] :as current-account} [:get-current-account]
             editing?        [:get :my-profile/editing?]
-            changed-account [:get :my-profile/profile]]
+            changed-account [:get :my-profile/profile]
+            currency        [:wallet/currency]
+            scroll          (atom nil)]
     (let [shown-account (merge current-account changed-account)]
       [react/view profile.components.styles/profile
        (if editing?
          [my-profile-edit-toolbar]
          [my-profile-toolbar])
-       [react/scroll-view {:keyboard-should-persist-taps :handled}
+       [react/scroll-view {:ref                          #(reset! scroll %)
+                           :keyboard-should-persist-taps :handled
+                           :on-content-size-change       #(when (and scroll @scroll)
+                                                            (.scrollToEnd @scroll))}
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
-         [my-profile-settings current-account]]
+         [my-profile-settings current-account currency]]
         [advanced shown-account]]])))

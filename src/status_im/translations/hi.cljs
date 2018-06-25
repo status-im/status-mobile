@@ -1,8 +1,7 @@
 (ns status-im.translations.hi)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "सदस्य"
    :not-implemented                       "!कार्यान्वित नहीं"
    :chat-name                             "चैट नाम"
@@ -134,7 +133,6 @@
    :can-not-add-yourself                  "आप अपने आपको नहीं जोड़ सकते"
    :unknown-address                       "अज्ञात पता"
 
-
    ;;login
    :connect                               "कनेक्ट करें"
    :address                               "पता"
@@ -204,8 +202,6 @@
    :send-transaction                      "लेनदेन भेजें"
    :delete-contact                        "संपर्क मिटाएं"
    :mute-notifications                    "अधिसूचनाएं म्यूट करें"
-
-
    :contact-s                             {:one   "संपर्क"
                                            :other "संपर्क"}
    :next                                  "अगला"
@@ -227,8 +223,6 @@
    :browsing-open-in-web-browser          "वेब ब्राउज़र में खोलें"
    :delete-group-prompt                   "इससे संपर्क प्रभावित नहीं होंगे"
    :edit-profile                          "प्रोफाइल का संपादन करें"
-
-
    :empty-topic                           "रिक्त विषय"
    :to                                    "प्रति"
    :data                                  "डेटा"})

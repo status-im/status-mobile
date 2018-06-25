@@ -1,8 +1,7 @@
 (ns status-im.translations.lv)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Dalībnieki"
    :not-implemented                       "!tādas funkcijas pagaidām nav"
    :chat-name                             "Čata nosaukums"
@@ -199,7 +198,6 @@
    :contact-already-added                 "Kontakts jau bija pievienots"
    :can-not-add-yourself                  "Tu nevari pievienot sevi"
    :unknown-address                       "Nezināmā adrese"
-
 
    ;;login
    :connect                               "Savienoties"
