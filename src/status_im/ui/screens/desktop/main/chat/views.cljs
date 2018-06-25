@@ -5,6 +5,7 @@
             [clojure.string :as string]
             [status-im.chat.styles.message.message :as message.style]
             [status-im.utils.gfycat.core :as gfycat.core]
+            [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
@@ -138,7 +139,7 @@
         [react/view {:style {:padding-vertical 60}}
          (doall
            (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
-             ^{:key message-id}
+             ^{:key (or message-id "0")}
              [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 
