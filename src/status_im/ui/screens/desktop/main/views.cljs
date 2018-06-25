@@ -24,8 +24,9 @@
 (views/defview main-view []
   (views/letsubs [view-id [:get :view-id]]
     (let [component (case view-id
-                      :chat chat.views/chat-view
+                      :chat        chat.views/chat-view
                       :new-contact add-new.views/new-contact
+                      :qr-code     profile.views/qr-code
                       status-view)]
       [react/view {:style {:flex 1}}
        [component]])))

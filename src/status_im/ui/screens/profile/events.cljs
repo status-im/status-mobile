@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.events
   (:require [clojure.spec.alpha :as spec]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.react :refer [show-image-picker]]
+            [status-im.ui.components.react :as react]
             [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
@@ -16,7 +16,7 @@
  :open-image-picker
   ;; the image picker is only used here for now, this effect can be use in other scenarios as well
  (fn [callback-event]
-   (show-image-picker
+   (react/show-image-picker
     (fn [image]
       (let [path (get (js->clj image) "path")
             _ (log/debug path)
@@ -116,3 +116,13 @@
    (handlers-macro/merge-fx cofx
                             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
                             (accounts.utils/clean-seed-phrase))))
+
+(re-frame/reg-fx
+ :copy-to-clipboard
+ (fn [value]
+   (react/copy-to-clipboard value)))
+
+(handlers/register-handler-fx
+ :copy-to-clipboard
+ (fn [_ [_ value]]
+   {:copy-to-clipboard value}))
