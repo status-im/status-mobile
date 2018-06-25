@@ -142,6 +142,20 @@
                                       :in-progress?    false
                                       :password        nil})
 
+;; TODO(goranjovic) - this is a temporary workaround because in regular `clear-send-properties` we need `:from-chat?`
+;; to be false to avoid the wallet onboarding crash if the user accessed transactions from dapps first.
+;; On the other hand, if we reset the same flag to false every time we clear the current transaction that would also
+;; happen when user clicks Cancel in chat initiated transaction and then all fields would become editable, which is
+;; another bug.
+;; This temporary workaround resets all fields except the flag if we are in a chat /send transaction.
+;; A permanent solution would be to add onboarding check to dapp transaction and/or review the workflow.
+(def ^:private partial-clear-send-properties {:id              nil
+                                              :signing?        false
+                                              :wrong-password? false
+                                              :waiting-signal? false
+                                              :in-progress?    false
+                                              :password        nil})
+
 (defn on-transactions-completed [raw-results]
   (let [result (types/json->clj raw-results)]
     (dispatch-transaction-completed result)))
@@ -362,8 +376,9 @@
 
 (defn discard-transaction
   [{:keys [db]}]
-  (let [{:keys [id]} (get-in db [:wallet :send-transaction])]
-    (merge {:db (update-in db [:wallet :send-transaction] merge clear-send-properties)}
+  (let [{:keys [id from-chat?]} (get-in db [:wallet :send-transaction])
+        clear-fields            (if from-chat? partial-clear-send-properties clear-send-properties)]
+    (merge {:db (update-in db [:wallet :send-transaction] merge clear-fields)}
            (when id
              {:discard-transaction id}))))
 
