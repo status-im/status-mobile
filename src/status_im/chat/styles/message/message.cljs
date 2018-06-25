@@ -10,7 +10,7 @@
    :color          styles/text1-color
    :letter-spacing -0.2
    :android        {:line-height 22}
-   :ios            {:line-height 23}})
+   :ios            {:line-height 22}})
 
 (def style-sub-text
   {:top         -2
@@ -23,15 +23,11 @@
   [{:keys [first-in-group? display-username?]}]
   (if (and display-username?
            first-in-group?)
-    8
-    4))
+    6
+    2))
 
 (def message-empty-spacing
   {:height 16})
-
-(def message-body-base
-  {:padding-right 10
-   :padding-left  10})
 
 (defn last-message-padding
   [{:keys [last? typing]}]
@@ -39,15 +35,17 @@
     {:padding-bottom 16}))
 
 (defn message-body
-  [{:keys [outgoing] :as message}]
-  (let [align     (if outgoing :flex-end :flex-start)
+  [{:keys [outgoing display-photo?] :as message}]
+  (let [align (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
-    (merge message-body-base
-           {:flex-direction direction
+    (merge {:flex-direction direction
             :width          230
             :padding-top    (message-padding-top message)
             :align-self     align
-            :align-items    align})))
+            :align-items    align}
+           (when display-photo?
+             {:padding-right 8
+              :padding-left  8}))))
 
 (def message-timestamp
   {:font-size      10
@@ -89,17 +87,17 @@
   [outgoing]
   (let [align (if outgoing :flex-end :flex-start)]
     {:flex-direction :column
-     :width          260
-     :padding-left   10
-     :padding-right  10
+     :width          230
+     :padding-left   8
+     :padding-right  8
      :align-items    align}))
 
 (defn delivery-status [outgoing]
   (if outgoing
     {:align-self    :flex-end
-     :padding-right 22}
+     :padding-right 8}
     {:align-self    :flex-start
-     :padding-left  16}))
+     :padding-left  8}))
 
 (def message-author
   {:width      photos/default-size

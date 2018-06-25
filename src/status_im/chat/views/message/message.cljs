@@ -79,6 +79,7 @@
   (letsubs [network [:network-name]]
     (let [{{:keys [amount fiat-amount tx-hash asset] send-network :network} :params} content
           recipient-name (get-in content [:params :bot-db :public :recipient])
+          amount-text-long? (< 10 (count amount))
           network-mismatch? (and (seq send-network) (not= network send-network))]
       [react/view style/command-send-message-view
        [react/view
@@ -88,7 +89,7 @@
                        :font  :medium}
            amount
            [react/text {:style (style/command-amount-currency-separator outgoing)}
-            "."]
+            (if amount-text-long? "\n" ".")]
            [react/text {:style (style/command-send-currency-text outgoing)
                         :font  :default}
             asset]]]]
