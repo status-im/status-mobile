@@ -136,7 +136,7 @@
                            :on-content-size-change #(when (or (not @scroll-height) (< (- %2 @scroll-height) 500))
                                                       (.scrollToEnd @scroll-ref))
                            :ref                    #(reset! scroll-ref %)}
-        [react/view {:style {:padding-vertical 60}}
+        [react/view {:style {:padding-vertical 46}}
          (doall
            (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
              ^{:key (or message-id "0")}
