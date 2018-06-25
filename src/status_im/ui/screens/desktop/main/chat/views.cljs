@@ -138,7 +138,7 @@
         [react/view {:style {:padding-vertical 60}}
          (doall
            (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
-             ^{:key (str message index)}
+             ^{:key message-id}
              [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 
