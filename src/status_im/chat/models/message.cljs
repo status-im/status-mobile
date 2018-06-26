@@ -16,7 +16,8 @@
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.data-store.messages :as messages-store]
-            [status-im.data-store.user-statuses :as user-statuses-store]))
+            [status-im.data-store.user-statuses :as user-statuses-store]
+            [status-im.utils.datetime :as datetime]))
 
 (def receive-interceptors
   [(re-frame/inject-cofx :random-id)
@@ -475,3 +476,32 @@
 
       :else
       (send-command cofx params))))
+
+(defn custom-send-command-message [whisper-id address asset amount]
+  {:message  nil,
+   :command  {:command      {:bot           "transactor",
+                             :color         "#5fc48d",
+                             :ref           ["transactor" :command 83 "send"],
+                             :name          "send",
+                             :type          :command,
+                             :async-handler false,
+                             :icon          "money_white",
+                             :scope         #{:global :personal-chats :registered :humans},
+                             :has-handler   true,
+                             :preview       nil,
+                             :short-preview nil,
+                             :scope-bitmask 83,
+                             :owner-id      "transactor"},
+              :params       {:asset  asset,
+                             :amount amount},
+              :to-message   nil,
+              :created-at   (datetime/timestamp),
+              :chat-id      whisper-id,
+              :handler-data nil},
+   :chat-id  whisper-id,
+   :identity whisper-id,
+   :address  address})
+
+(defn send-custom-send-command [{:keys [whisper-identity address asset amount]} cofx]
+  (when whisper-identity
+    (send-command cofx (custom-send-command-message whisper-identity address asset amount))))

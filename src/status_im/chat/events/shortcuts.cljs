@@ -34,15 +34,11 @@
 (defn shortcut-override? [message]
   (get shortcuts (get-in message [:content :command])))
 
-(defn shortcut-override-fx [db {:keys [chat-id content] :as message} opts]
+(defn shortcut-override-fx [db {:keys [chat-id content]}]
   (let [command              (:command content)
         contact              (get-in db [:contacts/contacts chat-id])
-        shortcut-specific-fx (get shortcuts command)
-        stored-command       {:message message :opts opts}]
+        shortcut-specific-fx (get shortcuts command)]
     (-> db
-        (assoc :commands/stored-command stored-command)
-        ;; NOTE(goranjovic) - stores the command if we want to continue it after
-        ;; shortcut has been executed, see `:execute-stored-command`
         (shortcut-specific-fx contact (:params content))
         ;; TODO(goranjovic) - replace this dispatch with a function call
         ;; Need to refactor chat events namespaces for this to avoid circular dependecy

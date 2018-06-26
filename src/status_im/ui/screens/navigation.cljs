@@ -70,23 +70,26 @@
              (let [db (re-frame/get-coeffect context :db)]
                (re-frame/assoc-coeffect context :db (unload-data! db))))))
 
+(def navigation-interceptors
+  [unload-data-interceptor (re-frame/enrich preload-data!)])
+
 ;; event handlers
 
 (handlers/register-handler-db
  :navigate-to
- [unload-data-interceptor (re-frame/enrich preload-data!)]
+ navigation-interceptors
  (fn [db [_ & params]]
    (apply navigate-to db params)))
 
 (handlers/register-handler-db
  :navigate-to-modal
- [unload-data-interceptor (re-frame/enrich preload-data!)]
+ navigation-interceptors
  (fn [db [_ modal-view]]
    (assoc db :modal modal-view)))
 
 (handlers/register-handler-fx
  :navigation-replace
- [unload-data-interceptor (re-frame/enrich preload-data!)]
+ navigation-interceptors
  (fn [cofx [_ view-id]]
    (replace-view view-id cofx)))
 
@@ -118,7 +121,7 @@
 
 (handlers/register-handler-fx
  :navigate-to-tab
- [unload-data-interceptor (re-frame/enrich preload-data!)]
+ navigation-interceptors
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (handlers-macro/merge-fx cofx
                             {:db (-> db

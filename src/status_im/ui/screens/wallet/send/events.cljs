@@ -9,15 +9,18 @@
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.models.wallet :as models.wallet]
+            [status-im.chat.models.message :as models.message]
             [status-im.constants :as constants]
             [status-im.transport.utils :as transport.utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.ui.screens.navigation :as navigation]))
 
 ;;;; FX
 
@@ -273,11 +276,20 @@
         (dissoc :message-id :id))))
 
 (handlers/register-handler-fx
+ :send-transaction-message
+ (concat models.message/send-interceptors
+         navigation/navigation-interceptors)
+ (fn [cofx [{:keys [view-id] :as params}]]
+   (handlers-macro/merge-fx cofx
+                            (models.message/send-custom-send-command params)
+                            (navigation/replace-view view-id))))
+
+(handlers/register-handler-fx
  ::transaction-completed
  (fn [{db :db now :now} [_ {:keys [id response] :as params} modal?]]
-   (let [{:keys [hash error]} response
-         {:keys [method from-chat?]} (get-in db [:wallet :send-transaction])
-         db'             (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+   (let [{:keys [hash error]}                            response
+         {:keys [method whisper-identity to symbol amount-text]}  (get-in db [:wallet :send-transaction])
+         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
        {:db db'}
        (merge
@@ -288,17 +300,17 @@
                (update-in [:wallet :transactions-unsigned] dissoc id)
                true
                (update-in [:wallet :send-transaction] merge clear-send-properties {:tx-hash hash}))}
-        (cond
-          modal?
+        (if modal?
+
           (cond-> {:dispatch [:navigate-back]}
             (= method constants/web3-send-transaction)
             (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
 
-          from-chat?
-          {:dispatch [:execute-stored-command]}
-
-          :else
-          {:dispatch [:navigation-replace :wallet-transaction-sent]}))))))
+          {:dispatch [:send-transaction-message {:view-id          :wallet-transaction-sent
+                                                 :whisper-identity whisper-identity
+                                                 :address          to
+                                                 :asset            (name symbol)
+                                                 :amount           amount-text}]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [result (types/json->clj raw-results)]
