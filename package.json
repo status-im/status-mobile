@@ -43,11 +43,7 @@
     "punycode": "1.4.1",
     "querystring-es3": "0.2.1",
     "re-natal": "git+https://github.com/status-im/re-natal.git#master",
-<<<<<<< HEAD
     "react": "16.3.1",
-=======
-    "react": "^16.3.1",
->>>>>>> Merged with develop branch
     "react-dom": "16.3.1",
     "react-native": "git+https://github.com/status-im/react-native-desktop.git",
     "react-native-background-timer": "2.0.0",
@@ -64,7 +60,7 @@
     "react-native-image-crop-picker": "0.18.1",
     "react-native-image-resizer": "1.0.0",
     "react-native-invertible-scroll-view": "1.1.0",
-    "react-native-keychain": "git+https://github.com/status-im/react-native-keychain.git",
+    "react-native-keychain": "git+https://github.com/MaxRis/react-native-keychain.git#bug/linux-support",
     "react-native-level-fs": "3.0.0",
     "react-native-os": "1.1.0",
     "react-native-qrcode": "0.2.6",
