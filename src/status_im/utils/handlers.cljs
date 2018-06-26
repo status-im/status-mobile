@@ -102,9 +102,7 @@
      [context]
      (let [new-db             (get-coeffect context :db)
            [event-name]       (get-coeffect context :event)]
-       (when (or
-              (mixpanel/force-tracking? event-name)
-              (get-in new-db [:account/account :sharing-usage-data?]))
+       (when (get-in new-db [:account/account :sharing-usage-data?])
          (let [event    (get-coeffect context :event)
                offline? (or (= :offline (:network-status new-db))
                             (= :offline (:sync-state new-db)))

@@ -135,8 +135,3 @@
                          [(update trigger :properties merge data)]
                          (map (partial update trigger :properties merge) data)))
                      [trigger]))))))
-
-(defn force-tracking? [event-name]
-  (and config/force-sr-ratio-tracking
-       (contains? #{:signals/envelope-status :chat-received-message/add}
-                  event-name)))

@@ -1,5 +1,4 @@
-(ns status-im.utils.mixpanel-events
-  (:require [status-im.chat.models.message :as message-model]))
+(ns status-im.utils.mixpanel-events)
 ;; This file is supposed to be edited by Chad.
 ;; Chad loves mixpanel. When Chad was a child he dreamed of being a mixpanel tamer.
 
@@ -197,44 +196,4 @@
    {:label      "Tap"
     :trigger    [:my-profile/finish]
     :properties {:target :seed-phrase
-                 :type   :step3-done}}
-
-   ;; sent/receive ratio
-   {:label      "SRratio"
-    :trigger    [:signals/envelope-status]
-    :properties {:target :user-message-sent}
-    :filter-fn  (fn [db [_ envelope-hash status]]
-                  (when (= :sent status)
-                    (let [{:keys [chat-id message-id]}
-                          (get-in db [:transport/message-envelopes envelope-hash])
-
-                          {:keys [message-type]}
-                          (get-in db [:chats chat-id :messages message-id])]
-                      (= :user-message message-type))))
-    :data-fn    (fn [db [_ envelope-hash status]]
-                  (when (= :sent status)
-                    (let [{:keys [chat-id message-id]}
-                          (get-in db [:transport/message-envelopes envelope-hash])
-
-                          {:keys [message-type]}
-                          (get-in db [:chats chat-id :messages message-id])]
-                      {:message-id   message-id
-                       :message-type message-type})))}
-
-   {:label      "SRratio"
-    :trigger    [:chat-received-message/add]
-    :properties {:target :user-message-received}
-    :filter-fn  (fn [db [_ messages]]
-                  (some
-                   (fn [{:keys [message-type] :as message}]
-                     (and (= :user-message message-type)
-                          (message-model/add-to-chat? {:db db} message)))
-                   messages))
-    :data-fn    (fn [db [_ messages]]
-                  (keep
-                   (fn [{:keys [message-id message-type] :as message}]
-                     (when (and (= :user-message message-type)
-                                (message-model/add-to-chat? {:db db} message))
-                       {:message-type message-type
-                        :message-id   message-id}))
-                   messages))}])
+                 :type   :step3-done}}])
