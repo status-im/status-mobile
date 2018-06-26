@@ -37,6 +37,8 @@ function getSyncResponse (payload) {
         return web3Response(payload, currentAccountAddress)
     } else if (payload.method == "net_version"){
         return web3Response(payload, networkId)
+    } else if (payload.method == "eth_uninstallFilter"){
+        return web3Response(payload, true);
     } else {
         return null;
     }
@@ -44,6 +46,9 @@ function getSyncResponse (payload) {
 
 StatusHttpProvider.prototype.send = function (payload) {
     //TODO to be compatible with MM https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#dizzy-all-async---think-of-metamask-as-a-light-client
+    if (payload.method == "eth_uninstallFilter"){
+        this.sendAsync(payload, function (res, err) {})
+    }
     var syncResponse = getSyncResponse(payload);
     if (syncResponse){
         return syncResponse;
@@ -55,7 +60,7 @@ StatusHttpProvider.prototype.send = function (payload) {
 
 StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
     var syncResponse = getSyncResponse(payload);
-    if (syncResponse){
+    if (syncResponse && callback){
         callback(null, syncResponse);
     }
     else {
