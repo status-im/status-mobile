@@ -100,28 +100,37 @@
 (def one-day (* 24 3600))
 (def seven-days (* 7 one-day))
 
+(defn request-inbox-messages-params [mailserver from to topics]
+  (let [days        (conj
+                     (into [] (range from to one-day))
+                     to)
+        day-ranges  (map vector days (drop 1 days))]
+    (for [topic topics
+          [current-from current-to] day-ranges]
+      {:topic          topic
+       :mailServerPeer (:address mailserver)
+       :symKeyID       (:sym-key-id mailserver)
+       :from           current-from
+       :to             current-to})))
+
 (defn request-inbox-messages
-  [web3 wnode topics from to success-fn error-fn]
-  (loop [from       from
-         current-to to]
-    (let [current-to (if (> (- to from) one-day)
-                       (+ from one-day)
-                       to)
-          opts       (merge {:mailServerPeer (:address wnode)
-                             :symKeyID       (:sym-key-id wnode)
-                             :from           from
-                             :to             current-to})]
-      (log/info "offline inbox: request-messages request for topics " topics " from " from " to " current-to)
-      (doseq [topic topics]
-        (let [opts (assoc opts :topic topic)]
-          (.requestMessages (transport.utils/shh web3)
-                            (clj->js opts)
-                            (fn [err resp]
-                              (if-not err
-                                (success-fn resp topic)
-                                (error-fn err topic))))))
-      (when (< current-to to)
-        (recur current-to to)))))
+  [web3 mailserver topics start-from end-to success-fn error-fn]
+  (log/info "offline inbox: request-messages request for topics " topics " from " start-from " to " end-to)
+  (doseq [{:keys [topic] :as params} (request-inbox-messages-params
+                                      mailserver
+                                      start-from
+                                      end-to
+                                      topics)]
+    (log/info "offline inbox: request-messages for: "
+              " topic " topic
+              " from "  (:from params)
+              " to   "  (:to params))
+    (.requestMessages (transport.utils/shh web3)
+                      (clj->js params)
+                      (fn [err resp]
+                        (if-not err
+                          (success-fn resp topic)
+                          (error-fn err topic))))))
 
 (re-frame/reg-fx
  ::add-peer

@@ -103,3 +103,59 @@
     (testing "inbox is not ready"
       (testing "it does not do anything"
         (is (nil? (inbox/request-messages {})))))))
+
+(deftest request-messages-params
+  (let [mailserver {:address    "peer"
+                    :sym-key-id "id"}]
+    (testing "from is greater that to"
+      (testing "it returns an empty sequence"
+        (is (empty? (inbox/request-inbox-messages-params mailserver 2 0 ["a" "b" "c"])))))
+    (testing "from is equal to to"
+      (testing "it returns an empty sequence"
+        (is (empty? (inbox/request-inbox-messages-params mailserver 2 2 ["a" "b" "c"])))))
+    (testing "to is less than the step"
+      (is (= #{{:topic          "a"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           0
+                :to             3}
+               {:topic          "b"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           0
+                :to             3}}
+             (into #{} (inbox/request-inbox-messages-params mailserver 0 3 ["a" "b"])))))
+    (testing "to is equal the step"
+      (is (= #{{:topic          "a"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           0
+                :to             86400}
+               {:topic          "b"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           0
+                :to             86400}}
+             (into #{} (inbox/request-inbox-messages-params mailserver 0 86400 ["a" "b"])))))
+    (testing "to is greather than the step"
+      (is (= #{{:topic          "a"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           0
+                :to             86400}
+               {:topic          "b"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           0
+                :to             86400}
+               {:topic          "a"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           86400
+                :to             90000}
+               {:topic          "b"
+                :mailServerPeer "peer"
+                :symKeyID       "id"
+                :from           86400
+                :to             90000}}
+             (into #{} (inbox/request-inbox-messages-params mailserver 0 90000 ["a" "b"])))))))
