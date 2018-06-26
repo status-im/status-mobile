@@ -130,10 +130,6 @@
 
 (def native-button-offset 16)
 
-(def toolbar-actions
-  {:flex-direction :row
-   :padding-right  14})
-
 (def create-icon
   {:font-size 20
    :height    22

@@ -34,18 +34,6 @@
   {:color     colors/white
    :font-size 12})
 
-(def toolbar-action-container
-  {:flex            0.2
-   :flex-direction  :column
-   :align-items     :center
-   :justify-content :center})
-
-(def toolbar-action-icon-container
-  {:width           40
-   :height          40
-   :align-items     :center
-   :justify-content :center})
-
 (def wallet-qr-code
   {:flex-grow      1
    :flex-direction :column})

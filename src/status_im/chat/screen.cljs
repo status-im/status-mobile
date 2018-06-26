@@ -30,14 +30,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]))
 
-(defn toolbar-action [chat-id chat-name group-chat public?]
-  [react/touchable-highlight
-   {:on-press            #(list-selection/show {:title chat-name
-                                                :options (actions/actions chat-id group-chat public?)})
-    :accessibility-label :chat-menu}
-   [react/view style/action
-    [vector-icons/icon :icons/dots-horizontal]]])
-
 (defview add-contact-bar [contact-identity]
   (letsubs [contact [:get-contact-by-identity contact-identity]]
     (when (models.contact/can-add-to-contacts? contact)
@@ -53,7 +45,8 @@
                         :options (actions/actions group-chat? chat-id public?)}))
 
 (defview chat-toolbar [public?]
-  (letsubs [{:keys [group-chat name chat-id contacts]} [:get-current-chat]]
+  (letsubs [name                                  [:get-current-chat-name]
+            {:keys [group-chat chat-id contacts]} [:get-current-chat]]
     [react/view
      [status-bar/status-bar]
      (if (= chat-id constants/console-chat-id)
