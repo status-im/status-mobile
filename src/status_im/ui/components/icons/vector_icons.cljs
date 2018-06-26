@@ -29,7 +29,7 @@
             :icons/delete              (js/require "./resources/icons/delete.svg")
             :icons/dots-horizontal     (js/require "./resources/icons/dots_horizontal.svg")
             :icons/dots-vertical       (js/require "./resources/icons/dots_vertical.svg")
-            :icons/exclamation_mark    (js/require "./resources/icons/exclamation_mark.svg")
+            :icons/exclamation-mark    (js/require "./resources/icons/exclamation_mark.svg")
             :icons/filter              (js/require "./resources/icons/filter.svg")
             :icons/fullscreen          (js/require "./resources/icons/fullscreen.svg")
             :icons/group-big           (js/require "./resources/icons/group_big.svg")
@@ -38,6 +38,7 @@
             :icons/hamburger           (js/require "./resources/icons/hamburger.svg")
             :icons/hidden              (js/require "./resources/icons/hidden.svg")
             :icons/in-contacts         (js/require "./resources/icons/in_contacts.svg")
+            :icons/lock                (js/require "./resources/icons/lock.svg")
             :icons/mic                 (js/require "./resources/icons/mic.svg")
             :icons/ok                  (js/require "./resources/icons/ok.svg")
             :icons/public              (js/require "./resources/icons/public.svg")
@@ -60,6 +61,8 @@
             :icons/newchat             (js/require "./resources/icons/newchat.svg")
             :icons/logo                (js/require "./resources/icons/logo.svg")
             :icons/camera              (js/require "./resources/icons/camera.svg")
+            :icons/check               (js/require "./resources/icons/check.svg")
+            :icons/dots                (js/require "./resources/icons/dots.svg")
             :icons/warning             (js/require "./resources/icons/warning.svg")})
 
 (defn normalize-property-name [n]

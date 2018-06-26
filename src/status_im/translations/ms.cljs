@@ -1,8 +1,7 @@
 (ns status-im.translations.ms)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Ahli"
    :not-implemented                       "!tidak diimplementasikan"
    :chat-name                             "Nama perbualan"
@@ -200,7 +199,6 @@
    :contact-already-added                 "Kenalan telah ditambah"
    :can-not-add-yourself                  "Anda tidak boleh menambah diri anda sendiri"
    :unknown-address                       "Address tidak diketahui"
-
 
    ;;login
    :connect                               "Sambung"

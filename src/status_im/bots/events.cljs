@@ -88,19 +88,19 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
-  :set-in-bot-db
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [params]]
-    (set-in-bot-db db params)))
+ :set-in-bot-db
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [params]]
+   (set-in-bot-db db params)))
 
 (handlers/register-handler-db
-  :update-bot-db
-  [re-frame/trim-v]
-  (fn [db [params]]
-    (update-bot-db db params)))
+ :update-bot-db
+ [re-frame/trim-v]
+ (fn [db [params]]
+   (update-bot-db db params)))
 
 (handlers/register-handler-db
-  ::calculated-subscription
-  [re-frame/trim-v]
-  (fn [db [params]]
-    (calculated-subscription db params)))
+ ::calculated-subscription
+ [re-frame/trim-v]
+ (fn [db [params]]
+   (calculated-subscription db params)))

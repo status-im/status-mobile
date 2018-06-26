@@ -4,6 +4,5 @@
 
 (def root
   {:background-color common/color-white
-   :border-top-color colors/gray-light
-   :border-top-width 1})
-
+   :border-bottom-color colors/gray-light
+   :border-bottom-width 1})

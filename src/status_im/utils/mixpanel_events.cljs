@@ -1,4 +1,5 @@
-(ns status-im.utils.mixpanel-events)
+(ns status-im.utils.mixpanel-events
+  (:require [status-im.chat.models.message :as message-model]))
 ;; This file is supposed to be edited by Chad.
 ;; Chad loves mixpanel. When Chad was a child he dreamed of being a mixpanel tamer.
 
@@ -24,11 +25,13 @@
 
    ; Push notification settings
 
-   {:label   "Granted push notifications"
-    :trigger [:request-notifications-granted]}
+   {:label      "Tap"
+    :trigger    [:request-notifications-granted]
+    :properties {:target :granted-push-notifications}}
 
-   {:label   "Denied push notifications"
-    :trigger [:request-notifications-denied]}
+   {:label      "Tap"
+    :trigger    [:request-notifications-denied]
+    :properties {:target :denied-push-notifications}}
 
    ;; Tab navigation
 
@@ -50,7 +53,7 @@
 
    ;; New
    {:label      "Tap"
-    :trigger    [:navigate-to-tab :new]
+    :trigger    [:navigate-to :new]
     :properties {:target :new}}
    {:label      "Tap"
     :trigger    [:navigate-to :new-chat]
@@ -62,7 +65,7 @@
     :trigger    [:show-profile]
     :properties {:target :show-profile}}
    {:label      "Tap"
-    :trigger    [:open-contact-toggle-list :chat-group]
+    :trigger    [:open-contact-toggle-list]
     :properties {:target :new-group-chat}}
    {:label      "Tap"
     :trigger    [:navigate-to :new-public-chat]
@@ -136,12 +139,14 @@
     :trigger    [:wallet/sign-transaction]
     :properties {:target :wallet-sign-transaction}}
    {:label      "Tap"
+    :trigger    [:wallet/sign-transaction-modal]
+    :properties {:target :dapp-sign-transaction}}
+   {:label      "Tap"
     :trigger    [:navigate-to-clean :wallet]
     :properties {:target :wallet-got-it}}
    {:label      "Tap"
-    :trigger    [:navigate-to :wallet-transaction-sent]
+    :trigger    [:navigation-replace :wallet-transaction-sent]
     :properties {:target :wallet-transaction-sent}}
-
 
    ;;Profile
    {:label      "Tap"
@@ -192,4 +197,44 @@
    {:label      "Tap"
     :trigger    [:my-profile/finish]
     :properties {:target :seed-phrase
-                 :type   :step3-done}}])
+                 :type   :step3-done}}
+
+   ;; sent/receive ratio
+   {:label      "SRratio"
+    :trigger    [:signals/envelope-status]
+    :properties {:target :user-message-sent}
+    :filter-fn  (fn [db [_ envelope-hash status]]
+                  (when (= :sent status)
+                    (let [{:keys [chat-id message-id]}
+                          (get-in db [:transport/message-envelopes envelope-hash])
+
+                          {:keys [message-type]}
+                          (get-in db [:chats chat-id :messages message-id])]
+                      (= :user-message message-type))))
+    :data-fn    (fn [db [_ envelope-hash status]]
+                  (when (= :sent status)
+                    (let [{:keys [chat-id message-id]}
+                          (get-in db [:transport/message-envelopes envelope-hash])
+
+                          {:keys [message-type]}
+                          (get-in db [:chats chat-id :messages message-id])]
+                      {:message-id   message-id
+                       :message-type message-type})))}
+
+   {:label      "SRratio"
+    :trigger    [:chat-received-message/add]
+    :properties {:target :user-message-received}
+    :filter-fn  (fn [db [_ messages]]
+                  (some
+                   (fn [{:keys [message-type] :as message}]
+                     (and (= :user-message message-type)
+                          (message-model/add-to-chat? {:db db} message)))
+                   messages))
+    :data-fn    (fn [db [_ messages]]
+                  (keep
+                   (fn [{:keys [message-id message-type] :as message}]
+                     (when (and (= :user-message message-type)
+                                (message-model/add-to-chat? {:db db} message))
+                       {:message-type message-type
+                        :message-id   message-id}))
+                   messages))}])

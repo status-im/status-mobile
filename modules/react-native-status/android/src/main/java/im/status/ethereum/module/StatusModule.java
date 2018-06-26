@@ -1,6 +1,8 @@
 package im.status.ethereum.module;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.*;
 import android.view.WindowManager;
@@ -43,7 +45,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private String logLevel;
     private Jail jail;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean jscEnabled, String logLevel) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
@@ -52,11 +54,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.devCluster = devCluster;
         this.logLevel = logLevel;
         reactContext.addLifecycleEventListener(this);
-        if(jscEnabled) {
-            jail = new JSCJail(this);
-        } else {
-            jail = new OttoJail();
-        }
+        jail = new JSCJail(this);
     }
 
     @Override
@@ -122,11 +120,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         try {
             logFile.setReadable(true);
             File parent = logFile.getParentFile();
+            if (!parent.canWrite()) {
+                return null;
+            }
             if (!parent.exists()) {
                 parent.mkdirs();
             }
             logFile.createNewFile();
-            logFile.setReadable(true);
+            logFile.setWritable(true);
+            Log.d(TAG, "Can write " + logFile.canWrite());
             Uri gethLogUri = Uri.fromFile(logFile);
             try {
                 Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
@@ -136,7 +138,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
 
             String gethLogFilePath = logFile.getAbsolutePath();
-            Log.d("ExtDirLog", gethLogFilePath);
+            Log.d(TAG, gethLogFilePath);
 
             return gethLogFilePath;
         } catch (Exception e) {
@@ -181,6 +183,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
 
+
+        int testnetNetworkId = 3;
         String testnetDataDir = root + "/ethereum/testnet";
         String oldKeystoreDir = testnetDataDir + "/keystore";
         String newKeystoreDir = root + "/keystore";
@@ -202,19 +206,19 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
 
-        int dev = 0;
-        if (this.devCluster) {
-            dev = 1;
-        }
-
-        String config = Statusgo.GenerateConfig(testnetDataDir, 3, dev);
+        String config;
         try {
             JSONObject customConfig = new JSONObject(defaultConfig);
+
+            String dataDir = root + customConfig.get("DataDir");
+
+            config = Statusgo.GenerateConfig(dataDir, customConfig.getInt("NetworkId"));
+
             JSONObject jsonConfig = new JSONObject(config);
 
-            String gethLogFilePath = prepareLogsFile();
-            boolean logsEnabled = (gethLogFilePath != null) && !TextUtils.isEmpty(this.logLevel);
-            String dataDir = root + customConfig.get("DataDir");
+            String gethLogFilePath = TextUtils.isEmpty(this.logLevel) ? null : prepareLogsFile();
+            boolean logsEnabled = (gethLogFilePath != null);
+
             jsonConfig.put("LogEnabled", logsEnabled);
             jsonConfig.put("LogFile", gethLogFilePath);
             jsonConfig.put("LogLevel", TextUtils.isEmpty(this.logLevel) ? "ERROR" : this.logLevel.toUpperCase());
@@ -239,10 +243,22 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             } catch (Exception e) {
 
             }
+            try {
+                Object clusterConfig = customConfig.get("ClusterConfig");
+                if (clusterConfig != null) {
+                    Log.d(TAG, "ClusterConfig is not null");
+                    jsonConfig.put("ClusterConfig", clusterConfig);
+                }
+            } catch (Exception e) {
+              Log.w(TAG, "Something went wrong parsing cluster config" + e.getMessage());
+            }
+
+
             jsonConfig.put("KeyStoreDir", newKeystoreDir);
 
             config = jsonConfig.toString();
         } catch (JSONException e) {
+            config = Statusgo.GenerateConfig(testnetDataDir, testnetNetworkId);
             Log.d(TAG, "Something went wrong " + e.getMessage());
             Log.d(TAG, "Default configuration will be used");
         }
@@ -487,8 +503,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void approveSignRequests(final String hashes, final String password, final Callback callback) {
-        Log.d(TAG, "approveSignRequests");
+    public void approveSignRequest(final String id, final String password, final Callback callback) {
+        Log.d(TAG, "approveSignRequest");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -497,7 +513,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.ApproveSignRequests(hashes, password);
+                String res = Statusgo.ApproveSignRequest(id, password);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void approveSignRequestWithArgs(final String id, final String password, final String gas, final String gasPrice, final Callback callback) {
+        Log.d(TAG, "approveSignRequestWithArgs");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.ApproveSignRequestWithArgs(id, password, Long.parseLong(gas), Long.parseLong(gasPrice));
                 callback.invoke(res);
             }
         };
@@ -568,7 +603,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
-        
+
         Log.d(TAG, "startCallJail");
         String res = jail.callJail(chatId, path, params);
         Log.d(TAG, "endCallJail");
@@ -723,5 +758,24 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void appStateChange(final String type) {
         Log.d(TAG, "AppStateChange: " + type);
         Statusgo.AppStateChange(type);
+    }
+
+    private static String uniqueID = null;
+    private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+
+    @ReactMethod
+    public void getDeviceUUID(final Callback callback) {
+        if (uniqueID == null) {
+            SharedPreferences sharedPrefs = this.getReactApplicationContext().getSharedPreferences(
+                    PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+            if (uniqueID == null) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.commit();
+            }
+        }
+        callback.invoke(uniqueID);
     }
 }

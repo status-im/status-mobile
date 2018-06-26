@@ -44,9 +44,9 @@
   (rf/reg-fx ::account-events/send-keys-update #())
 
   (rf/reg-cofx
-    ::account-events/get-all-accounts
-    (fn [coeffects _]
-      (assoc coeffects :all-accounts [account-from-realm]))))
+   ::account-events/get-all-accounts
+   (fn [coeffects _]
+     (assoc coeffects :all-accounts [account-from-realm]))))
 
 #_(deftest accounts-events
     "load-accounts
@@ -56,26 +56,26 @@
 
     (run-test-sync
 
-      (test-fixtures)
+     (test-fixtures)
 
-      (rf/dispatch [:initialize-db])
-      (rf/dispatch [:set :accounts/current-account-id account-id])
+     (rf/dispatch [:initialize-db])
+     (rf/dispatch [:set :accounts/current-account-id account-id])
 
-      (let [accounts (rf/subscribe [:get-accounts])]
+     (let [accounts (rf/subscribe [:get-accounts])]
 
-        (testing ":load-accounts event"
+       (testing ":load-accounts event"
 
           ;;Assert the initial state
-          (is (and (map? @accounts) (empty? @accounts)))
+         (is (and (map? @accounts) (empty? @accounts)))
 
-          (rf/dispatch [:load-accounts])
+         (rf/dispatch [:load-accounts])
 
-          (is (= {(:address account-from-realm) account-from-realm} @accounts)))
+         (is (= {(:address account-from-realm) account-from-realm} @accounts)))
 
-        (testing ":add-account event"
-          (let [new-account' (assoc new-account :network constants/default-network)]
+       (testing ":add-account event"
+         (let [new-account' (assoc new-account :network constants/default-network)]
 
-            (rf/dispatch [:add-account new-account])
+           (rf/dispatch [:add-account new-account])
 
-            (is (= {(:address account-from-realm) account-from-realm
-                    (:address new-account)        new-account'} @accounts)))))))
+           (is (= {(:address account-from-realm) account-from-realm
+                   (:address new-account)        new-account'} @accounts)))))))

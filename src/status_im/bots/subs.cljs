@@ -5,9 +5,9 @@
 (re-frame/reg-sub :get-bot-db :bot-db)
 
 (re-frame/reg-sub
-  :current-bot-db
-  :<- [:get-bot-db]
-  :<- [:selected-chat-command]
-  (fn [[bot-db command]]
-    (let [command-owner (get-in command [:command :owner-id])]
-      [command-owner (get bot-db command-owner)])))
+ :current-bot-db
+ :<- [:get-bot-db]
+ :<- [:selected-chat-command]
+ (fn [[bot-db command]]
+   (let [command-owner (get-in command [:command :owner-id])]
+     [command-owner (get bot-db command-owner)])))

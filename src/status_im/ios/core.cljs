@@ -13,32 +13,37 @@
             [status-im.utils.instabug :as instabug]
             [status-im.utils.snoopy :as snoopy]))
 
+(defn app-state-change-handler [state]
+  (dispatch [:app-state-change state]))
+
 (defn app-root []
   (let [keyboard-height (subscribe [:get :keyboard-height])]
     (reagent/create-class
-      {:component-will-mount
-       (fn []
-         (.addListener react/keyboard
-                       "keyboardWillShow"
-                       (fn [e]
-                         (let [h (.. e -endCoordinates -height)]
-                           (when-not (= h @keyboard-height)
-                             (dispatch [:set :keyboard-height h])
-                             (dispatch [:set :keyboard-max-height h])))))
-         (.addListener react/keyboard
-                       "keyboardWillHide"
-                       #(when-not (= 0 @keyboard-height)
-                          (dispatch [:set :keyboard-height 0])))
-         (.hide react/splash-screen))
-       :component-did-mount
-       (fn []
-         (notifications/on-refresh-fcm-token)
-         (notifications/on-notification))
-       :component-will-unmount
-       (fn []
-         (.stop react/http-bridge))
-       :display-name "root"
-       :reagent-render views/main})))
+     {:component-will-mount
+      (fn []
+        (.addListener react/keyboard
+                      "keyboardWillShow"
+                      (fn [e]
+                        (let [h (.. e -endCoordinates -height)]
+                          (when-not (= h @keyboard-height)
+                            (dispatch [:set :keyboard-height h])
+                            (dispatch [:set :keyboard-max-height h])))))
+        (.addListener react/keyboard
+                      "keyboardWillHide"
+                      #(when-not (= 0 @keyboard-height)
+                         (dispatch [:set :keyboard-height 0])))
+        (.hide react/splash-screen)
+        (.addEventListener react/app-state "change" app-state-change-handler))
+      :component-did-mount
+      (fn []
+        (notifications/on-refresh-fcm-token)
+        (notifications/on-notification))
+      :component-will-unmount
+      (fn []
+        (.stop react/http-bridge)
+        (.removeEventListener react/app-state "change" app-state-change-handler))
+      :display-name "root"
+      :reagent-render views/main})))
 
 (defn init []
   (core/init app-root)

@@ -19,7 +19,6 @@
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.money :as money]
             [status-im.utils.utils :as utils]))
 
 ;; Request screen
@@ -27,7 +26,7 @@
 (views/defview send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [{:keys [to to-name whisper-identity]} [:wallet.send/transaction]
-                  {:keys [amount amount-error]}         [:wallet.request/transaction]
+                  {:keys [amount amount-error amount-text]}         [:wallet.request/transaction]
                   scroll (atom nil)]
     [comp/simple-screen {:avoid-keyboard? true}
      [comp/toolbar (i18n/label :t/new-request)]
@@ -42,10 +41,13 @@
         [components/asset-selector {:disabled? true
                                     :symbol    :ETH}]
         [components/amount-selector {:error         amount-error
-                                     :input-options {:default-value  (str (money/to-fixed (money/wei->ether amount)))
-                                                     :max-length     21
+                                     :amount amount
+                                     :amount-text amount-text
+                                     :input-options {:max-length     21
                                                      :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]]]
+                                                     :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}
+         {:decimals 18
+          :symbol  :ETH}]]]
       [bottom-buttons/bottom-buttons styles/bottom-buttons
        nil ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
        [button/button {:disabled?           (not (and to amount))

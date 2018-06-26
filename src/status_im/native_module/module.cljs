@@ -8,7 +8,8 @@
   (-create-account [this password callback])
   (-recover-account [this passphrase password callback])
   (-login [this address password callback])
-  (-approve-sign-requests [this hashes password callback])
+  (-approve-sign-request [this id password callback])
+  (-approve-sign-request-with-args [this id password gas gas-price callback])
   (-discard-sign-request [this id])
   (-parse-jail [this chat-id file callback])
   (-call-jail [this params])
@@ -23,5 +24,6 @@
   (-add-peer [this enode callback])
   (-close-application [this])
   (-connection-change [this data])
-  (-app-state-change [this state]))
+  (-app-state-change [this state])
+  (-get-device-UUID [this callback]))
 

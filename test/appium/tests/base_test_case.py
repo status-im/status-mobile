@@ -4,6 +4,8 @@ import re
 import subprocess
 import asyncio
 
+from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
+from support.api.network_api import NetworkApi
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
@@ -13,7 +15,6 @@ from views.base_view import BaseView
 
 
 class AbstractTestCase:
-
     __metaclass__ = ABCMeta
 
     @property
@@ -66,7 +67,13 @@ class AbstractTestCase:
         desired_caps['automationName'] = 'UiAutomator2'
         desired_caps['setWebContentDebuggingEnabled'] = True
         desired_caps['ignoreUnimportantViews'] = False
+        desired_caps['enableNotificationListener'] = True
         return desired_caps
+
+    def update_capabilities_sauce_lab(self, new_capabilities: dict):
+        caps = self.capabilities_sauce_lab.copy()
+        caps.update(new_capabilities)
+        return caps
 
     @property
     def capabilities_local(self):
@@ -101,6 +108,8 @@ class AbstractTestCase:
 
     errors = []
 
+    network_api = NetworkApi()
+
     def verify_no_errors(self):
         if self.errors:
             pytest.fail('. '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
@@ -121,7 +130,7 @@ class SingleDeviceTestCase(AbstractTestCase):
                                                capabilities[self.environment]['capabilities'])
                 self.driver.implicitly_wait(self.implicitly_wait)
                 BaseView(self.driver).accept_agreements()
-                test_suite_data.current_test.jobs.append(self.driver.session_id)
+                test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
                 break
             except WebDriverException:
                 counter += 1
@@ -146,7 +155,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
             self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
             BaseView(self.drivers[driver]).accept_agreements()
-            test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
+            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -166,15 +175,20 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
     def setup_method(self, method):
         self.drivers = dict()
 
-    def create_drivers(self, quantity=2):
-        self.drivers = self.loop.run_until_complete(start_threads(quantity, webdriver.Remote,
-                                                    self.drivers,
-                                                    self.executor_sauce_lab,
-                                                    self.capabilities_sauce_lab))
+    def create_drivers(self, quantity=2, max_duration=1800, custom_implicitly_wait=None, offline_mode=False):
+        capabilities = {'maxDuration': max_duration}
+        if offline_mode:
+            capabilities['platformVersion'] = '6.0'
+        self.drivers = self.loop.run_until_complete(start_threads(quantity,
+                                                                  webdriver.Remote,
+                                                                  self.drivers,
+                                                                  self.executor_sauce_lab,
+                                                                  self.update_capabilities_sauce_lab(capabilities)))
         for driver in range(quantity):
-            self.drivers[driver].implicitly_wait(self.implicitly_wait)
+            self.drivers[driver].implicitly_wait(
+                custom_implicitly_wait if custom_implicitly_wait else self.implicitly_wait)
             BaseView(self.drivers[driver]).accept_agreements()
-            test_suite_data.current_test.jobs.append(self.drivers[driver].session_id)
+            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -189,10 +203,31 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         cls.loop.close()
 
 
-environments = {'local': LocalMultipleDeviceTestCase,
-                'sauce': SauceMultipleDeviceTestCase}
+environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == 'local' else SauceMultipleDeviceTestCase
 
 
-class MultipleDeviceTestCase(environments[pytest.config.getoption('env')]):
+class MultipleDeviceTestCase(environment):
 
-    pass
+    def setup_method(self, method):
+        super(MultipleDeviceTestCase, self).setup_method(method)
+        self.senders = dict()
+
+    def teardown_method(self, method):
+        for user in self.senders:
+            self.network_api.faucet(address=self.senders[user]['address'])
+        super(MultipleDeviceTestCase, self).teardown_method(method)
+
+
+class MessageReliabilityTestCase(MultipleDeviceTestCase):
+
+    def setup_method(self, method):
+        super(MessageReliabilityTestCase, self).setup_method(method)
+        self.one_to_one_chat_data = dict()
+        self.public_chat_data = dict()
+
+    def teardown_method(self, method):
+        if self.one_to_one_chat_data:
+            create_one_to_one_chat_report(self.one_to_one_chat_data)
+        if self.public_chat_data:
+            create_public_chat_report(self.public_chat_data)
+        super(MultipleDeviceTestCase, self).teardown_method(method)

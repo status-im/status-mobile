@@ -22,7 +22,6 @@
                              ({:timestamp "1505764322000"}
                               {:timestamp "1505750000000"})}))
 
-
 (deftest group-transactions-by-date
   "Check if transactions are sorted by date"
   (is (= (transactions-subs/group-transactions-by-date transactions)

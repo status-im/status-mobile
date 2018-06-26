@@ -139,3 +139,14 @@
              :letter-spacing -0.2}
    :android {:font-size  12
              :margin-top 2}})
+
+(def bottom-container
+  {:flex-direction    :row
+   :margin-horizontal 12
+   :margin-vertical   15})
+
+(def delete-button
+  {:background-color colors/white})
+
+(def delete-button-text
+  {:color colors/red})

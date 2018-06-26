@@ -54,16 +54,20 @@ release-ios: prod-build-ios ##@build build release for iOS release
 prod-build:
 	lein prod-build
 
+prod-build-android:
+	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null || true
+	lein prod-build-android
+
+prod-build-ios:
+	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
+	lein prod-build-ios
+
 full-prod-build: ##@build build prod for both Android and iOS
 	./scripts/bundle-status-go.sh ios
 	./scripts/bundle-status-go.sh android
 	$(MAKE) prod-build
-
-prod-build-android:
-	lein prod-build-android
-
-prod-build-ios:
-	lein prod-build-ios
+	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
+	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null
 
 #----------------
 # Dev builds
@@ -105,10 +109,15 @@ repl-android: ##@repl Start REPL for Android
 # Run
 # -------------
 run-android: ##@run Run Android build
-	react-native run-android
+	react-native run-android --appIdSuffix debug
 
+SIMULATOR=
 run-ios: ##@run Run iOS build
+ifneq ("$(SIMULATOR)", "")
+	react-native run-ios --simulator="$(SIMULATOR)"
+else
 	react-native run-ios
+endif
 
 #--------------
 # Tests
@@ -131,6 +140,11 @@ geth-connect: ##@other Connect to Geth on the device
 	build/bin/geth attach http://localhost:8545
 
 android-ports-avd: ##@other Add reverse proxy to Android Device/Simulator
+	adb -e reverse tcp:8081 tcp:8081
+	adb -e reverse tcp:3449 tcp:3449
+	adb -e reverse tcp:4567 tcp:4567
+
+android-ports-genymotion: ##@other Add reverse proxy to Android Device/Simulator
 	adb -e reverse tcp:8081 tcp:8081
 	adb -e reverse tcp:3449 tcp:3449
 	adb -e reverse tcp:4567 tcp:4567
