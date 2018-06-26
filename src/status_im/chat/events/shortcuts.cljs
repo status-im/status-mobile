@@ -15,7 +15,7 @@
              :from-chat? true)))
 
 (defn send-shortcut-fx [{:account/keys [account] :as db} contact params]
-  (let [chain              (keyword (ethereum/network-names (:network db)))
+  (let [chain              (keyword (:chain db))
         symbol             (-> params :asset keyword)
         {:keys [decimals]} (tokens/asset-for chain symbol)]
     (merge {:db (-> db

@@ -14,9 +14,8 @@
 ;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
 ;; if we were to update all balances.
-(defn- allowed-assets [network account]
-  (let [chain                 (keyword (ethereum/network-names network))
-        visible-token-symbols (get-in account [:settings :wallet :visible-tokens chain])]
+(defn- allowed-assets [chain account]
+  (let [visible-token-symbols (get-in account [:settings :wallet :visible-tokens chain])]
     (->> (tokens/tokens-for chain)
          (filter #(not (:nft? %)))
          (filter #(contains? visible-token-symbols (:symbol %)))
@@ -26,19 +25,19 @@
 
 (defn- generate-context
   "Generates context for jail call"
-  [account current-account-id chat-id group-chat? to network]
+  [account current-account-id chat-id group-chat? to chain]
   (merge {:platform       platform/os
-          :network        (ethereum/network-names network)
+          :network        chain
           :from           current-account-id
           :to             to
-          :allowed-assets (clj->js (allowed-assets network account))
+          :allowed-assets (clj->js (allowed-assets chain account))
           :chat           {:chat-id    chat-id
                            :group-chat (boolean group-chat?)}}
          i18n/delimeters))
 
 (defn request-command-message-data
   "Requests command message data from jail"
-  [{:contacts/keys [contacts] :account/keys [account] :keys [network] :as db}
+  [{:contacts/keys [contacts] :account/keys [account] :keys [chain] :as db}
    {{:keys [command command-scope-bitmask bot params type]} :content
     :keys [chat-id group-id] :as message}
    {:keys [data-type] :as opts}]
@@ -51,7 +50,7 @@
             to          (get-in contacts [chat-id :address])
             address     (get-in db [:account/account :address])
             jail-params {:parameters params
-                         :context    (generate-context account address chat-id (models.message/group-message? message) to network)}]
+                         :context    (generate-context account address chat-id (models.message/group-message? message) to chain)}]
         {:db        db
          :call-jail [{:jail-id                bot
                       :path                   path

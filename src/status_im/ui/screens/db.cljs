@@ -131,6 +131,7 @@
 ;;;;NETWORK
 
 (spec/def ::network (spec/nilable string?))
+(spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
 (spec/def :inbox/fetching? (spec/nilable boolean?))
@@ -225,6 +226,7 @@
                  ::sync-state
                  ::sync-data
                  ::network
+                 ::chain
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id

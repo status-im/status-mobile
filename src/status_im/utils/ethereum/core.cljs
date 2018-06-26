@@ -12,14 +12,6 @@
    :testnet {:id 3 :name "Ropsten"}
    :rinkeby {:id 4 :name "Rinkeby"}})
 
-(def network-names
-  {"mainnet"     "mainnet"
-   "mainnet_rpc" "mainnet"
-   "testnet"     "testnet"
-   "testnet_rpc" "testnet"
-   "rinkeby"     "rinkeby"
-   "rinkeby_rpc" "rinkeby"})
-
 (defn chain-id->chain-keyword [i]
   (some #(when (= i (:id (val %))) (key %)) chains))
 
@@ -71,6 +63,11 @@
 
 (defn network->chain-keyword [network]
   (chain-id->chain-keyword (network->chain-id network)))
+
+(defn network->chain-name [network]
+  (-> network
+      network->chain-keyword
+      name))
 
 (defn sha3 [s]
   (.sha3 dependencies/Web3.prototype (str s)))

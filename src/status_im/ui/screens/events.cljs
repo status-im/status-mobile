@@ -337,7 +337,9 @@
               status-module-initialized? status-node-started? device-UUID]
        :or   [network (get app-db :network)]} [_ address]]
    (let [console-contact (get contacts constants/console-chat-id)
-         current-account (accounts address)]
+         current-account (accounts address)
+         account-network-id (get current-account :network network)
+         account-network (get-in current-account [:networks account-network-id])]
      (cond-> (assoc app-db
                     :access-scope->commands-responses access-scope->commands-responses
                     :current-public-key (:public-key current-account)
@@ -350,6 +352,7 @@
                     :account/account current-account
                     :network-status network-status
                     :network network
+                    :chain (ethereum/network->chain-name account-network)
                     :peers-summary peers-summary
                     :peers-count peers-count
                     :device-UUID device-UUID)

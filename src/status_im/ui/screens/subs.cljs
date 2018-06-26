@@ -39,7 +39,7 @@
          (fn [current-account]
            (get (:networks current-account) (:network current-account))))
 
-(reg-sub :network-name (comp ethereum/network-names :network))
+(reg-sub :network-name :chain)
 
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)
