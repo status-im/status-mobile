@@ -93,7 +93,7 @@ class TestMessagesOneToOneChat(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
         progress_time = chat_1.chat_element_by_text(message).progress_bar.measure_time_while_element_is_shown()
-        if not 9 < progress_time < 15:
+        if not 5 < progress_time < 30:
             self.errors.append('Progress indicator is shown during %s seconds' % progress_time)
 
         device_1.set_network_connection(2)  # turning on WiFi connection
