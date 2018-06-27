@@ -2,4 +2,5 @@
 
 (def logout-row
   {:justify-content :space-between
-   :flex-direction  :row})
+   :flex-direction  :row
+   :margin-top      60})
