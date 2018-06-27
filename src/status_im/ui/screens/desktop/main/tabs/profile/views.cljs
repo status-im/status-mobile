@@ -40,9 +40,7 @@
      [react/view
       [my-profile-info current-account]]
      [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])
-                                 :style {:margin-top 60}}
-
-      [react/view {:style styles/logout-row}
-       [react/text {:style {:color colors/red}} (i18n/label :t/logout)]
-       [react/text {:style {:color colors/gray}} "V" build/version]]]]))
+     [react/view {:style styles/logout-row}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
+       [react/text {:style {:color colors/red}} (i18n/label :t/logout)]]
+      [react/text {:style {:color colors/gray}} "V" build/version]]]))
