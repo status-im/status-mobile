@@ -60,15 +60,6 @@
      (send-tokens params))))
 
 (re-frame/reg-fx
- ::show-transaction-moved
- (fn [modal?]
-   (utils/show-popup
-    (i18n/label :t/transaction-moved-title)
-    (i18n/label :t/transaction-moved-text)
-    (when modal?
-      #(re-frame/dispatch [:navigate-back])))))
-
-(re-frame/reg-fx
  ::show-transaction-error
  (fn [message]
     ;; (andrey) we need this timeout because modal window conflicts with alert
@@ -160,11 +151,6 @@
   (let [result (types/json->clj raw-results)]
     (dispatch-transaction-completed result)))
 
-(handlers/register-handler-fx
- :sign-later-from-chat
- (fn [_ _]
-   {::show-transaction-moved  true}))
-
 (defn prepare-transaction [{:keys [id message_id method args]} now]
   ;;NOTE(goranjovic): the transactions started from chat using /send command
   ;; are only in ether, so this parameter defaults to ETH
@@ -194,7 +180,6 @@
 
 (handlers/register-handler-fx
  :check-transactions-queue
- [(re-frame/inject-cofx :now)]
  (fn [{:keys [db now]} _]
    (let [{:keys [send-transaction transactions-queue]} (:wallet db)
          {:keys [id method args] :as queued-transaction} (last transactions-queue)

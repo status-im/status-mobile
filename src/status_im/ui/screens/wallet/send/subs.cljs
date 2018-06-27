@@ -75,12 +75,6 @@
                        send-transaction)
                      edit)))
 
-(defn sign-enabled? [amount-error to amount]
-  (and
-   (nil? amount-error)
-   (not (nil? to)) (not= to "")
-   (not (nil? amount)) (not= amount "")))
-
 (re-frame/reg-sub :wallet.send/transaction
                   :<- [::send-transaction]
                   :<- [:balance]
