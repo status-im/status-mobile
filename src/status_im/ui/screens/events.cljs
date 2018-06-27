@@ -13,6 +13,9 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.universal-links.core :as universal-links]
+
+            status-im.utils.universal-links.events
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
@@ -315,7 +318,7 @@
 
 (handlers/register-handler-fx
  :initialize-account
- (fn [_ [_ address events-after]]
+ (fn [cofx [_ address events-after]]
    {:dispatch-n (cond-> [[:initialize-account-db address]
                          [:initialize-protocol address]
                          [:fetch-web3-node-version]
@@ -329,7 +332,8 @@
                          [:update-transactions]
                          [:get-fcm-token]
                          [:update-sign-in-time]
-                         [:show-mainnet-is-default-alert]]
+                         [:show-mainnet-is-default-alert]
+                         (universal-links/stored-url-event cofx)]
                   (seq events-after) (into events-after))}))
 
 (handlers/register-handler-fx

@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :refer [dispatch]]
             [status-im.utils.platform :refer [android?]]
+            [status-im.utils.universal-links.core :as utils.universal-links]
             [status-im.ui.components.react :refer [view modal create-main-screen-view] :as react]
             [status-im.ui.components.styles :as common-styles]
             [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
@@ -134,7 +135,9 @@
 (defview main []
   (letsubs [signed-up? [:signed-up?]
             view-id    [:get :view-id]]
-    {:component-will-update (fn [] (react/dismiss-keyboard!))}
+    {:component-did-mount    utils.universal-links/initialize
+     :component-will-unmount utils.universal-links/finalize
+     :component-will-update  (fn [] (react/dismiss-keyboard!))}
     (when view-id
       (let [component        (get-main-component view-id)
             main-screen-view (create-main-screen-view view-id)]

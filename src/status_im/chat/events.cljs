@@ -374,15 +374,18 @@
                         :confirm-button-text (i18n/label :t/clear)
                         :on-accept           #(re-frame/dispatch [:clear-history])}}))
 
+(defn create-new-public-chat [topic {:keys [db now] :as cofx}]
+  (handlers-macro/merge-fx cofx
+                           (models/add-public-chat topic)
+                           (navigation/navigate-to-clean :home)
+                           (navigate-to-chat topic {})
+                           (public-chat/join-public-chat topic)))
+
 (handlers/register-handler-fx
  :create-new-public-chat
  [re-frame/trim-v]
- (fn [{:keys [db now] :as cofx} [topic]]
-   (handlers-macro/merge-fx cofx
-                            (models/add-public-chat topic)
-                            (navigation/navigate-to-clean :home)
-                            (navigate-to-chat topic {})
-                            (public-chat/join-public-chat topic))))
+ (fn [cofx [topic]]
+   (create-new-public-chat topic cofx)))
 
 (defn- group-name-from-contacts [selected-contacts all-contacts username]
   (->> selected-contacts
@@ -407,13 +410,16 @@
                               (navigate-to-chat random-id {})
                               (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
 
+(defn show-profile [identity {:keys [db] :as cofx}]
+  (handlers-macro/merge-fx cofx
+                           {:db (assoc db :contacts/identity identity)}
+                           (navigation/navigate-forget :profile)))
+
 (handlers/register-handler-fx
  :show-profile
  [re-frame/trim-v]
- (fn [{:keys [db] :as cofx} [identity]]
-   (handlers-macro/merge-fx cofx
-                            {:db (assoc db :contacts/identity identity)}
-                            (navigation/navigate-forget :profile))))
+ (fn [cofx [identity]]
+   (show-profile identity cofx)))
 
 (handlers/register-handler-fx
  :resend-message

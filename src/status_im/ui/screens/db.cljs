@@ -150,6 +150,10 @@
 
 (spec/def ::device-UUID (spec/nilable string?))
 
+;;;;UNIVERSAL LINKS
+
+(spec/def :universal-links/url (spec/nilable string?))
+
 (spec/def ::db (allowed-keys
                 :opt
                 [:contacts/contacts
@@ -187,6 +191,7 @@
                  :inbox/last-received
                  :inbox/current-id
                  :inbox/fetching?
+                 :universal-links/url
                  :browser/browsers
                  :browser/options
                  :new/open-dapp
