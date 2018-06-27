@@ -84,6 +84,34 @@ EOF
   fi
 }
 
+function install_clojure_cli() {
+  if is_macos; then
+    brew_install clojure
+  elif is_linux; then
+    install_clojure_cli_linux
+  fi
+}
+
+function install_clojure_cli_linux() {
+  if ! program_exists "lein"; then
+    cecho "@b@blue[[+ Installing Clojure CLI...]]"
+
+    local current_dir=$(pwd)
+    sudo su << EOF
+      curl --silent \
+        https://download.clojure.org/install/linux-install-1.9.0.381.sh \
+        -o /tmp/clojure
+
+      chmod +x /tmp/clojure
+      cd /tmp
+      ./clojure
+EOF
+    cd "$current_dir"
+  else
+    already_installed "Clojure CLI"
+  fi
+}
+
 function install_watchman() {
   if is_macos; then
     brew_install watchman
@@ -164,17 +192,19 @@ function install_node_via_nvm() {
   cd "$(repo_path)"
 
   if [ ! -e "$nvmrc" ]; then
-    cecho "@b@blue[[+ Installing latest stable Node version]]"
+    cecho "@b@blue[[+ Installing Node 9 (Node 10 is not supported by Realm)]]"
 
-    nvm install stable
-    echo stable > "$nvmrc"
+    nvm install 9
+    nvm alias status-im 9
+    echo status-im > "$nvmrc"
 
-    nvm use
+    nvm use status-im
   else
-    nvm use >/dev/null
+    local version_alias=$(cat "$nvmrc")
+    nvm use $version_alias
 
     local version=$(node -v)
-    cecho "+ Node already installed ($version via NVM)... skipping."
+    cecho "+ Node already installed ($version_alias $version via NVM)... skipping."
   fi
 }
 
@@ -228,6 +258,7 @@ function install_cocoapods() {
 
   local gem_command="sudo gem"
   local destination="system Ruby"
+  local version=$(required_pod_version)
 
   if using_rvm; then
     initialize_rvm
@@ -237,10 +268,8 @@ function install_cocoapods() {
   fi
 
   if ! program_exists "pod"; then
-    $gem_command install cocoapods
+    $gem_command install cocoapods -v "$version"
   elif ! correct_pod_version_is_installed; then
-    local version=$(required_pod_version)
-
     cecho "@b@blue[[+ Updating to cocoapods $version]]"
 
     $gem_command uninstall cocoapods --ignore-dependencies --silent

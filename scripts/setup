@@ -25,6 +25,7 @@ setup_header "Installing requirements..."
 
 install_and_setup_package_manager
 install_java8
+install_clojure_cli
 install_leiningen
 install_node
 install_watchman
