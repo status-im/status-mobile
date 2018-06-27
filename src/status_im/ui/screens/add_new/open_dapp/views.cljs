@@ -14,14 +14,14 @@
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.open-dapp.styles :as styles]))
 
-(defn render-row [row _ _]
-  [contact-view/contact-view {:contact             row
-                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description row])
+(defn- render-dapp [dapp]
+  [contact-view/contact-view {:contact             dapp
+                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description dapp])
                               :show-forward?       true
                               :accessibility-label :dapp-item}])
 
 (views/defview open-dapp []
-  (views/letsubs [dapps [:all-dapp-with-url-contacts]
+  (views/letsubs [dapps [:all-dapps]
                   url-text (atom nil)]
     [react/keyboard-avoiding-view styles/main-container
      [status-bar/status-bar]
@@ -36,15 +36,14 @@
                          :auto-capitalize     :none
                          :auto-correct        false
                          :style               add-new.styles/input
-                         :accessibility-label :dapp-url-input}]]
-     [react/text {:style styles/list-title}
-      (i18n/label :t/selected-dapps)]
-     [list/flat-list {:data                      dapps
-                      :key-fn                    :dapp-url
-                      :render-fn                 render-row
-                      :default-separator?        true
-                      :enableEmptySections       true
-                      :keyboardShouldPersistTaps :always}]]))
+                         :accessibility-label :dapp-url-input
+                         :return-key-type     :go}]]
+     [list/section-list {:sections                  dapps
+                         :key-fn                    :dapp-url
+                         :render-fn                 render-dapp
+                         :default-separator?        true
+                         :enableEmptySections       true
+                         :keyboardShouldPersistTaps :always}]]))
 
 (views/defview dapp-description []
   (views/letsubs [{:keys [name dapp-url description] :as dapp} [:get-screen-params]]

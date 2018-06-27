@@ -53,7 +53,7 @@
   {:width  icon-size
    :height icon-size})
 
-(def horizontal-margin 16)
+(def horizontal-margin 12)
 (def vertical-margin 12)
 
 (def left-item-wrapper
@@ -76,26 +76,23 @@
 
 (def separator
   (merge
-    base-separator
-    {:margin-left 70}))
+   base-separator
+   {:margin-left 70}))
 
 (defstyle list-header-footer-spacing
   {:android {:background-color colors/white
              :height           8}})
 
-(defstyle section-separator
-  (merge base-separator
-         {:android {:margin-top 12}
-          :ios     {:margin-top 16}}))
-
 (defstyle section-header
   {:font-size       14
    :color           colors/gray
    :margin-left     16
-   :android         {:margin-top    11
-                     :margin-bottom 3}
-   :ios             {:margin-top    10
-                     :margin-bottom 2}})
+   :margin-top      16
+   :android         {:margin-bottom 3}
+   :ios             {:margin-bottom 10}})
+
+(def section-header-container
+  {:background-color colors/white})
 
 (def action-list
   {:background-color colors/blue})

@@ -8,6 +8,7 @@
                  :compiler     {:output-to     "target/desktop/app.js"
                                 :main          "env.desktop.main"
                                 :output-dir    "target/desktop"
+                                :npm-deps false
                                 :optimizations :none}
                  :figwheel     true}
                 {:id           :ios
@@ -15,6 +16,7 @@
                  :compiler     {:output-to     "target/ios/app.js"
                                 :main          "env.ios.main"
                                 :output-dir    "target/ios"
+                                :npm-deps false
                                 :optimizations :none}
                  :figwheel     true}
                 {:id               :android
@@ -22,6 +24,7 @@
                  :compiler         {:output-to     "target/android/app.js"
                                     :main          "env.android.main"
                                     :output-dir    "target/android"
+                                    :npm-deps false
                                     :optimizations :none}
                  :warning-handlers '[status-im.utils.build/warning-handler]
                  :figwheel         true}]

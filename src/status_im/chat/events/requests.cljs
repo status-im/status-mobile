@@ -1,7 +1,6 @@
 (ns status-im.chat.events.requests
-  (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.utils.handlers :as handlers]))
+  (:require [status-im.constants :as constants]
+            [status-im.data-store.requests :as requests-store]))
 
 ;; Functions
 
@@ -9,9 +8,8 @@
   "Takes chat-id, message-id and cofx, returns fx necessary data for marking request as answered"
   [chat-id message-id {:keys [db]}]
   (when message-id
-    {:db                                  (update-in db [:chats chat-id :requests] dissoc message-id)
-     :data-store/mark-request-as-answered {:chat-id    chat-id
-                                           :message-id message-id}}))
+    {:db            (update-in db [:chats chat-id :requests] dissoc message-id)
+     :data-store/tx [(requests-store/mark-request-as-answered-tx chat-id message-id)]}))
 
 (defn add-request
   "Takes chat-id, message-id + cofx and returns fx with necessary data for adding new request"
@@ -22,5 +20,5 @@
                      :message-id message-id
                      :response   (:request-command content)
                      :status     "open"}]
-        {:db                      (assoc-in db [:chats chat-id :requests message-id] request)
-         :data-store/save-request request}))))
+        {:db            (assoc-in db [:chats chat-id :requests message-id] request)
+         :data-store/tx [(requests-store/save-request-tx request)]}))))

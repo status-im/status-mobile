@@ -1,21 +1,20 @@
 (ns status-im.chat.console
   (:require [status-im.ui.components.styles :refer [default-chat-color]]
-            [status-im.utils.random :as random]
             [status-im.constants :as constants]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.i18n :as i18n]
-            [clojure.string :as string]))
+            [status-im.i18n :as i18n]))
 
-(defn console-message [{:keys [message-id content content-type]
-                        :or   {message-id (random/id)}}]
+(defn console-message [{:keys [timestamp message-id content content-type]}]
   {:message-id   message-id
    :outgoing     false
    :chat-id      constants/console-chat-id
    :from         constants/console-chat-id
    :to           "me"
+   :timestamp    timestamp
    :clock-value  (utils.clocks/send 0)
    :content      content
-   :content-type content-type})
+   :content-type content-type
+   :show?        true})
 
 (def chat
   {:chat-id          constants/console-chat-id

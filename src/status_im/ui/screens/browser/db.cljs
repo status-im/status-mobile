@@ -12,21 +12,23 @@
 (spec/def :browser/fullscreen? (spec/nilable boolean?))
 (spec/def :browser/can-go-back? (spec/nilable boolean?))
 (spec/def :browser/can-go-forward? (spec/nilable boolean?))
+(spec/def :browser/error? (spec/nilable boolean?))
 
 (spec/def :browser/options
   (allowed-keys
-    :opt-un [:browser/browser-id
-             :browser/can-go-back?
-             :browser/can-go-forward?
-             :browser/fullscreen?]))
+   :opt-un [:browser/browser-id
+            :browser/can-go-back?
+            :browser/can-go-forward?
+            :browser/fullscreen?
+            :browser/error?]))
 
 (spec/def :browser/browser
   (allowed-keys
-    :req-un [:browser/browser-id
-             :browser/timestamp]
-    :opt-un [:browser/name
-             :browser/dapp?
-             :browser/url
-             :browser/contact]))
+   :req-un [:browser/browser-id
+            :browser/timestamp]
+   :opt-un [:browser/name
+            :browser/dapp?
+            :browser/url
+            :browser/contact]))
 
 (spec/def :browser/browsers (spec/nilable (spec/map-of :global/not-empty-string :browser/browser)))

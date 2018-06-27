@@ -30,10 +30,7 @@
 (def login-badge
   {:align-items :center})
 
-(def login-badge-image
-  {:width         56
-   :height        56
-   :border-radius 28})
+(def login-badge-image-size 56)
 
 (def login-badge-name
   {:font-size  15

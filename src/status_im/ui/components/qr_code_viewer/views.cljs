@@ -2,19 +2,19 @@
   (:require [reagent.core :as reagent]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.text :as text]))
 
 (defn qr-code [props]
   (reagent/create-element
-    rn-dependencies/qr-code
-    (clj->js (merge {:inverted true} props))))
+   rn-dependencies/qr-code
+   (clj->js (merge {:inverted true} props))))
 
 (defn- footer [style value]
   [react/view styles/footer
    [react/view styles/wallet-info
-    [react/text {:style               (merge styles/hash-value-text style)
-                 :accessibility-label :address-text}
-     value]]])
+    [text/selectable-text {:value value
+                           :style (merge styles/hash-value-text style)}]]])
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style]} value hint legend]
   {:pre [(not (nil? value))]}

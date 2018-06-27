@@ -1,7 +1,7 @@
 (ns status-im.utils.http
-  (:require [status-im.constants :as const]
-            [status-im.utils.utils :as utils]
-            [status-im.react-native.js-dependencies :as rn-dependencies])
+  (:require [status-im.utils.utils :as utils]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms
@@ -39,11 +39,14 @@
                                         :headers {"Cache-Control" "no-cache"}
                                         :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [response]
-                (let [ok?  (.-ok response)
-                      ok?' (if valid-response?
-                             (and ok? (valid-response? response))
-                             ok?)]
-                  [(.-_bodyText response) ok?'])))
+                (->
+                 (.text response)
+                 (.then (fn [response-body]
+                          (let [ok?  (.-ok response)
+                                ok?' (if valid-response?
+                                       (and ok? (valid-response? response))
+                                       ok?)]
+                            [response-body ok?']))))))
        (.then (fn [[response ok?]]
                 (cond
                   (and on-success ok?)
@@ -56,3 +59,14 @@
        (.catch (or on-error
                    (fn [error]
                      (utils/show-popup "Error" (str error))))))))
+
+(defn normalize-url [url]
+  (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
+
+(defn parse-payload [o]
+  (when o
+    (try
+      (js->clj (js/JSON.parse o)
+               :keywordize-keys true)
+      (catch :default _
+        (log/debug (str "Failed to parse " o))))))

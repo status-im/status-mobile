@@ -1,8 +1,7 @@
 (ns status-im.translations.sv)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Medlemmar"
    :not-implemented                       "!inte implementerad"
    :chat-name                             "Chattnamn"
@@ -336,8 +335,6 @@
    :wallet-browse-photos                  "Bläddra foton"
    :validation-amount-invalid-number      "Beloppet är inte ett giltigt tal"
    :validation-amount-is-too-precise      "Summan är för precis Den minsta summan du kan skicka är 1 Wei (1x10^-18 ETH)"
-
-
 
    ;; network settings
    :new-network                           "Nytt nätverk"

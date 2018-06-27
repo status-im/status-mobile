@@ -1,8 +1,7 @@
 (ns status-im.translations.ru)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Участники"
    :not-implemented                       "!не реализовано"
    :chat-name                             "Имя чата"
@@ -328,8 +327,6 @@
    :wallet-browse-photos                  "Просмотреть Фотографии"
    :validation-amount-invalid-number      "Сумма недействительна"
    :validation-amount-is-too-precise      "Слишком много чисел после запятой. Наименьшая сумма, которую вы можете отправить это 1 Wei (1x10^-18 ETH)"
-
-
 
    ;; network settings
    :new-network                           "Новая сеть"

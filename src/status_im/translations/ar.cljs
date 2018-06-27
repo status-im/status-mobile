@@ -1,8 +1,7 @@
 (ns status-im.translations.ar)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "الأعضاء"
    :not-implemented                       "!غير مُطَبّق"
    :chat-name                             "اسم الدردشة"
@@ -133,7 +132,6 @@
    :contact-already-added                 "تمت إضافة جهة الاتصال"
    :can-not-add-yourself                  "لا يمكنك إضافة نفسك"
    :unknown-address                       "عنوان غير معروف"
-
 
    ;;login
    :connect                               "اتصال"

@@ -20,11 +20,19 @@
                        ;; in handlers
                        (let [stack      (subscribe [:get :navigation-stack])
                              result-box (subscribe [:get-current-chat-ui-prop :result-box])
-                             webview    (subscribe [:get :webview-bridge])]
+                             webview    (subscribe [:get :webview-bridge])
+                             view-id    (subscribe [:get :view-id])
+                             chat-id    (subscribe [:get-current-chat-id])]
                          (cond
 
                            (and @webview (:can-go-back? @result-box))
                            (do (.goBack @webview) true)
+
+                           (#{:home :wallet :my-profile} view-id)
+                           (do (.exitApp react/back-handler))
+
+                           (= :wallet-transaction-sent @view-id)
+                           (do (dispatch [:execute-stored-command-and-return-to-chat @chat-id]) true)
 
                            (< 1 (count @stack))
                            (do (dispatch [:navigate-back]) true)
@@ -38,32 +46,35 @@
 (defn app-root []
   (let [keyboard-height (subscribe [:get :keyboard-height])]
     (reagent/create-class
-      {:component-will-mount
-       (fn []
-         (.addListener react/keyboard
-                       "keyboardDidShow"
-                       (fn [e]
-                         (let [h (.. e -endCoordinates -height)]
-                           (when-not (= h @keyboard-height)
-                             (dispatch [:set :keyboard-height h])
-                             (dispatch [:set :keyboard-max-height h])))))
-         (.addListener react/keyboard
-                       "keyboardDidHide"
-                       #(when-not (= 0 @keyboard-height)
-                          (dispatch [:set :keyboard-height 0])))
-         (.hide react/splash-screen)
-         (.addEventListener react/app-state "change" app-state-change-handler))
-       :component-did-mount
-       (fn []
-         (notifications/on-refresh-fcm-token)
+     {:component-will-mount
+      (fn []
+        (.addListener react/keyboard
+                      "keyboardDidShow"
+                      (fn [e]
+                        (let [h (.. e -endCoordinates -height)]
+                          (dispatch [:hide-tab-bar])
+                          (when-not (= h @keyboard-height)
+                            (dispatch [:set :keyboard-height h])
+                            (dispatch [:set :keyboard-max-height h])))))
+        (.addListener react/keyboard
+                      "keyboardDidHide"
+                      (fn [_]
+                        (dispatch [:show-tab-bar])
+                        (when (zero? @keyboard-height)
+                          (dispatch [:set :keyboard-height 0]))))
+        (.hide react/splash-screen)
+        (.addEventListener react/app-state "change" app-state-change-handler))
+      :component-did-mount
+      (fn []
+        (notifications/on-refresh-fcm-token)
          ;; TODO(oskarth): Background click_action handler
-         (notifications/on-notification))
-       :component-will-unmount
-       (fn []
-         (.stop react/http-bridge)
-         (.removeEventListener react/app-state "change" app-state-change-handler))
-       :display-name "root"
-       :reagent-render views/main})))
+        (notifications/on-notification))
+      :component-will-unmount
+      (fn []
+        (.stop react/http-bridge)
+        (.removeEventListener react/app-state "change" app-state-change-handler))
+      :display-name "root"
+      :reagent-render views/main})))
 
 (defn init []
   (status/set-soft-input-mode status/adjust-resize)

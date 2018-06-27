@@ -1,8 +1,7 @@
 (ns status-im.translations.sw)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Wanachama"
    :not-implemented                       "!haijatekelezwa"
    :chat-name                             "Jina la gumzo"
@@ -138,7 +137,6 @@
    :contact-already-added                 "Tayari mawasiliano yameongezwa"
    :can-not-add-yourself                  "Huwezi kujiongeza mwenyewe"
    :unknown-address                       "Anwani Haijulikani"
-
 
    ;;login
    :connect                               "Unganisha"

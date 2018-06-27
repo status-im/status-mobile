@@ -42,9 +42,13 @@
    :justify-content :center})
 
 (def web-view-error
-  {:justify-content :center
-   :align-items     :center
-   :flex-direction  :row})
+  {:flex             1
+   :justify-content  :center
+   :align-items      :center
+   :background-color colors/gray-lighter})
+
+(def web-view-error-text
+  {:color colors/gray})
 
 (defnstyle toolbar-content [show-actions]
   {:flex-direction     :row

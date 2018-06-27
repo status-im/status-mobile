@@ -1,21 +1,24 @@
 (ns status-im.data-store.browser
-  (:require [cljs.core.async :as async]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.realm.core :as core]
-            [status-im.data-store.realm.browser :as data-store])
-  (:refer-clojure :exclude [exists?]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.data-store.realm.core :as core]))
 
 (re-frame/reg-cofx
-  :data-store/all-browsers
-  (fn [cofx _]
-    (assoc cofx :all-stored-browsers (data-store/get-all))))
+ :data-store/all-browsers
+ (fn [cofx _]
+   (assoc cofx :all-stored-browsers (-> @core/account-realm
+                                        (core/get-all :browser)
+                                        (core/sorted :timestamp :desc)
+                                        (core/all-clj :browser)))))
 
-(re-frame/reg-fx
-  :data-store/save-browser
-  (fn [{:keys [browser-id] :as browser}]
-    (async/go (async/>! core/realm-queue #(data-store/save browser (data-store/exists? browser-id))))))
+(defn save-browser-tx
+  "Returns tx function for saving browser"
+  [{:keys [browser-id] :as browser}]
+  (fn [realm]
+    (core/create realm :browser browser (core/exists? realm :browser :browser-id browser-id))))
 
-(re-frame/reg-fx
-  :data-store/remove-browser
-  (fn [browser-id]
-    (async/go (async/>! core/realm-queue #(data-store/delete browser-id)))))
+(defn remove-browser-tx
+  "Returns tx function for removing browser"
+  [browser-id]
+  (fn [realm]
+    (let [browser (core/single (core/get-by-field realm :browser :browser-id browser-id))]
+      (core/delete realm browser))))

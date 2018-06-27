@@ -1,8 +1,7 @@
 (ns status-im.translations.hu)
 
 (def translations
-  {
-   ;;common
+  {;;common
    :members-title                         "Tagok"
    :not-implemented                       "!nem végrehajtott"
    :chat-name                             "Csevegés neve"
@@ -134,7 +133,6 @@
    :can-not-add-yourself                  "Magadat nem adhatod hozzá"
    :unknown-address                       "Ismeretlen cím"
 
-
    ;;login
    :connect                               "Kapcsolódás"
    :address                               "Cím"
@@ -204,8 +202,6 @@
    :send-transaction                      "Tranzakció küldése"
    :delete-contact                        "Névjegy törlése"
    :mute-notifications                    "Értesítések elnémítása"
-
-
    :contact-s                             {:one   "névjegy"
                                            :other "névjegyek"}
    :next                                  "Következő"
@@ -227,8 +223,6 @@
    :browsing-open-in-web-browser          "Megnyitás új böngészőben"
    :delete-group-prompt                   "Nem lesz hatással a névjegyekre"
    :edit-profile                          "Profil szerkesztése"
-
-
    :empty-topic                           "Üres téma"
    :to                                    "Címzett"
    :data                                  "Adatok"})
