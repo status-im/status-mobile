@@ -1,4 +1,4 @@
-ns status-im.ui.screens.desktop.main.chat.views
+(ns status-im.ui.screens.desktop.main.chat.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.icons.vector-icons :as icons]
