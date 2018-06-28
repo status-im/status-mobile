@@ -133,8 +133,7 @@
                                                         (when @scroll-timer (js/clearTimeout @scroll-timer))
                                                         (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
                                                       (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
-                           :on-content-size-change #(when (or (not @scroll-height) (< (- %2 @scroll-height) 500))
-                                                      (.scrollToEnd @scroll-ref))
+                           :on-content-size-change #(.scrollToEnd @scroll-ref)
                            :ref                    #(reset! scroll-ref %)}
         [react/view {:style {:padding-vertical 46}}
          (doall
