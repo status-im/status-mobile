@@ -151,7 +151,11 @@
       (if should-move?
         (re-frame/dispatch [:request-permissions {:permissions [:read-external-storage]
                                                   :on-allowed  #(move-to-internal-storage config)}])
-        (status/start-node (types/clj->json config)))))))
+        (do
+          ;; Preemptively stop node if it's already running
+          ;; in order to prevent "node is already running" errors
+          (when platform/desktop? (status/stop-node))
+          (status/start-node (types/clj->json config))))))))
 
 (re-frame/reg-fx
  ::status-module-initialized-fx
