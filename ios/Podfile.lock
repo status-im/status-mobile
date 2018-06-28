@@ -2,9 +2,9 @@ PODS:
   - FirebaseAnalytics (4.0.1):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
   - FirebaseCore (4.0.2):
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
   - FirebaseInstanceID (2.0.0):
     - FirebaseCore (~> 4.0)
   - FirebaseMessaging (2.0.0):
@@ -16,30 +16,44 @@ PODS:
   - GoogleToolboxForMac/Defines (2.1.1)
   - GoogleToolboxForMac/Logger (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
-  - GoogleToolboxForMac/NSData+zlib (2.1.1):
+  - "GoogleToolboxForMac/NSData+zlib (2.1.1)":
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - Protobuf (3.3.0)
-  - React (0.53.3):
-    - React/Core (= 0.53.3)
+  - React (0.55.4):
+    - React/Core (= 0.55.4)
   - react-native-background-timer (2.0.0):
     - React
-  - React/Core (0.53.3):
-    - yoga (= 0.53.3.React)
-  - yoga (0.53.3.React)
+  - React/Core (0.55.4):
+    - yoga (= 0.55.4.React)
+  - RNKeychain (3.0.0-rc.3):
+    - React
+  - yoga (0.55.4.React)
 
 DEPENDENCIES:
   - FirebaseMessaging
   - React (from `../node_modules/react-native`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
+  - RNKeychain (from `../node_modules/react-native-keychain`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseInstanceID
+    - FirebaseMessaging
+    - GoogleToolboxForMac
+    - Protobuf
 
 EXTERNAL SOURCES:
   React:
-    :path: ../node_modules/react-native
+    :path: "../node_modules/react-native"
   react-native-background-timer:
-    :path: ../node_modules/react-native-background-timer
+    :path: "../node_modules/react-native-background-timer"
+  RNKeychain:
+    :path: "../node_modules/react-native-keychain"
   yoga:
-    :path: ../node_modules/react-native/ReactCommon/yoga
+    :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   FirebaseAnalytics: 4d7040fefc3cd8b291cde35f12cf063d7963f15d
@@ -48,10 +62,11 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 227406c05b0dc9290702d2e9f18ab5528f0c2cf2
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
-  React: fd20e9486c9d994fb6e40d6e67dbd29c7709889c
-  react-native-background-timer: 10063c04bf85d7f8811dff8c74399f0aa715245f
-  yoga: c7c8e64dbc2552b1ceac0b491ff03f5e5128b501
+  React: aa2040dbb6f317b95314968021bd2888816e03d5
+  react-native-background-timer: 63dcbf37dbcf294b5c6c071afcdc661fa06a7594
+  RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
+  yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 653ad2d673bf8aa8127325a078e07aedc8dbe463
+PODFILE CHECKSUM: 58fa7be75df3ece53c570dbd30d721f4b6d77137
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.5.3

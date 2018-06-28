@@ -19,13 +19,15 @@
 
 (defn universal-link? [url]
   (boolean
-   (re-matches #"^(app|http|https)://get.status.im/.*$" url)))
+   (re-matches #"((^https?://get.status.im/)|(^status-im://)).*$" url)))
 
 (defn open! [url]
   (log/info "universal-links:  opening " url)
   (if-let [dapp-url (match-url url browse-regex)]
     (list-selection/browse-dapp dapp-url)
-    (.openURL react/linking url)))
+    ;; We need to dispatch here, we can't openURL directly
+    ;; as it is opened in safari on iOS
+    (re-frame/dispatch [:handle-universal-link url])))
 
 (defn handle-browse [url cofx]
   (log/info "universal-links: handling browse " url)

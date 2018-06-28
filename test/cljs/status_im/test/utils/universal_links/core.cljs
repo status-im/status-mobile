@@ -17,25 +17,25 @@
                           [:db :universal-links/url]))))
       (testing "a public chat link"
         (testing "it joins the chat"
-          (is (get-in (links/handle-url "app://get.status.im/chat/public/status"
+          (is (get-in (links/handle-url "status-im://chat/public/status"
                                         {:db db})
                       [:db :chats "status"]))))
 
       (testing "a browse dapp link"
         (testing "it open the dapps"
           (is
-           (= "app://get.status.im/browse/www.cryptokitties.co"
-              (:browse (links/handle-url "app://get.status.im/browse/www.cryptokitties.co"
+           (= "status-im://browse/www.cryptokitties.co"
+              (:browse (links/handle-url "status-im://browse/www.cryptokitties.co"
                                          {:db db}))))))
       (testing "a user profile link"
         (testing "it loads the profile"
-          (let [actual (links/handle-url "app://get.status.im/user/profile-id"
+          (let [actual (links/handle-url "status-im://user/profile-id"
                                          {:db db})]
             (is (= "profile-id" (get-in actual [:db :contacts/identity])))
             (is (= :profile (get-in actual [:db :view-id]))))))
       (testing "a not found url"
         (testing "it does nothing"
-          (is (nil? (links/handle-url "app://get.status.im/not-existing"
+          (is (nil? (links/handle-url "status-im://not-existing"
                                       {:db db}))))))))
 
 (deftest url-event-listener
@@ -53,16 +53,16 @@
           (is (= nil @actual)))))))
 
 (deftest universal-link-test
-  (testing "app://get.status.im/blah"
+  (testing "status-im://blah"
     (testing "it returns true"
-      (is (links/universal-link? "app://get.status.im/blah"))))
+      (is (links/universal-link? "status-im://blah"))))
   (testing "http://get.status.im/blah"
     (testing "it returns true"
       (is (links/universal-link? "http://get.status.im/blah"))))
   (testing "https://get.status.im/blah"
     (testing "it returns true"
       (is (links/universal-link? "https://get.status.im/blah"))))
-  (testing "app://not.status.im/blah"
+  (testing "not-status-im://blah"
     (testing "it returns false"
       (is (not (links/universal-link? "https://not.status.im/blah")))))
   (testing "http://not.status.im/blah"

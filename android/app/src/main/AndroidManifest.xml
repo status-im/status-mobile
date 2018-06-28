@@ -60,7 +60,12 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" android:host="get.status.im" />
                 <data android:scheme="https" android:host="get.status.im" />
-                <data android:scheme="app" android:host="get.status.im" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="status-im" />
             </intent-filter>
         </activity>
         <service
