@@ -146,13 +146,10 @@ class TestMessages(MultipleDeviceTestCase):
     def test_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        users = []
+        users = ['user_1', 'user_2']
         chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
-        for sign_in in device_1, device_2:
-            users.append(sign_in.create_user())
-            home = sign_in.get_home_view()
-            home.join_public_chat(chat_name)
-        chat_1, chat_2 = device_1.get_chat_view(), device_2.get_chat_view()
+        home_1, home_2 = device_1.create_user(username=users[0]), device_2.create_user(username=users[1])
+        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
 
         chat_1.chat_message_input.send_keys('/command')
         chat_1.send_message_button.click()
@@ -189,8 +186,8 @@ class TestMessages(MultipleDeviceTestCase):
     def test_username_and_profile_picture_in_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1, username_2 = device_1.create_user(), device_2.create_user()
-        home_1, home_2 = device_1.get_home_view(), device_2.get_home_view()
+        username_1, username_2 = 'user_1', 'user_2'
+        home_1, home_2 = device_1.create_user(username=username_1), device_2.create_user(username=username_2)
         device_2_public_key = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         file_name = 'sauce_logo.png'
@@ -259,7 +256,7 @@ class TestMessages(MultipleDeviceTestCase):
         chat.send_message_button.click()
 
         # verify correct text is sent
-        chat.chat_element_by_text(message_text[:-2] + ' ')
+        chat.chat_element_by_text(message_text[:-2] + ' ').wait_for_visibility_of_element(2)
 
 
 @marks.all
@@ -305,9 +302,8 @@ class TestOfflineMessages(MultipleDeviceTestCase):
         self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
-        username_1 = sign_in_1.create_user()
-        username_2 = sign_in_2.create_user()
-        home_1, home_2 = sign_in_1.get_home_view(), sign_in_2.get_home_view()
+        username_1, username_2 = 'user_1', 'user_2'
+        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
 
         device_2_public_key = home_2.get_public_key()
         home_1.add_contact(device_2_public_key)

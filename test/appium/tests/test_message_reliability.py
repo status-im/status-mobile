@@ -36,13 +36,11 @@ class TestMessageReliability(MessageReliabilityTestCase):
         try:
             self.create_drivers(2, max_duration=10800, custom_implicitly_wait=2)
             device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-            device_1.create_user(username='user_a')
-            device_2.create_user(username='user_b')
-            device_1_home, device_2_home = device_1.get_home_view(), device_2.get_home_view()
+            device_1_home, device_2_home = device_1.create_user(username='user_a'), device_2.create_user(
+                username='user_b')
             device_2_public_key = device_2_home.get_public_key()
             device_2_home.home_button.click()
-            device_1_home.add_contact(device_2_public_key)
-            device_1_chat = device_1_home.get_chat_view()
+            device_1_chat = device_1_home.add_contact(device_2_public_key)
             device_1_chat.chat_message_input.send_keys('hello')
             device_1_chat.send_message_button.click()
             device_2_home.element_by_text('hello').click()
@@ -86,8 +84,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
     def test_message_reliability_1_1_chat_with_predefined_user(self, messages_number, user_public_key):
         self.create_drivers(1, max_duration=10800, custom_implicitly_wait=2)
         sign_in_view = SignInView(self.drivers[0])
-        sign_in_view.create_user(username='user_a')
-        home_view = sign_in_view.get_home_view()
+        home_view = sign_in_view.create_user(username='user_a')
         home_view.add_contact(user_public_key)
         chat_view = home_view.get_chat_view()
         for i in range(messages_number):
@@ -100,13 +97,12 @@ class TestMessageReliability(MessageReliabilityTestCase):
         self.public_chat_data['message_time'] = dict()
 
         self.create_drivers(participants_number, max_duration=10800, custom_implicitly_wait=2)
-        users = list()
+        users = ['user_%s' % i for i in range(participants_number)]
         chat_views = list()
         chat_name = chat_name if chat_name else ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
         for i in range(participants_number):
             device = SignInView(self.drivers[i])
-            users.append(device.create_user())
-            home_view = device.get_home_view()
+            home_view = device.create_user(username=users[i])
             home_view.join_public_chat(chat_name)
             chat_views.append(home_view.get_chat_view())
 
@@ -138,8 +134,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
         self.create_drivers(1, max_duration=10800, custom_implicitly_wait=2, offline_mode=True)
         driver = self.drivers[0]
         sign_in_view = SignInView(driver)
-        sign_in_view.create_user()
-        home_view = sign_in_view.get_home_view()
+        home_view = sign_in_view.create_user()
         chat_name = chat_name if chat_name else ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
         home_view.join_public_chat(chat_name)
 
@@ -261,7 +256,8 @@ class TestMessageReliability(MessageReliabilityTestCase):
         device_2.open_notifications()
         try:
             WebDriverWait(device_2, message_wait_time) \
-                .until(expected_conditions.presence_of_element_located((MobileBy.XPATH, '//*[contains(@text, "Status")]')))
+                .until(
+                expected_conditions.presence_of_element_located((MobileBy.XPATH, '//*[contains(@text, "Status")]')))
             element = BaseButton(device_2)
             element.locator = element.Locator.xpath_selector("//*[contains(@text,'Status')]")
             element.click()

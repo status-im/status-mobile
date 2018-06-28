@@ -167,12 +167,12 @@ class WalletView(BaseView):
         else:
             info('Current USD balance %s is ok' % usd)
 
-    def wait_balance_changed_on_wallet_screen(self, initial_balance=0, wait_time=300):
+    def wait_balance_changed_on_wallet_screen(self, expected_balance=0.1, wait_time=300):
         counter = 0
         while True:
             if counter >= wait_time:
                 pytest.fail('Balance is not changed during %s seconds!' % wait_time)
-            elif self.get_eth_value() == initial_balance:
+            elif self.get_eth_value() != expected_balance:
                 counter += 10
                 time.sleep(10)
                 self.swipe_down()

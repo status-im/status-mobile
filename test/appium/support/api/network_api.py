@@ -67,6 +67,11 @@ class NetworkApi:
                 info('Transaction is received')
                 return
 
+    def verify_balance_is(self, expected_balance: int, recipient_address: str, errors: list):
+        balance = self.get_balance(recipient_address)
+        if balance / 1000000000000000000 != expected_balance:
+            errors.append('Recipients balance is not updated on etherscan')
+
     def faucet(self, address):
         return requests.request('GET', '%s/0x%s' % (self.faucet_url, address)).json()
 

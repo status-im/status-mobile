@@ -112,7 +112,7 @@ class SignInView(BaseView):
         self.next_button.click()
         self.do_not_share.wait_for_visibility_of_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
-        return username
+        return self.get_home_view()
 
     def recover_access(self, passphrase, password):
         recover_access_view = self.i_have_account_button.click()
@@ -123,6 +123,7 @@ class SignInView(BaseView):
         recover_access_view.sign_in_button.click()
         self.do_not_share.wait_for_element(10)
         self.do_not_share.click_until_presence_of_element(self.home_button)
+        return self.get_home_view()
 
     def open_status_test_dapp(self):
         profile_view = self.profile_button.click()

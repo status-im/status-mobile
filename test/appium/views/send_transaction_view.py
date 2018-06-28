@@ -110,6 +110,36 @@ class ErrorDialog(BaseView):
         return element.wait_for_element(wait_time)
 
 
+class AdvancedButton(BaseButton):
+    def __init__(self, driver):
+        super(AdvancedButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('advanced-button')
+
+
+class TransactionFeeButton(BaseButton):
+    def __init__(self, driver):
+        super(TransactionFeeButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('transaction-fee-button')
+
+
+class GasLimitInput(BaseEditBox):
+    def __init__(self, driver):
+        super(GasLimitInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('gas-limit-input')
+
+
+class GasPriceInput(BaseEditBox):
+    def __init__(self, driver):
+        super(GasPriceInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('gas-price-input')
+
+
+class TotalFeeInput(BaseEditBox):
+    def __init__(self, driver):
+        super(TotalFeeInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='total-fee-input']/android.widget.TextView")
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -119,8 +149,14 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
-
         self.amount_edit_box = AmountEditBox(self.driver)
+
+        self.advanced_button = AdvancedButton(self.driver)
+        self.transaction_fee_button = TransactionFeeButton(self.driver)
+        self.gas_limit_input = GasLimitInput(self.driver)
+        self.gas_price_input = GasPriceInput(self.driver)
+        self.total_fee_input = TotalFeeInput(self.driver)
+
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)

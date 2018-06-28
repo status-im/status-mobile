@@ -8,6 +8,7 @@ from views.sign_in_view import SignInView
 class TestSignIn(MultipleDeviceTestCase):
 
     @marks.testrail_case_id(3740)
+    @marks.testrail_id(1432)
     def test_offline_login(self):
         self.create_drivers(1, offline_mode=True)
         driver = self.drivers[0]

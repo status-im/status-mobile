@@ -68,6 +68,10 @@ class BaseElement(object):
         info('Looking for %s' % self.name)
         return self.driver.find_elements(self.locator.by, self.locator.value)
 
+    def click(self):
+        self.find_element().click()
+        info('Tap on %s' % self.name)
+
     def wait_for_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
@@ -158,11 +162,13 @@ class BaseElement(object):
     def measure_time_before_element_appears(self, max_wait_time=30):
         def wrapper():
             return self.wait_for_visibility_of_element(max_wait_time)
+
         return timeit(wrapper, number=1)
 
     def measure_time_while_element_is_shown(self, max_wait_time=30):
         def wrapper():
             return self.wait_for_invisibility_of_element(max_wait_time)
+
         return timeit(wrapper, number=1)
 
 
@@ -183,10 +189,6 @@ class BaseEditBox(BaseElement):
         self.find_element().clear()
         info('Clear text in %s' % self.name)
 
-    def click(self):
-        self.find_element().click()
-        info('Tap on %s' % self.name)
-
     def delete_last_symbols(self, number_of_symbols_to_delete: int):
         info('Delete last %s symbols from %s' % (number_of_symbols_to_delete, self.name))
         self.click()
@@ -201,7 +203,7 @@ class BaseEditBox(BaseElement):
         action = TouchAction(self.driver)
         location = self.find_element().location
         x, y = location['x'], location['y']
-        action.press(x=x+100, y=y-50).release().perform()
+        action.press(x=x + 100, y=y - 50).release().perform()
 
     def cut_text(self):
         info('Cut text in %s' % self.name)
@@ -210,7 +212,7 @@ class BaseEditBox(BaseElement):
         action = TouchAction(self.driver)
         action.long_press(x=x, y=y).release().perform()
         time.sleep(2)
-        action.press(x=x+50, y=y-50).release().perform()
+        action.press(x=x + 50, y=y - 50).release().perform()
 
 
 class BaseText(BaseElement):

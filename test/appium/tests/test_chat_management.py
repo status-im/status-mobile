@@ -83,11 +83,9 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
     def test_public_chat_management(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        users = []
         chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(19))
         for sign_in in device_1, device_2:
-            users.append(sign_in.create_user())
-            home = sign_in.get_home_view()
+            home = sign_in.create_user()
             home.join_public_chat(chat_name)
         chat_1, chat_2 = device_1.get_chat_view(), device_2.get_chat_view()
         message_1, message_2, message_3, message_4, message_5 = 'm1', 'm2', 'm3', 'm4', 'm5'

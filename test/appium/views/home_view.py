@@ -31,11 +31,16 @@ class ConsoleButton(BaseButton):
 class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
         super(ChatElement, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % username_part)
+        self.username = username_part
+        self.locator = self.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % self.username)
 
     def navigate(self):
-        from views.chat_view import ChatView
-        return ChatView(self.driver)
+        if self.username == 'Status Console':
+            from views.console_view import ConsoleView
+            return ConsoleView(self.driver)
+        else:
+            from views.chat_view import ChatView
+            return ChatView(self.driver)
 
     def click(self):
         from views.chat_view import ChatMessageInput
