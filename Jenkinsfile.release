@@ -70,7 +70,7 @@ timeout(90) {
         }
 
         stage('Build (Android)') {
-          sh 'cd android && ./gradlew assembleRelease -PreleaseVersion=' + version
+          sh 'cd android && ./gradlew react-native-android:installArchives && ./gradlew assembleRelease -PreleaseVersion=' + version
         }
 
         stage('Build (iOS)') {

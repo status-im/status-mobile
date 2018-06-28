@@ -50,7 +50,7 @@ timeout(90) {
         }
 
         stage('Build (Android)') {
-          sh 'cd android && ./gradlew assembleRelease'
+          sh 'cd android && ./gradlew react-native-android:installArchives && ./gradlew assembleRelease'
         }
 
         stage('Build (iOS)') {

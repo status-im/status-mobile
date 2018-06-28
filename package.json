@@ -33,7 +33,7 @@
     "re-natal": "0.8.1",
     "react": "16.2.0",
     "react-dom": "16.2.0",
-    "react-native": "0.55.4",
+    "react-native": "github:status-im/react-native#v0.55.4",
     "react-native-background-timer": "2.0.0",
     "react-native-camera": "0.10.0",
     "react-native-config": "0.9.0",
