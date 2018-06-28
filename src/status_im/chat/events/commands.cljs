@@ -83,16 +83,6 @@
      (shortcuts/shortcut-override-fx db message opts)
      (request-command-message-data db message opts))))
 
-(handlers/register-handler-fx
- :execute-command-immediately
- [re-frame/trim-v]
- (fn [_ [{command-name :name}]]
-   (case (keyword command-name)
-     :grant-permissions
-     {:dispatch [:request-permissions {:permissions [:read-external-storage]
-                                       :on-allowed  #(re-frame/dispatch [:initialize-geth])}]}
-     (log/debug "ignoring command: " command-name))))
-
 ;; NOTE(goranjovic) - continues execution of a command that was paused by a shortcut
 (defn execute-stored-command [{:keys [db]}]
   (let [{:keys [message opts]} (:commands/stored-command db)]

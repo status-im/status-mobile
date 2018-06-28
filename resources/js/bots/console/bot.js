@@ -516,15 +516,6 @@ if (faucets.length > 0) {
     status.command(faucetCommandConfig);
 }
 
-status.response({
-    name: "grant-permissions",
-    scope: ["personal-chats", "anonymous", "registered", "dapps"],
-    color: "#7099e6",
-    description: "Grant permissions",
-    icon: "lock_white",
-    executeImmediately: true
-});
-
 status.addListener("on-message-input-change", function (params, context) {
     return jsSuggestions({code: params.message}, context);
 });

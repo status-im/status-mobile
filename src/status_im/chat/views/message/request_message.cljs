@@ -95,7 +95,6 @@
           network-mismatch? (and request-network (not= request-network network))
           on-press-handler (cond
                              network-mismatch? nil
-                             (:execute-immediately? command) #(dispatch [:execute-command-immediately command])
                              (and (not answered?) status-initialized?) #(set-chat-command message-id command))]
       [view
        [touchable-highlight
