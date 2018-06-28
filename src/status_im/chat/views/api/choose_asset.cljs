@@ -21,8 +21,10 @@
                      :style  styles/asset-icon}]
        [react/text {:style styles/asset-symbol} symbol]
        [react/text {:style styles/asset-name} name]]
-      [react/text {:style styles/asset-balance}
-       (str (money/internal->formatted amount symbol decimals))]]]))
+      ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963
+      ;;until the resolution of https://github.com/status-im/status-react/issues/4972
+      #_[react/text {:style styles/asset-balance}
+         (str (money/internal->formatted amount symbol decimals))]]]))
 
 (def assets-separator [react/view styles/asset-separator])
 
