@@ -4,6 +4,8 @@
             [re-frame.core :as re-frame]
             [status-im.utils.random :as random]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.utils.universal-links.core :as utils.universal-links]
             [status-im.data-store.browser :as browser-store]
             [status-im.utils.http :as http]))
 
@@ -13,6 +15,19 @@
  (fn [{:keys [db all-stored-browsers]} _]
    (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
      {:db (assoc db :browser/browsers browsers)})))
+
+(re-frame/reg-fx
+ :browse
+ (fn [link]
+   (if (utils.universal-links/universal-link? link)
+     (do
+       (utils.universal-links/open! link))
+     (list-selection/browse link))))
+
+(handlers/register-handler-fx
+ :browse-link-from-message
+ (fn [_ [_ link]]
+   {:browse link}))
 
 (defn get-new-browser [browser now]
   (cond-> browser

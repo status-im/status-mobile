@@ -20,6 +20,13 @@
           (is (get-in (links/handle-url "app://get.status.im/chat/public/status"
                                         {:db db})
                       [:db :chats "status"]))))
+
+      (testing "a browse dapp link"
+        (testing "it open the dapps"
+          (is
+           (= "app://get.status.im/browse/www.cryptokitties.co"
+              (:browse (links/handle-url "app://get.status.im/browse/www.cryptokitties.co"
+                                         {:db db}))))))
       (testing "a user profile link"
         (testing "it loads the profile"
           (let [actual (links/handle-url "app://get.status.im/user/profile-id"
@@ -45,6 +52,26 @@
           (links/url-event-listener #js {})
           (is (= nil @actual)))))))
 
+(deftest universal-link-test
+  (testing "app://get.status.im/blah"
+    (testing "it returns true"
+      (is (links/universal-link? "app://get.status.im/blah"))))
+  (testing "http://get.status.im/blah"
+    (testing "it returns true"
+      (is (links/universal-link? "http://get.status.im/blah"))))
+  (testing "https://get.status.im/blah"
+    (testing "it returns true"
+      (is (links/universal-link? "https://get.status.im/blah"))))
+  (testing "app://not.status.im/blah"
+    (testing "it returns false"
+      (is (not (links/universal-link? "https://not.status.im/blah")))))
+  (testing "http://not.status.im/blah"
+    (testing "it returns false"
+      (is (not (links/universal-link? "https://not.status.im/blah")))))
+  (testing "https://not.status.im/blah"
+    (testing "it returns false"
+      (is (not (links/universal-link? "https://not.status.im/blah"))))))
+
 (deftest stored-url-event
   (testing "the url is in the database"
     (testing "it returns the event"
@@ -54,4 +81,3 @@
     (testing "it returns nil"
       (= nil
          (links/stored-url-event {:db {}})))))
-

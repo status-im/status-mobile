@@ -272,22 +272,27 @@
                                 (transport/stop-whisper)))
      {:get-encryption-key [this-event]})))
 
+(defn initialize-db [encryption-key
+                     {{:universal-links/keys [url]
+                       :keys                 [status-module-initialized? status-node-started?
+                                              network-status network peers-count peers-summary device-UUID]
+                       :or                   {network (get app-db :network)}} :db}]
+  {::init-store encryption-key
+   :db          (assoc app-db
+                       :contacts/contacts {}
+                       :network-status network-status
+                       :peers-count (or peers-count 0)
+                       :peers-summary (or peers-summary [])
+                       :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                       :status-node-started? status-node-started?
+                       :network network
+                       :universal-links/url url
+                       :device-UUID device-UUID)})
+
 (handlers/register-handler-fx
  :initialize-db
- (fn [{{:keys          [status-module-initialized? status-node-started?
-                        network-status network peers-count peers-summary device-UUID]
-        :or {network (get app-db :network)}} :db}
-      [_ encryption-key]]
-   {::init-store encryption-key
-    :db          (assoc app-db
-                        :contacts/contacts {}
-                        :network-status network-status
-                        :peers-count (or peers-count 0)
-                        :peers-summary (or peers-summary [])
-                        :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                        :status-node-started? status-node-started?
-                        :network network
-                        :device-UUID device-UUID)}))
+ (fn [cofx [_ encryption-key]]
+   (initialize-db encryption-key cofx)))
 
 (handlers/register-handler-db
  :initialize-account-db

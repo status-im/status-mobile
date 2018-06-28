@@ -8,7 +8,6 @@
             [status-im.chat.models.message :as models.message]
             [status-im.chat.console :as console]
             [status-im.commands.events.loading :as events.loading]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -30,10 +29,6 @@
 
 ;;;; Effects
 
-(re-frame/reg-fx
- :browse
- (fn [link]
-   (list-selection/browse link)))
 
 (re-frame/reg-fx
  :show-cooldown-warning
@@ -201,11 +196,6 @@
                               (init-console-chat)
                               (group-chat-messages)
                               (add-default-contacts)))))
-
-(handlers/register-handler-fx
- :browse-link-from-message
- (fn [_ [_ link]]
-   {:browse link}))
 
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
   (when (and (not (get-in db [:chats chat-id :public?]))

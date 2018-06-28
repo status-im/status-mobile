@@ -35,3 +35,9 @@
                        {:label  (i18n/label :t/browsing-open-in-web-browser)
                         :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
+
+(defn browse-dapp [link]
+  (show {:title       (i18n/label :t/browsing-title)
+         :options     [{:label  (i18n/label :t/browsing-open-in-browser)
+                        :action #(re-frame/dispatch [:open-browser {:url link}])}]
+         :cancel-text (i18n/label :t/browsing-cancel)}))

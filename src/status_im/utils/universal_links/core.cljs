@@ -5,26 +5,42 @@
    [status-im.utils.config :as config]
    [status-im.chat.events :as chat.events]
    [status-im.models.account :as models.account]
+   [status-im.ui.components.list-selection :as list-selection]
    [status-im.ui.components.react  :as react]))
 
 (def public-chat-regex #".*/chat/public/(.*)$")
 (def profile-regex #".*/user/(.*)$")
+(def browse-regex #".*/browse/(.*)$")
+
+(defn match-url [url regex]
+  (some->> url
+           (re-matches regex)
+           peek))
+
+(defn universal-link? [url]
+  (boolean
+   (re-matches #"^(app|http|https)://get.status.im/.*$" url)))
+
+(defn open! [url]
+  (log/info "universal-links:  opening " url)
+  (if-let [dapp-url (match-url url browse-regex)]
+    (list-selection/browse-dapp dapp-url)
+    (.openURL react/linking url)))
+
+(defn handle-browse [url cofx]
+  (log/info "universal-links: handling browse " url)
+  {:browse url})
 
 (defn handle-public-chat [public-chat cofx]
   (log/info "universal-links: handling public chat " public-chat)
   (chat.events/create-new-public-chat public-chat cofx))
 
 (defn handle-view-profile [profile-id cofx]
-  (log/info "universal links: handling view profile" profile-id)
+  (log/info "universal-links: handling view profile" profile-id)
   (chat.events/show-profile profile-id cofx))
 
 (defn handle-not-found [full-url]
-  (log/info "universal links: no handler for " full-url))
-
-(defn match-url [url regex]
-  (some->> url
-           (re-matches regex)
-           peek))
+  (log/info "universal-links: no handler for " full-url))
 
 (defn stored-url-event
   "Return an event description for processing a url if in the database"
@@ -37,7 +53,7 @@
   [url]
   (if-not (nil? url)
     (re-frame/dispatch [:handle-universal-link url])
-    (log/debug "universal links: no url")))
+    (log/debug "universal-links: no url")))
 
 (defn store-url-for-later
   "Store the url in the db to be processed on login"
@@ -58,6 +74,9 @@
 
     (match-url url profile-regex)
     (handle-view-profile (match-url url profile-regex) cofx)
+
+    (match-url url browse-regex)
+    (handle-browse url cofx)
 
     :else (handle-not-found url)))
 
