@@ -9,7 +9,6 @@
             [status-im.ui.screens.accounts.recover.views :as recover.views]
             [status-im.ui.screens.accounts.views :as accounts.views]))
 
-
 (enable-console-print!)
 
 (views/defview main []

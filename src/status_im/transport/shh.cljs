@@ -51,7 +51,7 @@
 
 (defn post-message
   [{:keys [web3 whisper-message on-success on-error]}]
-    (.. web3
+  (.. web3
       -shh
       (extPost (clj->js whisper-message) (fn [err resp]
                                            (if-not err

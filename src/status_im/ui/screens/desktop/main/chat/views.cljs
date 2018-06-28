@@ -20,11 +20,11 @@
   (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat]
                   {:keys [pending?]}                                   [:get-current-chat-contact]]
     (let [chat-name (str
-                      (if public? "#" "")
-                      (if (string/blank? name)
-                        (gfycat.core/generate-gfy public-key)
-                        (or name
-                            (i18n/label :t/chat-name))))]
+                     (if public? "#" "")
+                     (if (string/blank? name)
+                       (gfycat.core/generate-gfy public-key)
+                       (or name
+                           (i18n/label :t/chat-name))))]
       [react/view {:style styles/toolbar-chat-view}
        [react/view {:style {:flex-direction :row}}
         (when public?
@@ -43,9 +43,9 @@
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
                   incoming-name   [:get-contact-name-by-identity from]]
-      (let [name (or incoming-name (gfycat/generate-gfy from))]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
-         [react/text {:style styles/author} name]])))
+    (let [name (or incoming-name (gfycat/generate-gfy from))]
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
+       [react/text {:style styles/author} name]])))
 
 (views/defview member-photo [from]
   [react/view
@@ -62,57 +62,55 @@
                      :style  styles/photo-style}]])))
 
 (views/defview message-with-timestamp [text {:keys [timestamp] :as message} style]
- [react/view {:style style}
-  [react/view {:style {:flex-direction :row :flex-wrap :wrap}}
-   [react/text {:style styles/message-text}
-    text]
-   [react/text {:style (styles/message-timestamp-placeholder)}
-    (time/timestamp->time timestamp)]
-   [react/text {:style (styles/message-timestamp)}
-    (time/timestamp->time timestamp)]]])
-
+  [react/view {:style style}
+   [react/view {:style {:flex-direction :row :flex-wrap :wrap}}
+    [react/text {:style styles/message-text}
+     text]
+    [react/text {:style (styles/message-timestamp-placeholder)}
+     (time/timestamp->time timestamp)]
+    [react/text {:style (styles/message-timestamp)}
+     (time/timestamp->time timestamp)]]])
 
 (views/defview text-only-message [text message]
-  [react/view {:style (styles/message-row message)  }
-    [message-with-timestamp text message (styles/message-box message)]])
+  [react/view {:style (styles/message-row message)}
+   [message-with-timestamp text message (styles/message-box message)]])
 
 (views/defview photo-placeholder []
   [react/view {:style styles/photo-style}])
 
 (views/defview message-with-name-and-avatar [text {:keys [from first-in-group? last-in-group?] :as message}]
-     [react/view {:style (styles/message-row message)}
-      [react/view {:style {:flex-direction :column}}
-       (when first-in-group?
-         [message-author-name message])
-       [react/view {:style {:flex-direction :row}}
-         (if last-in-group?
-           [member-photo from]
-           [photo-placeholder])
-        [message-with-timestamp text message (styles/message-box message)]]]])
+  [react/view {:style (styles/message-row message)}
+   [react/view {:style {:flex-direction :column}}
+    (when first-in-group?
+      [message-author-name message])
+    [react/view {:style {:flex-direction :row}}
+     (if last-in-group?
+       [member-photo from]
+       [photo-placeholder])
+     [message-with-timestamp text message (styles/message-box message)]]]])
 
-(defn message [text me? {:keys [ message-id chat-id message-status user-statuses from
+(defn message [text me? {:keys [message-id chat-id message-status user-statuses from
                                 current-public-key content-type group-chat outgoing type value] :as message}]
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
     (when (= content-type constants/text-content-type)
-     (reagent.core/create-class
+      (reagent.core/create-class
        {:component-did-mount
-         #(when (and message-id
-                     chat-id
-                     (not outgoing)
-                     (not= :seen message-status)
-                     (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
-            (re-frame/dispatch [:send-seen! {:chat-id    chat-id
-                                             :from       from
-                                             :message-id message-id}]))
-       :reagent-render
-         (fn []
+        #(when (and message-id
+                    chat-id
+                    (not outgoing)
+                    (not= :seen message-status)
+                    (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
+           (re-frame/dispatch [:send-seen! {:chat-id    chat-id
+                                            :from       from
+                                            :message-id message-id}]))
+        :reagent-render
+        (fn []
           ^{:key (str "message" message-id)}
           (if (and group-chat (not outgoing))
             [message-with-name-and-avatar text message]
-            [text-only-message text message]))})
-      )))
+            [text-only-message text message]))}))))
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
   (views/letsubs [chat-id* (atom nil)
@@ -127,20 +125,19 @@
       [react/view {:style styles/messages-view}
        [react/scroll-view {:scrollEventThrottle    16
                            :on-scroll              (fn [e]
-                                                    (let [ne (.-nativeEvent e)
-                                                          y (.-y (.-contentOffset ne))]
-                                                      (when (zero? y)
-                                                        (when @scroll-timer (js/clearTimeout @scroll-timer))
-                                                        (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
-                                                      (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
+                                                     (let [ne (.-nativeEvent e)
+                                                           y (.-y (.-contentOffset ne))]
+                                                       (when (zero? y)
+                                                         (when @scroll-timer (js/clearTimeout @scroll-timer))
+                                                         (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
+                                                       (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
                            :on-content-size-change #(.scrollToEnd @scroll-ref)
                            :ref                    #(reset! scroll-ref %)}
         [react/view {:style {:padding-vertical 46}}
          (doall
-           (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
-             ^{:key (or message-id "0")}
-             [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
-
+          (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
+            ^{:key (or message-id "0")}
+            [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 (views/defview chat-text-input []
   (views/letsubs [inp-ref (atom nil)]
