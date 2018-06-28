@@ -25,9 +25,10 @@
  ::accept-transaction
  (fn [{:keys [masked-password id on-completed]}]
   ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (status/approve-sign-request id
-                                (security/unmask masked-password)
-                                on-completed)))
+   (when masked-password
+     (status/approve-sign-request id
+                                  (security/unmask masked-password)
+                                  on-completed))))
 
 (re-frame/reg-fx
  ::accept-transaction-with-changed-gas
@@ -341,13 +342,16 @@
   ;;TODO(goranjovic) - unify send-transaction and unsigned-transaction
   (let [{:keys [id password] :as send-transaction}   (get-in db [:wallet :send-transaction])
         {:keys [gas gas-price]} [:wallet.send/unsigned-transaction]]
-    {:db                                   (assoc-in db [:wallet :send-transaction :in-progress?] true)
-     ::accept-transaction-with-changed-gas {:id                id
-                                            :masked-password   password
-                                            :gas               (or gas (:gas send-transaction))
-                                            :gas-price         (or gas-price (:gas-price send-transaction))
-                                            :default-gas-price default-gas-price
-                                            :on-completed      on-transactions-modal-completed}}))
+    ;;TODO(goranjovic) - `when password` check is to prevent this bug - https://github.com/status-im/status-react/issues/4858
+    ;; ideally this should be fixed by disabling the button after first tap
+    (when password
+      {:db                                   (assoc-in db [:wallet :send-transaction :in-progress?] true)
+       ::accept-transaction-with-changed-gas {:id                id
+                                              :masked-password   password
+                                              :gas               (or gas (:gas send-transaction))
+                                              :gas-price         (or gas-price (:gas-price send-transaction))
+                                              :default-gas-price default-gas-price
+                                              :on-completed      on-transactions-modal-completed}})))
 
 (handlers/register-handler-fx
  :wallet/sign-transaction-modal-update-gas-success
