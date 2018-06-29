@@ -147,8 +147,8 @@ class TestMessages(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         users = ['user_1', 'user_2']
-        chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
         home_1, home_2 = device_1.create_user(username=users[0]), device_2.create_user(username=users[1])
+        chat_name = home_1.get_public_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
 
         chat_1.chat_message_input.send_keys('/command')
@@ -229,7 +229,7 @@ class TestMessages(MultipleDeviceTestCase):
         sign_in = SignInView(self.drivers[0])
         sign_in.create_user()
         home = sign_in.get_home_view()
-        home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
+        home.join_public_chat(home.get_public_chat_name())
         chat = sign_in.get_chat_view()
         message_text = 'test'
         message_input = chat.chat_message_input

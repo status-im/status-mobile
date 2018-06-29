@@ -135,7 +135,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
         driver = self.drivers[0]
         sign_in_view = SignInView(driver)
         home_view = sign_in_view.create_user()
-        chat_name = chat_name if chat_name else ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
+        chat_name = chat_name if chat_name else home_view.get_public_chat_name()
         home_view.join_public_chat(chat_name)
 
         start_time = time.time()

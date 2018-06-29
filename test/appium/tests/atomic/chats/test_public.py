@@ -21,7 +21,7 @@ class TestMessagesPublicChat(MultipleDeviceTestCase):
         home_1.add_contact(public_key_2)
         home_1.get_back_to_home_view()
 
-        public_chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
+        public_chat_name = home_1.get_public_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
         if chat_2.connection_status.text != 'Fetching messages...':

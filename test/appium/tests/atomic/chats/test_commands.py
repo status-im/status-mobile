@@ -188,7 +188,7 @@ class TestCommands(MultipleDeviceTestCase):
         wallet_1 = home_1.wallet_button.click()
         wallet_1.set_up_wallet()
 
-        send_transaction_device_1 = wallet_1.request_button.click_until_presence_of_element(
+        send_transaction_device_1 = wallet_1.receive_transaction_button.click_until_presence_of_element(
             wallet_1.send_transaction_request)
         wallet_1.send_transaction_request.click()
         send_transaction_device_1.amount_edit_box.scroll_to_element()

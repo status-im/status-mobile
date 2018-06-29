@@ -135,7 +135,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2 = home_2.get_chat_with_user(username_1).click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
-        public_chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
+        public_chat_name = home_1.get_public_chat_name()
         chat_1.get_back_to_home_view()
         home_1.join_public_chat(public_chat_name)
         chat_2.get_back_to_home_view()
@@ -278,7 +278,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()
 
-        public_chat = home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
+        public_chat = home.join_public_chat(home.get_public_chat_name())
         if public_chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in a public chat')
         self.verify_no_errors()
@@ -345,7 +345,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
 
-        home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
+        home.join_public_chat(home.get_public_chat_name())
         chat = sign_in.get_chat_view()
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]

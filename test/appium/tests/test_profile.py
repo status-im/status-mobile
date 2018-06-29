@@ -24,7 +24,7 @@ class TestProfileView(SingleDeviceTestCase):
         profile_view.cross_icon.click()
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        wallet_view.request_button.click()
+        wallet_view.receive_transaction_button.click()
         wallet_view.qr_code_image.wait_for_element()
         key_value = wallet_view.address_text.text
         key_value_from_qr = wallet_view.get_text_from_qr()
@@ -86,18 +86,7 @@ class TestProfileView(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         public_key = home_view.get_public_key()
         profile_view = home_view.get_profile_view()
-        profile_view.backup_seed_phrase_button.click()
-        profile_view.ok_continue_button.click()
-        seed_phrase = profile_view.get_seed_phrase()
-        profile_view.next_button.click()
-        word_number = profile_view.seed_phrase_word_number.number
-        profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number])
-        profile_view.next_button.click()
-        word_number_1 = profile_view.seed_phrase_word_number.number
-        profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number_1])
-        profile_view.done_button.click()
-        profile_view.yes_button.click()
-        profile_view.ok_got_it_button.click()
+        seed_phrase = profile_view.backup_seed_phrase()
         profile_view.logout_button.click()
         profile_view.confirm_logout_button.click()
         recover_access_view = sign_in_view.add_existing_account_button.click()
@@ -106,7 +95,7 @@ class TestProfileView(SingleDeviceTestCase):
         recover_access_view.password_input.click()
         recover_access_view.send_as_keyevent('qwerty1234')
         recover_access_view.sign_in_button.click()
-        sign_in_view.do_not_share.click()
+        sign_in_view.do_not_share_button.click()
         public_key_1 = home_view.get_public_key()
         assert public_key == public_key_1
 
@@ -157,8 +146,8 @@ class TestProfileView(SingleDeviceTestCase):
         sign_in_view.name_input.click()
         sign_in_view.name_input.send_keys(emoji.emojize('%s %s' % (username, emoji_name)))
         sign_in_view.next_button.click()
-        sign_in_view.do_not_share.wait_for_element(10)
-        sign_in_view.do_not_share.click_until_presence_of_element(sign_in_view.home_button)
+        sign_in_view.do_not_share_button.wait_for_element(10)
+        sign_in_view.do_not_share_button.click_until_presence_of_element(sign_in_view.home_button)
         profile_view = sign_in_view.profile_button.click()
         profile_view.swipe_down()
         assert profile_view.username_text.text == '%s %s' % (username, emoji.EMOJI_UNICODE[emoji_name])

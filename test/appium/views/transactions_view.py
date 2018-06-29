@@ -2,7 +2,6 @@ import time
 
 import pytest
 from selenium.common.exceptions import NoSuchElementException
-from appium.webdriver.common.mobileby import MobileBy
 from views.base_element import BaseElement, BaseButton, BaseText
 from views.base_view import BaseView
 
@@ -13,10 +12,15 @@ class OptionsButton(BaseButton):
         self.locator = self.Locator.xpath_selector(
             '(//android.view.ViewGroup[@content-desc="icon"])[2]')
 
+    class CopyTransactionHashButton(BaseButton):
+        def __init__(self, driver):
+            super(OptionsButton.CopyTransactionHashButton, self).__init__(driver)
+            self.locator = self.Locator.text_selector('Copy transaction hash')
+
     class OpenOnEtherscanButton(BaseButton):
         def __init__(self, driver):
             super(OptionsButton.OpenOnEtherscanButton, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector("//*[@text='Open on Etherscan.io']")
+            self.locator = self.Locator.text_selector('Open on Etherscan.io')
 
 
 class TransactionTable(BaseElement):
@@ -49,6 +53,7 @@ class TransactionTable(BaseElement):
                 self.driver = driver
                 self.locators = dict(transaction_hash="//android.widget.TextView[@text='Hash']/following-sibling::*[1]")
                 self.options_button = OptionsButton(driver)
+                self.copy_transaction_hash_button = OptionsButton.CopyTransactionHashButton(driver)
                 self.open_transaction_on_etherscan_button = OptionsButton.OpenOnEtherscanButton(driver)
 
             class DetailsTextElement(BaseText):

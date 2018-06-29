@@ -1,14 +1,13 @@
 from tests import info
 import time
-import pytest
 from views.base_view import BaseView
 from views.base_element import BaseButton, BaseText
 
 
-class SendButton(BaseButton):
+class SendTransactionButton(BaseButton):
 
     def __init__(self, driver):
-        super(SendButton, self).__init__(driver)
+        super(SendTransactionButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('send-transaction-button')
 
     def navigate(self):
@@ -16,10 +15,10 @@ class SendButton(BaseButton):
         return SendTransactionView(self.driver)
 
 
-class RequestButton(BaseButton):
+class ReceiveTransactionButton(BaseButton):
 
     def __init__(self, driver):
-        super(RequestButton, self).__init__(driver)
+        super(ReceiveTransactionButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('receive-transaction-button')
 
     def navigate(self):
@@ -41,10 +40,10 @@ class ChooseRecipientButton(BaseButton):
         self.locator = self.Locator.accessibility_id('choose-recipient-button')
 
 
-class TransactionsButton(BaseButton):
+class TransactionHistoryButton(BaseButton):
 
     def __init__(self, driver):
-        super(TransactionsButton, self).__init__(driver)
+        super(TransactionHistoryButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('transaction-history-button')
 
     def navigate(self):
@@ -124,19 +123,39 @@ class SignInPhraseText(BaseText):
         self.locator = self.Locator.xpath_selector(
             "//*[contains(@text,'phrase')]/preceding-sibling::*[1]/android.widget.TextView")
 
+    @property
+    def list(self):
+        return [element.text for element in self.find_elements()]
+
+    @property
+    def string(self):
+        return ' '.join(self.list)
+
+
+class AssetTextElement(BaseText):
+    def __init__(self, driver, asset_name):
+        super(AssetTextElement, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('%s-asset-value-text' % asset_name.lower())
+
+
+class AssetCheckBox(BaseButton):
+    def __init__(self, driver, asset_name):
+        super(AssetCheckBox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % asset_name)
+
 
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
         self.driver = driver
 
-        self.send_button = SendButton(self.driver)
-        self.transactions_button = TransactionsButton(self.driver)
+        self.send_transaction_button = SendTransactionButton(self.driver)
+        self.transaction_history_button = TransactionHistoryButton(self.driver)
         self.eth_asset = EthAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
 
         self.send_transaction_request = SendTransactionRequestButton(self.driver)
-        self.request_button = RequestButton(self.driver)
+        self.receive_transaction_button = ReceiveTransactionButton(self.driver)
 
         self.send_request_button = SendRequestButton(self.driver)
         self.options_button = OptionsButton(self.driver)
@@ -171,7 +190,8 @@ class WalletView(BaseView):
         counter = 0
         while True:
             if counter >= wait_time:
-                pytest.fail('Balance is not changed during %s seconds!' % wait_time)
+                info('Balance is not changed during %s seconds!' % wait_time)
+                return
             elif self.get_eth_value() != expected_balance:
                 counter += 10
                 time.sleep(10)
@@ -186,7 +206,19 @@ class WalletView(BaseView):
 
     def set_up_wallet(self):
         self.set_up_button.click()
-        phrase = self.get_sign_in_phrase()
+        phrase = self.sign_in_phrase.string
         self.done_button.click()
         self.yes_button.click()
         return phrase
+
+    def get_wallet_address(self):
+        self.receive_transaction_button.click()
+        address = self.address_text.text
+        self.back_button.click()
+        return address
+
+    def asset_by_name(self, asset_name):
+        return AssetTextElement(self.driver, asset_name)
+
+    def asset_checkbox_by_name(self, asset_name):
+        return AssetCheckBox(self.driver, asset_name)

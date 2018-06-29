@@ -1,3 +1,5 @@
+import random
+import string
 import time
 import base64
 import zbarlight
@@ -72,7 +74,20 @@ class ContinueButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='CONTINUE' or @text='Continue']")
 
 
-class HomeButton(BaseButton):
+class TabButton(BaseButton):
+
+    @property
+    def counter(self):
+        class Counter(BaseText):
+            def __init__(self, driver, parent_locator):
+                super(Counter, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(
+                    "//*[@content-desc='%s']/android.view.ViewGroup[2]/android.widget.TextView" % parent_locator)
+
+        return Counter(self.driver, self.locator.value)
+
+
+class HomeButton(TabButton):
     def __init__(self, driver):
         super(HomeButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('home-tab-button')
@@ -82,7 +97,7 @@ class HomeButton(BaseButton):
         return HomeView(self.driver)
 
 
-class WalletButton(BaseButton):
+class WalletButton(TabButton):
     def __init__(self, driver):
         super(WalletButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('wallet-tab-button')
@@ -92,7 +107,7 @@ class WalletButton(BaseButton):
         return WalletView(self.driver)
 
 
-class ProfileButton(BaseButton):
+class ProfileButton(TabButton):
     def __init__(self, driver):
         super(ProfileButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('profile-tab-button')
@@ -153,6 +168,13 @@ class ConnectionStatusText(BaseText):
             "//*[@content-desc='connection-status-text']/android.widget.TextView")
 
 
+class TestFairyWarning(BaseText):
+    def __init__(self, driver):
+        super(TestFairyWarning, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('session recording')
+        self.is_shown = bool()
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -178,6 +200,8 @@ class BaseView(object):
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
 
+        self.test_fairy_warning = TestFairyWarning(self.driver)
+
         self.element_types = {
             'base': BaseElement,
             'button': BaseButton,
@@ -191,6 +215,8 @@ class BaseView(object):
         while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed() or PasswordInput(
                 self.driver).is_element_displayed()):
             for button in self.ok_button, self.continue_button:
+                if self.test_fairy_warning.is_element_displayed():
+                    self.test_fairy_warning.is_shown = True
                 try:
                     button.wait_for_element(15)
                     button.click()
@@ -295,8 +321,13 @@ class BaseView(object):
         from views.wallet_view import WalletView
         return WalletView(self.driver)
 
-    def get_unique_amount(self):
+    @staticmethod
+    def get_unique_amount():
         return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
+
+    @staticmethod
+    def get_public_chat_name():
+        return ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
 
     def get_text_from_qr(self):
         image = Image.open(BytesIO(base64.b64decode(self.driver.get_screenshot_as_base64())))
@@ -330,3 +361,11 @@ class BaseView(object):
         sign_in_view.password_input.send_keys(password)
         sign_in_view.sign_in_button.click()
         sign_in_view.home_button.wait_for_visibility_of_element()
+
+    def get_public_key(self):
+        profile_view = self.profile_button.click()
+        profile_view.share_my_contact_key_button.click()
+        profile_view.public_key_text.wait_for_visibility_of_element()
+        public_key = profile_view.public_key_text.text
+        profile_view.cross_icon.click()
+        return public_key

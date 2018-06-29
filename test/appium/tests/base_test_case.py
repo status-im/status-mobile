@@ -110,6 +110,8 @@ class AbstractTestCase:
 
     network_api = NetworkApi()
 
+    test_fairy_warning_is_shown = bool()
+
     def verify_no_errors(self):
         if self.errors:
             pytest.fail('. '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
@@ -129,7 +131,9 @@ class SingleDeviceTestCase(AbstractTestCase):
                 self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
                                                capabilities[self.environment]['capabilities'])
                 self.driver.implicitly_wait(self.implicitly_wait)
-                BaseView(self.driver).accept_agreements()
+                view = BaseView(self.driver)
+                view.accept_agreements()
+                self.test_fairy_warning_is_shown = view.test_fairy_warning.is_shown
                 test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
                 break
             except WebDriverException:

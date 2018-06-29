@@ -146,6 +146,13 @@ class CrossIcon(BaseButton):
         self.locator = self.Locator.accessibility_id('done-button')
 
 
+class ShareButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ShareButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('share-code-button')
+
+
 class AdvancedButton(BaseButton):
 
     def __init__(self, driver):
@@ -253,6 +260,7 @@ class ProfileView(BaseView):
         self.edit_picture_button = EditPictureButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)
         self.cross_icon = CrossIcon(self.driver)
+        self.share_button = ShareButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
 
@@ -283,6 +291,21 @@ class ProfileView(BaseView):
     def get_seed_phrase(self):
         text = [i.text for i in self.seed_phrase_table.find_elements()]
         return dict(zip(map(int, text[::2]), text[1::2]))
+
+    def backup_seed_phrase(self):
+        self.backup_seed_phrase_button.click()
+        self.ok_continue_button.click()
+        seed_phrase = self.get_seed_phrase()
+        self.next_button.click()
+        word_number = self.seed_phrase_word_number.number
+        self.seed_phrase_word_input.set_value(seed_phrase[word_number])
+        self.next_button.click()
+        word_number_1 = self.seed_phrase_word_number.number
+        self.seed_phrase_word_input.set_value(seed_phrase[word_number_1])
+        self.done_button.click()
+        self.yes_button.click()
+        self.ok_got_it_button.click()
+        return seed_phrase
 
     def edit_profile_picture(self, file_name: str):
         if not AbstractTestCase().environment == 'sauce':

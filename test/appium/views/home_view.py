@@ -128,14 +128,6 @@ class HomeView(BaseView):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
-    def get_public_key(self):
-        profile_view = self.profile_button.click()
-        profile_view.share_my_contact_key_button.click()
-        profile_view.public_key_text.wait_for_visibility_of_element()
-        public_key = profile_view.public_key_text.text
-        profile_view.cross_icon.click()
-        return public_key
-
     def swipe_and_delete_chat(self, chat_name: str):
         chat_element = self.get_chat_with_user(chat_name)
         counter = 0

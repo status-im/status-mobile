@@ -140,6 +140,13 @@ class TotalFeeInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//*[@content-desc='total-fee-input']/android.widget.TextView")
 
 
+class ShareButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ShareButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('share-button')
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -169,6 +176,8 @@ class SendTransactionView(BaseView):
         self.stt_button = STTButton(self.driver)
 
         self.error_dialog = ErrorDialog(self.driver)
+
+        self.share_button = ShareButton(self.driver)
 
     def sign_transaction(self, sender_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)

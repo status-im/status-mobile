@@ -32,7 +32,7 @@ class TestTransaction(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(recipient['address'], transaction_amount)
         chat_view.get_back_to_home_view()
         home_view.wallet_button.click()
-        transactions_view = wallet_view.transactions_button.click()
+        transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=transaction_amount)
 
     @marks.pr
@@ -92,7 +92,7 @@ class TestTransaction(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        transactions_view = wallet_view.transactions_button.click()
+        transactions_view = wallet_view.transaction_history_button.click()
         transaction_details = transactions_view.transactions_table.get_first_transaction().click()
         transaction_hash = transaction_details.get_transaction_hash()
         transaction_details.options_button.click()
@@ -114,7 +114,7 @@ class TestTransaction(SingleDeviceTestCase):
         home_view.get_back_to_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        send_transaction = wallet_view.send_button.click()
+        send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.stt_button)
         send_transaction.stt_button.click()
         send_transaction.amount_edit_box.click()
@@ -141,7 +141,7 @@ class TestTransaction(SingleDeviceTestCase):
         home_view.get_back_to_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        send_transaction = wallet_view.send_button.click()
+        send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
         transaction_amount = send_transaction.get_unique_amount()
         send_transaction.amount_edit_box.set_value(transaction_amount)
@@ -171,7 +171,7 @@ class TestTransaction(SingleDeviceTestCase):
         home_view.get_back_to_home_view()
         wallet_view = home_view.wallet_button.click()
         sign_in_phrase = wallet_view.set_up_wallet()
-        send_transaction = wallet_view.send_button.click()
+        send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
         send_transaction.amount_edit_box.set_value(send_transaction.get_unique_amount())
         send_transaction.confirm()
@@ -259,7 +259,7 @@ class TestTransactions(MultipleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         device_2_chat.back_button.click()
         device_2_wallet = device_2_home.wallet_button.click()
-        transactions_view = device_2_wallet.transactions_button.click()
+        transactions_view = device_2_wallet.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=amount)
 
     @marks.pr
@@ -278,7 +278,7 @@ class TestTransactions(MultipleDeviceTestCase):
         device_1_home.get_back_to_home_view()
         wallet_view_device_1 = device_1_home.wallet_button.click()
         wallet_view_device_1.set_up_wallet()
-        send_transaction_device_1 = wallet_view_device_1.request_button.click_until_presence_of_element(
+        send_transaction_device_1 = wallet_view_device_1.receive_transaction_button.click_until_presence_of_element(
             wallet_view_device_1.send_transaction_request)
         wallet_view_device_1.send_transaction_request.click()
         send_transaction_device_1.amount_edit_box.scroll_to_element()

@@ -17,7 +17,7 @@ class TestWallet(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        send_transaction = wallet_view.send_button.click()
+        send_transaction = wallet_view.send_transaction_button.click()
 
         # Check valid amount
         invalid_amount = 'asd'
@@ -93,7 +93,7 @@ class TestWallet(SingleDeviceTestCase):
         wallet_view = sign_in_view.wallet_button.click()
         sign_in_phrase = wallet_view.set_up_wallet()
 
-        send_transaction = wallet_view.send_button.click()
+        send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
         recipient_address = transaction_users_wallet['A_USER']['address']
