@@ -155,19 +155,25 @@
                               (assoc-in [:wallet :transactions-loading?] true))}))))
 
 (defn combine-entries [transaction token-transfer]
-  (merge transaction (select-keys token-transfer
-                                  (if (= :ETH (:symbol transaction))
-                                    [:symbol :from :to :value :type :token]
-                                    [:confirmations]))))
+  (merge transaction (select-keys token-transfer [:symbol :from :to :value :type :token :transfer])))
+
+(defn update-confirmations [tx1 tx2]
+  (assoc tx1 :confirmations (max (:confirmations tx1)
+                                 (:confirmations tx2))))
 
 (defn- tx-and-transfer?
   "A helper function that checks if first argument is a transaction and the second argument a token transfer object."
   [tx1 tx2]
   (and (not (:transfer tx1)) (:transfer tx2)))
 
+(defn- both-transfer?
+  [tx1 tx2]
+  (and (:transfer tx1) (:transfer tx2)))
+
 (defn dedupe-transactions [tx1 tx2]
   (cond (tx-and-transfer? tx1 tx2) (combine-entries tx1 tx2)
         (tx-and-transfer? tx2 tx1) (combine-entries tx2 tx1)
+        (both-transfer? tx1 tx2)   (update-confirmations tx1 tx2)
         :else tx2))
 
 (handlers/register-handler-db

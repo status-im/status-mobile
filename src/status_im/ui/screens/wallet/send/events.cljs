@@ -265,17 +265,39 @@
            (handle-failed-tx error_message))
          {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))
 
-(defn prepare-unconfirmed-transaction [db now hash id]
-  (let [transaction (get-in db [:wallet :transactions-unsigned id])]
+(defn prepare-unconfirmed-dapp-transaction [now hash transaction]
+  (-> transaction
+      (assoc :confirmations "0"
+             :timestamp (str now)
+             :type :outbound
+             :hash hash)
+      (update :gas-price str)
+      (update :value str)
+      (update :gas str)
+      (dissoc :message-id :id)))
+
+(defn prepare-unconfirmed-status-transaction [db now hash transaction]
+  (let [network (:network db)
+        token   (tokens/symbol->token (keyword (ethereum/network-names network)) (:symbol transaction))]
     (-> transaction
         (assoc :confirmations "0"
                :timestamp (str now)
                :type :outbound
                :hash hash)
         (update :gas-price str)
-        (update :value str)
+        (assoc :value (:amount transaction))
+        (assoc :token token)
         (update :gas str)
         (dissoc :message-id :id))))
+
+(defn prepare-unconfirmed-transaction [db now hash id]
+  (let [unsigned-transaction (get-in db [:wallet :transactions-unsigned id])
+        send-transaction     (get-in db [:wallet :send-transaction])]
+    ;;TODO(goranjovic) - unify `send-transaction` with transactions-unsigned`
+    ;; currently the latter is only used for transactions initiated from dapps
+    (if-not (:symbol send-transaction)
+      (prepare-unconfirmed-dapp-transaction now hash unsigned-transaction)
+      (prepare-unconfirmed-status-transaction db now hash send-transaction))))
 
 (handlers/register-handler-fx
  :send-transaction-message
