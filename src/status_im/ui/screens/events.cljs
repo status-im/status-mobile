@@ -213,20 +213,22 @@
    :on-accept           handle-reset-data})
 
 (defn initialize-views [{{:accounts/keys [accounts] :as db} :db}]
-  {:db (if (empty? accounts)
-         (assoc db :view-id :intro :navigation-stack (list :intro))
-         (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
-           (-> db
-               (assoc :view-id :login
-                      :navigation-stack (list :login))
-               (update :accounts/login assoc
-                       :address address
-                       :photo-path photo-path
-                       :name name))))})
+  {:db                                  (if (empty? accounts)
+                                          (assoc db :view-id :intro :navigation-stack (list :intro))
+                                          (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
+                                            (-> db
+                                                (assoc :view-id :login
+                                                       :navigation-stack (list :login))
+                                                (update :accounts/login assoc
+                                                        :address address
+                                                        :photo-path photo-path
+                                                        :name name))))
+   :handle-initial-push-notification-fx db})
 
 (defn initialize-db
   "Initialize db to the initial state"
   [{{:universal-links/keys [url]
+     :push-notifications/keys [initial?]
      :keys                 [status-module-initialized? status-node-started?
                             network-status network peers-count peers-summary device-UUID]
      :or                   {network (get app-db :network)}} :db}]
@@ -239,6 +241,7 @@
                        :status-node-started? status-node-started?
                        :network network
                        :universal-links/url url
+                       :push-notifications/initial? initial?
                        :device-UUID device-UUID)})
 
 ;; Entrypoint, fetches the key from the keychain and initialize the app
@@ -292,7 +295,8 @@
  :initialize-account-db
  (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
               network network-status peers-count peers-summary view-id navigation-stack
-              status-module-initialized? status-node-started? device-UUID]
+              status-module-initialized? status-node-started? device-UUID
+              push-notifications/initial?]
        :or   [network (get app-db :network)]} [_ address]]
    (let [console-contact (get contacts constants/console-chat-id)
          current-account (accounts address)
@@ -310,6 +314,7 @@
                     :network-status network-status
                     :network network
                     :chain (ethereum/network->chain-name account-network)
+                    :push-notifications/initial? initial?
                     :peers-summary peers-summary
                     :peers-count peers-count
                     :device-UUID device-UUID)

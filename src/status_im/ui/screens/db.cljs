@@ -53,7 +53,9 @@
              :chat/spam-messages-frequency       0
              :tooltips                           {}
              :desktop/desktop                    {:tab-view-id :home}
-             :dimensions/window                  (dimensions/window)})
+             :dimensions/window                  (dimensions/window)
+             :push-notifications/stored          {}
+             :push-notifications/initial?        false})
 
 ;;;;GLOBAL
 
@@ -161,6 +163,12 @@
 ;; DIMENSIONS
 (spec/def :dimensions/window map?)
 
+;; PUSH NOTIFICATIONS
+
+(spec/def :push-notifications/stored (spec/nilable map?))
+; Shows that push notification used to start the application is processed
+(spec/def :push-notifications/initial? (spec/nilable boolean?))
+
 (spec/def ::db (allowed-keys
                 :opt
                 [:contacts/contacts
@@ -199,6 +207,8 @@
                  :inbox/current-id
                  :inbox/fetching?
                  :universal-links/url
+                 :push-notifications/stored
+                 :push-notifications/initial?
                  :browser/browsers
                  :browser/options
                  :new/open-dapp

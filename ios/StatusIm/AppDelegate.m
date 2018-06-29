@@ -16,8 +16,10 @@
 #import "RCTRootView.h"
 #import "SplashScreen.h"
 #import "TestFairy.h"
-#import "RNFIRMessaging.h"
 #import "RCTLinkingManager.h"
+#import <Firebase.h>
+#import "RNFirebaseNotifications.h"
+#import "RNFirebaseMessaging.h"
 
 @implementation AppDelegate
 
@@ -64,6 +66,11 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
 
+  [FIRApp configure];
+  [RNFirebaseNotifications configure];
+  [application registerForRemoteNotifications];
+
+
   /* Set logging level from React Native */
   NSString *logLevel = [ReactNativeConfig envFor:@"LOG_LEVEL"];
   if([logLevel isEqualToString:@"error"]){
@@ -95,29 +102,20 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   [self.window makeKeyAndVisible];
   [SplashScreen show];
 
-  [FIRApp configure];
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
-
   return YES;
 }
 
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
-{
-[RNFIRMessaging willPresentNotification:notification withCompletionHandler:completionHandler];
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+  [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler
-{
-[RNFIRMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo
+                                                       fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
--(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-[RNFIRMessaging didReceiveLocalNotification:notification];
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
-[RNFIRMessaging didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+  [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application
