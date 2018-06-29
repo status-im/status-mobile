@@ -109,6 +109,7 @@ repl-android: ##@repl Start REPL for Android
 # Run
 # -------------
 run-android: ##@run Run Android build
+	cd android; ./gradlew react-native-android:installArchives
 	react-native run-android --appIdSuffix debug
 
 SIMULATOR=
