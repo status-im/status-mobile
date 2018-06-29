@@ -17,7 +17,6 @@
             [status-im.chat.views.message.options :as message-options]
             [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.message.message :as message]
-            [status-im.chat.views.input.input :as input]
             [status-im.chat.views.toolbar-content :as toolbar-content]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list.views :as list]

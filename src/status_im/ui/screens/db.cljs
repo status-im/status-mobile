@@ -241,7 +241,6 @@
                  :chat/chat-ui-props
                  :chat/chat-list-ui-props
                  :chat/layout-height
-                 :chat/expandable-view-height-to-value
                  :chat/message-data
                  :chat/message-status
                  :chat/selected-participants

@@ -12,14 +12,13 @@
    :border-top-color colors/gray-light
    :border-top-width 1})
 
-(defn item-suggestion-container [last?]
+(def item-suggestion-container
   {:flex-direction      :row
    :align-items         :center
    :height              item-height
-   :margin-left         14
-   :padding-right       14
+   :padding-horizontal  14
    :border-bottom-color colors/gray-light
-   :border-bottom-width (if last? 0 border-height)})
+   :border-bottom-width border-height})
 
 (def item-suggestion-name
   {:color     common/color-black

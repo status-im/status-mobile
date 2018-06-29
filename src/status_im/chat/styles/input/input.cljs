@@ -5,7 +5,7 @@
 (def min-input-height 36)
 (def padding-vertical 8)
 (def border-height 1)
-(def max-input-height (* 4 min-input-height))
+(def max-input-height (* 5 min-input-height))
 
 (defnstyle root [margin-bottom]
   {:background-color colors/white
@@ -25,21 +25,23 @@
    :padding-bottom padding-vertical
    :flex           1})
 
-(defn input-animated [content-height]
-  {:align-items      :flex-start
-   :flex-direction   :row
-   :flex-grow        1
-   :height           (min (max min-input-height content-height) max-input-height)})
+(def input-animated
+  {:align-items    :flex-start
+   :flex-direction :row
+   :flex-grow      1
+   :min-height     min-input-height
+   :max-height     max-input-height})
 
-(defnstyle input-view [content-height single-line-input?]
+(defnstyle input-view [single-line-input?]
   {:flex           1
    :font-size      15
    :padding-top    9
    :padding-bottom 5
    :padding-right  12
-   :height         (if single-line-input?
+   :min-height     min-input-height
+   :max-height     (if single-line-input?
                      min-input-height
-                     (+ (min (max min-input-height content-height) max-input-height)))
+                     max-input-height)
    :android        {:padding-top 3}})
 
 (def invisible-input-text
