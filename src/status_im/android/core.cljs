@@ -60,9 +60,8 @@
         (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
       (fn []
-        (notifications/on-refresh-fcm-token)
          ;; TODO(oskarth): Background click_action handler
-        (notifications/on-notification))
+        (notifications/init))
       :component-will-unmount
       (fn []
         (.stop react/http-bridge)

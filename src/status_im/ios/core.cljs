@@ -36,8 +36,7 @@
         (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
       (fn []
-        (notifications/on-refresh-fcm-token)
-        (notifications/on-notification))
+        (notifications/init))
       :component-will-unmount
       (fn []
         (.stop react/http-bridge)

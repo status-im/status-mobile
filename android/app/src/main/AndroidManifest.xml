@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- dangerous permissions -->
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -34,8 +36,14 @@
             android:largeHeap="true">
       <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
       <meta-data
-              android:name="com.google.firebase.messaging.default_notification_icon"
-              android:resource="@drawable/ic_stat_status_notification" />
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ic_stat_status_notification" />
+
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="@string/notification_channel_id" />
+
+
         <activity
                 android:name=".MainActivity"
                 android:label="@string/app_name"
@@ -74,19 +82,17 @@
                 android:enabled="true"
                 android:exported="true"/>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
-
-        <service android:name="com.evollu.react.fcm.MessagingService" android:enabled="true" android:exported="true">
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
           <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
           </intent-filter>
         </service>
-
-        <service android:name="com.evollu.react.fcm.InstanceIdService" android:exported="false">
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService">
           <intent-filter>
             <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
           </intent-filter>
         </service>
-
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
     </application>
 
 </manifest>
