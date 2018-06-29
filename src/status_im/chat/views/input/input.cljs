@@ -3,6 +3,7 @@
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [status-im.chat.constants :as constants]
             [status-im.chat.styles.input.input :as style]
             [status-im.chat.views.input.parameter-box :as parameter-box]
@@ -37,7 +38,6 @@
                                   (reset! input-ref %))
        :accessibility-label    :chat-message-input
        :multiline              (not single-line-input?)
-       :default-value          (or input-text "")
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
@@ -74,7 +74,10 @@
        :placeholder-text-color colors/gray
        :auto-capitalize        :sentences}
       (when cooldown-enabled?
-        {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
+        {:placeholder (i18n/label :cooldown/text-input-disabled)})
+      (when (nil? input-text)
+        {:default-value ""
+         :value         ""}))]))
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
   (letsubs [{:keys [input-text]} [:get-current-chat]]
