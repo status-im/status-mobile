@@ -40,7 +40,7 @@ RCTStatus* RCTStatusPrivate::rctStatus = nullptr;
 
 RCTStatus::RCTStatus(QObject* parent) : QObject(parent), d_ptr(new RCTStatusPrivate) {
     RCTStatusPrivate::rctStatus = this;
-    SetJailSignalCallback((void*)&RCTStatus::jailSignalEventCallback);
+    SetSignalEventCallback((void*)&RCTStatus::jailSignalEventCallback);
     connect(this, &RCTStatus::jailSignalEvent, this, &RCTStatus::onJailSignalEvent);
 }
 
