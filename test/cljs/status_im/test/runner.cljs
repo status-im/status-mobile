@@ -20,6 +20,7 @@
             [status-im.test.transport.core]
             [status-im.test.transport.inbox]
             [status-im.test.transport.handlers]
+            [status-im.test.transport.filters]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
             [status-im.test.chat.models.message]
@@ -85,6 +86,7 @@
  'status-im.test.transport.core
  'status-im.test.transport.inbox
  'status-im.test.transport.handlers
+ 'status-im.test.transport.filters
  'status-im.test.protocol.web3.inbox
  'status-im.test.utils.utils
  'status-im.test.utils.handlers-macro

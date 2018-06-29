@@ -5,7 +5,7 @@
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.handlers :as transport.handlers]
             [status-im.transport.inbox :as inbox]
-            status-im.transport.filters
+            [status-im.transport.filters :as transport.filters]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -23,11 +23,11 @@
                                    (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
                                                                         :sym-key    sym-key
                                                                         :sym-key-id sym-key-id}]))
-          topic (transport.utils/get-topic constants/contact-discovery)]
+          discovery-topics       (transport.filters/discovery-topics public-key)]
       (handlers-macro/merge-fx cofx
                                {:shh/add-discovery-filter {:web3           web3
                                                            :private-key-id public-key
-                                                           :topic topic}
+                                                           :topics discovery-topics}
                                 :shh/restore-sym-keys {:web3       web3
                                                        :transport  (:transport/chats db)
                                                        :on-success sym-key-added-callback}}
@@ -49,6 +49,7 @@
                                                             :chat    (assoc chat :sym-key-id sym-key-id)})]
       :shh/add-filter {:web3       web3
                        :sym-key-id sym-key-id
+                       :one-to-one (get-in db [:transport/chats chat-id :one-to-one])
                        :topic      topic
                        :chat-id    chat-id}})))
 
@@ -68,6 +69,6 @@
   account A messages without this."
   [{:keys [db]}]
   (let [{:transport/keys [chats discovery-filter]} db
-        chat-filters                               (mapv :filter (vals chats))
+        chat-filters                               (mapcat :filters (vals chats))
         all-filters                                (conj chat-filters discovery-filter)]
     {:shh/remove-filters all-filters}))

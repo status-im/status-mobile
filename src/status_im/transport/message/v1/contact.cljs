@@ -22,9 +22,10 @@
       (handlers-macro/merge-fx cofx
                                {:shh/get-new-sym-keys [{:web3       (:web3 db)
                                                         :on-success on-success}]}
-                               (protocol/init-chat {:chat-id chat-id
-                                                    :topic   topic
-                                                    :resend? "contact-request"})))))
+                               (protocol/init-chat {:chat-id    chat-id
+                                                    :topic      topic
+                                                    :one-to-one true
+                                                    :resend?    "contact-request"})))))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage

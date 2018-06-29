@@ -5,6 +5,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.utils :as transport.utils]
+            [status-im.transport.filters :as transport.filters]
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]
             [status-im.constants :as constants]
@@ -233,10 +234,11 @@
 (defn get-request-messages-topics
   "Returns topics for which full history has already been recovered"
   [db]
-  (conj (map :topic
-             (remove :fetch-history?
-                     (vals (:transport/chats db))))
-        (transport.utils/get-topic constants/contact-discovery)))
+  (concat
+   (map :topic
+        (remove :fetch-history?
+                (vals (:transport/chats db))))
+   (transport.filters/discovery-topics (:current-public-key db))))
 
 (defn get-request-history-topics
   "Returns topics for which full history has not been recovered"

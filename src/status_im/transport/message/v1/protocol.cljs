@@ -4,6 +4,7 @@
             [status-im.constants :as constants]
             [status-im.chat.core :as chat]
             [status-im.transport.db :as transport.db]
+            [status-im.transport.filters :as transport.filters]
             [status-im.transport.message.core :as message]
             [status-im.transport.utils :as transport.utils]))
 
@@ -15,13 +16,14 @@
 (defn init-chat
   "Initialises chat on protocol layer.
   If topic is not passed as argument it is derived from `chat-id`"
-  [{:keys [chat-id topic resend?]
+  [{:keys [chat-id topic one-to-one resend?]
     :or   {topic   (transport.utils/get-topic chat-id)}}
    {:keys [db]}]
   {:db (assoc-in db
                  [:transport/chats chat-id]
-                 (transport.db/create-chat {:topic   topic
-                                            :resend? resend?}))})
+                 (transport.db/create-chat {:topic      topic
+                                            :one-to-one one-to-one
+                                            :resend?    resend?}))})
 
 #_(defn requires-ack [message-id chat-id {:keys [db] :as cofx}]
     {:db (update-in db [:transport/chats chat-id :pending-ack] conj message-id)})
@@ -52,7 +54,9 @@
                  :message       (merge {:sig     current-public-key
                                         :pubKey  chat-id
                                         :payload payload
-                                        :topic   (transport.utils/get-topic constants/contact-discovery)}
+                                        :topic   (if config/partitioned-topic-enabled?
+                                                   (transport.filters/partition-topic chat-id)
+                                                   transport.filters/discovery-topic)}
                                        whisper-opts)}]}))
 
 (defn- prepare-recipients [public-keys db]

@@ -16,10 +16,10 @@
 (spec/def ::sym-key-id string?)
 ;;TODO (yenda) remove once go implements persistence
 (spec/def ::sym-key string?)
-(spec/def ::filter any?)
+(spec/def ::filters (spec/coll-of any?))
 
 (spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic ::fetch-history?]
-                                        :opt-un [::sym-key-id ::sym-key ::filter ::resend?]))
+                                        :opt-un [::sym-key-id ::sym-key ::filters ::resend? ::one-to-one]))
 
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
 (spec/def :transport/discovery-filter (spec/nilable any?))
@@ -32,6 +32,7 @@
    :seen                  []
    :pending-ack           []
    :pending-send          []
+   :one-to-one            false
    :fetch-history?        true
    :resend?               resend?
    :topic                 topic})

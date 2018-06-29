@@ -71,6 +71,7 @@
 (deftest request-messages
   (let [db {:network "mainnet"
             :mailserver-status :connected
+            :current-public-key "a"
             :inbox/current-id "wnodeid"
             :inbox/wnodes
             {:mainnet {"wnodeid" {:address    "wnode-address"
@@ -95,8 +96,8 @@
           (testing "it uses last 7 days for catching up"
             (is (= 395200 (get-in actual [::inbox/request-messages 0 :from]))))
           (testing "it only uses topics that dont have fetch history set"
-            (is (= ["0xf8946aac" "dont-fetch-history"]
-                   (get-in actual [::inbox/request-messages 0 :topics]))))
+            (is (= (sort ["0xf8946aac" "0xe5c5274a" "dont-fetch-history"])
+                   (sort (get-in actual [::inbox/request-messages 0 :topics])))))
           (testing "it uses the last 24 hours to request history"
             (is (= 913600
                    (get-in actual [::inbox/request-messages 1 :from]))))

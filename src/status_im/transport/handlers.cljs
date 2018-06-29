@@ -75,11 +75,13 @@
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
                                                (assoc :sym-key-id sym-key-id
                                                       :sym-key sym-key
+                                                      :one-to-one true
                                                       :topic topic))]
      (handlers-macro/merge-fx cofx
                               {:db (assoc-in db [:transport/chats chat-id] chat-transport-info)
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
+                                                :one-to-one true
                                                 :topic      topic
                                                 :chat-id    chat-id}
                                :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
@@ -94,6 +96,7 @@
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
                                                (assoc :sym-key-id sym-key-id
                                                       :sym-key sym-key
+                                                      :one-to-one true
                                                       :topic topic))]
      (handlers-macro/merge-fx cofx
                               {:db             (assoc-in db
@@ -102,6 +105,7 @@
                                :dispatch       [:inbox/request-chat-history chat-id]
                                :shh/add-filter {:web3       web3
                                                 :sym-key-id sym-key-id
+                                                :one-to-one true
                                                 :topic      topic
                                                 :chat-id    chat-id}
                                :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id

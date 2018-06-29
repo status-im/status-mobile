@@ -9,9 +9,14 @@
                    {:networks {"mainnet_rpc" {:config {:NetworkId 1}}}
                     :public-key "1"}}}]
     (testing "it adds the discover filter"
-      (is (= (:shh/add-discovery-filter (protocol.handlers/initialize-protocol cofx [])))))
+      (let [actual (:shh/add-discovery-filter (protocol.handlers/initialize-protocol cofx []))]
+        (is actual)
+        (testing "it adds the topics"
+          (is (=
+               ["0x2af2e6e7" "0xf8946aac"]
+               (:topics actual))))))
     (testing "it restores the sym-keys"
-      (is (= (:shh/restore-sym-keys (protocol.handlers/initialize-protocol cofx [])))))
+      (is (:shh/restore-sym-keys (protocol.handlers/initialize-protocol cofx []))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :chain "mainnet"
