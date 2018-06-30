@@ -15,7 +15,7 @@ class TestrailReport(BaseTestReport):
         self.user = environ.get('TESTRAIL_USER')
 
         self.run_id = None
-        self.suite_id = 42
+        self.suite_id = 15
         self.project_id = 9
 
         self.outcomes = {
@@ -54,9 +54,26 @@ class TestrailReport(BaseTestReport):
     def add_run(self, run_name):
         request_body = {'suite_id': self.suite_id,
                         'name': run_name,
-                        'milestone_id': self.actual_milestone_id}
+                        'milestone_id': self.actual_milestone_id,
+                        'case_ids': self.get_regression_cases(),
+                        'include_all': False}
         run = self.post('add_run/%s' % self.project_id, request_body)
         self.run_id = run['id']
+
+    def get_cases(self, section_id):
+        return self.get('get_cases/%s&suite_id=%s&section_id=%s' % (self.project_id, self.suite_id, section_id))
+
+    def get_regression_cases(self):
+        test_cases = dict()
+        test_cases['smoke_phase_1'] = 157
+        test_cases['smoke_phase_2'] = 308
+        test_cases['upgrade'] = 309
+        test_cases['negative_tests'] = 458
+        case_ids = list()
+        for phase in test_cases:
+            for case in self.get_cases(test_cases[phase]):
+                case_ids.append(case['id'])
+        return case_ids
 
     def add_results(self):
         for test in self.get_all_tests():

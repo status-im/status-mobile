@@ -62,3 +62,25 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not home.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' text is not shown" % text)
         self.verify_no_errors()
+
+    @marks.testrail_id(844)
+    def test_create_account_short_and_mismatch_password(self):
+
+        sign_in = SignInView(self.driver)
+        sign_in.create_account_button.click()
+        sign_in.password_input.set_value('12345')
+
+        mismatch_error = "Password confirmation doesn't match password"
+
+        sign_in.next_button.click()
+        if sign_in.confirm_password_input.is_element_displayed():
+            self.errors.append('Next button is clickable when password is less then 6 symbols')
+
+        sign_in.password_input.set_value('123456')
+        sign_in.next_button.click()
+        sign_in.confirm_password_input.set_value('1234567')
+        sign_in.next_button.click()
+
+        if not sign_in.find_text_part(mismatch_error):
+            self.errors.append("'%s' is not shown")
+        self.verify_no_errors()

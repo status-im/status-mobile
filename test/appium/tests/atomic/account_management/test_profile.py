@@ -49,13 +49,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Can\'t share wallet address via email')
         self.verify_no_errors()
 
-    @marks.skip
     @marks.testrail_id(3704)
     def test_copy_contact_code_and_wallet_address(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
-        profile_view.share_my_contact_key_button.click()
         profile_view.share_my_contact_key_button.click()
         public_key = profile_view.public_key_text.text
         profile_view.public_key_text.long_press_element()
@@ -96,7 +94,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             if not profile_view.profile_picture.is_element_image_equals_template():
                 pytest.fail('Profile picture was not updated')
 
-    @marks.skip
     @marks.testrail_id(2374)
     def test_backup_seed_phrase(self):
         sign_in_view = SignInView(self.driver)

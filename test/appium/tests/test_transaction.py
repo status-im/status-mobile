@@ -162,8 +162,8 @@ class TestTransaction(SingleDeviceTestCase):
 
     @marks.testrail_case_id(3452)
     def test_sign_transaction_twice(self):
-        recipient = transaction_users['F_USER']
-        sender = transaction_users['E_USER']
+        recipient = transaction_users['E_USER']
+        sender = transaction_users['F_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
         home_view = sign_in_view.get_home_view()

@@ -14,3 +14,4 @@ transaction = pytest.mark.transaction
 wallet = pytest.mark.wallet
 sign_in = pytest.mark.sign_in
 skip = pytest.mark.skip
+console = pytest.mark.console

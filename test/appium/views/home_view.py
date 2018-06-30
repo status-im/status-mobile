@@ -90,7 +90,7 @@ class HomeView(BaseView):
                 break
 
     def get_chat_with_user(self, username):
-        return ChatElement(self.driver, username)
+        return ChatElement(self.driver, username[:25])
 
     def add_contact(self, public_key):
         start_new_chat = self.plus_button.click()

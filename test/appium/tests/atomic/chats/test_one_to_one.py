@@ -1,16 +1,13 @@
 import random
 import string
-
 import emoji
 import pytest
 from selenium.common.exceptions import TimeoutException
-
-from tests import marks, get_current_time, group_chat_users
+from tests import marks, get_current_time, group_chat_users, transaction_users
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
-@marks.all
 @marks.chat
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
@@ -363,3 +360,25 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
             self.errors.append('Message with emoji was not sent in 1-1 chat')
         self.verify_no_errors()
+
+
+class TestChatManagement(SingleDeviceTestCase):
+
+    @marks.testrail_id(1428)
+    def test_clear_history(self):
+        recipient = transaction_users['E_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(recipient['public_key'])
+        chat_view = home_view.get_chat_view()
+        for _ in range(4):
+            chat_view.chat_message_input.send_keys('test message')
+            chat_view.send_message_button.click()
+        chat_view.clear_history()
+        if not chat_view.no_messages_in_chat.is_element_present():
+            pytest.fail('Message history is shown')
+        home_view.relogin()
+        home_view.get_chat_with_user(recipient['username']).click()
+        if not chat_view.no_messages_in_chat.is_element_present():
+            pytest.fail('Message history is shown after re-login')

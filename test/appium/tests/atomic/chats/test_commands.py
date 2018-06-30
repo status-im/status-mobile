@@ -211,5 +211,32 @@ class TestCommands(MultipleDeviceTestCase):
                 self.errors.append("Request funds message doesn't contain 'Send' button")
         except TimeoutException:
             self.errors.append('Request funds message was not received')
-
         self.verify_no_errors()
+
+    @marks.testrail_id(1417)
+    def test_contact_profile_send_transaction(self):
+        self.create_drivers(1)
+        recipient = transaction_users['B_USER']
+        sign_in_view = SignInView(self.drivers[0])
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
+        sender_public_key = home_view.get_public_key()
+        sender_address = home_view.public_key_to_address(sender_public_key)
+        home_view.home_button.click()
+        self.network_api.get_donate(sender_address)
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        home_view.home_button.click()
+        home_view.add_contact(recipient['public_key'])
+        chat_view = home_view.get_chat_view()
+        chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
+        chat_view.view_profile_button.click()
+        chat_view.profile_send_transaction.click()
+        chat_view.chat_message_input.click()
+        chat_view.eth_asset.click()
+        amount = chat_view.get_unique_amount()
+        chat_view.send_as_keyevent(amount)
+        chat_view.send_message_button.click()
+        send_transaction_view = chat_view.get_send_transaction_view()
+        send_transaction_view.sign_transaction(common_password)
+        self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)

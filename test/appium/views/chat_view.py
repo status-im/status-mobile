@@ -311,6 +311,11 @@ class ChatView(BaseView):
                 self.element_by_text(chat_name).is_element_present():
             errors.append('Chat was not deleted')
 
+    def clear_history(self):
+        self.chat_options.click()
+        self.clear_history_button.click()
+        self.clear_button.click()
+
     def send_transaction_in_1_1_chat(self, amount, password, wallet_set_up=False):
         self.commands_button.click()
         self.send_command.click()

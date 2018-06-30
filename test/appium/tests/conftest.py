@@ -143,8 +143,8 @@ def update_sauce_jobs(test_name, job_ids, passed):
 
 
 def get_testrail_case_id(obj):
-    if 'testrail_case_id' in obj.keywords._markers:
-        return obj.keywords._markers['testrail_case_id'].args[0]
+    if 'testrail_id' in obj.keywords._markers:
+        return obj.keywords._markers['testrail_id'].args[0]
 
 
 def pytest_runtest_setup(item):
