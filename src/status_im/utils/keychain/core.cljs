@@ -1,10 +1,12 @@
 (ns status-im.utils.keychain.core
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.react-native.js-dependencies :as rn]))
+            [status-im.react-native.js-dependencies :as rn]
+            [status-im.utils.platform :as platform]))
 
 (def key-bytes 64)
 (def username "status-im.encryptionkey")
+(when platform/desktop? (.setUsername rn/keychain username))
 
 (defn- bytes->js-array [b]
   (.from js/Array b))
