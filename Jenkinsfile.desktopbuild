@@ -25,6 +25,11 @@ def doGitRebase() {
   }
 }
 
+def cleanupBuild(packageFolder) {
+  sh 'rm -rf node_modules'
+  sh ( 'rm -rf ' + packageFolder )
+}
+
 parallel (
   "MacOS parallel build stream" : {
     timeout(90) {
@@ -50,7 +55,7 @@ parallel (
 
             doGitRebase()
 
-            sh 'rm -rf node_modules'
+            cleanupBuild(packageFolder)
             sh 'cp .env.jenkins .env'
             sh 'lein deps'
 
@@ -61,7 +66,6 @@ parallel (
             sh 'rm -f index.desktop.js'
             sh 'lein prod-build-desktop'
 
-            sh ( 'rm -rf ' + packageFolder )
             sh ( 'mkdir ' + packageFolder )
             sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
           }
@@ -91,8 +95,10 @@ parallel (
             archiveArtifacts "StatusImPackage/*.app.zip"
           }
 
+          cleanupBuild(packageFolder)
           slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') MacOS build finished successfully. ' + env.BUILD_URL
         } catch (e) {
+          cleanupBuild(packageFolder)
           slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on MacOS. ' + env.BUILD_URL
           throw e
         }
@@ -123,7 +129,7 @@ parallel (
 
             doGitRebase()
 
-            sh 'rm -rf node_modules'
+            cleanupBuild(packageFolder)
             sh 'cp .env.jenkins .env'
             sh 'lein deps'
 
@@ -134,7 +140,6 @@ parallel (
             sh 'rm -f index.desktop.js'
             sh 'lein prod-build-desktop'
 
-            sh ( 'rm -rf ' + packageFolder )
             sh ( 'mkdir ' + packageFolder )
             sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
           }
@@ -180,8 +185,10 @@ parallel (
             archiveArtifacts "StatusImPackage/*.AppImage"
           }
 
+          cleanupBuild(packageFolder)
           slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build finished successfully. ' + env.BUILD_URL
         } catch (e) {
+          cleanupBuild(packageFolder)
           slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on Linux. ' + env.BUILD_URL
           throw e
         }
