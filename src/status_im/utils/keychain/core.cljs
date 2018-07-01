@@ -6,7 +6,6 @@
 
 (def key-bytes 64)
 (def username "status-im.encryptionkey")
-(when platform/desktop? (.setUsername rn/keychain username))
 
 (defn- bytes->js-array [b]
   (.from js/Array b))
@@ -67,3 +66,6 @@
 (defn reset []
   (log/debug "resetting key...")
   (.resetGenericPassword rn/keychain))
+
+(defn set-username []
+  (when platform/desktop? (.setUsername rn/keychain username)))
