@@ -11,7 +11,7 @@
 
 (defn app-root []
   (reagent/create-class
-    {:reagent-render views/main}))
+   {:reagent-render views/main}))
 
 (defn init []
   (core/init app-root))
