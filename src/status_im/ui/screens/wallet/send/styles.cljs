@@ -20,6 +20,14 @@
    :padding-top        12
    :padding-horizontal 12})
 
+(def spinner-container
+  {:position        :absolute
+   :left            0
+   :top             0
+   :right           0
+   :bottom          0
+   :justify-content :center})
+
 (def signing-phrase-container
   {:border-radius    8
    :height           36

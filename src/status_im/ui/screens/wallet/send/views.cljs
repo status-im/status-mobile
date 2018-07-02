@@ -22,12 +22,10 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
-            [status-im.transport.utils :as transport.utils]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]
-            [clojure.string :as string]))
+            [status-im.utils.ethereum.core :as ethereum]))
 
-(defview sign-panel [message?]
+(defview sign-panel [message-label spinning?]
   (letsubs [account         [:get-current-account]
             wrong-password? [:wallet.send/wrong-password?]
             signing-phrase  (:signing-phrase @account)
@@ -36,13 +34,17 @@
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
      [react/animated-view {:style (styles/sign-panel opacity-value)}
+      [react/view styles/spinner-container
+       ;;NOTE(goranjovic) - android build doesn't seem to react on change in `:animating` property, so
+       ;;we have this workaround of just using `when` around the whole element.
+       (when spinning?
+         [react/activity-indicator {:animating true
+                                    :size      :large}])]
       [react/view styles/signing-phrase-container
        [react/text {:style               styles/signing-phrase
                     :accessibility-label :signing-phrase-text}
         signing-phrase]]
-      [react/text {:style styles/signing-phrase-description} (i18n/label (if message?
-                                                                           :t/signing-message-phrase-description
-                                                                           :t/signing-phrase-description))]
+      [react/text {:style styles/signing-phrase-description} (i18n/label message-label)]
       [react/view styles/password-container
        [react/text-input
         {:auto-focus             true
@@ -56,7 +58,7 @@
          [tooltip/tooltip (i18n/label :t/wrong-password)])]]]))
 
 ;; "Cancel" and "Sign Transaction >" buttons, signing with password
-(defview signing-buttons [cancel-handler sign-handler & [sign-label]]
+(defview signing-buttons [spinning? cancel-handler sign-handler sign-label]
   (letsubs [sign-enabled? [:wallet.send/sign-password-enabled?]]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons
@@ -66,9 +68,9 @@
       (i18n/label :t/cancel)]
      [button/button {:style               (wallet.styles/button-container sign-enabled?)
                      :on-press            sign-handler
-                     :disabled?           (not sign-enabled?)
+                     :disabled?           (or spinning? (not sign-enabled?))
                      :accessibility-label :sign-transaction-button}
-      (i18n/label (or sign-label :t/transactions-sign-transaction))
+      (i18n/label sign-label)
       [vector-icons/icon :icons/forward {:color :white}]]]))
 
 (defn- sign-enabled? [amount-error to amount]
@@ -78,7 +80,7 @@
    (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
-(defn- sign-buttons [amount-error to amount sufficient-funds? modal?]
+(defn- sign-button [amount-error to amount sufficient-funds? modal?]
   (let [sign-enabled?           (sign-enabled? amount-error to amount)
         immediate-sign-enabled? (or modal? (and sign-enabled? sufficient-funds?))]
     [bottom-buttons/bottom-buttons
@@ -212,7 +214,8 @@
      [advanced-cartouche transaction modal?])])
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? network]}]
-  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? in-progress? from-chat? symbol]} transaction
+  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? in-progress?
+                from-chat? symbol]} transaction
         {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
@@ -243,12 +246,13 @@
                                                      :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
         [advanced-options advanced? transaction modal? scroll]]]
       (if signing?
-        [signing-buttons
+        [signing-buttons in-progress?
          #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
-         #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))]
-        [sign-buttons amount-error to amount sufficient-funds? modal?])
+         #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))
+         :t/transactions-sign-transaction]
+        [sign-button amount-error to amount sufficient-funds? modal?])
       (when signing?
-        [sign-panel])
+        [sign-panel :t/signing-phrase-description in-progress?])
       (when in-progress? [react/view styles/processing-view])]]))
 
 (defview send-transaction []
@@ -291,10 +295,10 @@
            :input-options {:multiline true}
            :amount-text   data}
           nil]]]]
-      [signing-buttons
+      [signing-buttons false
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
        #(re-frame/dispatch [:wallet/sign-message-modal])
        :t/transactions-sign]
-      [sign-panel true]
+      [sign-panel :t/signing-message-phrase-description false]
       (when in-progress?
         [react/view styles/processing-view])]]))

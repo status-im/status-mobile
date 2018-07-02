@@ -250,7 +250,9 @@
 
         ;;WRONG PASSWORD
        constants/send-transaction-password-error-code
-       {:db (assoc-in db [:wallet :send-transaction :wrong-password?] true)}
+       {:db (-> db
+                (assoc-in [:wallet :send-transaction :wrong-password?] true)
+                (assoc-in [:wallet :send-transaction :waiting-signal?] false))}
 
         ;;NO ERROR, DISCARDED, TIMEOUT or DEFAULT ERROR
        (if (this-transaction-signing? id (:id send-transaction) view-id modal)
