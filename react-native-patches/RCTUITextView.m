@@ -246,9 +246,9 @@ static UIColor *defaultPlaceholderColor()
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-  if (_contextMenuHidden) {
+  /*if (_contextMenuHidden) {
     return NO;
-  }
+  }*/
 
   return [super canPerformAction:action withSender:sender];
 }
