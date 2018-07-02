@@ -76,6 +76,10 @@
   (when bn
     (.toFixed bn)))
 
+(defn to-number [bn]
+  (when bn
+    (.toNumber bn)))
+
 (defn wei->str [unit n]
   (str (to-fixed (wei-> unit n)) " " (string/upper-case (name unit))))
 

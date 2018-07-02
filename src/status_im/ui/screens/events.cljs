@@ -26,6 +26,9 @@
             status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
+            status-im.ui.screens.wallet.collectibles.cryptokitties.events
+            status-im.ui.screens.wallet.collectibles.cryptostrikers.events
+            status-im.ui.screens.wallet.collectibles.etheremon.events
             status-im.ui.screens.browser.events
             status-im.ui.screens.offline-messaging-settings.events
             status-im.ui.screens.bootnodes-settings.events

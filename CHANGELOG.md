@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added Farsi public #status channel
 - Spam moderation
+- Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
 
 ## [0.9.21] - 2018-06-25
 ### Added

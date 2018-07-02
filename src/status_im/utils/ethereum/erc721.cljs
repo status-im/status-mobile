@@ -6,5 +6,9 @@
 
 (defn token-of-owner-by-index [web3 contract address index cb]
   (ethereum/call web3
-                 (ethereum/call-params contract "tokenOfOwnerByIndex(address,uint256)" (ethereum/normalized-address address) index)
+                 (ethereum/call-params
+                  contract
+                  "tokenOfOwnerByIndex(address,uint256)"
+                  (ethereum/normalized-address address)
+                  (ethereum/int->hex index))
                  #(cb %1 (ethereum/hex->bignumber %2))))

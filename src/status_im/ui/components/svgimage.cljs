@@ -1,7 +1,8 @@
 (ns status-im.ui.components.svgimage
   (:require [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.http :as http]))
 
 (defn html [uri width height]
   (str
@@ -38,7 +39,7 @@
 (defn svgimage [{:keys [style source]}]
   (let [width (reagent/atom nil)
         {:keys [uri k] :or {k 1}} source]
-    (when (re-find #"^(https:)([/|.|\w|\s|-])*\.(?:jpg|svg|png)$" uri)
+    (when (http/url-sanitized? uri)
       (fn []
         [react/view {:style     style
                      :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}

@@ -70,3 +70,6 @@
                :keywordize-keys true)
       (catch :default _
         (log/debug (str "Failed to parse " o))))))
+
+(defn url-sanitized? [uri]
+  (not (nil? (re-find #"^(https:)([/|.|\w|\s|-])*\.(?:jpg|svg|png)$" uri))))
