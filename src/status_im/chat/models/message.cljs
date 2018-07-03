@@ -17,7 +17,9 @@
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.ui.screens.currency-settings.subs :as currency-settings]
+            [status-im.utils.datetime :as datetime]
+            [clojure.string :as string]))
 
 (def receive-interceptors
   [(re-frame/inject-cofx :random-id)
@@ -385,19 +387,30 @@
     :as             request}
    {:keys [params command handler-data content-type]}
    network
+   currency
    prices
    tx-hash]
   (let [content (if request
                   {:request-command     request-command
                    ;; TODO janherich this is technically not correct, but works for now
                    :request-command-ref (:ref command)
-                   :params              (assoc request-params :bot-db (:bot-db params))
+                   :params              (assoc request-params
+                                               :bot-db (:bot-db params)
+                                               :fiat-amount (money/fiat-amount-value (:amount request-params)
+                                                                                     (-> request-params :asset keyword)
+                                                                                     currency
+                                                                                     prices)
+                                               :currency (name currency))
                    :prefill             prefill
                    :prefill-bot-db      prefillBotDb}
                   {:params (cond-> params
                              (= (:name command) constants/command-send)
                              (assoc :network (ethereum/network-names network)
-                                    :fiat-amount (money/usd-amount (:amount params) (-> params :asset keyword) prices)
+                                    :fiat-amount (money/fiat-amount-value (:amount params)
+                                                                          (-> params :asset keyword)
+                                                                          currency
+                                                                          prices)
+                                    :currency (name currency)
                                     :tx-hash tx-hash))})
         content' (assoc content
                         :command               (:name command)
@@ -434,12 +447,14 @@
   [{{:keys [current-public-key chats network prices] :as db} :db :keys [now] :as cofx} params]
   (let [{{:keys [handler-data to-message command] :as content} :command chat-id :chat-id} params
         ;; We send commands to deleted chats as well, i.e. signed later transactions
-        chat    (or (get chats chat-id) {:chat-id chat-id})
-        request (:request handler-data)
-        command-name (:name command)
-        tx-hash (get-in db [:wallet :send-transaction :tx-hash])]
+        chat           (or (get chats chat-id) {:chat-id chat-id})
+        request        (:request handler-data)
+        command-name   (:name command)
+        tx-hash        (get-in db [:wallet :send-transaction :tx-hash])
+        currency       (-> (currency-settings/get-user-currency db) name string/upper-case keyword)]
     (handlers-macro/merge-fx cofx
-                             (upsert-and-send (prepare-command-message current-public-key chat now request content network prices tx-hash))
+                             (upsert-and-send (prepare-command-message current-public-key chat now request content
+                                                                       network currency prices tx-hash))
                              (console-events/console-respond-command-messages command handler-data)
                              (requests-events/request-answered chat-id to-message)
                              (update-transactions command-name tx-hash {:with-delay? false}))))

@@ -89,9 +89,8 @@
                     (merge command {:prefill        prefill
                                     :prefill-bot-db (or prefill-bot-db prefillBotDb)})
                     command)
-          {:keys [amount asset] request-network :network} params
+          {:keys [amount asset fiat-amount currency] request-network :network} params
           recipient-name (get-in params [:bot-db :public :recipient])
-          usd-amount (money/usd-amount amount (keyword asset) prices)
           network-mismatch? (and request-network (not= request-network network))
           on-press-handler (cond
                              network-mismatch? nil
@@ -119,7 +118,7 @@
                asset]]]
             [view st/command-request-fiat-amount-row
              [text {:style st/command-request-fiat-amount-text}
-              (str "~ " usd-amount " " (i18n/label :usd-currency))]]
+              (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]]
             (when (and group-chat
                        recipient-name)
               [text {:style st/command-request-recipient-text}

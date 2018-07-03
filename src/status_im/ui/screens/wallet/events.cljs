@@ -104,37 +104,40 @@
 (defn tokens-symbols [v chain]
   (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))
 
+(defn update-wallet [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
+  (let [network     (get-in db [:account/account :networks network])
+        chain       (ethereum/network->chain-keyword network)
+        mainnet?    (= :mainnet chain)
+        assets      (get-in settings [:wallet :visible-tokens chain])
+        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) chain)
+        currency-id (or (get-in settings [:wallet :currency]) :usd)
+        currency    (get constants/currencies currency-id)]
+    (when (not= network-status :offline)
+      {:get-balance        {:web3          web3
+                            :account-id    address
+                            :success-event :update-balance-success
+                            :error-event   :update-balance-fail}
+       :get-tokens-balance {:web3          web3
+                            :account-id    address
+                            :symbols       assets
+                            :chain         chain
+                            :success-event :update-token-balance-success
+                            :error-event   :update-token-balance-fail}
+       :get-prices         {:from          (if mainnet? (conj tokens "ETH") ["ETH"])
+                            :to            [(:code currency)]
+                            :success-event :update-prices-success
+                            :error-event   :update-prices-fail}
+       :db                 (-> db
+                               (clear-error-message :prices-update)
+                               (clear-error-message :balance-update)
+                               (assoc-in [:wallet :balance-loading?] true)
+                               (assoc :prices-loading? true))})))
+
 ;; Handlers
 (handlers/register-handler-fx
  :update-wallet
- (fn [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db} _]
-   (let [network     (get-in db [:account/account :networks network])
-         chain       (ethereum/network->chain-keyword network)
-         mainnet?    (= :mainnet chain)
-         assets      (get-in settings [:wallet :visible-tokens chain])
-         tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) chain)
-         currency-id (or (get-in settings [:wallet :currency]) :usd)
-         currency    (get constants/currencies currency-id)]
-     (when (not= network-status :offline)
-       {:get-balance        {:web3          web3
-                             :account-id    address
-                             :success-event :update-balance-success
-                             :error-event   :update-balance-fail}
-        :get-tokens-balance {:web3          web3
-                             :account-id    address
-                             :symbols       assets
-                             :chain         chain
-                             :success-event :update-token-balance-success
-                             :error-event   :update-token-balance-fail}
-        :get-prices         {:from          (if mainnet? (conj tokens "ETH") ["ETH"])
-                             :to            [(:code currency)]
-                             :success-event :update-prices-success
-                             :error-event   :update-prices-fail}
-        :db                 (-> db
-                                (clear-error-message :prices-update)
-                                (clear-error-message :balance-update)
-                                (assoc-in [:wallet :balance-loading?] true)
-                                (assoc :prices-loading? true))}))))
+ (fn [cofx _]
+   (update-wallet cofx)))
 
 (handlers/register-handler-fx
  :update-transactions

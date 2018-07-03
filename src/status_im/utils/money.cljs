@@ -143,10 +143,10 @@
   (when (and amount balance)
     (.greaterThanOrEqualTo balance amount)))
 
-(defn usd-amount [amount-str from prices]
+(defn fiat-amount-value [amount-str from to prices]
   (-> amount-str
       (js/parseFloat)
       bignumber
-      (crypto->fiat (get-in prices [from :USD :price] (bignumber 0)))
+      (crypto->fiat (get-in prices [from to :price] (bignumber 0)))
       (with-precision 2)
       str))
