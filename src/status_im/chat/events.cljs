@@ -386,16 +386,16 @@
                               (navigate-to-chat random-id {})
                               (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
 
-(defn show-profile [identity {:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (assoc db :contacts/identity identity)}
-                           (navigation/navigate-forget :profile)))
+(defn show-profile [identity keep-navigation? {:keys [db] :as cofx}]
+  (cond->> {:db (assoc db :contacts/identity identity)}
+    keep-navigation? (navigation/navigate-to-cofx :profile nil)
+    :else            (navigation/navigate-forget :profile)))
 
 (handlers/register-handler-fx
  :show-profile
  [re-frame/trim-v]
- (fn [cofx [identity]]
-   (show-profile identity cofx)))
+ (fn [cofx [identity keep-navigation?]]
+   (show-profile identity keep-navigation? cofx)))
 
 (handlers/register-handler-fx
  :resend-message

@@ -8,7 +8,8 @@
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.universal-links.core :as universal-links]))
 
 ;;;; FX
 
@@ -149,10 +150,11 @@
 
 (register-handler-fx
  :change-account-handler
- (fn [{{:keys [view-id] :as db} :db} [_ address]]
+ (fn [{{:keys [view-id] :as db} :db :as cofx} [_ address]]
    {:db       (cond-> (dissoc db :accounts/login)
                 (= view-id :create-account)
                 (assoc-in [:accounts/create :step] :enter-name))
     :dispatch [:initialize-account address
                (when (not= view-id :create-account)
-                 [[:navigate-to-clean :home]])]}))
+                 [[:navigate-to-clean :home]
+                  (universal-links/stored-url-event cofx)])]}))

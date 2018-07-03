@@ -83,3 +83,23 @@
     (is (= #{"4" "5" "6"}
            (set (get-in (chat-events/mark-messages-seen "1-1" {:db test-db})
                         [:shh/post 0 :message :payload :message-ids]))))))
+
+(deftest show-profile-test
+  (testing "default behaviour"
+    (testing "it navigates to profile but forgets the navigation"
+      (let [{:keys [db]} (chat-events/show-profile
+                          "a"
+                          false
+                          {:db {:navigation-stack '(:home)}})]
+        (is (= "a" (:contacts/identity db)))
+        (is (= '(:home) (:navigation-stack db)))
+        (is (= :profile (:view-id db))))))
+  (testing "keep-navigation? on"
+    (testing "it navigates to profile and keeps the navigation"
+      (let [{:keys [db]} (chat-events/show-profile
+                          "a"
+                          true
+                          {:db {:navigation-stack '(:home)}})]
+        (is (= "a" (:contacts/identity db)))
+        (is (= '(:profile :home) (:navigation-stack db)))
+        (is (= :profile (:view-id db)))))))

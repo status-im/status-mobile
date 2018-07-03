@@ -50,17 +50,22 @@
     (dissoc db :was-modal?) ;;TODO check how it worked with this bug
     (apply preload-data! db args)))
 
+(defn navigate-to-cofx [go-to-view-id screen-params {:keys [db]}]
+  (let [view-id (:view-id db)
+        db (cond-> db
+             (seq screen-params)
+             (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
+    {:db (if (= view-id go-to-view-id)
+           db
+           (push-view db go-to-view-id))}))
+
 (defn navigate-to
-  "Navigates to particular view"
+  "DEPRECATED, use navigate-to-cofx above.
+  Navigates to particular view"
   ([db go-to-view-id]
    (navigate-to db go-to-view-id nil))
   ([{:keys [view-id] :as db} go-to-view-id screen-params]
-   (let [db (cond-> db
-              (seq screen-params)
-              (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
-     (if (= view-id go-to-view-id)
-       db
-       (push-view db go-to-view-id)))))
+   (:db (navigate-to-cofx go-to-view-id screen-params {:db db}))))
 
 (def unload-data-interceptor
   (re-frame/->interceptor

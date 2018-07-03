@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Spam moderation
 - Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
 - Added more dapps
+- Universal and deep links for public chats, browsing dapps, viewing profiles
 
 ### Fixed
 - Fixed mailservers connectivity issue

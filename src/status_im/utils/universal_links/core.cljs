@@ -19,7 +19,7 @@
 
 (defn universal-link? [url]
   (boolean
-   (re-matches #"((^https?://get.status.im/)|(^status-im://)).*$" url)))
+   (re-matches #"((^https?://get.status.im/)|(^status-im://))[\x00-\x7F]+$" url)))
 
 (defn open! [url]
   (log/info "universal-links:  opening " url)
@@ -39,7 +39,7 @@
 
 (defn handle-view-profile [profile-id cofx]
   (log/info "universal-links: handling view profile" profile-id)
-  (chat.events/show-profile profile-id cofx))
+  (chat.events/show-profile profile-id true cofx))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

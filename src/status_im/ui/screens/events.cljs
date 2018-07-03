@@ -13,7 +13,6 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.universal-links.core :as universal-links]
             status-im.utils.universal-links.events
             [status-im.chat.commands.core :as commands]
             status-im.ui.screens.add-new.new-chat.navigation
@@ -375,8 +374,7 @@
                          [:update-transactions]
                          [:get-fcm-token]
                          [:update-sign-in-time]
-                         [:show-mainnet-is-default-alert]
-                         (universal-links/stored-url-event cofx)]
+                         [:show-mainnet-is-default-alert]]
                   (seq events-after) (into events-after))}))
 
 (handlers/register-handler-fx
