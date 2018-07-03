@@ -28,6 +28,8 @@ def doGitRebase() {
 def cleanupBuild(packageFolder) {
   sh 'rm -rf node_modules'
   sh ( 'rm -rf ' + packageFolder )
+  sh 'rm -rf desktop/modules'
+  sh 'rm -rf desktop/node_modules'
 }
 
 parallel (
