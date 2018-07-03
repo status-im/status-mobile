@@ -1,15 +1,17 @@
+import random
+
 from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
 
 from tests import marks, transaction_users, common_password, group_chat_users
-from tests.base_test_case import MultipleDeviceTestCase
+from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
 @marks.chat
 @marks.transaction
-class TestCommands(MultipleDeviceTestCase):
+class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_case_id(3742)
     @marks.testrail_id(3697)
@@ -29,7 +31,7 @@ class TestCommands(MultipleDeviceTestCase):
 
         device_1_chat = device_1_home.add_contact(public_key)
         amount_1 = device_1_chat.get_unique_amount()
-        device_1_chat.send_transaction_in_1_1_chat(amount_1, common_password, wallet_set_up=True)
+        device_1_chat.send_transaction_in_1_1_chat('ETH', amount_1, common_password, wallet_set_up=True)
         status_text_1 = device_1_chat.chat_element_by_text(amount_1).status.text
         if status_text_1 != 'Sent':
             self.errors.append("Message about sent funds has status '%s' instead of 'Sent'" % status_text_1)
@@ -46,7 +48,7 @@ class TestCommands(MultipleDeviceTestCase):
             self.errors.append('Sent transaction message was not received')
 
         amount_2 = device_1_chat.get_unique_amount()
-        device_1_chat.request_transaction_in_1_1_chat(amount_2)
+        device_1_chat.request_transaction_in_1_1_chat('ETH', amount_2)
         status_text_2 = device_1_chat.chat_element_by_text(amount_2).status.text
         if status_text_2 != 'Sent':
             self.errors.append("Request funds message has status '%s' instead of 'Sent'" % status_text_2)
@@ -83,7 +85,7 @@ class TestCommands(MultipleDeviceTestCase):
         amount = chat_1.get_unique_amount()
         chat_1.commands_button.click()
         chat_1.send_command.click()
-        chat_1.eth_asset.click()
+        chat_1.asset_by_name('ETH').click()
         chat_1.send_as_keyevent(amount)
         send_transaction_view = chat_1.get_send_transaction_view()
         chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
@@ -147,17 +149,15 @@ class TestCommands(MultipleDeviceTestCase):
 
         chat_2 = home_2.add_contact(sender['public_key'])
         amount = chat_2.get_unique_amount()
-        chat_2.request_transaction_in_1_1_chat(amount)
+        chat_2.request_transaction_in_1_1_chat('ETH', amount)
 
         chat_1 = home_1.get_chat_with_user(recipient['username']).click()
-        chat_1.send_eth_to_request(amount=amount, sender_password=sender['password'])
+        chat_1.send_funds_to_request(amount=amount, sender_password=sender['password'])
 
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Message with the sent amount is not shown for the sender')
         if not chat_2.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Message with the sent amount is not shown for the recipient')
-        if chat_2.chat_element_by_text(amount).send_request_button.is_element_displayed():
-            self.errors.append("'Send' in a transaction request button is not disabled after receiving transaction")
 
         chat_2.get_back_to_home_view()
         home_2.wallet_button.click()
@@ -228,10 +228,97 @@ class TestCommands(MultipleDeviceTestCase):
         chat_view.view_profile_button.click()
         chat_view.profile_send_transaction.click()
         chat_view.chat_message_input.click()
-        chat_view.eth_asset.click()
+        chat_view.asset_by_name('ETH').click()
         amount = chat_view.get_unique_amount()
         chat_view.send_as_keyevent(amount)
         chat_view.send_message_button.click()
         send_transaction_view = chat_view.get_send_transaction_view()
         send_transaction_view.sign_transaction(common_password)
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
+
+    @marks.testrail_id(3744)
+    def test_send_tokens_in_1_1_chat(self):
+        recipient = transaction_users['D_USER']
+        sender = transaction_users['C_USER']
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1 = device_1.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        home_2 = device_2.recover_access(passphrase=recipient['passphrase'], password=recipient['password'])
+        wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
+        wallet_1.set_up_wallet()
+        wallet_1.home_button.click()
+        wallet_2.set_up_wallet()
+        wallet_2.home_button.click()
+
+        chat_1 = home_1.add_contact(recipient['public_key'])
+        amount = chat_1.get_unique_amount()
+        chat_1.send_transaction_in_1_1_chat('STT', amount, sender['password'])
+
+        message_1 = chat_1.chat_element_by_text(amount)
+        if not message_1.is_element_displayed() or not message_1.contains_text('STT'):
+            self.errors.append('Message with the sent amount is not shown for the sender')
+        chat_2 = home_2.get_chat_with_user(sender['username']).click()
+        message_2 = chat_2.chat_element_by_text(amount)
+        if not message_2.is_element_displayed() or not message_2.contains_text('STT'):
+            self.errors.append('Message with the sent amount is not shown for the recipient')
+
+        try:
+            self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
+        except Failed as e:
+            self.errors.append(e.msg)
+        self.verify_no_errors()
+
+    @marks.testrail_id(3748)
+    def test_request_and_receive_tokens_in_1_1_chat(self):
+        recipient = transaction_users['C_USER']
+        sender = transaction_users['D_USER']
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1 = device_1.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        home_2 = device_2.recover_access(passphrase=recipient['passphrase'], password=recipient['password'])
+        wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
+        wallet_1.set_up_wallet()
+        wallet_1.home_button.click()
+        wallet_2.set_up_wallet()
+        wallet_2.home_button.click()
+
+        chat_2 = home_2.add_contact(sender['public_key'])
+        amount = chat_2.get_unique_amount()
+        chat_2.request_transaction_in_1_1_chat('STT', amount)
+
+        chat_1 = home_1.get_chat_with_user(recipient['username']).click()
+        chat_1.send_funds_to_request(amount=amount, sender_password=sender['password'])
+
+        message_1 = chat_1.chat_element_by_text(amount)
+        if not message_1.is_element_displayed() or not message_1.contains_text('STT'):
+            self.errors.append('Message with the sent amount is not shown for the sender')
+        message_2 = chat_2.chat_element_by_text(amount)
+        if not message_2.is_element_displayed() or not message_2.contains_text('STT'):
+            self.errors.append('Message with the sent amount is not shown for the recipient')
+
+        try:
+            self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
+        except Failed as e:
+            self.errors.append(e.msg)
+        self.verify_no_errors()
+
+
+@marks.chat
+@marks.transaction
+class TestCommandsSingleDevices(SingleDeviceTestCase):
+
+    @marks.testrail_id(3745)
+    def test_send_request_not_enabled_tokens(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        chat = home.add_contact(transaction_users['D_USER']['public_key'])
+        chat.commands_button.click()
+        chat.send_command.click()
+        if chat.asset_by_name('MDS').is_element_displayed():
+            self.errors.append('Token which is not enabled in wallet can be sent in 1-1 chat')
+        chat.chat_message_input.clear()
+        chat.commands_button.click()
+        chat.request_command.click()
+        if chat.asset_by_name('MDS').is_element_displayed():
+            self.errors.append('Token which is not enabled in wallet can be requested in 1-1 chat')
+        self.verify_no_errors()

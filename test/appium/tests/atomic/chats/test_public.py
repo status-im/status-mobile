@@ -22,9 +22,6 @@ class TestPublicChat(MultipleDeviceTestCase):
         public_chat_name = home_1.get_public_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
-        if chat_2.connection_status.text != 'Fetching messages...':
-            self.errors.append("'Fetching messages...' status is not shown")
-
         message = 'hello'
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()

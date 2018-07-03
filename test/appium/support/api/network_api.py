@@ -15,6 +15,10 @@ class NetworkApi:
         method = self.ropsten_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
+    def get_token_transaction(self, address: str) -> dict:
+        method = self.ropsten_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
+        return requests.request('GET', url=method).json()['result']
+
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.ropsten_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
         return not int(requests.request('GET', url=method).json()['result']['isError'])
@@ -39,7 +43,7 @@ class NetworkApi:
                 return
         pytest.fail('Transaction is not found in Ropsten network')
 
-    def find_transaction_by_unique_amount(self, address, amount, wait_time=600):
+    def find_transaction_by_unique_amount(self, address, amount, token=False, wait_time=600):
         counter = 0
         while True:
             if counter >= wait_time:
@@ -49,7 +53,10 @@ class NetworkApi:
             else:
                 counter += 10
                 time.sleep(10)
-                transactions = self.get_transactions(address=address)
+                if token:
+                    transactions = self.get_token_transaction(address=address)
+                else:
+                    transactions = self.get_transactions(address=address)
                 info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
                      (amount, address))
                 for transaction in transactions:

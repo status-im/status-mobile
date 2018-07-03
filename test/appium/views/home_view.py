@@ -1,6 +1,6 @@
 from tests import info
 import time
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from views.base_element import BaseButton, BaseText
 from views.base_view import BaseView
 
@@ -32,7 +32,8 @@ class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
         super(ChatElement, self).__init__(driver)
         self.username = username_part
-        self.locator = self.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % self.username)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='chat-item'][.//*[starts-with(@text,'%s')]]" % self.username)
 
     def navigate(self):
         if self.username == 'Status Console':
@@ -48,15 +49,33 @@ class ChatElement(BaseButton):
         self.click_until_presence_of_element(desired_element=desired_element)
         return self.navigate()
 
+    def find_element(self):
+        info('Looking for %s' % self.name)
+        for _ in range(2):
+            try:
+                return super(ChatElement, self).find_element()
+            except NoSuchElementException:
+                HomeView(self.driver).reconnect()
+
     @property
     def swipe_delete_button(self):
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
-                locator_str = "/../../following-sibling::*[1][name()='android.view.ViewGroup']/*[@content-desc='icon']"
+                locator_str = "/android.view.ViewGroup/*[@content-desc='icon']"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
 
         return DeleteButton(self.driver, self.locator.value)
+
+    def swipe_and_delete(self):
+        counter = 0
+        while counter < 10:
+            self.swipe_element()
+            if self.swipe_delete_button.is_element_present():
+                break
+            time.sleep(10)
+            counter += 1
+        self.swipe_delete_button.click()
 
 
 class ChatNameText(BaseText):
@@ -127,14 +146,3 @@ class HomeView(BaseView):
         start_new_chat.confirm()
         from views.chat_view import ChatView
         return ChatView(self.driver)
-
-    def swipe_and_delete_chat(self, chat_name: str):
-        chat_element = self.get_chat_with_user(chat_name)
-        counter = 0
-        while counter < 10:
-            chat_element.swipe_element()
-            if chat_element.swipe_delete_button.is_element_present():
-                break
-            time.sleep(10)
-            counter += 1
-        chat_element.swipe_delete_button.click()

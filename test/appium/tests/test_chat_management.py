@@ -41,9 +41,9 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
 
         # Devices: Request and send transactions
         transaction_amount = '0.00001'
-        device_1_chat_view.request_transaction_in_1_1_chat(transaction_amount)
+        device_1_chat_view.request_transaction_in_1_1_chat('ETH', transaction_amount)
         device_1_chat_view.send_transaction_in_1_1_chat(transaction_amount, self.senders['g_user']['password'])
-        device_2_chat_view.request_transaction_in_1_1_chat(transaction_amount)
+        device_2_chat_view.request_transaction_in_1_1_chat('ETH', transaction_amount)
         device_2_chat_view.send_transaction_in_1_1_chat(transaction_amount, self.senders['h_user']['password'])
 
         # Device 1: Send message to device 2
@@ -117,7 +117,7 @@ class TestChatManagementMultiple(MultipleDeviceTestCase):
 
         chat_1.get_back_to_home_view()
         home_1 = chat_1.get_home_view()
-        home_1.swipe_and_delete_chat(public_chat_name)
+        home_1.get_chat_with_user(public_chat_name).swipe_and_delete()
 
         for home in home_2, home_1:
             home.relogin()
@@ -144,7 +144,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.chat_message_input.send_keys('test message')
         chat_view.send_message_button.click()
         chat_view.get_back_to_home_view()
-        home_view.swipe_and_delete_chat(recipient['username'][:20])
+        home_view.get_chat_with_user(recipient['username']).swipe_and_delete()
         home_view.relogin()
         if home_view.get_chat_with_user(recipient['username']).is_element_present(20):
             pytest.fail('The chat is present after re-login')
@@ -161,7 +161,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.chat_message_input.send_keys('test message')
         chat_view.send_message_button.click()
         transaction_amount = '0.00001'
-        chat_view.request_transaction_in_1_1_chat(transaction_amount)
+        chat_view.request_transaction_in_1_1_chat('ETH', transaction_amount)
         chat_view.send_transaction_in_1_1_chat(transaction_amount, sender['password'], wallet_set_up=True)
         chat_view.delete_chat(recipient['username'], self.errors)
         if home_view.get_chat_with_user(recipient['username']).is_element_present(5):
@@ -189,7 +189,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.chat_message_input.send_keys('This is text message!')
         chat_view.send_message_button.click()
         chat_view.get_back_to_home_view()
-        home_view.swipe_and_delete_chat(chat_name)
+        home_view.get_chat_with_user(chat_name).swipe_and_delete()
         home_view.relogin()
         if home_view.get_chat_with_user(chat_name).is_element_displayed():
             pytest.fail('The chat is present after re-login')

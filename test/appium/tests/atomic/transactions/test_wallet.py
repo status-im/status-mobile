@@ -1,9 +1,6 @@
-import pytest
-from selenium.common.exceptions import TimeoutException
-from tests import transaction_users, get_current_time, transaction_users_wallet, marks, common_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
+from tests import transaction_users, transaction_users_wallet, marks, common_password
+from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
-from views.web_views.base_web_view import BaseWebView
 
 
 @marks.transaction
@@ -77,7 +74,8 @@ class TestTransactionWallet(SingleDeviceTestCase):
         send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.stt_button)
         send_transaction.stt_button.click()
         send_transaction.amount_edit_box.click()
-        send_transaction.amount_edit_box.set_value(send_transaction.get_unique_amount())
+        amount = send_transaction.get_unique_amount()
+        send_transaction.amount_edit_box.set_value(amount)
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
@@ -87,6 +85,7 @@ class TestTransactionWallet(SingleDeviceTestCase):
         send_transaction.enter_password_input.send_keys(sender['password'])
         send_transaction.sign_transaction_button.click()
         send_transaction.got_it_button.click()
+        self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
 
     @marks.testrail_id(2164)
     def test_transaction_wrong_password_wallet(self):

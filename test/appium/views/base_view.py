@@ -212,13 +212,13 @@ class BaseView(object):
     def accept_agreements(self):
         iterations = int()
         from views.sign_in_view import CreateAccountButton, PasswordInput
-        while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed() or PasswordInput(
-                self.driver).is_element_displayed()):
+        if self.test_fairy_warning.is_element_displayed(10):
+            self.test_fairy_warning.is_shown = True
+        while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed(2) or PasswordInput(
+                self.driver).is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:
-                if self.test_fairy_warning.is_element_displayed():
-                    self.test_fairy_warning.is_shown = True
                 try:
-                    button.wait_for_element(15)
+                    button.wait_for_element(3)
                     button.click()
                 except (NoSuchElementException, TimeoutException):
                     pass
@@ -235,6 +235,10 @@ class BaseView(object):
     def click_system_back_button(self):
         info('Click system back button')
         self.driver.press_keycode(4)
+
+    def cut_text(self):
+        info('Cut text')
+        self.driver.press_keycode(277)
 
     def copy_text(self):
         info('Copy text')
@@ -391,3 +395,15 @@ class BaseView(object):
         self.send_as_keyevent('+0')
         self.confirm()
         self.element_by_accessibility_id('Send Message').click()
+
+    def reconnect(self):
+        connect_status = self.connection_status
+        for i in range(3):
+            if connect_status.is_element_displayed(5) and 'Tap to reconnect' in connect_status.text:
+                connect_status.click()
+                try:
+                    connect_status.wait_for_invisibility_of_element()
+                except TimeoutException as e:
+                    if i == 2:
+                        e.msg = "Can't reconnect to mail server after 3 attempts"
+                        raise e

@@ -9,6 +9,7 @@ all = pytest.mark.all
 api = pytest.mark.api
 chat = pytest.mark.chat
 chat_management = pytest.mark.chat_management
+dapps = pytest.mark.dapps
 message_reliability = pytest.mark.message_reliability
 transaction = pytest.mark.transaction
 wallet = pytest.mark.wallet
