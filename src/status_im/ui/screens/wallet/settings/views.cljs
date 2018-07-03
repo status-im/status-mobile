@@ -26,8 +26,10 @@
             visible-tokens [:wallet/visible-tokens-symbols]]
     [react/view (merge components.styles/flex {:background-color :white})
      [status-bar/status-bar {:type :modal-wallet}]
-     [toolbar/toolbar #_{} {:style wallet.styles/toolbar}
-      [toolbar/nav-text {:style               {:color :white}
+     [toolbar/toolbar {:style wallet.styles/toolbar}
+      [toolbar/nav-text {:handler             #(do (re-frame/dispatch [:update-wallet])
+                                                   (re-frame/dispatch [:navigate-back]))
+                         :style               {:color :white}
                          :accessibility-label :done-button}
        (i18n/label :t/done)]
       [toolbar/content-title {:color :white}
