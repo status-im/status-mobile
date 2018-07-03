@@ -28,9 +28,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.send_message_button.click()
 
         device_2_home.element_by_text(message, 'button').click()
+        device_2_home.connection_status.wait_for_invisibility_of_element(30)
 
         if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
-            pytest.fail("'Seen' status is shown under the sent text message")
+            pytest.fail("'Seen' status is not shown under the sent text message")
 
     @marks.testrail_id(772)
     def test_offline_messaging_1_1_chat(self):

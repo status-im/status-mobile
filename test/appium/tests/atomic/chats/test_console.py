@@ -1,5 +1,7 @@
 import time
 
+import pytest
+
 from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -44,5 +46,10 @@ class TestMessagesPublicChat(SingleDeviceTestCase):
         home_view = profile_view.home_button.click()
         chat_view = home_view.get_chat_with_user('Status Console').click()
         chat_view.chat_message_input.send_keys('web3.eth.blockNumber')
+        block_number = self.network_api.get_latest_block_number()
         chat_view.send_message_button.click()
-        chat_view.wait_for_element_starts_with_text(str(self.network_api.get_latest_block_number()), 10)
+        for number in block_number, block_number + 1:
+            if chat_view.chat_element_by_text(str(number)).is_element_displayed():
+                break
+        else:
+            pytest.fail('Actual block number is not shown')

@@ -62,7 +62,6 @@ class TestCommands(MultipleDeviceTestCase):
                 self.errors.append("Request funds message doesn't contain text 'Transaction Request'")
         except TimeoutException:
             self.errors.append('Request funds message was not received')
-
         self.verify_no_errors()
 
     @marks.testrail_id(765)
@@ -126,11 +125,9 @@ class TestCommands(MultipleDeviceTestCase):
         home_2.wallet_button.click()
         try:
             wallet_2.wait_balance_changed_on_wallet_screen(expected_balance=init_balance + float(amount))
+            self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         except Failed as e:
             self.errors.append(e.msg)
-
-        self.network_api.verify_balance_is(expected_balance=init_balance + float(amount),
-                                           recipient_address=recipient['address'], errors=self.errors)
         self.verify_no_errors()
 
     @marks.testrail_id(1391)
@@ -166,11 +163,9 @@ class TestCommands(MultipleDeviceTestCase):
         home_2.wallet_button.click()
         try:
             wallet_2.wait_balance_changed_on_wallet_screen(expected_balance=init_balance + float(amount))
+            self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         except Failed as e:
             self.errors.append(e.msg)
-
-        self.network_api.verify_balance_is(expected_balance=init_balance + float(amount),
-                                           recipient_address=recipient['address'], errors=self.errors)
         self.verify_no_errors()
 
     @marks.testrail_id(1429)

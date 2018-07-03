@@ -57,13 +57,14 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.share_my_contact_key_button.click()
         public_key = profile_view.public_key_text.text
         profile_view.public_key_text.long_press_element()
-        self.driver.press_keycode(278)
+        profile_view.copy_text()
         profile_view.cross_icon.click()
         home = profile_view.home_button.click()
         chat = home.add_contact(group_chat_users['A_USER']['public_key'])
         chat.chat_message_input.click()
-        self.driver.press_keycode(279)
-        if chat.chat_message_input.text != public_key:
+        chat.paste_text()
+        input_text = chat.chat_message_input.text
+        if input_text not in public_key or len(input_text) < 1:
             self.errors.append('Public key was not copied')
         chat.chat_message_input.clear()
         chat.get_back_to_home_view()
@@ -73,12 +74,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet.receive_transaction_button.click()
         address = wallet.address_text.text
         wallet.address_text.long_press_element()
-        self.driver.press_keycode(278)
+        wallet.copy_text()
         wallet.get_back_to_home_view()
         wallet.home_button.click()
         home.get_chat_with_user(group_chat_users['A_USER']['username']).click()
         chat.chat_message_input.click()
-        self.driver.press_keycode(279)
+        chat.paste_text()
         if chat.chat_message_input.text != address:
             self.errors.append('Wallet address was not copied')
         self.verify_no_errors()

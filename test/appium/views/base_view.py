@@ -236,6 +236,14 @@ class BaseView(object):
         info('Click system back button')
         self.driver.press_keycode(4)
 
+    def copy_text(self):
+        info('Copy text')
+        self.driver.press_keycode(278)
+
+    def paste_text(self):
+        info('Paste text')
+        self.driver.press_keycode(279)
+
     def send_as_keyevent(self, string):
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
 
