@@ -302,14 +302,10 @@ class ChatView(BaseView):
             self.send_message_button.click_until_presence_of_element(send_transaction.sign_transaction_button)
         send_transaction.sign_transaction(sender_password)
 
-    def delete_chat(self, chat_name: str, errors: list):
+    def delete_chat(self):
         self.chat_options.click()
         self.delete_chat_button.click()
         self.delete_button.click()
-        from views.home_view import HomeView
-        if not HomeView(self.driver).plus_button.is_element_present() or \
-                self.element_by_text(chat_name).is_element_present():
-            errors.append('Chat was not deleted')
 
     def clear_history(self):
         self.chat_options.click()

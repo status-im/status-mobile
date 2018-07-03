@@ -231,13 +231,49 @@ class SelectFromGalleryButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Select from gallery']")
 
 
+class MainCurrencyButton(BaseButton):
+
+    def __init__(self, driver):
+        super(MainCurrencyButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("currency-button")
+
+
+class NetworkPlusButton(BaseButton):
+
+    def __init__(self, driver):
+        super(NetworkPlusButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("(//android.view.ViewGroup[@content-desc='icon'])[2]")
+
+
+class RopstenChainButton(BaseButton):
+
+    def __init__(self, driver):
+        super(RopstenChainButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[contains(@text,'Ropsten test network')]/following-sibling::android.widget.CheckBox[1]")
+
+
+class CustomNetworkName(BaseEditBox):
+
+    def __init__(self, driver):
+        super(CustomNetworkName, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Name']/following-sibling::*[1]/android.widget.EditText")
+
+
+class CustomNetworkURL(BaseEditBox):
+
+    def __init__(self, driver):
+        super(CustomNetworkURL, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='RPC URL']/following-sibling::*[1]/android.widget.EditText")
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
         super(ProfileView, self).__init__(driver)
         self.driver = driver
 
-        # old design
         self.options_button = OptionsButton(self.driver)
         self.username_input = OptionsButton.UsernameInput(self.driver)
         self.user_status_box = OptionsButton.UserStatusBox(self.driver)
@@ -246,12 +282,16 @@ class ProfileView(BaseView):
         self.profile_address_text = ProfileAddressText(self.driver)
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
+        self.network_plus_button = NetworkPlusButton(self.driver)
+        self.ropsten_chain_button = RopstenChainButton(self.driver)
+        self.custom_network_url = CustomNetworkURL(self.driver)
+        self.custom_network_name = CustomNetworkName(self.driver)
         self.connect_button = NetworkSettingsButton.ConnectButton(self.driver)
         self.logout_button = LogoutButton(self.driver)
         self.logout_dialog = LogoutDialog(self.driver)
         self.confirm_logout_button = ConfirmLogoutButton(self.driver)
 
-        # new design
+        self.main_currency_button = MainCurrencyButton(self.driver)
 
         self.username_text = UserNameText(self.driver)
         self.share_my_contact_key_button = ShareMyContactKeyButton(self.driver)
@@ -283,6 +323,20 @@ class ProfileView(BaseView):
         self.connect_button.click()
         from views.sign_in_view import SignInView
         return SignInView(self.driver)
+
+    def add_custom_network(self):
+        self.advanced_button.click()
+        self.debug_mode_toggle.click()
+        self.network_settings_button.scroll_to_element()
+        self.network_settings_button.click()
+        self.network_plus_button.click_until_presence_of_element(self.ropsten_chain_button)
+        self.ropsten_chain_button.click()
+        self.custom_network_url.send_keys('https://ropsten.infura.io/iMko0kJNQUdhbCSaJcox')
+        self.custom_network_name.send_keys('custom_ropsten')
+        self.save_button.click()
+        self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
+        self.connect_button.click()
+        return self.get_sign_in_view()
 
     def get_address(self):
         profile_view = self.profile_button.click()
@@ -323,4 +377,10 @@ class ProfileView(BaseView):
     def logout(self):
         self.logout_button.click()
         return self.logout_dialog.logout_button.click()
+
+    def set_currency(self, desired_currency='Euro (EUR)'):
+        self.main_currency_button.click()
+        desired_currency = self.element_by_text(desired_currency)
+        desired_currency.scroll_to_element()
+        desired_currency.click()
 

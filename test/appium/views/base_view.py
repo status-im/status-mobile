@@ -280,7 +280,7 @@ class BaseView(object):
         element.locator = element.Locator.text_selector(text)
         return element
 
-    def element_by_text_part(self, text, element_type='base'):
+    def element_by_text_part(self, text, element_type='button'):
         info("Looking for an element by text part: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.text_part_selector(text)
@@ -297,6 +297,12 @@ class BaseView(object):
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
+
+    def element_by_accessibility_id(self, accessibility_id, element_type='button'):
+        info("Looking for an element by text: '%s'" % accessibility_id)
+        element = self.element_types[element_type](self.driver)
+        element.locator = element.Locator.accessibility_id(accessibility_id)
+        return element
 
     def swipe_down(self):
         self.driver.swipe(500, 500, 500, 1000)
@@ -358,6 +364,7 @@ class BaseView(object):
                 self.back_button.click()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
+        return self.get_home_view()
 
     def relogin(self, password=common_password):
         self.get_back_to_home_view()
@@ -377,3 +384,10 @@ class BaseView(object):
         public_key = profile_view.public_key_text.text
         profile_view.cross_icon.click()
         return public_key
+
+    def share_via_messenger(self):
+        self.element_by_text('Messenger').click()
+        self.element_by_text('NEW MESSAGE').click()
+        self.send_as_keyevent('+0')
+        self.confirm()
+        self.element_by_accessibility_id('Send Message').click()

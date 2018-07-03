@@ -28,25 +28,21 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
         profile_view.share_my_contact_key_button.click()
+        public_key = profile_view.public_key_text.text
         profile_view.share_button.click()
-        try:
-            profile_view.element_by_text('Gmail').is_element_displayed()
-            profile_view.element_by_text('Gmail', 'button').click()
-            profile_view.element_by_text('Welcome to Gmail').wait_for_visibility_of_element()
-        except (NoSuchElementException, TimeoutException):
-            self.errors.append('Can\'t share contact code via email')
+        profile_view.share_via_messenger()
+        if not profile_view.element_by_text_part(public_key).is_element_present():
+            self.errors.append("Can't share public key")
         profile_view.click_system_back_button()
         profile_view.cross_icon.click()
         wallet = profile_view.wallet_button.click()
         wallet.set_up_wallet()
         request = wallet.receive_transaction_button.click()
+        address = wallet.address_text.text
         request.share_button.click()
-        try:
-            profile_view.element_by_text('Gmail').is_element_displayed()
-            profile_view.element_by_text('Gmail', 'button').click()
-            profile_view.element_by_text('Welcome to Gmail').wait_for_visibility_of_element()
-        except (NoSuchElementException, TimeoutException):
-            self.errors.append('Can\'t share wallet address via email')
+        wallet.share_via_messenger()
+        if not wallet.element_by_text_part(address).is_element_present():
+            self.errors.append("Can't share address")
         self.verify_no_errors()
 
     @marks.testrail_id(3704)
@@ -112,3 +108,42 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if sign_in_view.profile_button.counter.is_element_displayed():
             self.errors.append('Profile button counter is shown after seed phrase backup')
         self.verify_no_errors()
+
+    @marks.testrail_id(3721)
+    def test_invite_friends(self):
+        sign_in_view = SignInView(self.driver)
+        home = sign_in_view.create_user()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.receive_transaction_button.click()
+        address = wallet.address_text.text[2:]
+        wallet.get_back_to_home_view()
+        wallet.home_button.click()
+        start_new_chat = home.plus_button.click()
+        start_new_chat.invite_friends_button.click()
+        start_new_chat.share_via_messenger()
+        start_new_chat.find_text_part("Get Status at http://status.im?refCode=%s" % address)
+
+    @marks.testrail_id(3450)
+    def test_set_currency(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.set_currency('Euro (EUR)')
+        profile_view.get_back_to_home_view()
+        wallet_view = profile_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        assert '€' in wallet_view.total_amount_text.text
+        assert 'EUR' == wallet_view.currency_text.text
+
+    @marks.testrail_id(3707)
+    def test_add_custom_network(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.add_custom_network()
+        sign_in_view.click_account_by_position(0)
+        sign_in_view.sign_in()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.find_text_part('CUSTOM_ROPSTEN')

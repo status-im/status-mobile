@@ -58,6 +58,12 @@ class UsernameCheckbox(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.widget.CheckBox" % username)
 
 
+class InviteFriendsButton(BaseButton):
+    def __init__(self, driver):
+        super(InviteFriendsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('invite-friends-button')
+
+
 class StartNewChatView(ContactsView):
     def __init__(self, driver):
         super(StartNewChatView, self).__init__(driver)
@@ -68,6 +74,7 @@ class StartNewChatView(ContactsView):
 
         self.open_d_app_button = OpenDAppButton(self.driver)
         self.open_button = OpenButton(self.driver)
+        self.invite_friends_button = InviteFriendsButton(self.driver)
 
         self.chat_name_editbox = ChatNameEditBox(self.driver)
         self.enter_url_editbox = EnterUrlEditbox(self.driver)

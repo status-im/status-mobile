@@ -144,6 +144,20 @@ class AssetCheckBox(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % asset_name)
 
 
+class TotalAmountText(BaseText):
+
+    def __init__(self, driver):
+        super(TotalAmountText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('total-amount-value-text')
+
+
+class CurrencyText(BaseText):
+
+    def __init__(self, driver):
+        super(CurrencyText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('total-amount-currency-text')
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -168,6 +182,9 @@ class WalletView(BaseView):
 
         self.set_up_button = SetUpButton(self.driver)
         self.sign_in_phrase = SignInPhraseText(self.driver)
+
+        self.total_amount_text = TotalAmountText(self.driver)
+        self.currency_text = CurrencyText(self.driver)
 
     def get_usd_total_value(self):
         import re

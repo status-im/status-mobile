@@ -46,6 +46,17 @@ class AlwaysButton(BaseButton):
         self.locator = self.Locator.text_part_selector('ALWAYS')
 
 
+class BrowserCrossIcon(BaseButton):
+
+    def __init__(self, driver):
+        super(BrowserCrossIcon, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
+
+    def navigate(self):
+        from views.home_view import HomeView
+        return HomeView(self.driver)
+
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -61,6 +72,7 @@ class BaseWebView(BaseView):
 
         self.web_view_browser = WebViewBrowserButton(self.driver)
         self.always_button = AlwaysButton(self.driver)
+        self.browser_cross_icon = BrowserCrossIcon(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0

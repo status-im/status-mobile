@@ -151,7 +151,7 @@ class BaseElement(object):
         location, size = element.location, element.size
         x, y = location['x'], location['y']
         width, height = size['width'], size['height']
-        self.driver.swipe(start_x=x + width / 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+        self.driver.swipe(start_x=x + width * 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
 
     def long_press_element(self):
         element = self.find_element()
