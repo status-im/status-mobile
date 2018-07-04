@@ -97,7 +97,7 @@ timeout(90) {
           def buildInfo = server.upload(uploadSpec)
           apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
 
-          sh ('bundle exec fastlane android nightly')
+          sh 'bundle exec fastlane android nightly build_no:' + build_no
           sh ('echo ARTIFACT Android: ' + apkUrl)
         }
 

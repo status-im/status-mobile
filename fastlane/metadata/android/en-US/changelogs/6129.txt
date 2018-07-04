@@ -1,0 +1,10 @@
+New and Improved:
+
+Mainnet is enabled by default on new installations. Upgrades will need to manually switch.
+Chat now supports sending SNT and other tokens in 1-1 chats
+New chat UI for /send and /receive commands
+Updated chat message styling
+Updated DApp list
+New help links on the Profile tab
+Performance improvements when fetching old messages
+Added 5 new default public chats for our friends speaking Korean, Chinese, Japanese, Russian and Spanish.
