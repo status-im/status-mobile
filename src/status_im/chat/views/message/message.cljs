@@ -144,15 +144,22 @@
       [message-content-command-send message]
       [message-content-command-with-markup message])))
 
-(defview message-timestamp [t justify-timestamp? outgoing command?]
+(def rtl-characters-regex #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
+
+(defn right-to-left-text? [content]
+  (let [char (first content)]
+    (re-matches rtl-characters-regex char)))
+
+(defview message-timestamp [t justify-timestamp? outgoing command? content]
   (when-not command?
-    [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing)} t]))
+    (let [rtl? (right-to-left-text? content)]
+      [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing rtl?)} t])))
 
 (defn message-view
-  [{:keys [timestamp-str outgoing] :as message} content {:keys [justify-timestamp?]}]
+  [{:keys [timestamp-str outgoing content] :as message} message-content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
-   content
-   [message-timestamp timestamp-str justify-timestamp? outgoing (get-in message [:content :command])]])
+   message-content
+   [message-timestamp timestamp-str justify-timestamp? outgoing (get-in message [:content :command]) content]])
 
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
