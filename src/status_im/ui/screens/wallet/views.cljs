@@ -44,9 +44,9 @@
     [react/view styles/backup-seed-phrase-container
      [react/view styles/backup-seed-phrase-text-container
       [react/text {:style styles/backup-seed-phrase-title}
-       (i18n/label :t/wallet-backup-seed-title)]
+       (i18n/label :t/wallet-backup-recovery-title)]
       [react/text {:style styles/backup-seed-phrase-description}
-       (i18n/label :t/wallet-backup-seed-description)]]
+       (i18n/label :t/wallet-backup-recovery-description)]]
      [vector-icons/icon :icons/forward {:color :white}]]]])
 
 (def actions

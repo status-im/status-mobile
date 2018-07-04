@@ -66,14 +66,14 @@
                                     (.hideView js-dependencies/testfairy @ref)))}
     [react/view {:style styles/twelve-words-container}
      [react/text {:style styles/twelve-words-label}
-      (i18n/label :t/your-seed-phrase)]
+      (i18n/label :t/your-recovery-phrase)]
      [react/view {:style styles/twelve-words-columns
                   :ref (partial reset! ref)}
       [six-words (subvec mnemonic-vec 0 6)]
       [react/view {:style styles/twelve-words-columns-separator}]
       [six-words (subvec mnemonic-vec 6 12)]]
      [react/text {:style styles/twelve-words-description}
-      (i18n/label :t/your-seed-phrase-description)]
+      (i18n/label :t/your-recovery-phrase-description)]
      [react/view styles/twelve-words-spacer]
      [react/view styles/twelve-words-button-container
       [components.common/bottom-button
@@ -96,7 +96,7 @@
   [react/view {:style styles/enter-word-container}
    [react/view {:style styles/enter-word-row}
     [react/text {:style styles/enter-word-label}
-     (i18n/label :t/check-your-seed)]
+     (i18n/label :t/check-your-recovery-phrase)]
     [react/text {:style styles/enter-word-n}
      (i18n/label :t/word-n {:number (inc idx)})]]
    [input error]
@@ -145,7 +145,7 @@
         (toolbar/nav-button (actions/back #(step-back step))))
       [react/view
        [react/text {:style styles/backup-seed}
-        (i18n/label :t/backup-seed-phrase)]
+        (i18n/label :t/backup-recovery-phrase)]
        [react/text {:style styles/step-n}
         (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})]]]
      [components.common/separator]

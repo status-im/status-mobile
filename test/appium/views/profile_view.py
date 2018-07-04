@@ -165,25 +165,32 @@ class AdvancedButton(BaseButton):
         return self.navigate()
 
 
-class BackupSeedPhraseButton(BaseButton):
+class BackupRecoveryPhraseButton(BaseButton):
 
     def __init__(self, driver):
-        super(BackupSeedPhraseButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Backup your Seed Phrase']")
+        super(BackupRecoveryPhraseButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Backup your Recovery phrase')
 
 
-class SeedPhraseTable(BaseText):
+class OkContinueButton(BaseButton):
 
     def __init__(self, driver):
-        super(SeedPhraseTable, self).__init__(driver)
+        super(OkContinueButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, CONTINUE']")
+
+
+class RecoveryPhraseTable(BaseText):
+
+    def __init__(self, driver):
+        super(RecoveryPhraseTable, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             '//android.widget.FrameLayout/android.view.ViewGroup[3]/android.widget.TextView')
 
 
-class SeedPhraseWordNumberText(BaseText):
+class RecoveryPhraseWordNumberText(BaseText):
 
     def __init__(self, driver):
-        super(SeedPhraseWordNumberText, self).__init__(driver)
+        super(RecoveryPhraseWordNumberText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[contains(@text,'#')]")
 
     @property
@@ -192,10 +199,10 @@ class SeedPhraseWordNumberText(BaseText):
         return int(self.find_element().text.split('#')[1])
 
 
-class SeedPhraseWordInput(BaseEditBox):
+class RecoveryPhraseWordInput(BaseEditBox):
 
     def __init__(self, driver):
-        super(SeedPhraseWordInput, self).__init__(driver)
+        super(RecoveryPhraseWordInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//android.widget.EditText')
 
 
@@ -330,10 +337,11 @@ class ProfileView(BaseView):
         self.debug_mode_toggle = DebugModeToggle(self.driver)
 
         # Backup seed phrase
-        self.backup_seed_phrase_button = BackupSeedPhraseButton(self.driver)
-        self.seed_phrase_table = SeedPhraseTable(self.driver)
-        self.seed_phrase_word_number = SeedPhraseWordNumberText(self.driver)
-        self.seed_phrase_word_input = SeedPhraseWordInput(self.driver)
+        self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)
+        self.ok_continue_button = OkContinueButton(self.driver)
+        self.recovery_phrase_table = RecoveryPhraseTable(self.driver)
+        self.recovery_phrase_word_number = RecoveryPhraseWordNumberText(self.driver)
+        self.recovery_phrase_word_input = RecoveryPhraseWordInput(self.driver)
         self.ok_got_it_button = OkGotItButton(self.driver)
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
 
@@ -371,24 +379,24 @@ class ProfileView(BaseView):
         profile_view = self.profile_button.click()
         return profile_view.profile_address_text.text
 
-    def get_seed_phrase(self):
-        text = [i.text for i in self.seed_phrase_table.find_elements()]
+    def get_recovery_phrase(self):
+        text = [i.text for i in self.recovery_phrase_table.find_elements()]
         return dict(zip(map(int, text[::2]), text[1::2]))
 
-    def backup_seed_phrase(self):
-        self.backup_seed_phrase_button.click()
+    def backup_recovery_phrase(self):
+        self.backup_recovery_phrase_button.click()
         self.ok_continue_button.click()
-        seed_phrase = self.get_seed_phrase()
+        recovery_phrase = self.get_recovery_phrase()
         self.next_button.click()
-        word_number = self.seed_phrase_word_number.number
-        self.seed_phrase_word_input.set_value(seed_phrase[word_number])
+        word_number = self.recovery_phrase_word_number.number
+        self.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
         self.next_button.click()
-        word_number_1 = self.seed_phrase_word_number.number
-        self.seed_phrase_word_input.set_value(seed_phrase[word_number_1])
+        word_number_1 = self.recovery_phrase_word_number.number
+        self.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
         self.done_button.click()
         self.yes_button.click()
         self.ok_got_it_button.click()
-        return seed_phrase
+        return recovery_phrase
 
     def edit_profile_picture(self, file_name: str):
         if not AbstractTestCase().environment == 'sauce':

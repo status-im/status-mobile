@@ -20,3 +20,7 @@
    :font-size      13
    :letter-spacing -0.2
    :color          colors/text-light-gray})
+
+(def recovery-phrase-input
+  {:flex                1
+   :text-align-vertical :top})

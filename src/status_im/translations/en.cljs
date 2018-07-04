@@ -46,7 +46,7 @@
    :password-placeholder2                "Confirm your password"
    :name-placeholder                     "Display name"
    :password_error1                      "Password confirmation doesn't match password."
-   :password-description                 "You'll need this password to open the app, confirm transactions and whenever you need to regain access on a new device or install."
+   :password-description                 "You'll need this password to open the app and confirm transactions."
    :name-description                     "This will be the name everybody who uses Status will see. You can change it later."
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
@@ -157,25 +157,25 @@
    :testnet-text                         "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
    :mainnet-text                         "You’re on the Mainnet. Real ETH will be sent"
    :dev-mode                             "Development mode"
-   :backup-your-seed                     "Backup your Seed Phrase"
+   :backup-your-recovery-phrase          "Backup your Recovery phrase"
 
-   ;;seed
-   :your-data-belongs-to-you             "If you lose your seed phrase you lose your data and funds"
-   :your-data-belongs-to-you-description "Status can’t help you recover your account if you lose your seed phrase. You are in charge of the security of your data, and backing up your seed phrase is the best safeguard."
+   ;;recovery phrase
+   :your-data-belongs-to-you             "If you lose your recovery phrase you lose your data and funds"
+   :your-data-belongs-to-you-description "Status can’t help you recover your account if you lose your recovery phrase. You are in charge of the security of your data, and backing up your recovery phrase is the best safeguard."
    :ok-continue                          "Ok, continue"
-   :your-seed-phrase                     "Your seed phrase"
-   :your-seed-phrase-description         "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet."
+   :your-recovery-phrase                 "Your recovery phrase"
+   :your-recovery-phrase-description     "This is your recovery phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet."
    :enter-word                           "Enter word"
-   :check-your-seed                      "Check your seed phrase"
+   :check-your-recovery-phrase           "Check your recovery phrase"
    :wrong-word                           "Wrong word"
    :are-you-sure?                        "Are you sure?"
-   :are-you-sure-description             "You will not be able to see the whole seed phrase again"
+   :are-you-sure-description             "You will not be able to see the whole recovery phrase again"
    :you-are-all-set                      "You’re all set!"
-   :you-are-all-set-description          "Now if you lose your phone you can restore your account and wallet using the seed phrase and password."
+   :you-are-all-set-description          "Now if you lose your phone you can restore your account and wallet using the recovery phrase."
    :ok-got-it                            "Ok, got it"
-   :backup-seed-phrase                   "Backup Seed Phrase"
+   :backup-recovery-phrase               "Backup Recovery phrase"
    :step-i-of-n                          "Step {{step}} of {{number}}"
-   :word-n-description                   "In order to check if you have backed up your seed phrase correctly, enter the word #{{number}} above."
+   :word-n-description                   "In order to check if you have backed up your recovery phrase correctly, enter the word #{{number}} above."
    :word-n                               "Word #{{number}}"
 
    :wallet-onboarding-title              "Simple and secure cryptocurrency wallet"
@@ -185,8 +185,8 @@
    :wallet-set-up-signing-phrase         "This is your personal transaction phrase that you’ll use everytime you make a transaction. Make sure to write it down on a piece of paper, store it somewhere, and only confirm transactions when you see these three words."
    :wallet-set-up-confirm-title          "Wrote it down?"
    :wallet-set-up-confirm-description    "You won’t be able to see your 3-word transaction phrase again after this."
-   :wallet-backup-seed-title             "Backup your Seed Phrase"
-   :wallet-backup-seed-description       "This will help you to keep your money safe"
+   :wallet-backup-recovery-title         "Backup your Recovery phrase"
+   :wallet-backup-recovery-description   "This will help you to keep your money safe"
 
    ;;make_photo
    :image-source-title                   "Edit picture"
@@ -378,9 +378,10 @@
 
    ;;recover
    :passphrase                           "Passphrase"
+   :recovery-phrase                      "Recovery phrase"
    :recover                              "Recover"
    :twelve-words-in-correct-order        "12 words in correct order"
-   :enter-12-words                       "Enter the 12 words of your seed phrase"
+   :enter-12-words                       "Enter the 12 words of your recovery phrase, separated by single spaces"
 
    ;;accounts
    :recover-access                       "Recover access"
@@ -683,7 +684,7 @@
    ;; invalid-key
 
    :invalid-key-title                    "We detected a problem with the encryption key"
-   :invalid-key-content                  "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your seed phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted."
+   :invalid-key-content                  "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your recovery phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted."
    :invalid-key-confirm                  "Apply"
 
    ;; decryption-failed

@@ -114,7 +114,7 @@
        [profile.components/settings-item-separator])
      (when show-backup-seed?
        [profile.components/settings-item
-        {:label-kw     :t/backup-your-seed
+        {:label-kw     :t/backup-your-recovery-phrase
          :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]

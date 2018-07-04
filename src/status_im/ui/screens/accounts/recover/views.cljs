@@ -24,10 +24,10 @@
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
                                     (.hideView js-dependencies/testfairy @input-ref)))}
     [text-input/text-input-with-label
-     {:style               components.styles/flex
+     {:style               styles/recovery-phrase-input
       :height              92
       :ref                 (partial reset! input-ref)
-      :label               (i18n/label :t/passphrase)
+      :label               (i18n/label :t/recovery-phrase)
       :placeholder         (i18n/label :t/enter-12-words)
       :multiline           true
       :default-value       passphrase
