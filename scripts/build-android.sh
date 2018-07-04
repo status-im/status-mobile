@@ -14,7 +14,7 @@ echo
 
 GRADLE_PROPERTIES="--daemon --parallel -q -b android/build.gradle"
 
-npm install
+yarn install
 
 case $TARGET in
   debug)

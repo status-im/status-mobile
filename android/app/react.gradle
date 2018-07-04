@@ -2,8 +2,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 def config = project.hasProperty("react") ? project.react : [];
 
+def cliPath = config.cliPath ?: "node_modules/react-native/local-cli/cli.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = config.entryFile ?: "index.android.js"
+def bundleCommand = config.bundleCommand ?: "bundle"
 
 // because elvis operator
 def elvisFile(thing) {
@@ -12,6 +14,7 @@ def elvisFile(thing) {
 
 def reactRoot = elvisFile(config.root) ?: file("../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
+def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
 void runBefore(String dependentTaskName, Task task) {
     Task dependentTask = tasks.findByPath(dependentTaskName);
@@ -30,25 +33,30 @@ gradle.projectsEvaluated {
 
     productFlavors.each { productFlavorName ->
         buildTypes.each { buildTypeName ->
-            // Create variant and source names
-            def sourceName = "${buildTypeName}"
-            def targetName = "${sourceName.capitalize()}"
-            if (productFlavorName) {
-                sourceName = "${productFlavorName}${targetName}"
-            }
+            // Create variant and target names
+            def flavorNameCapitalized = "${productFlavorName.capitalize()}"
+            def buildNameCapitalized = "${buildTypeName.capitalize()}"
+            def targetName = "${flavorNameCapitalized}${buildNameCapitalized}"
+            def targetPath = productFlavorName ?
+                    "${productFlavorName}/${buildTypeName}" :
+                    "${buildTypeName}"
 
             // React js bundle directories
             def jsBundleDirConfigName = "jsBundleDir${targetName}"
             def jsBundleDir = elvisFile(config."$jsBundleDirConfigName") ?:
-                    file("$buildDir/intermediates/assets/${sourceName}")
+                    file("$buildDir/intermediates/assets/${targetPath}")
 
-            def resourcesDirConfigName = "jsBundleDir${targetName}"
+            def resourcesDirConfigName = "resourcesDir${targetName}"
             def resourcesDir = elvisFile(config."${resourcesDirConfigName}") ?:
-                    file("$buildDir/intermediates/res/merged/${sourceName}")
+                    file("$buildDir/intermediates/res/merged/${targetPath}")
             def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
 
             // Bundle task name for variant
             def bundleJsAndAssetsTaskName = "bundle${targetName}JsAndAssets"
+
+            // Additional node and packager commandline arguments
+            def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+            def extraPackagerArgs = config.extraPackagerArgs ?: []
 
             def currentBundleTask = tasks.create(
                     name: bundleJsAndAssetsTaskName,
@@ -71,26 +79,48 @@ gradle.projectsEvaluated {
                 workingDir reactRoot
 
                 // Set up dev mode
-                def devEnabled = !targetName.toLowerCase().contains("release")
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine "cmd", "/c", "react-native", "bundle", "--platform", "android", "--dev", "${devEnabled}",
-                            "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
-                } else {
-                    commandLine "react-native", "bundle", "--platform", "android", "--dev", "${devEnabled}",
-                            "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
+                def devEnabled = !(config."devDisabledIn${targetName}"
+                        || targetName.toLowerCase().contains("release"))
+
+                def extraArgs = extraPackagerArgs;
+
+                if (bundleConfig) {
+                    extraArgs = extraArgs.clone()
+                    extraArgs.add("--config");
+                    extraArgs.add(bundleConfig);
                 }
 
-                enabled config."bundleIn${targetName}" ?: targetName.toLowerCase().contains("release")
+                println cliPath
+                println bundleCommand
+                println "--platform android --dev false --reset-cache --entry-file"
+                println entryFile
+                println "--bundle-output"
+                println jsBundleFile
+                println "--assets-dest"
+                println resourcesDir
+
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
+                } else {
+                    commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
+                }
+
+                enabled config."bundleIn${targetName}" ||
+                        config."bundleIn${buildTypeName.capitalize()}" ?:
+                        targetName.toLowerCase().contains("release")
             }
 
             // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
             currentBundleTask.dependsOn("merge${targetName}Resources")
             currentBundleTask.dependsOn("merge${targetName}Assets")
 
-            runBefore("processArmeabi-v7a${targetName}Resources", currentBundleTask)
-            runBefore("processX86${targetName}Resources", currentBundleTask)
+            runBefore("process${flavorNameCapitalized}Armeabi-v7a${buildNameCapitalized}Resources", currentBundleTask)
+            runBefore("process${flavorNameCapitalized}X86${buildNameCapitalized}Resources", currentBundleTask)
             runBefore("processUniversal${targetName}Resources", currentBundleTask)
             runBefore("process${targetName}Resources", currentBundleTask)
+            runBefore("dataBindingProcessLayouts${targetName}", currentBundleTask)
         }
     }
 }

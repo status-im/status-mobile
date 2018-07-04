@@ -29,6 +29,16 @@ function brew_install() {
   fi
 }
 
+function brew_link() {
+  local package=$1
+
+  if ! is_macos; then
+    return 1
+  fi
+
+  brew link --overwrite --force $@
+}
+
 function brew_cask_install() {
   local package=$1
 
