@@ -85,13 +85,14 @@
                                           :clock-value)
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
-    ;; Necessary until we adjust merge-fx to cater for :txs
-    (-> (select-keys cofx [:data-store/tx :db])
-        (assoc-in [:db :chats chat-id :messages] {})
-        (assoc-in [:db :chats chat-id :message-groups] {})
-        (assoc-in [:db :chats chat-id :deleted-at-clock-value] last-message-clock-value)
-        (update :data-store/tx concat [(chats-store/clear-history-tx chat-id last-message-clock-value)
-                                       (messages-store/delete-messages-tx chat-id)]))))
+    {:db            (update-in db [:chats chat-id] merge
+                               {:messages               {}
+                                :message-groups         {}
+                                :unviewed-messages      #{}
+                                :not-loaded-message-ids #{}
+                                :deleted-at-clock-value last-message-clock-value})
+     :data-store/tx [(chats-store/clear-history-tx chat-id last-message-clock-value)
+                     (messages-store/delete-messages-tx chat-id)]}))
 
 (defn- remove-transport [chat-id {:keys [db] :as cofx}]
   ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
