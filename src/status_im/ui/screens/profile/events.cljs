@@ -126,3 +126,27 @@
  :copy-to-clipboard
  (fn [_ [_ value]]
    {:copy-to-clipboard value}))
+
+(re-frame/reg-fx
+ :show-tooltip
+ (let [tooltips (atom {})]
+   (fn [tooltip-id]
+     (let [interval-id (js/setInterval
+                        #(let [{:keys [opacity interval-id cnt]} (@tooltips tooltip-id)]
+                           (when opacity
+                             (swap! tooltips assoc-in [tooltip-id :cnt] (inc cnt))
+                             (if (and opacity (>= 0.0 opacity))
+                               (do
+                                 (log/debug "remove interval:" interval-id)
+                                 (js/clearInterval interval-id)
+                                 (swap! tooltips dissoc interval-id))
+                               (do (re-frame/dispatch [:set-in [:tooltips tooltip-id] opacity])
+                                   (when (< 10 cnt)
+                                     (swap! tooltips assoc-in [tooltip-id :opacity] (- opacity 0.05)))))))
+                        100)]
+       (swap! tooltips assoc tooltip-id {:opacity 1.0 :interval-id interval-id :cnt 0})))))
+
+(handlers/register-handler-fx
+ :show-tooltip
+ (fn [_ [_ tooltip-id]]
+   {:show-tooltip tooltip-id}))
