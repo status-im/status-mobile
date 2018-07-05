@@ -45,7 +45,6 @@
        [react/text {:style styles/qr-code-text}
         public-key]
        (when tooltip-opacity
-         (log/debug "tooltip-opacity:" tooltip-opacity)
          [copied-tooltip tooltip-opacity])]
       [react/touchable-highlight {:on-press #(do
                                                (re-frame/dispatch [:copy-to-clipboard public-key])
