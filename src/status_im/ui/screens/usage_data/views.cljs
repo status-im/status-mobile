@@ -28,12 +28,9 @@
      [react/view styles/bottom-button-container
       [components.common/button {:button-style      styles/share-button
                                  :uppercase?        false
-                                 :on-press          #(utils/show-confirmation {:ios-confirm-style "default"}
-                                                                              (i18n/label :t/confirmation-title)
-                                                                              (i18n/label :t/confirmation-text)
-                                                                              (i18n/label :t/confirmation-action)
-                                                                              (fn [] (re-frame/dispatch [:help-improve-handler true next]))
-                                                                              nil)
+                                 ;; this is a desktop hack. we are currently not collecting data usage
+                                 ;; on behalf of the user
+                                 :on-press          #(re-frame/dispatch [:help-improve-handler false next])
                                  :label             (i18n/label :t/share-usage-data)}]
       [components.common/button {:button-style      styles/dont-share-button
                                  :uppercase?        false
