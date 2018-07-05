@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Farsi public #status channel
 - Spam moderation
 - Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
+- Added more dapps
+
+### Fixed
+- Fixed mailservers connectivity issue
+
+### Changed
+- Downgraded React Native to 0.53.3 for improved performance and decreased battery consumption
+- When joining a chat only download one day of history
 
 ## [0.9.21] - 2018-06-25
 ### Added
