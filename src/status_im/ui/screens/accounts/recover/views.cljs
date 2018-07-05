@@ -32,7 +32,7 @@
       :multiline           true
       :default-value       passphrase
       :auto-correct        false
-      :on-change-text      #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] %])
+      :on-change-text      #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] (string/lower-case %)])
       :error               error}]))
 
 (defview password-input [password]
