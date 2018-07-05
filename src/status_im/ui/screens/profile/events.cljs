@@ -131,6 +131,8 @@
  :show-tooltip
  (let [tooltips (atom {})]
    (fn [tooltip-id]
+     (when-let [{:keys [interval-id]} (@tooltips tooltip-id)]
+       (js/clearInterval interval-id))
      (let [interval-id (js/setInterval
                         #(let [{:keys [opacity interval-id cnt]} (@tooltips tooltip-id)]
                            (when opacity
@@ -139,6 +141,7 @@
                                (do
                                  (log/debug "remove interval:" interval-id)
                                  (js/clearInterval interval-id)
+                                 (re-frame/dispatch [:set-in [:tooltips tooltip-id] nil])
                                  (swap! tooltips dissoc interval-id))
                                (do (re-frame/dispatch [:set-in [:tooltips tooltip-id] opacity])
                                    (when (< 10 cnt)
