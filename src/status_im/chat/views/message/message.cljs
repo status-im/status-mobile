@@ -62,6 +62,7 @@
   (letsubs [confirmed? [:transaction-confirmed? tx-hash]
             tx-exists? [:wallet-transaction-exists? tx-hash]]
     [react/touchable-highlight {:on-press #(when tx-exists?
+                                             (re-frame/dispatch [:update-transactions])
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view style/command-send-status-container
       [vector-icons/icon (if confirmed? :icons/check :icons/dots)
