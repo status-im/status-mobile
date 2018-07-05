@@ -257,10 +257,10 @@
         ;;NO ERROR, DISCARDED, TIMEOUT or DEFAULT ERROR
        (if (this-transaction-signing? id (:id send-transaction) view-id modal)
          (cond-> {:db                      (-> db
+                                               navigation/navigate-back
                                                (assoc-in [:wallet :transactions-queue] nil)
                                                (update-in [:wallet :transactions-unsigned] dissoc id)
-                                               (update-in [:wallet :send-transaction] merge clear-send-properties))
-                  :dispatch                [:navigate-back]}
+                                               (update-in [:wallet :send-transaction] merge clear-send-properties))}
            (= method constants/web3-send-transaction)
            (handle-failed-tx error_message))
          {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))

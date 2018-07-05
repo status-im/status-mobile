@@ -92,7 +92,7 @@
            [react/text {:style styles/text-secondary-content}
             (clojure.core/name symbol)]]
           [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
-           (str (wallet.utils/format-amount (symbol balance) decimals))]]]]
+           (str (wallet.utils/format-amount (get balance symbol) decimals))]]]]
        (when error
          [tooltip/tooltip error {}])])))
 
