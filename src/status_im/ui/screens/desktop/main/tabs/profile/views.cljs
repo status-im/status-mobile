@@ -8,6 +8,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [taoensso.timbre :as log]
             [clojure.string :as string]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
@@ -19,22 +20,19 @@
                 :number-of-lines 1}
     name]])
 
-(views/defview copied-tooltip []
-  [react/view {:style {:flex-direction :row
-                       :justify-content :space-between
-                       :align-items :center
-                       :height 24
-                       :border-radius 8
-                       :padding-left 10
-                       :padding-right 10
-                       :background-color (colors/alpha colors/tooltip-green 0.14)}}
-   [vector-icons/icon :icons/check
-    {:style styles/check-icon}]
-   [react/text {:style {:font-size 14 :color colors/tooltip-green}}
-    (i18n/label :sharing-copied-to-clipboard)]])
+(views/defview copied-tooltip [opacity]
+  (views/letsubs []
+    [react/view {:style (styles/tooltip-container opacity)}
+     [react/view {:style styles/tooltip-icon-text}
+      [vector-icons/icon :icons/check
+       {:style styles/check-icon}]
+      [react/text {:style {:font-size 14 :color colors/tooltip-green-text}}
+       (i18n/label :sharing-copied-to-clipboard)]]
+     [react/view {:style styles/tooltip-triangle}]]))
 
 (views/defview qr-code []
-  (views/letsubs [{:keys [public-key]} [:get-current-account]]
+  (views/letsubs [{:keys [public-key]} [:get-current-account]
+                  tooltip-opacity [:get-in [:tooltips :qr-copied]]]
     [react/view
      [react/view {:style styles/close-icon-container}
       [vector-icons/icon :icons/close {:style styles/close-icon}]]
@@ -43,12 +41,15 @@
        (string/replace (i18n/label :qr-code-public-key-hint) "\n" "")]
       [react/view {:style styles/qr-code}
        [qr-code-viewer/qr-code {:value public-key :size 130}]]
-      [copied-tooltip]
-      [react/text {:style styles/qr-code-text}
-       public-key]
+      [react/view {:style {:align-items :center}}
+       [react/text {:style styles/qr-code-text}
+        public-key]
+       (when tooltip-opacity
+         (log/debug "tooltip-opacity:" tooltip-opacity)
+         [copied-tooltip tooltip-opacity])]
       [react/touchable-highlight {:on-press #(do
-                                               (js/setInterval (fn [] (js/alert "hi")) 500)
-                                               (re-frame/dispatch [:copy-to-clipboard public-key]))}
+                                               (re-frame/dispatch [:copy-to-clipboard public-key])
+                                               (re-frame/dispatch [:show-tooltip :qr-copied]))}
        [react/view {:style styles/qr-code-copy}
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))

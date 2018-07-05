@@ -55,7 +55,7 @@
   {:height       16
    :width        16
    :margin-right 8
-   :tint-color   colors/tooltip-green})
+   :tint-color   colors/tooltip-green-text})
 
 (def qr-code-title
   {:font-size     20
@@ -83,3 +83,29 @@
 (def qr-code-copy-text
   {:font-size 16
    :color     colors/white})
+
+(defn tooltip-container [opacity]
+  {:position    :absolute
+   :align-items :center
+   :opacity     opacity
+   :top         -34})
+
+(def tooltip-icon-text
+  {:flex-direction   :row
+   :justify-content  :space-between
+   :align-items      :center
+   :height           24
+   :border-radius    8
+   :padding-left     10
+   :padding-right    10
+   :background-color colors/tooltip-green})
+
+(def tooltip-triangle
+  {:width              0
+   :height             0
+   :border-top-width   9.1
+   :border-left-width  9.1
+   :border-right-width 9.1
+   :border-left-color  :transparent
+   :border-right-color :transparent
+   :border-top-color   colors/tooltip-green})
