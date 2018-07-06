@@ -33,7 +33,7 @@
 
 (views/defview main-views []
   [react/view {:style {:flex 1 :flex-direction :row}}
-   [react/view {:style {:width 280 :background-color :white}}
+   [react/view {:style {:width 340 :background-color :white}}
     [react/view {:style {:flex 1}}
      [tab-views]]
     [tabs/main-tabs]]
