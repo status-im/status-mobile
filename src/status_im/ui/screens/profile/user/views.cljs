@@ -53,8 +53,11 @@
     :action (fn []
               (re-frame/dispatch [:request-permissions {:permissions [:camera :write-external-storage]
                                                         :on-allowed  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
-                                                        :on-denied   #(utils/show-popup (i18n/label :t/error)
-                                                                                        (i18n/label :t/camera-access-error))}]))}])
+                                                        :on-denied   (fn []
+                                                                       (utils/set-timeout
+                                                                        #(utils/show-popup (i18n/label :t/error)
+                                                                                           (i18n/label :t/camera-access-error))
+                                                                        50))}]))}])
 
 (defn qr-viewer-toolbar [label value]
   [toolbar/toolbar {}

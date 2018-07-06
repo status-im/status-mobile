@@ -163,8 +163,11 @@
 (defn- request-camera-permissions []
   (re-frame/dispatch [:request-permissions {:permissions [:camera]
                                             :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])
-                                            :on-denied   #(utils/show-popup (i18n/label :t/error)
-                                                                            (i18n/label :t/camera-access-error))}]))
+                                            :on-denied   #(utils/set-timeout
+                                                           (fn []
+                                                             (utils/show-popup (i18n/label :t/error)
+                                                                               (i18n/label :t/camera-access-error)))
+                                                           50)}]))
 
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
