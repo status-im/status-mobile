@@ -36,7 +36,9 @@
 (defn tab [index content view-id active?]
   [react/touchable-highlight {:style    (merge tabs.styles/tab-container {:flex 1})
                               :disabled active?
-                              :on-press #(re-frame/dispatch [:set-in [:desktop/desktop :tab-view-id] view-id])}
+                              :on-press #(do
+                                           (re-frame/dispatch [:navigate-to :home])
+                                           (re-frame/dispatch [:set-in [:desktop/desktop :tab-view-id] view-id]))}
    [react/view
     [content active?]]])
 
