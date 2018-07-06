@@ -73,16 +73,16 @@
       (i18n/label sign-label)
       [vector-icons/icon :icons/forward {:color :white}]]]))
 
-(defn- sign-enabled? [amount-error to amount]
+(defn- sign-enabled? [amount-error to amount modal?]
   (and
    (nil? amount-error)
-   (not (nil? to)) (not= to "")
+   (or modal? (not (nil? to)) (not= to "")) ;;NOTE(goranjovic) - contract creation will have empty `to`
    (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
-(defn- sign-button [amount-error to amount sufficient-funds? modal?]
-  (let [sign-enabled?           (sign-enabled? amount-error to amount)
-        immediate-sign-enabled? (or modal? (and sign-enabled? sufficient-funds?))]
+(defn- sign-button [amount-error to amount sufficient-funds? sufficient-gas? modal?]
+  (let [sign-enabled?           (sign-enabled? amount-error to amount modal?)
+        immediate-sign-enabled? (and sign-enabled? sufficient-funds? sufficient-gas?)]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons
      [react/view]
@@ -187,7 +187,7 @@
                                                   (:invalid? gas-price-edit))}
           (i18n/label :t/done)]]]])))
 
-(defn- advanced-cartouche [{:keys [max-fee gas gas-price]} modal?]
+(defn- advanced-cartouche [{:keys [max-fee gas gas-price]}]
   [react/view
    [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
                                                  (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
@@ -212,11 +212,11 @@
                         :key   :wallet-advanced}]
       [vector-icons/icon (if advanced? :icons/up :icons/down) {:color :white}]]]]
    (when advanced?
-     [advanced-cartouche transaction modal?])])
+     [advanced-cartouche transaction])])
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? network]}]
-  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? in-progress?
-                from-chat? symbol]} transaction
+  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? sufficient-gas?
+                in-progress? from-chat? symbol]} transaction
         {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
@@ -239,7 +239,8 @@
                                     :symbol    symbol}]
         [components/amount-selector {:disabled?     (or from-chat? modal?)
                                      :error         (or amount-error
-                                                        (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
+                                                        (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
+                                                        (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
                                      :amount        amount
                                      :amount-text   amount-text
                                      :input-options {:max-length     21
@@ -251,7 +252,7 @@
          #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
          #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))
          :t/transactions-sign-transaction]
-        [sign-button amount-error to amount sufficient-funds? modal?])
+        [sign-button amount-error to amount sufficient-funds? sufficient-gas? modal?])
       (when signing?
         [sign-panel :t/signing-phrase-description in-progress?])
       (when in-progress? [react/view styles/processing-view])]]))

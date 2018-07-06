@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed chat message layout for right-to-left languages
 - Fixed parsing of messages containing multiple dots (elipsis)
 - Fixed Webview: Screen cut off when using ERC dEX DApp [#3131]
+- Fixed gas validation: Showing message when total amount being sent plus the max gas cost exceed the balance [#3441]
  
 ## [0.9.22] - 2018-07-09
 ### Added
