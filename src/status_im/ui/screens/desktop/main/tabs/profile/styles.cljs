@@ -1,10 +1,33 @@
 (ns status-im.ui.screens.desktop.main.tabs.profile.styles
   (:require [status-im.ui.components.colors :as colors]))
 
+(def profile-view
+  {:align-items :center})
+
+(def profile-badge
+  {:margin-top    34
+   :align-items   :center
+   :margin-bottom 16})
+
 (def logout-row
-  {:justify-content :space-between
-   :flex-direction  :row
-   :margin-top      60})
+  {:justify-content   :space-between
+   :flex-direction    :row
+   :margin-horizontal 12
+   :align-self        :stretch
+   :margin-top        60})
+
+(defn logout-row-text [color]
+  {:color     color
+   :font-size 16})
+
+(def profile-photo
+  {:border-radius 100
+   :width         100
+   :height        100})
+
+(def profile-user-name
+  {:font-weight :bold
+   :font-size   18})
 
 (def share-contact-code
   {:flex-direction    :row
@@ -12,6 +35,7 @@
    :align-items       :center
    :height            45
    :width             240
+   :margin-horizontal 50
    :border-radius     8
    :background-color  (colors/alpha colors/blue 0.1)})
 
