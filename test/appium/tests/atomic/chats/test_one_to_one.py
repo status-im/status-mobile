@@ -3,7 +3,7 @@ import string
 import emoji
 import pytest
 from selenium.common.exceptions import TimeoutException
-from tests import marks, get_current_time, group_chat_users, basic_user
+from tests import marks, get_current_time, group_chat_users
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -359,39 +359,4 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
             self.errors.append('Message with emoji was not sent in 1-1 chat')
-        self.verify_no_errors()
-
-
-class TestChatManagement(SingleDeviceTestCase):
-
-    @marks.testrail_id(1428)
-    def test_clear_history_one_to_one_chat(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        chat_view = home_view.add_contact(basic_user['public_key'])
-        for _ in range(2):
-            chat_view.chat_message_input.send_keys('test message')
-            chat_view.send_message_button.click()
-        chat_view.clear_history()
-        if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown')
-        home_view.relogin()
-        home_view.get_chat_with_user(basic_user['username']).click()
-        if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown after re-login')
-
-    @marks.testrail_id(3720)
-    def test_delete_one_to_one_chat_via_delete_button(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat_view = home.add_contact(basic_user['public_key'])
-        for _ in range(2):
-            chat_view.chat_message_input.send_keys('test message')
-            chat_view.send_message_button.click()
-        chat_view.delete_chat()
-        if home.get_chat_with_user(basic_user['username']).is_element_present(10):
-            self.errors.append("One-to-one' chat is shown, but the chat has been deleted")
-        home.relogin()
-        if home.get_chat_with_user(basic_user['username']).is_element_present(10):
-            self.errors.append("One-to-one' chat is shown after re-login, but the chat has been deleted")
         self.verify_no_errors()

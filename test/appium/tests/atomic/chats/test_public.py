@@ -67,20 +67,3 @@ class TestPublicChat(MultipleDeviceTestCase):
         for message in message_1, message_2:
             if chat_1.element_starts_with_text(message).is_element_present():
                 pytest.fail("Message '%s' is shown after re-login, but public chat history has been cleared" % message)
-
-    @marks.testrail_id(3720)
-    def test_delete_public_chat_via_delete_button(self):
-        self.create_drivers(1)
-        sign_in = SignInView(self.drivers[0])
-        home = sign_in.create_user()
-        chat_name = home.get_public_chat_name()
-        public_chat = home.join_public_chat(chat_name)
-        public_chat.chat_message_input.send_keys('takoe')
-        public_chat.send_message_button.click()
-        public_chat.delete_chat()
-        if home.element_by_text(chat_name).is_element_present(5):
-            self.errors.append("Public chat '%s' is shown, but the chat has been deleted" % chat_name)
-        home.relogin()
-        if home.element_by_text(chat_name).is_element_present(5):
-            self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
-        self.verify_no_errors()

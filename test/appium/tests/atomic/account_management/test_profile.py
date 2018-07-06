@@ -1,5 +1,4 @@
 import pytest
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, group_chat_users
 from tests.base_test_case import SingleDeviceTestCase

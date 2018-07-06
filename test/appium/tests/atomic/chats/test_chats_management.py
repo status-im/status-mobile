@@ -1,6 +1,6 @@
 import pytest
 
-from tests import marks, group_chat_users, transaction_users
+from tests import marks, group_chat_users, basic_user
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -9,21 +9,18 @@ from views.sign_in_view import SignInView
 class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(1428)
-    def test_clear_history(self):
-        recipient = transaction_users['E_USER']
+    def test_clear_history_one_to_one_chat(self):
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        home_view = sign_in_view.get_home_view()
-        home_view.add_contact(recipient['public_key'])
-        chat_view = home_view.get_chat_view()
-        for _ in range(4):
+        home_view = sign_in_view.create_user()
+        chat_view = home_view.add_contact(basic_user['public_key'])
+        for _ in range(2):
             chat_view.chat_message_input.send_keys('test message')
             chat_view.send_message_button.click()
         chat_view.clear_history()
         if not chat_view.no_messages_in_chat.is_element_present():
             pytest.fail('Message history is shown')
         home_view.relogin()
-        home_view.get_chat_with_user(recipient['username']).click()
+        home_view.get_chat_with_user(basic_user['username']).click()
         if not chat_view.no_messages_in_chat.is_element_present():
             pytest.fail('Message history is shown after re-login')
 
@@ -121,3 +118,35 @@ class TestChatManagement(SingleDeviceTestCase):
         start_new_chat.start_new_chat_button.click()
         if not start_new_chat.element_by_text(group_chat_users['A_USER']['username']).is_element_displayed():
             pytest.fail("List of contacts doesn't contain added user")
+
+    @marks.testrail_id(3719)
+    def test_delete_one_to_one_chat_via_delete_button(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        chat_view = home.add_contact(basic_user['public_key'])
+        for _ in range(2):
+            chat_view.chat_message_input.send_keys('test message')
+            chat_view.send_message_button.click()
+        chat_view.delete_chat()
+        if home.get_chat_with_user(basic_user['username']).is_element_present(10):
+            self.errors.append("One-to-one' chat is shown, but the chat has been deleted")
+        home.relogin()
+        if home.get_chat_with_user(basic_user['username']).is_element_present(10):
+            self.errors.append("One-to-one' chat is shown after re-login, but the chat has been deleted")
+        self.verify_no_errors()
+
+    @marks.testrail_id(3720)
+    def test_delete_public_chat_via_delete_button(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        chat_name = home.get_public_chat_name()
+        public_chat = home.join_public_chat(chat_name)
+        public_chat.chat_message_input.send_keys('test message')
+        public_chat.send_message_button.click()
+        public_chat.delete_chat()
+        if home.element_by_text(chat_name).is_element_present(5):
+            self.errors.append("Public chat '%s' is shown, but the chat has been deleted" % chat_name)
+        home.relogin()
+        if home.element_by_text(chat_name).is_element_present(5):
+            self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
+        self.verify_no_errors()
