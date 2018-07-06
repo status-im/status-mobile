@@ -63,4 +63,4 @@
  :open-collectible-in-browser
  [re-frame/trim-v]
  (fn [_ [data]]
-   {:dispatch [:open-browser data]}))
+   {:dispatch [:open-url-in-browser data]}))

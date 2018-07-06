@@ -5,6 +5,7 @@
             [status-im.test.contacts.subs]
             [status-im.test.accounts.events]
             [status-im.test.data-store.realm.core]
+            [status-im.test.browser.events]
             [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
@@ -12,7 +13,6 @@
             [status-im.test.bots.events]
             [status-im.test.models.mailserver]
             [status-im.test.models.bootnode]
-            [status-im.test.models.browser-history]
             [status-im.test.models.account]
             [status-im.test.models.contact]
             [status-im.test.models.network]
@@ -70,7 +70,6 @@
  'status-im.test.models.mailserver
  'status-im.test.models.bootnode
  'status-im.test.models.account
- 'status-im.test.models.browser-history
  'status-im.test.models.contact
  'status-im.test.models.network
  'status-im.test.models.wallet
@@ -105,4 +104,5 @@
  'status-im.test.utils.universal-links.core
  'status-im.test.utils.http
  'status-im.test.ui.screens.events
- 'status-im.test.ui.screens.accounts.login.events)
+ 'status-im.test.ui.screens.accounts.login.events
+ 'status-im.test.browser.events)

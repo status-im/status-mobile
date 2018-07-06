@@ -31,7 +31,7 @@
       [react/text-input {:on-change-text      #(reset! url-text %)
                          :on-submit-editing   #(do
                                                  (re-frame/dispatch [:navigate-to-clean :home])
-                                                 (re-frame/dispatch [:open-browser {:url @url-text}]))
+                                                 (re-frame/dispatch [:open-url-in-browser @url-text]))
                          :placeholder         (i18n/label :t/enter-url)
                          :auto-capitalize     :none
                          :auto-correct        false

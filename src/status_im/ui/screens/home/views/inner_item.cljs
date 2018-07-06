@@ -16,7 +16,8 @@
             [status-im.ui.components.chat-preview :as chat-preview]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.common.common :as components.common]))
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.models.browser :as model]))
 
 (defn command-short-preview
   [{:keys [command] {:keys [amount asset]} :params}]
@@ -111,8 +112,9 @@
           [message-content-text last-message]
           [unviewed-indicator chat-id]]]]])))
 
-(defview home-list-browser-item-inner-view [{:keys [name url] :as browser}]
-  (letsubs [dapp [:get-dapp-by-name name]]
+(defview home-list-browser-item-inner-view [{:keys [name] :as browser}]
+  (letsubs [dapp [:get-dapp-by-name name]
+            url  (model/get-current-url browser)]
     [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
      [react/view styles/chat-container
       [react/view styles/chat-icon-container
