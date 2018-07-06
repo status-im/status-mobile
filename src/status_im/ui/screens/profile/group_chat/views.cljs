@@ -101,7 +101,11 @@
          [group-chat-profile-toolbar])
        [react/scroll-view
         [react/view profile.components.styles/profile-form
-         [profile.components/profile-header shown-chat editing? false nil :set-group-chat-name]
+         [profile.components/profile-header
+          {:contact              shown-chat
+           :editing?             editing?
+           :allow-icon-change?   false
+           :on-change-text-event :set-group-chat-name}]
          [list/action-list (actions admin? (:chat-id current-chat))
           {:container-style        styles/action-container
            :action-style           styles/action

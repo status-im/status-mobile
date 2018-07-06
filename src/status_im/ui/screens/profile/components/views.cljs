@@ -50,9 +50,10 @@
     [profile-name-input name on-change-text-event
      (when group-chat {:accessibility-label :chat-name-input})]]])
 
-(defn profile-header [contact editing? allow-icon-change? options on-change-text-event]
+(defn profile-header
+  [{:keys [contact edited-contact editing? allow-icon-change? options on-change-text-event]}]
   (if editing?
-    [profile-header-edit contact options on-change-text-event allow-icon-change?]
+    [profile-header-edit (or edited-contact contact) options on-change-text-event allow-icon-change?]
     [profile-header-display contact]))
 
 ;; settings items elements

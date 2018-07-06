@@ -70,7 +70,9 @@
 (handlers/register-handler-fx
  :my-profile/start-editing-profile
  (fn [{:keys [db]} []]
-   {:db (assoc db :my-profile/editing? true)}))
+   (let [profile (select-keys (:account/account db) [:name :photo-path])]
+     {:db (assoc db :my-profile/editing? true
+                 :my-profile/profile profile)})))
 
 (handlers/register-handler-fx
  :my-profile/save-profile

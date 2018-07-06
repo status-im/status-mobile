@@ -207,7 +207,13 @@
        [react/scroll-view {:ref                          #(reset! scroll %)
                            :keyboard-should-persist-taps :handled}
         [react/view profile.components.styles/profile-form
-         [profile.components/profile-header shown-account editing? true profile-icon-options :my-profile/update-name]]
+         [profile.components/profile-header
+          {:contact              current-account
+           :edited-contact       changed-account
+           :editing?             editing?
+           :allow-icon-change?   true
+           :options              profile-icon-options
+           :on-change-text-event :my-profile/update-name}]]
         [react/view action-button.styles/actions-list
          [share-contact-code current-account public-key]]
         [react/view styles/my-profile-info-container
