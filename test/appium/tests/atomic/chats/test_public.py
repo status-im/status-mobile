@@ -8,6 +8,7 @@ from views.sign_in_view import SignInView
 class TestPublicChat(MultipleDeviceTestCase):
 
     @marks.testrail_id(1383)
+    @marks.smoke_1
     def test_public_chat_messaging(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

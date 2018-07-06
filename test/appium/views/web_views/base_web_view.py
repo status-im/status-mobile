@@ -81,3 +81,7 @@ class BaseWebView(BaseView):
             counter += 1
             if counter > wait_time:
                 pytest.fail("Page is not loaded during %s seconds" % wait_time)
+
+    def open_in_webview(self):
+        self.web_view_browser.click()
+        self.always_button.click()

@@ -8,6 +8,7 @@ from views.sign_in_view import SignInView
 class TestSignIn(SingleDeviceTestCase):
 
     @marks.testrail_id(1381)
+    @marks.smoke_1
     def test_login_with_new_account(self):
         sign_in = SignInView(self.driver)
         username = 'test_user'

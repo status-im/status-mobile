@@ -11,6 +11,7 @@ from views.sign_in_view import SignInView
 class TestMessagesPublicChat(SingleDeviceTestCase):
 
     @marks.testrail_id(1380)
+    @marks.smoke_1
     def test_faucet_console_command(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -37,6 +38,7 @@ class TestMessagesPublicChat(SingleDeviceTestCase):
         console_view.chat_element_by_text('Faucet request has been received').wait_for_visibility_of_element()
 
     @marks.testrail_id(1400)
+    @marks.smoke_1
     def test_web3_block_number(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()

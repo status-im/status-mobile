@@ -10,6 +10,7 @@ from views.sign_in_view import SignInView
 class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(759)
+    @marks.smoke_1
     def test_recover_account(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

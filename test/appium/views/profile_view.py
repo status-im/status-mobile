@@ -172,13 +172,6 @@ class BackupSeedPhraseButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Backup your Seed Phrase']")
 
 
-class OkContinueButton(BaseButton):
-
-    def __init__(self, driver):
-        super(OkContinueButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='OK, CONTINUE']")
-
-
 class SeedPhraseTable(BaseText):
 
     def __init__(self, driver):
@@ -268,6 +261,38 @@ class CustomNetworkURL(BaseEditBox):
             "//*[@text='RPC URL']/following-sibling::*[1]/android.widget.EditText")
 
 
+class HelpButton(BaseButton):
+
+    def __init__(self, driver):
+        super(HelpButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("help-button")
+
+
+class RequestFeatureButton(BaseButton):
+
+    def __init__(self, driver):
+        super(RequestFeatureButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("request-feature-button")
+
+
+class SubmitBugButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SubmitBugButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("submit-bug-button")
+
+
+class FaqButton(BaseButton):
+
+    def __init__(self, driver):
+        super(FaqButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("faq-button")
+
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
@@ -306,12 +331,16 @@ class ProfileView(BaseView):
 
         # Backup seed phrase
         self.backup_seed_phrase_button = BackupSeedPhraseButton(self.driver)
-        self.ok_continue_button = OkContinueButton(self.driver)
         self.seed_phrase_table = SeedPhraseTable(self.driver)
         self.seed_phrase_word_number = SeedPhraseWordNumberText(self.driver)
         self.seed_phrase_word_input = SeedPhraseWordInput(self.driver)
         self.ok_got_it_button = OkGotItButton(self.driver)
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
+
+        self.help_button = HelpButton(self.driver)
+        self.request_feature_button = RequestFeatureButton(self.driver)
+        self.submit_bug_button = SubmitBugButton(self.driver)
+        self.faq_button = FaqButton(self.driver)
 
     def switch_network(self, network):
         self.advanced_button.click()

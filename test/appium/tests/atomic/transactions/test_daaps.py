@@ -6,6 +6,7 @@ from views.sign_in_view import SignInView
 class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(769)
+    @marks.smoke_1
     def test_send_transaction_from_daap(self):
         sender = transaction_users['B_USER']
         sign_in_view = SignInView(self.driver)
@@ -20,6 +21,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(initial_balance, address)
 
     @marks.testrail_id(3716)
+    @marks.smoke_1
     def test_sign_message_from_daap(self):
         password = 'password_for_daap'
         sign_in_view = SignInView(self.driver)

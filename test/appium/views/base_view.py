@@ -176,6 +176,20 @@ class TestFairyWarning(BaseText):
         self.is_shown = bool()
 
 
+class OkContinueButton(BaseButton):
+
+    def __init__(self, driver):
+        super(OkContinueButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, CONTINUE']")
+
+
+class DiscardButton(BaseButton):
+
+    def __init__(self, driver):
+        super(DiscardButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='DISCARD']")
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -196,6 +210,8 @@ class BaseView(object):
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)
+        self.ok_continue_button = OkContinueButton(self.driver)
+        self.discard_button = DiscardButton(self.driver)
         self.connection_status = ConnectionStatusText(self.driver)
 
         self.apps_button = AppsButton(self.driver)

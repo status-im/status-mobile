@@ -7,6 +7,7 @@ from views.sign_in_view import SignInView
 class TestTransactionWallet(SingleDeviceTestCase):
 
     @marks.testrail_id(766)
+    @marks.smoke_1
     def test_send_eth_from_wallet_to_contact(self):
         recipient = transaction_users['F_USER']
         sender = transaction_users['E_USER']
@@ -35,6 +36,7 @@ class TestTransactionWallet(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
     @marks.testrail_id(767)
+    @marks.smoke_1
     def test_send_eth_from_wallet_to_address(self):
         recipient = transaction_users['E_USER']
         sender = transaction_users['F_USER']
@@ -60,6 +62,7 @@ class TestTransactionWallet(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
     @marks.testrail_id(1430)
+    @marks.smoke_1
     def test_send_stt_from_wallet(self):
         sender = transaction_users_wallet['A_USER']
         recipient = transaction_users_wallet['B_USER']

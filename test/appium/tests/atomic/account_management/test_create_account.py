@@ -10,6 +10,7 @@ from views.sign_in_view import SignInView
 class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(758)
+    @marks.smoke_1
     def test_create_account(self):
         if not self.test_fairy_warning_is_shown:
             self.errors.append('TestFairy warning is not shown')
@@ -47,6 +48,7 @@ class TestCreateAccount(SingleDeviceTestCase):
             pytest.fail('New account was not created')
 
     @marks.testrail_id(3692)
+    @marks.skip
     def test_home_view(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
