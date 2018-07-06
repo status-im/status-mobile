@@ -199,8 +199,8 @@
    :sharing-cancel                       "Cancel"
 
    :browsing-title                       "Browse"
-   :browsing-open-in-web-browser         "Open in web browser"
-   :browsing-open-in-browser             "Open in browser"
+   :browsing-open-in-web-browser         "Open in system browser"
+   :browsing-open-in-browser             "Open in Status browser"
    :browsing-cancel                      "Cancel"
 
    ;;sign-up
