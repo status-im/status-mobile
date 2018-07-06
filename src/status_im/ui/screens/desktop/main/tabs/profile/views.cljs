@@ -14,9 +14,11 @@
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
             [status-im.ui.screens.profile.user.views :as profile]))
 
-(defn profile-badge [{:keys [name]}]
-  [react/view {:margin-vertical 10}
-   [react/text {:style {:font-weight :bold}
+(defn profile-badge [{:keys [name photo-path]}]
+  [react/view styles/profile-badge
+   [react/image {:source {:uri photo-path}
+                 :style  styles/profile-photo}]
+   [react/text {:style           styles/profile-user-name
                 :number-of-lines 1}
     name]])
 
@@ -32,10 +34,10 @@
 
 (views/defview qr-code []
   (views/letsubs [{:keys [public-key]} [:get-current-account]
-                  tooltip-opacity [:get-in [:tooltips :qr-copied]]]
+                  tooltip-opacity      [:get-in [:tooltips :qr-copied]]]
     [react/view
-     [react/view {:style styles/close-icon-container}
-      [vector-icons/icon :icons/close {:style styles/close-icon}]]
+     #_[react/view {:style styles/close-icon-container}
+        [vector-icons/icon :icons/close {:style styles/close-icon}]]
      [react/view {:style styles/qr-code-container}
       [react/text {:style styles/qr-code-title}
        (string/replace (i18n/label :qr-code-public-key-hint) "\n" "")]
@@ -65,12 +67,10 @@
 
 (views/defview profile []
   (views/letsubs [current-account [:get-current-account]]
-    [react/view {:margin-top 40 :margin-horizontal 10}
-     [react/view
-      [profile-badge current-account]]
-     [react/view {:style {:align-items :center}}
-      [share-contact-code]]
+    [react/view styles/profile-view
+     [profile-badge current-account]
+     [share-contact-code]
      [react/view {:style styles/logout-row}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
-       [react/text {:style {:color colors/red}} (i18n/label :t/logout)]]
-      [react/text {:style {:color colors/gray}} "V" build/version]]]))
+       [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
+      [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version]]]]))
