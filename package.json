@@ -24,7 +24,7 @@
     "events": "1.1.1",
     "homoglyph-finder": "1.1.1",
     "identicon.js": "git@github.com:status-im/identicon.js.git",
-    "instabug-reactnative": "2.12.0",
+    "instabug-reactnative": "2.13.2",
     "level-filesystem": "1.2.0",
     "nfc-react-native": "git@github.com:status-im/nfc-react-native.git",
     "process": "0.11.10",
