@@ -164,4 +164,5 @@ startdev-%:
 	  "ios")      ${MAKE} prepare-ios;; \
 	esac
 	${MAKE} dev-$(SYSTEM)-$(DEVICE)
-	${MAKE} -j2 react-native repl-$(SYSTEM)
+	${MAKE} react-native &
+	${MAKE} repl-$(SYSTEM)
