@@ -371,6 +371,8 @@ class ProfileView(BaseView):
         self.select_from_gallery_button.click()
         if self.allow_button.is_element_displayed(sec=10):
             self.allow_button.click()
+        for element_text in 'Images', 'DCIM':
+            self.element_by_text(element_text).click()
         self.element_by_text(file_name).click()
         self.confirm_button.click()
 
