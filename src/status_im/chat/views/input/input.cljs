@@ -32,7 +32,8 @@
        :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
                                                                         :messages-focused? false}])
        :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
-       :on-submit-editing      #(re-frame/dispatch [:send-current-message])
+       :on-submit-editing      #(when single-line-input?
+                                  (re-frame/dispatch [:send-current-message]))
        :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent %))))
        :on-change              #(re-frame/dispatch [:set-chat-input-text (.-text (.-nativeEvent %))])
        :on-selection-change    #(let [s (-> (.-nativeEvent %)
