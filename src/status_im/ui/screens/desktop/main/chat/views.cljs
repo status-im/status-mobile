@@ -64,7 +64,8 @@
 (views/defview message-with-timestamp [text {:keys [timestamp] :as message} style]
   [react/view {:style style}
    [react/view {:style {:flex-direction :row :flex-wrap :wrap}}
-    [react/text {:style styles/message-text}
+    [react/text {:style      styles/message-text
+                 :selectable true}
      text]
     [react/text {:style (styles/message-timestamp-placeholder)}
      (time/timestamp->time timestamp)]
