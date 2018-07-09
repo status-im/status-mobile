@@ -686,6 +686,12 @@
    :invalid-key-content                  "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your seed phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted."
    :invalid-key-confirm                  "Apply"
 
+   ;; decryption-failed
+
+   :decryption-failed-title              "We were not able to decrypt your data"
+   :decryption-failed-content            "We were not able to decrypt your data, you might need to create new account and erase your old data by tapping “Apply”. Clicking on “Cancel”, will try again"
+   :decryption-failed-confirm            "Apply"
+
    ;; browser
    :browser                              "Browser"
    :enter-dapp-url                       "Enter a ÐApp URL"

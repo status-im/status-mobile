@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Fixed mailservers connectivity issue
 - Clear chat action correctly clear the unread messages counter
+- Gracefully handle realm decryption failures by showing a pop up asking the user to reset the data
 
 ### Changed
 - Downgraded React Native to 0.53.3 for improved performance and decreased battery consumption

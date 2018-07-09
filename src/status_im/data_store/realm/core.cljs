@@ -11,8 +11,6 @@
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.utils :as utils]))
 
-(def new-account-filename "new-account")
-
 (defn to-buffer [key]
   (when key
     (let [length (.-length key)
@@ -31,9 +29,8 @@
   [options file-name encryption-key]
   (log/debug "Opening realm at " file-name "...")
   (let [options-js (clj->js (assoc options :path file-name))]
-    (when encryption-key
-      (log/debug "Using encryption key...")
-      (set! (.-encryptionKey options-js) (to-buffer encryption-key)))
+    (log/debug "Using encryption key...")
+    (set! (.-encryptionKey options-js) (to-buffer encryption-key))
     (when (exists? js/window)
       (rn-dependencies/realm. options-js))))
 
@@ -61,12 +58,6 @@
 (defn- close [realm]
   (when realm
     (.close realm)))
-
-(defn reset-realm
-  "Delete realm & open a new database using encryption key"
-  [file-name schemas encryption-key]
-  (delete-realm file-name)
-  (open-realm (last schemas) file-name encryption-key))
 
 (defn- migrate-schemas
   "Apply migrations in sequence and open database with the last schema"
@@ -110,33 +101,9 @@
   (reset! base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas encryption-key))
   (log/debug "Created @base-realm"))
 
-(defn reset-account-realm [encryption-key]
-  (log/debug "Resetting account realm...")
-  (when @account-realm
-    (close @account-realm))
-  (reset! account-realm (open-migrated-realm new-account-filename account/schemas encryption-key))
-  (.write @account-realm #(.deleteAll @account-realm))
-  (log/debug "Created @account-realm"))
-
-(defn move-file-handler [address encryption-key err handler]
-  (log/debug "Moved file with error: " err address)
-  (if err
-    (log/error "Error moving account realm: " (.-message err))
-    (reset! account-realm (open-migrated-realm address account/schemas encryption-key)))
-  (handler err))
-
-(defn change-account [address new-account? encryption-key handler]
-  (let [path (.-path @account-realm)]
-    (log/debug "closing account realm: " path)
-    (close-account-realm)
-    (log/debug "is new account? " new-account?)
-    (if new-account?
-      (let [new-path (string/replace path new-account-filename address)]
-        (log/debug "Moving file " path " to " new-path)
-        (fs/move-file path new-path #(move-file-handler address encryption-key % handler)))
-      (do
-        (reset! account-realm (open-migrated-realm address account/schemas encryption-key))
-        (handler nil)))))
+(defn change-account [address encryption-key]
+  (close-account-realm)
+  (reset! account-realm (open-migrated-realm address account/schemas encryption-key)))
 
 (declare realm-obj->clj)
 
@@ -152,19 +119,6 @@
    (let [obj-to-save (select-keys obj (keys (get-in entity->schemas
                                                     [schema-name :properties])))]
      (.create realm (name schema-name) (clj->js obj-to-save) update?))))
-
-(defn save
-  ([realm schema-name obj]
-   (save realm schema-name obj false))
-  ([realm schema-name obj update?]
-   (write realm #(create realm schema-name obj update?))))
-
-(defn save-all
-  ([realm schema-name objs]
-   (save-all realm schema-name objs false))
-  ([realm schema-name objs update?]
-   (write realm (fn []
-                  (mapv #(save realm schema-name % update?) objs)))))
 
 (defn delete [realm obj]
   (.delete realm obj))
