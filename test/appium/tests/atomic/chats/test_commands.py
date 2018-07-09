@@ -1,5 +1,3 @@
-import random
-
 from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
@@ -322,3 +320,16 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         if chat.asset_by_name('MDS').is_element_displayed():
             self.errors.append('Token which is not enabled in wallet can be requested in 1-1 chat')
         self.verify_no_errors()
+
+    @marks.testrail_id(3771)
+    def test_logcat_send_transaction_in_1_1_chat(self):
+        sender = transaction_users['C_USER']
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.home_button.click()
+        chat = home.add_contact(transaction_users['D_USER']['public_key'])
+        amount = chat.get_unique_amount()
+        chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
+        chat.check_no_value_in_logcat(sender['password'])

@@ -2,6 +2,7 @@ import random
 import string
 import time
 import base64
+import pytest
 import zbarlight
 from tests import info, common_password
 from eth_keys import datatypes
@@ -226,7 +227,7 @@ class BaseView(object):
 
     @property
     def logcat(self):
-        return self.driver.get_log("logcat")
+        return str(self.driver.get_log("logcat"))
 
     def confirm(self):
         info("Tap 'Confirm' on native keyboard")
@@ -407,3 +408,7 @@ class BaseView(object):
                     if i == 2:
                         e.msg = "Can't reconnect to mail server after 3 attempts"
                         raise e
+
+    def check_no_value_in_logcat(self, exp_value: str, value_name: str = 'Password'):
+        if exp_value in self.logcat:
+            pytest.fail('%s in logcat!!!' % value_name, pytrace=False)

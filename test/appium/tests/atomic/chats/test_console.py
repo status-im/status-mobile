@@ -48,8 +48,8 @@ class TestMessagesPublicChat(SingleDeviceTestCase):
         chat_view.chat_message_input.send_keys('web3.eth.blockNumber')
         block_number = self.network_api.get_latest_block_number()
         chat_view.send_message_button.click()
-        for number in block_number, block_number + 1:
-            if chat_view.chat_element_by_text(str(number)).is_element_displayed():
+        for i in range(4):
+            if chat_view.chat_element_by_text(str(block_number + i)).is_element_displayed():
                 break
         else:
             pytest.fail('Actual block number is not shown')

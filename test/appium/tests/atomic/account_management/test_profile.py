@@ -146,3 +146,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
         profile_view.find_text_part('CUSTOM_ROPSTEN')
+
+    @marks.testrail_id(3774)
+    def test_logcat_backup_seed_phrase(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        seed_phrase = profile_view.backup_seed_phrase()
+        for i in seed_phrase.values():
+            profile_view.check_no_value_in_logcat(i, 'Passphrase')
