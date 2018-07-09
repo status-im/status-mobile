@@ -13,6 +13,8 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.dimensions :as dimensions]
             status-im.utils.universal-links.events
             [status-im.chat.commands.core :as commands]
             status-im.ui.screens.add-new.new-chat.navigation
@@ -183,6 +185,11 @@
    (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
 
 (re-frame/reg-fx
+ ::listen-to-window-dimensions-change
+ (fn []
+   (dimensions/add-event-listener)))
+
+(re-frame/reg-fx
  ::get-fcm-token-fx
  (fn [_]
    (notifications/get-fcm-token)))
@@ -300,9 +307,10 @@
 
      :else
      (handlers-macro/merge-fx cofx
-                              {::init-device-UUID nil
-                               ::init-store       encryption-key
-                               ::testfairy-alert  nil}
+                              {::init-device-UUID                   nil
+                               ::init-store                         encryption-key
+                               ::listen-to-window-dimensions-change nil
+                               ::testfairy-alert                    nil}
                               (initialize-db)))))
 
 ;; DB has been decrypted, load accounts, initialize geth, etc
@@ -516,3 +524,8 @@
  :hide-tab-bar
  (fn [db _]
    (assoc db :tab-bar-visible? false)))
+
+(handlers/register-handler-db
+ :update-window-dimensions
+ (fn [db [_ dimensions]]
+   (assoc db :dimensions/window (dimensions/window dimensions))))

@@ -92,3 +92,11 @@
 (reg-sub :get-current-account-network
          (fn [{:keys [network] :as db} [_]]
            (get-in db [:account/account :networks network])))
+
+(reg-sub :dimensions/window
+         (fn [db _]
+           (get db :dimensions/window)))
+
+(reg-sub :dimensions/window-width
+         :<- [:dimensions/window]
+         :width)

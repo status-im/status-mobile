@@ -3,6 +3,7 @@
   (:require [cljs.spec.alpha :as spec]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
+            [status-im.utils.dimensions :as dimensions]
             status-im.transport.db
             status-im.ui.screens.accounts.db
             status-im.ui.screens.contacts.db
@@ -18,39 +19,40 @@
             status-im.ui.screens.add-new.new-public-chat.db))
 
 ;; initial state of app-db
-(def app-db {:current-public-key          nil
-             :status-module-initialized?  (or platform/ios? js/goog.DEBUG)
-             :keyboard-height             0
-             :tab-bar-visible?            true
-             :navigation-stack            '()
-             :contacts/contacts           {}
-             :qr-codes                    {}
-             :group/selected-contacts     #{}
-             :chats                       {}
-             :current-chat-id             nil
-             :selected-participants       #{}
-             :discoveries                 {}
-             :discover-search-tags        #{}
-             :discover-current-dapp       {}
-             :tags                        []
-             :sync-state                  :done
-             :wallet.transactions         constants/default-wallet-transactions
-             :wallet-selected-asset       {}
-             :prices                      {}
-             :peers-count                 0
-             :peers-summary               []
-             :notifications               {}
-             :network                     constants/default-network
-             :networks/networks           constants/default-networks
-             :inbox/wnodes                constants/default-wnodes
-             :my-profile/editing?         false
-             :transport/chats             {}
-             :transport/message-envelopes {}
+(def app-db {:current-public-key                 nil
+             :status-module-initialized?         (or platform/ios? js/goog.DEBUG)
+             :keyboard-height                    0
+             :tab-bar-visible?                   true
+             :navigation-stack                   '()
+             :contacts/contacts                  {}
+             :qr-codes                           {}
+             :group/selected-contacts            #{}
+             :chats                              {}
+             :current-chat-id                    nil
+             :selected-participants              #{}
+             :discoveries                        {}
+             :discover-search-tags               #{}
+             :discover-current-dapp              {}
+             :tags                               []
+             :sync-state                         :done
+             :wallet.transactions                constants/default-wallet-transactions
+             :wallet-selected-asset              {}
+             :prices                             {}
+             :peers-count                        0
+             :peers-summary                      []
+             :notifications                      {}
+             :network                            constants/default-network
+             :networks/networks                  constants/default-networks
+             :inbox/wnodes                       constants/default-wnodes
+             :my-profile/editing?                false
+             :transport/chats                    {}
+             :transport/message-envelopes        {}
              :chat/cooldowns                     0
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
-             :desktop/desktop             {:tab-view-id :home}})
+             :desktop/desktop                    {:tab-view-id :home}
+             :dimensions/window                  (dimensions/window)})
 
 ;;;;GLOBAL
 
@@ -155,6 +157,9 @@
 
 (spec/def :universal-links/url (spec/nilable string?))
 
+;; DIMENSIONS
+(spec/def :dimensions/window map?)
+
 (spec/def ::db (allowed-keys
                 :opt
                 [:contacts/contacts
@@ -204,7 +209,8 @@
                  :transport/message-envelopes
                  :transport/chats
                  :transport/discovery-filter
-                 :desktop/desktop]
+                 :desktop/desktop
+                 :dimensions/window]
                 :opt-un
                 [::current-public-key
                  ::modal

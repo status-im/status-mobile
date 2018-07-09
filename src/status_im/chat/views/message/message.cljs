@@ -25,8 +25,6 @@
             [clojure.string :as string]
             [status-im.chat.events.console :as console]))
 
-(def window-width (:width (react/get-dimensions "window")))
-
 (defview message-content-status []
   (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
             members                                          [:get-current-chat-contacts]]
