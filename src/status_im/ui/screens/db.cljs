@@ -50,6 +50,7 @@
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
+             :tooltips                    {}
              :desktop/desktop             {:tab-view-id :home}})
 
 ;;;;GLOBAL
@@ -127,6 +128,7 @@
                                                                          :navigation.screen-params/display-collectible])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
+(spec/def ::tooltips (spec/nilable any?))
 
 ;;;;NETWORK
 
@@ -204,6 +206,7 @@
                  ::modal
                  ::was-modal?
                  ::rpc-url
+                 ::tooltips
                  ::web3
                  ::web3-node-version
                  ::webview-bridge

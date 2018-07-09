@@ -195,6 +195,7 @@
 
    ;;sharing
    :sharing-copy-to-clipboard            "Copy to clipboard"
+   :sharing-copied-to-clipboard          "Copied to clipboard"
    :sharing-share                        "Share..."
    :sharing-cancel                       "Cancel"
 
@@ -291,6 +292,7 @@
    :choose-from-contacts                 "Choose from contacts"
    :no-contacts                          "No contacts yet"
    :show-qr                              "Show QR code"
+   :copy-qr                              "Copy code"
    :qr-code-public-key-hint              "Share this code to \nstart chatting"
    :enter-address                        "Enter address"
    :enter-contact-code                   "Enter contact code"

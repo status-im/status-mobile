@@ -29,6 +29,8 @@
 (def cyan "#7adcfb") ;; Used by wallet transaction filtering icon
 (def photo-border-color "#ccd3d6")
 (def green "#44d058") ;; icon for successful inboud transaction
+(def tooltip-green-text "#66bf50") ;; fading tooltip text color
+(def tooltip-green "#e9f6e6") ;; fading tooltip background color
 
 (def chat-colors ["#fa6565"
                   "#7cda00"
