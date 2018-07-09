@@ -91,6 +91,8 @@
 
 (defn message [text me? {:keys [message-id chat-id message-status user-statuses from
                                 current-public-key content-type group-chat outgoing type value] :as message}]
+  (when (nil? message-id)
+    (log/debug "nil?" message))
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
@@ -135,8 +137,8 @@
                            :ref                    #(reset! scroll-ref %)}
         [react/view {:style {:padding-vertical 46}}
          (doall
-          (for [[index {:keys [from content message-id] :as message-obj}] (map-indexed vector (reverse @messages))]
-            ^{:key (or message-id "0")}
+          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse @messages))]
+            ^{:key (or message-id (str type value))}
             [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
 (views/defview chat-text-input []
