@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Fixed chat message layout for right-to-left languages
+- Fixed parsing of messages containing multiple dots (elipsis)
 
 ## [0.9.22] - 2018-07-09
 ### Added

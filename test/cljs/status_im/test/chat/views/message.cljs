@@ -20,7 +20,13 @@
                     nil])
          (message/parse-url "Status - https://github.com/status-im/status-react a Mobile Ethereum Operating System")))
   (is (= (lazy-seq [{:text "Browse, chat and make payments securely on the decentralized web." :url? false} nil])
-         (message/parse-url "Browse, chat and make payments securely on the decentralized web."))))
+         (message/parse-url "Browse, chat and make payments securely on the decentralized web.")))
+  (is (= (lazy-seq [{:text "test...test..." :url? false} nil])
+         (message/parse-url "test...test...")))
+  (is (= (lazy-seq [{:text "test..test.." :url? false} nil])
+         (message/parse-url "test..test..")))
+  (is (= (lazy-seq [{:text "...test" :url? false} nil])
+         (message/parse-url "...test"))))
 
 (deftest right-to-left-text?
   (is (not (message/right-to-left-text? "You are lucky today!")))
