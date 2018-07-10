@@ -156,6 +156,8 @@ function install_android_sdk() {
   elif is_linux; then
     install_android_sdk_linux
   fi
+
+  use_android_sdk
 }
 
 function install_android_sdk_linux() {
@@ -289,4 +291,43 @@ function dependency_setup() {
   echo
   echo "  + done"
   echo
+}
+
+function use_android_sdk() {
+  _localPropertiesPath=./android/local.properties
+  if [ -n "$ANDROID_SDK" ]; then
+    if ! grep -Fq "sdk.dir" $_localPropertiesPath; then
+      echo "sdk.dir=$ANDROID_SDK" | tee -a $_localPropertiesPath
+    fi
+  else
+    _docURL="https://docs.status.im/docs/build_status_linux.html"
+    if is_macos; then
+      _docURL="https://docs.status.im/docs/build_status_osx.html"
+    fi
+    cecho "@yellow[[ANDROID_SDK environment variable not defined, please install the Android SDK.]]"
+    cecho "@yellow[[(see $_docUrl).]]"
+
+    echo
+
+    exit 1
+  fi
+}
+
+function install_android_ndk() {
+  _localPropertiesPath=./android/local.properties
+  if grep -Fq "ndk.dir" $_localPropertiesPath; then
+    dependency_setup \
+      "pushd android && ./gradlew react-native-android:installArchives && popd"
+  else
+    _ndkParentDir=~/Android/Sdk
+    mkdir -p $_ndkParentDir
+    cecho "@cyan[[Downloading Android NDK.]]"
+    wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
+      cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
+      unzip -q -o android-ndk.zip -d "$_ndkParentDir" && \
+      rm -f android-ndk.zip && \
+      _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | head -n 1)" && \
+      echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
+      cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"
+  fi
 }
