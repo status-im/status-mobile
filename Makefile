@@ -46,6 +46,7 @@ prepare-ios: prepare ##@prepare Install iOS specific dependencies
 release: release-android release-ios ##@build build release for Android and iOS
 
 release-android: prod-build-android ##@build build release for Android
+	cd android; ./gradlew react-native-android:installArchives
 	react-native run-android --variant=release
 
 release-ios: prod-build-ios ##@build build release for iOS release
