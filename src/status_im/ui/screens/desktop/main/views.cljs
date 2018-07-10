@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
             [status-im.ui.screens.desktop.main.tabs.home.views :as home.views]
+            [status-im.ui.screens.desktop.main.styles :as styles]
             [status-im.ui.screens.desktop.main.chat.views :as chat.views]
             [status-im.ui.screens.desktop.main.add-new.views :as add-new.views]
             [status-im.ui.components.desktop.tabs :as tabs]
@@ -32,10 +33,10 @@
        [component]])))
 
 (views/defview main-views []
-  [react/view {:style {:flex 1 :flex-direction :row}}
-   [react/view {:style {:width 340 :background-color :white}}
+  [react/view {:style styles/main-views}
+   [react/view {:style styles/left-sidebar}
     [react/view {:style {:flex 1}}
      [tab-views]]
     [tabs/main-tabs]]
-   [react/view {:style {:width 1 :background-color "#e8ebec"}}]
+   [react/view {:style styles/pane-separator}]
    [main-view]])
