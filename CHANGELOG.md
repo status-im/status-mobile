@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- iPad support. Status is now displayed at full native resolution on iPad's
+
+## [0.9.22] - 2018-07-09
+### Added
 - Added Farsi public #status channel
 - Spam moderation
 - Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
