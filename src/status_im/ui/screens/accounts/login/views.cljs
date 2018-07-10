@@ -71,12 +71,11 @@
                                 (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
           :secure-text-entry true
           :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]]]
-     [react/view styles/processing-view
-      (when processing
-        [components/activity-indicator {:animating true}])
-      (when processing
+     (when processing
+       [react/view styles/processing-view
+        [components/activity-indicator {:animating true}]
         [react/text {:style styles/sign-you-in}
-         (i18n/label :t/sign-you-in)])]
+         (i18n/label :t/sign-you-in)]])
      (when-not processing
        [react/view {:style styles/bottom-button-container}
         (when-not can-navigate-back?

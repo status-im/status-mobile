@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - iPad support. Status is now displayed at full native resolution on iPad's
+- fixed Sign in: Cannot paste text within password field [#3931]
 
 ## [0.9.22] - 2018-07-09
 ### Added
