@@ -19,9 +19,7 @@
 
 (def intro-description
   {:margin-top     8
-   :font-size      14
    :line-height    21
-   :letter-spacing -0.2
    :text-align     :center
    :color          colors/gray})
 

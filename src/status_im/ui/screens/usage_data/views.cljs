@@ -17,11 +17,11 @@
       [react/view {:style styles/image-container}
        [react/image {:source (:analytics-image resources/ui)
                      :style  styles/usage-data-image}]]
-      [react/text {:style styles/help-improve-text}
-       (i18n/label :t/help-improve)]
+      [react/i18n-text {:style styles/help-improve-text
+                        :key   :help-improve}]
       [react/view
-       [react/text {:style styles/help-improve-text-description}
-        (i18n/label :t/help-improve-description)]]
+       [react/i18n-text {:style styles/help-improve-text-description
+                         :key   :help-improve-description}]]
       [react/text {:style    styles/learn-what-we-collect-link
                    :on-press #(.openURL react/linking "https://wiki.status.im/Help_Improve_Status#Help_Improve_Status")}
        (i18n/label :t/learn-what-we-collect-link)]]

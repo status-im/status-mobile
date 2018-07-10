@@ -74,8 +74,7 @@
      (when processing
        [react/view styles/processing-view
         [components/activity-indicator {:animating true}]
-        [react/text {:style styles/sign-you-in}
-         (i18n/label :t/sign-you-in)]])
+        [react/i18n-text {:style styles/sign-you-in :key :sign-you-in}]])
      (when-not processing
        [react/view {:style styles/bottom-button-container}
         (when-not can-navigate-back?

@@ -33,9 +33,7 @@
 
 (defstyle label
   {:color   :white
-   :ios     {:font-size      14
-             :line-height    16
-             :letter-spacing -0.2}
+   :ios     {:line-height 16}
    :android {:font-size   12}})
 
 (def amount-text-input-container

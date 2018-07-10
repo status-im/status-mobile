@@ -68,11 +68,10 @@
      [react/view {:style styles/welcome-image-container}
       [react/image {:source (:welcome-image resources/ui)
                     :style  styles/welcome-image}]]
-     [react/text {:style styles/welcome-text}
-      (i18n/label :t/welcome-to-status)]
+     [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
      [react/view
-      [react/text {:style styles/welcome-text-description}
-       (i18n/label :t/welcome-to-status-description)]]]))
+      [react/i18n-text {:style styles/welcome-text-description
+                        :key   :welcome-to-status-description}]]]))
 
 (views/defview home []
   (views/letsubs [home-items [:home-items]
@@ -84,8 +83,7 @@
            [welcome view-id]
            (empty? home-items)
            [react/view styles/no-chats
-            [react/text {:style styles/no-chats-text}
-             (i18n/label :t/no-recent-chats)]]
+            [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]]
            :else
            [list/flat-list {:data      home-items
                             :key-fn    first

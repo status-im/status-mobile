@@ -31,8 +31,7 @@
                     :font                :toolbar-title
                     :accessibility-label :dapp-name-text}
         name]
-       [react/text {:style styles/dapp-text}
-        (i18n/label :t/dapp)]]]]))
+       [react/i18n-text {:style styles/dapp-text :key :dapp}]]]]))
 
 (def browser-config
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
@@ -53,8 +52,7 @@
 (defn- web-view-error [_ code desc]
   (reagent/as-element
    [react/view styles/web-view-error
-    [react/text {:style styles/web-view-error-text}
-     (i18n/label :t/web-view-error)]
+    [react/i18n-text {:style styles/web-view-error-text :key :web-view-error}]
     [react/text {:style styles/web-view-error-text}
      (str code)]
     [react/text {:style styles/web-view-error-text}

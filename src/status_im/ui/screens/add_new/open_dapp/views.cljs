@@ -67,13 +67,11 @@
                                                             (re-frame/dispatch [:open-dapp-in-browser dapp]))}]
       [components/separator {:margin-left 72}]]
      [react/view styles/description-container
-      [react/text {:style styles/gray-label}
-       (i18n/label :t/description)]
+      [react/i18n-text {:style styles/gray-label :key :description}]
       [react/text {:style (merge styles/black-label {:padding-top 18})}
        description]
       [components/separator {:margin-top 15}]
-      [react/text {:style (merge styles/gray-label {:padding-top 18})}
-       (i18n/label :t/url)]
+      [react/i18n-text {:style (merge styles/gray-label {:padding-top 18}) :key :url}]
       [react/text {:style (merge styles/black-label {:padding-top 14})}
        dapp-url]
       [components/separator {:margin-top 6}]]]))

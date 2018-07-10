@@ -23,7 +23,8 @@
                    :accessibility-label :transaction-sent-text}
        (i18n/label :t/transaction-sent)]
       [react/view styles/gap]
-      [react/text {:style styles/transaction-sent-description} (i18n/label :t/transaction-description)]]
+      [react/i18n-text {:style styles/transaction-sent-description
+                        :key   :transaction-description}]]
      [react/view components.styles/flex]
      [components/separator]
      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:close-transaction-sent-screen chat-id])

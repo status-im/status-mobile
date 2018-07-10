@@ -91,8 +91,7 @@
 (defn settings-switch-item [{:keys [label-kw value action-fn active?] :or {active? true}}]
   [react/view styles/settings-item
    [react/view styles/settings-item-text-wrapper
-    [react/text {:style styles/settings-item-text}
-     (i18n/label label-kw)]]
+    [react/i18n-text {:style styles/settings-item-text :key label-kw}]]
    [react/switch {:on-tint-color   colors/blue
                   :value           value
                   :on-value-change action-fn

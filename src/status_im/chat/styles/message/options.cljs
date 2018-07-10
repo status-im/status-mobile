@@ -19,8 +19,6 @@
 
 (def title-text
   {:font-weight    :bold
-   :font-size      14
-   :letter-spacing -0.2
    :line-height    20})
 
 (def label

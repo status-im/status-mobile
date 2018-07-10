@@ -30,8 +30,6 @@
   {:line-height    21
    :margin-top     8
    :margin-bottom  16
-   :font-size      14
-   :letter-spacing -0.2
    :text-align     :center
    :color          colors/gray})
 

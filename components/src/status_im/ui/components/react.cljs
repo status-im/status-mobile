@@ -103,6 +103,12 @@
                             (dissoc :font)
                             (assoc :style (merge style font))))]))
 
+(defn i18n-text
+  [{:keys [style key]}]
+  (let [default-style {:letter-spacing -0.2
+                       :font-size      14}]
+    [text {:style (merge default-style style)} (i18n/label key)]))
+
 (defn icon
   ([n] (icon n styles/icon-default))
   ([n style]

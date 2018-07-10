@@ -104,8 +104,8 @@
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :key-fn          :hash
                          :render-fn       #(render-transaction % network)
-                         :empty-component [react/text {:style styles/empty-text}
-                                           (i18n/label :t/transactions-history-empty)]
+                         :empty-component [react/i18n-text {:style styles/empty-text
+                                                            :key   :transactions-history-empty}]
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
                          :refreshing      false}]]))
 
@@ -183,12 +183,12 @@
   [react/view {:style styles/details-block}
    [progress-bar confirmations-progress (failed? type)]
    (if (failed? type)
-     [react/text {:style styles/details-failed}
-      (i18n/label :t/failed)]
+     [react/i18n-text {:style styles/details-failed
+                       :key   :failed}]
      [react/text {:style styles/details-confirmations-count}
       (str confirmations " " (i18n/label :t/confirmations))])
-   [react/text {:style styles/details-confirmations-helper-text}
-    (i18n/label :t/confirmations-helper-text)]])
+   [react/i18n-text {:style styles/details-confirmations-helper-text
+                     :key   :confirmations-helper-text}]])
 
 (defn details-list-row
   ([label props-value]
@@ -201,7 +201,7 @@
                                      [nil extra-props-value]
                                      extra-props-value)]
      [react/view {:style styles/details-row}
-      [react/text {:style styles/details-item-label} (i18n/label label)]
+      [react/i18n-text {:style styles/details-item-label :key label}]
       [react/view {:style styles/details-item-value-wrapper}
        [react/text (merge {:style styles/details-item-value} props)
         (str (or value "-"))]

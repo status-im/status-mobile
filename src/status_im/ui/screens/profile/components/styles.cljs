@@ -58,7 +58,6 @@
 (defstyle settings-item-text
   {:flex-wrap :nowrap
    :font-size 15
-   :ios       {:letter-spacing -0.2}
    :android   {:color colors/black}})
 
 (def settings-item-destructive

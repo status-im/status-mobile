@@ -27,8 +27,7 @@
 
 (defn view-asset [symbol]
   [react/view
-   [react/text {:style styles/label}
-    (i18n/label :t/wallet-asset)]
+   [react/i18n-text {:style styles/label :key :wallet-asset}]
    [react/view styles/asset-container-read-only
     [react/text {:style styles/asset-text}
      (name symbol)]]])

@@ -65,8 +65,7 @@
        (if processing
          [react/view styles/processing-view
           [react/activity-indicator {:animating true}]
-          [react/text {:style styles/sign-you-in}
-           (i18n/label :t/sign-you-in)]]
+          [react/i18n-text {:style styles/sign-you-in :key :sign-you-in}]]
          [react/view {:style styles/bottom-button-container}
           [react/view {:style {:flex 1}}]
           [components.common/bottom-button
