@@ -54,7 +54,7 @@
       [list/item-secondary (wallet.utils/format-amount amount decimals)]]]]])
 
 (views/defview assets [type]
-  (views/letsubs [assets [:wallet/visible-assets-with-amount]]
+  (views/letsubs [assets [:wallet/transferrable-assets-with-amount]]
     [components/simple-screen
      [components/toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}

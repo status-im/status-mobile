@@ -111,6 +111,11 @@
                   (fn [[balance visible-assets]]
                     (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
 
+(re-frame/reg-sub :wallet/transferrable-assets-with-amount
+                  :<- [:wallet/visible-assets-with-amount]
+                  (fn [all-assets]
+                    (filter #(not (:nft? %)) all-assets)))
+
 (re-frame/reg-sub :wallet/currency
                   :<- [:wallet.settings/currency]
                   (fn [currency-id]
