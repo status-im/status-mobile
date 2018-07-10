@@ -2,6 +2,7 @@ FROM openjdk:8-jdk
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV ANDROID_HOME /opt/android-sdk-linux
+ENV ANDROID_SDK_HOME /opt/android-sdk-linux
 ENV PATH ${PATH}:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}:${ANDROID_HOME}/tools
 ENV ANDROID_NDK /opt/android-ndk-linux
 ENV ANDROID_NDK_HOME /opt/android-ndk-linux
@@ -26,10 +27,10 @@ RUN cd /opt/android-sdk-linux && \
     unzip sdk-platform-tools.zip && \
     rm -f sdk-platform-tools.zip
 
-RUN wget -q --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip && \
+RUN wget -q --output-document=android-ndk.zip http://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
 	unzip android-ndk.zip && \
 	rm -f android-ndk.zip && \
-	mv android-ndk-r15c android-ndk-linux
+	mv android-ndk-r10e android-ndk-linux
 
 RUN yes | sdkmanager --licenses
 
@@ -94,6 +95,11 @@ RUN keytool -genkey -v -keystore status-im.keystore -storepass password -alias s
 RUN mkdir -p /root/.gradle
 RUN mv status-im.keystore /root/.gradle/
 
-RUN ./android/gradlew --parallel -q -b android/build.gradle assembleRelease
+
+RUN echo "sdk.dir=/opt/android-sdk-linux" >> android/local.properties
+RUN echo "ndk.dir=/opt/android-ndk-linux" >> android/local.properties
+
+RUN cd ./android && ./gradlew react-native-android:installArchives
+RUN cd ./android && ./gradlew assembleRelease
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
