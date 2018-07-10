@@ -105,7 +105,8 @@
          [react/view styles/item-upper-container
           [chat-list-item-name truncated-chat-name group-chat public? public-key]
           [react/view styles/message-status-container
-           [message-timestamp timestamp]]]
+           [message-timestamp (or (:timestamp last-message)
+                                  timestamp)]]]
          [react/view styles/item-lower-container
           [message-content-text last-message]
           [unviewed-indicator chat-id]]]]])))
