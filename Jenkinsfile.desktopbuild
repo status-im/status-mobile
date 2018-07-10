@@ -1,3 +1,12 @@
+properties([
+    buildDiscarder(logRotator(
+        numToKeepStr: '2',
+        daysToKeepStr: '3',
+        artifactNumToKeepStr: '2',
+        artifactDaysToKeepStr: '3'
+    ))
+])
+
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
