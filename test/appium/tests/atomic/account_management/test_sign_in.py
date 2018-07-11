@@ -38,6 +38,7 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in.sign_in_button.click()
         sign_in.find_full_text('Wrong password')
 
+    @marks.logcat
     @marks.testrail_id(3768)
     def test_password_in_logcat_sign_in(self):
         sign_in = SignInView(self.driver)

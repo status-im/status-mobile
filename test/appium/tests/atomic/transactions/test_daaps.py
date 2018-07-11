@@ -36,6 +36,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.enter_password_input.send_keys(password)
         send_transaction_view.sign_transaction_button.click()
 
+    @marks.logcat
     @marks.testrail_id(3772)
     def test_logcat_send_transaction_from_daap(self):
         sender = transaction_users['B_USER']
@@ -48,6 +49,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction(sender['password'])
         send_transaction_view.check_no_value_in_logcat(sender['password'])
 
+    @marks.logcat
     @marks.testrail_id(3775)
     def test_logcat_sign_message_from_daap(self):
         sign_in_view = SignInView(self.driver)

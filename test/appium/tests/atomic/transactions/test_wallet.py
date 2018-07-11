@@ -164,6 +164,7 @@ class TestTransactionWallet(SingleDeviceTestCase):
         send_transaction.done_button.click()
         send_transaction.find_text_part('Invalid address:', 20)
 
+    @marks.logcat
     @marks.testrail_id(3770)
     def test_logcat_send_transaction_from_wallet(self):
         sender = transaction_users['E_USER']

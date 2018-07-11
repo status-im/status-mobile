@@ -243,7 +243,12 @@ class BaseView(object):
 
     @property
     def logcat(self):
-        return str(self.driver.get_log("logcat"))
+        for i in range(30):
+            logcat = self.driver.get_log("logcat")
+            if len(logcat) > 1000:
+                return str([i for i in logcat if 'appium' not in str(i).lower()])
+            time.sleep(10)
+        raise TimeoutError('Logcat is empty after 300 sec')
 
     def confirm(self):
         info("Tap 'Confirm' on native keyboard")

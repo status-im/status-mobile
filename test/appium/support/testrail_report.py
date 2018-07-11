@@ -68,7 +68,8 @@ class TestrailReport(BaseTestReport):
         test_cases['smoke_phase_1'] = 157
         test_cases['smoke_phase_2'] = 308
         test_cases['upgrade'] = 309
-        test_cases['negative_tests'] = 458
+        test_cases['error_handling'] = 458
+        test_cases['logcat_verifications'] = 718
         case_ids = list()
         for phase in test_cases:
             for case in self.get_cases(test_cases[phase]):

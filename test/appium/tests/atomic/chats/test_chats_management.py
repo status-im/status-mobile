@@ -73,6 +73,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat = home.join_public_chat(chat_name)
         message = 'test message'
 
+        chat.reconnect()
         chat_element = chat.chat_element_by_text(message)
         chat_element.find_element()
         username = chat_element.username.text

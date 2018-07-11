@@ -53,8 +53,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1.set_network_connection(2)  # turning on WiFi connection on primary device
 
-        if 'Tap to reconnect' in home_1.connection_status.text:
-            home_2.connection_status.click()
+        home_1.reconnect()
         chat_element = home_1.get_chat_with_user(username_2)
         chat_element.wait_for_visibility_of_element(20)
         chat_1 = chat_element.click()
@@ -101,8 +100,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("'Delete message' button is not shown for not sent message")
 
         chat_1.reconnect()
-        chat_1.element_by_text('Resend').click()
-        if chat_1.chat_element_by_text(message).status.text != 'Sent':
+        chat_element = chat_1.chat_element_by_text(message)
+        chat_1.element_by_text('Resend').click_until_presence_of_element(chat_element)
+        chat_element.status.wait_for_visibility_of_element()
+        if chat_element.status.text != 'Sent':
             self.errors.append("Message status is not 'Sent' after resending the message")
 
         chat_2 = home_2.get_chat_with_user(username_1).click()
@@ -207,7 +208,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
-            self.erros.append("Message with test '%s' was not received" % message)
+            self.erros.append("Message with text '%s' was not received" % message)
+        device_2_chat.reconnect()
         device_2_chat.add_to_contacts.click()
 
         device_2_chat.get_back_to_home_view()

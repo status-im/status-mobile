@@ -1,3 +1,5 @@
+from selenium.common.exceptions import NoSuchElementException
+
 from tests import get_current_time, common_password
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
@@ -123,7 +125,7 @@ class SignInView(BaseView):
 
         self.element_by_text_part('Display name').wait_for_element(30)
         username = username if username else 'user_%s' % get_current_time()
-        self.name_input.send_keys(username)
+        self.name_input.set_value(username)
 
         self.next_button.click()
         self.do_not_share_button.wait_for_visibility_of_element(10)
@@ -158,4 +160,7 @@ class SignInView(BaseView):
         return self.sign_in_button.click()
 
     def click_account_by_position(self, position: int):
-        self.account_button.find_elements()[position].click()
+        try:
+            self.account_button.find_elements()[position].click()
+        except IndexError:
+            raise NoSuchElementException('Unable to find account by position %s' % position)

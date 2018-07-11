@@ -54,6 +54,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         if sign_in.get_public_key() == public_key:
             pytest.fail('The same account is recovered with reversed passphrase')
 
+    @marks.logcat
     @marks.testrail_id(3769)
     def test_logcat_recovering_account(self):
         sign_in = SignInView(self.driver)

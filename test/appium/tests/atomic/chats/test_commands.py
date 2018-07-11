@@ -327,6 +327,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append('Token which is not enabled in wallet can be requested in 1-1 chat')
         self.verify_no_errors()
 
+    @marks.logcat
     @marks.testrail_id(3771)
     def test_logcat_send_transaction_in_1_1_chat(self):
         sender = transaction_users['C_USER']
