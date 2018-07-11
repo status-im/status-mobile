@@ -18,7 +18,7 @@
 
 (views/defview toolbar-chat-view []
   (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat]
-                  {:keys [pending?]}                                   [:get-current-chat-contact]]
+                  {:keys [pending? whisper-identity]}                  [:get-current-chat-contact]]
     (let [chat-name (str
                      (if public? "#" "")
                      (if (string/blank? name)
@@ -35,7 +35,7 @@
          chat-name]]
        (when pending?
          [react/touchable-highlight
-          {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
+          {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
           [react/view {:style styles/add-contact}                                      ;style/add-contact
            [react/text {:style styles/add-contact-text}
             (i18n/label :t/add-to-contacts)]]])])))
