@@ -72,7 +72,7 @@
    [react/view {:style styles/logout-row}
     [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
      [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
-    [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version]]]])
+    [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])
 
 (views/defview profile-data []
   (views/letsubs
