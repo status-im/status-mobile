@@ -40,12 +40,12 @@ public:
     Q_INVOKABLE void moveToInternalStorage(double callbackId);
     Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);
-    Q_INVOKABLE void notify(QString token, double callbackId);
+    Q_INVOKABLE void notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId);
     Q_INVOKABLE void addPeer(QString enode, double callbackId);
     Q_INVOKABLE void recoverAccount(QString passphrase, QString password, double callbackId);
     Q_INVOKABLE void login(QString address, QString password, double callbackId);
-    Q_INVOKABLE void completeTransactions(QString hashes, QString password, double callbackId);
-    Q_INVOKABLE void discardTransaction(QString id);
+    Q_INVOKABLE void approveSignRequests(QString hashes, QString password, double callbackId);
+    Q_INVOKABLE void discardSignRequest(QString id);
 
     Q_INVOKABLE void setAdjustResize();
     Q_INVOKABLE void setAdjustPan();
@@ -54,6 +54,7 @@ public:
     Q_INVOKABLE void clearCookies();
     Q_INVOKABLE void clearStorageAPIs();
     Q_INVOKABLE void sendWeb3Request(QString payload, double callbackId);
+    Q_INVOKABLE void sendWeb3PrivateRequest(QString payload, double callbackId);
     Q_INVOKABLE void closeApplication();
     Q_INVOKABLE void getDeviceUUID(double callbackId);
 
