@@ -29,7 +29,6 @@
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
-  ; FIX!!!
   (if platform/desktop?
     (dispatch [:request-notifications-granted {}])
     (-> (.requestPermissions (.-default rn/react-native-fcm))

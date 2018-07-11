@@ -1,4 +1,4 @@
-ns status-im.chat.events.send-message
+(ns status-im.chat.events.send-message
   (:require [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as message-model]
