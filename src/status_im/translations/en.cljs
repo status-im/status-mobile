@@ -72,7 +72,7 @@
    :home                                 "Home"
    :no-recent-chats                      "There are no recent Chats or DApps here yet. Tap the “Plus” button to see the list of Dapps or discover people to chat with."
    :welcome-to-status                    "Welcome to Status"
-   :welcome-to-status-description        "Here you can securely chat with people, or browse and interact with DApps. Tap the “Plus” icon to begin."
+   :welcome-to-status-description        "Here you can chat with people in a secure\n private chat, browse and interact with DApps.\n Use the “Plus” icon to explore Status"
 
    ;;chat
    :is-typing                            "is typing"

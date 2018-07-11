@@ -156,30 +156,32 @@
    :color          colors/gray})
 
 (def welcome-view
-  {:flex               1
-   :padding-horizontal 30})
+  {:flex 1})
 
-(def welcome-image-container
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+(defstyle welcome-image-container
+  {:align-items :center
+   :android     {:margin-top 38}
+   :ios         {:margin-top 42}})
 
 (def welcome-image
   {:width  320
    :height 278})
 
-(def welcome-text
+(defstyle welcome-text
   {:line-height    28
    :font-size      22
    :font-weight    :bold
    :letter-spacing -0.3
+   :android        {:margin-top 22}
+   :ios            {:margin-top 96}
    :text-align     :center
    :color          colors/black})
 
-(def welcome-text-description
+(defstyle welcome-text-description
   {:line-height    21
    :margin-top     8
-   :margin-bottom  32
+   :android        {:margin-bottom 82}
+   :ios            {:margin-bottom 32}
    :font-size      14
    :letter-spacing -0.2
    :text-align     :center
