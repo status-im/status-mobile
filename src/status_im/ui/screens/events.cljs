@@ -143,13 +143,11 @@
 (re-frame/reg-fx
  ::init-store
  (fn [encryption-key]
-   (try
-     (do
-       (data-store/init encryption-key)
-       (re-frame/dispatch [:after-decryption]))
-     (catch js/Error error
-       (log/warn "Could not decrypt database" error)
-       (re-frame/dispatch [:initialize-app encryption-key :decryption-failed])))))
+   (.. (data-store/init encryption-key)
+       (then #(re-frame/dispatch [:after-decryption]))
+       (catch (fn [error]
+                (log/warn "Could not decrypt database" error)
+                (re-frame/dispatch [:initialize-app encryption-key :decryption-failed]))))))
 
 (re-frame/reg-fx
  :initialize-geth-fx

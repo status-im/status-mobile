@@ -14,8 +14,16 @@
             status-im.data-store.requests))
 
 (defn init [encryption-key]
-  (when-not @data-source/base-realm
-    (data-source/open-base-realm encryption-key)))
+  (if @data-source/base-realm
+    (js/Promise.resolve)
+    (..
+     (data-source/ensure-directories)
+     ;; This can be removed when we are confident all the users
+     ;; have migrated the data, introduced in 0.9.23
+     (then #(data-source/move-realms))
+     (catch (fn [error]
+              (log/error "Could not move realms" error)))
+     (then #(data-source/open-base-realm encryption-key)))))
 
 (defn change-account [address encryption-key]
   (log/debug "changing account to: " address)

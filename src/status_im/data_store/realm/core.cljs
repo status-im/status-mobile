@@ -7,6 +7,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
             [status-im.utils.async :as utils.async]
+            [status-im.utils.platform :as utils.platform]
+            [status-im.utils.ethereum.core :as utils.ethereum]
             [cognitect.transit :as transit]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.utils :as utils]))
@@ -34,26 +36,67 @@
     (when (exists? js/window)
       (rn-dependencies/realm. options-js))))
 
-(defn- delete-realm
-  [file-name]
-  (.deleteFile rn-dependencies/realm (clj->js {:path file-name})))
-
-(defn- default-realm-dir [path]
-  (string/replace path #"default\.realm$" ""))
+(defn- is-account-file? [n]
+  (re-matches #".*/[0-9a-f]{40}$" n))
 
 (defn- is-realm-file? [n]
-  (or (re-matches #".*/default\.realm$" n)
-      (re-matches #".*/new-account$" n)
-      (re-matches #".*/[0-9a-f]{40}$" n)))
+  (or (re-matches #".*/default\.realm(\.management|\.lock|\.note)?$" n)
+      (re-matches #".*/new-account(\.management|\.lock|\.note)?$" n)
+      (re-matches #".*/[0-9a-f]{40}(\.management|\.lock|\.note)?$" n)))
+
+(defn- realm-management-file? [n]
+  (re-matches #".*(\.management|\.lock|\.note)$" n))
+
+(def old-base-realm-path
+  (.-defaultPath rn-dependencies/realm))
+
+(def realm-dir
+  (cond
+    utils.platform/android? (str
+                             (.-DocumentDirectoryPath rn-dependencies/fs)
+                             "/../no_backup/realm/")
+    utils.platform/ios?     (str
+                             (.-LibraryDirectoryPath rn-dependencies/fs)
+                             "/realm/")
+    :else                   (.-defaultPath rn-dependencies/realm)))
+
+(def old-realm-dir
+  (string/replace old-base-realm-path #"default\.realm$" ""))
+
+(def accounts-realm-dir
+  (str realm-dir "accounts/"))
+
+(def base-realm-path
+  (str realm-dir
+       "default.realm"))
 
 (defn- delete-realms []
   (log/warn "realm: deleting all realms")
+  (fs/unlink realm-dir))
+
+(defn- ensure-directories []
   (..
-   (fs/read-dir (default-realm-dir (.-defaultPath rn-dependencies/realm)))
+   (fs/mkdir realm-dir)
+   (then #(fs/mkdir accounts-realm-dir))))
+
+(defn- move-realm-to-library [path]
+  (let [filename (last (string/split path "/"))
+        new-path (if (is-account-file? path)
+                   (str accounts-realm-dir (utils.ethereum/sha3 filename))
+                   (str realm-dir filename))]
+    (log/debug "realm: moving " path " to " new-path)
+    (if (realm-management-file? path)
+      (fs/unlink path)
+      (fs/move-file path new-path))))
+
+(defn- move-realms []
+  (log/info "realm: moving all realms")
+  (..
+   (fs/read-dir old-realm-dir)
    (then #(->> (js->clj % :keywordize-keys true)
                (map :path)
-               (filter is-realm-file?)
-               (run! delete-realm)))))
+               (filter is-realm-file?)))
+   (then #(js/Promise.all (clj->js (map move-realm-to-library %))))))
 
 (defn- close [realm]
   (when realm
@@ -98,12 +141,13 @@
   (log/debug "Opening base realm... (first run)")
   (when @base-realm
     (close @base-realm))
-  (reset! base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas encryption-key))
+  (reset! base-realm (open-migrated-realm base-realm-path base/schemas encryption-key))
   (log/debug "Created @base-realm"))
 
 (defn change-account [address encryption-key]
-  (close-account-realm)
-  (reset! account-realm (open-migrated-realm address account/schemas encryption-key)))
+  (let [path (str accounts-realm-dir (utils.ethereum/sha3 address))]
+    (close-account-realm)
+    (reset! account-realm (open-migrated-realm path account/schemas encryption-key))))
 
 (declare realm-obj->clj)
 
