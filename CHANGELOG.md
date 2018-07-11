@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - iPad support. Status is now displayed at full native resolution on iPad's
-- fixed Sign in: Cannot paste text within password field [#3931]
+- Persist browser history
 
 ### Fixed
+- Fixed Sign in: Cannot paste text within password field [#3931]
 - Fixed chat message layout for right-to-left languages
 - Fixed parsing of messages containing multiple dots (elipsis)
-
+- Fixed Webview: Screen cut off when using ERC dEX DApp [#3131]
+ 
 ## [0.9.22] - 2018-07-09
 ### Added
 - Added Farsi public #status channel

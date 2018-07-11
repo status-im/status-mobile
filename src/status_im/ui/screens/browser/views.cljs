@@ -91,7 +91,7 @@
     (let [can-go-back?    (model/can-go-back? browser)
           can-go-forward? (model/can-go-forward? browser)
           url             (model/get-current-url browser)]
-      [react/keyboard-avoiding-view styles/browser
+      [react/view styles/browser
        [status-bar/status-bar]
        [toolbar.view/toolbar {}
         [toolbar.view/nav-button-with-count
