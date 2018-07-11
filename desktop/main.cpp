@@ -188,6 +188,7 @@ int main(int argc, char **argv) {
   view.rootContext()->setContextProperty("ReactNativeProperties", rnp);
   view.setSource(QUrl("qrc:///main.qml"));
   view.setResizeMode(QQuickView::SizeRootObjectToView);
+  view.resize(650, 400);
   view.show();
 
 #ifdef BUILD_FOR_BUNDLE
