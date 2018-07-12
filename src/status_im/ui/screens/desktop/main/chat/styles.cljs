@@ -97,3 +97,7 @@
 (def chat-view
   {:flex             1
    :background-color :white})
+
+(def hyperlink
+  (assoc message-text
+         :color colors/blue))
