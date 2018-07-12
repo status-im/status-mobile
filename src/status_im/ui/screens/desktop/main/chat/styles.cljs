@@ -55,10 +55,20 @@
   {:flex             1
    :background-color colors/gray-lighter})
 
+(def img-container
+  {:height          78
+   :justify-content :center})
+
 (def photo-style
   {:borderRadius 20
    :width        40
    :height       40
+   :margin-right 8})
+
+(def photo-style-toolbar
+  {:borderRadius 32
+   :width        32
+   :height       32
    :margin-right 8})
 
 (def toolbar-chat-view
