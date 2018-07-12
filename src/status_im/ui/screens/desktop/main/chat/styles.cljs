@@ -56,7 +56,7 @@
    :background-color colors/gray-lighter})
 
 (def img-container
-  {:height          78
+  {:height          56
    :justify-content :center})
 
 (def photo-style
@@ -71,8 +71,22 @@
    :height       32
    :margin-right 8})
 
+(defn topic-image [color]
+  {:background-color color
+   :align-items      :center
+   :justify-content  :center
+   ;; todo, combine these with photo-style
+   :width            32
+   :height           32
+   :border-radius    32
+   :margin-right     8})
+
+(def topic-text
+  {:font-size 18
+   :color     colors/white})
+
 (def toolbar-chat-view
-  {:padding         11
+  {:margin-left     11
    :justify-content :center})
 
 (def toolbar-chat-name

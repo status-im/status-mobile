@@ -14,7 +14,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.chat.views.message.datemark :as message.datemark]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
-            [status-im.ui.screens.desktop.main.tabs.home.styles :as home.styles]
             [status-im.i18n :as i18n]))
 
 (views/defview toolbar-chat-view []
@@ -31,8 +30,8 @@
                             :align-items :center}}
         [react/view {:style styles/img-container}
          (if public?
-          [react/view {:style (home.styles/topic-image color)}
-           [react/text {:style home.styles/topic-text}
+          [react/view {:style (styles/topic-image color)}
+           [react/text {:style styles/topic-text}
             (string/capitalize (first name))]]
           [react/image {:style styles/photo-style-toolbar
                         :source {:uri photo-path}}])]
