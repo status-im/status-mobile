@@ -71,7 +71,7 @@ class TestMessages(MultipleDeviceTestCase):
         device_1_chat.wait_for_message_in_one_to_one_chat(url_message, self.errors)
         if device_1_chat.element_by_text(url_message, 'button').is_element_present():
             device_1_chat.element_by_text(url_message, 'button').click()
-            web_view = device_1_chat.open_in_browser_button.click()
+            web_view = device_1_chat.open_in_status_button.click()
             web_view.find_full_text('Status, the Ethereum discovery tool.')
             device_1_chat.back_button.click()
 

@@ -30,7 +30,7 @@
 
 (defn browse [link]
   (show {:title       (i18n/label :t/browsing-title)
-         :options     [{:label  (i18n/label :t/browsing-open-in-browser)
+         :options     [{:label  (i18n/label :t/browsing-open-in-status)
                         :action #(re-frame/dispatch [:open-url-in-browser link])}
                        {:label  (i18n/label :t/browsing-open-in-web-browser)
                         :action #(.openURL react/linking (http/normalize-url link))}]
@@ -38,6 +38,6 @@
 
 (defn browse-dapp [link]
   (show {:title       (i18n/label :t/browsing-title)
-         :options     [{:label  (i18n/label :t/browsing-open-in-browser)
+         :options     [{:label  (i18n/label :t/browsing-open-in-status)
                         :action #(re-frame/dispatch [:open-url-in-browser link])}]
          :cancel-text (i18n/label :t/browsing-cancel)}))

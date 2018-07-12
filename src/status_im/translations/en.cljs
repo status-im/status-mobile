@@ -200,7 +200,7 @@
 
    :browsing-title                       "Browse"
    :browsing-open-in-web-browser         "Open in web browser"
-   :browsing-open-in-browser             "Open in browser"
+   :browsing-open-in-status              "Open in Status"
    :browsing-cancel                      "Cancel"
 
    ;;sign-up

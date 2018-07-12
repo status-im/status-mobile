@@ -244,7 +244,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.get_back_to_home_view()
         chat_2 = home_2.get_chat_with_user(username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_2.open_in_browser_button.click()
+        web_view = chat_2.open_in_status_button.click()
         try:
             web_view.find_full_text('Status, the Ethereum discovery tool.')
         except TimeoutException:
@@ -258,7 +258,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(url_message)
         chat_2.send_message_button.click()
         chat_1.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_1.open_in_browser_button.click()
+        web_view = chat_1.open_in_status_button.click()
         try:
             web_view.find_full_text('Status, the Ethereum discovery tool.')
         except TimeoutException:
