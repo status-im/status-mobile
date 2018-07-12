@@ -12,7 +12,7 @@
             [status-im.ui.components.react :as components]
             [reagent.core :as reagent]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.ui.components.toolbar.actions :as actions]
@@ -130,14 +130,17 @@
                                     :style               (when-not can-go-back? styles/disabled-button)
                                     :accessibility-label :previou-page-button}
          [react/view
-          [vector-icons/icon :icons/arrow-left]]]
+          [icons/icon :icons/arrow-left]]]
         [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-forward browser])
                                     :disabled            (not can-go-forward?)
                                     :style               (merge styles/forward-button
                                                                 (when-not can-go-forward? styles/disabled-button))
                                     :accessibility-label :next-page-button}
          [react/view
-          [vector-icons/icon :icons/arrow-right]]]]
+          [icons/icon :icons/arrow-right]]]
+        [react/view {:flex 1}]
+        [react/touchable-highlight {:on-press #(.reload @webview)}
+         [icons/icon :icons/refresh]]]
        (when-not dapp?
          [tooltip/bottom-tooltip-info
           (i18n/label :t/browser-warning)])])))
