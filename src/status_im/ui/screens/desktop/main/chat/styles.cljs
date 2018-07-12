@@ -62,8 +62,7 @@
    :margin-right 8})
 
 (def toolbar-chat-view
-  {:align-items     :center
-   :padding         11
+  {:padding         11
    :justify-content :center})
 
 (def toolbar-chat-name
@@ -75,11 +74,11 @@
   {:background-color :white
    :border-radius    6
    :margin-top       3
-   :padding          4})
+   :padding-top      1})
 
 (def add-contact-text
   {:font-size 14
-   :color     colors/gray})
+   :color     colors/blue})
 
 (def message-text
   {:font-size 14})
