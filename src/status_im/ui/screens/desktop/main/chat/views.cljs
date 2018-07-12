@@ -36,8 +36,6 @@
           [react/image {:style styles/photo-style-toolbar
                         :source {:uri photo-path}}])]
         [react/view
-         (when public?
-           [icons/icon :icons/public-chat])
          (when (and group-chat (not public?))
            [icons/icon :icons/group-chat])
          [react/text {:style styles/toolbar-chat-name}
