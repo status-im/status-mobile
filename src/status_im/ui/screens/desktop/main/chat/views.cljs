@@ -4,6 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
             [status-im.chat.styles.message.message :as message.style]
+            [status-im.chat.views.message.message :as message.view]
             [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfycat]
@@ -66,7 +67,7 @@
    [react/view {:style {:flex-direction :row :flex-wrap :wrap}}
     [react/text {:style      styles/message-text
                  :selectable true}
-     text]
+     (message.view/cached-parse-text text :browse-link-from-message styles/hyperlink)]
     [react/text {:style (styles/message-timestamp-placeholder)}
      (time/timestamp->time timestamp)]
     [react/text {:style (styles/message-timestamp)}
