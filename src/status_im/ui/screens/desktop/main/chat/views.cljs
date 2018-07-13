@@ -214,5 +214,5 @@
                      [react/text {:style (styles/contact-card-text colors/blue)}
                       (i18n/label :t/send-message)]]]
                    [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
-                   [react/touchable-opacity {:on-press #(re-frame/dispatch [:copy-to-clipboard public-key])}
-                    [react/text {:style {:font-size 14}} public-key]]]]))
+                   [react/text {:style      {:font-size 14}
+                                :selectable true} public-key]]]))
