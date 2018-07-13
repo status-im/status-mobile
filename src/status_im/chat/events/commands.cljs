@@ -15,8 +15,8 @@
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
 ;; if we were to update all balances.
 (defn- allowed-assets [chain account]
-  (let [visible-token-symbols (get-in account [:settings :wallet :visible-tokens chain])]
-    (->> (tokens/tokens-for chain)
+  (let [visible-token-symbols (get-in account [:settings :wallet :visible-tokens (keyword chain)])]
+    (->> (tokens/tokens-for (keyword chain))
          (filter #(not (:nft? %)))
          (filter #(contains? visible-token-symbols (:symbol %)))
          (map #(vector (-> % :symbol clojure.core/name)
