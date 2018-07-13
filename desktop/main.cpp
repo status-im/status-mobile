@@ -29,6 +29,9 @@ QStringList consoleOutputStrings;
 bool ubuntuServerStarted = false;
 #endif
 
+const int MAIN_WINDOW_WIDTH = 1024;
+const int MAIN_WINDOW_HEIGHT = 768;
+
 // TODO: some way to change while running
 class ReactNativeProperties : public QObject {
   Q_OBJECT
@@ -188,6 +191,7 @@ int main(int argc, char **argv) {
   view.rootContext()->setContextProperty("ReactNativeProperties", rnp);
   view.setSource(QUrl("qrc:///main.qml"));
   view.setResizeMode(QQuickView::SizeRootObjectToView);
+  view.resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
   view.show();
 
 #ifdef BUILD_FOR_BUNDLE
