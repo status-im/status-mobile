@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.desktop.main.chat.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
             [status-im.chat.styles.message.message :as message.style]
@@ -31,7 +32,7 @@
          chat-name]]
        (when pending?
          [react/touchable-highlight
-          {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
+          {:on-press #(status-im.thread/dispatch [:add-pending-contact chat-id])}
           [react/view {:style {:background-color :white :border-radius 6 :margin-top 3 :padding 4}}                                      ;style/add-contact
            [react/text {:style {:font-size 14 :color "#939ba1"}}
             "Add to contacts"]]])])))
@@ -42,7 +43,7 @@
     (if outgoing
       [react/text {:style message.style/author} (:name current-account)]
       (let [name (or incoming-name (gfycat/generate-gfy from))]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
+        [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
          [react/text {:style message.style/author} name]]))))
 
 (def photo-style
@@ -83,7 +84,7 @@
                     (not outgoing)
                     (not= :seen message-status)
                     (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
-           (re-frame/dispatch [:send-seen! {:chat-id    chat-id
+           (status-im.thread/dispatch [:send-seen! {:chat-id    chat-id
                                             :from       from
                                             :message-id message-id}]))
         :reagent-render
@@ -99,7 +100,7 @@
              [react/view {:style {:flex 1}}]
              [react/text {:style {:color styles/color-gray4 :font-size 12}} (time/timestamp->time timestamp)]]
              ;;TODO use https://github.com/status-im/status-react/pull/3299
-             ;;[rn-hl/hyperlink {:linkStyle {:color "#2980b9"} :on-press #(re-frame/dispatch [:show-link-dialog %1])}
+             ;;[rn-hl/hyperlink {:linkStyle {:color "#2980b9"} :on-press #(status-im.thread/dispatch [:show-link-dialog %1])}
             [react/text
              text]]])}))))
 
@@ -120,7 +121,7 @@
                                                            y (.-y (.-contentOffset ne))]
                                                        (when (zero? y)
                                                          (when @scroll-timer (js/clearTimeout @scroll-timer))
-                                                         (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
+                                                         (reset! scroll-timer (js/setTimeout #(status-im.thread/dispatch [:load-more-messages]) 300)))
                                                        (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
                            :on-content-size-change #(when (or (not @scroll-height) (< (- %2 @scroll-height) 500))
                                                       (.scrollToEnd @scroll-ref))
@@ -151,14 +152,14 @@
                                                 (js/setTimeout #(do
                                                                   (.clear @inp-ref)
                                                                   (.focus @inp-ref)) 200)
-                                                (re-frame/dispatch [:send-current-message]))))
+                                                (status-im.thread/dispatch [:send-current-message]))))
                           :on-change      (fn [e]
                                             (let [native-event (.-nativeEvent e)
                                                   text (.-text native-event)]
-                                              (re-frame/dispatch [:set-chat-input-text text])))}]]
+                                              (status-im.thread/dispatch [:set-chat-input-text text])))}]]
       [react/touchable-highlight {:on-press (fn []
                                               (js/setTimeout #(do (.clear @inp-ref) (.focus @inp-ref)) 200)
-                                              (re-frame/dispatch [:send-current-message]))}
+                                              (status-im.thread/dispatch [:send-current-message]))}
        [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
                             :justify-content :center :transform [{:rotate "90deg"}]}}
         [icons/icon :icons/arrow-left]]]]]))

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.contacts.events
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.contacts.default-dapps :as default-dapps]
@@ -51,7 +52,7 @@
          fx              {:db (assoc db :contacts/new-identity contact-identity)}
          validation-result (new-chat.db/validate-pub-key contact-identity current-account)]
      (if (some? validation-result)
-       (utils/show-popup (i18n/label :t/unable-to-read-this-code) validation-result #(re-frame/dispatch [:navigate-to-clean :home]))
+       (utils/show-popup (i18n/label :t/unable-to-read-this-code) validation-result #(status-im.thread/dispatch [:navigate-to-clean :home]))
        (handlers-macro/merge-fx cofx
                                 fx
                                 (add-contact-and-open-chat contact-identity))))))

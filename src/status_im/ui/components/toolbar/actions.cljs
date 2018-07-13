@@ -1,5 +1,6 @@
 (ns status-im.ui.components.toolbar.actions
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.styles :as styles]))
 
 (defn add [illuminated? handler]
@@ -16,9 +17,9 @@
    :handler             handler
    :accessibility-label :back-button})
 
-(def default-handler #(re-frame/dispatch [:navigate-back]))
+(def default-handler #(status-im.thread/dispatch [:navigate-back]))
 
-(def home-handler #(re-frame/dispatch [:navigate-to-clean :home]))
+(def home-handler #(status-im.thread/dispatch [:navigate-to-clean :home]))
 
 (def default-back
   (back default-handler))

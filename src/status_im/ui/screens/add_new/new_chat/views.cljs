@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.add-new.new-chat.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.contact.contact :as contact-view]
@@ -15,7 +16,7 @@
 
 (defn- render-row [row _ _]
   [contact-view/contact-view {:contact       row
-                              :on-press      #(re-frame/dispatch [:start-chat (:whisper-identity %) {:navigation-replace? true}])
+                              :on-press      #(status-im.thread/dispatch [:start-chat (:whisper-identity %) {:navigation-replace? true}])
                               :show-forward? true}])
 
 (views/defview new-chat []
@@ -26,14 +27,14 @@
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat)]
      [react/view add-new.styles/new-chat-container
       [react/view add-new.styles/new-chat-input-container
-       [react/text-input {:on-change-text      #(re-frame/dispatch [:set :contacts/new-identity %])
+       [react/text-input {:on-change-text      #(status-im.thread/dispatch [:set :contacts/new-identity %])
                           :on-submit-editing   #(when-not error-message
-                                                  (re-frame/dispatch [:add-contact-handler]))
+                                                  (status-im.thread/dispatch [:add-contact-handler]))
                           :placeholder         (i18n/label :t/enter-contact-code)
                           :style               add-new.styles/input
                           :accessibility-label :enter-contact-code-input
                           :return-key-type     :go}]]
-      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:scan-qr-code
+      [react/touchable-highlight {:on-press            #(status-im.thread/dispatch [:scan-qr-code
                                                                             {:toolbar-title (i18n/label :t/new-contact)}
                                                                             :set-contact-identity-from-qr])
                                   :style               add-new.styles/button-container

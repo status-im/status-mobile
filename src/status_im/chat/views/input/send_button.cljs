@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.chat.styles.input.send-button :as style]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.react :as react]
@@ -30,7 +31,7 @@
     (when (and (sendable? input-text)
                (or (not selected-command)
                    (some #{:complete :less-than-needed} [command-completion])))
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:send-current-message])}
+      [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:send-current-message])}
        (let [spin (.interpolate spin-value (clj->js {:inputRange  [0 1]
                                                      :outputRange ["0deg" "90deg"]}))]
          [react/animated-view

@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.add-new.open-dapp.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
+  (:require [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.action-button.action-button :as action-button]
@@ -16,7 +16,7 @@
 
 (defn- render-dapp [dapp]
   [contact-view/contact-view {:contact             dapp
-                              :on-press            #(re-frame/dispatch [:navigate-to :dapp-description dapp])
+                              :on-press            #(status-im.thread/dispatch [:navigate-to :dapp-description dapp])
                               :show-forward?       true
                               :accessibility-label :dapp-item}])
 
@@ -30,8 +30,8 @@
      [react/view add-new.styles/input-container
       [react/text-input {:on-change-text      #(reset! url-text %)
                          :on-submit-editing   #(do
-                                                 (re-frame/dispatch [:navigate-to-clean :home])
-                                                 (re-frame/dispatch [:open-url-in-browser @url-text]))
+                                                 (status-im.thread/dispatch [:navigate-to-clean :home])
+                                                 (status-im.thread/dispatch [:open-url-in-browser @url-text]))
                          :placeholder         (i18n/label :t/enter-url)
                          :auto-capitalize     :none
                          :auto-correct        false
@@ -63,8 +63,8 @@
                                     :icon-opts           {:color colors/blue}
                                     :accessibility-label :open-dapp-button
                                     :on-press            #(do
-                                                            (re-frame/dispatch [:navigate-to-clean :home])
-                                                            (re-frame/dispatch [:open-dapp-in-browser dapp]))}]
+                                                            (status-im.thread/dispatch [:navigate-to-clean :home])
+                                                            (status-im.thread/dispatch [:open-dapp-in-browser dapp]))}]
       [components/separator {:margin-left 72}]]
      [react/view styles/description-container
       [react/i18n-text {:style styles/gray-label :key :description}]

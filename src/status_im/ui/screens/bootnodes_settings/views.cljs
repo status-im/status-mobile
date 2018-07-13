@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.bootnodes-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.ui.components.colors :as colors]
@@ -14,7 +15,7 @@
             [status-im.ui.screens.bootnodes-settings.styles :as styles]))
 
 (defn navigate-to-add-bootnode [id]
-  (re-frame/dispatch [:edit-bootnode id]))
+  (status-im.thread/dispatch [:edit-bootnode id]))
 
 (defn render-row [{:keys [name id]}]
   [react/touchable-highlight
@@ -39,7 +40,7 @@
       [profile.components/settings-switch-item
        {:label-kw  :t/bootnodes-enabled
         :value     bootnodes-enabled
-        :action-fn #(re-frame/dispatch [:toggle-custom-bootnodes %])}]]
+        :action-fn #(status-im.thread/dispatch [:toggle-custom-bootnodes %])}]]
      [react/view styles/wrapper
       [list/flat-list {:data               (vals bootnodes)
                        :default-separator? false

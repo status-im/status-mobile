@@ -1,6 +1,7 @@
 (ns ^{:doc "Public chat API"}
  status-im.transport.message.v1.public-chat
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.core :as message]
@@ -16,7 +17,7 @@
   [chat-id {:keys [db] :as cofx}]
   (when-not (has-already-joined? chat-id cofx)
     (let [on-success (fn [sym-key sym-key-id]
-                       (re-frame/dispatch [::add-new-sym-key {:chat-id    chat-id
+                       (status-im.thread/dispatch [::add-new-sym-key {:chat-id    chat-id
                                                               :sym-key    sym-key
                                                               :sym-key-id sym-key-id}]))]
       (handlers-macro/merge-fx cofx

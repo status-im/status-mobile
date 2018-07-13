@@ -3,6 +3,7 @@
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
@@ -39,8 +40,8 @@
     (throw (str "Unknown type: " k))))
 
 (defn- render-token [{:keys [symbol name icon decimals amount]} type]
-  [list/touchable-item  #(do (re-frame/dispatch [(type->handler type) symbol])
-                             (re-frame/dispatch [:navigate-back]))
+  [list/touchable-item  #(do (status-im.thread/dispatch [(type->handler type) symbol])
+                             (status-im.thread/dispatch [:navigate-back]))
    [react/view
     [list/item
      [list/item-image icon]
@@ -79,7 +80,7 @@
                   network  [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [react/view
-       [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+       [components/cartouche {:disabled? disabled? :on-press #(status-im.thread/dispatch [:navigate-to (type->view type)])}
         (i18n/label :t/wallet-asset)
         [react/view {:style               styles/asset-content-container
                      :accessibility-label :choose-asset-button}
@@ -116,7 +117,7 @@
          (ethereum/normalized-address address)]]])))
 
 (defn render-contact [contact]
-  [list/touchable-item #(re-frame/dispatch [:wallet/fill-request-from-contact contact])
+  [list/touchable-item #(status-im.thread/dispatch [:wallet/fill-request-from-contact contact])
    [list/item
     [photos/photo (:photo-path contact) {:size list.styles/image-size}]
     [list/item-content
@@ -152,7 +153,7 @@
                                  :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
          [button/button {:disabled?    (string/blank? @content)
-                         :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content :code])
+                         :on-press     #(status-im.thread/dispatch [:wallet/fill-request-from-url @content :code])
                          :fit-to-text? false}
           (i18n/label :t/done)]]]])))
 
@@ -160,8 +161,8 @@
   [choose-recipient/choose-recipient])
 
 (defn- request-camera-permissions []
-  (re-frame/dispatch [:request-permissions {:permissions [:camera]
-                                            :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])
+  (status-im.thread/dispatch [:request-permissions {:permissions [:camera]
+                                            :on-allowed  #(status-im.thread/dispatch [:navigate-to :recipient-qr-code])
                                             :on-denied   #(utils/set-timeout
                                                            (fn []
                                                              (utils/show-popup (i18n/label :t/error)
@@ -172,12 +173,12 @@
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
                         :options (concat
                                   [{:label  (i18n/label :t/recent-recipients)
-                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                                    :action #(status-im.thread/dispatch [:navigate-to :recent-recipients])}]
                                   (when-not contact-only?
                                     [{:label  (i18n/label :t/scan-qr)
                                       :action request-camera-permissions}
                                      {:label  (i18n/label :t/recipient-code)
-                                      :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
+                                      :action #(status-im.thread/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
   [components/cartouche {:on-press  #(on-choose-recipient contact-only?)

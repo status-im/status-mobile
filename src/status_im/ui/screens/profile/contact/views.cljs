@@ -7,6 +7,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.list.views :as list]
@@ -21,7 +22,7 @@
   (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :icons/add-contact
-              :action              #(re-frame/dispatch [:add-contact whisper-identity])
+              :action              #(status-im.thread/dispatch [:add-contact whisper-identity])
               :accessibility-label :add-to-contacts-button}]
             [{:label               (i18n/label :t/in-contacts)
               :icon                :icons/in-contacts
@@ -29,12 +30,12 @@
               :accessibility-label :in-contacts-button}])
           [{:label               (i18n/label :t/send-message)
             :icon                :icons/chats
-            :action              #(re-frame/dispatch [:open-chat-with-contact {:whisper-identity whisper-identity}])
+            :action              #(status-im.thread/dispatch [:open-chat-with-contact {:whisper-identity whisper-identity}])
             :accessibility-label :start-conversation-button}]
           (when-not dapp?
             [{:label               (i18n/label :t/send-transaction)
               :icon                :icons/arrow-right
-              :action              #(re-frame/dispatch [:profile/send-transaction whisper-identity])
+              :action              #(status-im.thread/dispatch [:profile/send-transaction whisper-identity])
               :accessibility-label :send-transaction-button}])))
 
 (defn profile-info-item [{:keys [label value options accessibility-label]}]

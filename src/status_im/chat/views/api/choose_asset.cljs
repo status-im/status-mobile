@@ -1,6 +1,7 @@
 (ns status-im.chat.views.api.choose-asset
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.utils.money :as money]
@@ -11,7 +12,7 @@
 
 (defn- render-asset [arg-index bot-db-key]
   (fn [{:keys [name symbol amount decimals] :as asset}]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch
+    [react/touchable-highlight {:on-press #(status-im.thread/dispatch
                                             [:set-asset-as-command-argument {:arg-index  arg-index
                                                                              :bot-db-key bot-db-key
                                                                              :asset      (clean-asset asset)}])}

@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.network-settings.events
-  (:require [re-frame.core :refer [dispatch dispatch-sync after] :as re-frame]
+  (:require [re-frame.core :refer [dispatch after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler] :as handlers]
             status-im.ui.screens.network-settings.edit-network.events
             [status-im.utils.handlers-macro :as handlers-macro]

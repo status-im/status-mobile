@@ -1,11 +1,11 @@
 (ns status-im.android.core
   (:require [reagent.core :as reagent]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [re-frame.core :refer [subscribe dispatch]]
             status-im.utils.db
             status-im.ui.screens.db
-            status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
+            [status-im.thread :as thread]
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
             [status-im.native-module.core :as status]
@@ -29,13 +29,13 @@
                            (do (.goBack @webview) true)
 
                            (< 1 (count @stack))
-                           (do (dispatch [:navigate-back]) true)
+                           (do (thread/dispatch [:navigate-back]) true)
 
                            :else false)))]
     (.addEventListener react/back-handler "hardwareBackPress" new-listener)))
 
 (defn app-state-change-handler [state]
-  (dispatch [:app-state-change state]))
+  (thread/dispatch [:app-state-change state]))
 
 (defn app-root []
   (let [keyboard-height (subscribe [:get :keyboard-height])]
@@ -46,16 +46,16 @@
                       "keyboardDidShow"
                       (fn [e]
                         (let [h (.. e -endCoordinates -height)]
-                          (dispatch [:hide-tab-bar])
+                          (thread/dispatch [:hide-tab-bar])
                           (when-not (= h @keyboard-height)
-                            (dispatch [:set :keyboard-height h])
-                            (dispatch [:set :keyboard-max-height h])))))
+                            (thread/dispatch [:set :keyboard-height h])
+                            (thread/dispatch [:set :keyboard-max-height h])))))
         (.addListener react/keyboard
                       "keyboardDidHide"
                       (fn [_]
-                        (dispatch [:show-tab-bar])
+                        (thread/dispatch [:show-tab-bar])
                         (when (zero? @keyboard-height)
-                          (dispatch [:set :keyboard-height 0]))))
+                          (thread/dispatch [:set :keyboard-height 0]))))
         (.hide react/splash-screen)
         (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
@@ -71,6 +71,7 @@
       :reagent-render views/main})))
 
 (defn init []
+  (thread/start)
   (status/set-soft-input-mode status/adjust-resize)
   (init-back-button-handler!)
   (core/init app-root)

@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.home.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
@@ -28,13 +29,13 @@
         [components.common/logo styles/toolbar-logo]])
      [toolbar/actions
       (when platform/ios?
-        [(-> (toolbar.actions/add true #(re-frame/dispatch [:navigate-to :new]))
+        [(-> (toolbar.actions/add true #(status-im.thread/dispatch [:navigate-to :new]))
              (assoc-in [:icon-opts :accessibility-label] :new-chat-button))])]]))
 
 (defn- home-action-button []
   [react/view styles/action-button-container
    [react/touchable-highlight {:accessibility-label :new-chat-button
-                               :on-press            #(re-frame/dispatch [:navigate-to :new])}
+                               :on-press            #(status-im.thread/dispatch [:navigate-to :new])}
     [react/view styles/action-button
      [icons/icon :icons/add {:color :white}]]]])
 
@@ -54,14 +55,14 @@
         (when is-deletable?
           [react/touchable-highlight {:style    styles/delete-icon-highlight
                                       :on-press #(do
-                                                   (re-frame/dispatch [:set-swipe-position home-item-id false])
-                                                   (re-frame/dispatch [delete-action home-item-id]))}
+                                                   (status-im.thread/dispatch [:set-swipe-position home-item-id false])
+                                                   (status-im.thread/dispatch [delete-action home-item-id]))}
            [react/view {:style styles/delete-icon-container}
             [vector-icons/icon :icons/delete {:color colors/red}]]])]])))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
 (views/defview welcome [view-id]
-  (views/letsubs [handler #(re-frame/dispatch [:set-in [:accounts/create :show-welcome?] false])]
+  (views/letsubs [handler #(status-im.thread/dispatch [:set-in [:accounts/create :show-welcome?] false])]
     {:component-will-update  handler
      :component-will-unmount handler}
     [react/view {:style styles/welcome-view}

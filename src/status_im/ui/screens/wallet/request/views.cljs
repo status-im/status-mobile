@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.request.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
@@ -49,12 +50,12 @@
                                        :amount-text   amount-text
                                        :input-options {:max-length     21
                                                        :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                       :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount % symbol decimals])}}
+                                                       :on-change-text #(status-im.thread/dispatch [:wallet.request/set-and-validate-amount % symbol decimals])}}
            token]]]
         [bottom-buttons/bottom-buttons styles/bottom-buttons
          nil   ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
          [button/button {:disabled?           (not (and to amount))
-                         :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount symbol decimals])
+                         :on-press            #(status-im.thread/dispatch [:wallet-send-request whisper-identity amount symbol decimals])
                          :text-style          {:padding-horizontal 0}
                          :accessibility-label :sent-request-button}
           (i18n/label :t/send-request)
@@ -83,7 +84,7 @@
       [common/network-info {:text-color :white}]
       [react/scroll-view styles/request-wrapper
        [qr-code address-hex chain-id]
-       [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
+       [button/primary-button {:on-press            #(status-im.thread/dispatch [:navigate-to :wallet-send-transaction-request])
                                :style               styles/send-request
                                :accessibility-label :sent-transaction-request-button}
         (i18n/label :t/send-transaction-request)]]]]))

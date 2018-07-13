@@ -60,7 +60,7 @@
                                    rn-dependencies/i18n.locale
                                    "'; "
                                    js-res/web3])]
-         (.initJail status init-js #(do (re-frame/dispatch [:initialize-keychain])
+         (.initJail status init-js #(do (status-im.thread/dispatch [:initialize-keychain])
                                         (log/debug "JavaScriptCore jail initialized"))))))))
 
 (defonce listener-initialized (atom false))
@@ -68,7 +68,7 @@
 (when-not @listener-initialized
   (reset! listener-initialized true)
   (.addListener r/device-event-emitter "gethEvent"
-                #(dispatch [:signal-event (.-jsonEvent %)])))
+                #(re-frame/dispatch [:signal-event (.-jsonEvent %)])))
 
 (defn should-move-to-internal-storage? [on-result]
   (when status
@@ -216,7 +216,7 @@
      {:jail-id  chat-id
       :path     path
       :params   params
-      :callback (or callback #(dispatch [:chat-received-message/bot-response {:chat-id chat-id} %]))})))
+      :callback (or callback #(status-im.thread/dispatch [:chat-received-message/bot-response {:chat-id chat-id} %]))})))
 
 (defn set-soft-input-mode [mode]
   (when status

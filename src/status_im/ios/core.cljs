@@ -1,9 +1,8 @@
 (ns status-im.ios.core
   (:require [reagent.core :as reagent]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [re-frame.core :refer [subscribe dispatch]]
             status-im.utils.db
             status-im.ui.screens.db
-            status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
             [status-im.ui.screens.views :as views]

@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -24,7 +25,7 @@
       :icon-opts {:color               :white
                   :accessibility-label :options-menu-button}
       :options   [{:label  (i18n/label :t/wallet-manage-assets)
-                   :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
+                   :action #(status-im.thread/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
 
 (defn- total-section [value currency]
   [react/view styles/section
@@ -41,7 +42,7 @@
 
 (defn- backup-seed-phrase []
   [react/view styles/section
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
+   [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:navigate-to :backup-seed])}
     [react/view styles/backup-seed-phrase-container
      [react/view styles/backup-seed-phrase-text-container
       [react/i18n-text {:style styles/backup-seed-phrase-title
@@ -54,15 +55,15 @@
   [{:label               (i18n/label :t/send-transaction)
     :accessibility-label :send-transaction-button
     :icon                :icons/arrow-right
-    :action              #(re-frame/dispatch [:navigate-to :wallet-send-transaction])}
+    :action              #(status-im.thread/dispatch [:navigate-to :wallet-send-transaction])}
    {:label               (i18n/label :t/receive-transaction)
     :accessibility-label :receive-transaction-button
     :icon                :icons/arrow-left
-    :action              #(re-frame/dispatch [:navigate-to :wallet-request-transaction])}
+    :action              #(status-im.thread/dispatch [:navigate-to :wallet-request-transaction])}
    {:label               (i18n/label :t/transaction-history)
     :accessibility-label :transaction-history-button
     :icon                :icons/transaction-history
-    :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
+    :action              #(status-im.thread/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [currency]
   (fn [{:keys [symbol icon decimals amount]}]
@@ -94,7 +95,7 @@
         details?     (pos? items-number)]
     [react/touchable-highlight
      (when details?
-       {:on-press #(re-frame/dispatch [:show-collectibles-list address-hex collectible])})
+       {:on-press #(status-im.thread/dispatch [:show-collectibles-list address-hex collectible])})
      [react/view {:style styles/asset-item-container}
       [list/item
        [list/item-image icon]
@@ -140,7 +141,7 @@
      [toolbar-view]
      [react/scroll-view {:refresh-control
                          (reagent/as-element
-                          [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
+                          [react/refresh-control {:on-refresh #(status-im.thread/dispatch [:update-wallet])
                                                   :tint-color :white
                                                   :refreshing false}])}
       [total-section portfolio-value currency]

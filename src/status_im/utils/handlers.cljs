@@ -7,7 +7,8 @@
             [status-im.utils.mixpanel :as mixpanel]
             [status-im.models.account :as models.account]
             [cljs.core.async :as async]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.worker.sender :as sender]))
 
 (def pre-event-callback (atom nil))
 
@@ -118,8 +119,23 @@
   ([name middleware handler]
    (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
 
+(def send-db
+  (re-frame.core/->interceptor
+   :id :send-db
+   :before nil #_(fn
+                   [context]
+                   (let [original-db (re-frame.core/get-coeffect context :db)]
+                     (update context :original-db original-db)))
+   :after (fn [context]
+            (when-let [db (dissoc (re-frame.core/get-effect context :db)
+                                  :web3
+                                  :transport/discovery-filter)]
+              (sender/post-db db))
+            context)))
+
 (def default-interceptors
-  [debug-handlers-names
+  [send-db
+   debug-handlers-names
    (when js/goog.DEBUG check-spec)
    (re-frame/inject-cofx :now)
    track-mixpanel])

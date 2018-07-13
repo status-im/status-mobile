@@ -65,16 +65,18 @@ lein deps && npm install && ./re-natal use-android-device "${device_type}" && ./
 
 cd android && ./gradlew react-native-android:installArchives && cd ../
 
+node scripts/build-worker.js android real
+
 # open figwheel in new tab
-tab "lein figwheel-repl ${cljs_build}"
+tab "lein figwheel-repl ${cljs_build} worker-android"
 
 # open react-native package in new tab
 tab "react-native start"
 
 # echo "Press any key when emulator, figwheel and packager are ready" && read -n 1
-sleep 10s
+sleep 90s
 
-adb reverse tcp:8081 tcp:8081 && adb reverse tcp:3449 tcp:3449
+adb reverse tcp:8081 tcp:8081 && adb reverse tcp:3449 tcp:3449 && adb reverse tcp:9090 tcp:9090
 
 make run-android
 

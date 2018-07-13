@@ -1,6 +1,7 @@
 (ns ^{:doc "Contact request and update API"}
  status-im.transport.message.v1.contact
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
@@ -13,7 +14,7 @@
   (send [this chat-id {:keys [db random-id] :as cofx}]
     (let [topic      (transport.utils/get-topic random-id)
           on-success (fn [sym-key sym-key-id]
-                       (re-frame/dispatch [:contact/send-new-sym-key
+                       (status-im.thread/dispatch [:contact/send-new-sym-key
                                            {:sym-key-id sym-key-id
                                             :sym-key    sym-key
                                             :chat-id    chat-id
@@ -103,7 +104,7 @@
                                        (first (sort [current-sym-key sym-key])))))]
       (if save-key?
         (let [on-success (fn [sym-key sym-key-id]
-                           (re-frame/dispatch [:contact/add-new-sym-key
+                           (status-im.thread/dispatch [:contact/add-new-sym-key
                                                {:sym-key-id sym-key-id
                                                 :timestamp  timestamp
                                                 :sym-key    sym-key

@@ -2,6 +2,7 @@
  status-im.transport.shh
   (:require [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.transit :as transit]))
 
@@ -19,8 +20,8 @@
  :shh/get-new-key-pair
  (fn [{:keys [web3 success-event error-event]}]
    (get-new-key-pair {:web3       web3
-                      :on-success #(re-frame/dispatch [success-event %])
-                      :on-error   #(re-frame/dispatch [error-event %])})))
+                      :on-success #(status-im.thread/dispatch [success-event %])
+                      :on-error   #(status-im.thread/dispatch [error-event %])})))
 
 (defn get-public-key [{:keys [web3 key-pair-id on-success on-error]}]
   (if (and web3 key-pair-id)
@@ -37,8 +38,8 @@
  (fn [{:keys [web3 key-pair-id success-event error-event]}]
    (get-public-key {:web3        web3
                     :key-pair-id key-pair-id
-                    :on-success  #(re-frame/dispatch [success-event %])
-                    :on-error    #(re-frame/dispatch [error-event %])})))
+                    :on-success  #(status-im.thread/dispatch [success-event %])
+                    :on-error    #(status-im.thread/dispatch [error-event %])})))
 
 (defn generate-sym-key-from-password
   [{:keys [web3 password on-success on-error]}]
@@ -67,9 +68,9 @@
                     :whisper-message (update message :payload (comp transport.utils/from-utf8
                                                                     transit/serialize))
                     :on-success      (if success-event
-                                       #(re-frame/dispatch (conj success-event %))
+                                       #(status-im.thread/dispatch (conj success-event %))
                                        #(log/debug :shh/post-success))
-                    :on-error        #(re-frame/dispatch [error-event %])}))))
+                    :on-error        #(status-im.thread/dispatch [error-event %])}))))
 
 ;; This event params contain a recipients key because it's a vector of map with public-key and topic keys.
 ;; the :shh/post event has public-key and topic keys at the top level of the args map.
@@ -89,9 +90,9 @@
                                               :topic topic
                                               :symKeyID sym-key-id)
                       :on-success      (if success-event
-                                         #(re-frame/dispatch success-event)
+                                         #(status-im.thread/dispatch success-event)
                                          #(log/debug :shh/post-success))
-                      :on-error        #(re-frame/dispatch [error-event %])})))))
+                      :on-error        #(status-im.thread/dispatch [error-event %])})))))
 
 (defn add-sym-key
   [{:keys [web3 sym-key on-success on-error]}]

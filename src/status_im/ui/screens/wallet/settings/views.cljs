@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -14,7 +15,7 @@
 (defn- render-token [{:keys [symbol name icon]} visible-tokens]
   [list/list-item-with-checkbox
    {:checked?        (contains? visible-tokens (keyword symbol))
-    :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
+    :on-value-change #(status-im.thread/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
    [list/item
     [list/item-image icon]
     [list/item-content
@@ -27,8 +28,8 @@
     [react/view (merge components.styles/flex {:background-color :white})
      [status-bar/status-bar {:type :modal-wallet}]
      [toolbar/toolbar {:style wallet.styles/toolbar}
-      [toolbar/nav-text {:handler             #(do (re-frame/dispatch [:update-wallet])
-                                                   (re-frame/dispatch [:navigate-back]))
+      [toolbar/nav-text {:handler             #(do (status-im.thread/dispatch [:update-wallet])
+                                                   (status-im.thread/dispatch [:navigate-back]))
                          :style               {:color :white}
                          :accessibility-label :done-button}
        (i18n/label :t/done)]

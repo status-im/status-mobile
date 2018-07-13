@@ -1,5 +1,6 @@
 (ns status-im.data-store.accounts
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.data-store.realm.core :as core]
             [status-im.utils.types :as types]))
 
@@ -56,4 +57,4 @@
                               (dissoc :after-update-event))]
       (core/create realm :account account-to-save true)
       (when after-update-event
-        (re-frame/dispatch after-update-event)))))
+        (status-im.thread/dispatch after-update-event)))))

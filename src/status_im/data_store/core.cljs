@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
+            [status-im.thread :as status-im.thread]
             [status-im.data-store.realm.core :as data-source]
             status-im.data-store.chats
             status-im.data-store.messages
@@ -36,7 +37,7 @@
     (data-source/write realm #(doseq [transaction transactions]
                                 (transaction realm)))
     (doseq [event success-events]
-      (re-frame/dispatch event))))
+      (status-im.thread/dispatch event))))
 
 (re-frame/reg-fx
  :data-store/base-tx

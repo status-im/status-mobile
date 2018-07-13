@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.offline-messaging-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -16,10 +17,10 @@
    [vector-icons/icon :icons/wnode {:color (if connected? :white :gray)}]])
 
 (defn connect-to-mailserver [id]
-  (re-frame/dispatch [:connect-wnode id]))
+  (status-im.thread/dispatch [:connect-wnode id]))
 
 (defn navigate-to-add-mailserver [wnode-id]
-  (re-frame/dispatch [:edit-mailserver wnode-id]))
+  (status-im.thread/dispatch [:edit-mailserver wnode-id]))
 
 (defn- render-row [current-wnode-id]
   (fn [{:keys [name id user-defined]}]

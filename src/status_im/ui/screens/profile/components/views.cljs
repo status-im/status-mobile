@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.components.views
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
@@ -20,7 +21,7 @@
             :default-value       name
             :auto-focus          true
             :on-change-text      #(when on-change-text-event
-                                    (re-frame/dispatch [on-change-text-event %]))
+                                    (status-im.thread/dispatch [on-change-text-event %]))
             :accessibility-label :username-input}
            props)]])
 

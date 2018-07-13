@@ -1,7 +1,8 @@
 (ns status-im.utils.utils
   (:require [status-im.i18n :as i18n]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]))
 
 (defn show-popup
   ([title content]
@@ -66,7 +67,7 @@
  :utils/dispatch-later
  (fn [params]
    (doseq [{:keys [ms dispatch]} params]
-     (set-timeout #(re-frame/dispatch dispatch) ms))))
+     (set-timeout #(status-im.thread/dispatch dispatch) ms))))
 
 (defn clear-timeout [id]
   (.clearTimeout rn-dependencies/background-timer id))

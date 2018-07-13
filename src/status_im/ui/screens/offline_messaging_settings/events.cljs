@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.offline-messaging-settings.events
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.events :as accounts-events]
@@ -26,6 +27,6 @@
                           :content             (i18n/label :t/connect-wnode-content
                                                            {:name (get-in db [:inbox/wnodes chain wnode :name])})
                           :confirm-button-text (i18n/label :t/close-app-button)
-                          :on-accept           #(re-frame/dispatch [::save-wnode chain wnode])
+                          :on-accept           #(status-im.thread/dispatch [::save-wnode chain wnode])
                           :on-cancel           nil}})))
 

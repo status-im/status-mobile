@@ -1,5 +1,6 @@
 (ns status-im.ui.components.desktop.tabs
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.main-tabs.styles :as tabs.styles])
@@ -36,7 +37,7 @@
 (defn tab [index content view-id active?]
   [react/touchable-highlight {:style    (merge tabs.styles/tab-container {:flex 1})
                               :disabled active?
-                              :on-press #(re-frame/dispatch [:set-in [:desktop/desktop :tab-view-id] view-id])}
+                              :on-press #(status-im.thread/dispatch [:set-in [:desktop/desktop :tab-view-id] view-id])}
    [react/view
     [content active?]]])
 

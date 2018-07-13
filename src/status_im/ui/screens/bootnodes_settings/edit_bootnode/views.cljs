@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
    [re-frame.core :as re-frame]
+   [status-im.thread :as status-im.thread]
    [status-im.ui.components.react :as react]
    [status-im.i18n :as i18n]
    [status-im.utils.utils :as utils]
@@ -18,7 +19,7 @@
   (utils/show-confirmation (i18n/label :t/delete-bootnode-title)
                            (i18n/label :t/delete-bootnode-are-you-sure)
                            (i18n/label :t/delete-bootnode)
-                           #(re-frame/dispatch [:delete-bootnode id])))
+                           #(status-im.thread/dispatch [:delete-bootnode id])))
 
 (defn delete-button [id]
   [react/touchable-highlight {:on-press #(handle-delete id)}
@@ -30,7 +31,7 @@
       (i18n/label :t/delete)]]]])
 
 (def qr-code
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
+  [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:scan-qr-code
                                                              {:toolbar-title (i18n/label :t/add-bootnode)}
                                                              :set-bootnode-from-qr])
                               :style    styles/qr-code}
@@ -55,7 +56,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   name
-            :on-change-text  #(re-frame/dispatch [:bootnode-set-input :name %])
+            :on-change-text  #(status-im.thread/dispatch [:bootnode-set-input :name %])
             :auto-focus      true}]
           [text-input/text-input-with-label
            {:label           (i18n/label :t/bootnode-address)
@@ -64,7 +65,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   url
-            :on-change-text  #(re-frame/dispatch [:bootnode-set-input :url %])}]
+            :on-change-text  #(status-im.thread/dispatch [:bootnode-set-input :url %])}]
           (when id
             [delete-button id])]]
         [react/view styles/bottom-container
@@ -73,4 +74,4 @@
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:save-new-bootnode])}]]]])))
+           :on-press  #(status-im.thread/dispatch [:save-new-bootnode])}]]]])))

@@ -1,5 +1,6 @@
 (ns status-im.chat.events.receive-message
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [taoensso.timbre :as log]
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.models.message :as message-model]
@@ -20,7 +21,7 @@
 (re-frame.core/reg-fx
  :chat-received-message/add-fx
  (fn [messages]
-   (re-frame/dispatch [:chat-received-message/add messages])))
+   (status-im.thread/dispatch [:chat-received-message/add messages])))
 
 (defn- request-command-message-data [message {:keys [db]}]
   (commands-events/request-command-message-data
@@ -89,14 +90,14 @@
          {:keys [update-db default-db]} context
          content (or err text-message)]
      (when update-db
-       (re-frame/dispatch [:update-bot-db {:bot bot-id
+       (status-im.thread/dispatch [:update-bot-db {:bot bot-id
                                            :db  update-db}]))
-     (re-frame/dispatch [:suggestions-handler (assoc params
+     (status-im.thread/dispatch [:suggestions-handler (assoc params
                                                      :bot-id bot-id
                                                      :result data
                                                      :default-db default-db)])
      (when content
-       (re-frame/dispatch [:chat-received-message/add
+       (status-im.thread/dispatch [:chat-received-message/add
                            [{:message-id   random-id
                              :timestamp    now
                              :content      (str content)
