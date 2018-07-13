@@ -82,12 +82,8 @@
    :color     colors/white})
 
 (def toolbar-chat-view
-<<<<<<< a5a66a8d5e77e2b44ebc24e539ae20f50b4962a9
   {:margin-left     11
    :justify-content :center})
-=======
-  {:padding         11})
->>>>>>> navigate to user profile from chat
 
 (def toolbar-chat-name
   {:font-size   16
