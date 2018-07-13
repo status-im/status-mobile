@@ -17,8 +17,8 @@
             [status-im.i18n :as i18n]))
 
 (views/defview toolbar-chat-view []
-  (views/letsubs [{:keys [chat-id name public-key public? group-chat]} [:get-current-chat]
-                  {:keys [pending?]}                                   [:get-current-chat-contact]]
+  (views/letsubs [{:keys [chat-id name public-key public? group-chat color]} [:get-current-chat]
+                  {:keys [pending? whisper-identity photo-path]}             [:get-current-chat-contact]]
     (let [chat-name (str
                      (if public? "#" "")
                      (if (string/blank? name)
@@ -26,19 +26,26 @@
                        (or name
                            (i18n/label :t/chat-name))))]
       [react/view {:style styles/toolbar-chat-view}
-       [react/view {:style {:flex-direction :row}}
-        (when public?
-          [icons/icon :icons/public-chat])
-        (when (and group-chat (not public?))
-          [icons/icon :icons/group-chat])
-        [react/text {:style styles/toolbar-chat-name}
-         chat-name]]
-       (when pending?
+       [react/view {:style {:flex-direction :row
+                            :align-items :center}}
+        [react/view {:style styles/img-container}
+         (if public?
+          [react/view {:style (styles/topic-image color)}
+           [react/text {:style styles/topic-text}
+            (string/capitalize (first name))]]
+          [react/image {:style styles/photo-style-toolbar
+                        :source {:uri photo-path}}])]
+        [react/view
+         (when (and group-chat (not public?))
+           [icons/icon :icons/group-chat])
+         [react/text {:style styles/toolbar-chat-name}
+          chat-name]
+         (when pending?
          [react/touchable-highlight
-          {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
-          [react/view {:style styles/add-contact}                                      ;style/add-contact
+          {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+          [react/view {:style styles/add-contact}
            [react/text {:style styles/add-contact-text}
-            (i18n/label :t/add-to-contacts)]]])])))
+            (i18n/label :t/add-to-contacts)]]])]]])))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]

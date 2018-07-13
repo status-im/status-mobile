@@ -55,15 +55,34 @@
   {:flex             1
    :background-color colors/gray-lighter})
 
+(def img-container
+  {:height          56
+   :justify-content :center})
+
 (def photo-style
-  {:borderRadius 20
+  {:border-radius 20
    :width        40
    :height       40
    :margin-right 8})
 
+(def photo-style-toolbar
+  {:border-radius 32
+   :width         32
+   :height        32
+   :margin-right  8})
+
+(defn topic-image [color]
+  (merge photo-style-toolbar
+         {:background-color color
+          :align-items      :center
+          :justify-content  :center}))
+
+(def topic-text
+  {:font-size 18
+   :color     colors/white})
+
 (def toolbar-chat-view
-  {:align-items     :center
-   :padding         11
+  {:margin-left     11
    :justify-content :center})
 
 (def toolbar-chat-name
@@ -75,11 +94,11 @@
   {:background-color :white
    :border-radius    6
    :margin-top       3
-   :padding          4})
+   :padding-top      1})
 
 (def add-contact-text
   {:font-size 14
-   :color     colors/gray})
+   :color     colors/blue})
 
 (def message-text
   {:font-size 14})
