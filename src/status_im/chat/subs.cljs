@@ -280,10 +280,12 @@
  :<- [:chat-parameter-box]
  :<- [:show-suggestions?]
  :<- [:validation-messages]
- (fn [[chat-parameter-box show-suggestions? validation-messages]]
+ :<- [:selected-chat-command]
+ (fn [[chat-parameter-box show-suggestions? validation-messages {:keys [command-completion]}]]
    (and chat-parameter-box
         (not validation-messages)
-        (not show-suggestions?))))
+        (not show-suggestions?)
+        (not (= :complete command-completion)))))
 
 (reg-sub
  :show-suggestions-view?

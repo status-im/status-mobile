@@ -12,6 +12,9 @@
    :mailserver-reconnect                 "Could not connect to mailserver. Tap to reconnect"
    :fetching-messages                    "Fetching messages..."
    :search-for                           "Search for..."
+   :find                                 "Find"
+   :install                              "Install"
+   :success                              "Success"
    :cancel                               "Cancel"
    :next                                 "Next"
    :open                                 "Open"
@@ -709,6 +712,18 @@
    :rinkeby-network                      "Rinkeby test network"
    :network-id                           "Network ID"
    :specify-network-id                   "Specify network id"
+
+   :extension                            "Extension"
+   :extensions                           "Extensions"
+   :extension-installed                  "You installed an extension"
+   :extension-find                       "Find extension"
+   :extension-address                    "Extension address"
+   :extension-url                        "Enter an extension URL"
+   :no-extension                         "No extension installed"
+   :identifier                           "Identifier"
+   :errors                               "Errors"
+   :hooks                                "Hooks"
+   :permissions                          "Permissions"
 
    ;; invalid-key
 

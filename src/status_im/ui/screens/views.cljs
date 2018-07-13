@@ -40,8 +40,10 @@
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.edit-network.views :refer [edit-network]]
+            [status-im.ui.screens.extensions.views :refer [extensions-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :refer [edit-mailserver]]
+            [status-im.ui.screens.extensions.add.views :refer [add-extension show-extension]]
             [status-im.ui.screens.bootnodes-settings.views :refer [bootnodes-settings]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
@@ -87,10 +89,13 @@
     :login login
     :recover recover
     :network-settings network-settings
+    :extensions-settings extensions-settings
     :network-details network-details
     :edit-network edit-network
     :offline-messaging-settings offline-messaging-settings
     :edit-mailserver edit-mailserver
+    :add-extension add-extension
+    :show-extension show-extension
     :bootnodes-settings bootnodes-settings
     :edit-bootnode edit-bootnode
     :currency-settings currency-settings

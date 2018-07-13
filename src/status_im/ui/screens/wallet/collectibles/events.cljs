@@ -26,7 +26,7 @@
 (defn load-token [web3 i items-number contract address symbol]
   (when (< i items-number)
     (erc721/token-of-owner-by-index web3 contract address i
-                                    (fn [v1 v2]
+                                    (fn [_ v2]
                                       (load-token web3 (inc i) items-number contract address symbol)
                                       (re-frame/dispatch [:load-collectible symbol (.toNumber v2)])))))
 

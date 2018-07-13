@@ -1,6 +1,8 @@
 (ns status-im.chat.commands.core
-  (:require [clojure.set :as set]
+  (:require [re-frame.core :as re-frame]
+            [clojure.set :as set]
             [clojure.string :as string]
+            [pluto.host :as host]
             [status-im.constants :as constants]
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.commands.protocol :as protocol]
@@ -8,6 +10,7 @@
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.message :as message-model]
+            [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]))
 
 (def register
@@ -80,7 +83,7 @@
 (defn index-commands
   "Takes collecton of things implementing the command protocol, and
   correctly indexes them  by their composite ids and access scopes."
-  [commands {:keys [db]}]
+  [commands]
   (let [id->command              (reduce (fn [acc command]
                                            (assoc acc (command-id command)
                                                   {:type   command
@@ -100,9 +103,66 @@
                                                         access-scopes)))
                                             {}
                                             id->command)]
-    {:db (assoc db
-                :id->command              id->command
-                :access-scope->command-id access-scope->command-id)}))
+    {:id->command              id->command
+     :access-scope->command-id access-scope->command-id}))
+
+(defn load-commands
+  "Takes collection of things implementing the command protocol and db,
+  correctly indexes them and adds them to db in a way that preserves existing commands"
+  [commands {:keys [db]}]
+  (let [{:keys [id->command access-scope->command-id]} (index-commands commands)]
+    {:db (-> db
+             (update :id->command merge id->command)
+             (update :access-scope->command-id #(merge-with (fnil into #{}) % access-scope->command-id)))}))
+
+(defn remove-command
+  "Remove command form db, correctly updating all indexes"
+  [command {:keys [db]}]
+  (let [id (command-id command)]
+    {:db (-> db
+             (update :id->command dissoc id)
+             (update :access-scope->command-id (fn [access-scope->command-id]
+                                                 (reduce (fn [acc [scope command-ids-set]]
+                                                           (if (command-ids-set id)
+                                                             (if (= 1 (count command-ids-set))
+                                                               acc
+                                                               (assoc acc scope (disj command-ids-set id)))
+                                                             (assoc acc scope command-ids-set)))
+                                                         {}
+                                                         access-scope->command-id))))}))
+
+(def command-hook
+  "Hook for extensions"
+  (reify host/AppHook
+    (id [_] :commands)
+    (properties [_] {:scope         #{:personal-chats :public-chats}
+                     :description   :string
+                     :short-preview :view
+                     :preview       :view
+                     :parameters    [{:id           :keyword
+                                      :type         {:one-of #{:text :phone :password :number}}
+                                      :placeholder  :string
+                                      :suggestions? :component}]})
+    (hook-in [_ id {:keys [description scope parameters preview short-preview]} cofx]
+      (let [new-command (reify protocol/Command
+                          (id [_] (name id))
+                          (scope [_] scope)
+                          (description [_] description)
+                          (parameters [_] parameters)
+                          (validate [_ _ _])
+                          (on-send [_ _ _])
+                          (on-receive [_ _ _])
+                          (short-preview [_ props] (short-preview props))
+                          (preview [_ props] (preview props)))]
+        (load-commands [new-command] cofx)))
+    (unhook [_ id {:keys [scope]} {:keys [db] :as cofx}]
+      (remove-command (get-in db [:id->command [(name id) scope] :type]) cofx))))
+
+(handlers/register-handler-fx
+ :load-commands
+ [re-frame/trim-v]
+ (fn [cofx [commands]]
+   (load-commands commands cofx)))
 
 (defn chat-commands
   "Takes `id->command`, `access-scope->command-id` and `chat` parameters and returns

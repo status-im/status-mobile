@@ -42,22 +42,12 @@
                       :font  :default}
           status])])))
 
-(defn message-content-audio [_]
-  [react/view style/audio-container
-   [react/view style/play-view
-    [react/image {:style  style/play-image}]]
-   [react/view style/track-container
-    [react/view style/track]
-    [react/view style/track-mark]
-    [react/text {:style style/track-duration-text
-                 :font  :default}
-     "03:39"]]])
-
 (defview message-content-command
   [command-message]
   (letsubs [id->command [:get-id->command]]
-    (when-let [command (commands-receiving/lookup-command-by-ref command-message id->command)]
-      (commands/generate-preview command command-message))))
+    (if-let [command (commands-receiving/lookup-command-by-ref command-message id->command)]
+      (commands/generate-preview command command-message)
+      [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))
 
 (def rtl-characters-regex #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
 
@@ -235,11 +225,10 @@
   [wrapper message [emoji-message message]])
 
 (defmethod message-content :default
-  [wrapper {:keys [content-type content] :as message}]
+  [wrapper {:keys [content-type] :as message}]
   [wrapper message
    [message-view message
-    [message-content-audio {:content      content
-                            :content-type content-type}]]])
+    [react/text {} (str "Unhandled content-type " content-type)]]])
 
 (defn- text-status [status]
   [react/view style/delivery-view

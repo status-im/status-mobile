@@ -26,6 +26,7 @@
 (def in-app-notifications-enabled? (enabled? (get-config :IN_APP_NOTIFICATIONS_ENABLED 0)))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
+(def extensions-enabled? (enabled? (get-config :EXTENSIONS 0)))
 
 ;; CONFIG VALUES
 (def log-level

@@ -64,8 +64,8 @@
 (def TestCommandInstance (TestCommand.))
 (def AnotherTestCommandInstance (AnotherTestCommand.))
 
-(deftest index-commands-test
-  (let [fx (core/index-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
+(deftest load-commands-test
+  (let [fx (core/load-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
     (testing "Primary composite key index for command is correctly created"
       (is (= TestCommandInstance
              (get-in fx [:db :id->command
@@ -94,7 +94,7 @@
                      (core/command-id AnotherTestCommandInstance))))))
 
 (deftest chat-commands-test
-  (let [fx (core/index-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
+  (let [fx (core/load-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
     (testing "That relevant commands are looked up for chat"
       (is (= #{TestCommandInstance AnotherTestCommandInstance}
              (into #{}
@@ -119,7 +119,7 @@
                                        {:chat-id "contact"})))))))
 
 (deftest selected-chat-command-test
-  (let [fx       (core/index-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})
+  (let [fx       (core/load-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})
         commands (core/chat-commands (get-in fx [:db :id->command])
                                      (get-in fx [:db :access-scope->command-id])
                                      {:chat-id    "contact"})]

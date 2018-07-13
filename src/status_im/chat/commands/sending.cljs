@@ -25,7 +25,8 @@
                                                   :prefill [(get parameter-map :asset)
                                                             (get parameter-map :amount)]}
                                         :content-type constants/content-type-command-request}}
-       path))
+       path
+       {:content-type constants/content-type-command}))
 
 (defn- create-command-message
   "Create message map from chat-id, command & input parameters"

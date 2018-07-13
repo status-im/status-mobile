@@ -12,6 +12,7 @@
             [status-im.ui.components.chat-preview :as chat-preview]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.svgimage :as svgimage]
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]
@@ -40,21 +41,40 @@
       #_[react/text {:style transactions-styles/asset-balance}
          (str (money/internal->formatted amount symbol decimals))]]]))
 
+(defn- render-nft-asset [selected-event-creator]
+  (fn [{:keys [name symbol amount] :as asset}]
+    [react/touchable-highlight
+     {:on-press #(re-frame/dispatch (selected-event-creator (clojure.core/name symbol)))}
+     [react/view transactions-styles/asset-container
+      [react/view transactions-styles/asset-main
+       [react/image {:source (-> asset :icon :source)
+                     :style  transactions-styles/asset-icon}]
+       [react/text {:style transactions-styles/asset-symbol} name]]
+      [react/text {:style transactions-styles/nft-asset-amount} (money/to-fixed amount)]]]))
+
 (def assets-separator [react/view transactions-styles/asset-separator])
 
-(defview choose-asset [selected-event-creator]
+(defview choose-asset [nft? selected-event-creator]
   (letsubs [assets [:wallet/visible-assets-with-amount]]
     [react/view
-     [list/flat-list {:data                      (filter #(not (:nft? %)) assets)
+     [list/flat-list {:data                      (filter #(if nft?
+                                                            (:nft? %)
+                                                            (not (:nft? %)))
+                                                         assets)
                       :key-fn                    (comp name :symbol)
-                      :render-fn                 (render-asset selected-event-creator)
+                      :render-fn                 (if nft?
+                                                   (render-nft-asset selected-event-creator)
+                                                   (render-asset selected-event-creator))
                       :enableEmptySections       true
                       :separator                 assets-separator
                       :keyboardShouldPersistTaps :always
                       :bounces                   false}]]))
 
 (defn choose-asset-suggestion [selected-event-creator]
-  [choose-asset selected-event-creator])
+  [choose-asset false selected-event-creator])
+
+(defn choose-nft-asset-suggestion [selected-event-creator]
+  [choose-asset true selected-event-creator])
 
 (defn personal-send-request-short-preview
   [label-key {:keys [content]}]
@@ -76,6 +96,32 @@
    {:id          :amount
     :type        :number
     :placeholder "Amount"}])
+
+(defview choose-nft-token [selected-event-creator]
+  (letsubs [{:keys [input-params]} [:selected-chat-command]
+            collectibles           [:collectibles]]
+    (let [collectible-tokens (get collectibles (keyword (:symbol input-params)))]
+      [react/view {:flex-direction   :row
+                   :align-items      :center
+                   :padding-vertical 11}
+       (map
+        (fn [[id {:keys [name image_url]}]]
+          [react/touchable-highlight
+           {:key      id
+            :on-press #(re-frame/dispatch (selected-event-creator (str id)))}
+           [react/view {:flex-direction  :column
+                        :align-items     :center
+                        :margin-left     10
+                        :border-radius   2
+                        :border-width    1
+                        :border-color    colors/gray}
+            [svgimage/svgimage {:style    transactions-styles/nft-token-icon
+                                :source   {:uri image_url}}]
+            [react/text {} name]]])
+        collectible-tokens)])))
+
+(defn choose-nft-token-suggestion [selected-event-creator]
+  [choose-nft-token selected-event-creator])
 
 ;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences

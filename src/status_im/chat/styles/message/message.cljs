@@ -157,55 +157,9 @@
            {:padding-top    12
             :padding-bottom 10})))
 
-(def author
-  {:color         styles/color-gray4
-   :margin-bottom 4
-   :font-size     12})
-
-(def audio-container
-  {:flex-direction :row
-   :align-items    :center})
-
-(def play-view
-  {:width         33
-   :height        33
-   :border-radius 16
-   :elevation     1})
-
 (def play-image
   {:width  33
    :height 33})
-
-(def track-container
-  {:margin-top  10
-   :margin-left 10
-   :width       120
-   :height      26
-   :elevation   1})
-
-(def track
-  {:position         :absolute
-   :top              4
-   :width            120
-   :height           2
-   :background-color :#EC7262})
-
-(def track-mark
-  {:position         :absolute
-   :left             0
-   :top              0
-   :width            2
-   :height           10
-   :background-color :#4A5258})
-
-(def track-duration-text
-  {:position       :absolute
-   :left           1
-   :top            11
-   :font-size      11
-   :color          :#4A5258
-   :letter-spacing 1
-   :line-height    15})
 
 (def status-container
   {:flex           1

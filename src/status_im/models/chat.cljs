@@ -72,7 +72,7 @@
                                          :contacts/dapps default-dapps)}
                              (group-chat-messages)
                              (add-default-contacts)
-                             (commands/index-commands commands/register))))
+                             (commands/load-commands commands/register))))
 
 (defn process-pending-messages
   "Change status of own messages which are still in `sending` status to `not-sent`
