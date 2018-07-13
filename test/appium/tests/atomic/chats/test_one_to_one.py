@@ -27,10 +27,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        device_2_home.get_chat_with_user(username_1).click()
-
-        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
-            pytest.fail("'Seen' status is not shown under the sent text message")
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(772)
     @marks.smoke_1
@@ -101,7 +99,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         chat_1.reconnect()
         chat_element = chat_1.chat_element_by_text(message)
-        chat_1.element_by_text('Resend').click_until_presence_of_element(chat_element)
+        chat_1.element_by_text('Resend').click()
         chat_element.status.wait_for_visibility_of_element()
         if chat_element.status.text != 'Sent':
             self.errors.append("Message status is not 'Sent' after resending the message")
@@ -286,6 +284,31 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         public_chat = home.join_public_chat(home.get_public_chat_name())
         if public_chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in a public chat')
+        self.verify_no_errors()
+
+    @marks.testrail_id(3695)
+    @marks.smoke_1
+    def test_message_marked_as_sent_and_seen_1_1_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_1 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        device_2_public_key = device_2_home.get_public_key()
+        device_2_home.home_button.click()
+
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+
+        message = 'test message'
+        device_1_chat.chat_message_input.send_keys(message)
+        device_1_chat.send_message_button.click()
+        if device_1_chat.chat_element_by_text(message).status.text != 'Sent':
+            self.errors.append("'Sent' status is not shown under the sent text message")
+
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
+
+        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
+            self.errors.append("'Seen' status is not shown under the text message which was read by a receiver")
         self.verify_no_errors()
 
 

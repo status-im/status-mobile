@@ -15,7 +15,8 @@ RERUN_ERRORS = [
     "503 Service Unavailable",
     "object has no attribute",
     "[Errno 104] Connection reset by peer",
-    "Sauce could not start your job"
+    "Sauce could not start your job",
+    "HTTP Error 303"
 ]
 
 

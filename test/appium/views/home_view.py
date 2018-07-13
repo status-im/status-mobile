@@ -51,11 +51,15 @@ class ChatElement(BaseButton):
 
     def find_element(self):
         info('Looking for %s' % self.name)
-        for _ in range(2):
+        for i in range(2):
             try:
                 return super(ChatElement, self).find_element()
-            except NoSuchElementException:
-                HomeView(self.driver).reconnect()
+            except NoSuchElementException as e:
+                if i == 0:
+                    HomeView(self.driver).reconnect()
+                else:
+                    e.msg = 'Unable to find chat with user %s' % self.username
+                    raise e
 
     @property
     def swipe_delete_button(self):

@@ -3,7 +3,6 @@ import pytest
 from tests import marks, transaction_users
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
-from views.web_views.base_web_view import BaseWebView
 
 
 @marks.all
