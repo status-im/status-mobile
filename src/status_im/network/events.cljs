@@ -33,7 +33,8 @@
                                     {:db (assoc db :network-status (if is-connected? :online :offline))}
                                     (inbox/request-messages))
      is-connected?
-     (assoc :drain-mixpanel-events nil))))
+     (assoc :drain-mixpanel-events  nil
+            :update-transactions-fx cofx))))
 
 (handlers/register-handler-fx
  ::update-network-status
