@@ -7,7 +7,11 @@
             [status-im.utils.mixpanel :as mixpanel]
             [status-im.models.account :as models.account]
             [cljs.core.async :as async]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.worker.sender :as sender]
+            [status-im.utils.datetime :as time]
+            [re-frame.db]
+            [status-im.utils.core :as utils.core]))
 
 (def pre-event-callback (atom nil))
 
@@ -117,6 +121,62 @@
   ([name handler] (register-handler name nil handler))
   ([name middleware handler]
    (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
+
+(defn- diff [old-db new-db]
+  (let [all-old-keys (keys old-db)
+        all-new-keys (keys new-db)
+        changed-keys (remove (fn [k]
+                               (identical? (get old-db k)
+                                           (get new-db k)))
+                             all-new-keys)
+        removed-keys (and (not= all-old-keys all-new-keys)
+                          (clojure.set/difference (set all-old-keys)
+                                                  (set all-new-keys)))]
+    {:changed-keys (set changed-keys)
+     :removed-keys removed-keys}))
+
+(defn- chats-changes [old-chats new-chats]
+  (let [{:keys [changed-keys removed-keys]} (diff old-chats new-chats)
+        changes (reduce (fn [res chat-id]
+                          (let [new-chat (get new-chats chat-id)
+                                {:keys [changed-keys removed-keys]}
+                                (diff (get old-chats chat-id) new-chat)]
+                            (assoc res chat-id
+                                   {:changed-data (select-keys new-chat changed-keys)
+                                    :removed-keys removed-keys})))
+                        {}
+                        changed-keys)]
+
+    {:changed-chats changes
+     :removed-chats removed-keys}))
+
+(re-frame/reg-fx
+ :db
+ (fn [value]
+   (when-not (identical? @re-frame.db/app-db value)
+     (let [{:keys [changed-keys removed-keys]} (diff @re-frame.db/app-db value)
+           chats-changes-data (when (contains? changed-keys :chats)
+                                (chats-changes (:chats @re-frame.db/app-db)
+                                               (:chats value)))
+           changed-data (select-keys value (disj changed-keys :chats))]
+       (sender/post-db {:changed-data (-> changed-data
+                                          (dissoc :web3 :transport/discovery-filter)
+                                          (utils.core/update-if-present
+                                           :wallet dissoc :balance)
+                                          (utils.core/update-if-present
+                                           :transport/chats
+                                           #(reduce (fn [coll [k v]]
+                                                      (assoc coll k (dissoc v :filter)))
+                                                    {}
+                                                    %)))
+                        :removed-keys removed-keys
+                        :chats        chats-changes-data}))
+     (reset! re-frame.db/app-db value))))
+
+(re-frame/reg-cofx
+ :now
+ (fn [coeffects _]
+   (assoc coeffects :now (time/timestamp))))
 
 (def default-interceptors
   [debug-handlers-names

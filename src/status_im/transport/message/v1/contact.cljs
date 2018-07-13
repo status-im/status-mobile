@@ -5,7 +5,6 @@
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.handlers :as handlers]
             [status-im.data-store.transport :as transport-store]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
@@ -24,7 +23,8 @@
                                                         :on-success on-success}]}
                                (protocol/init-chat {:chat-id chat-id
                                                     :topic   topic
-                                                    :resend? "contact-request"})))))
+                                                    :resend? "contact-request"}))))
+  (receive [this chat-id _ timestamp cofx]))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage

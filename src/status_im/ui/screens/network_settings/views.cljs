@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.network-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
@@ -30,10 +31,10 @@
   #{"mainnet" "mainnet_rpc"})
 
 (defn navigate-to-network [network]
-  (re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}]))
+  (status-im.thread/dispatch [:navigate-to :network-details {:networks/selected-network network}]))
 
 (defn navigate-to-add-network []
-  (re-frame/dispatch [:edit-network]))
+  (status-im.thread/dispatch [:edit-network]))
 
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]

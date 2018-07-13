@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.add-new.new-public-chat.view
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -23,11 +24,11 @@
      [text-input.view/text-input-with-label
       {:container           styles/input-container
        :on-change-text      #(do
-                               (re-frame/dispatch [:set :public-group-topic-error (when-not (spec/valid? ::v/topic %)
+                               (status-im.thread/dispatch [:set :public-group-topic-error (when-not (spec/valid? ::v/topic %)
                                                                                     (i18n/label :t/topic-name-error))])
-                               (re-frame/dispatch [:set :public-group-topic %]))
+                               (status-im.thread/dispatch [:set :public-group-topic %]))
        :on-submit-editing   #(when (and topic (spec/valid? ::v/topic topic))
-                               (re-frame/dispatch [:create-new-public-chat topic]))
+                               (status-im.thread/dispatch [:create-new-public-chat topic]))
        :auto-capitalize     :none
        :accessibility-label :chat-name-input
        :placeholder         nil
@@ -43,7 +44,7 @@
     (first topic)]])
 
 (defn- render-topic [topic]
-  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:create-new-public-chat topic])
+  [react/touchable-highlight {:on-press            #(status-im.thread/dispatch [:create-new-public-chat topic])
                               :accessibility-label :chat-item}
    [react/view
     [list/item

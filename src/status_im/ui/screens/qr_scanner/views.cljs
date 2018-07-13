@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -20,7 +21,7 @@
 
     [react/view styles/barcode-scanner-container
      [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
-     [camera/camera {:onBarCodeRead #(re-frame/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
+     [camera/camera {:onBarCodeRead #(status-im.thread/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
                      :ref           #(reset! camera-initialized? true)
                      :captureAudio  false
                      :style         styles/barcode-scanner}]

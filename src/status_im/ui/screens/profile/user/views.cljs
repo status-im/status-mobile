@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.user.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.styles :as action-button.styles]
@@ -28,7 +29,7 @@
    nil
    [toolbar/content-title ""]
    [react/touchable-highlight
-    {:on-press            #(re-frame/dispatch [:my-profile/start-editing-profile])
+    {:on-press            #(status-im.thread/dispatch [:my-profile/start-editing-profile])
      :accessibility-label :edit-button}
     [react/view
      [react/text {:style      common.styles/label-action-text
@@ -41,23 +42,22 @@
     :reagent-render (fn [] [toolbar/toolbar {}
                             nil
                             [toolbar/content-title ""]
-                            [toolbar/default-done {:handler             #(re-frame/dispatch [:my-profile/save-profile])
+                            [toolbar/default-done {:handler             #(status-im.thread/dispatch [:my-profile/save-profile])
                                                    :icon                :icons/ok
                                                    :icon-opts           {:color colors/blue}
                                                    :accessibility-label :done-button}]])}))
 
 (def profile-icon-options
   [{:label  (i18n/label :t/image-source-gallery)
-    :action #(re-frame/dispatch [:my-profile/update-picture])}
+    :action #(status-im.thread/dispatch [:my-profile/update-picture])}
    {:label  (i18n/label :t/image-source-make-photo)
     :action (fn []
-              (re-frame/dispatch [:request-permissions {:permissions [:camera :write-external-storage]
-                                                        :on-allowed  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
-                                                        :on-denied   (fn []
-                                                                       (utils/set-timeout
-                                                                        #(utils/show-popup (i18n/label :t/error)
-                                                                                           (i18n/label :t/camera-access-error))
-                                                                        50))}]))}])
+              (status-im.thread/dispatch
+               [:request-permissions
+                {:permissions [:camera :write-external-storage]
+                 :on-allowed  [:navigate-to :profile-photo-capture]
+                 :on-denied   {:title   (i18n/label :t/error)
+                               :content (i18n/label :t/camera-access-error)}}]))}])
 
 (defn qr-viewer-toolbar [label value]
   [toolbar/toolbar {}
@@ -78,9 +78,10 @@
       value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
 
 (defn- show-qr [contact source value]
-  #(re-frame/dispatch [:navigate-to-modal :profile-qr-viewer {:contact contact
-                                                              :source  source
-                                                              :value   value}]))
+  #(status-im.thread/dispatch [:navigate-to-modal :profile-qr-viewer
+                               {:contact contact
+                                :source  source
+                                :value   value}]))
 
 (defn share-contact-code [current-account public-key]
   [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
@@ -96,7 +97,7 @@
 (defn- handle-logout []
   (utils/show-confirmation (i18n/label :t/logout-title)
                            (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
+                           (i18n/label :t/logout) #(status-im.thread/dispatch [:logout])))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -104,7 +105,7 @@
      [profile.components/settings-title (i18n/label :t/settings)]
      [profile.components/settings-item {:label-kw            :t/main-currency
                                         :value               (:code currency)
-                                        :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
+                                        :action-fn           #(status-im.thread/dispatch [:navigate-to :currency-settings])
                                         :accessibility-label :currency-button}]
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/notifications
@@ -115,12 +116,12 @@
      (when show-backup-seed?
        [profile.components/settings-item
         {:label-kw     :t/backup-your-recovery-phrase
-         :action-fn    #(re-frame/dispatch [:navigate-to :backup-seed])
+         :action-fn    #(status-im.thread/dispatch [:navigate-to :backup-seed])
          :icon-content [components.common/counter {:size 22} 1]}])
      [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw :t/need-help
                                         :accessibility-label :help-button
-                                        :action-fn #(re-frame/dispatch [:navigate-to :help-center])}]
+                                        :action-fn #(status-im.thread/dispatch [:navigate-to :help-center])}]
      [profile.components/settings-item-separator]
      [react/view styles/my-profile-settings-logout-wrapper
       [react/view styles/my-profile-settings-logout
@@ -140,39 +141,39 @@
        [profile.components/settings-item
         {:label-kw            :t/network
          :value               (get-in networks [network :name])
-         :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
+         :action-fn           #(status-im.thread/dispatch [:navigate-to :network-settings])
          :accessibility-label :network-button}])
      (when config/offline-inbox-enabled?
        [profile.components/settings-item-separator])
      (when config/offline-inbox-enabled?
        [profile.components/settings-item
         {:label-kw            :t/offline-messaging
-         :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+         :action-fn           #(status-im.thread/dispatch [:navigate-to :offline-messaging-settings])
          :accessibility-label :offline-messages-settings-button}])
      (when config/bootnodes-settings-enabled?
        [profile.components/settings-item-separator])
      (when config/bootnodes-settings-enabled?
        [profile.components/settings-item
         {:label-kw            :t/bootnodes
-         :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+         :action-fn           #(status-im.thread/dispatch [:navigate-to :bootnodes-settings])
          :accessibility-label :bootnodes-settings-button}])
      [profile.components/settings-item-separator]
      [profile.components/settings-item
       {:label-kw            :t/help-improve?
        :value               (i18n/label (if sharing-usage-data? :on :off))
-       :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
+       :action-fn           #(status-im.thread/dispatch [:navigate-to :usage-data [:navigate-back]])
        :accessibility-label :help-improve}]
      [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/dev-mode
        :value     dev-mode?
-       :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]]))
+       :action-fn #(status-im.thread/dispatch [:switch-dev-mode %])}]]))
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:get :my-profile/advanced?]]
-    {:component-will-unmount #(re-frame/dispatch [:set :my-profile/advanced? false])}
+    {:component-will-unmount #(status-im.thread/dispatch [:set :my-profile/advanced? false])}
     [react/view
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:set :my-profile/advanced? (not advanced?)])
+     [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:set :my-profile/advanced? (not advanced?)])
                                  :style    styles/advanced-button}
       [react/view {:style styles/advanced-button-container}
        [react/view {:style styles/advanced-button-container-background}

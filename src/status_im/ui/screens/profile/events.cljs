@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.events
   (:require [clojure.spec.alpha :as spec]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.react :refer [show-image-picker]]
             [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.navigation]
@@ -21,7 +22,7 @@
       (let [path (get (js->clj image) "path")
             _ (log/debug path)
             on-success (fn [base64]
-                         (re-frame/dispatch [callback-event base64]))
+                         (status-im.thread/dispatch [callback-event base64]))
             on-error   (fn [type error]
                          (.log js/console type error))]
         (img->base64 path on-success on-error))))))

@@ -2,7 +2,8 @@
   (:require-macros
    [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.ui.components.react :as r]
-            [re-frame.core :refer [dispatch] :as re-frame]
+            [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [taoensso.timbre :as log]
             [cljs.core.async :as async :refer [<!]]
             [status-im.utils.js-resources :as js-res]
@@ -68,7 +69,7 @@
 (when-not @listener-initialized
   (reset! listener-initialized true)
   (.addListener r/device-event-emitter "gethEvent"
-                #(dispatch [:signal-event (.-jsonEvent %)])))
+                #(re-frame/dispatch [:signal-event (.-jsonEvent %)])))
 
 (defn should-move-to-internal-storage? [on-result]
   (when status
@@ -216,7 +217,7 @@
      {:jail-id  chat-id
       :path     path
       :params   params
-      :callback (or callback #(dispatch [:chat-received-message/bot-response {:chat-id chat-id} %]))})))
+      :callback (or callback #(status-im.thread/dispatch [:chat-received-message/bot-response {:chat-id chat-id} %]))})))
 
 (defn set-soft-input-mode [mode]
   (when status

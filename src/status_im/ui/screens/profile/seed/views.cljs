@@ -5,10 +5,10 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.colors :as colors]
-            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -30,9 +30,9 @@
 
 (defn step-back [step]
   (case step
-    (:intro :12-words) (re-frame/dispatch [:navigate-back])
-    :first-word (re-frame/dispatch [:my-profile/set-step :12-words])
-    :second-word (re-frame/dispatch [:my-profile/set-step :first-word])))
+    (:intro :12-words) (status-im.thread/dispatch [:navigate-back])
+    :first-word (status-im.thread/dispatch [:my-profile/set-step :12-words])
+    :second-word (status-im.thread/dispatch [:my-profile/set-step :first-word])))
 
 (defn intro []
   [react/view {:style styles/intro-container}
@@ -43,7 +43,7 @@
    [react/i18n-text {:style styles/intro-description
                      :key   :your-data-belongs-to-you-description}]
    [components.common/button {:button-style styles/intro-button
-                              :on-press     #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
+                              :on-press     #(status-im.thread/dispatch [:set-in [:my-profile/seed :step] :12-words])
                               :label        (i18n/label :t/ok-continue)}]])
 
 (defn six-words [words]
@@ -59,11 +59,14 @@
       (when (not= i (first (last words)))
         [react/view {:style styles/six-words-separator}])])])
 
+(def testfairy              (js/require "react-native-testfairy"))
+
+
 (defview twelve-words [{:keys [mnemonic]}]
   (letsubs [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))
             ref (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @ref)))}
+                                    (.hideView testfairy @ref)))}
     [react/view {:style styles/twelve-words-container}
      [react/text {:style styles/twelve-words-label}
       (i18n/label :t/your-recovery-phrase)]
@@ -78,17 +81,17 @@
      [react/view styles/twelve-words-button-container
       [components.common/bottom-button
        {:forward? true
-        :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
+        :on-press #(status-im.thread/dispatch [:my-profile/enter-two-random-words])}]]]))
 
 (defview input [error]
   (letsubs [ref (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @ref)))}
+                                    (.hideView testfairy @ref)))}
     [text-input/text-input-with-label
      {:placeholder    (i18n/label :t/enter-word)
       :ref            (partial reset! ref)
       :auto-focus     true
-      :on-change-text #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
+      :on-change-text #(status-im.thread/dispatch [:set-in [:my-profile/seed :word] %])
       :error          error}]))
 
 (defn enter-word [step [idx word] error entered-word]
@@ -110,16 +113,16 @@
       :disabled? (string/blank? entered-word)
       :on-press  (fn [_]
                    (cond (not= word entered-word)
-                         (re-frame/dispatch [:set-in [:my-profile/seed :error] (i18n/label :t/wrong-word)])
+                         (status-im.thread/dispatch [:set-in [:my-profile/seed :error] (i18n/label :t/wrong-word)])
 
                          (= :first-word step)
-                         (re-frame/dispatch [:my-profile/set-step :second-word])
+                         (status-im.thread/dispatch [:my-profile/set-step :second-word])
 
                          :else
                          (utils/show-question
                           (i18n/label :t/are-you-sure?)
                           (i18n/label :t/are-you-sure-description)
-                          #(re-frame/dispatch [:my-profile/finish]))))}]]])
+                          #(status-im.thread/dispatch [:my-profile/finish]))))}]]])
 
 (defn finish []
   [react/view {:style styles/finish-container}
@@ -131,7 +134,7 @@
    [react/text {:style styles/finish-description}
     (i18n/label :t/you-are-all-set-description)]
    [components.common/button {:button-style styles/finish-button
-                              :on-press     #(re-frame/dispatch [:navigate-back])
+                              :on-press     #(status-im.thread/dispatch [:navigate-back])
                               :label        (i18n/label :t/ok-got-it)}]])
 
 (defview backup-seed []

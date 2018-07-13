@@ -1,6 +1,7 @@
 (ns status-im.protocol.handlers
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.constants :as constants]
             [status-im.native-module.core :as status]
             [status-im.utils.utils :as utils]
@@ -30,7 +31,7 @@
      (.getSyncing
       (.-eth web3)
       (fn [error sync]
-        (re-frame/dispatch [:update-sync-state error sync]))))))
+        (status-im.thread/dispatch [:update-sync-state error sync]))))))
 
 (re-frame/reg-fx
  ::status-init-jail
@@ -50,7 +51,7 @@
                          (utils/show-popup
                           "Ethereum node started incorrectly"
                           "Ethereum node was started with incorrect configuration, application will be stopped to recover from that condition."
-                          #(re-frame/dispatch [:close-application])))))))))
+                          #(status-im.thread/dispatch [:close-application])))))))))
 
 (defn initialize-protocol
   [{:data-store/keys [transport mailservers] :keys [db web3] :as cofx} [current-account-id ethereum-rpc-url]]

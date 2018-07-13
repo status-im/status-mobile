@@ -1,6 +1,7 @@
 (ns status-im.chat.views.message.message
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as animation]
@@ -62,8 +63,8 @@
   (letsubs [confirmed? [:transaction-confirmed? tx-hash]
             tx-exists? [:wallet-transaction-exists? tx-hash]]
     [react/touchable-highlight {:on-press #(when tx-exists?
-                                             (re-frame/dispatch [:update-transactions])
-                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
+                                             (status-im.thread/dispatch [:update-transactions])
+                                             (status-im.thread/dispatch [:show-transaction-details tx-hash]))}
      [react/view style/command-send-status-container
       [vector-icons/icon (if confirmed? :icons/check :icons/dots)
        {:color           colors/blue
@@ -204,7 +205,7 @@
                           [react/text
                            {:key      idx
                             :style    {:color colors/blue}
-                            :on-press #(re-frame/dispatch [event-on-press url])}
+                            :on-press #(status-im.thread/dispatch [event-on-press url])}
                            url])
                         text)))
        vec))
@@ -340,7 +341,7 @@
       (if (or seen-by-everyone (zero? delivery-statuses-count))
         [text-status (or seen-by-everyone outgoing-status)]
         [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:show-message-details {:message-status outgoing-status
+         {:on-press #(status-im.thread/dispatch [:show-message-details {:message-status outgoing-status
                                                                 :user-statuses  delivery-statuses
                                                                 :participants   participants}])}
          [react/view style/delivery-view
@@ -364,11 +365,11 @@
   [react/touchable-highlight {:on-press (fn [] (if platform/ios?
                                                  (action-sheet/show {:title   (i18n/label :message-not-sent)
                                                                      :options [{:label  (i18n/label :resend-message)
-                                                                                :action #(re-frame/dispatch [:resend-message chat-id message-id])}
+                                                                                :action #(status-im.thread/dispatch [:resend-message chat-id message-id])}
                                                                                {:label        (i18n/label :delete-message)
                                                                                 :destructive? true
-                                                                                :action       #(re-frame/dispatch [:delete-message chat-id message-id])}]})
-                                                 (re-frame/dispatch
+                                                                                :action       #(status-im.thread/dispatch [:delete-message chat-id message-id])}]})
+                                                 (status-im.thread/dispatch
                                                   [:show-message-options {:chat-id    chat-id
                                                                           :message-id message-id}])))}
    [react/view style/not-sent-view
@@ -426,7 +427,7 @@
     (when display-photo?
       [react/view style/message-author
        (when last-in-group?
-         [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
+         [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:show-profile from])}
           [react/view
            [photos/member-photo from]]])])
     [react/view (style/group-message-view outgoing)
@@ -440,7 +441,7 @@
 (defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
-                                                (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                                                (status-im.thread/dispatch [:set-chat-ui-props {:messages-focused? true}])
                                                 (react/dismiss-keyboard!))
                                :on-long-press #(when (= content-type constants/text-content-type)
                                                  (list-selection/share content (i18n/label :t/message)))}

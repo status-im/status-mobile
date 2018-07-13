@@ -281,6 +281,7 @@
         web3              (:web3 db)
         topic             (get-in db [:transport/chats chat-id :topic])
         now-in-s          (quot now 1000)]
+    (log/debug :UUUU (inbox-ready? wnode cofx))
     (when (inbox-ready? wnode cofx)
       {::request-messages [{:wnode      wnode
                             :topics     [topic]

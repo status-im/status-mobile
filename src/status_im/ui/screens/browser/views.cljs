@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.slurp :refer [slurp]]
                    [status-im.utils.views :as views])
   (:require [cljs.reader :as reader]
-            [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -41,7 +41,7 @@
     [react/view
      [react/view (styles/toolbar-content false)
       [react/text-input {:on-change-text    #(reset! url-text %)
-                         :on-submit-editing #(re-frame/dispatch [:update-browser (assoc browser :url @url-text)])
+                         :on-submit-editing #(status-im.thread/dispatch [:update-browser (assoc browser :url @url-text)])
                          :auto-focus        (not url)
                          :placeholder       (i18n/label :t/enter-url)
                          :auto-capitalize   :none
@@ -68,12 +68,12 @@
         {:strs [url]} navState]
     (when (and platform/ios? (= type "navStateChange"))
       (when (not= "about:blank" url)
-        (re-frame/dispatch [:update-browser-on-nav-change browser url false])))))
+        (status-im.thread/dispatch [:update-browser-on-nav-change browser url false])))))
 
 (defn on-navigation-change [event browser]
   (let [{:strs [url loading]} (js->clj event)]
     (when (not= "about:blank" url)
-      (re-frame/dispatch [:update-browser-on-nav-change browser url loading]))))
+      (status-im.thread/dispatch [:update-browser-on-nav-change browser url loading]))))
 
 (defn get-inject-js [url]
   (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
@@ -96,9 +96,9 @@
          (actions/close (fn []
                           (when @webview
                             (.sendToBridge @webview "navigate-to-blank"))
-                          (re-frame/dispatch [:navigate-back])
+                          (status-im.thread/dispatch [:navigate-back])
                           (when error?
-                            (re-frame/dispatch [:remove-browser browser-id]))))]
+                            (status-im.thread/dispatch [:remove-browser browser-id]))))]
         (if dapp?
           [toolbar-content-dapp name]
           [toolbar-content url browser])]
@@ -113,8 +113,8 @@
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
          :on-bridge-message                     #(on-bridge-message % browser)
-         :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
-         :on-error                              #(re-frame/dispatch [:update-browser-options {:error? true}])
+         :on-load                               #(status-im.thread/dispatch [:update-browser-options {:error? false}])
+         :on-error                              #(status-im.thread/dispatch [:update-browser-options {:error? true}])
          :injected-on-start-loading-java-script (str js-res/web3
                                                      (get-inject-js url)
                                                      (js-res/web3-init
@@ -123,13 +123,13 @@
                                                       (str network-id)))
          :injected-java-script                  js-res/webview-js}]
        [react/view styles/toolbar
-        [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-back browser])
+        [react/touchable-highlight {:on-press            #(status-im.thread/dispatch [:browser-nav-back browser])
                                     :disabled            (not can-go-back?)
                                     :style               (when-not can-go-back? styles/disabled-button)
                                     :accessibility-label :previou-page-button}
          [react/view
           [icons/icon :icons/arrow-left]]]
-        [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-forward browser])
+        [react/touchable-highlight {:on-press            #(status-im.thread/dispatch [:browser-nav-forward browser])
                                     :disabled            (not can-go-forward?)
                                     :style               (merge styles/forward-button
                                                                 (when-not can-go-forward? styles/disabled-button))

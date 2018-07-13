@@ -1,5 +1,6 @@
 (ns status-im.network.events
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.network.net-info :as net-info]
@@ -22,8 +23,8 @@
 (handlers/register-handler-fx
  :listen-to-network-status
  (fn []
-   {::listen-to-network-status [#(re-frame/dispatch [::update-connection-status %])
-                                #(re-frame/dispatch [::update-network-status %])]}))
+   {::listen-to-network-status [#(status-im.thread/dispatch [::update-connection-status %])
+                                #(status-im.thread/dispatch [::update-network-status %])]}))
 
 (handlers/register-handler-fx
  ::update-connection-status

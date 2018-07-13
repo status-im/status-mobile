@@ -1,5 +1,6 @@
 (ns status-im.chat.events.receive-message
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [taoensso.timbre :as log]
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.models.message :as message-model]
@@ -17,7 +18,7 @@
    (when (message-model/add-to-chat? cofx message)
      (message-model/receive message cofx))))
 
-(re-frame.core/reg-fx
+(re-frame/reg-fx
  :chat-received-message/add-fx
  (fn [messages]
    (re-frame/dispatch [:chat-received-message/add messages])))
@@ -89,20 +90,20 @@
          {:keys [update-db default-db]} context
          content (or err text-message)]
      (when update-db
-       (re-frame/dispatch [:update-bot-db {:bot bot-id
-                                           :db  update-db}]))
-     (re-frame/dispatch [:suggestions-handler (assoc params
-                                                     :bot-id bot-id
-                                                     :result data
-                                                     :default-db default-db)])
+       (status-im.thread/dispatch [:update-bot-db {:bot bot-id
+                                                   :db  update-db}]))
+     (status-im.thread/dispatch [:suggestions-handler (assoc params
+                                                             :bot-id bot-id
+                                                             :result data
+                                                             :default-db default-db)])
      (when content
-       (re-frame/dispatch [:chat-received-message/add
-                           [{:message-id   random-id
-                             :timestamp    now
-                             :content      (str content)
-                             :content-type constants/text-content-type
-                             :clock-value  (utils.clocks/send 0)
-                             :chat-id      chat-id
-                             :from         chat-id
-                             :to           "me"
-                             :show?        true}]])))))
+       (status-im.thread/dispatch [:chat-received-message/add
+                                   [{:message-id   random-id
+                                     :timestamp    now
+                                     :content      (str content)
+                                     :content-type constants/text-content-type
+                                     :clock-value  (utils.clocks/send 0)
+                                     :chat-id      chat-id
+                                     :from         chat-id
+                                     :to           "me"
+                                     :show?        true}]])))))

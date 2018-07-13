@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
@@ -51,7 +52,7 @@
          :secure-text-entry      true
          :placeholder            (i18n/label :t/enter-password)
          :placeholder-text-color components.styles/color-gray4
-         :on-change-text         #(re-frame/dispatch [:wallet.send/set-password (security/mask-data %)])
+         :on-change-text         #(status-im.thread/dispatch [:wallet.send/set-password (security/mask-data %)])
          :style                  styles/password
          :accessibility-label    :enter-password-input}]
        (when wrong-password?
@@ -88,7 +89,7 @@
      [react/view]
      [button/button {:style               components.styles/flex
                      :disabled?           (not immediate-sign-enabled?)
-                     :on-press            #(re-frame/dispatch [:wallet.send/set-signing? true])
+                     :on-press            #(status-im.thread/dispatch [:wallet.send/set-signing? true])
                      :text-style          {:color :white}
                      :accessibility-label :sign-transaction-button}
       (i18n/label :t/transactions-sign-transaction)
@@ -96,12 +97,12 @@
 
 (defn return-to-transaction [dapp-transaction?]
   (if dapp-transaction?
-    (re-frame/dispatch [:navigate-to-modal :wallet-send-transaction-modal])
+    (status-im.thread/dispatch [:navigate-to-modal :wallet-send-transaction-modal])
     (act/default-handler)))
 
 (defn handler [discard? dapp-transaction?]
   (if discard?
-    #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
+    #(status-im.thread/dispatch [:wallet/discard-transaction-navigate-back])
     #(return-to-transaction dapp-transaction?)))
 
 (defn- toolbar [discard? dapp-transaction? action title]
@@ -133,7 +134,7 @@
            (i18n/label :t/gas-limit)
            [react/view styles/gas-input-wrapper
             [react/text-input (merge styles/transaction-fee-input
-                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-value :gas %])
+                                     {:on-change-text      #(status-im.thread/dispatch [:wallet.send/edit-value :gas %])
                                       :default-value       gas
                                       :accessibility-label :gas-limit-input})]]]
           (when (:invalid? gas-edit)
@@ -144,7 +145,7 @@
            (i18n/label :t/gas-price)
            [react/view styles/gas-input-wrapper
             [react/text-input (merge styles/transaction-fee-input
-                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-value :gas-price %])
+                                     {:on-change-text      #(status-im.thread/dispatch [:wallet.send/edit-value :gas-price %])
                                       :default-value       gas-price
                                       :accessibility-label :gas-price-input})]
             [wallet.components/cartouche-secondary-text
@@ -175,10 +176,10 @@
             (str max-fee " " (i18n/label :t/eth))]]]]
 
         [bottom-buttons/bottom-buttons styles/fee-buttons
-         [button/button {:on-press            #(re-frame/dispatch [:wallet.send/reset-gas-default])
+         [button/button {:on-press            #(status-im.thread/dispatch [:wallet.send/reset-gas-default])
                          :accessibility-label :reset-to-default-button}
           (i18n/label :t/reset-default)]
-         [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details
+         [button/button {:on-press            #(do (status-im.thread/dispatch [:wallet.send/set-gas-details
                                                                        (:value-number gas-edit)
                                                                        (:value-number gas-price-edit)])
                                                    (return-to-transaction modal?))
@@ -189,8 +190,8 @@
 
 (defn- advanced-cartouche [{:keys [max-fee gas gas-price]} modal?]
   [react/view
-   [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
-                                                 (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
+   [wallet.components/cartouche {:on-press  #(do (status-im.thread/dispatch [:wallet.send/clear-gas])
+                                                 (status-im.thread/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
     (i18n/label :t/wallet-transaction-fee)
     [react/view {:style               styles/advanced-options-text-wrapper
                  :accessibility-label :transaction-fee-button}
@@ -202,7 +203,7 @@
 (defn- advanced-options [advanced? transaction modal? scroll]
   [react/view {:style styles/advanced-wrapper}
    [react/touchable-highlight {:on-press (fn []
-                                           (re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])
+                                           (status-im.thread/dispatch [:wallet.send/toggle-advanced (not advanced?)])
                                            (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 350)))}
     [react/view {:style styles/advanced-button-wrapper}
      [react/view {:style               styles/advanced-button
@@ -244,12 +245,12 @@
                                      :amount-text   amount-text
                                      :input-options {:max-length     21
                                                      :on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
+                                                     :on-change-text #(status-im.thread/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
         [advanced-options advanced? transaction modal? scroll]]]
       (if signing?
         [signing-buttons in-progress?
-         #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
-         #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))
+         #(status-im.thread/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
+         #(status-im.thread/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))
          :t/transactions-sign-transaction]
         [sign-button amount-error to amount sufficient-funds? modal?])
       (when signing?
@@ -298,8 +299,8 @@
            :amount-text   data}
           nil]]]]
       [signing-buttons false
-       #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-       #(re-frame/dispatch [:wallet/sign-message-modal])
+       #(status-im.thread/dispatch [:wallet/discard-transaction-navigate-back])
+       #(status-im.thread/dispatch [:wallet/sign-message-modal])
        :t/transactions-sign]
       [sign-panel :t/signing-message-phrase-description false]
       (when in-progress?

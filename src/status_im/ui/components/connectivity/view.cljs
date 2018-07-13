@@ -1,6 +1,7 @@
 (ns status-im.ui.components.connectivity.view
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.connectivity.styles :as styles]
@@ -26,5 +27,5 @@
                      :accessibility-label :connection-status-text}
          [react/text {:style    styles/text
                       :on-press (when mailserver-error?
-                                  #(re-frame/dispatch [:inbox/reconnect]))}
+                                  #(status-im.thread/dispatch [:inbox/reconnect]))}
           (i18n/label label)]]))))

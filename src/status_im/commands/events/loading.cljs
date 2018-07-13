@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [clojure.set :as s]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.js-resources :as js-resources]
             [status-im.utils.types :as types]
@@ -19,7 +20,7 @@
       jail-id jail-resource
       (fn [jail-response]
         (let [converted (types/json->clj jail-response)]
-          (re-frame/dispatch [::proceed-loading jail-id (update converted :result types/json->clj)])))))))
+          (status-im.thread/dispatch [::proceed-loading jail-id (update converted :result types/json->clj)])))))))
 
 (re-frame/reg-fx
  ::show-popup

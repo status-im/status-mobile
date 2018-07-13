@@ -1,17 +1,18 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]))
 
 (defmethod navigation/preload-data! :wallet
   [db _]
-  (re-frame/dispatch [:update-wallet])
+  (status-im.thread/dispatch [:update-wallet])
   (assoc-in db [:wallet :current-tab] 0))
 
 (defmethod navigation/preload-data! :transactions-history
   [db _]
-  (re-frame/dispatch [:update-transactions])
+  (status-im.thread/dispatch [:update-transactions])
   db)
 
 (def transaction-send-default
@@ -35,5 +36,5 @@
   (if (= event :navigate-back)
     db
     (do
-      (re-frame/dispatch [:wallet/update-gas-price])
+      (status-im.thread/dispatch [:wallet/update-gas-price])
       (assoc-in db [:wallet :send-transaction] transaction-send-default))))

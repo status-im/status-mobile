@@ -1,6 +1,7 @@
 (ns status-im.utils.config
   (:require [status-im.react-native.js-dependencies :as rn-dependencies]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [taoensso.timbre :as log]))
 
 (def config (js->clj (.-default rn-dependencies/config) :keywordize-keys true))
 
@@ -46,3 +47,10 @@
 (def group-chats-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED)))
 (def spam-button-detection-enabled? (enabled? (get-config :SPAM_BUTTON_DETECTION_ENABLED "0")))
 (def mainnet-warning-enabled? (enabled? (get-config :MAINNET_WARNING_ENABLED 0)))
+
+(goog-define thread "ui")
+
+(defn handlers-thread? []
+  (let [res (= "handlers" thread)]
+    (log/debug "Thread " thread)
+    res))

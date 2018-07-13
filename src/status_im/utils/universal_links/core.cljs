@@ -2,6 +2,7 @@
   (:require
    [taoensso.timbre :as log]
    [re-frame.core :as re-frame]
+   [status-im.thread :as status-im.thread]
    [status-im.utils.config :as config]
    [status-im.chat.events :as chat.events]
    [status-im.models.account :as models.account]
@@ -27,7 +28,7 @@
     (list-selection/browse-dapp dapp-url)
     ;; We need to dispatch here, we can't openURL directly
     ;; as it is opened in safari on iOS
-    (re-frame/dispatch [:handle-universal-link url])))
+    (status-im.thread/dispatch [:handle-universal-link url])))
 
 (defn handle-browse [url cofx]
   (log/info "universal-links: handling browse " url)
@@ -54,7 +55,7 @@
   "Dispatch url so we can get access to re-frame/db"
   [url]
   (if-not (nil? url)
-    (re-frame/dispatch [:handle-universal-link url])
+    (status-im.thread/dispatch [:handle-universal-link url])
     (log/debug "universal-links: no url")))
 
 (defn store-url-for-later

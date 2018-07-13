@@ -1,6 +1,7 @@
 (ns ^{:doc "Public chat API"}
  status-im.transport.message.v1.public-chat
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.core :as message]

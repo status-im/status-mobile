@@ -34,7 +34,9 @@
             status-im.ui.screens.currency-settings.events
             status-im.ui.screens.usage-data.events
             status-im.utils.keychain.events
+            status-im.ui.screens.signal-events
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.constants :as constants]
@@ -60,7 +62,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.worker.sender :as sender]))
 
 ;;;; Helper fns
 
@@ -78,14 +81,9 @@
                                      [:chat-received-message/bot-response
                                       {:chat-id chat-id}
                                       jail-response])]
-                    (re-frame/dispatch event)))})))
+                    (status-im.thread/dispatch event)))})))
 
 ;;;; COFX
-
-(re-frame/reg-cofx
- :now
- (fn [coeffects _]
-   (assoc coeffects :now (time/timestamp))))
 
 (re-frame/reg-cofx
  :random-id
@@ -109,7 +107,7 @@
           (assoc :callback
                  (fn [jail-response]
                    (when-let [event (callback-event-creator jail-response)]
-                     (re-frame/dispatch event)))))))))
+                     (status-im.thread/dispatch event)))))))))
 
 (re-frame/reg-fx
  :call-jail-function
@@ -122,8 +120,8 @@
      (call-jail-function opts))))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
-  (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   #(re-frame/dispatch (failure-event-creator %))
+  (let [on-success #(status-im.thread/dispatch (success-event-creator %))
+        on-error   #(status-im.thread/dispatch (failure-event-creator %))
         opts       {:valid-response? response-validator
                     :timeout-ms      timeout-ms}]
     (http/get url on-success on-error opts)))
@@ -162,7 +160,7 @@
 (re-frame/reg-fx
  :request-permissions-fx
  (fn [options]
-   (permissions/request-permissions options)))
+   (sender/request-permissions options)))
 
 (re-frame/reg-fx
  ::request-notifications-fx
@@ -180,7 +178,7 @@
 (re-frame/reg-fx
  ::init-device-UUID
  (fn []
-   (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
+   (status/get-device-UUID #(status-im.thread/dispatch [:set :device-UUID %]))))
 
 (re-frame/reg-fx
  ::get-fcm-token-fx
@@ -222,7 +220,7 @@
 (defn- reset-keychain []
   (.. (keychain/reset)
       (then
-       #(re-frame/dispatch [:initialize-keychain]))))
+       #(status-im.thread/dispatch [:initialize-keychain]))))
 
 (defn- handle-reset-data  []
   (.. (realm/delete-realms)
@@ -396,7 +394,7 @@
  (fn [{{:keys [web3] :as db} :db} _]
    (.. web3 -version (getNode (fn [err resp]
                                 (when-not err
-                                  (re-frame/dispatch [:fetch-web3-node-version-callback resp])))))
+                                  (status-im.thread/dispatch [:fetch-web3-node-version-callback resp])))))
    nil))
 
 (handlers/register-handler-fx
@@ -409,31 +407,6 @@
  (fn [_ _]
    {::get-fcm-token-fx nil}))
 
-;; Because we send command to jail in params and command `:ref` is a lookup vector with
-;; keyword in it (for example `["transactor" :command 51 "send"]`), we lose that keyword
-;; information in the process of converting to/from JSON, and we need to restore it
-(defn- restore-command-ref-keyword
-  [orig-params]
-  (if [(get-in orig-params [:command :command :ref])]
-    (update-in orig-params [:command :command :ref 1] keyword)
-    orig-params))
-
-(defn handle-jail-signal [{:keys [chat_id data]}]
-  (let [{:keys [event data]} (types/json->clj data)]
-    (case event
-      "local-storage"    [:set-local-storage {:chat-id chat_id
-                                              :data    data}]
-      "show-suggestions" [:show-suggestions-from-jail {:chat-id chat_id
-                                                       :markup  data}]
-      "send-message"     [:chat-send-message/from-jail {:chat-id chat_id
-                                                        :message data}]
-      "handler-result"   (let [orig-params (:origParams data)]
-                           ;; TODO(janherich): figure out and fix chat_id from event
-                           [:command-handler! (:chat-id orig-params)
-                            (restore-command-ref-keyword orig-params)
-                            {:result {:returned (dissoc data :origParams)}}])
-      (log/debug "Unknown jail signal " event))))
-
 (handlers/register-handler-fx
  :discovery/summary
  (fn [{:keys [db] :as cofx} [_ peers-summary]]
@@ -445,26 +418,6 @@
                                           :peers-count peers-count)}
                               (transport.handlers/resend-contact-messages previous-summary)
                               (inbox/peers-summary-change-fx previous-summary)))))
-
-(handlers/register-handler-fx
- :signal-event
- (fn [_ [_ event-str]]
-   (log/debug :event-str event-str)
-   (instabug/log (str "Signal event: " event-str))
-   (let [{:keys [type event]} (types/json->clj event-str)
-         to-dispatch (case type
-                       "sign-request.queued" [:sign-request-queued event]
-                       "sign-request.failed" [:sign-request-failed event]
-                       "node.started"        [:status-node-started]
-                       "node.stopped"        [:status-node-stopped]
-                       "module.initialized"  [:status-module-initialized]
-                       "jail.signal"         (handle-jail-signal event)
-                       "envelope.sent"       [:signals/envelope-status (:hash event) :sent]
-                       "envelope.expired"    [:signals/envelope-status (:hash event) :not-sent]
-                       "discovery.summary"   [:discovery/summary event]
-                       (log/debug "Event " type " not handled"))]
-     (when to-dispatch
-       {:dispatch to-dispatch}))))
 
 (handlers/register-handler-fx
  :status-module-initialized

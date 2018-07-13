@@ -1,6 +1,7 @@
 (ns status-im.chat.views.message.options
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [clojure.string :as string]
             [status-im.ui.components.react :as react]
@@ -26,7 +27,7 @@
 
 (defn view []
   (let [{:keys [chat-id message-id]} @(re-frame/subscribe [:get-current-chat-ui-prop :message-options])
-        close-message-options-fn #(re-frame/dispatch [:set-chat-ui-props {:show-message-options? false}])]
+        close-message-options-fn #(status-im.thread/dispatch [:set-chat-ui-props {:show-message-options? false}])]
     [bottom-info/overlay {:on-click-outside close-message-options-fn}
      [bottom-info/container (* styles/item-height 2)
       [react/view
@@ -36,10 +37,10 @@
                      :icon     :icons/refresh
                      :on-press #(do
                                   (close-message-options-fn)
-                                  (re-frame/dispatch [:resend-message chat-id message-id]))}]
+                                  (status-im.thread/dispatch [:resend-message chat-id message-id]))}]
        [action-item {:label    :delete-message
                      :icon     :icons/delete
                      :style    {:color colors/red}
                      :on-press #(do
                                   (close-message-options-fn)
-                                  (re-frame/dispatch [:delete-message chat-id message-id]))}]]]]))
+                                  (status-im.thread/dispatch [:delete-message chat-id message-id]))}]]]]))

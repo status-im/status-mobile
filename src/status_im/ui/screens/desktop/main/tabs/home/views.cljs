@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.desktop.main.tabs.home.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]))
@@ -28,7 +29,7 @@
      [unviewed-indicator chat-id]]))
 
 (defn chat-list-item [[chat-id chat]]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
+  [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:navigate-to-chat chat-id])}
    [react/view
     [chat-list-item-inner-view (assoc chat :chat-id chat-id)]]])
 
@@ -37,7 +38,7 @@
     [react/view {:style {:flex 1 :background-color :white}}
      [react/view {:style {:align-items :center :flex-direction :row :padding 11}}
       [react/view {:style {:flex 1}}]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :new-contact])}
+      [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:navigate-to :new-contact])}
        [icons/icon :icons/add]]]
      [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
      [react/scroll-view

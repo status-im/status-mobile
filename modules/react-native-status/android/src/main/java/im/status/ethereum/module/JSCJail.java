@@ -172,6 +172,7 @@ class JSCJail implements Jail {
 
     @Override
     public String parseJail(String chatId, String js) {
+        Log.d(TAG, "parseJail");
         Cell cell = new Cell();
         JSContext context = new JSContext();
         cell.context = context;

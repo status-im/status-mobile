@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.chat.views.photos :as photos]
             [status-im.ui.screens.accounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
@@ -14,7 +15,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]))
 
 (defn account-view [{:keys [address photo-path name public-key]}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-login address photo-path name])}
+  [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:open-login address photo-path name])}
    [react/view styles/account-view
     [photos/photo photo-path {:size styles/account-image-size}]
     [react/view styles/account-badge-text-view
@@ -41,9 +42,9 @@
                         :render-fn (fn [account] [account-view account])
                         :separator [react/view {:height 12}]}]]
       [react/view
-       [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :create-account])
+       [components.common/button {:on-press #(status-im.thread/dispatch [:navigate-to :create-account])
                                   :label    (i18n/label :t/create-new-account)}]
        [react/view styles/bottom-button-container
-        [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
+        [components.common/button {:on-press    #(status-im.thread/dispatch [:navigate-to :recover])
                                    :label       (i18n/label :t/add-existing-account)
                                    :background? false}]]]]]))

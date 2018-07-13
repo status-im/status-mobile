@@ -59,7 +59,7 @@
                            {:symKeyID sym-key-id
                             :topics   [topic]}
                            (fn [js-error js-message]
-                             (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
+                             (status-im.thread/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
 
 (defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters

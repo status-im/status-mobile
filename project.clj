@@ -37,17 +37,29 @@
                         :cljsbuild    {:builds
                                        {:ios
                                         {:source-paths ["components/src" "react-native/src" "src"]
-                                         :compiler     {:output-to     "target/ios/app.js"
-                                                        :main          "env.ios.main"
-                                                        :output-dir    "target/ios"
-                                                        :optimizations :none}}
+                                         :compiler     {:output-to       "target/ios/app.js"
+                                                        :main            "env.ios.main"
+                                                        :output-dir      "target/ios"
+                                                        :optimizations   :none
+                                                        :closure-defines {status-im.thread/platform "ios"}}}
                                         :android
                                         {:source-paths     ["components/src" "react-native/src" "src"]
-                                         :compiler         {:output-to     "target/android/app.js"
-                                                            :main          "env.android.main"
-                                                            :output-dir    "target/android"
-                                                            :optimizations :none}
+                                         :compiler         {:output-to       "target/android/app.js"
+                                                            :main            "env.android.main"
+                                                            :output-dir      "target/android"
+                                                            :optimizations   :none
+                                                            :closure-defines {status-im.thread/platform     "android"}}
                                          :warning-handlers [status-im.utils.build/warning-handler]}
+                                        :worker-android
+                                        {:source-paths ["components/src" "react-native/src" "src"]
+                                         :figwheel     true
+                                         :compiler     {:output-to     "target/worker_android/app.js"
+                                                        :main          "env.android.worker"
+                                                        :output-dir    "target/worker_android"
+                                                        :optimizations :none
+                                                        :target        :nodejs
+                                                        :closure-defines {status-im.thread/platform     "android"
+                                                                          status-im.utils.config/thread "handlers"}}}
                                         :desktop
                                         {:source-paths ["components/src" "react-native/src" "src"]
                                          :compiler     {:output-to     "target/desktop/app.js"
@@ -76,12 +88,12 @@
                                                         :target        :nodejs}}
                                         {:id           "protocol"
                                          :source-paths ["components/src" "src" "test/cljs"]
-                                         :compiler     {:main             status-im.test.protocol.runner
-                                                        :output-to        "target/test/test.js"
-                                                        :output-dir       "target/test"
-                                                        :optimizations    :none
-                                                        :preamble         ["js/hook-require.js"]
-                                                        :target           :nodejs}}
+                                         :compiler     {:main          status-im.test.protocol.runner
+                                                        :output-to     "target/test/test.js"
+                                                        :output-dir    "target/test"
+                                                        :optimizations :none
+                                                        :preamble      ["js/hook-require.js"]
+                                                        :target        :nodejs}}
                                         {:id           "env-dev-utils"
                                          :source-paths ["env/dev/env/utils.cljs" "test/env/dev"]
                                          :compiler     {:main          env.test.runner
@@ -115,4 +127,19 @@
                                                          :parallel-build     false
                                                          :elide-asserts      true
                                                          :language-in        :ecmascript5}
-                                      :warning-handlers [status-im.utils.build/warning-handler]}}}}})
+                                      :warning-handlers [status-im.utils.build/warning-handler]}
+
+                                     :worker-android
+                                     {:source-paths ["components/src" "react-native/src" "src" "env/prod"]
+                                      :compiler     {:output-to          "worker.android.js"
+                                                     :main               "env.android.worker"
+                                                     :output-dir         "target/worker-android-prod"
+                                                     :static-fns         true
+                                                     :optimize-constants true
+                                                     :optimizations      :simple
+                                                     :closure-defines    {"goog.DEBUG"                  false
+                                                                          status-im.thread/platform     "android"
+                                                                          status-im.utils.config/thread "handlers"}
+                                                     :parallel-build     false
+                                                     :elide-asserts      true
+                                                     :language-in        :ecmascript5}}}}}})

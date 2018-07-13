@@ -230,6 +230,7 @@ dependencies {
     compile project(':react-native-testfairy')
     implementation project(':react-native-keychain')
     implementation project(':instabug-reactnative')
+    implementation project(':react-native-threads')
 
     implementation 'status-im:function:0.0.1'
     implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])

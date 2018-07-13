@@ -13,6 +13,7 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.chat.views.photos :as photos]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [cljs.spec.alpha :as spec]
             [status-im.ui.screens.accounts.db :as db]))
 
@@ -25,7 +26,7 @@
 
 (defn login-account [password-text-input address password]
   (.blur password-text-input)
-  (re-frame/dispatch [:login-account address password]))
+  (status-im.thread/dispatch [:login-account address password]))
 
 (defn- error-key [error]
   ;; TODO Improve selection logic when status-go provide an error code
@@ -67,8 +68,8 @@
           :auto-focus        can-navigate-back? ;;this needed because keyboard overlays testfairy alert
           :on-submit-editing #(login-account @password-text-input address password)
           :on-change-text    #(do
-                                (re-frame/dispatch [:set-in [:accounts/login :password] %])
-                                (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
+                                (status-im.thread/dispatch [:set-in [:accounts/login :password] %])
+                                (status-im.thread/dispatch [:set-in [:accounts/login :error] ""]))
           :secure-text-entry true
           :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]]]
      (when processing
@@ -80,7 +81,7 @@
         (when-not can-navigate-back?
           [components.common/bottom-button
            {:label    (i18n/label :t/other-accounts)
-            :on-press #(re-frame/dispatch [:navigate-to-clean :accounts])}])
+            :on-press #(status-im.thread/dispatch [:navigate-to-clean :accounts])}])
         [react/view {:style {:flex 1}}]
         [components.common/bottom-button
          {:forward?  true

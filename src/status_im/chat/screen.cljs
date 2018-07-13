@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.chat.models :as models.chat]
@@ -33,7 +34,7 @@
   (letsubs [contact [:get-contact-by-identity contact-identity]]
     (when (models.contact/can-add-to-contacts? contact)
       [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
+       {:on-press            #(status-im.thread/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
        [react/view style/add-contact
         [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
@@ -87,7 +88,7 @@
       :preview [react/view style/message-view-preview]}
      [react/touchable-without-feedback
       {:on-press (fn [_]
-                   (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                   (status-im.thread/dispatch [:set-chat-ui-props {:messages-focused? true}])
                    (react/dismiss-keyboard!))}
       [react/animated-view {:style (style/message-view-animated opacity)}
        message-view]]]))
@@ -116,7 +117,7 @@
   (letsubs [messages           [:get-current-chat-messages-stream]
             chat               [:get-current-chat]
             current-public-key [:get-current-public-key]]
-    {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
+    {:component-did-mount #(status-im.thread/dispatch [:set-chat-ui-props {:messages-focused? true
                                                                    :input-focused? false}])}
     (if (empty? messages)
       [empty-chat-container chat]
@@ -127,7 +128,7 @@
                                                                   :current-public-key current-public-key
                                                                   :row                message}])
                        :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                       :onEndReached              #(status-im.thread/dispatch [:load-more-messages])
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps :handled}])))
 
@@ -144,7 +145,7 @@
                         :keyboard-should-persist-taps :handled}
      [react/view {:style     style/chat-view
                   :on-layout (fn [e]
-                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
+                               (status-im.thread/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
       [chat-toolbar public?]
       (when (= :chat current-view)
         [messages-view-animation

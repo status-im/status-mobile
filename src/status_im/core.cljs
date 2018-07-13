@@ -6,16 +6,19 @@
             status-im.transport.impl.receive
             [taoensso.timbre :as log]
             [status-im.utils.config :as config]
-            [status-im.react-native.js-dependencies :as js-dependencies]
-            [goog.object :as object]))
+            [goog.object :as object]
+            status-im.ui.screens.signal-events
+            [status-im.thread :as status-im.thread]))
 
 (when js/goog.DEBUG
   (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
 
+(def testfairy              (js/require "react-native-testfairy"))
+
 (defn init [app-root]
   (log/set-level! config/log-level)
   (error-handler/register-exception-handler!)
-  (status/init-jail)
+  #_(status/init-jail)
   (when config/testfairy-enabled?
-    (.begin js-dependencies/testfairy config/testfairy-token))
+    (.begin testfairy config/testfairy-token))
   (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root)))
