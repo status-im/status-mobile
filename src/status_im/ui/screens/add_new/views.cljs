@@ -14,7 +14,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.mixpanel :as mixpanel]))
 
-(defn- options-list [{:keys [address anon-id]}]
+(defn- options-list [{:keys [anon-id]}]
   [react/view action-button.styles/actions-list
    [action-button/action-button
     {:label               (i18n/label :t/start-new-chat)
@@ -52,7 +52,7 @@
      :icon                :icons/share
      :icon-opts           {:color colors/blue}
      :on-press            #(do (mixpanel/track anon-id "Tap" {:target :invite-friends} false)
-                               (list-selection/open-share {:message (i18n/label :t/get-status-at {:address address})}))}]])
+                               (list-selection/open-share {:message (i18n/label :t/get-status-at)}))}]])
 
 (views/defview add-new []
   (views/letsubs [account     [:get-current-account]

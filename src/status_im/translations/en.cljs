@@ -231,7 +231,7 @@
    :start-new-chat                       "Start new chat"
    :start-group-chat                     "Start group chat"
    :invite-friends                       "Invite friends"
-   :get-status-at                        "Get Status at http://status.im?refCode={{address}}"
+   :get-status-at                        "Get Status at http://status.im"
    :chats                                "Chats"
    :delete-chat                          "Delete chat"
    :group-chat                           "Group chat"
