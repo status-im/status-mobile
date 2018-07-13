@@ -20,8 +20,8 @@
 
 (views/defview toolbar-chat-view []
   (views/letsubs [{:keys [chat-id public-key public? group-chat color]} [:get-current-chat]
-    {:keys [pending? whisper-identity photo-path]}                       [:get-current-chat-contact]
-    current-chat-name                                    [:get-current-chat-name]]
+    {:keys [pending? whisper-identity photo-path]}                      [:get-current-chat-contact]
+    current-chat-name                                                   [:get-current-chat-name]]
    [react/view {:style styles/toolbar-chat-view}
     [react/view {:style {:flex-direction  :row
                          :align-items :center}}
@@ -42,16 +42,11 @@
          [react/view {:style styles/add-contact}
           [react/text {:style styles/add-contact-text}
            (i18n/label :t/add-to-contacts)]]])]
-
-     ;; todo things look ok. think about spacing though
-
-     [react/view {:style {:float "right"}}
-      (when (and (not group-chat) (not public?))
-        [react/text {:on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
-         (i18n/label :t/view-profile)])]]
-
-
-]))
+     (when (and (not group-chat) (not public?))
+       [react/text {:style {:position :absolute
+                            :right 20}
+                    :on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
+        (i18n/label :t/view-profile)])]]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
