@@ -19,30 +19,39 @@
             [status-im.i18n :as i18n]))
 
 (views/defview toolbar-chat-view []
-  (views/letsubs
-   [{:keys [chat-id public-key public? group-chat color]} [:get-current-chat]
-    {:keys [pending? whisper-identity photo-path] :as contact}                       [:get-current-chat-contact]
+  (views/letsubs [{:keys [chat-id public-key public? group-chat color]} [:get-current-chat]
+    {:keys [pending? whisper-identity photo-path]}                       [:get-current-chat-contact]
     current-chat-name                                    [:get-current-chat-name]]
    [react/view {:style styles/toolbar-chat-view}
     [react/view {:style {:flex-direction  :row
-                         :justify-content :space-between}}
+                         :align-items :center}}
+
      [react/view {:style styles/img-container}
          (if public?
           [react/view {:style (styles/topic-image color)}
            [react/text {:style styles/topic-text}
-            (string/capitalize (first name))]]
+            (string/capitalize (first current-chat-name))]]
           [react/image {:style styles/photo-style-toolbar
                         :source {:uri photo-path}}])]
-       [react/text {:style styles/toolbar-chat-name} formatted-chat-name]
-     (when (and (not group-chat) (not public?))
-       [react/text {:on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
-        (i18n/label :t/view-profile)])]
-    (when pending?
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
-       [react/view {:style styles/add-contact} ;style/add-contact
-        [react/text {:style styles/add-contact-text}
-         (i18n/label :t/add-to-contacts)]]])]))
+
+     [react/view
+      [react/text {:style styles/toolbar-chat-name} current-chat-name]
+      (when pending?
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+         [react/view {:style styles/add-contact}
+          [react/text {:style styles/add-contact-text}
+           (i18n/label :t/add-to-contacts)]]])]
+
+     ;; todo things look ok. think about spacing though
+
+     [react/view {:style {:float "right"}}
+      (when (and (not group-chat) (not public?))
+        [react/text {:on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
+         (i18n/label :t/view-profile)])]]
+
+
+]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
