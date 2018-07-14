@@ -5,7 +5,6 @@
 (def http-bridge            (js/require "react-native-http-bridge"))
 ;; i18n is now exported in default object of the module
 ;; https://github.com/AlexanderZaytsev/react-native-i18n/blob/master/index.js
-(def i18n                   (js/require "react-native-i18n"))
 (def keychain               (js/require "react-native-keychain"))
 (def qr-code                (js/require "react-native-qrcode"))
 (def react-native           (js/require "react-native"))
@@ -21,7 +20,8 @@
     (= (.-OS (.-Platform react-native)) "desktop"))
 
 (if desktopPlatform?
-  (do (def camera                 #js {:constants {:Aspect "Portrait"}})
+  (do (def i18n                   (js/require "react-native-i18n"))
+      (def camera                 #js {:constants {:Aspect "Portrait"}})
       (def dialogs                #js {})
       (def dismiss-keyboard       #js {})
       (def image-crop-picker      #js {})
@@ -37,7 +37,8 @@
       (def snoopy-buffer          #js {})
       (def background-timer       #js {:setTimeout (fn [])})
       (def testfairy #js {}))
-  (do (def camera                 (js/require "react-native-camera"))
+  (do (def i18n                   (.-default (js/require "react-native-i18n")))
+      (def camera                 (js/require "react-native-camera"))
       (def dialogs                (js/require "react-native-dialogs"))
       (def dismiss-keyboard       (js/require "dismissKeyboard"))
       (def image-crop-picker      (js/require "react-native-image-crop-picker"))
