@@ -7,11 +7,11 @@
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
             [status-im.utils.async :as utils.async]
+            [status-im.utils.platform :as utils.platform]
+            [status-im.utils.ethereum.core :as utils.ethereum]
             [cognitect.transit :as transit]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.utils :as utils]))
-
-(def new-account-filename "new-account")
 
 (defn to-buffer [key]
   (when key
@@ -31,42 +31,76 @@
   [options file-name encryption-key]
   (log/debug "Opening realm at " file-name "...")
   (let [options-js (clj->js (assoc options :path file-name))]
-    (when encryption-key
-      (log/debug "Using encryption key...")
-      (set! (.-encryptionKey options-js) (to-buffer encryption-key)))
+    (log/debug "Using encryption key...")
+    (set! (.-encryptionKey options-js) (to-buffer encryption-key))
     (when (exists? js/window)
       (rn-dependencies/realm. options-js))))
 
-(defn- delete-realm
-  [file-name]
-  (.deleteFile rn-dependencies/realm (clj->js {:path file-name})))
-
-(defn- default-realm-dir [path]
-  (string/replace path #"default\.realm$" ""))
+(defn- is-account-file? [n]
+  (re-matches #".*/[0-9a-f]{40}$" n))
 
 (defn- is-realm-file? [n]
-  (or (re-matches #".*/default\.realm$" n)
-      (re-matches #".*/new-account$" n)
-      (re-matches #".*/[0-9a-f]{40}$" n)))
+  (or (re-matches #".*/default\.realm(\.management|\.lock|\.note)?$" n)
+      (re-matches #".*/new-account(\.management|\.lock|\.note)?$" n)
+      (re-matches #".*/[0-9a-f]{40}(\.management|\.lock|\.note)?$" n)))
+
+(defn- realm-management-file? [n]
+  (re-matches #".*(\.management|\.lock|\.note)$" n))
+
+(def old-base-realm-path
+  (.-defaultPath rn-dependencies/realm))
+
+(def realm-dir
+  (cond
+    utils.platform/android? (str
+                             (.-DocumentDirectoryPath rn-dependencies/fs)
+                             "/../no_backup/realm/")
+    utils.platform/ios?     (str
+                             (.-LibraryDirectoryPath rn-dependencies/fs)
+                             "/realm/")
+    :else                   (.-defaultPath rn-dependencies/realm)))
+
+(def old-realm-dir
+  (string/replace old-base-realm-path #"default\.realm$" ""))
+
+(def accounts-realm-dir
+  (str realm-dir "accounts/"))
+
+(def base-realm-path
+  (str realm-dir
+       "default.realm"))
 
 (defn- delete-realms []
   (log/warn "realm: deleting all realms")
+  (fs/unlink realm-dir))
+
+(defn- ensure-directories []
   (..
-   (fs/read-dir (default-realm-dir (.-defaultPath rn-dependencies/realm)))
+   (fs/mkdir realm-dir)
+   (then #(fs/mkdir accounts-realm-dir))))
+
+(defn- move-realm-to-library [path]
+  (let [filename (last (string/split path "/"))
+        new-path (if (is-account-file? path)
+                   (str accounts-realm-dir (utils.ethereum/sha3 filename))
+                   (str realm-dir filename))]
+    (log/debug "realm: moving " path " to " new-path)
+    (if (realm-management-file? path)
+      (fs/unlink path)
+      (fs/move-file path new-path))))
+
+(defn- move-realms []
+  (log/info "realm: moving all realms")
+  (..
+   (fs/read-dir old-realm-dir)
    (then #(->> (js->clj % :keywordize-keys true)
                (map :path)
-               (filter is-realm-file?)
-               (run! delete-realm)))))
+               (filter is-realm-file?)))
+   (then #(js/Promise.all (clj->js (map move-realm-to-library %))))))
 
 (defn- close [realm]
   (when realm
     (.close realm)))
-
-(defn reset-realm
-  "Delete realm & open a new database using encryption key"
-  [file-name schemas encryption-key]
-  (delete-realm file-name)
-  (open-realm (last schemas) file-name encryption-key))
 
 (defn- migrate-schemas
   "Apply migrations in sequence and open database with the last schema"
@@ -107,36 +141,13 @@
   (log/debug "Opening base realm... (first run)")
   (when @base-realm
     (close @base-realm))
-  (reset! base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas encryption-key))
+  (reset! base-realm (open-migrated-realm base-realm-path base/schemas encryption-key))
   (log/debug "Created @base-realm"))
 
-(defn reset-account-realm [encryption-key]
-  (log/debug "Resetting account realm...")
-  (when @account-realm
-    (close @account-realm))
-  (reset! account-realm (open-migrated-realm new-account-filename account/schemas encryption-key))
-  (.write @account-realm #(.deleteAll @account-realm))
-  (log/debug "Created @account-realm"))
-
-(defn move-file-handler [address encryption-key err handler]
-  (log/debug "Moved file with error: " err address)
-  (if err
-    (log/error "Error moving account realm: " (.-message err))
-    (reset! account-realm (open-migrated-realm address account/schemas encryption-key)))
-  (handler err))
-
-(defn change-account [address new-account? encryption-key handler]
-  (let [path (.-path @account-realm)]
-    (log/debug "closing account realm: " path)
+(defn change-account [address encryption-key]
+  (let [path (str accounts-realm-dir (utils.ethereum/sha3 address))]
     (close-account-realm)
-    (log/debug "is new account? " new-account?)
-    (if new-account?
-      (let [new-path (string/replace path new-account-filename address)]
-        (log/debug "Moving file " path " to " new-path)
-        (fs/move-file path new-path #(move-file-handler address encryption-key % handler)))
-      (do
-        (reset! account-realm (open-migrated-realm address account/schemas encryption-key))
-        (handler nil)))))
+    (reset! account-realm (open-migrated-realm path account/schemas encryption-key))))
 
 (declare realm-obj->clj)
 
@@ -152,19 +163,6 @@
    (let [obj-to-save (select-keys obj (keys (get-in entity->schemas
                                                     [schema-name :properties])))]
      (.create realm (name schema-name) (clj->js obj-to-save) update?))))
-
-(defn save
-  ([realm schema-name obj]
-   (save realm schema-name obj false))
-  ([realm schema-name obj update?]
-   (write realm #(create realm schema-name obj update?))))
-
-(defn save-all
-  ([realm schema-name objs]
-   (save-all realm schema-name objs false))
-  ([realm schema-name objs update?]
-   (write realm (fn []
-                  (mapv #(save realm schema-name % update?) objs)))))
 
 (defn delete [realm obj]
   (.delete realm obj))

@@ -8,11 +8,14 @@
 (handlers/register-handler-fx
  :scan-qr-code
  (fn [{:keys [db]} [_ identifier handler]]
-   {:db (assoc-in db [:qr-codes identifier] handler)
+   {:db                     (assoc-in db [:qr-codes identifier] handler)
     :request-permissions-fx {:permissions [:camera]
                              :on-allowed  #(re-frame/dispatch [:navigate-to :qr-scanner {:current-qr-context identifier}])
-                             :on-denied   #(utils/show-popup (i18n/label :t/error)
-                                                             (i18n/label :t/camera-access-error))}}))
+                             :on-denied   (fn []
+                                            (utils/set-timeout
+                                             #(utils/show-popup (i18n/label :t/error)
+                                                                (i18n/label :t/camera-access-error))
+                                             50))}}))
 
 (handlers/register-handler-fx
  :clear-qr-code

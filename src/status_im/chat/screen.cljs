@@ -36,8 +36,7 @@
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
        [react/view style/add-contact
-        [react/text {:style style/add-contact-text}
-         (i18n/label :t/add-to-contacts)]]])))
+        [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   (if public? (str "#" chat-name) chat-name)

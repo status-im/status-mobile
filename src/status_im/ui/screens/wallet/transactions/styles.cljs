@@ -144,8 +144,7 @@
 (def details-item-label
   {:flex         1
    :margin-right 10
-   :color        colors/gray
-   :font-size    14})
+   :color        colors/gray})
 
 (def details-item-value-wrapper
   {:flex 5})
@@ -213,7 +212,6 @@
 
 (def details-confirmations-helper-text
   {:color           colors/gray
-   :font-size       14
    :margin-vertical 2})
 
 (def details-separator

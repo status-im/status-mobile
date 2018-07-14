@@ -9,18 +9,14 @@
 (spec/def :browser/photo-path (spec/nilable string?))
 (spec/def :browser/name (spec/nilable string?))
 (spec/def :browser/dapp? (spec/nilable boolean?))
-(spec/def :browser/fullscreen? (spec/nilable boolean?))
 (spec/def :browser/error? (spec/nilable boolean?))
 (spec/def :browser/history (spec/nilable vector?))
 (spec/def :browser/history-index (spec/nilable int?))
-(spec/def :browser/dont-store-history-on-nav-change? (spec/nilable boolean?))
 
 (spec/def :browser/options
   (allowed-keys
    :opt-un [:browser/browser-id
-            :browser/fullscreen?
-            :browser/error?
-            :browser/dont-store-history-on-nav-change?]))
+            :browser/error?]))
 
 (spec/def :browser/browser
   (allowed-keys
@@ -28,8 +24,6 @@
             :browser/timestamp]
    :opt-un [:browser/name
             :browser/dapp?
-            :browser/url
-            :browser/contact
             :browser/history
             :browser/history-index]))
 

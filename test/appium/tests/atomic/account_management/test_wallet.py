@@ -11,6 +11,7 @@ from views.web_views.base_web_view import BaseWebView
 class TestWallet(SingleDeviceTestCase):
 
     @marks.testrail_id(3698)
+    @marks.smoke_1
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -50,9 +51,8 @@ class TestWallet(SingleDeviceTestCase):
         transaction_hash = transaction_details.get_transaction_hash()
         transaction_details.options_button.click()
         transaction_details.open_transaction_on_etherscan_button.click()
-        base_web_view = BaseWebView(self.driver)
-        base_web_view.web_view_browser.click()
-        base_web_view.always_button.click()
+        base_web_view = wallet_view.get_base_web_view(self.driver)
+        base_web_view.open_in_webview()
         base_web_view.find_text_part(transaction_hash)
 
     @marks.testrail_id(1450)
@@ -75,6 +75,7 @@ class TestWallet(SingleDeviceTestCase):
             pytest.fail('Transaction hash was not copied')
 
     @marks.testrail_id(3713)
+    @marks.smoke_1
     def test_manage_assets(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -92,3 +93,22 @@ class TestWallet(SingleDeviceTestCase):
         if wallet.asset_by_name(deselect_asset).is_element_displayed():
             self.errors.append('%s asset is shown in wallet but was deselected' % deselect_asset)
         self.verify_no_errors()
+
+    @marks.testrail_id(3725)
+    def test_backup_seed_phrase_warning_from_wallet(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        wallet = sign_in.wallet_button.click()
+        wallet.set_up_wallet()
+        if wallet.backup_seed_phrase.is_element_present():
+            pytest.fail("'Backup your Seed Phrase' option is shown on Wallet for an account with no funds")
+        wallet.receive_transaction_button.click()
+        address = wallet.address_text.text[2:]
+        wallet.get_back_to_home_view()
+        home = wallet.home_button.click()
+        self.network_api.get_donate(address)
+        home.wallet_button.click()
+        if not wallet.backup_seed_phrase.is_element_present():
+            pytest.fail("'Backup your Seed Phrase' option is not shown on Wallet for an account with funds")
+        profile = wallet.get_profile_view()
+        profile.backup_seed_phrase()

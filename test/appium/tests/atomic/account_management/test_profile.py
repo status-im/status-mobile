@@ -1,6 +1,7 @@
 import pytest
 
 from tests import marks, group_chat_users
+from tests import marks, group_chat_users, basic_user
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -10,6 +11,7 @@ from views.sign_in_view import SignInView
 class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(760)
+    @marks.smoke_1
     def test_set_profile_picture(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -22,6 +24,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             pytest.fail('Profile picture was not updated')
 
     @marks.testrail_id(1403)
+    @marks.smoke_1
     def test_share_contact_code_and_wallet_address(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -45,6 +48,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(3704)
+    @marks.smoke_1
     def test_copy_contact_code_and_wallet_address(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -91,7 +95,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                 pytest.fail('Profile picture was not updated')
 
     @marks.testrail_id(2374)
-    def test_backup_seed_phrase(self):
+    @marks.smoke_1
+    def test_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         if sign_in_view.profile_button.counter.text != '1':
@@ -103,7 +108,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if sign_in_view.profile_button.counter.text != '1':
             self.errors.append('Profile button counter is not shown after relogin')
         sign_in_view.profile_button.click()
-        profile_view.backup_seed_phrase()
+        profile_view.backup_recovery_phrase()
         if sign_in_view.profile_button.counter.is_element_displayed():
             self.errors.append('Profile button counter is shown after seed phrase backup')
         self.verify_no_errors()
@@ -146,3 +151,53 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
         profile_view.find_text_part('CUSTOM_ROPSTEN')
+
+    @marks.logcat
+    @marks.testrail_id(3774)
+    def test_logcat_backup_seed_phrase(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.backup_seed_phrase_button.click()
+        profile_view.ok_continue_button.click()
+        seed_phrase = profile_view.get_seed_phrase()
+        profile_view.next_button.click()
+        word_number = profile_view.seed_phrase_word_number.number
+        profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number])
+        profile_view.next_button.click()
+        word_number_1 = profile_view.seed_phrase_word_number.number
+        profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number_1])
+        profile_view.done_button.click()
+        profile_view.yes_button.click()
+        for i in seed_phrase[word_number], seed_phrase[word_number_1]:
+            profile_view.check_no_value_in_logcat(i, 'Passphrase')
+
+    @marks.testrail_id(3751)
+    def test_need_help_section(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.help_button.click()
+        profile_view.request_feature_button.click()
+        profile_view.find_full_text('Feature Requests')
+        profile_view.click_system_back_button()
+        profile_view.submit_bug_button.click()
+        profile_view.find_full_text('Report a problem')
+        profile_view.click_system_back_button()
+        profile_view.discard_button.click()
+        base_web_view = profile_view.faq_button.click()
+        base_web_view.open_in_webview()
+        profile_view.find_text_part('Questions around beta')
+
+    @marks.testrail_id(1416)
+    @marks.smoke_1
+    def test_contact_profile_view(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        home_view = sign_in_view.get_home_view()
+        home_view.add_contact(basic_user['public_key'])
+        chat_view = home_view.get_chat_view()
+        chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
+        chat_view.view_profile_button.click()
+        for text in basic_user['username'], 'In contacts', 'Send transaction', 'Send message', 'Contact code':
+            chat_view.find_full_text(text)

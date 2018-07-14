@@ -44,7 +44,7 @@
        [react/text {:style               styles/signing-phrase
                     :accessibility-label :signing-phrase-text}
         signing-phrase]]
-      [react/text {:style styles/signing-phrase-description} (i18n/label message-label)]
+      [react/i18n-text {:style styles/signing-phrase-description :key message-label}]
       [react/view styles/password-container
        [react/text-input
         {:auto-focus             true
@@ -158,8 +158,8 @@
          [react/view styles/transaction-fee-info-icon
           [react/text {:style styles/transaction-fee-info-icon-text} "?"]]
          [react/view styles/transaction-fee-info-text-wrapper
-          [react/text {:style styles/advanced-fees-text}
-           (i18n/label :t/wallet-transaction-fee-details)]]]
+          [react/i18n-text {:style styles/advanced-fees-text
+                            :key   :wallet-transaction-fee-details}]]]
         [components/separator]
         [react/view styles/transaction-fee-block-wrapper
          [wallet.components/cartouche {:disabled? true}
@@ -207,8 +207,9 @@
     [react/view {:style styles/advanced-button-wrapper}
      [react/view {:style               styles/advanced-button
                   :accessibility-label :advanced-button}
-      [react/text {:style (merge wallet.components.styles/label styles/advanced-label)}
-       (i18n/label :t/wallet-advanced)]
+      [react/i18n-text {:style (merge wallet.components.styles/label
+                                      styles/advanced-label)
+                        :key   :wallet-advanced}]
       [vector-icons/icon (if advanced? :icons/up :icons/down) {:color :white}]]]]
    (when advanced?
      [advanced-cartouche transaction modal?])])
@@ -278,7 +279,8 @@
         [status-bar/status-bar {:type :modal-wallet}]
         [toolbar false false act/close-white
          (i18n/label :t/send-transaction)]
-        [react/text {:style styles/empty-text} (i18n/label :t/unsigned-transaction-expired)]]])))
+        [react/i18n-text {:style styles/empty-text
+                          :key   :unsigned-transaction-expired}]]])))
 
 (defview sign-message-modal []
   (letsubs [{:keys [data in-progress?]} [:wallet.send/unsigned-transaction]]

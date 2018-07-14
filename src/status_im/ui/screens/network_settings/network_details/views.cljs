@@ -35,8 +35,8 @@
               [react/text {:style      st/connect-button-label
                            :uppercase? true}
                (i18n/label :t/connect)]]
-             [react/text {:style st/connect-button-description}
-              (i18n/label :t/connecting-requires-login)]]])
+             [react/i18n-text {:style st/connect-button-description
+                               :key   :connecting-requires-login}]]])
          [react/view st/network-config-container
           [react/text {:style               st/network-config-text
                        :accessibility-label :network-details-text}

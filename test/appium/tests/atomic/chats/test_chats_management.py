@@ -25,6 +25,7 @@ class TestChatManagement(SingleDeviceTestCase):
             pytest.fail('Message history is shown after re-login')
 
     @marks.testrail_id(1395)
+    @marks.smoke_1
     def test_swipe_to_delete_1_1_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -41,6 +42,7 @@ class TestChatManagement(SingleDeviceTestCase):
             pytest.fail('Deleted 1-1 chat is present after relaunch app')
 
     @marks.testrail_id(3718)
+    @marks.smoke_1
     def test_swipe_to_delete_public_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -63,6 +65,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(3694)
+    @marks.smoke_1
     def test_add_contact_from_public_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -70,6 +73,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat = home.join_public_chat(chat_name)
         message = 'test message'
 
+        chat.reconnect()
         chat_element = chat.chat_element_by_text(message)
         chat_element.find_element()
         username = chat_element.username.text
@@ -95,6 +99,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(763)
+    @marks.smoke_1
     def test_add_contact_by_pasting_public_key(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

@@ -62,6 +62,15 @@
            (handle-found res)
            (handle-not-found))))))
 
+(defn safe-get-encryption-key
+  "Return encryption key or empty string in case invalid/empty"
+  []
+  (log/debug "initializing realm encryption key...")
+  (.. (get-encryption-key)
+      (catch (fn [{:keys [_ key]}]
+               (log/warn "key is invalid, continuing")
+               (or key "")))))
+
 (defn reset []
   (log/debug "resetting key...")
   (.resetGenericPassword rn/keychain))

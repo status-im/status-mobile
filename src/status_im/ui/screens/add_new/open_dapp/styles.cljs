@@ -6,9 +6,7 @@
    :background-color colors/white})
 
 (def gray-label
-  {:font-size      14
-   :letter-spacing -0.2
-   :color          colors/gray})
+  {:color          colors/gray})
 
 (def black-label
   {:font-size      15

@@ -13,9 +13,9 @@ RERUN_ERRORS = [
     'ERROR The test with session id'
     "Message: 'CreateAccountButton' is not found on screen",
     "503 Service Unavailable",
-    "AttributeError: 'NoneType' object has no attribute 'find_element'",
-    "[Errno 104] Connection reset by peer"
-    "AttributeError: 'NoneType' object has no attribute"
+    "object has no attribute",
+    "[Errno 104] Connection reset by peer",
+    "Sauce could not start your job"
 ]
 
 

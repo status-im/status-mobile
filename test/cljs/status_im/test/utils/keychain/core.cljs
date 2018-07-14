@@ -50,3 +50,29 @@
                     (is (= :weak-key error))
                     (is (= weak-key (js->clj key)))
                     (done))))))))
+
+(deftest safe-key-is-not-valid
+  (async
+   done
+   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password (key->json weak-key)}))}]
+     (testing "it returns a valid key"
+       (.. (keychain/safe-get-encryption-key)
+           (then (fn [k]
+                   (is (= weak-key (js->clj k)))
+                   (done)))
+           (catch (fn [err]
+                    (is (not err))
+                    (done))))))))
+
+(deftest safe-key-is-nil
+  (async
+   done
+   (with-redefs [rn/keychain #js {:getGenericPassword (constantly (.resolve js/Promise #js {:password nil}))}]
+     (testing "it returns a valid key"
+       (.. (keychain/safe-get-encryption-key)
+           (then (fn [k]
+                   (is (= "" (js->clj k)))
+                   (done)))
+           (catch (fn [err]
+                    (is (not err))
+                    (done))))))))

@@ -16,8 +16,7 @@
 
 (defstyle dapp-text
   {:color   colors/gray
-   :ios     {:font-size  14
-             :margin-top 4}
+   :ios     {:margin-top 4}
    :android {:font-size 13}})
 
 (def toolbar

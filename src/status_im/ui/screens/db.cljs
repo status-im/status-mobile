@@ -94,7 +94,7 @@
 (spec/def :navigation/prev-view-id (spec/nilable keyword?))
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
-(spec/def :navigation.screen-params/browser (allowed-keys :req [:browser/browser-id]))
+(spec/def :navigation.screen-params/browser (spec/nilable string?))
 (spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
 (spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))
@@ -133,6 +133,7 @@
 ;;;;NETWORK
 
 (spec/def ::network (spec/nilable string?))
+(spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
 (spec/def :inbox/fetching? (spec/nilable boolean?))
@@ -228,6 +229,7 @@
                  ::sync-state
                  ::sync-data
                  ::network
+                 ::chain
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id

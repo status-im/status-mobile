@@ -8,6 +8,7 @@ from views.sign_in_view import SignInView
 class TestSignIn(SingleDeviceTestCase):
 
     @marks.testrail_id(1381)
+    @marks.smoke_1
     def test_login_with_new_account(self):
         sign_in = SignInView(self.driver)
         username = 'test_user'
@@ -36,6 +37,17 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in.password_input.set_value(common_password + '1')
         sign_in.sign_in_button.click()
         sign_in.find_full_text('Wrong password')
+
+    @marks.logcat
+    @marks.testrail_id(3768)
+    def test_password_in_logcat_sign_in(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.logout()
+        sign_in.click_account_by_position(0)
+        sign_in.sign_in()
+        sign_in.check_no_value_in_logcat(common_password)
 
 
 @marks.all

@@ -23,8 +23,8 @@
     [react/text {:style styles/badge-name-text}
      (or name (i18n/label :t/new-network))]
     (when connected?
-      [react/text {:style styles/badge-connected-text}
-       (i18n/label :t/connected)])]])
+      [react/i18n-text {:style styles/badge-connected-text
+                        :key   :connected}])]])
 
 (def mainnet?
   #{"mainnet" "mainnet_rpc"})

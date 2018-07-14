@@ -18,7 +18,6 @@
 (def sign-you-in
   {:margin-top     16
    :font-size      13
-   :letter-spacing -0.2
    :color          colors/text-light-gray})
 
 (def bottom-button-container

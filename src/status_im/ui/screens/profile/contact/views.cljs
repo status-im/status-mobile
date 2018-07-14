@@ -65,7 +65,10 @@
        [profile-contact-toolbar]
        [react/scroll-view
         [react/view profile.components.styles/profile-form
-         [profile.components/profile-header contact false false nil nil]]
+         [profile.components/profile-header
+          {:contact              contact
+           :editing?             false
+           :allow-icon-change?   false}]]
         [list/action-list (actions contact)
          {:container-style        styles/action-container
           :action-style           styles/action

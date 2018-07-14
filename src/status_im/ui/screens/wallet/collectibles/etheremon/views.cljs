@@ -24,4 +24,4 @@
      :icon-opts           {:color colors/blue}
      :accessibility-label :open-collectible-button
      :on-press            #(re-frame/dispatch [:open-collectible-in-browser
-                                               {:url (str "https://www.etheremon.com/#/mons/" class_id)}])}]])
+                                               (str "https://www.etheremon.com/#/mons/" class_id)])}]])

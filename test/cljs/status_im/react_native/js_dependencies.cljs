@@ -24,6 +24,7 @@
        :DeviceEventEmitter #js {:addListener (fn [])}
        :Dimensions         #js {:get  (fn [])}})
 (def realm                  #js {:schemaVersion (fn [])
+                                 :defaultPath   "/tmp/realm"
                                  :close         (fn [])})
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})

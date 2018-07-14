@@ -7,6 +7,7 @@ from views.sign_in_view import SignInView
 class TestTransactionWallet(SingleDeviceTestCase):
 
     @marks.testrail_id(766)
+    @marks.smoke_1
     def test_send_eth_from_wallet_to_contact(self):
         recipient = transaction_users['F_USER']
         sender = transaction_users['E_USER']
@@ -35,6 +36,7 @@ class TestTransactionWallet(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
     @marks.testrail_id(767)
+    @marks.smoke_1
     def test_send_eth_from_wallet_to_address(self):
         recipient = transaction_users['E_USER']
         sender = transaction_users['F_USER']
@@ -60,6 +62,7 @@ class TestTransactionWallet(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
     @marks.testrail_id(1430)
+    @marks.smoke_1
     def test_send_stt_from_wallet(self):
         sender = transaction_users_wallet['A_USER']
         recipient = transaction_users_wallet['B_USER']
@@ -160,3 +163,29 @@ class TestTransactionWallet(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_input.set_value(recipient['public_key'])
         send_transaction.done_button.click()
         send_transaction.find_text_part('Invalid address:', 20)
+
+    @marks.logcat
+    @marks.testrail_id(3770)
+    def test_logcat_send_transaction_from_wallet(self):
+        sender = transaction_users['E_USER']
+        recipient = transaction_users['F_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.get_home_view()
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.click()
+        transaction_amount = send_transaction.get_unique_amount()
+        send_transaction.amount_edit_box.set_value(transaction_amount)
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
+        send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.enter_password_input.click()
+        send_transaction.send_as_keyevent(sender['password'])
+        send_transaction.sign_transaction_button.click()
+        send_transaction.got_it_button.click()
+        send_transaction.check_no_value_in_logcat(sender['password'])

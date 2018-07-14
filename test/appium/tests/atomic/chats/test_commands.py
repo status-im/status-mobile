@@ -1,5 +1,3 @@
-import random
-
 from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
@@ -13,7 +11,7 @@ from views.sign_in_view import SignInView
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
-    @marks.testrail_case_id(3742)
+    @marks.smoke_1
     @marks.testrail_id(3697)
     def test_network_mismatch_for_send_request_commands(self):
         sender = self.senders['d_user'] = transaction_users['D_USER']
@@ -67,6 +65,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(765)
+    @marks.smoke_1
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_users['D_USER']
         sender = self.senders['c_user'] = transaction_users['C_USER']
@@ -133,6 +132,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1391)
+    @marks.smoke_1
     def test_request_and_receive_eth_in_1_1_chat(self):
         recipient = transaction_users['C_USER']
         sender = self.senders['d_user'] = transaction_users['D_USER']
@@ -169,6 +169,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1429)
+    @marks.smoke_1
     def test_request_eth_in_wallet(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -237,6 +238,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
 
     @marks.testrail_id(3744)
+    @marks.smoke_1
     def test_send_tokens_in_1_1_chat(self):
         recipient = transaction_users['D_USER']
         sender = transaction_users['C_USER']
@@ -269,6 +271,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(3748)
+    @marks.smoke_1
     def test_request_and_receive_tokens_in_1_1_chat(self):
         recipient = transaction_users['C_USER']
         sender = transaction_users['D_USER']
@@ -308,6 +311,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(3745)
+    @marks.smoke_1
     def test_send_request_not_enabled_tokens(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -322,3 +326,17 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         if chat.asset_by_name('MDS').is_element_displayed():
             self.errors.append('Token which is not enabled in wallet can be requested in 1-1 chat')
         self.verify_no_errors()
+
+    @marks.logcat
+    @marks.testrail_id(3771)
+    def test_logcat_send_transaction_in_1_1_chat(self):
+        sender = transaction_users['C_USER']
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.home_button.click()
+        chat = home.add_contact(transaction_users['D_USER']['public_key'])
+        amount = chat.get_unique_amount()
+        chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
+        chat.check_no_value_in_logcat(sender['password'])

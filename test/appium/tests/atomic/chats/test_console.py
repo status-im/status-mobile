@@ -11,6 +11,7 @@ from views.sign_in_view import SignInView
 class TestMessagesPublicChat(SingleDeviceTestCase):
 
     @marks.testrail_id(1380)
+    @marks.smoke_1
     def test_faucet_console_command(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -21,22 +22,14 @@ class TestMessagesPublicChat(SingleDeviceTestCase):
         console_chat = home_view.get_chat_with_user('Status Console')
         console_view = console_chat.click()
         console_view.send_faucet_request()
-        first_request_time = time.time()
         console_view.chat_element_by_text('Faucet request has been received').wait_for_visibility_of_element()
-        console_view.send_faucet_request()
-        console_view.chat_element_by_text('Faucet request error').wait_for_visibility_of_element()
         console_view.get_back_to_home_view()
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.wait_balance_changed_on_wallet_screen()
-        wallet_view.home_button.click()
-        console_chat.click()
-        wait_time = 300 - (time.time() - first_request_time)
-        time.sleep(wait_time if wait_time > 0 else 0)
-        console_view.send_faucet_request()
-        console_view.chat_element_by_text('Faucet request has been received').wait_for_visibility_of_element()
 
     @marks.testrail_id(1400)
+    @marks.smoke_1
     def test_web3_block_number(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -48,8 +41,8 @@ class TestMessagesPublicChat(SingleDeviceTestCase):
         chat_view.chat_message_input.send_keys('web3.eth.blockNumber')
         block_number = self.network_api.get_latest_block_number()
         chat_view.send_message_button.click()
-        for number in block_number, block_number + 1:
-            if chat_view.chat_element_by_text(str(number)).is_element_displayed():
+        for i in range(4):
+            if chat_view.chat_element_by_text(str(block_number + i)).is_element_displayed():
                 break
         else:
             pytest.fail('Actual block number is not shown')

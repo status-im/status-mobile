@@ -44,8 +44,6 @@
    :margin-bottom  (scaled-y 26)
    :margin-left    34
    :margin-right   34
-   :font-size      14
-   :letter-spacing -0.2
    :text-align     :center
    :color          colors/gray})
 

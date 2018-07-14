@@ -4,7 +4,6 @@
 
 (deftest initialize-db
   (testing "it preserves universal-links/url"
-    (is (= "some-url" (get-in (events/initialize-db "blah"
-                                                    {:db
+    (is (= "some-url" (get-in (events/initialize-db {:db
                                                      {:universal-links/url "some-url"}})
                               [:db :universal-links/url])))))

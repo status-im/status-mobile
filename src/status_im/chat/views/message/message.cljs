@@ -62,6 +62,7 @@
   (letsubs [confirmed? [:transaction-confirmed? tx-hash]
             tx-exists? [:wallet-transaction-exists? tx-hash]]
     [react/touchable-highlight {:on-press #(when tx-exists?
+                                             (re-frame/dispatch [:update-transactions])
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view style/command-send-status-container
       [vector-icons/icon (if confirmed? :icons/check :icons/dots)
@@ -143,15 +144,22 @@
       [message-content-command-send message]
       [message-content-command-with-markup message])))
 
-(defview message-timestamp [t justify-timestamp? outgoing command?]
+(def rtl-characters-regex #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
+
+(defn right-to-left-text? [content]
+  (let [char (first content)]
+    (re-matches rtl-characters-regex char)))
+
+(defview message-timestamp [t justify-timestamp? outgoing command? content]
   (when-not command?
-    [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing)} t]))
+    (let [rtl? (right-to-left-text? content)]
+      [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing rtl?)} t])))
 
 (defn message-view
-  [{:keys [timestamp-str outgoing] :as message} content {:keys [justify-timestamp?]}]
+  [{:keys [timestamp-str outgoing content] :as message} message-content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
-   content
-   [message-timestamp timestamp-str justify-timestamp? outgoing (get-in message [:content :command])]])
+   message-content
+   [message-timestamp timestamp-str justify-timestamp? outgoing (get-in message [:content :command]) content]])
 
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
@@ -159,7 +167,7 @@
 
 (def regx-styled (re-pattern (string/join "|" (map first replacements))))
 
-(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
 
 (defn- parse-str-regx [string regx matched-fn unmatched-fn]
   (if (string? string)

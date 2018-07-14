@@ -100,8 +100,7 @@
    :color       colors/white})
 
 (def backup-seed-phrase-description
-  {:font-size   14
-   :line-height 20
+  {:line-height 20
    :color       colors/white-lighter-transparent})
 
 (def total-balance-container
@@ -116,8 +115,7 @@
    :color     colors/white})
 
 (def total-value
-  {:font-size 14
-   :color     colors/white-transparent})
+  {:color     colors/white-transparent})
 
 (defstyle total-balance-currency
   {:font-size   37

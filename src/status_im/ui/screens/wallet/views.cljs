@@ -36,17 +36,18 @@
      [react/text {:style               styles/total-balance-currency
                   :accessibility-label :total-amount-currency-text}
       (:code currency)]]
-    [react/text {:style styles/total-value} (i18n/label :t/wallet-total-value)]]])
+    [react/i18n-text {:style styles/total-value
+                      :key   :wallet-total-value}]]])
 
 (defn- backup-seed-phrase []
   [react/view styles/section
    [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
     [react/view styles/backup-seed-phrase-container
      [react/view styles/backup-seed-phrase-text-container
-      [react/text {:style styles/backup-seed-phrase-title}
-       (i18n/label :t/wallet-backup-seed-title)]
-      [react/text {:style styles/backup-seed-phrase-description}
-       (i18n/label :t/wallet-backup-seed-description)]]
+      [react/i18n-text {:style styles/backup-seed-phrase-title
+                        :key   :wallet-backup-recovery-title}]
+      [react/i18n-text {:style styles/backup-seed-phrase-description
+                        :key   :wallet-backup-recovery-description}]]
      [vector-icons/icon :icons/forward {:color :white}]]]])
 
 (def actions

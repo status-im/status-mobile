@@ -10,6 +10,7 @@ from views.sign_in_view import SignInView
 class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(758)
+    @marks.smoke_1
     def test_create_account(self):
         if not self.test_fairy_warning_is_shown:
             self.errors.append('TestFairy warning is not shown')
@@ -47,6 +48,7 @@ class TestCreateAccount(SingleDeviceTestCase):
             pytest.fail('New account was not created')
 
     @marks.testrail_id(3692)
+    @marks.skip
     def test_home_view(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -65,7 +67,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(844)
     def test_create_account_short_and_mismatch_password(self):
-
         sign_in = SignInView(self.driver)
         sign_in.create_account_button.click()
         sign_in.password_input.set_value('12345')
@@ -84,3 +85,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not sign_in.find_text_part(mismatch_error):
             self.errors.append("'%s' is not shown")
         self.verify_no_errors()
+
+    @marks.testrail_id(3767)
+    def test_password_in_logcat_creating_account(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        sign_in.check_no_value_in_logcat(common_password)

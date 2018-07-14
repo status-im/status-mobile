@@ -27,8 +27,7 @@
 
 (defn view-asset [symbol]
   [react/view
-   [react/text {:style styles/label}
-    (i18n/label :t/wallet-asset)]
+   [react/i18n-text {:style styles/label :key :wallet-asset}]
    [react/view styles/asset-container-read-only
     [react/text {:style styles/asset-text}
      (name symbol)]]])
@@ -54,7 +53,7 @@
       [list/item-secondary (wallet.utils/format-amount amount decimals)]]]]])
 
 (views/defview assets [type]
-  (views/letsubs [assets [:wallet/visible-assets-with-amount]]
+  (views/letsubs [assets [:wallet/transferrable-assets-with-amount]]
     [components/simple-screen
      [components/toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
@@ -163,8 +162,11 @@
 (defn- request-camera-permissions []
   (re-frame/dispatch [:request-permissions {:permissions [:camera]
                                             :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])
-                                            :on-denied   #(utils/show-popup (i18n/label :t/error)
-                                                                            (i18n/label :t/camera-access-error))}]))
+                                            :on-denied   #(utils/set-timeout
+                                                           (fn []
+                                                             (utils/show-popup (i18n/label :t/error)
+                                                                               (i18n/label :t/camera-access-error)))
+                                                           50)}]))
 
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)

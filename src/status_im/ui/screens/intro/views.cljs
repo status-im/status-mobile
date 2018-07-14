@@ -12,11 +12,11 @@
    [status-bar/status-bar {:flat? true}]
    [react/view {:style styles/intro-logo-container}
     [components.common/logo styles/intro-logo]]
-   [react/text {:style styles/intro-text}
-    (i18n/label :t/intro-text)]
+   [react/i18n-text {:style styles/intro-text
+                     :key   :intro-text}]
    [react/view
-    [react/text {:style styles/intro-text-description}
-     (i18n/label :t/intro-text-description)]]
+    [react/i18n-text {:style styles/intro-text-description
+                      :key   :intro-text-description}]]
    [react/view styles/buttons-container
     [components.common/button {:button-style {:flex-direction :row}
                                :on-press     #(re-frame/dispatch [:navigate-to :create-account])

@@ -63,6 +63,7 @@ class TestBrowsing(SingleDeviceTestCase):
             pytest.fail('The browser entry is present after re-login')
 
     @marks.testrail_id(1396)
+    @marks.smoke_1
     def test_open_google_com_via_open_dapp(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
@@ -75,6 +76,7 @@ class TestBrowsing(SingleDeviceTestCase):
         assert browsing_view.element_by_text('Google').is_element_displayed()
 
     @marks.testrail_id(1397)
+    @marks.smoke_1
     def test_back_forward_buttons_browsing_website(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

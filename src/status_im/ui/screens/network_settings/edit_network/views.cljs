@@ -47,7 +47,7 @@
           :container       styles/input-container
           :default-value   (get-in manage-network [:url :value])
           :on-change-text  #(re-frame/dispatch [:network-set-input :url %])}]
-        [react/text (i18n/label :t/network-chain)]
+        [react/i18n-text {:key :network-chain}]
         [react/view styles/network-type
          [list/flat-list {:data      [:mainnet :testnet :rinkeby]
                           :key-fn    (fn [_ i] (str i))

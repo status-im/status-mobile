@@ -12,6 +12,7 @@ from views.sign_in_view import SignInView
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(764)
+    @marks.smoke_1
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -32,6 +33,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             pytest.fail("'Seen' status is not shown under the sent text message")
 
     @marks.testrail_id(772)
+    @marks.smoke_1
     def test_offline_messaging_1_1_chat(self):
         self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -51,8 +53,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1.set_network_connection(2)  # turning on WiFi connection on primary device
 
-        if 'Tap to reconnect' in home_1.connection_status.text:
-            home_2.connection_status.click()
+        home_1.reconnect()
         chat_element = home_1.get_chat_with_user(username_2)
         chat_element.wait_for_visibility_of_element(20)
         chat_1 = chat_element.click()
@@ -71,7 +72,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
-    @marks.testrail_case_id(3741)
+    @marks.smoke_1
     @marks.testrail_id(3701)
     def test_resend_message_offline(self):
         self.create_drivers(2, offline_mode=True)
@@ -99,8 +100,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("'Delete message' button is not shown for not sent message")
 
         chat_1.reconnect()
-        chat_1.element_by_text('Resend').click()
-        if chat_1.chat_element_by_text(message).status.text != 'Sent':
+        chat_element = chat_1.chat_element_by_text(message)
+        chat_1.element_by_text('Resend').click_until_presence_of_element(chat_element)
+        chat_element.status.wait_for_visibility_of_element()
+        if chat_element.status.text != 'Sent':
             self.errors.append("Message status is not 'Sent' after resending the message")
 
         chat_2 = home_2.get_chat_with_user(username_1).click()
@@ -144,6 +147,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(1386)
+    @marks.smoke_1
     def test_send_message_to_newly_added_contact(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -180,6 +184,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1387)
+    @marks.smoke_1
     def test_add_to_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -203,7 +208,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
-            self.erros.append("Message with test '%s' was not received" % message)
+            self.erros.append("Message with text '%s' was not received" % message)
+        device_2_chat.reconnect()
         device_2_chat.add_to_contacts.click()
 
         device_2_chat.get_back_to_home_view()
@@ -221,6 +227,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1413)
+    @marks.smoke_1
     def test_send_and_open_links(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -259,6 +266,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1431)
+    @marks.smoke_1
     def test_offline_status(self):
         self.create_drivers(1, offline_mode=True)
         driver = self.drivers[0]
@@ -286,6 +294,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(1390)
+    @marks.smoke_1
     def test_copy_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -318,6 +327,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1398)
+    @marks.smoke_1
     def test_delete_cut_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -338,6 +348,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.chat_element_by_text(message_text[:-2] + ' ').wait_for_visibility_of_element(2)
 
     @marks.testrail_id(2106)
+    @marks.smoke_1
     def test_send_emoji(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
