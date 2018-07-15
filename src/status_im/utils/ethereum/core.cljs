@@ -13,7 +13,8 @@
    :rinkeby {:id 4 :name "Rinkeby"}})
 
 (defn chain-id->chain-keyword [i]
-  (some #(when (= i (:id (val %))) (key %)) chains))
+  (or (some #(when (= i (:id (val %))) (key %)) chains)
+      :custom))
 
 (defn chain-keyword->chain-id [k]
   (get-in chains [k :id]))

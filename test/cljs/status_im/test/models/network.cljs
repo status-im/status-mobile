@@ -13,6 +13,8 @@
     (is (not (model/valid-rpc-url? "http://something with space"))))
   (testing "a url without a hostname"
     (is (not (model/valid-rpc-url? "https://"))))
+  (testing "an uppercase HTTP url"
+    (is (not (model/valid-rpc-url? "HTTP://valid.com"))))
   (testing "an http url"
     (is (model/valid-rpc-url? "http://valid.com")))
   (testing "an https url"
@@ -32,10 +34,25 @@
   (let [actual (model/new-network {:random-id "random-id"}
                                   "network-name"
                                   "upstream-url"
-                                  :mainnet)]
+                                  :mainnet
+                                  nil)]
     (is (= {:id     "randomid"
             :name   "network-name"
             :config {:NetworkId      1
+                     :DataDir        "/ethereum/mainnet_rpc"
+                     :UpstreamConfig {:Enabled true
+                                      :URL     "upstream-url"}}}
+           actual))))
+
+(deftest new-network-id-test
+  (let [actual (model/new-network {:random-id "random-id"}
+                                  "network-name"
+                                  "upstream-url"
+                                  :mainnet
+                                  "5777")]
+    (is (= {:id     "randomid"
+            :name   "network-name"
+            :config {:NetworkId      5777
                      :DataDir        "/ethereum/mainnet_rpc"
                      :UpstreamConfig {:Enabled true
                                       :URL     "upstream-url"}}}

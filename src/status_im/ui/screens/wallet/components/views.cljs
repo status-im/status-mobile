@@ -105,7 +105,8 @@
     (let [address? (and (not (nil? address)) (not= address ""))]
       [react/view styles/recipient-container
        [react/view styles/recipient-icon
-        [photos/photo (:photo-path contact) {:size list.styles/image-size}]]
+        (when contact
+          [photos/photo (:photo-path contact) {:size list.styles/image-size}])]
        [react/view {:style styles/recipient-name}
         [react/text {:style               (styles/participant true)
                      :accessibility-label (if request? :contact-name-text :recipient-name-text)

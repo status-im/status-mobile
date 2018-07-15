@@ -40,9 +40,10 @@
 (defn- assert-correct-network
   [{:keys [db]}]
   ;; Assure that node was started correctly
-  (let [{:keys [network web3]} db]
-    (when-let [network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
-      (when web3 ; necessary because of the unit tests
+  (let [{:keys [web3]} db]
+    (let [network (get-in db [:account/account :network])
+          network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
+      (when (and network-id web3) ; necessary because of the unit tests
         (.getNetwork (.-version web3)
                      (fn [error fetched-network-id]
                        (when (and (not error) ; error most probably means we are offline

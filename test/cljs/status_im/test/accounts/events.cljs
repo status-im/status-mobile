@@ -70,12 +70,4 @@
 
          (rf/dispatch [:load-accounts])
 
-         (is (= {(:address account-from-realm) account-from-realm} @accounts)))
-
-       (testing ":add-account event"
-         (let [new-account' (assoc new-account :network constants/default-network)]
-
-           (rf/dispatch [:add-account new-account])
-
-           (is (= {(:address account-from-realm) account-from-realm
-                   (:address new-account)        new-account'} @accounts)))))))
+         (is (= {(:address account-from-realm) account-from-realm} @accounts))))))
