@@ -27,7 +27,8 @@
   (validate [this parameters cofx]
     "Function validating the parameters once command is send. Takes parameters map
     and `cofx` map as argument, returns either `nil` meaning that no errors were
-    found and command send workflow can proceed, or sequence of errors to display")
+    found and command send workflow can proceed, or one/more errors to display.
+    Each error is represented by the map containing `:title` and `:description` keys.")
   (yield-control [this parameters cofx]
     "Optional function, which if implemented, can step out of the normal command
     workflow (`validate-and-send`) and yield control back to application before sending.
