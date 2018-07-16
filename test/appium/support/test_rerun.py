@@ -16,7 +16,8 @@ RERUN_ERRORS = [
     "object has no attribute",
     "[Errno 104] Connection reset by peer",
     "Sauce could not start your job",
-    "HTTP Error 303"
+    "HTTP Error 303",
+    "http.client.RemoteDisconnected: Remote end closed connection without response"
 ]
 
 

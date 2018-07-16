@@ -285,9 +285,8 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(amount)
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
+        send_transaction.recent_recipients_button.click()
+        send_transaction.element_by_text_part(recipient['username']).click()
         send_transaction.sign_transaction(sender['password'])
 
         wallet_1.home_button.click()

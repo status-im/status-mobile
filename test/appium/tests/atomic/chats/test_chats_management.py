@@ -55,7 +55,8 @@ class TestChatManagement(SingleDeviceTestCase):
         home.get_chat_with_user('#' + chat_name).swipe_and_delete()
         profile = home.profile_button.click()
         profile.logout()
-        sign_in.click_account_by_position(0)
+        if sign_in.ok_button.is_element_displayed():
+            sign_in.ok_button.click()
         sign_in.sign_in()
         if home.get_chat_with_user('#' + chat_name).is_element_displayed():
             self.errors.append('Deleted public chat is present after relogin')

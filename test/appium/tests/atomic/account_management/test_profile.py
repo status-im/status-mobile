@@ -103,7 +103,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Profile button counter is not shown')
         profile_view = sign_in_view.profile_button.click()
         profile_view.logout()
-        sign_in_view.click_account_by_position(0)
+        if sign_in_view.ok_button.is_element_displayed():
+            sign_in_view.ok_button.click()
         sign_in_view.sign_in()
         if sign_in_view.profile_button.counter.text != '1':
             self.errors.append('Profile button counter is not shown after relogin')
@@ -190,7 +191,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.find_text_part('Questions around beta')
 
     @marks.testrail_id(1416)
-    @marks.smoke_1
     def test_contact_profile_view(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
