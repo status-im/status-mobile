@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.qr-scanner.events
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.camera :as camera]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :as utils]
@@ -10,7 +11,7 @@
  (fn [{:keys [db]} [_ identifier handler]]
    {:db                     (assoc-in db [:qr-codes identifier] handler)
     :request-permissions-fx {:permissions [:camera]
-                             :on-allowed  #(re-frame/dispatch [:navigate-to :qr-scanner {:current-qr-context identifier}])
+                             :on-allowed  #(status-im.thread/dispatch [:navigate-to :qr-scanner {:current-qr-context identifier}])
                              :on-denied   (fn []
                                             (utils/set-timeout
                                              #(utils/show-popup (i18n/label :t/error)

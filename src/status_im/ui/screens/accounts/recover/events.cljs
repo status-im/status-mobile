@@ -3,6 +3,7 @@
    status-im.ui.screens.accounts.recover.navigation
    [clojure.string :as string]
    [re-frame.core :as re-frame]
+   [status-im.thread :as status-im.thread]
    [status-im.native-module.core :as status]
    [status-im.ui.screens.accounts.events :as accounts-events]
    [status-im.utils.types :as types]
@@ -29,7 +30,7 @@
       (let [data (-> (types/json->clj result)
                      (dissoc :mnemonic)
                      (types/clj->json))]
-        (re-frame/dispatch [:account-recovered data password]))))))
+        (status-im.thread/dispatch [:account-recovered data password]))))))
 
 ;;;; Handlers
 

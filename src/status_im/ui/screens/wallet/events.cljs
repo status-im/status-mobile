@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.events
   (:require [clojure.set :as set]
             [re-frame.core :as re-frame :refer [dispatch reg-fx]]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.navigation]
             [status-im.utils.ethereum.core :as ethereum]
@@ -53,8 +54,8 @@
  (fn [{:keys [web3 account-id success-event error-event]}]
    (get-balance {:web3       web3
                  :account-id account-id
-                 :on-success #(re-frame/dispatch [success-event %])
-                 :on-error   #(re-frame/dispatch [error-event %])})))
+                 :on-success #(status-im.thread/dispatch [success-event %])
+                 :on-error   #(status-im.thread/dispatch [error-event %])})))
 
 (reg-fx
  :get-tokens-balance
@@ -64,23 +65,23 @@
        (get-token-balance {:web3       web3
                            :contract   contract
                            :account-id account-id
-                           :on-success #(re-frame/dispatch [success-event symbol %])
-                           :on-error   #(re-frame/dispatch [error-event symbol %])})))))
+                           :on-success #(status-im.thread/dispatch [success-event symbol %])
+                           :on-error   #(status-im.thread/dispatch [error-event symbol %])})))))
 
 (reg-fx
  :get-transactions
  (fn [{:keys [web3 chain account-id token-addresses success-event error-event]}]
    (transactions/get-transactions chain
                                   account-id
-                                  #(re-frame/dispatch [success-event %])
-                                  #(re-frame/dispatch [error-event %]))
+                                  #(status-im.thread/dispatch [success-event %])
+                                  #(status-im.thread/dispatch [error-event %]))
    (doseq [direction [:inbound :outbound]]
      (erc20/get-token-transactions web3
                                    chain
                                    token-addresses
                                    direction
                                    account-id
-                                   #(re-frame/dispatch [success-event %])))))
+                                   #(status-im.thread/dispatch [success-event %])))))
 
 ;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
 (reg-fx
@@ -88,18 +89,18 @@
  (fn [{:keys [from to success-event error-event]}]
    (prices/get-prices from
                       to
-                      #(re-frame/dispatch [success-event %])
-                      #(re-frame/dispatch [error-event %]))))
+                      #(status-im.thread/dispatch [success-event %])
+                      #(status-im.thread/dispatch [error-event %]))))
 
 (reg-fx
  :update-gas-price
  (fn [{:keys [web3 success-event edit?]}]
-   (ethereum/gas-price web3 #(re-frame/dispatch [success-event %2 edit?]))))
+   (ethereum/gas-price web3 #(status-im.thread/dispatch [success-event %2 edit?]))))
 
 (reg-fx
  :update-estimated-gas
  (fn [{:keys [web3 obj success-event]}]
-   (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
+   (ethereum/estimate-gas-web3 web3 (clj->js obj) #(status-im.thread/dispatch [success-event %2]))))
 
 (defn tokens-symbols [v chain]
   (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))

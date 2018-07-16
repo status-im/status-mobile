@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.onboarding.views
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
@@ -20,5 +21,5 @@
    [components.common/button
     {:button-style styles/set-up-button
      :label-style  styles/set-up-button-label
-     :on-press     #(re-frame/dispatch [:navigate-to :wallet-onboarding-setup])
+     :on-press     #(status-im.thread/dispatch [:navigate-to :wallet-onboarding-setup])
      :label        (i18n/label :t/wallet-onboarding-set-up)}]])

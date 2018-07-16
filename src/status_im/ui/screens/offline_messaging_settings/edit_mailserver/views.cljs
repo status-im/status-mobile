@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
    [re-frame.core :as re-frame]
+   [status-im.thread :as status-im.thread]
    [status-im.ui.components.react :as react]
    [status-im.i18n :as i18n]
    [status-im.utils.utils :as utils]
@@ -19,10 +20,10 @@
   (utils/show-confirmation (i18n/label :t/delete-mailserver-title)
                            (i18n/label :t/delete-mailserver-are-you-sure)
                            (i18n/label :t/delete-mailserver)
-                           #(re-frame/dispatch [:delete-mailserver id])))
+                           #(status-im.thread/dispatch [:delete-mailserver id])))
 
 (defn connect-button [id]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:connect-wnode id])}
+  [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:connect-wnode id])}
    [react/view styles/button-container
     [react/view {:style               styles/connect-button
                  :accessibility-label :mailserver-connect-button}
@@ -40,7 +41,7 @@
       (i18n/label :t/delete)]]]])
 
 (def qr-code
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:scan-qr-code
+  [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:scan-qr-code
                                                              {:toolbar-title (i18n/label :t/add-mailserver)}
                                                              :set-mailserver-from-qr])
                               :style    styles/qr-code}
@@ -66,7 +67,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   name
-            :on-change-text  #(re-frame/dispatch [:mailserver-set-input :name %])
+            :on-change-text  #(status-im.thread/dispatch [:mailserver-set-input :name %])
             :auto-focus      true}]
           [text-input/text-input-with-label
            {:label           (i18n/label :t/mailserver-address)
@@ -75,7 +76,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   url
-            :on-change-text  #(re-frame/dispatch [:mailserver-set-input :url %])}]
+            :on-change-text  #(status-im.thread/dispatch [:mailserver-set-input :url %])}]
           (when (and id
                      (not connected?))
             [react/view
@@ -87,4 +88,4 @@
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:upsert-mailserver])}]]]])))
+           :on-press  #(status-im.thread/dispatch [:upsert-mailserver])}]]]])))

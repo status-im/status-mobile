@@ -1,6 +1,7 @@
 (ns status-im.ui.components.toolbar.view
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list-selection :as list-selection]
@@ -15,7 +16,7 @@
 ;; Navigation item
 
 (defn nav-item
-  [{:keys [handler accessibility-label style] :or {handler #(re-frame/dispatch [:navigate-back])}} item]
+  [{:keys [handler accessibility-label style] :or {handler #(status-im.thread/dispatch [:navigate-back])}} item]
   [react/touchable-highlight
    (merge {:on-press handler}
           (when accessibility-label
@@ -43,7 +44,7 @@
   ([text] (nav-text nil text))
   ([{:keys [handler] :as props} text]
    [react/text (utils/deep-merge {:style    (merge styles/item styles/item-text)
-                                  :on-press (or handler #(re-frame/dispatch [:navigate-back]))}
+                                  :on-press (or handler #(status-im.thread/dispatch [:navigate-back]))}
                                  props)
     text]))
 

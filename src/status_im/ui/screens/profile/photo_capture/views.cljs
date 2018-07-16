@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.photo-capture.views
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
@@ -16,8 +17,8 @@
         _          (log/debug "Captured image: " path)
         on-success (fn [base64]
                      (log/debug "Captured success: " base64)
-                     (re-frame/dispatch [:my-profile/update-picture base64])
-                     (re-frame/dispatch [:navigate-back]))
+                     (status-im.thread/dispatch [:my-profile/update-picture base64])
+                     (status-im.thread/dispatch [:navigate-back]))
         on-error   (fn [type error]
                      (log/debug type error))]
     (image-processing/img->base64 path on-success on-error)))

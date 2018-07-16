@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.group.add-contacts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.contact.contact :refer [toogle-contact-view]]
             [status-im.ui.components.list.views :as list]
@@ -11,11 +12,11 @@
 
 (defn- on-toggle [checked? whisper-identity]
   (let [action (if checked? :deselect-contact :select-contact)]
-    (re-frame/dispatch [action whisper-identity])))
+    (status-im.thread/dispatch [action whisper-identity])))
 
 (defn- on-toggle-participant [checked? whisper-identity]
   (let [action (if checked? :deselect-participant :select-participant)]
-    (re-frame/dispatch [action whisper-identity])))
+    (status-im.thread/dispatch [action whisper-identity])))
 
 (defn- group-toggle-contact [contact]
   [toogle-contact-view contact :is-contact-selected? on-toggle])
@@ -46,7 +47,7 @@
             selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
-     [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
+     [toggle-list-toolbar {:handler #(status-im.thread/dispatch [:navigate-to :new-group])
                            :label   (i18n/label :t/next)
                            :count   (pos? selected-contacts-count)}
       (i18n/label :t/group-chat)]
@@ -61,8 +62,8 @@
      [status-bar]
      [toggle-list-toolbar {:count   selected-contacts-count
                            :handler #(do
-                                       (re-frame/dispatch [:add-new-group-chat-participants])
-                                       (re-frame/dispatch [:navigate-back]))
+                                       (status-im.thread/dispatch [:add-new-group-chat-participants])
+                                       (status-im.thread/dispatch [:navigate-back]))
                            :label   (i18n/label :t/add)}
       name]
      [toggle-list contacts group-toggle-participant]]))

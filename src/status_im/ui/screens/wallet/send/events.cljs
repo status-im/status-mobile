@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.send.events
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.db :as db]
@@ -79,7 +80,7 @@
   (or (and to (utils.hex/valid-hex? to)) (and data (not= data "0x"))))
 
 (defn dispatch-transaction-completed [result & [modal?]]
-  (re-frame/dispatch [::transaction-completed {:id (:id result) :response result} modal?]))
+  (status-im.thread/dispatch [::transaction-completed {:id (:id result) :response result} modal?]))
 ;;;; Handlers
 
 (defn set-and-validate-amount-db [db amount symbol decimals]

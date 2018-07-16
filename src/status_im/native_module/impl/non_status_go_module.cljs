@@ -3,6 +3,7 @@
             [status-im.native-module.impl.module :as impl]
             [status-im.constants :as constants]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [goog.string :as gstring]
             [goog.string.format]))
 
@@ -13,8 +14,8 @@
   ;; status-go calls
   (-init-jail [this])
   (-start-node [this config]
-    (re-frame/dispatch [:signal-event "{\"type\":\"node.started\",\"event\":{}}"])
-    (re-frame/dispatch [:signal-event "{\"type\":\"node.ready\",\"event\":{}}"]))
+    (status-im.thread/dispatch [:signal-event "{\"type\":\"node.started\",\"event\":{}}"])
+    (status-im.thread/dispatch [:signal-event "{\"type\":\"node.ready\",\"event\":{}}"]))
   (-stop-node [this])
   (-create-account [this password callback]
     (let [address (str "c9f5c0e2bea0aabb6b0b618e9f45ab0958" (gstring/format "%06d" (rand-int 100000)))]

@@ -1,6 +1,7 @@
 (ns status-im.chat.views.bottom-info
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [clojure.string :as string]
             [status-im.ui.components.react :as react]
@@ -74,7 +75,7 @@
                                                   :status           message-status}]))
                                 (into {}))
               statuses     (vals (merge participants user-statuses))]
-          [overlay {:on-click-outside #(re-frame/dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
+          [overlay {:on-click-outside #(status-im.thread/dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
            [container (* styles/item-height (count statuses))
             [list/flat-list {:contentContainerStyle styles/bottom-info-list-container
                              :data                statuses

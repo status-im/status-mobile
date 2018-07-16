@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.icons.vector-icons :as icons]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.react :as react]))
 
 (views/defview new-contact []
@@ -21,8 +22,8 @@
                            :on-change   (fn [e]
                                           (let [native-event (.-nativeEvent e)
                                                 text (.-text native-event)]
-                                            (re-frame/dispatch [:set :contacts/new-identity text])))}]]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact-handler new-contact-identity])}
+                                            (status-im.thread/dispatch [:set :contacts/new-identity text])))}]]
+       [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:add-contact-handler new-contact-identity])}
         [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
                              :justify-content :center}}
          [icons/icon :icons/ok]]]]]
@@ -40,8 +41,8 @@
                            :on-change   (fn [e]
                                           (let [native-event (.-nativeEvent e)
                                                 text (.-text native-event)]
-                                            (re-frame/dispatch [:set :public-group-topic text])))}]]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:create-new-public-chat topic])}
+                                            (status-im.thread/dispatch [:set :public-group-topic text])))}]]
+       [react/touchable-highlight {:on-press #(status-im.thread/dispatch [:create-new-public-chat topic])}
         [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
                              :justify-content :center}}
          [icons/icon :icons/ok]]]]]]))

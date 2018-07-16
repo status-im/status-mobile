@@ -31,6 +31,8 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import com.instabug.library.Instabug;
 
+import javax.annotation.Nullable;
+
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
     private static final String TAG = "StatusModule";
@@ -44,6 +46,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private boolean devCluster;
     private String logLevel;
     private Jail jail;
+    static Activity sactivity = null; 
 
     StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
         super(reactContext);
@@ -62,13 +65,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return "Status";
     }
 
+    protected @Nullable final Activity getCurrentActivity1() {
+        return sactivity;
+    }
+
     @Override
     public void onHostResume() {  // Actvity `onResume`
         module = this;
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
             Log.d(TAG, "On host Activity doesn't exist");
-            return;
+            currentActivity = getCurrentActivity1();
+            if (currentActivity == null) {
+                Log.d(TAG, "On host Activity doesn't exist again");
+                return;
+            }
+        } else {
+            sactivity = currentActivity;
         }
 
         if (status == null) {
@@ -95,7 +108,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     private boolean checkAvailability() {
 
-        Activity currentActivity = getCurrentActivity();
+        Activity currentActivity = getCurrentActivity1();
         if (currentActivity == null) {
             Log.d(TAG, "Activity doesn't exist");
             return false;
@@ -149,10 +162,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private void doStartNode(final String defaultConfig) {
-
-        Activity currentActivity = getCurrentActivity();
-
-        String root = currentActivity.getApplicationInfo().dataDir;
+        String root = this.getReactApplicationContext().getApplicationInfo().dataDir;
         String dataFolder = root + "/ethereum/testnet";
         Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
@@ -291,8 +301,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private String getNewInternalDir() {
-        Activity currentActivity = getCurrentActivity();
-        return currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
+        Activity currentActivity = getCurrentActivity1();
+        return this.getReactApplicationContext().getApplicationInfo().dataDir + "/ethereum/testnet";
     }
 
     private void deleteDirectory(File folder) {
@@ -426,14 +436,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
+        Log.d(TAG, "hey");
+
         Runnable r = new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "ups");
                 String res = Statusgo.CreateAccount(password);
 
+                Log.d(TAG, "halaley " + res);
                 callback.invoke(res);
+                Log.d(TAG, "wow");
             }
         };
+        Log.d(TAG, "hop");
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
@@ -613,7 +629,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void setAdjustResize() {
         Log.d(TAG, "setAdjustResize");
-        final Activity activity = getCurrentActivity();
+        final Activity activity = getCurrentActivity1();
         if (activity == null) {
             return;
         }
@@ -629,7 +645,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void setAdjustPan() {
         Log.d(TAG, "setAdjustPan");
-        final Activity activity = getCurrentActivity();
+        final Activity activity = getCurrentActivity1();
         if (activity == null) {
             return;
         }
@@ -645,7 +661,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void setSoftInputMode(final int mode) {
         Log.d(TAG, "setSoftInputMode");
-        final Activity activity = getCurrentActivity();
+        final Activity activity = getCurrentActivity1();
         if (activity == null) {
             return;
         }
@@ -662,7 +678,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void clearCookies() {
         Log.d(TAG, "clearCookies");
-        final Activity activity = getCurrentActivity();
+        final Activity activity = getCurrentActivity1();
         if (activity == null) {
             return;
         }
@@ -684,7 +700,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void clearStorageAPIs() {
         Log.d(TAG, "clearStorageAPIs");
-        final Activity activity = getCurrentActivity();
+        final Activity activity = getCurrentActivity1();
         if (activity == null) {
             return;
         }

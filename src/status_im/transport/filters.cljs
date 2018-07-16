@@ -1,6 +1,7 @@
 (ns ^{:doc "API for whisper filters"}
  status-im.transport.filters
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.transport.utils :as utils]
             [status-im.utils.config :as config]
@@ -36,7 +37,7 @@
                                    :symKeyID sym-key-id}
                                   (fn [js-error js-message]
                                     (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))]
-     (re-frame/dispatch [::filter-added chat-id filter]))))
+     (status-im.thread/dispatch [::filter-added chat-id filter]))))
 
 (handlers/register-handler-db
  ::filter-added

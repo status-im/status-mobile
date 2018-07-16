@@ -5,6 +5,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.react :as components]
@@ -29,22 +30,22 @@
 
 (defn next-step [step password password-confirm]
   (case step
-    :enter-password (re-frame/dispatch [:set-in [:accounts/create :step] :confirm-password])
+    :enter-password (status-im.thread/dispatch [:set-in [:accounts/create :step] :confirm-password])
     :confirm-password (if (= password password-confirm)
-                        (re-frame/dispatch [:create-account])
-                        (re-frame/dispatch [:set-in [:accounts/create :error] (i18n/label :t/password_error1)]))
-    :enter-name (re-frame/dispatch [:account-set-name])))
+                        (status-im.thread/dispatch [:create-account])
+                        (status-im.thread/dispatch [:set-in [:accounts/create :error] (i18n/label :t/password_error1)]))
+    :enter-name (status-im.thread/dispatch [:account-set-name])))
 
 (defn step-back [step]
   (case step
-    :enter-password (re-frame/dispatch [:navigate-back])
-    :confirm-password (re-frame/dispatch [:reset-account-creation])))
+    :enter-password (status-im.thread/dispatch [:navigate-back])
+    :confirm-password (status-im.thread/dispatch [:reset-account-creation])))
 
 (defview input [step error]
   [text-input/text-input-with-label
    {:label             (get-in steps [step :input-label])
     :placeholder       (get-in steps [step :input-placeholder])
-    :on-change-text    #(re-frame/dispatch [:account-set-input-text (get-in steps [step :input-key]) %])
+    :on-change-text    #(status-im.thread/dispatch [:account-set-input-text (get-in steps [step :input-key]) %])
     :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
     :error             error}])
 

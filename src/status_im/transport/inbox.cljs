@@ -1,6 +1,7 @@
 (ns ^{:doc "Offline inboxing events and API"}
  status-im.transport.inbox
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.native-module.core :as status]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -144,8 +145,8 @@
  (fn [{:keys [wnode web3]}]
    (mark-trusted-peer web3
                       wnode
-                      #(re-frame/dispatch [:inbox/mailserver-trusted %])
-                      #(re-frame/dispatch [:inbox/check-connection]))))
+                      #(status-im.thread/dispatch [:inbox/mailserver-trusted %])
+                      #(status-im.thread/dispatch [:inbox/check-connection]))))
 
 (re-frame/reg-fx
  ::request-messages
@@ -171,7 +172,7 @@
      {:password   (:password wnode)
       :web3       (:web3 db)
       :on-success (fn [_ sym-key-id]
-                    (re-frame/dispatch [:inbox/get-sym-key-success wnode sym-key-id]))
+                    (status-im.thread/dispatch [:inbox/get-sym-key-success wnode sym-key-id]))
       :on-error   #(log/error "offline inbox: get-sym-key error" %)}}))
 
 (defn connect-to-mailserver

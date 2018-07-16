@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -19,7 +20,7 @@
   (cond->
    {:icon      :icons/filter
     :icon-opts {:accessibility-label :filters-button}
-    :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
+    :handler   #(status-im.thread/dispatch [:navigate-to-modal :wallet-transactions-filter])}
     filter? (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
 
 (defn- all-checked? [filter-data]
@@ -56,7 +57,7 @@
                                         [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
                                         [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
         {:keys [decimals]}   (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-    [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
+    [list/touchable-item #(status-im.thread/dispatch [:show-transaction-details hash])
      [react/view {:accessibility-label :transaction-item}
       [list/item
        [list/item-icon (transaction-type->icon (keyword type))]
@@ -106,7 +107,7 @@
                          :render-fn       #(render-transaction % network)
                          :empty-component [react/i18n-text {:style styles/empty-text
                                                             :key   :transactions-history-empty}]
-                         :on-refresh      #(re-frame/dispatch [:update-transactions])
+                         :on-refresh      #(status-im.thread/dispatch [:update-transactions])
                          :refreshing      false}]]))
 
 ;; Filter history
@@ -115,7 +116,7 @@
   [react/view {:accessibility-label :filter-item}
    [list/list-item-with-checkbox
     {:checked?        checked?
-     :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}
+     :on-value-change #(status-im.thread/dispatch [:wallet.transactions/filter path %])}
     [list/item
      [list/item-icon icon]
      content]]])
@@ -139,7 +140,7 @@
      [toolbar/toolbar {}
       [toolbar/nav-clear-text {:accessibility-label :done-button} (i18n/label :t/done)]
       [toolbar/content-title (i18n/label :t/transactions-filter-title)]
-      [toolbar/text-action {:handler             #(re-frame/dispatch [:wallet.transactions/filter-all])
+      [toolbar/text-action {:handler             #(status-im.thread/dispatch [:wallet.transactions/filter-all])
                             :disabled?           (all-checked? filter-data)
                             :accessibility-label :select-all-button}
        (i18n/label :t/transactions-filter-select-all)]]

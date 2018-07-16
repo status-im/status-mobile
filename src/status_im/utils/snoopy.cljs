@@ -94,8 +94,7 @@
                                 "Please consider preloading of screens or lazy loading of some components")
         :tick?             false
         :print-events?     false
-       ;; todo(rasom): revisit this number when/if
-       ;; https://github.com/status-im/status-react/pull/2849 will be merged
+        ;; todo(rasom): revisit this number when/if
+        ;; https://github.com/status-im/status-react/pull/2849 will be merged
         :threshold         200
         :events            events}))))
-

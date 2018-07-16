@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar.view]
@@ -53,7 +54,7 @@
     [react/touchable-highlight
      (cond-> {:style    common.styles/flex
               :disabled active?
-              :on-press #(re-frame/dispatch [:navigate-to-tab view-id])}
+              :on-press #(status-im.thread/dispatch [:navigate-to-tab view-id])}
        accessibility-label
        (assoc :accessibility-label accessibility-label))
      [react/view

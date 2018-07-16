@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.react :as react]
@@ -32,7 +33,7 @@
       :multiline           true
       :default-value       passphrase
       :auto-correct        false
-      :on-change-text      #(re-frame/dispatch [:set-in [:accounts/recover :passphrase] (string/lower-case %)])
+      :on-change-text      #(status-im.thread/dispatch [:set-in [:accounts/recover :passphrase] (string/lower-case %)])
       :error               error}]))
 
 (defview password-input [password]
@@ -43,7 +44,7 @@
        :placeholder       (i18n/label :t/enter-password)
        :default-value     password
        :auto-focus        false
-       :on-change-text    #(re-frame/dispatch [:set-in [:accounts/recover :password] %])
+       :on-change-text    #(status-im.thread/dispatch [:set-in [:accounts/recover :password] %])
        :secure-text-entry true
        :error             error}]]))
 
@@ -74,4 +75,4 @@
             :disabled? (not valid-form?)
             :on-press  (fn [_]
                          (let [masked-passphrase (security/mask-data (ethereum/words->passphrase words))]
-                           (re-frame/dispatch [:recover-account masked-passphrase password])))}]])])))
+                           (status-im.thread/dispatch [:recover-account masked-passphrase password])))}]])])))

@@ -7,6 +7,7 @@
             [status-im.ui.screens.wallet.send.transaction-sent.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
@@ -27,7 +28,7 @@
                         :key   :transaction-description}]]
      [react/view components.styles/flex]
      [components/separator]
-     [react/touchable-highlight {:on-press            #(re-frame/dispatch [:close-transaction-sent-screen chat-id])
+     [react/touchable-highlight {:on-press            #(status-im.thread/dispatch [:close-transaction-sent-screen chat-id])
                                  :accessibility-label :got-it-button}
       [react/view styles/got-it-container
        [react/text {:style      styles/got-it

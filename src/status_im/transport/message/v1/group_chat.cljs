@@ -1,6 +1,7 @@
 (ns ^{:doc "Group chat API"}
  status-im.transport.message.v1.group-chat
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
@@ -26,7 +27,7 @@
       [{:web3       (:web3 db)
         :sym-key    sym-key
         :on-success (fn [sym-key sym-key-id]
-                      (re-frame/dispatch
+                      (status-im.thread/dispatch
                        [:group/add-new-sym-key
                         {:chat-id    chat-id
                          :signature  signature
@@ -44,7 +45,7 @@
   (when (user-is-group-admin? chat-id cofx)
     {:shh/get-new-sym-keys [{:web3       (get-in cofx [:db :web3])
                              :on-success (fn [sym-key sym-key-id]
-                                           (re-frame/dispatch
+                                           (status-im.thread/dispatch
                                             [:group/send-new-sym-key
                                              {:chat-id    chat-id
                                               :sym-key    sym-key

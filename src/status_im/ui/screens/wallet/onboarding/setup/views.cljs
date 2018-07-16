@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]
@@ -24,7 +25,7 @@
   (utils/show-question
    (i18n/label :t/wallet-set-up-confirm-title)
    (i18n/label :t/wallet-set-up-confirm-description)
-   #(re-frame/dispatch [:wallet-set-up-passed])))
+   #(status-im.thread/dispatch [:wallet-set-up-passed])))
 
 (views/defview screen []
   (views/letsubs [{:keys [signing-phrase]} [:get-current-account]]
@@ -32,7 +33,7 @@
       [comp/simple-screen {:avoid-keyboard? true}
        [comp/toolbar
         {}
-        (actions/back-white #(re-frame/dispatch [:wallet-setup-navigate-back]))
+        (actions/back-white #(status-im.thread/dispatch [:wallet-setup-navigate-back]))
         (i18n/label :t/wallet-set-up-title)]
        [react/view components.styles/flex
         [react/view {:style styles/setup-image-container}

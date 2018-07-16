@@ -35,6 +35,7 @@
             status-im.ui.screens.usage-data.events
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.constants :as constants]
@@ -78,7 +79,7 @@
                                      [:chat-received-message/bot-response
                                       {:chat-id chat-id}
                                       jail-response])]
-                    (re-frame/dispatch event)))})))
+                    (status-im.thread/dispatch event)))})))
 
 ;;;; COFX
 
@@ -109,7 +110,7 @@
           (assoc :callback
                  (fn [jail-response]
                    (when-let [event (callback-event-creator jail-response)]
-                     (re-frame/dispatch event)))))))))
+                     (status-im.thread/dispatch event)))))))))
 
 (re-frame/reg-fx
  :call-jail-function
@@ -122,8 +123,8 @@
      (call-jail-function opts))))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
-  (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   #(re-frame/dispatch (failure-event-creator %))
+  (let [on-success #(status-im.thread/dispatch (success-event-creator %))
+        on-error   #(status-im.thread/dispatch (failure-event-creator %))
         opts       {:valid-response? response-validator
                     :timeout-ms      timeout-ms}]
     (http/get url on-success on-error opts)))
@@ -180,7 +181,7 @@
 (re-frame/reg-fx
  ::init-device-UUID
  (fn []
-   (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
+   (status/get-device-UUID #(status-im.thread/dispatch [:set :device-UUID %]))))
 
 (re-frame/reg-fx
  ::get-fcm-token-fx
@@ -222,7 +223,7 @@
 (defn- reset-keychain []
   (.. (keychain/reset)
       (then
-       #(re-frame/dispatch [:initialize-keychain]))))
+       #(status-im.thread/dispatch [:initialize-keychain]))))
 
 (defn- handle-reset-data  []
   (.. (realm/delete-realms)
@@ -396,7 +397,7 @@
  (fn [{{:keys [web3] :as db} :db} _]
    (.. web3 -version (getNode (fn [err resp]
                                 (when-not err
-                                  (re-frame/dispatch [:fetch-web3-node-version-callback resp])))))
+                                  (status-im.thread/dispatch [:fetch-web3-node-version-callback resp])))))
    nil))
 
 (handlers/register-handler-fx

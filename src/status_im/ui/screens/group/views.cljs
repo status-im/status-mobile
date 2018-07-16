@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
@@ -17,7 +18,7 @@
     [react/view add-new.styles/input-container
      [react/text-input
       {:auto-focus          true
-       :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
+       :on-change-text      #(status-im.thread/dispatch [:set :new-chat-name %])
        :default-value       new-group-name
        :placeholder         (i18n/label :t/set-a-topic)
        :style               add-new.styles/input
@@ -33,7 +34,7 @@
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/group-chat)]
    (when save-btn-enabled?
-     (let [handler #(re-frame/dispatch [:create-new-group-chat-and-open group-name])]
+     (let [handler #(status-im.thread/dispatch [:create-new-group-chat-and-open group-name])]
        (if platform/android?
          [toolbar/actions [{:icon      :icons/ok
                             :icon-opts {:color               :blue

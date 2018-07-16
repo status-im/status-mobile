@@ -70,7 +70,7 @@
 ;; Accessor methods for React Components
 
 (defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
-  (let [font (get-in platform/platform-specific [:fonts (keyword font)])
+  (let [font  (get-in platform/platform-specific [:fonts (keyword font)])
         style (get opts style-key)]
     (-> opts
         (dissoc :font)
@@ -95,13 +95,13 @@
                    :or   {font :default}} text]
   (let [font (get-in platform/platform-specific [:fonts (keyword font)])]
     [text-input-class (merge
-                        {:underline-color-android :transparent
-                         :placeholder-text-color  styles/text2-color
-                         :placeholder             (i18n/label :t/type-a-message)
-                         :value                   text}
-                        (-> opts
-                            (dissoc :font)
-                            (assoc :style (merge style font))))]))
+                       {:underline-color-android :transparent
+                        :placeholder-text-color  styles/text2-color
+                        :placeholder             (i18n/label :t/type-a-message)
+                        :value                   text}
+                       (-> opts
+                           (dissoc :font)
+                           (assoc :style (merge style font))))]))
 
 (defn i18n-text
   [{:keys [style key]}]
@@ -122,9 +122,9 @@
    content])
 
 (defn touchable-without-feedback [props content]
- [touchable-without-feedback-class
-  props
-  content])
+  [touchable-without-feedback-class
+   props
+   content])
 
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
@@ -197,14 +197,14 @@
                         (views current-view)
                         (= views current-view))
 
-        style (if current-view?
-                {:flex   1
-                 :zIndex 0}
-                {:opacity 0
-                 :flex    0
-                 :zIndex -1})
+        style         (if current-view?
+                        {:flex   1
+                         :zIndex 0}
+                        {:opacity 0
+                         :flex    0
+                         :zIndex  -1})
 
-        component' (if (fn? component) [component] component)]
+        component'    (if (fn? component) [component] component)]
 
     (when (or (not hide?) (and hide? current-view?))
       (if hide?
@@ -241,7 +241,7 @@
                               :wallet-send-transaction-request
                               :wallet-transaction-fee
                               :wallet-sign-message-modal
-                              :contact-code)      styles/color-blue4
+                              :contact-code) styles/color-blue4
                              (:qr-viewer
                               :recipient-qr-code) "#2f3031"
                              (:accounts :login

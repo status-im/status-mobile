@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.choose-recipient.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
@@ -21,7 +22,7 @@
                                    :icons/flash-active
                                    :icons/flash-inactive)
                       :icon-opts {:color :white}
-                      :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
+                      :handler   #(status-im.thread/dispatch [:wallet/toggle-flashlight])}]]])
 
 (defn- viewfinder [{:keys [height width]} size]
   (let [height (cond-> height
@@ -63,10 +64,10 @@
                        :torchMode     (camera/set-torch camera-flashlight)
                        :onBarCodeRead #(when-not @read-once?
                                          (reset! read-once? true)
-                                         (re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) :qr]))}]]
+                                         (status-im.thread/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) :qr]))}]]
       [viewfinder dimensions (size dimensions)]]
      [bottom-buttons/bottom-button
       [button/button {:disabled?           false
-                      :on-press            #(re-frame/dispatch [:navigate-back])
+                      :on-press            #(status-im.thread/dispatch [:navigate-back])
                       :accessibility-label :cancel-button}
        (i18n/label :t/cancel)]]]))

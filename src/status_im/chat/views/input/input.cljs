@@ -3,6 +3,7 @@
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.chat.constants :as constants]
             [status-im.chat.styles.input.input :as style]
             [status-im.chat.views.input.parameter-box :as parameter-box]
@@ -23,23 +24,23 @@
             cooldown-enabled?    [:chat-cooldown-enabled?]]
     [react/text-input
      (merge
-      {:ref                    #(when % (re-frame/dispatch [:set-chat-ui-props {:input-ref %}]))
+      {:ref                    #(when % (status-im.thread/dispatch [:set-chat-ui-props {:input-ref %}]))
        :accessibility-label    :chat-message-input
        :multiline              (not single-line-input?)
        :default-value          (or input-text "")
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
-       :on-focus               #(re-frame/dispatch [:set-chat-ui-props {:input-focused?    true
+       :on-focus               #(status-im.thread/dispatch [:set-chat-ui-props {:input-focused?    true
                                                                         :messages-focused? false}])
-       :on-blur                #(re-frame/dispatch [:set-chat-ui-props {:input-focused? false}])
+       :on-blur                #(status-im.thread/dispatch [:set-chat-ui-props {:input-focused? false}])
        :on-submit-editing      #(when single-line-input?
-                                  (re-frame/dispatch [:send-current-message]))
+                                  (status-im.thread/dispatch [:send-current-message]))
        :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent %))))
-       :on-change              #(re-frame/dispatch [:set-chat-input-text (.-text (.-nativeEvent %))])
+       :on-change              #(status-im.thread/dispatch [:set-chat-input-text (.-text (.-nativeEvent %))])
        :on-selection-change    #(let [s (-> (.-nativeEvent %)
                                             (.-selection))
                                       end (.-end s)]
-                                  (re-frame/dispatch [:update-text-selection end]))
+                                  (status-im.thread/dispatch [:update-text-selection end]))
        :style                  (style/input-view single-line-input?)
        :placeholder-text-color colors/gray
        :auto-capitalize        :sentences}
@@ -96,8 +97,8 @@
   (letsubs [commands-responses [:get-available-commands-responses]]
     (when (seq commands-responses)
       [react/touchable-highlight
-       {:on-press            #(do (re-frame/dispatch [:set-chat-input-text constants/command-char])
-                                  (re-frame/dispatch [:chat-input-focus :input-ref]))
+       {:on-press            #(do (status-im.thread/dispatch [:set-chat-input-text constants/command-char])
+                                  (status-im.thread/dispatch [:chat-input-focus :input-ref]))
         :accessibility-label :chat-commands-button}
        [react/view
         [vi/icon :icons/input-commands {:container-style style/input-commands-icon
@@ -113,7 +114,7 @@
                                            (.-layout)
                                            (.-height))]
                                  (when (> h 0)
-                                   (re-frame/dispatch [:set-chat-ui-props {:input-height h}])))}
+                                   (status-im.thread/dispatch [:set-chat-ui-props {:input-height h}])))}
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input?}]
         (if (string/blank? input-text)

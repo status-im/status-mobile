@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.currency-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -15,7 +16,7 @@
   (fn [{:keys [id code display-name] :as currency}]
     (let [selected? (= id current-currency-id)]
       [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:wallet.settings/set-currency id])
+       {:on-press            #(status-im.thread/dispatch [:wallet.settings/set-currency id])
         :accessibility-label :currency-item}
        [react/view styles/currency-item
         [react/text {:style styles/currency-name-text}

@@ -1,6 +1,7 @@
 (ns status-im.chat.views.input.suggestions
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.react :as react]
             [status-im.chat.styles.input.suggestions :as style]
             [status-im.chat.views.input.animations.expandable :as expandable]
@@ -27,7 +28,7 @@
        (when (seq commands)
          (for [[i {:keys [description] :as command}] (map-indexed vector commands)]
            ^{:key i}
-           [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
+           [suggestion-item {:on-press            #(status-im.thread/dispatch [:select-chat-input-command command nil])
                              :name                (commands-model/command-name command)
                              :description         description
                              :last?               (= i (dec (count commands)))

@@ -2,6 +2,7 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.chat.models :as models]
@@ -335,7 +336,7 @@
    {:show-confirmation {:title               (i18n/label :t/delete-confirmation)
                         :content             (i18n/label :t/delete-chat-confirmation)
                         :confirm-button-text (i18n/label :t/delete)
-                        :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
+                        :on-accept           #(status-im.thread/dispatch [:remove-chat-and-navigate-home chat-id])}}))
 
 (handlers/register-handler-fx
  :clear-history
@@ -348,7 +349,7 @@
    {:show-confirmation {:title               (i18n/label :t/clear-history-confirmation)
                         :content             (i18n/label :t/clear-history-confirmation-content)
                         :confirm-button-text (i18n/label :t/clear)
-                        :on-accept           #(re-frame/dispatch [:clear-history])}}))
+                        :on-accept           #(status-im.thread/dispatch [:clear-history])}}))
 
 (defn create-new-public-chat [topic {:keys [db now] :as cofx}]
   (handlers-macro/merge-fx cofx

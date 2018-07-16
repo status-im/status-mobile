@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.usage-data.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.common.common :as components.common]
@@ -32,11 +33,11 @@
                                                                               (i18n/label :t/confirmation-title)
                                                                               (i18n/label :t/confirmation-text)
                                                                               (i18n/label :t/confirmation-action)
-                                                                              (fn [] (re-frame/dispatch [:help-improve-handler true next]))
+                                                                              (fn [] (status-im.thread/dispatch [:help-improve-handler true next]))
                                                                               nil)
                                  :label             (i18n/label :t/share-usage-data)}]
       [components.common/button {:button-style      styles/dont-share-button
                                  :uppercase?        false
-                                 :on-press          #(re-frame/dispatch [:help-improve-handler false next])
+                                 :on-press          #(status-im.thread/dispatch [:help-improve-handler false next])
                                  :label             (i18n/label :t/dont-want-to-share)}]]]))
 

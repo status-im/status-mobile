@@ -10,6 +10,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.ui.components.common.styles :as common.styles]
             [status-im.i18n :as i18n]
             [status-im.utils.utils :as utils]))
@@ -19,7 +20,7 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]
    [react/touchable-highlight
-    {:on-press #(re-frame/dispatch [:group-chat-profile/start-editing])}
+    {:on-press #(status-im.thread/dispatch [:group-chat-profile/start-editing])}
     [react/view
      [react/text {:style               common.styles/label-action-text
                   :uppercase?          true
@@ -30,7 +31,7 @@
   [toolbar/toolbar {}
    nil
    [toolbar/content-title ""]
-   [toolbar/default-done {:handler   #(re-frame/dispatch [:group-chat-profile/save-profile])
+   [toolbar/default-done {:handler   #(status-im.thread/dispatch [:group-chat-profile/save-profile])
                           :icon      :icons/ok
                           :icon-opts {:color               colors/blue
                                       :accessibility-label :done-button}}]])
@@ -40,26 +41,26 @@
    (when admin?
      [{:label  (i18n/label :add-members)
        :icon   :icons/add
-       :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
+       :action #(status-im.thread/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close
      :action              #(utils/show-confirmation (i18n/label :t/clear-history-title)
                                                     (i18n/label :t/clear-history-confirmation-content)
                                                     (i18n/label :t/clear-history-action)
-                                                    (fn [] (re-frame/dispatch [:clear-history])))
+                                                    (fn [] (status-im.thread/dispatch [:clear-history])))
      :accessibility-label :clear-history-button}
     {:label               (i18n/label :t/delete-chat)
      :icon                :icons/arrow-left
      :action              #(utils/show-confirmation (i18n/label :t/leave-group-title)
                                                     (i18n/label :t/leave-group-confirmation)
                                                     (i18n/label :t/leave-group-action)
-                                                    (fn [] (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
+                                                    (fn [] (status-im.thread/dispatch [:remove-chat-and-navigate-home chat-id])))
      :accessibility-label :delete-chat-button}]))
 
 (defn contact-actions [contact]
-  [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])
+  [{:action #(status-im.thread/dispatch [:show-profile (:whisper-identity contact)])
     :label  (i18n/label :t/view-profile)}
-   {:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
+   {:action #(status-im.thread/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
     :label  (i18n/label :t/remove-from-chat)}])
 
 (defn render-contact [{:keys [name whisper-identity] :as contact} admin? group-admin-identity current-user-identity]
@@ -72,7 +73,7 @@
      :accessibility-label :member-item
      :inner-props         {:accessibility-label :member-name-text}
      :on-press            (when (not= whisper-identity current-user-identity)
-                            #(re-frame/dispatch [:show-profile whisper-identity]))}]])
+                            #(status-im.thread/dispatch [:show-profile whisper-identity]))}]])
 
 (defview chat-group-contacts-view [admin? group-admin-identity current-user-identity]
   (letsubs [contacts [:get-current-chat-contacts]]

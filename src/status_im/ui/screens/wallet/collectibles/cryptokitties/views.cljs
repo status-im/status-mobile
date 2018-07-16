@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.collectibles.cryptokitties.views
-  (:require [re-frame.core :as re-frame]
+  (:require [status-im.thread :as status-im.thread]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.action-button :as action-button]
             [status-im.ui.components.colors :as colors]
@@ -24,5 +24,6 @@
      :icon                :icons/address
      :icon-opts           {:color colors/blue}
      :accessibility-label :open-collectible-button
-     :on-press            #(re-frame/dispatch [:open-collectible-in-browser
-                                               (str "https://www.cryptokitties.co/kitty/" id)])}]])
+     :on-press            #(status-im.thread/dispatch
+                            [:open-collectible-in-browser
+                             (str "https://www.cryptokitties.co/kitty/" id)])}]])

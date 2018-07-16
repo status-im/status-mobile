@@ -40,14 +40,24 @@
                                          :compiler     {:output-to     "target/ios/app.js"
                                                         :main          "env.ios.main"
                                                         :output-dir    "target/ios"
-                                                        :optimizations :none}}
+                                                        :optimizations :none
+                                                        :closure-defines {status-im.thread/platform "android"}}}
                                         :android
                                         {:source-paths     ["components/src" "react-native/src" "src"]
                                          :compiler         {:output-to     "target/android/app.js"
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
-                                                            :optimizations :none}
+                                                            :optimizations :none
+                                                            :closure-defines {status-im.thread/platform "android"}}
                                          :warning-handlers [status-im.utils.build/warning-handler]}
+                                        :worker-android
+                                        {:source-paths ["components/src" "react-native/src" "src"]
+                                         :figwheel     true
+                                         :compiler     {:output-to     "target/worker_android/app.js"
+                                                        :main          "env.android.worker"
+                                                        :output-dir    "target/worker_android"
+                                                        :optimizations :none
+                                                        :target        :nodejs}}
                                         :desktop
                                         {:source-paths ["components/src" "react-native/src" "src"]
                                          :compiler     {:output-to     "target/desktop/app.js"

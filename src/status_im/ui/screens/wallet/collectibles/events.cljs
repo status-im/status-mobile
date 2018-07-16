@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.collectibles.events
   (:require [re-frame.core :as re-frame]
+            [status-im.thread :as status-im.thread]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.ethereum.erc721 :as erc721]
             [status-im.utils.ethereum.tokens :as tokens]
@@ -28,7 +29,7 @@
     (erc721/token-of-owner-by-index web3 contract address i
                                     (fn [v1 v2]
                                       (load-token web3 (inc i) items-number contract address symbol)
-                                      (re-frame/dispatch [:load-collectible symbol (.toNumber v2)])))))
+                                      (status-im.thread/dispatch [:load-collectible symbol (.toNumber v2)])))))
 
 (re-frame/reg-fx
  :load-collectibles-fx
