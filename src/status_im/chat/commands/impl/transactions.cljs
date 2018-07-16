@@ -1,21 +1,26 @@
 (ns status-im.chat.commands.impl.transactions
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
+            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.impl.transactions.styles :as transactions-styles]
-            [status-im.chat.events.requests :as request-events]
+            [status-im.data-store.requests :as requests-store]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.animation :as animation]
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.wallet.send.events :as send.events]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
             [status-im.ui.screens.navigation :as navigation]))
+
+;; common `send/request` functionality
 
 (defn- render-asset [selected-event-creator]
   (fn [{:keys [name symbol amount decimals] :as asset}]
@@ -53,58 +58,6 @@
           (i18n/label-number (:amount parameters))
           " "
           (:asset parameters))]))
-
-(defview send-status [tx-hash outgoing]
-  (letsubs [confirmed? [:transaction-confirmed? tx-hash]
-            tx-exists? [:wallet-transaction-exists? tx-hash]]
-    [react/touchable-highlight {:on-press #(when tx-exists?
-                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
-     [react/view transactions-styles/command-send-status-container
-      [vector-icons/icon (if confirmed? :icons/check :icons/dots)
-       {:color           colors/blue
-        :container-style (transactions-styles/command-send-status-icon outgoing)}]
-      [react/view
-       [react/text {:style transactions-styles/command-send-status-text}
-        (i18n/label (cond
-                      confirmed? :status-confirmed
-                      tx-exists? :status-pending
-                      :else :status-tx-not-found))]]]]))
-
-(defview send-preview
-  [{:keys [content timestamp-str outgoing group-chat]}]
-  (letsubs [network [:network-name]]
-    (let [{{:keys [amount fiat-amount tx-hash asset currency] send-network :network} :params} content
-          recipient-name (get-in content [:params :bot-db :public :recipient])
-          network-mismatch? (and (seq send-network) (not= network send-network))]
-      [react/view transactions-styles/command-send-message-view
-       [react/view
-        [react/view transactions-styles/command-send-amount-row
-         [react/view transactions-styles/command-send-amount
-          [react/text {:style transactions-styles/command-send-amount-text
-                       :font  :medium}
-           amount
-           [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
-            "."]
-           [react/text {:style (transactions-styles/command-send-currency-text outgoing)
-                        :font  :default}
-            asset]]]]
-        (when fiat-amount
-          [react/view transactions-styles/command-send-fiat-amount
-           [react/text {:style transactions-styles/command-send-fiat-amount-text}
-            (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
-        (when (and group-chat
-                   recipient-name)
-          [react/text {:style transactions-styles/command-send-recipient-text}
-           (str
-            (i18n/label :send-sending-to)
-            " "
-            recipient-name)])
-        [react/view
-         [react/text {:style (transactions-styles/command-send-timestamp outgoing)}
-          (str (i18n/label :sent-at) " " timestamp-str)]]
-        [send-status tx-hash outgoing]
-        (when network-mismatch?
-          [react/text send-network])]])))
 
 (def personal-send-request-params
   [{:id          :asset
@@ -158,6 +111,60 @@
           {:title       "Amount"
            :description (str "Max number of decimals is " asset-decimals)})))))
 
+;; `/send` command
+
+(defview send-status [tx-hash outgoing]
+  (letsubs [confirmed? [:transaction-confirmed? tx-hash]
+            tx-exists? [:wallet-transaction-exists? tx-hash]]
+    [react/touchable-highlight {:on-press #(when tx-exists?
+                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
+     [react/view transactions-styles/command-send-status-container
+      [vector-icons/icon (if confirmed? :icons/check :icons/dots)
+       {:color           colors/blue
+        :container-style (transactions-styles/command-send-status-icon outgoing)}]
+      [react/view
+       [react/text {:style transactions-styles/command-send-status-text}
+        (i18n/label (cond
+                      confirmed? :status-confirmed
+                      tx-exists? :status-pending
+                      :else :status-tx-not-found))]]]]))
+
+(defview send-preview
+  [{:keys [content timestamp-str outgoing group-chat]}]
+  (letsubs [network [:network-name]]
+    (let [{{:keys [amount fiat-amount tx-hash asset currency] send-network :network} :params} content
+          recipient-name (get-in content [:params :bot-db :public :recipient])
+          network-mismatch? (and (seq send-network) (not= network send-network))]
+      [react/view transactions-styles/command-send-message-view
+       [react/view
+        [react/view transactions-styles/command-send-amount-row
+         [react/view transactions-styles/command-send-amount
+          [react/text {:style transactions-styles/command-send-amount-text
+                       :font  :medium}
+           amount
+           [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
+            "."]
+           [react/text {:style (transactions-styles/command-send-currency-text outgoing)
+                        :font  :default}
+            asset]]]]
+        (when fiat-amount
+          [react/view transactions-styles/command-send-fiat-amount
+           [react/text {:style transactions-styles/command-send-fiat-amount-text}
+            (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
+        (when (and group-chat
+                   recipient-name)
+          [react/text {:style transactions-styles/command-send-recipient-text}
+           (str
+            (i18n/label :send-sending-to)
+            " "
+            recipient-name)])
+        [react/view
+         [react/text {:style (transactions-styles/command-send-timestamp outgoing)}
+          (str (i18n/label :sent-at) " " timestamp-str)]]
+        [send-status tx-hash outgoing]
+        (when network-mismatch?
+          [react/text send-network])]])))
+
 ;; TODO(goranjovic) - update to include tokens in https://github.com/status-im/status-react/issues/3233
 (defn- transaction-details [contact symbol]
   (-> contact
@@ -165,8 +172,6 @@
       (assoc :symbol symbol
              :gas (ethereum/estimate-gas symbol)
              :from-chat? true)))
-
-;; `/send` command
 
 (deftype PersonalSendCommand []
   protocol/Command
@@ -180,15 +185,15 @@
     ;; Only superficial/formatting validation, "real validation" will be performed
     ;; by the wallet, where we yield control in the next step
     (personal-send-request-validation parameters cofx))
-  (yield-control [_ parameters {:keys [db]}]
+  (yield-control [_ {:keys [amount asset]} {:keys [db]}]
     ;; Prefill wallet and navigate there
     (let [recipient-contact  (get-in db [:contacts/contacts (:current-chat-id db)])
           sender-account     (:account/account db)
           chain              (keyword (:chain db))
-          symbol             (-> parameters :asset keyword)
+          symbol             (keyword asset)
           {:keys [decimals]} (tokens/asset-for chain symbol)]
       (merge {:db (-> db
-                      (send.events/set-and-validate-amount-db (:amount parameters) symbol decimals)
+                      (send.events/set-and-validate-amount-db amount symbol decimals)
                       (choose-recipient.events/fill-request-details
                        (transaction-details recipient-contact symbol))
                       (update-in [:wallet :send-transaction] dissoc :id :password :wrong-password?)
@@ -213,6 +218,124 @@
 
 ;; `/request` command
 
+(def request-message-icon-scale-delay 600)
+
+(defn set-chat-command [message-id command]
+  (let [metadata {:to-message-id message-id}]
+    (re-frame/dispatch [:select-chat-input-command command metadata])))
+
+(def min-scale 1)
+(def max-scale 1.3)
+
+(defn button-animation [val to-value loop? answered?]
+  (animation/anim-sequence
+   [(animation/anim-delay
+     (if (and @loop? (not @answered?))
+       request-message-icon-scale-delay
+       0))
+    (animation/spring val {:toValue         to-value
+                           :useNativeDriver true})]))
+
+(defn request-button-animation-logic
+  [{:keys [to-value val loop? answered?] :as context}]
+  (animation/start
+   (button-animation val to-value loop? answered?)
+   #(if (and @loop? (not @answered?))
+      (let [new-value (if (= to-value min-scale) max-scale min-scale)
+            context'  (assoc context :to-value new-value)]
+        (request-button-animation-logic context'))
+      (animation/start
+       (button-animation val min-scale loop? answered?)))))
+
+(defn request-button-label
+  "The request button label will be in the form of `request-the-command-name`"
+  [command-name]
+  (keyword (str "request-" (name command-name))))
+
+(defn request-button [message-id _ on-press-handler]
+  (let [scale-anim-val (animation/create-value min-scale)
+        answered?      (re-frame/subscribe [:is-request-answered? message-id])
+        loop?          (reagent/atom true)
+        context        {:to-value  max-scale
+                        :val       scale-anim-val
+                        :answered? answered?
+                        :loop?     loop?}]
+    (reagent/create-class
+     {:display-name "request-button"
+      :component-did-mount
+      (if (or (nil? on-press-handler) @answered?) (fn []) #(request-button-animation-logic context))
+      :component-will-unmount
+      #(reset! loop? false)
+      :reagent-render
+      (fn [message-id {command-icon :icon :as command} on-press-handler]
+        (when command
+          [react/touchable-highlight
+           {:on-press            on-press-handler
+            :style               transactions-styles/command-request-image-touchable
+            :accessibility-label (request-button-label (:name command))}
+           [react/animated-view {:style (transactions-styles/command-request-image-view command scale-anim-val)}
+            (when command-icon
+              [react/icon command-icon transactions-styles/command-request-image])]]))})))
+
+(defview request-preview
+  [{:keys [message-id content outgoing timestamp timestamp-str group-chat]} {:keys [db]}]
+  (letsubs [answered? [:is-request-answered? message-id]
+            status-initialized? [:get :status-module-initialized?]
+            network [:network-name]
+            prices [:prices]]
+    (let [{:keys [amount asset fiat-amount currency] request-network :network} (:params content)
+          recipient-name    (get-in content [:params :bot-db :public :recipient])
+          network-mismatch? (and request-network (not= request-network network))
+          command           (get-in db [:id->command ["send" #{:personal-chats}] :type])
+          on-press-handler  (cond
+                              network-mismatch? nil
+                              (and (not answered?)
+                                   status-initialized?) #(set-chat-command message-id command))]
+      [react/view
+       [react/touchable-highlight
+        {:on-press on-press-handler}
+        [react/view (transactions-styles/command-request-message-view outgoing)
+         [react/view
+          [react/view
+           [react/text {:style (transactions-styles/command-request-header-text outgoing)}
+            (i18n/label :transaction-request)]]
+          [react/view transactions-styles/command-request-row
+           [react/text {:style transactions-styles/command-request-amount-text
+                        :font  :medium}
+            amount
+            [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
+             "."]
+            [react/text {:style (transactions-styles/command-request-currency-text outgoing)
+                         :font  :default}
+             asset]]]
+          [react/view transactions-styles/command-request-fiat-amount-row
+           [react/text {:style transactions-styles/command-request-fiat-amount-text}
+            (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]]
+          (when (and group-chat recipient-name)
+            [react/text {:style transactions-styles/command-request-recipient-text}
+             (str
+              (i18n/label :request-requesting-from)
+              " "
+              recipient-name)])
+          (when network-mismatch?
+            [react/text {:style transactions-styles/command-request-network-text}
+             (str (i18n/label :on) " " request-network)])
+          [react/view transactions-styles/command-request-timestamp-row
+           [react/text {:style (transactions-styles/command-request-timestamp-text outgoing)}
+            (str
+             (datetime/timestamp->mini-date timestamp)
+             " "
+             (i18n/label :at)
+             " "
+             timestamp-str)]]
+          (when-not outgoing
+            [react/view
+             [react/view transactions-styles/command-request-separator-line]
+             [react/view transactions-styles/command-request-button
+              [react/text {:style    (transactions-styles/command-request-button-text answered?)
+                           :on-press on-press-handler}
+               (i18n/label (if answered? :command-button-sent :command-button-send))]]])]]]])))
+
 (deftype PersonalRequestCommand []
   protocol/Command
   (id [_]
@@ -225,10 +348,14 @@
     (personal-send-request-validation parameters cofx))
   (yield-control [_ _ _])
   (on-send [_ _ _ _])
-  (on-receive [_ command-message cofx]
-    (let [{:keys [chat-id message-id]} command-message]
-      (request-events/add-request chat-id message-id cofx)))
+  (on-receive [_ {:keys [message-id chat-id]} {:keys [db]}]
+    (let [request {:chat-id    chat-id
+                   :message-id message-id
+                   :response   "send"
+                   :status     "open"}]
+      {:db            (assoc-in db [:chats chat-id :requests message-id] request)
+       :data-store/tx [(requests-store/save-request-tx request)]}))
   (short-preview [_ command-message _]
     (personal-send-request-short-preview command-message))
-  (preview [_ command-message _]
-    nil))
+  (preview [_ command-message cofx]
+    (request-preview command-message cofx)))
