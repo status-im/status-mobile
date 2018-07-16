@@ -319,15 +319,22 @@ function install_android_ndk() {
     dependency_setup \
       "pushd android && ./gradlew react-native-android:installArchives && popd"
   else
-    local _ndkParentDir=~/Android/Sdk
-    mkdir -p $_ndkParentDir
-    cecho "@cyan[[Downloading Android NDK.]]"
-    wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
-      cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
-      unzip -q -o android-ndk.zip -d "$_ndkParentDir" && \
-      rm -f android-ndk.zip && \
-      _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | head -n 1)" && \
+    if is_macos; then
+      brew_install android-ndk && \
+        _ndkTargetDir=/usr/local/opt/android-ndk        
+    elif is_linux; then
+      local _ndkParentDir=~/Android/Sdk
+      mkdir -p $_ndkParentDir
+      cecho "@cyan[[Downloading Android NDK.]]"
+      wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
+        cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
+        unzip -q -o android-ndk.zip -d "$_ndkParentDir" && \
+        rm -f android-ndk.zip && \
+        _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | head -n 1)"
+    fi
+    if [ $? ]; then
       echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
       cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"
+    fi
   fi
 }
