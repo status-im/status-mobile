@@ -88,7 +88,7 @@
 (def toolbar-chat-name
   {:font-size   16
    :color       :black
-   :font-weight "600"})
+   :font-weight "300"})
 
 (def add-contact
   {:background-color :white
@@ -116,3 +116,40 @@
 (def chat-view
   {:flex             1
    :background-color :white})
+
+(defn contact-card-text [color]
+  {:color     color
+   :font-size 14})
+
+(def contact-card-gray-text
+  {:color     colors/gray
+   :font-size 14})
+
+(def chat-profile-body
+  {:margin 32})
+
+(def chat-profile-row
+  {:flex-direction :row
+   :align-items    :center
+   :margin-bottom  10})
+
+(def chat-profile-icon-container
+  {:background-color (colors/alpha colors/blue 0.1)
+   :justify-content  :center
+   :align-items      :center
+   :border-radius    15
+   ;; not sure idiomatic reagent for multiple style values
+   ;; for margin
+   :width            22
+   :height           22
+   :margin-right     10})
+
+(defn chat-profile-icon [color]
+  {:tint-color color
+   :width      15
+   :height     15})
+
+(def chat-profile-contact-code
+  {:color         colors/gray
+   :margin-top    10
+   :margin-bottom 5})
