@@ -42,7 +42,6 @@
             [status-im.test.utils.transducers]
             [status-im.test.utils.async]
             [status-im.test.utils.datetime]
-            [status-im.test.utils.mixpanel]
             [status-im.test.utils.prices]
             [status-im.test.utils.keychain.core]
             [status-im.test.utils.universal-links.core]
@@ -100,7 +99,6 @@
  'status-im.test.utils.signing-phrase.core
  'status-im.test.utils.transducers
  'status-im.test.utils.datetime
- 'status-im.test.utils.mixpanel
  'status-im.test.utils.prices
  'status-im.test.utils.keychain.core
  'status-im.test.utils.universal-links.core

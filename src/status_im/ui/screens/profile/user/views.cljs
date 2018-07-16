@@ -157,12 +157,6 @@
          :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
          :accessibility-label :bootnodes-settings-button}])
      [profile.components/settings-item-separator]
-     [profile.components/settings-item
-      {:label-kw            :t/help-improve?
-       :value               (i18n/label (if sharing-usage-data? :on :off))
-       :action-fn           #(re-frame/dispatch [:navigate-to :usage-data [:navigate-back]])
-       :accessibility-label :help-improve}]
-     [profile.components/settings-item-separator]
      [profile.components/settings-switch-item
       {:label-kw  :t/dev-mode
        :value     dev-mode?

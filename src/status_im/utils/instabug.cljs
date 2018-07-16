@@ -19,16 +19,6 @@
 (defn- prepare-event-name [event {:keys [target]}]
   (str event " " target))
 
-;; `event` is an event name, e.g. "Tap"
-;; `properties` is a map of event details or nil, e.g. {:target :send-current-message}
-;; (see status-im.utils.mixpanel-events for list of trackable events)
-(defn track [event properties]
-  (when (= event "Tap")
-    (let [event-name (prepare-event-name event properties)]
-      (try
-        (.logUserEventWithName instabug event-name)
-        (catch :default _ nil)))))
-
 (defn log [str]
   (if js/goog.DEBUG
     (log/debug str)
