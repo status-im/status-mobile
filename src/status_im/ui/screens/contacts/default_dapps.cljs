@@ -37,7 +37,11 @@
            {:name        "DDEX"
             :dapp-url    "https://ddex.io/"
             :photo-path  "contacts://ddex"
-            :description "Instant, real-time order matching with secure on-chain settlement"}]}
+            :description "Instant, real-time order matching with secure on-chain settlement"}
+           {:name        "EasyTrade"
+            :dapp-url    "https://easytrade.io"
+            :photo-path  "contacts://easytrade"
+            :description "One exchange for every token"}]}
    {:title "Marketplaces"
     :data [{:name        "CryptoCribs"
             :dapp-url    "https://cryptocribs.com"

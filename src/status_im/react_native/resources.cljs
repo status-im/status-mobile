@@ -12,6 +12,7 @@
    :commiteth          (js/require "./resources/images/contacts/commiteth.png")
    :etherplay          (js/require "./resources/images/contacts/etherplay.png")
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
+   :easytrade          (js/require "./resources/images/contacts/easytrade.png")
 
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
