@@ -374,7 +374,7 @@
                          [:process-pending-messages]
                          [:update-wallet]
                          [:update-transactions]
-                         (if-not platform/desktop? [:get-fcm-token])
+                         (if platform/mobile? [:get-fcm-token])
                          [:update-sign-in-time]
                          [:show-mainnet-is-default-alert]]
                   (seq events-after) (into events-after))}))
