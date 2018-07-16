@@ -269,19 +269,24 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.create_drivers(1, offline_mode=True)
         driver = self.drivers[0]
         sign_in = SignInView(driver)
-        home = sign_in.create_user()
+        home_view = sign_in.create_user()
+
+        # Dismiss "Welcome to Status" placeholder.
+        # When the placeholder is visible, the offline status bar does not appear
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.home_button.click()
 
         driver.set_network_connection(1)  # airplane mode
 
-        if home.connection_status.text != 'Offline':
+        if home_view.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in home screen')
 
-        chat = home.add_contact(group_chat_users['C_USER']['public_key'])
+        chat = home_view.add_contact(group_chat_users['C_USER']['public_key'])
         if chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()
 
-        public_chat = home.join_public_chat(home.get_public_chat_name())
+        public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
         if public_chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in a public chat')
         self.verify_no_errors()
