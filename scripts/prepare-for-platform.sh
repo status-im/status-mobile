@@ -14,7 +14,6 @@ if [ $# -eq 0 ]
     echo "When called it replaces platform-specific files"
     echo "If invoked with 'mobile' argument it will make a copying: "
     echo "package.json.mobile -> package.json"
-    echo ".re-natal.mobile -> .re-natal"
     echo "etc.."
     exit 1
   else
@@ -29,9 +28,6 @@ cp "package.json.${PLATFORM}" package.json
 
 echo "copying package-lock.json.${PLATFORM} -> package-lock.json"
 cp "package-lock.json.${PLATFORM}" package-lock.json
-
-echo "copying .re-natal.${PLATFORM} -> .re-natal"
-cp ".re-natal.${PLATFORM}" .re-natal
 
 echo "copying VERSION.${PLATFORM} -> VERSION"
 cp "VERSION.${PLATFORM}" VERSION
