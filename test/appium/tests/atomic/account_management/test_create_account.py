@@ -43,6 +43,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile = sign_in.get_profile_view()
         profile.logout_button.click()
         profile.confirm_logout_button.click()
+        if sign_in.ok_button.is_element_displayed():
+            sign_in.ok_button.click()
         sign_in.create_user()
         if sign_in.get_public_key() == public_key:
             pytest.fail('New account was not created')

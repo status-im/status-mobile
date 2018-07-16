@@ -154,23 +154,23 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.logcat
     @marks.testrail_id(3774)
-    def test_logcat_backup_seed_phrase(self):
+    def test_logcat_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
-        profile_view.backup_seed_phrase_button.click()
+        profile_view.backup_recovery_phrase_button.click()
         profile_view.ok_continue_button.click()
-        seed_phrase = profile_view.get_seed_phrase()
+        recovery_phrase = profile_view.get_recovery_phrase()
         profile_view.next_button.click()
-        word_number = profile_view.seed_phrase_word_number.number
-        profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number])
+        word_number = profile_view.recovery_phrase_word_number.number
+        profile_view.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
         profile_view.next_button.click()
-        word_number_1 = profile_view.seed_phrase_word_number.number
-        profile_view.seed_phrase_word_input.set_value(seed_phrase[word_number_1])
+        word_number_1 = profile_view.recovery_phrase_word_number.number
+        profile_view.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
         profile_view.done_button.click()
         profile_view.yes_button.click()
-        for i in seed_phrase[word_number], seed_phrase[word_number_1]:
-            profile_view.check_no_value_in_logcat(i, 'Passphrase')
+        for i in recovery_phrase[word_number], recovery_phrase[word_number_1]:
+            profile_view.check_no_value_in_logcat(i, 'Recovery phrase')
 
     @marks.testrail_id(3751)
     def test_need_help_section(self):

@@ -161,6 +161,8 @@ class SignInView(BaseView):
         return self.sign_in_button.click()
 
     def click_account_by_position(self, position: int):
+        if self.ok_button.is_element_displayed():
+            self.ok_button.click()
         try:
             self.account_button.find_elements()[position].click()
         except IndexError:

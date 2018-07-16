@@ -243,7 +243,7 @@ class BaseView(object):
 
     @property
     def logcat(self):
-        for i in range(30):
+        for i in range(60):
             logcat = self.driver.get_log("logcat")
             if len(logcat) > 1000:
                 return str([i for i in logcat if 'appium' not in str(i).lower()])
