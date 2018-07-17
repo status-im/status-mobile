@@ -9,6 +9,8 @@
             [status-im.ui.screens.accounts.recover.views :as recover.views]
             [status-im.ui.screens.accounts.views :as accounts.views]))
 
+(enable-console-print!)
+
 (views/defview main []
   (views/letsubs [view-id [:get :view-id]]
     (let [component (case view-id
@@ -17,7 +19,7 @@
                       :accounts accounts.views/accounts
                       :recover recover.views/recover
                       :create-account create.views/create-account
-                      (:new-contact :chat :home) main.views/main-views
+                      (:new-contact :chat :home :qr-code) main.views/main-views
                       :login login.views/login
                       react/view)]
       [react/view {:style {:flex 1}}

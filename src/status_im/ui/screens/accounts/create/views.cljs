@@ -44,6 +44,7 @@
   [text-input/text-input-with-label
    {:label             (get-in steps [step :input-label])
     :placeholder       (get-in steps [step :input-placeholder])
+    :style             {:height 52}
     :on-change-text    #(re-frame/dispatch [:account-set-input-text (get-in steps [step :input-key]) %])
     :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
     :error             error}])

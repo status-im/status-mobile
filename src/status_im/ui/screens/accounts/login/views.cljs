@@ -70,6 +70,7 @@
                                 (re-frame/dispatch [:set-in [:accounts/login :password] %])
                                 (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
           :secure-text-entry true
+          :style             {:height 52}
           :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]]]
      (when processing
        [react/view styles/processing-view
