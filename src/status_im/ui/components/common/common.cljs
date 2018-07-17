@@ -90,15 +90,23 @@
                     (assoc :accessibility-label accessibility-label))
        (if more-than-9 (i18n/label :t/counter-9-plus) value)]])))
 
-(defn image-contain [_ _]
-  (let [content-width (reagent/atom 0)]
-    (reagent/create-class
-     {:reagent-render
-      (fn [{:keys [container-style style]} {:keys [image width height]}]
-        [react/view {:style     (merge styles/image-contain container-style)
-                     :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
-         [react/image {:source      image
-                       :resize-mode :contain
-                       :style       (merge style
-                                           {:width  @content-width
-                                            :height (/ (* @content-width height) width)})}]])})))
+(defview image-contain [{:keys [container-style style]} {:keys [image width height]}]
+  (letsubs [content-width (reagent/atom 0)
+            {window-width :width window-height :height} [:dimensions/window]]
+    [react/view {:style     (merge styles/image-contain container-style)
+                 :on-layout #(reset! content-width (-> % .-nativeEvent .-layout .-width))}
+     [react/image {:source      image
+                   :resize-mode :contain
+                   :style       (merge style
+                                       (if (> window-height window-width)
+                                         {:width  (* @content-width
+                                                     (if (< window-height 600)
+                                                       0.6
+                                                       1))
+                                          :height (/ (* @content-width height
+                                                        (if (< window-height 600)
+                                                          0.6
+                                                          1))
+                                                     width)}
+                                         {:width  @content-width
+                                          :height (* window-height 0.6)}))}]]))

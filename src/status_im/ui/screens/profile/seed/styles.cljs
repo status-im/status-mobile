@@ -8,7 +8,8 @@
    :margin-horizontal 26})
 
 (def intro-image
-  {:padding-bottom 10})
+  {:padding-bottom 10
+   :align-items    :center})
 
 (def intro-text
   {:text-align     :center
