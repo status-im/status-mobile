@@ -79,7 +79,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
         send_transaction_view.sign_transaction(sender['password'])
-        send_transaction_view.check_no_value_in_logcat(sender['password'])
+        send_transaction_view.check_no_values_in_logcat(password=sender['password'])
 
     @marks.logcat
     @marks.testrail_id(3775)
@@ -94,4 +94,4 @@ class TestTransactionDApp(SingleDeviceTestCase):
             send_transaction_view.enter_password_input)
         send_transaction_view.enter_password_input.send_keys(common_password)
         send_transaction_view.sign_transaction_button.click()
-        send_transaction_view.check_no_value_in_logcat(common_password)
+        send_transaction_view.check_no_values_in_logcat(password=common_password)

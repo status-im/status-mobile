@@ -1,6 +1,6 @@
 import pytest
 
-from tests import marks, group_chat_users, basic_user, get_current_time
+from tests import marks, group_chat_users, basic_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -55,8 +55,6 @@ class TestChatManagement(SingleDeviceTestCase):
         home.get_chat_with_user('#' + chat_name).swipe_and_delete()
         profile = home.profile_button.click()
         profile.logout()
-        if sign_in.ok_button.is_element_displayed():
-            sign_in.ok_button.click()
         sign_in.sign_in()
         if home.get_chat_with_user('#' + chat_name).is_element_displayed():
             self.errors.append('Deleted public chat is present after relogin')

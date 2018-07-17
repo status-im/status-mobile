@@ -95,6 +95,13 @@ class DonNotShareButton(BaseButton):
                                                    'or @text="Do not share"]' % "'")
 
 
+class OtherAccountsButton(BaseButton):
+
+    def __init__(self, driver):
+        super(OtherAccountsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('OTHER ACCOUNTS')
+
+
 class SignInView(BaseView):
 
     def __init__(self, driver):
@@ -115,6 +122,7 @@ class SignInView(BaseView):
         self.learn_more_link = LearnMoreLink(self.driver)
         self.share_data_button = ShareDataButton(self.driver)
         self.do_not_share_button = DonNotShareButton(self.driver)
+        self.other_accounts_button = OtherAccountsButton(self.driver)
 
     def create_user(self, username: str = '', password=common_password):
         self.create_account_button.click()
@@ -157,6 +165,8 @@ class SignInView(BaseView):
         return status_test_daap
 
     def sign_in(self, password=common_password):
+        if self.ok_button.is_element_displayed():
+            self.ok_button.click()
         self.password_input.set_value(password)
         return self.sign_in_button.click()
 

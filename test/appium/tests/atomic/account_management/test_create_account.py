@@ -41,10 +41,10 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.create_user()
         public_key = sign_in.get_public_key()
         profile = sign_in.get_profile_view()
-        profile.logout_button.click()
-        profile.confirm_logout_button.click()
+        profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
+        sign_in.other_accounts_button.click()
         sign_in.create_user()
         if sign_in.get_public_key() == public_key:
             pytest.fail('New account was not created')
@@ -92,4 +92,4 @@ class TestCreateAccount(SingleDeviceTestCase):
     def test_password_in_logcat_creating_account(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
-        sign_in.check_no_value_in_logcat(common_password)
+        sign_in.check_no_values_in_logcat(password=common_password)

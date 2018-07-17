@@ -243,12 +243,10 @@ class BaseView(object):
 
     @property
     def logcat(self):
-        for i in range(60):
-            logcat = self.driver.get_log("logcat")
-            if len(logcat) > 1000:
-                return str([i for i in logcat if 'appium' not in str(i).lower()])
-            time.sleep(10)
-        raise TimeoutError('Logcat is empty after 300 sec')
+        logcat = self.driver.get_log("logcat")
+        if len(logcat) > 1000:
+            return str([i for i in logcat if 'appium' not in str(i).lower()])
+        raise TimeoutError('Logcat is empty')
 
     def confirm(self):
         info("Tap 'Confirm' on native keyboard")
@@ -395,13 +393,9 @@ class BaseView(object):
     def relogin(self, password=common_password):
         self.get_back_to_home_view()
         profile_view = self.profile_button.click()
-        profile_view.logout_button.click()
-        profile_view.confirm_logout_button.click()
+        profile_view.logout()
         sign_in_view = self.get_sign_in_view()
-        sign_in_view.click_account_by_position(0)
-        sign_in_view.password_input.send_keys(password)
-        sign_in_view.sign_in_button.click()
-        sign_in_view.home_button.wait_for_visibility_of_element()
+        sign_in_view.sign_in(password)
 
     def get_public_key(self):
         profile_view = self.profile_button.click()
@@ -433,6 +427,8 @@ class BaseView(object):
                         e.msg = "Can't reconnect to mail server after 3 attempts"
                         raise e
 
-    def check_no_value_in_logcat(self, exp_value: str, value_name: str = 'Password'):
-        if exp_value in self.logcat:
-            pytest.fail('%s in logcat!!!' % value_name, pytrace=False)
+    def check_no_values_in_logcat(self, **kwargs):
+        logcat = self.logcat
+        for key, value in kwargs.items():
+            if value in logcat:
+                pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)

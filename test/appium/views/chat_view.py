@@ -190,7 +190,8 @@ class ChatElementByText(BaseText):
         class StatusText(BaseText):
             def __init__(self, driver, parent_locator: str):
                 super(StatusText, self).__init__(driver)
-                text = "//android.widget.TextView[@text='Seen' or @text='Sent' or @text='Not sent. Tap for options']"
+                text = "//android.widget.TextView[@text='Seen' or @text='Sent' or " \
+                       "@text='Not sent. Tap for options' or @text='Network mismatch']"
                 self.locator = self.Locator.xpath_selector(parent_locator + text)
 
         return StatusText(self.driver, self.locator.value)

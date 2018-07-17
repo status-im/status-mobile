@@ -59,5 +59,4 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
     def test_logcat_recovering_account(self):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(basic_user['passphrase'], basic_user['password'])
-        sign_in.check_no_value_in_logcat(basic_user['passphrase'], 'Passphrase')
-        sign_in.check_no_value_in_logcat(basic_user['password'])
+        sign_in.check_no_values_in_logcat(passphrase=basic_user['passphrase'], password=basic_user['password'])

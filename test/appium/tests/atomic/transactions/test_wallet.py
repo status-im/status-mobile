@@ -191,7 +191,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.send_as_keyevent(sender['password'])
         send_transaction.sign_transaction_button.click()
         send_transaction.got_it_button.click()
-        send_transaction.check_no_value_in_logcat(sender['password'])
+        send_transaction.check_no_values_in_logcat(password=sender['password'])
 
     @marks.testrail_id(3746)
     @marks.smoke_1
