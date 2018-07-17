@@ -113,12 +113,12 @@ void RCTStatus::startNode(QString configString) {
     qDebug() << " RCTStatus::startNode configString: " << jsonDoc.toVariant().toMap();
     QVariantMap configJSON = jsonDoc.toVariant().toMap();
 
-    QString newKeystoreUrl = "keystore";
-
     int networkId = configJSON["NetworkId"].toInt();
     QString dataDir = configJSON["DataDir"].toString();
 
-    QString networkDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + dataDir;
+    QString rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
+    QString networkDir = rootDirPath + dataDir;
+    QString keyStoreDir = rootDirPath + "keystore";
     QDir dir(networkDir);
     if (!dir.exists()) {
       dir.mkpath(".");
@@ -136,7 +136,7 @@ void RCTStatus::startNode(QString configString) {
 
     qDebug() << " RCTStatus::startNode GenerateConfig configString: " << jsonDoc.toVariant().toMap();
     QVariantMap generatedConfig = jsonDoc.toVariant().toMap();
-    generatedConfig["KeyStoreDir"] = newKeystoreUrl;
+    generatedConfig["KeyStoreDir"] = keyStoreDir;
     generatedConfig["LogEnabled"] = true;
     generatedConfig["LogFile"] = networkDir + "/geth.log";
     //generatedConfig["LogLevel"] = "DEBUG";
