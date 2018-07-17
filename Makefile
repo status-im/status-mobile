@@ -31,6 +31,7 @@ setup: ##@prepare Install all the requirements for status-react
 
 prepare: ##@prepare Install dependencies and prepare workspace
 	lein deps
+	scripts/prepare-for-platform.sh mobile
 	npm install
 	./re-natal deps
 	./re-natal use-figwheel
