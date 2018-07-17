@@ -33,7 +33,11 @@
            {:name        "Eth2phone"
             :dapp-url    "https://eth2.io"
             :photo-path  "contacts://eth2phone"
-            :description "Send Ether by phone number"}]}
+            :description "Send Ether by phone number"}
+           {:name        "DDEX"
+            :dapp-url    "https://ddex.io/"
+            :photo-path  "contacts://ddex"
+            :description "Instant, real-time order matching with secure on-chain settlement"}]}
    {:title "Marketplaces"
     :data [{:name        "CryptoCribs"
             :dapp-url    "https://cryptocribs.com"
@@ -54,7 +58,11 @@
            {:name        "The Bounties Network"
             :dapp-url    "https://beta.bounties.network/"
             :photo-path  "contacts://bounties-network"
-            :description "Bounties on any task, paid in any token"}]}
+            :description "Bounties on any task, paid in any token"}
+           {:name        "Emoon"
+            :dapp-url    "https://www.emoon.io/"
+            :photo-path  "contacts://emoon"
+            :description "A decentralized marketplace for buying & selling crypto assets"}]}
    {:title "Fun & Games"
     :data [{:name        "CryptoKitties"
             :dapp-url    "https://www.cryptokitties.co"
@@ -109,4 +117,9 @@
            {:name        "Status Test DApp"
             :dapp-url    "https://status-im.github.io/dapp/"
             :description "Request test assets and test basic web3 functionality."
-            :developer?   true}]}])
+            :developer?   true}]}
+   {:title "Other: Media"
+    :data [{:name        "LivePeer"
+            :dapp-url    "http://livepeer.tv"
+            :photo-path  "contacts://livepeer"
+            :description "Decentralized video broadcasting"}]}])
