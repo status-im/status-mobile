@@ -20,6 +20,8 @@
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.ui.screens.currency-settings.subs :as currency-settings]
             [status-im.utils.datetime :as datetime]
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.react :as react]
             [clojure.string :as string]))
 
 (def receive-interceptors
@@ -99,10 +101,11 @@
   (assoc message :outgoing (= from (:current-public-key db))))
 
 (defn- add-message
-  [batch? {:keys [chat-id message-id clock-value content] :as message} current-chat? {:keys [db] :as cofx}]
+  [batch? {:keys [chat-id message-id clock-value content from] :as message} current-chat? {:keys [db] :as cofx}]
   (let [prepared-message (-> message
                              (prepare-message chat-id current-chat?)
                              (add-outgoing-status cofx))]
+(when (and platform/desktop? (not= from (:current-public-key db))) (#(.sendNotification react/desktop-notification content)))
     (let [fx {:db            (cond->
                               (-> db
                                   (update-in [:chats chat-id :messages] assoc message-id prepared-message)
