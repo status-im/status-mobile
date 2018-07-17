@@ -27,13 +27,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.name_input.send_keys('user_%s' % get_current_time())
 
         sign_in.next_button.click()
-        if not sign_in.learn_more_link.is_element_displayed(10):
-            self.errors.append("'Learn more about what we collect' is not shown")
-        if not sign_in.share_data_button.is_element_displayed(10):
-            self.errors.append("'Share data' button is not visible")
-        if not sign_in.do_not_share_button.is_element_displayed(10):
-            self.errors.append("'Do not share' button is not visible")
-        self.verify_no_errors()
 
     @marks.testrail_id(1433)
     def test_switch_users_and_add_new_account(self):
