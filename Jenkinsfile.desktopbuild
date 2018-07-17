@@ -1,0 +1,196 @@
+env.LANG="en_US.UTF-8"
+env.LANGUAGE="en_US.UTF-8"
+env.LC_ALL="en_US.UTF-8"
+
+def installJSDeps() {
+    def attempt = 1
+    def maxAttempts = 10
+    def installed = false
+    sh 'node -v'
+    sh 'npm -v'
+    while (!installed && attempt <= maxAttempts) {
+        println "#${attempt} attempt to install npm deps"
+        sh 'npm install --verbose'
+        installed = fileExists('node_modules/web3/index.js')
+        attemp = attempt + 1
+    }
+}
+
+def doGitRebase() {
+  try {
+    sh 'git rebase origin/desktop'
+  } catch (e) {
+    sh 'git rebase --abort'
+    throw e
+  }
+}
+
+def cleanupBuild(packageFolder) {
+  sh 'rm -rf node_modules'
+  sh ( 'rm -rf ' + packageFolder )
+  sh 'rm -rf desktop/modules'
+  sh 'rm -rf desktop/node_modules'
+}
+
+parallel (
+  "MacOS parallel build stream" : {
+    timeout(90) {
+      node ('macos1') {
+        def apkUrl = ''
+        def ipaUrl = ''
+        def testPassed = true
+        def branch;
+        def scriptOutput = ''
+        def packageFolder = './StatusImPackage'
+        def scriptPath = sh(script: 'pwd -P', returnStdout: true).trim()
+
+        load "$HOME/env.groovy"
+
+        try {
+
+          stage('Git & Dependencies') {
+            slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') MacOS build started. ' + env.BUILD_URL
+
+            sh ('echo ' + scriptPath)
+
+            checkout scm
+
+            doGitRebase()
+
+            cleanupBuild(packageFolder)
+            sh 'cp .env.jenkins .env'
+            sh 'lein deps'
+
+            installJSDeps()
+          }
+
+          stage('Build ClojureScript') {
+            sh 'rm -f index.desktop.js'
+            sh 'lein prod-build-desktop'
+
+            sh ( 'mkdir ' + packageFolder )
+            sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
+          }
+
+          stage('Build MacOS binaries') {
+            sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
+            sh 'export PATH=/Users/administrator/qt/5.9.1/clang_64/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;node_modules/react-native-keychain/desktop;node_modules/react-native-securerandom/desktop;modules/react-native-status/desktop"\
+            -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
+          }
+
+          stage('Prepare and create MacOS Bundle') {
+            sh ('cd ' + packageFolder + ' && ../scripts/download-package-files.sh "StatusIm.app.zip" "1Vkb6MD3nsmT02Az6rRRZywQSwCz1ZN9V" && unzip ./StatusIm.app.zip')
+            sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
+            sh ('chmod +x ' + packageFolder + '/StatusIm.app/Contents/MacOs/ubuntu-server')
+            sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
+
+            sh ('export PATH=/Users/administrator/qt/5.9.1/clang_64/bin:$PATH && cd ' + packageFolder + ' && macdeployqt StatusIm.app -verbose=1 -dmg -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
+
+            sh 'rm -f StatusIm.app.zip'
+          }
+
+          stage('Archive built artifact') {
+            archiveArtifacts "StatusImPackage/*.dmg"
+          }
+
+          cleanupBuild(packageFolder)
+          slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') MacOS build finished successfully. ' + env.BUILD_URL
+        } catch (e) {
+          cleanupBuild(packageFolder)
+          slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on MacOS. ' + env.BUILD_URL
+          throw e
+        }
+      }
+    }
+  },
+  "Linux parallel build stream" : {
+    timeout(90) {
+      node ('linux1') {
+        def apkUrl = ''
+        def ipaUrl = ''
+        def testPassed = true
+        def branch;
+        def scriptOutput = ''
+        def packageFolder = './StatusImPackage'
+        def scriptPath = sh(script: 'pwd -P', returnStdout: true).trim()
+
+        sh ('echo ' + scriptPath)
+
+        try {
+
+          stage('Git & Dependencies') {
+            slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build started. ' + env.BUILD_URL
+
+            sh ('echo ' + scriptPath)
+
+            checkout scm
+
+            doGitRebase()
+
+            cleanupBuild(packageFolder)
+            sh 'cp .env.jenkins .env'
+            sh 'lein deps'
+
+            installJSDeps()
+          }
+
+          stage('Build ClojureScript') {
+            sh 'rm -f index.desktop.js'
+            sh 'lein prod-build-desktop'
+
+            sh ( 'mkdir ' + packageFolder )
+            sh ( 'react-native bundle --entry-file index.desktop.js --bundle-output ' + packageFolder + '/StatusIm.jsbundle --dev false --platform desktop --assets-dest ' + packageFolder + '/assets' )
+          }
+
+          stage('Build Linux binaries') {
+            sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
+            sh 'export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;node_modules/react-native-keychain/desktop;node_modules/react-native-securerandom/desktop;modules/react-native-status/desktop"\
+            -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
+          }
+
+          stage('Prepare and create Linux AppImage') {
+            sh ('rm -rf ' + packageFolder + '/StatusImAppImage')
+            sh ('cd ' + packageFolder + ' && cp /home/maxr/qttools/StatusImAppImage.zip ./ && unzip ./StatusImAppImage.zip')
+
+            sh ('rm -rf ' + packageFolder + '/AppDir && mkdir ' + packageFolder + '/AppDir')
+            sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
+            sh ('cp  ./deployment/linux/.env  ' + packageFolder + '/AppDir')
+            sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
+
+            sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
+            sh ('chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage')
+
+            sh 'rm -f Application-x86_64.AppImage'
+            sh 'rm -f StatusIm-x86_64.AppImage'
+
+            sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
+            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
+            sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
+
+            sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/AppDir/usr/bin')
+            sh ('cp -rf ' + packageFolder + '/StatusImAppImage/* ' + packageFolder +'/AppDir/usr/bin')
+            sh ('rm -f ' + packageFolder +'/AppDir/usr/bin/StatusIm.AppImage')
+
+            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
+            sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
+
+            sh ('rm -rf ' + packageFolder +'/StatusIm.AppImage')
+            sh ('cp -f ./StatusIm-x86_64.AppImage ' + packageFolder + '/StatusIm.AppImage')
+
+          }
+
+          stage('Archive built artifact') {
+            archiveArtifacts "StatusImPackage/*.AppImage"
+          }
+
+          cleanupBuild(packageFolder)
+          slackSend channel: '#jenkins-desktop', color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') Linux build finished successfully. ' + env.BUILD_URL
+        } catch (e) {
+          cleanupBuild(packageFolder)
+          slackSend channel: '#jenkins-desktop', color: 'bad', message: BRANCH_NAME + ' failed to build on Linux. ' + env.BUILD_URL
+          throw e
+        }
+      }
+    }
+  }
+)
