@@ -59,15 +59,39 @@
 (defn fetch-current [{:keys [db] :as cofx}]
   (fetch (:inbox/current-id db) cofx))
 
+(defn preferred-mailserver-id [{:keys [db] :as cofx}]
+  (let [chain (models.network/get-chain cofx)]
+    (get-in db [:account/account :settings :wnode chain])))
+
+(defn- round-robin
+  "Find the choice and pick the next one, default to first if not found"
+  [choices current-id]
+  (let [next-index (reduce
+                    (fn [index choice]
+                      (if (= current-id choice)
+                        (reduced (inc index))
+                        (inc index)))
+                    0
+                    choices)]
+    (nth choices
+         (mod
+          next-index
+          (count choices)))))
+
 (defn selected-or-random-id
-  "Use the preferred mailserver if set & exists, otherwise picks one randomly"
+  "Use the preferred mailserver if set & exists, otherwise picks one randomly
+  if current-id is not set, else round-robin"
   [{:keys [db] :as cofx}]
-  (let [chain (models.network/get-chain cofx)
-        preference (get-in db [:account/account :settings :wnode chain])]
+  (let [chain      (models.network/get-chain cofx)
+        current-id (:inbox/current-id db)
+        preference (preferred-mailserver-id cofx)
+        choices    (-> db :inbox/wnodes chain keys)]
     (if (and preference
              (fetch preference cofx))
       preference
-      (-> db :inbox/wnodes chain keys rand-nth))))
+      (if current-id
+        (round-robin choices current-id)
+        (rand-nth choices)))))
 
 (def default? (comp not :user-defined fetch))
 

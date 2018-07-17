@@ -3,7 +3,6 @@ import pytest
 from tests import marks, transaction_users
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
-from views.web_views.base_web_view import BaseWebView
 
 
 @marks.all
@@ -51,7 +50,7 @@ class TestWallet(SingleDeviceTestCase):
         transaction_hash = transaction_details.get_transaction_hash()
         transaction_details.options_button.click()
         transaction_details.open_transaction_on_etherscan_button.click()
-        base_web_view = wallet_view.get_base_web_view(self.driver)
+        base_web_view = wallet_view.get_base_web_view()
         base_web_view.open_in_webview()
         base_web_view.find_text_part(transaction_hash)
 
@@ -95,20 +94,20 @@ class TestWallet(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(3725)
-    def test_backup_seed_phrase_warning_from_wallet(self):
+    def test_backup_recovery_phrase_warning_from_wallet(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        if wallet.backup_seed_phrase.is_element_present():
-            pytest.fail("'Backup your Seed Phrase' option is shown on Wallet for an account with no funds")
+        if wallet.backup_recovery_phrase.is_element_present():
+            pytest.fail("'Backup your Recovery phrase' option is shown on Wallet for an account with no funds")
         wallet.receive_transaction_button.click()
         address = wallet.address_text.text[2:]
         wallet.get_back_to_home_view()
         home = wallet.home_button.click()
         self.network_api.get_donate(address)
         home.wallet_button.click()
-        if not wallet.backup_seed_phrase.is_element_present():
-            pytest.fail("'Backup your Seed Phrase' option is not shown on Wallet for an account with funds")
+        if not wallet.backup_recovery_phrase.is_element_present():
+            pytest.fail("'Backup your Recovery phrase' option is not shown on Wallet for an account with funds")
         profile = wallet.get_profile_view()
-        profile.backup_seed_phrase()
+        profile.backup_recovery_phrase()

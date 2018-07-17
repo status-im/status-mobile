@@ -243,7 +243,7 @@ class BaseView(object):
 
     @property
     def logcat(self):
-        for i in range(30):
+        for i in range(60):
             logcat = self.driver.get_log("logcat")
             if len(logcat) > 1000:
                 return str([i for i in logcat if 'appium' not in str(i).lower()])
@@ -422,7 +422,10 @@ class BaseView(object):
         connect_status = self.connection_status
         for i in range(3):
             if connect_status.is_element_displayed(5) and 'Tap to reconnect' in connect_status.text:
-                connect_status.click()
+                try:
+                    connect_status.click()
+                except AttributeError:
+                    pass
                 try:
                     connect_status.wait_for_invisibility_of_element()
                 except TimeoutException as e:

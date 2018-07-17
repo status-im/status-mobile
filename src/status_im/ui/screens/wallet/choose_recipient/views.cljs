@@ -45,7 +45,7 @@
 
 (defview choose-recipient []
   (letsubs [read-once?        (atom false)
-            dimensions        (react/get-dimensions "window")
+            dimensions        [:dimensions/window]
             camera-flashlight [:wallet.send/camera-flashlight]]
     [react/view {:style styles/qr-code}
      [status-bar/status-bar {:type :transparent}]

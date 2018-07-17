@@ -37,6 +37,22 @@ check_pr_prereq() {
   fi
 }
 
+check_sync() {
+    git fetch
+    if [ -n "$(git rev-list $BRANCH..$REMOTE/$BRANCH)" ]; then
+      warn "the local branch $BRANCH is behind $REMOTE/$BRANCH."
+      echo "Do you want to cancel or do you prefer to abandon your work and reset local $BRANCH to $REMOTE/$BRANCH ?"
+      echo "cancel/reset"
+      read response;
+      if [ "$response" = "reset" ]; then
+          git fetch $REMOTE
+          git reset --hard $REMOTE/$BRANCH
+      else
+          fatal "the local branch $BRANCH is behind $REMOTE/$BRANCH."
+      fi
+    fi
+}
+
 GH_URL_BASE="https://api.github.com"
 
 get_pr_info() {
@@ -133,6 +149,7 @@ EOF
   fi
   load_config
   check_pr_prereq
+  check_sync
   get_pr_info "$@"
   cleanup
   fetch_pr

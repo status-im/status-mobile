@@ -27,10 +27,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        device_2_home.get_chat_with_user(username_1).click()
-
-        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
-            pytest.fail("'Seen' status is not shown under the sent text message")
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(772)
     @marks.smoke_1
@@ -101,7 +99,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         chat_1.reconnect()
         chat_element = chat_1.chat_element_by_text(message)
-        chat_1.element_by_text('Resend').click_until_presence_of_element(chat_element)
+        chat_1.element_by_text('Resend').click()
         chat_element.status.wait_for_visibility_of_element()
         if chat_element.status.text != 'Sent':
             self.errors.append("Message status is not 'Sent' after resending the message")
@@ -244,7 +242,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.get_back_to_home_view()
         chat_2 = home_2.get_chat_with_user(username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_2.open_in_browser_button.click()
+        web_view = chat_2.open_in_status_button.click()
         try:
             web_view.find_full_text('Status, the Ethereum discovery tool.')
         except TimeoutException:
@@ -258,7 +256,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(url_message)
         chat_2.send_message_button.click()
         chat_1.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_1.open_in_browser_button.click()
+        web_view = chat_1.open_in_status_button.click()
         try:
             web_view.find_full_text('Status, the Ethereum discovery tool.')
         except TimeoutException:
@@ -271,21 +269,51 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.create_drivers(1, offline_mode=True)
         driver = self.drivers[0]
         sign_in = SignInView(driver)
-        home = sign_in.create_user()
+        home_view = sign_in.create_user()
+
+        # Dismiss "Welcome to Status" placeholder.
+        # When the placeholder is visible, the offline status bar does not appear
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.home_button.click()
 
         driver.set_network_connection(1)  # airplane mode
 
-        if home.connection_status.text != 'Offline':
+        if home_view.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in home screen')
 
-        chat = home.add_contact(group_chat_users['C_USER']['public_key'])
+        chat = home_view.add_contact(group_chat_users['C_USER']['public_key'])
         if chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()
 
-        public_chat = home.join_public_chat(home.get_public_chat_name())
+        public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
         if public_chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in a public chat')
+        self.verify_no_errors()
+
+    @marks.testrail_id(3695)
+    @marks.smoke_1
+    def test_message_marked_as_sent_and_seen_1_1_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_1 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        device_2_public_key = device_2_home.get_public_key()
+        device_2_home.home_button.click()
+
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+
+        message = 'test message'
+        device_1_chat.chat_message_input.send_keys(message)
+        device_1_chat.send_message_button.click()
+        if device_1_chat.chat_element_by_text(message).status.text != 'Sent':
+            self.errors.append("'Sent' status is not shown under the sent text message")
+
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
+
+        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
+            self.errors.append("'Seen' status is not shown under the text message which was read by a receiver")
         self.verify_no_errors()
 
 

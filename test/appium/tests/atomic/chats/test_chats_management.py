@@ -1,7 +1,7 @@
 import pytest
 
-from tests import marks, group_chat_users, basic_user
-from tests.base_test_case import SingleDeviceTestCase
+from tests import marks, group_chat_users, basic_user, get_current_time
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
@@ -55,47 +55,14 @@ class TestChatManagement(SingleDeviceTestCase):
         home.get_chat_with_user('#' + chat_name).swipe_and_delete()
         profile = home.profile_button.click()
         profile.logout()
-        sign_in.click_account_by_position(0)
+        if sign_in.ok_button.is_element_displayed():
+            sign_in.ok_button.click()
         sign_in.sign_in()
         if home.get_chat_with_user('#' + chat_name).is_element_displayed():
             self.errors.append('Deleted public chat is present after relogin')
         home.join_public_chat(chat_name)
         if chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append('Chat history is shown')
-        self.verify_no_errors()
-
-    @marks.testrail_id(3694)
-    @marks.smoke_1
-    def test_add_contact_from_public_chat(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat_name = 'testaddcontact'
-        chat = home.join_public_chat(chat_name)
-        message = 'test message'
-
-        chat.reconnect()
-        chat_element = chat.chat_element_by_text(message)
-        chat_element.find_element()
-        username = chat_element.username.text
-        chat_element.member_photo.click()
-        for element in [chat.contact_profile_picture, chat.add_to_contacts, chat.profile_send_message,
-                        chat.profile_send_transaction, chat.public_key_text, chat.element_by_text(username, 'text')]:
-            if not element.is_element_displayed():
-                self.errors.append('%s is not visible' % 'user name' if 'Base' in element.name else element.name)
-        chat.add_to_contacts.click()
-        if not chat.element_by_text('In contacts').is_element_displayed():
-            self.errors.append("'Add to contacts' is not changed to 'In contacts'")
-
-        chat.get_back_to_home_view()
-        start_new_chat = home.plus_button.click()
-        start_new_chat.start_new_chat_button.click()
-        if not start_new_chat.element_by_text(username).is_element_displayed():
-            self.errors.append("List of contacts doesn't contain added user")
-        start_new_chat.get_back_to_home_view()
-
-        home.get_chat_with_user('#' + chat_name).click()
-        chat.chat_message_input.send_keys(message)
-        chat.send_message_button.click()
         self.verify_no_errors()
 
     @marks.testrail_id(763)
@@ -154,4 +121,43 @@ class TestChatManagement(SingleDeviceTestCase):
         home.relogin()
         if home.element_by_text(chat_name).is_element_present(5):
             self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
+        self.verify_no_errors()
+
+
+@marks.chat
+class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
+
+    @marks.testrail_id(3694)
+    @marks.smoke_1
+    def test_add_contact_from_public_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        chat_name = 'testaddcontact'
+        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
+        message = 'test message'
+
+        chat_2.chat_message_input.send_keys(message)
+        chat_2.send_message_button.click()
+        self.drivers[1].quit()
+
+        chat_element = chat_1.chat_element_by_text(message)
+        chat_element.find_element()
+        username = chat_element.username.text
+        chat_element.member_photo.click()
+        for element in [chat_1.contact_profile_picture, chat_1.add_to_contacts, chat_1.profile_send_message,
+                        chat_1.profile_send_transaction, chat_1.public_key_text,
+                        chat_1.element_by_text(username, 'text')]:
+            if not element.is_element_displayed():
+                self.errors.append('%s is not visible' % 'user name' if 'Base' in element.name else element.name)
+        chat_1.add_to_contacts.click()
+        if not chat_1.element_by_text('In contacts').is_element_displayed():
+            self.errors.append("'Add to contacts' is not changed to 'In contacts'")
+
+        chat_1.get_back_to_home_view()
+        start_new_chat = home_1.plus_button.click()
+        start_new_chat.start_new_chat_button.click()
+        if not start_new_chat.element_by_text(username).is_element_displayed():
+            self.errors.append("List of contacts doesn't contain added user")
+
         self.verify_no_errors()

@@ -1,5 +1,6 @@
 (ns status-im.ui.components.qr-code-viewer.views
   (:require [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
             [status-im.ui.components.react :as react]
@@ -18,7 +19,7 @@
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style]} value hint legend]
   {:pre [(not (nil? value))]}
-  (let [{:keys [width height]} (react/get-dimensions "window")]
+  (let [{:keys [width height]} @(re-frame/subscribe [:dimensions/window])]
     [react/view {:style (merge styles/qr-code style)}
      [react/text {:style (merge styles/qr-code-hint hint-style)}
       hint]

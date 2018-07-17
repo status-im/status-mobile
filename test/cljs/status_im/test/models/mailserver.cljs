@@ -146,7 +146,6 @@
     (let [cofx {:db {:network "mainnet_rpc"
                      :account/account {:networks {"mainnet_rpc"
                                                   {:config {:NetworkId 1}}}}
-                     :inbox/current-id "a"
                      :inbox/wnodes {:mainnet {"a" {}
                                               "b" {}
                                               "c" {}
@@ -167,10 +166,31 @@
                                :db
                                :inbox/current-id))))))))
       (testing "the user has not set an explicit preference"
-        (testing "it sets a random mailserver"
-          (is (= "d" (-> (model/set-current-mailserver cofx)
-                         :db
-                         :inbox/current-id))))))))
+        (testing "current-id is not set"
+          (testing "it sets a random mailserver"
+            (is (= "d" (-> (model/set-current-mailserver cofx)
+                           :db
+                           :inbox/current-id)))))
+        (testing "current-id is set"
+          (testing "it sets the next mailserver"
+            (is (= "c" (-> (model/set-current-mailserver (assoc-in
+                                                          cofx
+                                                          [:db :inbox/current-id]
+                                                          "b"))
+                           :db
+                           :inbox/current-id)))
+            (is (= "a" (-> (model/set-current-mailserver (assoc-in
+                                                          cofx
+                                                          [:db :inbox/current-id]
+                                                          "d"))
+                           :db
+                           :inbox/current-id)))
+            (is (= "a" (-> (model/set-current-mailserver (assoc-in
+                                                          cofx
+                                                          [:db :inbox/current-id]
+                                                          "non-existing"))
+                           :db
+                           :inbox/current-id)))))))))
 
 (deftest delete-mailserver
   (testing "the user is not connected to the mailserver"

@@ -6,15 +6,14 @@
             [status-im.ui.components.connectivity.styles :as styles]
             [status-im.i18n :as i18n]))
 
-(def window-width (:width (react/get-dimensions "window")))
-
 (defview error-view [{:keys [top]}]
   (letsubs [offline?             [:offline?]
             disconnected?        [:disconnected?]
             mailserver-error?    [:mailserver-error?]
             fetching?            [:fetching?]
             current-chat-contact [:get-current-chat-contact]
-            view-id              [:get :view-id]]
+            view-id              [:get :view-id]
+            window-width         [:dimensions/window-width]]
     (when-let [label (cond
                        offline? :t/offline
                        disconnected? :t/disconnected

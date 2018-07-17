@@ -158,10 +158,10 @@ class CurrencyText(BaseText):
         self.locator = self.Locator.accessibility_id('total-amount-currency-text')
 
 
-class BackupSeedPhrase(BaseButton):
+class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
-        super(BackupSeedPhrase, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Backup your Seed Phrase']")
+        super(BackupRecoveryPhrase, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Backup your Recovery phrase')
 
     def navigate(self):
         from views.profile_view import ProfileView
@@ -195,7 +195,7 @@ class WalletView(BaseView):
 
         self.total_amount_text = TotalAmountText(self.driver)
         self.currency_text = CurrencyText(self.driver)
-        self.backup_seed_phrase = BackupSeedPhrase(self.driver)
+        self.backup_recovery_phrase = BackupRecoveryPhrase(self.driver)
 
     def get_usd_total_value(self):
         import re

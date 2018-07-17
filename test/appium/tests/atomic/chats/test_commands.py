@@ -1,3 +1,4 @@
+import pytest
 from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
@@ -24,7 +25,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.switch_network('Mainnet with upstream RPC')
-        device_2_sign_in.click_account_by_position(0)
+        if device_2_sign_in.ok_button.is_element_displayed():
+            device_2_sign_in.ok_button.click()
         device_2_sign_in.sign_in()
 
         device_1_chat = device_1_home.add_contact(public_key)
@@ -246,11 +248,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], password=sender['password'])
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'], password=recipient['password'])
-        wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
+        wallet_1 = home_1.wallet_button.click()
         wallet_1.set_up_wallet()
         wallet_1.home_button.click()
-        wallet_2.set_up_wallet()
-        wallet_2.home_button.click()
 
         chat_1 = home_1.add_contact(recipient['public_key'])
         amount = chat_1.get_unique_amount()
@@ -305,6 +305,28 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append(e.msg)
         self.verify_no_errors()
 
+    @marks.testrail_id(3749)
+    @marks.smoke_1
+    def test_transaction_confirmed_on_recipient_side(self):
+        recipient = transaction_users['D_USER']
+        sender = transaction_users['C_USER']
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1 = device_1.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        home_2 = device_2.recover_access(passphrase=recipient['passphrase'], password=recipient['password'])
+        wallet_1 = home_1.wallet_button.click()
+        wallet_1.set_up_wallet()
+        wallet_1.home_button.click()
+
+        chat_1 = home_1.add_contact(recipient['public_key'])
+        amount = chat_1.get_unique_amount()
+        chat_1.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
+
+        chat_2 = home_2.get_chat_with_user(sender['username']).click()
+        self.network_api.wait_for_confirmation_of_transaction(recipient['address'], amount)
+        if not chat_2.chat_element_by_text(amount).contains_text('Confirmed', 60):
+            pytest.fail('Transaction state is not updated on the recipient side')
+
 
 @marks.chat
 @marks.transaction
@@ -340,3 +362,49 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         amount = chat.get_unique_amount()
         chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
         chat.check_no_value_in_logcat(sender['password'])
+
+    @marks.testrail_id(3736)
+    @marks.smoke_1
+    def test_send_transaction_details_in_1_1_chat(self):
+        recipient = transaction_users['D_USER']
+        sender = transaction_users['C_USER']
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.home_button.click()
+
+        chat = home.add_contact(recipient['public_key'])
+        amount = chat.get_unique_amount()
+        chat.commands_button.click()
+        chat.send_command.click()
+        chat.asset_by_name('ETH').click()
+        chat.send_as_keyevent(amount)
+        send_transaction_view = chat.get_send_transaction_view()
+        chat.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
+
+        if not send_transaction_view.element_by_text(recipient['username']).is_element_displayed():
+            self.errors.append('Recipient name is not shown')
+        if not send_transaction_view.element_by_text('0x' + recipient['address']).is_element_displayed():
+            self.errors.append('Recipient address is not shown')
+        if not send_transaction_view.element_by_text('ETH').is_element_displayed():
+            self.errors.append("Asset field doesn't contain 'ETH' text")
+        if not send_transaction_view.element_by_text(amount).is_element_displayed():
+            self.errors.append('Amount is not visible')
+        self.verify_no_errors()
+
+    @marks.testrail_id(3750)
+    @marks.smoke_1
+    def test_transaction_confirmed_on_sender_side(self):
+        sender = transaction_users['D_USER']
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.home_button.click()
+        chat = home.add_contact(transaction_users['C_USER']['public_key'])
+        amount = chat.get_unique_amount()
+        chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
+        if not chat.chat_element_by_text(amount).contains_text('Confirmed'):
+            pytest.fail('Transaction state is not updated on the sender side')

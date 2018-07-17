@@ -27,6 +27,7 @@
             [status-im.test.chat.views.message]
             [status-im.test.chat.views.photos]
             [status-im.test.chat.commands.core]
+            [status-im.test.chat.commands.impl.transactions]
             [status-im.test.i18n]
             [status-im.test.protocol.web3.inbox]
             [status-im.test.utils.utils]
@@ -82,6 +83,7 @@
  'status-im.test.chat.views.message
  'status-im.test.chat.views.photos
  'status-im.test.chat.commands.core
+ 'status-im.test.chat.commands.impl.transactions
  'status-im.test.i18n
  'status-im.test.transport.core
  'status-im.test.transport.inbox

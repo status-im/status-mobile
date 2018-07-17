@@ -129,10 +129,10 @@ class MoreUsersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
-class OpenInBrowserButton(BaseButton):
+class OpenInStatusButton(BaseButton):
     def __init__(self, driver):
-        super(OpenInBrowserButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Open in browser']")
+        super(OpenInStatusButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Open in Status']")
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
@@ -190,7 +190,8 @@ class ChatElementByText(BaseText):
         class StatusText(BaseText):
             def __init__(self, driver, parent_locator: str):
                 super(StatusText, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + '/android.widget.TextView')
+                text = "//android.widget.TextView[@text='Seen' or @text='Sent' or @text='Not sent. Tap for options']"
+                self.locator = self.Locator.xpath_selector(parent_locator + text)
 
         return StatusText(self.driver, self.locator.value)
 
@@ -230,11 +231,11 @@ class ChatElementByText(BaseText):
 
         return SendRequestButton(self.driver, self.locator.value)
 
-    def contains_text(self, text) -> bool:
+    def contains_text(self, text, wait_time=5) -> bool:
         element = BaseText(self.driver)
         element.locator = element.Locator.xpath_selector(
             self.locator.value + "//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
-        return element.is_element_displayed()
+        return element.is_element_displayed(wait_time)
 
 
 class ChatView(BaseView):
@@ -266,7 +267,7 @@ class ChatView(BaseView):
 
         self.first_recipient_button = FirstRecipient(self.driver)
 
-        self.open_in_browser_button = OpenInBrowserButton(self.driver)
+        self.open_in_status_button = OpenInStatusButton(self.driver)
 
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)

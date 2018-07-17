@@ -1,6 +1,5 @@
-from views.base_element import BaseButton, BaseEditBox, BaseText
-from views.base_view import BaseView
-from views.base_element import BaseElement, BaseButton, BaseEditBox
+from views.base_element import BaseText
+from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView, OkButton
 
 
@@ -90,10 +89,10 @@ class SelectAssetButton(BaseButton):
         self.locator = self.Locator.accessibility_id('choose-asset-button')
 
 
-class STTButton(BaseButton):
-    def __init__(self, driver):
-        super(STTButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Status Test Token']")
+class AssetButton(BaseButton):
+    def __init__(self, driver, asset_name):
+        super(AssetButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector(asset_name)
 
 
 class ErrorDialog(BaseView):
@@ -169,7 +168,6 @@ class SendTransactionView(BaseView):
         self.got_it_button = GotItButton(self.driver)
 
         self.select_asset_button = SelectAssetButton(self.driver)
-        self.stt_button = STTButton(self.driver)
 
         self.error_dialog = ErrorDialog(self.driver)
 
@@ -180,3 +178,6 @@ class SendTransactionView(BaseView):
         self.enter_password_input.send_keys(sender_password)
         self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
         self.got_it_button.click()
+
+    def asset_by_name(self, asset_name):
+        return AssetButton(self.driver, asset_name)
