@@ -2,11 +2,10 @@
   (:require [clojure.spec.alpha :as spec]
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :refer [show-image-picker]]
-            [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.chat.events :as chat-events]
-            [status-im.chat.events.input :as input-events]
+            [status-im.chat.commands.core :as commands]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.image-processing :refer [img->base64]]
@@ -29,11 +28,11 @@
 (handlers/register-handler-fx
  :profile/send-transaction
  [re-frame/trim-v]
- (fn [{{:contacts/keys [contacts]} :db :as cofx} [chat-id]]
-   (let [send-command (get-in contacts chat-const/send-command-ref)]
+ (fn [{:keys [db] :as cofx} [chat-id]]
+   (let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
      (handlers-macro/merge-fx cofx
                               (chat-events/start-chat chat-id {:navigation-replace? true})
-                              (input-events/select-chat-input-command send-command nil true)))))
+                              (commands/select-chat-input-command send-command nil)))))
 
 (defn valid-name? [name]
   (spec/valid? :profile/name name))

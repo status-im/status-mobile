@@ -15,8 +15,8 @@
      `id-of-the-any-chat` - command if available only for the specified chat
      `:personal-chats` - command is available for any personal 1-1 chat
      `:group-chats` - command is available for any group chat
-     `:public-chats` - command is available for any public chat
-     `:requested` - command is available only when there is an outstanding request")
+     `:public-chats` - command is available for any public chat ")
+  (description [this] "Description of the command")
   (parameters [this]
     "Ordered sequence of command parameter templates, where each parameter 
      is defined as map consisting of mandatory `:id`, `:title` and `:type` keys, 
@@ -29,21 +29,36 @@
     and `cofx` map as argument, returns either `nil` meaning that no errors were
     found and command send workflow can proceed, or one/more errors to display.
     Each error is represented by the map containing `:title` and `:description` keys.")
-  (yield-control [this parameters cofx]
-    "Optional function, which if implemented, can step out of the normal command
-    workflow (`validate-and-send`) and yield control back to application before sending.
-    Useful for cases where we want to use command input handling (parameters) and/or
-    validating, but we don't want to send message before yielding control elsewhere.")
-  (on-send [this message-id parameters cofx]
+  (on-send [this command-message cofx]
     "Function which can provide any extra effects to be produced in addition to 
     normal message effects which happen whenever message is sent")
   (on-receive [this command-message cofx]
     "Function which can provide any extre effects to be produced in addition to
     normal message effects which happen when particular command message is received")
-  (short-preview [this command-message cofx]
+  (short-preview [this command-message]
     "Function rendering the short-preview of the command message, used when
     displaying the last message in list of chats on home tab.
     There is no argument names `parameters` anymore, as the message object
     contains everything needed for short-preview/preview to render.")
-  (preview [this command-message cofx]
+  (preview [this command-message]
     "Function rendering preview of the command message in message stream"))
+
+(defprotocol Yielding
+  "Protocol for defining commands yielding control back to application during the send flow"
+  (yield-control [this parameters cofx]
+    "Function, which steps out of the normal command workflow (`validate-and-send`)
+    and yields control back to application before sending.
+    Useful for cases where we want to use command input handling (parameters) and/or
+    validating, but we don't want to send message before yielding control elsewhere."))
+
+(defprotocol EnhancedParameters
+  "Protocol for command messages which wish to modify/inject additional data into parameters,
+  other then those collected from the chat input.
+  Good example would be the `/send` and `/receive` commands - we would like to indicate
+  network selected in sender's device, but we of course don't want to force user to type
+  it in when it could be effortlessly looked up from context.
+  Another usage would be for example command where one of the input parameters will be
+  hashed after validation and we would want to avoid the original unhashed parameter
+  to be ever saved on the sender device, nor to be sent over the wire."
+  (enhance-parameters [this parameters cofx]
+    "Function which takes original parameters + cofx map and returns new map of parameters"))

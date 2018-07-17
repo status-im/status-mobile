@@ -7,12 +7,10 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.action-sheet :as action-sheet]
-            [status-im.commands.utils :as commands.utils]
-            [status-im.chat.models.commands :as models.commands]
-            [status-im.chat.models.message :as models.message]
+            [status-im.chat.commands.core :as commands]
+            [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.chat.styles.message.message :as style]
             [status-im.chat.styles.message.command-pill :as pill-style]
-            [status-im.chat.views.message.request-message :as request-message]
             [status-im.chat.views.photos :as photos]
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -22,8 +20,7 @@
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [clojure.string :as string]
-            [status-im.chat.events.console :as console]))
+            [clojure.string :as string]))
 
 (defview message-content-status []
   (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
@@ -56,90 +53,11 @@
                  :font  :default}
      "03:39"]]])
 
-(defview send-command-status [tx-hash outgoing]
-  (letsubs [confirmed? [:transaction-confirmed? tx-hash]
-            tx-exists? [:wallet-transaction-exists? tx-hash]]
-    [react/touchable-highlight {:on-press #(when tx-exists?
-                                             (re-frame/dispatch [:show-transaction-details tx-hash]))}
-     [react/view style/command-send-status-container
-      [vector-icons/icon (if confirmed? :icons/check :icons/dots)
-       {:color           colors/blue
-        :container-style (style/command-send-status-icon outgoing)}]
-      [react/view
-       [react/text {:style style/command-send-status-text}
-        (i18n/label (cond
-                      confirmed? :status-confirmed
-                      tx-exists? :status-pending
-                      :else :status-tx-not-found))]]]]))
-
-(defview message-content-command-send
-  [{:keys [content timestamp-str outgoing group-chat]}]
-  (letsubs [network [:network-name]]
-    (let [{{:keys [amount fiat-amount tx-hash asset currency] send-network :network} :params} content
-          recipient-name (get-in content [:params :bot-db :public :recipient])
-          amount-text-long? (< 10 (count amount))
-          network-mismatch? (and (seq send-network) (not= network send-network))]
-      [react/view style/command-send-message-view
-       [react/view
-        [react/view style/command-send-amount-row
-         [react/view style/command-send-amount
-          [react/text {:style style/command-send-amount-text
-                       :font  :medium}
-           amount
-           [react/text {:style (style/command-amount-currency-separator outgoing)}
-            (if amount-text-long? "\n" ".")]
-           [react/text {:style (style/command-send-currency-text outgoing)
-                        :font  :default}
-            asset]]]]
-        (when fiat-amount
-          [react/view style/command-send-fiat-amount
-           [react/text {:style style/command-send-fiat-amount-text}
-            (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
-        (when (and group-chat
-                   recipient-name)
-          [react/text {:style style/command-send-recipient-text}
-           (str
-            (i18n/label :send-sending-to)
-            " "
-            recipient-name)])
-        [react/view
-         [react/text {:style (style/command-send-timestamp outgoing)}
-          (str (i18n/label :sent-at) " " timestamp-str)]]
-        [send-command-status tx-hash outgoing]
-        (when network-mismatch?
-          [react/text send-network])]])))
-
-;; Used for command messages with markup generated on JS side
-(defview message-content-command-with-markup
-  [{:keys [content params]}]
-  (letsubs [command [:get-command (:command-ref content)]]
-    (let [preview (:preview content)
-          {:keys [color] icon-path :icon} command]
-      [react/view style/content-command-view
-       (when color
-         [react/view style/command-container
-          [react/view (pill-style/pill command)
-           [react/text {:style pill-style/pill-text
-                        :font  :default}
-            (models.commands/command-name command)]]])
-       (when icon-path
-         [react/view style/command-image-view
-          [react/icon icon-path style/command-image]])
-       (if (:markup preview)
-         ;; Markup was defined for command in jail, generate hiccup and render it
-         (commands.utils/generate-hiccup (:markup preview))
-         ;; Display preview if it's defined (as a string), in worst case, render params
-         [react/text {:style style/command-text
-                      :font  :default}
-          (or preview (str params))])])))
-
-(defn message-content-command
-  [message]
-  (let [{{:keys [command preview]} :content} message]
-    (if (and (= command constants/command-send)
-             (nil? preview))
-      [message-content-command-send message]
-      [message-content-command-with-markup message])))
+(defview message-content-command
+  [command-message]
+  (letsubs [id->command [:get-id->command]]
+    (when-let [command (commands-receiving/lookup-command-by-ref command-message id->command)]
+      (commands/generate-preview command command-message))))
 
 (def rtl-characters-regex #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
 
@@ -156,7 +74,9 @@
   [{:keys [timestamp-str outgoing content] :as message} message-content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
    message-content
-   [message-timestamp timestamp-str justify-timestamp? outgoing (get-in message [:content :command]) content]])
+   [message-timestamp timestamp-str justify-timestamp? outgoing (or (get content :command-path)
+                                                                    (get content :command-ref))
+    content]])
 
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
@@ -286,11 +206,6 @@
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
-(defmethod message-content constants/content-type-command-request
-  [wrapper message]
-  [wrapper message
-   [message-view message [request-message/message-content-command-request message]]])
-
 (defmethod message-content constants/text-content-type
   [wrapper message]
   [wrapper message [text-message message]])
@@ -302,6 +217,13 @@
 (defmethod message-content constants/content-type-status
   [_ _]
   [message-content-status])
+
+;; TODO(janherich) in the future, `content-type-command-request` will be deprecated
+;; as it's the same thing as command
+(defmethod message-content constants/content-type-command-request
+  [wrapper message]
+  [wrapper message
+   [message-view message [message-content-command message]]])
 
 (defmethod message-content constants/content-type-command
   [wrapper message]
@@ -387,12 +309,7 @@
   [{:keys [chat-id message-id current-public-key user-statuses content last-outgoing? outgoing message-type] :as message}]
   (let [outgoing-status (or (get-in user-statuses [current-public-key :status]) :not-sent)
         delivery-status (get-in user-statuses [chat-id :status])
-        status          (cond (and (= constants/console-chat-id chat-id)
-                                   (not (console/commands-with-delivery-status (:command content))))
-                              :seen
-
-                              :else
-                              (or delivery-status outgoing-status))]
+        status          (or delivery-status outgoing-status)]
     (case status
       :sending  [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]

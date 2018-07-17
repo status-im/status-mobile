@@ -216,7 +216,7 @@
      {:jail-id  chat-id
       :path     path
       :params   params
-      :callback (or callback #(dispatch [:chat-received-message/bot-response {:chat-id chat-id} %]))})))
+      :callback callback})))
 
 (defn set-soft-input-mode [mode]
   (when status

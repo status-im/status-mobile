@@ -4,7 +4,7 @@
             [status-im.ui.components.react :as react]
             [status-im.chat.styles.input.suggestions :as style]
             [status-im.chat.views.input.animations.expandable :as expandable]
-            [status-im.chat.models.commands :as commands-model]
+            [status-im.chat.commands.core :as commands]
             [status-im.i18n :as i18n]
             [taoensso.timbre :as log]))
 
@@ -19,19 +19,18 @@
      description]]])
 
 (defview suggestions-view []
-  (letsubs [commands [:get-available-commands]]
+  (letsubs [available-commands [:get-available-commands]]
     [expandable/expandable-view {:key :suggestions}
      [react/view
       [react/scroll-view {:keyboard-should-persist-taps :always
                           :bounces                      false}
-       (when (seq commands)
-         (for [[i {:keys [description] :as command}] (map-indexed vector commands)]
-           ^{:key i}
-           [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
-                             :name                (commands-model/command-name command)
-                             :description         description
-                             :last?               (= i (dec (count commands)))
-                             :accessibility-label (case (:name command)
-                                                    "send"    :send-payment-button
-                                                    "request" :request-payment-button
-                                                    nil)}]))]]]))
+       (when (seq available-commands)
+         (map-indexed
+          (fn [i {:keys [type] :as command}]
+            ^{:key i}
+            [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
+                              :name                (commands/command-name type)
+                              :description         (commands/command-description type)
+                              :last?               (= i (dec (count available-commands)))
+                              :accessibility-label (commands/accessibility-label type)}])
+          available-commands))]]]))

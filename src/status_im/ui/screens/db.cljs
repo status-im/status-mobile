@@ -10,7 +10,6 @@
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs
-            status-im.commands.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
@@ -264,7 +263,8 @@
                  :chat/last-clock-value
                  :chat/loaded-chats
                  :chat/bot-db
-                 :commands/access-scope->commands-responses
+                 :chat/id->command
+                 :chat/access-scope->command-id
                  :discoveries/discoveries
                  :discoveries/discover-search-tags
                  :discoveries/discover-current-dapp

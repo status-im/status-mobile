@@ -17,6 +17,7 @@
             [status-im.utils.utils :as utils]
             [status-im.models.wallet :as models.wallet]
             [status-im.chat.models.message :as models.message]
+            [status-im.chat.commands.sending :as commands-sending]
             [status-im.constants :as constants]
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]
@@ -304,10 +305,11 @@
  :send-transaction-message
  (concat models.message/send-interceptors
          navigation/navigation-interceptors)
- (fn [cofx [{:keys [view-id] :as params}]]
-   (handlers-macro/merge-fx cofx
-                            (models.message/send-custom-send-command params)
-                            (navigation/replace-view view-id))))
+ (fn [{:keys [db] :as cofx} [chat-id params]]
+   (when-let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
+     (handlers-macro/merge-fx cofx
+                              (commands-sending/send chat-id send-command params)
+                              (navigation/replace-view :wallet-transaction-sent)))))
 
 (handlers/register-handler-fx
  ::transaction-completed
@@ -331,11 +333,10 @@
             (= method constants/web3-send-transaction)
             (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
 
-          {:dispatch [:send-transaction-message {:view-id          :wallet-transaction-sent
-                                                 :whisper-identity whisper-identity
-                                                 :address          to
-                                                 :asset            (name symbol)
-                                                 :amount           amount-text}]}))))))
+          {:dispatch [:send-transaction-message whisper-identity {:address to
+                                                                  :asset   (name symbol)
+                                                                  :amount  amount-text
+                                                                  :tx-hash hash}]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [result (types/json->clj raw-results)]
