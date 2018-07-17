@@ -32,7 +32,6 @@ timeout(90) {
 
           sh 'rm -rf node_modules'
           sh 'cp .env.jenkins .env'
-          sh 'lein deps'
 
           installJSDeps()
 

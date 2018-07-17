@@ -39,7 +39,6 @@ timeout(90) {
           sh 'git fetch --tags'
           sh 'rm -rf node_modules'
           sh 'cp .env.nightly .env'
-          sh 'lein deps'
 
           installJSDeps()
 

@@ -30,11 +30,7 @@ setup: ##@prepare Install all the requirements for status-react
 	./scripts/setup
 
 prepare: ##@prepare Install dependencies and prepare workspace
-	lein deps
 	npm install
-	./re-natal deps
-	./re-natal use-figwheel
-	./re-natal enable-source-maps
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
@@ -69,41 +65,24 @@ full-prod-build: ##@build build prod for both Android and iOS
 	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
 	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null
 
-#----------------
-# Dev builds
-#----------------
-dev-android-real: ##@dev build for Android real device
-	./re-natal use-android-device real
-	./re-natal use-figwheel
-
-dev-android-avd: ##@dev build for Android AVD simulator
-	./re-natal use-android-device avd
-	./re-natal use-figwheel
-
-dev-android-genymotion: ##@dev build for Android Genymotion simulator
-	./re-natal use-android-device genymotion
-	./re-natal use-figwheel
-
-dev-ios-real: ##@dev build for iOS real device
-	./re-natal use-ios-device real
-	./re-natal use-figwheel
-
-dev-ios-simulator: ##@dev build for iOS simulator
-	./re-natal use-ios-device simulator
-	./re-natal use-figwheel
-
 #--------------
 # REPL
 # -------------
 
-repl: ##@repl Start REPL for iOS and Android
-	lein figwheel-repl ios android
+repl-ios-real: ##@repl Start REPL for iOS real device
+	clj -R:repl build.clj figwheel --platform ios --ios-device real
 
-repl-ios: ##@repl Start REPL for iOS
-	lein figwheel-repl ios
+repl-ios-simulator: ##@repl Start REPL for iOS simulator
+	clj -R:repl build.clj figwheel --platform ios --ios-device simulator
 
-repl-android: ##@repl Start REPL for Android
-	lein figwheel-repl android
+repl-android-real: ##@repl Start REPL for Android real device
+	clj -R:repl build.clj figwheel --platform android --android-device real
+
+repl-android-avd: ##@repl Start REPL for Android AVD
+	clj -R:repl build.clj figwheel --platform android --android-device avd
+
+repl-android-genymotion: ##@repl Start REPL for Android Genymotion
+	clj -R:repl build.clj figwheel --platform android --android-device genymotion
 
 #--------------
 # Run
@@ -160,9 +139,7 @@ startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
 	case "$(SYSTEM)" in \
-	  "android") ${MAKE} prepare && ${MAKE} android-ports-$(DEVICE);; \
+	  "android") ${MAKE} prepare;; \
 	  "ios")      ${MAKE} prepare-ios;; \
 	esac
-	${MAKE} dev-$(SYSTEM)-$(DEVICE)
-	${MAKE} react-native &
-	${MAKE} repl-$(SYSTEM)
+	${MAKE} repl-$(SYSTEM)-$(DEVICE)

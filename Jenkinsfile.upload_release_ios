@@ -43,7 +43,7 @@ timeout(90) {
 
           sh 'rm -rf node_modules'
           sh 'cp .env.prod .env'
-          sh 'lein deps'
+
           installJSDeps()
 
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'

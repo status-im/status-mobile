@@ -60,13 +60,13 @@ device=$(/Applications/Genymotion\ Shell.app/Contents/MacOS/genyshell -c "device
 open -a /Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name "${device##*| }"
 fi
 
-# Install deps, prepare for genymotion and figwheel
-lein deps && npm install && ./re-natal use-android-device "${device_type}" && ./re-natal use-figwheel && npm install
+# Install deps
+npm install
 
 cd android && ./gradlew react-native-android:installArchives && cd ../
 
 # open figwheel in new tab
-tab "lein figwheel-repl ${cljs_build}"
+tab "clj -R:repl build.clj figwheel --platform ${cljs_build} --ios-device ${device_type}"
 
 # open react-native package in new tab
 tab "react-native start"

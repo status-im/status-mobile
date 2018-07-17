@@ -38,14 +38,7 @@ install_cocoapods
 ####
 echo && setup_header "Installing dependencies..."
 
-dependency_setup lein deps
 dependency_setup npm install
-
-dependency_setup \
-  "ln -sf '$(repo_path)/node_modules/re-natal/index.js' '$(repo_path)/re-natal'"
-
-dependency_setup ./re-natal deps
-dependency_setup ./re-natal enable-source-maps
 
 dependency_setup \
   "mvn -f modules/react-native-status/ios/RCTStatus/pom.xml dependency:unpack"

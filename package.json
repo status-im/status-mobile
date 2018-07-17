@@ -31,7 +31,6 @@
     "prop-types": "15.6.0",
     "punycode": "1.4.1",
     "querystring-es3": "0.2.1",
-    "re-natal": "0.8.1",
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-native": "github:status-im/react-native#status-0.55.4",

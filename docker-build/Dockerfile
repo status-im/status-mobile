@@ -78,8 +78,6 @@ ADD .env.jenkins .env
 
 ADD ./project.clj ./
 
-RUN lein deps
-
 ADD ./package.json package-lock.json ./
 
 RUN npm install
