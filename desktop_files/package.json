@@ -14,7 +14,8 @@
     "node_modules/react-native-webview-bridge/desktop",
     "node_modules/react-native-keychain/desktop",
     "node_modules/react-native-securerandom/desktop",
-    "modules/react-native-status/desktop"
+    "modules/react-native-status/desktop",
+    "modules/react-native-desktop-notification/desktop"
   ],
   "dependencies": {
     "assert": "1.4.1",
