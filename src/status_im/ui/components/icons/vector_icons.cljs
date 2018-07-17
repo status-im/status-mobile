@@ -10,14 +10,14 @@
 
 (if-not platform/desktop?
   (do (defn get-property [name]
-            (object/get js-dependencies/svg name))
+        (object/get js-dependencies/svg name))
 
       (defn adapt-class [class]
-            (when class
-                  (reagent/adapt-react-class class)))
+        (when class
+          (reagent/adapt-react-class class)))
 
       (defn get-class [name]
-            (adapt-class (get-property name)))
+        (adapt-class (get-property name)))
 
       (def svg (get-class "Svg"))
       (def g (get-class "G"))
@@ -149,52 +149,51 @@
               :icons/camera              (components.svg/slurp-svg "./resources/icons/camera.svg")
               :icons/check               (components.svg/slurp-svg "./resources/icons/check.svg")
               :icons/dots                (components.svg/slurp-svg "./resources/icons/dots.svg")
-              :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")})
-  )
+              :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")}))
 
 (defn normalize-property-name [n]
-      (if (= n :icons/options)
-        (if platform/ios? :icons/dots-horizontal :icons/dots-vertical)
-        n))
+  (if (= n :icons/options)
+    (if platform/ios? :icons/dots-horizontal :icons/dots-vertical)
+    n))
 
 (if platform/desktop?
   (do (def default-viewbox {:width 24 :height 24})
 
       (defn icon
-            ([name] (icon name nil))
-            ([name {:keys [color container-style style accessibility-label width height]
-                    :or {accessibility-label :icon}}]
-              (let [icon-style (if width
-                                 (assoc default-viewbox :width width :height height)
-                                 default-viewbox)]
-                   [react/view {:style               container-style
-                                :accessibility-label accessibility-label}
-                    [react/image {:source (get icons (normalize-property-name name))
-                                  :style  (merge icon-style style)}]]))))
+        ([name] (icon name nil))
+        ([name {:keys [color container-style style accessibility-label width height]
+                :or {accessibility-label :icon}}]
+         (let [icon-style (if width
+                            (assoc default-viewbox :width width :height height)
+                            default-viewbox)]
+           [react/view {:style               container-style
+                        :accessibility-label accessibility-label}
+            [react/image {:source (get icons (normalize-property-name name))
+                          :style  (merge icon-style style)}]]))))
   (do (defn icon
-            ([name] (icon name nil))
-            ([name {:keys [color container-style style accessibility-label width height]
-                    :or   {accessibility-label :icon}}]
-              ^{:key name}
-              [react/view {:style               container-style
-                           :accessibility-label accessibility-label}
-               (if-let [icon-fn (get icons (normalize-property-name name))]
-                       (let [icon-vec (icon-fn
-                                        (cond
-                                          (keyword? color)
-                                          (case color
-                                                :dark styles/icon-dark-color
-                                                :gray styles/icon-gray-color
-                                                :blue styles/color-light-blue
-                                                :active styles/color-blue4
-                                                :white styles/color-white
-                                                :red styles/icon-red-color
-                                                styles/icon-dark-color)
-                                          (string? color)
-                                          color
-                                          :else
-                                          styles/icon-dark-color))]
-                            (if width
-                              (update icon-vec 1 assoc :width width :height height)
-                              icon-vec))
-                       (throw (js/Error. (str "Unknown icon: " name))))]))))
+        ([name] (icon name nil))
+        ([name {:keys [color container-style style accessibility-label width height]
+                :or   {accessibility-label :icon}}]
+         ^{:key name}
+         [react/view {:style               container-style
+                      :accessibility-label accessibility-label}
+          (if-let [icon-fn (get icons (normalize-property-name name))]
+            (let [icon-vec (icon-fn
+                            (cond
+                              (keyword? color)
+                              (case color
+                                :dark styles/icon-dark-color
+                                :gray styles/icon-gray-color
+                                :blue styles/color-light-blue
+                                :active styles/color-blue4
+                                :white styles/color-white
+                                :red styles/icon-red-color
+                                styles/icon-dark-color)
+                              (string? color)
+                              color
+                              :else
+                              styles/icon-dark-color))]
+              (if width
+                (update icon-vec 1 assoc :width width :height height)
+                icon-vec))
+            (throw (js/Error. (str "Unknown icon: " name))))]))))

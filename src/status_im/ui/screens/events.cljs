@@ -157,8 +157,8 @@
    (do
       ;; Preemptively stop node if it's already running
       ;; in order to prevent "node is already running" errors
-      (when platform/desktop? (status/stop-node))
-      (status/start-node (types/clj->json config)))))
+     (when platform/desktop? (status/stop-node))
+     (status/start-node (types/clj->json config)))))
 
 (re-frame/reg-fx
  ::status-module-initialized-fx
