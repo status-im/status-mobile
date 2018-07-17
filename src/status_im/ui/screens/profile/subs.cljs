@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.profile.subs
   (:require [re-frame.core :refer [reg-sub]]
             [clojure.string :as string]
-            [status-im.utils.build :as build]))
+            [status-im.utils.build :as build]
+            [status-im.utils.platform :as platform]))
 
 (reg-sub
  :get-profile-unread-messages-number
@@ -12,7 +13,8 @@
 (reg-sub
  :get-app-version
  (fn [{:keys [web3-node-version]}]
-   (str build/version " (" build/build-no ")\nnode " (or web3-node-version "N/A") "")))
+   (let [version (if platform/desktop? build/version build/build-no)]
+        (str build/version " (" version ")\nnode " (or web3-node-version "N/A") ""))))
 
 (reg-sub :get-device-UUID
          (fn [db]

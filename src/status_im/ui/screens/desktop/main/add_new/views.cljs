@@ -1,47 +1,97 @@
 (ns status-im.ui.screens.desktop.main.add-new.views
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.screens.add-new.new-public-chat.view :as public-chat]
+            [status-im.ui.components.list.views :as list]
+            [clojure.string :as string]
+            [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
+            [status-im.ui.screens.desktop.main.add-new.styles :as styles]
+            [status-im.ui.screens.add-new.new-public-chat.view :refer [default-public-chats]]
+            [status-im.ui.screens.add-new.new-public-chat.db :as public-chat-db]
+            [taoensso.timbre :as log]
             [status-im.ui.components.react :as react]))
 
 (views/defview new-contact []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
-                  topic [:get :public-group-topic]]
-    [react/view {:style {:flex 1 :background-color "#eef2f5"}}
-     ^{:key "newcontact"}
-     [react/view {:style {:height 64 :align-items :center :padding-horizontal 11 :justify-content :center}}
-      [react/text {:style {:font-size 16 :color :black :font-weight "600"}}
-       "Add new contact"]]
-     [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/view {:style {:height     90 :margin-horizontal 16 :margin-bottom 16 :background-color :white :border-radius 12}}
-                          ;:box-shadow "0 0.5px 4.5px 0 rgba(0, 0, 0, 0.04)"}}
-      [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16}}
+                  contacts             [:all-added-people-contacts]
+                  chat-error           [:new-contact-error-message]
+                  topic                [:get :public-group-topic]
+                  topic-error          [:new-topic-error-message]
+                  account              [:get-current-account]
+                  topic-input-ref      (atom nil)]
+    [react/scroll-view
+     [react/view {:style styles/new-contact-view}
+      ^{:key "newcontact"}
+      [react/view {:style styles/new-contact-title}
+       [react/text {:style styles/new-contact-title-text}
+        (i18n/label :new-chat)]]
+      [react/text {:style styles/new-contact-subtitle} (i18n/label :contact-code)]
+      [react/view {:style styles/new-contact-separator}]
+      [react/view {:style styles/add-contact-edit-view}
+       [react/text-input {:placeholder "0x..."
+                          :flex        1
+                          :style       styles/add-contact-input
+                          :on-change   (fn [e]
+                                         (let [native-event (.-nativeEvent e)
+                                               text (.-text native-event)]
+                                           (re-frame/dispatch [:set :contacts/new-identity text])))}]
+       [react/touchable-highlight {:disabled chat-error :on-press #(when-not chat-error (re-frame/dispatch [:add-contact-handler new-contact-identity]))}
+        [react/view
+         {:style (styles/add-contact-button chat-error)}
+         [react/text
+          {:style (styles/add-contact-button-text chat-error)}
+          (i18n/label :start-chat)]]]]
+      ^{:key "choosecontact"}
+      [react/view
+       (when (seq contacts) [react/text {:style styles/new-contact-subtitle} (i18n/label :or-choose-a-contact)])
+       [react/view {:style {:margin-top 12}}
+        (doall
+         (for [c contacts]
+           ^{:key (:whisper-identity c)}
+           [react/touchable-highlight {:on-press #(do
+                                                    (re-frame/dispatch [:set :contacts/new-identity (:whisper-identity c)])
+                                                    (re-frame/dispatch [:add-contact-handler (:whisper-identity c)]))}
+            [react/view {:style styles/suggested-contact-view}
+             [react/image {:style  styles/suggested-contact-image
+                           :source {:uri (:photo-path c)}}]
+             [react/text {:style styles/new-contact-subtitle} (:name c)]]]))]]
+      ^{:key "publicchat"}
+      [react/view {:style styles/new-contact-title}
+       [react/text {:style styles/new-contact-title-text}
+        (i18n/label :new-public-group-chat)]]
+      [react/text {:style styles/new-contact-subtitle} (i18n/label :public-group-topic)]
+      [react/view {:style styles/new-contact-separator}]
+      [react/view {:style styles/add-contact-edit-view}
        [react/view {:style {:flex 1}}
-        [react/text-input {:placeholder "Contact key"
+        [react/text-input {:flex        1
+                           :ref         #(when (and (nil? @topic-input-ref) %)
+                                           (.setNativeProps % (js-obj "text" "#"))
+                                           (reset! topic-input-ref %))
+                           :style       styles/add-contact-input
                            :on-change   (fn [e]
                                           (let [native-event (.-nativeEvent e)
-                                                text (.-text native-event)]
-                                            (re-frame/dispatch [:set :contacts/new-identity text])))}]]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact-handler new-contact-identity])}
-        [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
-                             :justify-content :center}}
-         [icons/icon :icons/ok]]]]]
-     ^{:key "publicchat"}
-     [react/view {:style {:height 64 :align-items :center :padding-horizontal 11 :justify-content :center}}
-      [react/text {:style {:font-size 16 :color :black :font-weight "600"}}
-       "Join to public chat"]]
-     [react/view {:style {:height 1 :background-color "#e8ebec" :margin-horizontal 16}}]
-     [react/view {:style {:height     90 :margin-horizontal 16 :margin-bottom 16 :background-color :white :border-radius 12}}
-                          ;:box-shadow "0 0.5px 4.5px 0 rgba(0, 0, 0, 0.04)"}}
-      [react/view {:style {:flex-direction :row :margin-horizontal 16 :margin-top 16}}
-       [react/text "#"]
-       [react/view {:style {:flex 1}}
-        [react/text-input {:placeholder "topic"
-                           :on-change   (fn [e]
-                                          (let [native-event (.-nativeEvent e)
-                                                text (.-text native-event)]
-                                            (re-frame/dispatch [:set :public-group-topic text])))}]]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:create-new-public-chat topic])}
-        [react/view {:style {:margin-left     16 :width 30 :height 30 :border-radius 15 :background-color "#eef2f5" :align-items :center
-                             :justify-content :center}}
-         [icons/icon :icons/ok]]]]]]))
+                                                text (.-text native-event)
+                                                [_ before after] (first (re-seq #"(.*)\#(.*)" text))]
+                                            (.setNativeProps @topic-input-ref (js-obj "text" (str "#" before after)))
+                                            (re-frame/dispatch [:set :public-group-topic (subs text 1)])))}]]
+       [react/touchable-highlight {:disabled topic-error
+                                   :on-press #(when-not topic-error
+                                                (do
+                                                  (re-frame/dispatch [:set :public-group-topic nil])
+                                                  (re-frame/dispatch [:create-new-public-chat topic])))}
+        [react/view {:style (styles/add-contact-button topic-error)}
+         [react/text {:style (styles/add-contact-button-text topic-error)}
+          (i18n/label :new-public-group-chat)]]]]
+      [react/text {:style styles/new-contact-subtitle} (i18n/label :selected-for-you)]
+      [react/view {:style {:margin-top 12}}
+       (doall
+        (for [topic public-chat/default-public-chats]
+          ^{:key topic}
+          [react/touchable-highlight {:on-press #(do
+                                                   (re-frame/dispatch [:set :public-group-topic nil])
+                                                   (re-frame/dispatch [:create-new-public-chat topic]))}
+           [react/view {:style styles/suggested-contact-view}
+            [react/view {:style styles/suggested-topic-image}
+             [react/text {:style styles/suggested-topic-text} (string/capitalize (first topic))]]
+            [react/text {:style styles/new-contact-subtitle} topic]]]))]]]))
