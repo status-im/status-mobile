@@ -377,8 +377,7 @@
                          [:update-wallet]
                          [:update-transactions]
                          [:get-fcm-token]
-                         [:update-sign-in-time]
-                         [:show-mainnet-is-default-alert]]
+                         [:update-sign-in-time]]
                   (seq events-after) (into events-after))}))
 
 (handlers/register-handler-fx
