@@ -36,9 +36,7 @@
 (def view (get-class "View"))
 (def safe-area-view (get-class "SafeAreaView"))
 
-(if platform/desktop?
-  (def status-bar (get-class "View"))
-  (def status-bar (get-class "StatusBar")))
+(def status-bar (get-class (if platform/desktop? "View" "StatusBar")))
 
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))

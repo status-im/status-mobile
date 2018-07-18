@@ -154,11 +154,7 @@
 (re-frame/reg-fx
  :initialize-geth-fx
  (fn [config]
-   (do
-      ;; Preemptively stop node if it's already running
-      ;; in order to prevent "node is already running" errors
-     (when platform/desktop? (status/stop-node))
-     (status/start-node (types/clj->json config)))))
+   (status/start-node (types/clj->json config))))
 
 (re-frame/reg-fx
  ::status-module-initialized-fx
@@ -382,7 +378,7 @@
                          [:process-pending-messages]
                          [:update-wallet]
                          [:update-transactions]
-                         (if platform/mobile? [:get-fcm-token])
+                         (when platform/mobile? [:get-fcm-token])
                          [:update-sign-in-time]
                          [:show-mainnet-is-default-alert]]
                   (seq events-after) (into events-after))}))
