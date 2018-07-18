@@ -39,7 +39,7 @@
         [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
-  (list-selection/show {:title   (if public? (str "#" chat-name) chat-name)
+  (list-selection/show {:title   chat-name
                         :options (actions/actions group-chat? chat-id public?)}))
 
 (defview chat-toolbar [public?]
