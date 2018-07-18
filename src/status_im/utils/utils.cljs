@@ -76,3 +76,17 @@
 
 (defn clear-interval [id]
   (.clearInterval rn-dependencies/background-timer id))
+
+(defn distinct-by-group
+  "First group a map's values by property <grouper>,
+  then select the optimal within each group as determined
+  by property <optimizing> taking the first after
+   ordering by <ordering>, which defaults to greater-than."
+
+  ([m grouper optimizing ordering]
+   (into {} (map (fn [[dup-val map-elts]]
+                   (first (sort-by (comp optimizing second) ordering map-elts)))
+                 (group-by (comp grouper second) m))))
+
+  ([m grouper optimizing]
+   (distinct-by-group m grouper optimizing >)))
