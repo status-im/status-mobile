@@ -3,10 +3,7 @@
   (:require [cljs.spec.alpha :as spec]))
 
 (spec/def :browser/browser-id (spec/nilable string?))
-(spec/def :browser/contact (spec/nilable string?))
 (spec/def :browser/timestamp (spec/nilable int?))
-(spec/def :browser/url (spec/nilable string?))
-(spec/def :browser/photo-path (spec/nilable string?))
 (spec/def :browser/name (spec/nilable string?))
 (spec/def :browser/dapp? (spec/nilable boolean?))
 (spec/def :browser/error? (spec/nilable boolean?))
@@ -28,3 +25,13 @@
             :browser/history-index]))
 
 (spec/def :browser/browsers (spec/nilable (spec/map-of :global/not-empty-string :browser/browser)))
+
+(spec/def :dapp/dapp (spec/nilable string?))
+(spec/def :dapp/permissions (spec/nilable vector?))
+
+(spec/def :dapp/permission-map
+  (allowed-keys
+   :req-un [:dapp/dapp]
+   :opt-un [:dapp/permissions]))
+
+(spec/def :dapps/permissions (spec/nilable (spec/map-of :global/not-empty-string :dapp/permission-map)))

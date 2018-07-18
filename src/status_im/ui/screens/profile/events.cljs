@@ -35,9 +35,6 @@
                               (chat-events/start-chat chat-id {:navigation-replace? true})
                               (input-events/select-chat-input-command send-command nil true)))))
 
-(defn get-current-account [db]
-  (:account/account db))
-
 (defn valid-name? [name]
   (spec/valid? :profile/name name))
 
@@ -101,7 +98,7 @@
 (handlers/register-handler-fx
  :my-profile/enter-two-random-words
  (fn [{:keys [db]} []]
-   (let [{:keys [mnemonic]} (get-current-account db)
+   (let [{:keys [mnemonic]} (:account/account db)
          shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]
      {:db (assoc db :my-profile/seed {:step :first-word
                                       :first-word (first shuffled-mnemonic)
