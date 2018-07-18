@@ -36,8 +36,6 @@
   (views/letsubs [{:keys [public-key]} [:get-current-account]
                   tooltip-opacity      [:get-in [:tooltips :qr-copied]]]
     [react/view
-     #_[react/view {:style styles/close-icon-container}
-        [vector-icons/icon :icons/close {:style styles/close-icon}]]
      [react/view {:style styles/qr-code-container}
       [react/text {:style styles/qr-code-title}
        (string/replace (i18n/label :qr-code-public-key-hint) "\n" "")]

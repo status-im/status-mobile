@@ -14,10 +14,10 @@
 
 ;; We don't use platform/desktop? here because that would lead to a circular dependency
 ;; since platform.cljs itself depends on js-dependencies
-(def desktopPlatform?
+(def desktop?
     (= (.-OS (.-Platform react-native)) "desktop"))
 
-(if desktopPlatform?
+(if desktop?
   (do (def i18n                   (js/require "react-native-i18n"))
       (def camera                 #js {:constants {:Aspect "Portrait"}})
       (def dialogs                #js {})
