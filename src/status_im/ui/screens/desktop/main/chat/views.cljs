@@ -63,7 +63,7 @@
 
 (views/defview message-with-timestamp [text {:keys [timestamp] :as message} style]
   [react/view {:style style}
-   [react/view {:style {:flex-direction :row :flex-wrap :wrap}}
+   [react/view {:style styles/message-wrapper}
     [react/text {:style      styles/message-text
                  :selectable true}
      text]
@@ -81,10 +81,10 @@
 
 (views/defview message-with-name-and-avatar [text {:keys [from first-in-group? last-in-group?] :as message}]
   [react/view {:style (styles/message-row message)}
-   [react/view {:style {:flex-direction :column}}
+   [react/view {:style styles/message-row-column}
     (when first-in-group?
       [message-author-name message])
-    [react/view {:style {:flex-direction :row}}
+    [react/view {:style styles/not-first-in-group-wrapper}
      (if last-in-group?
        [member-photo from]
        [photo-placeholder])
@@ -134,7 +134,7 @@
                                                        (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
                            :on-content-size-change #(.scrollToEnd @scroll-ref)
                            :ref                    #(reset! scroll-ref %)}
-        [react/view {:style {:padding-vertical 46}}
+        [react/view {:style styles/messages-scrollview-inner}
          (doall
           (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse @messages))]
             ^{:key (or message-id (str type value))}
@@ -143,7 +143,7 @@
 (views/defview chat-text-input []
   (views/letsubs [inp-ref (atom nil)]
     [react/view {:style styles/chat-box}
-     [react/view {:style {:flex-direction :row :flex 1}}
+     [react/view {:style styles/chat-box-inner}
       [react/view {:style {:flex 1}}
        [react/text-input {:placeholder    (i18n/label :t/type-a-message)
                           :auto-focus     true

@@ -45,7 +45,7 @@
       ^{:key "choosecontact"}
       [react/view
        (when (seq contacts) [react/text {:style styles/new-contact-subtitle} (i18n/label :or-choose-a-contact)])
-       [react/view {:style {:margin-top 12}}
+       [react/view {:style styles/suggested-contacts}
         (doall
          (for [c contacts]
            ^{:key (:whisper-identity c)}
@@ -84,7 +84,7 @@
          [react/text {:style (styles/add-contact-button-text topic-error)}
           (i18n/label :new-public-group-chat)]]]]
       [react/text {:style styles/new-contact-subtitle} (i18n/label :selected-for-you)]
-      [react/view {:style {:margin-top 12}}
+      [react/view {:style styles/suggested-contacts}
        (doall
         (for [topic public-chat/default-public-chats]
           ^{:key topic}
