@@ -18,7 +18,8 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.models.browser :as model]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.http :as http]))
 
 (views/defview toolbar-content-dapp [name]
   (views/letsubs [dapp [:get-dapp-by-name name]]
@@ -41,7 +42,10 @@
     [react/view
      [react/view (styles/toolbar-content false)
       [react/text-input {:on-change-text    #(reset! url-text %)
-                         :on-submit-editing #(re-frame/dispatch [:update-browser (assoc browser :url @url-text)])
+                         :on-submit-editing #(re-frame/dispatch [:update-browser-on-nav-change
+                                                                 browser
+                                                                 (http/normalize-and-decode-url @url-text)
+                                                                 false])
                          :auto-focus        (not url)
                          :placeholder       (i18n/label :t/enter-url)
                          :auto-capitalize   :none

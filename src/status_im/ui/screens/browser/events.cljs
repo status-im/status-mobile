@@ -57,12 +57,6 @@
    (model/update-browser-and-navigate cofx browser)))
 
 (handlers/register-handler-fx
- :update-browser
- [re-frame/trim-v]
- (fn [cofx [browser]]
-   (model/update-browser-fx cofx browser)))
-
-(handlers/register-handler-fx
  :update-browser-on-nav-change
  [re-frame/trim-v]
  (fn [cofx [browser url loading]]

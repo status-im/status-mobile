@@ -119,7 +119,7 @@
  (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
    (handlers-macro/merge-fx cofx
                             {:db       db
-                             :dispatch [:navigate-to-clean :usage-data [:account-finalized true]]}
+                             :dispatch [:navigate-to-clean :home]}
                             (accounts.utils/account-update {:name (:name create)}))))
 
 (handlers/register-handler-fx

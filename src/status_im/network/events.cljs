@@ -28,12 +28,11 @@
 (handlers/register-handler-fx
  ::update-connection-status
  [re-frame/trim-v]
- (fn [{{:keys [network-status mailserver-status] :as db} :db :as cofx} [is-connected?]]
-   (cond-> (handlers-macro/merge-fx cofx
-                                    {:db (assoc db :network-status (if is-connected? :online :offline))}
-                                    (inbox/request-messages))
-     is-connected?
-     (assoc :drain-mixpanel-events nil))))
+ (fn [{db :db :as cofx} [is-connected?]]
+   (handlers-macro/merge-fx
+    cofx
+    {:db (assoc db :network-status (if is-connected? :online :offline))}
+    (inbox/request-messages))))
 
 (handlers/register-handler-fx
  ::update-network-status

@@ -34,7 +34,6 @@
             status-im.ui.screens.offline-messaging-settings.events
             status-im.ui.screens.bootnodes-settings.events
             status-im.ui.screens.currency-settings.events
-            status-im.ui.screens.usage-data.events
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
@@ -58,7 +57,6 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.instabug :as instabug]
-            [status-im.utils.mixpanel :as mixpanel]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]

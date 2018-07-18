@@ -49,7 +49,6 @@
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
-            [status-im.ui.screens.usage-data.views :refer [usage-data]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]))
 
 (defn get-main-component [view-id]
@@ -57,7 +56,6 @@
     :collectibles-list collectibles-list
     :intro intro
     :create-account create-account
-    :usage-data usage-data
     (:home :wallet :my-profile) main-tabs
     :browser browser
     :open-dapp open-dapp

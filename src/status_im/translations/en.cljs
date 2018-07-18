@@ -51,16 +51,6 @@
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
 
-   :help-improve                         "Help improve Status\nby sharing usage patterns"
-   :help-improve?                        "Help improve Status?"
-   :help-improve-description             "We collect anonymous data to understand how Status is used and inform future development. Whilst we appreciate your help to make Status better, this is an optional choice and can be changed at any time."
-   :learn-what-we-collect-link           "Learn more about what we collect"
-   :share-usage-data                     "Share data"
-   :dont-want-to-share                   "Do not share"
-   :confirmation-title                   "Share data with Status?"
-   :confirmation-text                    "Are you sure you want to share anonymous data with Status?"
-   :confirmation-action                  "Share"
-
    ;;drawer
    :switch-users                         "Switch users"
    :logout-title                         "Log out?"
@@ -234,7 +224,7 @@
    :start-new-chat                       "Start new chat"
    :start-group-chat                     "Start group chat"
    :invite-friends                       "Invite friends"
-   :get-status-at                        "Get Status at http://status.im?refCode={{address}}"
+   :get-status-at                        "Get Status at http://status.im"
    :chats                                "Chats"
    :delete-chat                          "Delete chat"
    :group-chat                           "Group chat"

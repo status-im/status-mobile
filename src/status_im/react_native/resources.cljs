@@ -39,6 +39,10 @@
    :ethlend            (js/require "./resources/images/contacts/ethlend.png")
    :smartz             (js/require "./resources/images/contacts/smartz.png")
 
+   :ddex               (js/require "./resources/images/contacts/ddex.png")
+   :emoon              (js/require "./resources/images/contacts/emoon.png")
+   :livepeer           (js/require "./resources/images/contacts/livepeer.png")
+
    :console            (js/require "./resources/images/contacts/console.png")})
 
 (def assets

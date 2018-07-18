@@ -25,8 +25,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         public_key = device_2_home.get_public_key()
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.switch_network('Mainnet with upstream RPC')
-        if device_2_sign_in.ok_button.is_element_displayed():
-            device_2_sign_in.ok_button.click()
         device_2_sign_in.sign_in()
 
         device_1_chat = device_1_home.add_contact(public_key)
@@ -46,6 +44,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                 self.errors.append("Sent transaction message doesn't contain text 'testnet'")
         except TimeoutException:
             self.errors.append('Sent transaction message was not received')
+        device_2_chat.get_back_to_home_view()
 
         amount_2 = device_1_chat.get_unique_amount()
         device_1_chat.request_transaction_in_1_1_chat('ETH', amount_2)
@@ -53,6 +52,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if status_text_2 != 'Sent':
             self.errors.append("Request funds message has status '%s' instead of 'Sent'" % status_text_2)
 
+        device_2_home.get_chat_with_user(sender['username']).click()
         chat_element_2 = device_2_chat.chat_element_by_text(amount_2)
         try:
             chat_element_2.wait_for_visibility_of_element(120)
@@ -361,7 +361,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat = home.add_contact(transaction_users['D_USER']['public_key'])
         amount = chat.get_unique_amount()
         chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
-        chat.check_no_value_in_logcat(sender['password'])
+        chat.check_no_values_in_logcat(password=sender['password'])
 
     @marks.testrail_id(3736)
     @marks.smoke_1
@@ -406,5 +406,5 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         amount = chat.get_unique_amount()
         chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
-        if not chat.chat_element_by_text(amount).contains_text('Confirmed'):
+        if not chat.chat_element_by_text(amount).contains_text('Confirmed', wait_time=90):
             pytest.fail('Transaction state is not updated on the sender side')

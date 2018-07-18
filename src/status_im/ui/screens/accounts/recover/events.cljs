@@ -60,7 +60,7 @@
  :account-recovered-navigate
  (fn [{:keys [db]}]
    {:db (assoc-in db [:accounts/recover :processing] false)
-    :dispatch [:navigate-to :usage-data [:account-finalized false]]}))
+    :dispatch [:navigate-to-clean :home]}))
 
 (handlers/register-handler-fx
  :recover-account

@@ -1,8 +1,14 @@
 from tests import info
 import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from views.base_element import BaseButton, BaseText
+from views.base_element import BaseButton, BaseText, BaseElement
 from views.base_view import BaseView
+
+
+class WelcomeImageElement(BaseElement):
+    def __init__(self, driver):
+        super(WelcomeImageElement, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.ImageView')
 
 
 class PlusButton(BaseButton):
@@ -97,7 +103,7 @@ class ChatUrlText(BaseText):
 class HomeView(BaseView):
     def __init__(self, driver):
         super(HomeView, self).__init__(driver)
-
+        self.welcome_image = WelcomeImageElement(self.driver)
         self.plus_button = PlusButton(self.driver)
         self.console_button = ConsoleButton(self.driver)
         self.chat_name_text = ChatNameText(self.driver)

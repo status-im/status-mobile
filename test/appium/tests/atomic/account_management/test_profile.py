@@ -103,8 +103,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Profile button counter is not shown')
         profile_view = sign_in_view.profile_button.click()
         profile_view.logout()
-        if sign_in_view.ok_button.is_element_displayed():
-            sign_in_view.ok_button.click()
         sign_in_view.sign_in()
         if sign_in_view.profile_button.counter.text != '1':
             self.errors.append('Profile button counter is not shown after relogin')
@@ -118,16 +116,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_invite_friends(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
-        wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
-        wallet.receive_transaction_button.click()
-        address = wallet.address_text.text[2:]
-        wallet.get_back_to_home_view()
-        wallet.home_button.click()
         start_new_chat = home.plus_button.click()
         start_new_chat.invite_friends_button.click()
         start_new_chat.share_via_messenger()
-        start_new_chat.find_text_part("Get Status at http://status.im?refCode=%s" % address)
+        start_new_chat.find_text_part("Get Status at http://status.im")
 
     @marks.testrail_id(3450)
     def test_set_currency(self):
@@ -147,7 +139,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
         profile_view.add_custom_network()
-        sign_in_view.click_account_by_position(0)
         sign_in_view.sign_in()
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
@@ -170,8 +161,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
         profile_view.done_button.click()
         profile_view.yes_button.click()
-        for i in recovery_phrase[word_number], recovery_phrase[word_number_1]:
-            profile_view.check_no_value_in_logcat(i, 'Recovery phrase')
+        profile_view.check_no_values_in_logcat(passphrase1=recovery_phrase[word_number],
+                                               passphrase2=recovery_phrase[word_number_1])
 
     @marks.testrail_id(3751)
     def test_need_help_section(self):

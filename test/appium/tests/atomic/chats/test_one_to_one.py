@@ -92,12 +92,12 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Progress indicator is shown during %s seconds' % progress_time)
 
         device_1.set_network_connection(2)  # turning on WiFi connection
-
+        chat_1.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(30)
+        chat_1.reconnect()
         chat_1.element_by_text('Not sent. Tap for options').click()
         if not chat_1.element_by_text('Delete message').is_element_displayed():
             self.errors.append("'Delete message' button is not shown for not sent message")
 
-        chat_1.reconnect()
         chat_element = chat_1.chat_element_by_text(message)
         chat_1.element_by_text('Resend').click()
         chat_element.status.wait_for_visibility_of_element()
@@ -110,8 +110,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
-    @marks.testrail_case_id(3743)
     @marks.testrail_id(3710)
+    @marks.smoke_1
     def test_messaging_in_different_networks(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -123,7 +123,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         public_key_2 = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         profile_2.switch_network('Mainnet with upstream RPC')
-        sign_in_2.click_account_by_position(0)
         sign_in_2.sign_in()
 
         chat_1 = home_1.add_contact(public_key_2)
