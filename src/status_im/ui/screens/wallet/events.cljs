@@ -142,20 +142,20 @@
 (handlers/register-handler-fx
  :update-transactions
  (fn [{{:keys [network network-status web3] :as db} :db} _]
-   (when (not= network-status :offline)
-     (let [network         (get-in db [:account/account :networks network])
-           chain           (ethereum/network->chain-keyword network)
-           all-tokens      (tokens/tokens-for chain)
-           token-addresses (map :address all-tokens)]
-       {:get-transactions {:account-id      (get-in db [:account/account :address])
-                           :token-addresses token-addresses
-                           :chain           chain
-                           :web3            web3
-                           :success-event   :update-transactions-success
-                           :error-event     :update-transactions-fail}
-        :db               (-> db
-                              (clear-error-message :transactions-update)
-                              (assoc-in [:wallet :transactions-loading?] true))}))))
+   (let [chain (ethereum/network->chain-keyword network)]
+     (when (and (not= network-status :offline) chain)
+       (let [network         (get-in db [:account/account :networks network])
+             all-tokens      (tokens/tokens-for chain)
+             token-addresses (map :address all-tokens)]
+         {:get-transactions {:account-id      (get-in db [:account/account :address])
+                             :token-addresses token-addresses
+                             :chain           chain
+                             :web3            web3
+                             :success-event   :update-transactions-success
+                             :error-event     :update-transactions-fail}
+          :db               (-> db
+                                (clear-error-message :transactions-update)
+                                (assoc-in [:wallet :transactions-loading?] true))})))))
 
 (defn combine-entries [transaction token-transfer]
   (merge transaction (select-keys token-transfer [:symbol :from :to :value :type :token :transfer])))

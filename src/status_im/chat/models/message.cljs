@@ -334,13 +334,12 @@
                          :tokens  [fcm-token]}}))
 
 (defn update-message-status [{:keys [chat-id message-id from]} status {:keys [db]}]
-  (let [updated-status (-> db
-                           (get-in [:chats chat-id :message-statuses message-id from])
-                           (assoc :status status))]
-    {:db            (assoc-in db
-                              [:chats chat-id :message-statuses message-id from]
-                              updated-status)
-     :data-store/tx [(user-statuses-store/save-status-tx updated-status)]}))
+  (when-let [message-status (get-in db [:chats chat-id :message-statuses message-id from])]
+    (let [updated-status (assoc message-status :status status)]
+      {:db            (assoc-in db
+                                [:chats chat-id :message-statuses message-id from]
+                                updated-status)
+       :data-store/tx [(user-statuses-store/save-status-tx updated-status)]})))
 
 (defn resend-message [chat-id message-id cofx]
   (let [message (get-in cofx [:db :chats chat-id :messages message-id])
