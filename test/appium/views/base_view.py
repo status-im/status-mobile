@@ -3,6 +3,7 @@ import string
 import time
 import base64
 import pytest
+import re
 import zbarlight
 from tests import info, common_password
 from eth_keys import datatypes
@@ -430,5 +431,5 @@ class BaseView(object):
     def check_no_values_in_logcat(self, **kwargs):
         logcat = self.logcat
         for key, value in kwargs.items():
-            if value in logcat:
+            if re.findall('\W%s|\W%s\W' % (value, value), logcat):
                 pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)

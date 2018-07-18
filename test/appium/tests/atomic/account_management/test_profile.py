@@ -116,16 +116,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_invite_friends(self):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
-        wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
-        wallet.receive_transaction_button.click()
-        address = wallet.address_text.text[2:]
-        wallet.get_back_to_home_view()
-        wallet.home_button.click()
         start_new_chat = home.plus_button.click()
         start_new_chat.invite_friends_button.click()
         start_new_chat.share_via_messenger()
-        start_new_chat.find_text_part("Get Status at http://status.im?refCode=%s" % address)
+        start_new_chat.find_text_part("Get Status at http://status.im")
 
     @marks.testrail_id(3450)
     def test_set_currency(self):

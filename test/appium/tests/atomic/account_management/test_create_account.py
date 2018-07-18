@@ -42,14 +42,18 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.get_public_key() == public_key:
             pytest.fail('New account was not created')
 
-    @marks.testrail_id(3692)
-    @marks.skip
+    @marks.testrail_id(3787)
+    @marks.smoke_1
     def test_home_view(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
+        if not home.welcome_image.is_element_displayed():
+            self.errors.append('Welcome image is not shown')
         for text in ['Welcome to Status',
-                     ('Here you can securely chat with people, or browse and interact with DApps. '
-                      'Tap the “Plus” icon to begin.')]:
+                     'Here you can chat with people in a secure\n'
+                     ' private chat, browse and interact with DApps.\n'
+                     ' Use the “Plus” icon to explore Status',
+                     ]:
             if not home.element_by_text(text).is_element_displayed():
                 self.errors.append("'%s' text is not shown" % text)
         home.profile_button.click()

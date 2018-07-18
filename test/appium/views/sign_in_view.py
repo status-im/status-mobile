@@ -73,28 +73,6 @@ class NameInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
-class LearnMoreLink(BaseButton):
-
-    def __init__(self, driver):
-        super(LearnMoreLink, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Learn more about what we collect')
-
-
-class ShareDataButton(BaseButton):
-
-    def __init__(self, driver):
-        super(ShareDataButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Share data')
-
-
-class DonNotShareButton(BaseButton):
-
-    def __init__(self, driver):
-        super(DonNotShareButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE" '
-                                                   'or @text="Do not share"]' % "'")
-
-
 class OtherAccountsButton(BaseButton):
 
     def __init__(self, driver):
