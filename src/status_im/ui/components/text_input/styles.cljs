@@ -21,7 +21,7 @@
    :letter-spacing -0.2
    :color          colors/black
    :padding        0
-   :desktop       {:height 52}})
+   :desktop        {:height 52}})
 
 (defn error [label?]
   {:bottom-value (if label? -20 0)
