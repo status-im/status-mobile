@@ -35,6 +35,7 @@
              :discover-current-dapp              {}
              :tags                               []
              :sync-state                         :done
+             :app-state                          "active"
              :wallet.transactions                constants/default-wallet-transactions
              :wallet-selected-asset              {}
              :prices                             {}
@@ -76,6 +77,8 @@
 (spec/def ::network-status (spec/nilable keyword?))
 
 (spec/def ::mailserver-status (spec/nilable keyword?))
+
+(spec/def ::app-state string?)
 
 ;;;;NODE
 
@@ -231,6 +234,7 @@
                  ::sync-data
                  ::network
                  ::chain
+                 ::app-state
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id

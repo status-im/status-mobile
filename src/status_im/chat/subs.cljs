@@ -10,7 +10,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
-            [status-im.constants :as const]))
+            [status-im.constants :as const]
+            [status-im.wallet.transactions :as transactions]))
 
 (reg-sub :get-chats :chats)
 
@@ -405,7 +406,7 @@
  (fn [db [_ tx-hash]]
    (-> (get-in db [:wallet :transactions tx-hash :confirmations] "0")
        (js/parseInt)
-       (pos?))))
+       (>= transactions/confirmations-count-threshold))))
 
 (reg-sub
  :wallet-transaction-exists?

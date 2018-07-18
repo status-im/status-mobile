@@ -1,6 +1,7 @@
 (ns status-im.utils.transactions
   (:require [status-im.utils.http :as http]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (defn- get-network-subdomain [chain]
   (case chain
@@ -55,6 +56,8 @@
                {})))
 
 (defn get-transactions [chain account on-success on-error]
-  (http/get (get-transaction-url chain account)
-            #(on-success (format-transactions-response % account))
-            on-error))
+  (let [url (get-transaction-url chain account)]
+    (log/debug "HTTP GET" url)
+    (http/get url
+              #(on-success (format-transactions-response % account))
+              on-error)))

@@ -14,7 +14,8 @@
             status-im.ui.screens.wallet.request.events
             [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.wallet.transactions :as wallet.transactions]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -141,22 +142,8 @@
 
 (handlers/register-handler-fx
  :update-transactions
- (fn [{{:keys [network network-status web3] :as db} :db} _]
-   (when-not (= network-status :offline)
-     (let [network         (get-in db [:account/account :networks network])
-           chain           (ethereum/network->chain-keyword network)]
-       (when-not (= :custom chain)
-         (let [all-tokens      (tokens/tokens-for chain)
-               token-addresses (map :address all-tokens)]
-           {:get-transactions {:account-id      (get-in db [:account/account :address])
-                               :token-addresses token-addresses
-                               :chain           chain
-                               :web3            web3
-                               :success-event   :update-transactions-success
-                               :error-event     :update-transactions-fail}
-            :db               (-> db
-                                  (clear-error-message :transactions-update)
-                                  (assoc-in [:wallet :transactions-loading?] true))}))))))
+ (fn [cofx _]
+   (wallet.transactions/run-update cofx)))
 
 (defn combine-entries [transaction token-transfer]
   (merge transaction (select-keys token-transfer [:symbol :from :to :value :type :token :transfer])))
