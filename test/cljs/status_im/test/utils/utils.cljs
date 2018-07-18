@@ -54,58 +54,74 @@
          (u/deep-merge {:a {:b {:c 1}} :d 1} {:a {:b {:c 2}}}))))
 
 ;;; --- distinct-by-group-test ------------------------------------
+;;;
 ;;; Utility developed originally to dedupe list of browsers visited
 ;;; for chat/home screens that list those.
+;;; The following tests stress the de-duper and incidentally the
+;;; browser/get-current-url mechanism by varying index of the
+;;; current url, by having a dup fall in the middle, and by
+;;; having a null test in which an entry is unduplicated.
 
 (def ^:private browsers
-  {"aaa-1"  {:br-id         "aaa-1"
-             :history       ["aaa.com" "https://aaa.com"]
-             :history-index 1
-             :timestamp     42}
-   "aaa-2"  {:br-id         "aaa-2"
-             :history       ["https://aaa.com"]
-             :history-index 0
-             :timestamp     0}
-   "bbb-1"  {:br-id         "bbb-1"
-             :history       ["bbb.com" "https://bbb.com"]
-             :history-index 0
-             :timestamp     42}
-   "bbb-2"  {:br-id         "bbb-2"
-             :history       ["https://bbb.com" "bbb.com"]
-             :history-index 1
-             :timestamp     99}
-   "uniq-0" {:br-id         "uniq-0"
-             :history       ["https://uniq.com" "uniq.com"]
-             :history-index 0
-             :timestamp     42}})
+  {"aaa-1"   {:br-id         "aaa-1"
+              :history       ["aaa.com" "https://aaa.com"]
+              :history-index 1
+              :timing        [:latest]
+              :timestamp     42}
+   "aaa-2"   {:br-id         "aaa-2"
+              :history       ["https://aaa.com"]
+              :history-index 0
+              :timing        [:earliest]
+              :timestamp     0}
+
+   "bbb-1"   {:br-id         "bbb-1"
+              :history       ["bbb.com" "https://bbb.com"]
+              :history-index 0
+              :timing        [:earliest]
+              :timestamp     42}
+
+   "bbb-mid" {:br-id         "bbb-mid"
+              :history       ["http://bbb.com" "bbb.com" "https://bbb.com"]
+              :history-index 1
+              :timing        [:middle]
+              :timestamp     67}
+   "bbb-2"   {:br-id         "bbb-2"
+              :history       ["https://bbb.com" "bbb.com"]
+              :history-index 1
+              :timing        [:latest]
+              :timestamp     99}
+
+   ;; unduplicated entry as edge case
+   "uniq-0"  {:br-id         "uniq-0"
+              :history       ["https://uniq.com" "uniq.com"]
+              :history-index 0
+              :timing        [:earliest :latest]
+              :timestamp     42}})
 
 (deftest distinct-by-group-test
   ;; deduplicate map given key to identify dups and a key to identify
-  ;; a property to be maximized when selecting amongst the dups.
-  (is (= {"aaa-1"  {:br-id         "aaa-1"
-                    :history       ["aaa.com" "https://aaa.com"]
-                    :history-index 1
-                    :timestamp     42}
-          "bbb-2"  {:br-id         "bbb-2"
-                    :history       ["https://bbb.com" "bbb.com"]
-                    :history-index 1
-                    :timestamp     99}
-          "uniq-0" {:br-id         "uniq-0"
-                    :history       ["https://uniq.com" "uniq.com"]
-                    :history-index 0
-                    :timestamp     42}}
-         (utils/distinct-by-group browsers browser/get-current-url :timestamp)))
-  ;; test minimizing the property
-  (is (= {"aaa-2"  {:br-id         "aaa-2"
-                    :history       ["https://aaa.com"]
-                    :history-index 0
-                    :timestamp     0}
-          "bbb-1"  {:br-id         "bbb-1"
-                    :history       ["bbb.com" "https://bbb.com"]
-                    :history-index 0
-                    :timestamp     42}
-          "uniq-0" {:br-id         "uniq-0"
-                    :history       ["https://uniq.com" "uniq.com"]
-                    :history-index 0
-                    :timestamp     42}}
-         (utils/distinct-by-group browsers browser/get-current-url :timestamp <))))
+  ;; a property to be maximized when selecting amongst the dups"
+  (let [result (utils/distinct-by-group browsers browser/get-current-url :timestamp)]
+    (is (every? #(some #{:latest} %)
+                (map (comp :timing second) result)))
+
+    ;; sanity check just one for complete reproduction...
+    (is (and (seq (get browsers "aaa-1"))
+             (= (get browsers "aaa-1")
+                (get result "aaa-1"))))
+
+    ;; check edge case of unduplicated entry
+    (is (and (seq (get browsers "uniq-0"))
+             (= (get browsers "uniq-0")
+                (get result "uniq-0")))))
+
+  ;; same as above except minimizing
+  (let [result (utils/distinct-by-group browsers browser/get-current-url :timestamp <)]
+    (is (every? #(some #{:earliest} %)
+                (map (comp :timing second) result)))
+    (is (and (seq (get browsers "aaa-2"))
+             (= (get browsers "aaa-2")
+                (get result "aaa-2"))))
+    (is (and (seq (get browsers "uniq-0"))
+             (= (get browsers "uniq-0")
+                (get result "uniq-0"))))))
