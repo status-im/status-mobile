@@ -3,8 +3,6 @@
 (def config                 (js/require "react-native-config"))
 (def fs                     (js/require "react-native-fs"))
 (def http-bridge            (js/require "react-native-http-bridge"))
-;; i18n is now exported in default object of the module
-;; https://github.com/AlexanderZaytsev/react-native-i18n/blob/master/index.js
 (def keychain               (js/require "react-native-keychain"))
 (def qr-code                (js/require "react-native-qrcode"))
 (def react-native           (js/require "react-native"))
