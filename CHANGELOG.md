@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - iPad support. Status is now displayed at full native resolution on iPad's
 - Persist browser history
+- Refresh button in browser
+- Fixed browser links opening in new tabs
+- Fixed keyboard obstructing webview
 - Added more dapps
 
 ### Fixed
