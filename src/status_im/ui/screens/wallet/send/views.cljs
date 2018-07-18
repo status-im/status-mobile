@@ -76,7 +76,7 @@
 (defn- sign-enabled? [amount-error to amount modal?]
   (and
    (nil? amount-error)
-   (or modal? (not (nil? to)) (not= to "")) ;;NOTE(goranjovic) - contract creation will have empty `to`
+   (or modal? (not (empty? to))) ;;NOTE(goranjovic) - contract creation will have empty `to`
    (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
