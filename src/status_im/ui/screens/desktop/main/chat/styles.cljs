@@ -19,6 +19,9 @@
     {padding-horizontal 24
      :padding-top       padding-top-value}))
 
+(def message-row-column
+  {:flex-direction :column})
+
 (defn message-timestamp-placeholder []
   {:color               colors/transparent
    :font-size           10
@@ -48,12 +51,19 @@
    :margin-horizontal 24
    :padding-vertical  15})
 
+(def chat-box-inner
+  {:flex-direction  :row
+   :flex            1})
+
 (def chat-text-input
   {:flex 1})
 
 (def messages-view
   {:flex             1
    :background-color colors/gray-lighter})
+
+(def messages-scrollview-inner
+  {:padding-vertical 46})
 
 (def photo-style
   {:borderRadius 20
@@ -83,6 +93,13 @@
 
 (def message-text
   {:font-size 14})
+
+(def message-wrapper
+  {:flex-direction  :row
+   :flex-wrap       :wrap})
+
+(def not-first-in-group-wrapper
+  {:flex-direction :row})
 
 (def send-icon
   {:margin-left      16

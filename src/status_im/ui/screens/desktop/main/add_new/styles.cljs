@@ -55,6 +55,9 @@
    :align-items    :center
    :margin-bottom  16})
 
+(def suggested-contacts
+  {:margin-top 12})
+
 (def suggested-contact-image
   {:width         46
    :height        46
