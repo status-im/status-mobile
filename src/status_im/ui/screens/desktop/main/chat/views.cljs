@@ -56,7 +56,9 @@
        [react/text {:style styles/author} name]])))
 
 (views/defview member-photo [from]
-  [react/view
+  [react/text {:on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
+        (i18n/label :t/view-profile)]
+#_[react/view
    [react/image {:source {:uri (identicon/identicon from)}
                  :style  styles/photo-style}]])
 
