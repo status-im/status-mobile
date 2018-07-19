@@ -84,7 +84,7 @@
   (into {} (filter network-enabled?
                    (merge testnet-networks mainnet-networks))))
 
-(def default-wnodes
+(def default-wnodes-without-custom
   {:testnet {"mailserver-a" {:id      "mailserver-a" ;mail-01.do-ams3.eth.beta
                              :name    "Status mailserver A"
                              :password inbox-password
@@ -141,6 +141,9 @@
                              :name    "Status mailserver B"
                              :password inbox-password
                              :address "enode://70a2004e78399075f566033c42e9a0b1d43c683d4742755bb5457d03191be66a1b48c2b4fb259696839f28646a5828a1958b900860e27897f984ad0fc8482404@206.189.56.154:30504"}}})
+
+(def default-wnodes
+  (assoc default-wnodes-without-custom :custom (:testnet default-wnodes-without-custom)))
 
 (defn default-account-settings []
   {:wallet {:visible-tokens {:testnet #{:STT :ATT}

@@ -424,7 +424,8 @@
                    {:name     "Modest Test Token"
                     :symbol   :MDS
                     :decimals 18
-                    :address  "0x57cc9b83730e6d22b224e9dc3e370967b44a2de0"}])})
+                    :address  "0x57cc9b83730e6d22b224e9dc3e370967b44a2de0"}])
+   :custom []})
 
 (defn tokens-for [chain]
   (get all chain))

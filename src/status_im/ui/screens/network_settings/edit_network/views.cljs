@@ -11,13 +11,14 @@
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.network-settings.edit-network.styles :as styles]
-   [status-im.ui.components.checkbox.view :as checkbox]))
+   [clojure.string :as string]))
 
 (defn- render-network-type [manage-network type]
   (let [name (case type
                :mainnet (i18n/label :t/mainnet-network)
                :testnet (i18n/label :t/ropsten-network)
-               :rinkeby (i18n/label :t/rinkeby-network))]
+               :rinkeby (i18n/label :t/rinkeby-network)
+               :custom (i18n/label :t/custom))]
     [list/list-item-with-checkbox
      {:checked?        (= (get-in manage-network [:chain :value]) type)
       :on-value-change #(re-frame/dispatch [:network-set-input :chain type])
@@ -28,35 +29,42 @@
 (views/defview edit-network []
   (views/letsubs [manage-network [:get-manage-network]
                   is-valid?      [:manage-network-valid?]]
-    [react/view components.styles/flex
-     [status-bar/status-bar]
-     [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar (i18n/label :t/add-network)]
-      [react/scroll-view
-       [react/view styles/edit-network-view
-        [text-input/text-input-with-label
-         {:label           (i18n/label :t/name)
-          :placeholder     (i18n/label :t/specify-name)
-          :container       styles/input-container
-          :default-value   (get-in manage-network [:name :value])
-          :on-change-text  #(re-frame/dispatch [:network-set-input :name %])
-          :auto-focus      true}]
-        [text-input/text-input-with-label
-         {:label           (i18n/label :t/rpc-url)
-          :placeholder     (i18n/label :t/specify-rpc-url)
-          :container       styles/input-container
-          :default-value   (get-in manage-network [:url :value])
-          :on-change-text  #(re-frame/dispatch [:network-set-input :url %])}]
-        [react/i18n-text {:key :network-chain}]
-        [react/view styles/network-type
-         [list/flat-list {:data      [:mainnet :testnet :rinkeby]
-                          :key-fn    (fn [_ i] (str i))
-                          :separator list/base-separator
-                          :render-fn #(render-network-type manage-network %)}]]]]
-      [react/view styles/bottom-container
-       [react/view components.styles/flex]
-       [components.common/bottom-button
-        {:forward?  true
-         :label     (i18n/label :t/save)
-         :disabled? (not is-valid?)
-         :on-press  #(re-frame/dispatch [:save-new-network])}]]]]))
+    (let [custom? (= (get-in manage-network [:chain :value]) :custom)]
+      [react/view components.styles/flex
+       [status-bar/status-bar]
+       [react/keyboard-avoiding-view components.styles/flex
+        [toolbar/simple-toolbar (i18n/label :t/add-network)]
+        [react/scroll-view
+         [react/view styles/edit-network-view
+          [text-input/text-input-with-label
+           {:label          (i18n/label :t/name)
+            :placeholder    (i18n/label :t/specify-name)
+            :container      styles/input-container
+            :default-value  (get-in manage-network [:name :value])
+            :on-change-text #(re-frame/dispatch [:network-set-input :name %])
+            :auto-focus     true}]
+          [text-input/text-input-with-label
+           {:label          (i18n/label :t/rpc-url)
+            :placeholder    (i18n/label :t/specify-rpc-url)
+            :container      styles/input-container
+            :default-value  (get-in manage-network [:url :value])
+            :on-change-text #(re-frame/dispatch [:network-set-input :url (string/lower-case %)])}]
+          [react/i18n-text {:key :network-chain}]
+          [react/view styles/network-type
+           [list/flat-list {:data      [:mainnet :testnet :rinkeby :custom]
+                            :key-fn    (fn [_ i] (str i))
+                            :separator list/base-separator
+                            :render-fn #(render-network-type manage-network %)}]]
+          (when custom?
+            [text-input/text-input-with-label
+             {:label          (i18n/label :t/network-id)
+              :container      styles/input-container
+              :placeholder    (i18n/label :t/specify-network-id)
+              :on-change-text #(re-frame/dispatch [:network-set-input :network-id %])}])]]
+        [react/view styles/bottom-container
+         [react/view components.styles/flex]
+         [components.common/bottom-button
+          {:forward?  true
+           :label     (i18n/label :t/save)
+           :disabled? (not is-valid?)
+           :on-press  #(re-frame/dispatch [:save-new-network])}]]]])))

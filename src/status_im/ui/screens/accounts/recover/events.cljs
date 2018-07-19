@@ -59,8 +59,9 @@
 (handlers/register-handler-fx
  :account-recovered-navigate
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:accounts/recover :processing] false)
-    :dispatch [:navigate-to-clean :home]}))
+   {:db         (assoc-in db [:accounts/recover :processing] false)
+    :dispatch-n [[:navigate-to-clean :home]
+                 [:request-notifications]]}))
 
 (handlers/register-handler-fx
  :recover-account

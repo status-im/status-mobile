@@ -377,19 +377,16 @@
                          [:update-wallet]
                          [:update-transactions]
                          (when platform/mobile? [:get-fcm-token])
-                         [:update-sign-in-time]
-                         [:show-mainnet-is-default-alert]]
+                         [:update-sign-in-time]]
                   (seq events-after) (into events-after))}))
 
 (handlers/register-handler-fx
  :initialize-geth
  (fn [{db :db} _]
-   (let [default-networks (:networks/networks db)
-         default-network  (:network db)
-         {:keys [network networks]} (:account/account db)
-         network-config   (or (get-in networks [network :config])
-                              (get-in default-networks [default-network :config]))]
-     {:initialize-geth-fx network-config})))
+   (when-not (:status-node-started? db)
+     (let [default-networks (:networks/networks db)
+           default-network  (:network db)]
+       {:initialize-geth-fx (get-in default-networks [default-network :config])}))))
 
 (handlers/register-handler-fx
  :fetch-web3-node-version-callback

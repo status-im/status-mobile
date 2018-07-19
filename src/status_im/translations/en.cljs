@@ -30,6 +30,7 @@
    :on                                   "On"
    :off                                  "Off"
    :mailserver-connection-error          "Could not connect to mailserver"
+   :custom                               "Custom"
 
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
@@ -677,6 +678,8 @@
    :mainnet-network                      "Main network"
    :ropsten-network                      "Ropsten test network"
    :rinkeby-network                      "Rinkeby test network"
+   :network-id                           "Network ID"
+   :specify-network-id                   "Specify network id"
 
    ;; invalid-key
 

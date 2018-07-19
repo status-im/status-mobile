@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - iPad support. Status is now displayed at full native resolution on iPad's
+- Deep links support
 - Persist browser history
 - Added refresh button
 - Added more dapps
+- Allow for setting custom network id
 
 ### Fixed
 - Fixed Sign in: Cannot paste text within password field [#3931]
@@ -17,8 +19,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed parsing of messages containing multiple dots (elipsis)
 - Fixed Webview: Screen cut off when using ERC dEX DApp [#3131]
 - Fixed links targeting new tabs [#4413]
+- Fixed blinking token amounts in transaction history
+- Fixed/corrected fiat values in /send and /request messages
+- Automatically converts recovery phrase to lowercase during account recovery
+- Fixed unread messages counter
+- Fixed incoming messages timestamp
 - Fixed gas validation: Showing message when total amount being sent plus the max gas cost exceed the balance [#3441]
- 
+
+### Changed
+- Removed Mixpanel integration
+
 ## [0.9.22] - 2018-07-09
 ### Added
 - Added Farsi public #status channel

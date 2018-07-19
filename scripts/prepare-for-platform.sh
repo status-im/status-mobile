@@ -32,10 +32,17 @@ ln -sf  ${PLATFORM_FOLDER}/package.json package.json
 echo "Creating link: package-lock.json -> ${PLATFORM_FOLDER}/package-lock.json"
 ln -sf  ${PLATFORM_FOLDER}/package-lock.json package-lock.json
 
-# echo "Creating link: node_modules/ -> ${PLATFORM_FOLDER}/node_modules "
-# ln -snf  "${PLATFORM_FOLDER}/node_modules" node_modules
-
 echo "Creating link: VERSION -> ${PLATFORM_FOLDER}/VERSION"
 ln -sf  ${PLATFORM_FOLDER}/VERSION VERSION
+
+if [ "${PLATFORM}" == "mobile" ]
+  then
+    echo -e "Removing .re-natal symlink from root"
+    rm -rf .re-natal
+  else
+    echo "Creating link: .re-natal -> ${PLATFORM_FOLDER}/.re-natal"
+    ln -sf  ${PLATFORM_FOLDER}/.re-natal .re-natal
+fi
+
 
 echo -e "${GREEN}Finished!${NC}"
