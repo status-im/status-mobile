@@ -62,6 +62,10 @@
   (when status
     (call-module #(.startNode status config))))
 
+(defn create-x3dh-bundle [callback]
+  (when status
+    (call-module #(.createX3DHBundle status callback))))
+
 (defonce account-creation? (atom false))
 
 (defn create-account [password on-result]

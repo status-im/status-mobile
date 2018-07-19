@@ -12,6 +12,9 @@
 (defn create-account [password callback]
   (native-module/create-account password callback))
 
+(defn create-x3dh-bundle [callback]
+  (module-interface/-create-x3dh-bundle rns-module callback))
+
 (defn recover-account [passphrase password callback]
   (native-module/recover-account passphrase password callback))
 
