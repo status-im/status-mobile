@@ -67,6 +67,6 @@
     "string_decoder": "0.10.31",
     "text-encoding": "^0.6.4",
     "url": "0.10.3",
-    "web3": "https://github.com/status-im/web3.js.git#feature/shhext"
+    "web3": "git+https://github.com/status-im/web3.js.git#feature/chat-api"
   }
 }

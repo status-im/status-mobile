@@ -4,7 +4,7 @@
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.transport.message.core :as transport.message]
             [status-im.transport.message.v1.protocol :as protocol]
-            [status-im.transport.message.v1.group-chat :as transport.group-chat]
+            [status-im.transport.message.v1.core :as transport]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.navigation :as navigation]
@@ -106,7 +106,7 @@
   [{:keys [db] :as cofx} chat-id]
   ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
   (if (group-chat? cofx chat-id)
-    (transport.message/send (transport.group-chat/GroupLeave.) chat-id cofx)
+    (transport.message/send (transport/GroupLeave.) chat-id cofx)
     (transport.utils/unsubscribe-from-chat cofx chat-id)))
 
 (fx/defn deactivate-chat
@@ -133,7 +133,7 @@
 
 (fx/defn send-messages-seen
   [{:keys [db] :as cofx} chat-id message-ids]
-  (when (not (get-in db [:chats chat-id :public?]))
+  (when (not (get-in db [:chats chat-id :group-chat]))
     (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
 ;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future

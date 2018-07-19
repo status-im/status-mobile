@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.desktop.main.add-new.views
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.utils.config :as config]
             [status-im.ui.screens.add-new.new-public-chat.view :as public-chat]
             [status-im.ui.components.list.views :as list]
             [clojure.string :as string]
@@ -12,6 +13,19 @@
             [taoensso.timbre :as log]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]))
+
+(def group-chat-section
+  ^{:key "groupchat"}
+  [react/view {:style styles/new-contact-title}
+   [react/text {:style styles/new-contact-title-text
+                :font  :medium}
+    (i18n/label :new-group-chat)]
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-contact-toggle-list])}
+    [react/view
+     {:style (styles/add-contact-button nil)}
+     [react/text
+      {:style (styles/add-contact-button-text nil)}
+      (i18n/label :start-chat)]]]])
 
 (views/defview new-contact []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
@@ -60,6 +74,7 @@
              [react/image {:style  styles/suggested-contact-image
                            :source {:uri (:photo-path c)}}]
              [react/text {:style styles/new-contact-subtitle} (:name c)]]]))]]
+      (when config/group-chats-enabled? group-chat-section)
       ^{:key "publicchat"}
       [react/view {:style styles/new-contact-title}
        [react/text {:style styles/new-contact-title-text
