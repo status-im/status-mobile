@@ -59,3 +59,7 @@
 
 (defn is24Hour []
   (native-module/is24Hour))
+
+(def verify-group-membership-signatures native-module/verify-group-membership-signatures)
+
+(def sign-group-membership native-module/sign-group-membership)

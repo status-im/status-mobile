@@ -30,7 +30,7 @@
   [toolbar/toolbar {}
    nil
    [toolbar/content-title ""]
-   [toolbar/default-done {:handler   #(re-frame/dispatch [:group-chat-profile/save-profile])
+   [toolbar/default-done {:handler   #(re-frame/dispatch [:group-chats.ui/save-pressed])
                           :icon      :icons/ok
                           :icon-opts {:color               colors/blue
                                       :accessibility-label :done-button}}]])
@@ -47,7 +47,7 @@
      :accessibility-label :clear-history-button}
     {:label               (i18n/label :t/delete-chat)
      :icon                :icons/arrow-left
-     :action              #(re-frame/dispatch [:group-chat.ui/leave-group-pressed chat-id])
+     :action              #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])
      :accessibility-label :delete-chat-button}]))
 
 (defn contact-actions [contact]
@@ -99,7 +99,7 @@
           {:contact              shown-chat
            :editing?             editing?
            :allow-icon-change?   false
-           :on-change-text-event :set-group-chat-name}]
+           :on-change-text-event :group-chats.ui/name-changed}]
          [list/action-list (actions admin? (:chat-id current-chat))
           {:container-style        styles/action-container
            :action-style           styles/action

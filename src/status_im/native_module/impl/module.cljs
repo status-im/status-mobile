@@ -134,6 +134,14 @@
      (fn [UUID]
        (callback (string/upper-case UUID))))))
 
+(defn verify-group-membership-signatures [signature-pairs callback]
+  (when status
+    (call-module #(.verifyGroupMembershipSignatures status signature-pairs callback))))
+
+(defn sign-group-membership [content callback]
+  (when status
+    (call-module #(.signGroupMembership status content callback))))
+
 (defn is24Hour []
   (when status
     (.-is24Hour status)))

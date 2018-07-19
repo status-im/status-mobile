@@ -254,6 +254,30 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
 }
 
 ////////////////////////////////////////////////////////////////////
+#pragma mark - SignGroupMembership
+//////////////////////////////////////////////////////////////////// signGroupMembership
+RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"SignGroupMembership() method called");
+#endif
+    char * result = SignGroupMembership((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - VerifyGroupMembershipSignatures
+//////////////////////////////////////////////////////////////////// verifyGroupMembershipSignatures
+RCT_EXPORT_METHOD(verifyGroupMembershipSignatures:(NSString *)content
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"VerifyGroupMembershipSignatures() method called");
+#endif
+    char * result = VerifyGroupMembershipSignatures((char *) [content UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+////////////////////////////////////////////////////////////////////
 #pragma mark - only android methods
 ////////////////////////////////////////////////////////////////////
 RCT_EXPORT_METHOD(setAdjustResize) {

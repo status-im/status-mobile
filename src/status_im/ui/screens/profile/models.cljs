@@ -73,10 +73,6 @@
 (defn start-editing-group-chat-profile [{:keys [db]}]
   {:db (assoc db :group-chat-profile/editing? true)})
 
-(defn save-group-chat-profile [{:keys [db]}]
-  (-> {:db db}
-      (update :db dissoc :group-chat-profile/editing?)))
-
 (defn enter-two-random-words [{:keys [db]}]
   (let [{:keys [mnemonic]} (:account/account db)
         shuffled-mnemonic (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))]

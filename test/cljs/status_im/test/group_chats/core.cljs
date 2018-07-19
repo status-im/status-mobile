@@ -3,13 +3,15 @@
             [status-im.utils.config :as config]
             [status-im.group-chats.core :as group-chats]))
 
-(def chat-id "0xba")
+(def random-id "685a9351-417e-587c-8bc1-191ac2a57ef8")
 (def chat-name "chat-name")
 
 (def member-1 "member-1")
 (def member-2 "member-2")
 
 (def admin member-1)
+
+(def chat-id (str random-id admin))
 
 (def invitation-m1 {:id "m-1"
                     :user member-1})
@@ -42,6 +44,18 @@
         (testing "it sets the right version"
           (is (= 1
                  (:membership-version actual))))))
+    (testing "a chat with the wrong id"
+      (let [bad-chat-id (str random-id member-2)
+            actual      (->
+                         (group-chats/handle-membership-update
+                          {:db {}}
+                          (assoc initial-message :chat-id bad-chat-id)
+                          admin)
+                         :db
+                         :chats
+                         (get bad-chat-id))]
+        (testing "it does not create a chat"
+          (is (not actual)))))
     (testing "an already existing chat"
       (let [cofx {:db {:chats {chat-id {:contacts [invitation-m1
                                                    invitation-m2]
@@ -51,7 +65,7 @@
           (testing "the message is an older version"
             (let [actual (group-chats/handle-membership-update cofx initial-message admin)]
               (testing "it noops"
-                (is (not actual)))))
+                (is (= actual cofx)))))
           (testing "the message is a more recent version"
             (testing "it sets the right participants")))
         (testing "a leave from a member is received"

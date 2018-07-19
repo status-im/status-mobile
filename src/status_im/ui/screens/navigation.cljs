@@ -12,12 +12,6 @@
       (update :navigation-stack conj view-id)
       (assoc :view-id view-id)))
 
-(defn- replace-top-element [stack view-id]
-  (let [stack' (if (> 2 (count stack))
-                 (list :home)
-                 (pop stack))]
-    (conj stack' view-id)))
-
 ;; public fns
 
 (fx/defn navigate-to-clean

@@ -193,6 +193,25 @@ void RCTStatus::signMessage(QString rpcParams, double callbackId) {
         }, rpcParams, callbackId);
 }
 
+void RCTStatus::signGroupMembership(QString content, double callbackId) {
+    Q_D(RCTStatus);
+    qDebug() << "call of RCTStatus::signGroupMembership with param callbackId: " << callbackId;
+    QtConcurrent::run([&](QString content, double callbackId) {
+            const char* result = SignGroupMembership(content.toUtf8().data());
+            qDebug() << "RCTStatus::signGroupMembership SignGroupMembership result: " << statusGoResultError(result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, content, callbackId);
+}
+
+void RCTStatus::verifyGroupMembershipSignatures(QString signatures, double callbackId) {
+    Q_D(RCTStatus);
+    qDebug() << "call of RCTStatus::verifyGroupMembershipSignatures with param callbackId: " << callbackId;
+    QtConcurrent::run([&](QString signatures, double callbackId) {
+            const char* result = VerifyGroupMembershipSignatures(signatures.toUtf8().data());
+            qDebug() << "RCTStatus::verifyGroupMembershipSignatures VerifyGroupMembershipSignatures result: " << statusGoResultError(result);
+            d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+        }, signatures, callbackId);
+}
 
 void RCTStatus::setAdjustResize() {
 }

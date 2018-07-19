@@ -84,3 +84,5 @@
                         new-content {:text content}]
                     (aset message "content" (pr-str new-content)))))))
 
+(defn v13 [old-realm new-realm]
+  (log/debug "migrating v13 account database"))

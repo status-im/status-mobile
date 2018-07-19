@@ -54,6 +54,7 @@
 
 (defn- get-base-node-config [config]
   (assoc config
+         :BackupDisabledDataDir (utils.platform/no-backup-directory)
          :Name "StatusIM"))
 
 (defn- pick-nodes
@@ -94,7 +95,6 @@
                                      :MinimumPoW 0.001
                                      :EnableNTPSync true}
              :RequireTopics         (get-topics network)
-             :BackupDisabledDataDir (utils.platform/no-backup-directory)
              :InstallationID        installation-id
              :PFSEnabled            (or config/pfs-encryption-enabled?
                                         config/group-chats-enabled?))

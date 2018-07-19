@@ -12,4 +12,4 @@
 (extend-type transport/GroupLeave
   message/StatusMessage
   (send [this chat-id cofx]
-    (group-chats/handle-group-leave this chat-id cofx)))
+    (group-chats/send-group-leave this chat-id cofx)))

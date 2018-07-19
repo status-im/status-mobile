@@ -17,6 +17,7 @@
             [status-im.chat.commands.input :as commands.input]
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
+            [status-im.group-chats.core :as group-chats]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
@@ -505,11 +506,6 @@
    (chat/start-public-chat cofx topic modal?)))
 
 (handlers/register-handler-fx
- :chat.ui/start-group-chat
- (fn [cofx [_ group-name]]
-   (chat.group/start-group-chat cofx group-name)))
-
-(handlers/register-handler-fx
  :chat.ui/remove-chat
  (fn [cofx [_ chat-id]]
    (chat/remove-chat cofx chat-id)))
@@ -844,3 +840,32 @@
  :browser.ui/open-modal-chat-button-pressed
  (fn [cofx [_ host]]
    (browser/open-chat-from-browser cofx host)))
+
+;; group-chats module
+
+(handlers/register-handler-fx
+ :group-chats.ui/create-pressed
+ [(re-frame/inject-cofx :random-guid-generator)]
+ (fn [cofx [_ chat-name]]
+   (group-chats/create cofx chat-name)))
+
+(handlers/register-handler-fx
+ :group-chats.ui/name-changed
+ (fn [cofx [_ chat-name]]
+   (group-chats/handle-name-changed cofx chat-name)))
+
+(handlers/register-handler-fx
+ :group-chats.ui/save-pressed
+ (fn [cofx _]
+   (group-chats/save cofx)))
+
+(handlers/register-handler-fx
+ :group-chats.callback/sign-success
+ [(re-frame/inject-cofx :random-guid-generator)]
+ (fn [cofx [_ group-update]]
+   (group-chats/handle-sign-success cofx group-update)))
+
+(handlers/register-handler-fx
+ :group-chats.callback/verify-signature-success
+ (fn [cofx [_ group-update sender-signature]]
+   (group-chats/handle-membership-update cofx group-update sender-signature)))

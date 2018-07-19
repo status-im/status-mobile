@@ -693,6 +693,47 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     return android.text.format.DateFormat.is24HourFormat(this.reactContext.getApplicationContext());
   }
 
+  @ReactMethod
+  public void verifyGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
+    Log.d(TAG, "verifyGroupMembershipSignatures");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String result = Statusgo.VerifyGroupMembershipSignatures(signaturePairs);
+
+        callback.invoke(result);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
+
+  @ReactMethod
+  public void signGroupMembership(final String content, final Callback callback) {
+    Log.d(TAG, "signGroupMembership");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String result = Statusgo.SignGroupMembership(content);
+
+        callback.invoke(result);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
   @Override
   public @Nullable
   Map<String, Object> getConstants() {

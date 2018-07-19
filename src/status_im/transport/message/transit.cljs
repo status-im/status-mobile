@@ -65,8 +65,8 @@
 (deftype GroupMembershipUpdateHandler []
   Object
   (tag [this v] "g5")
-  (rep [this {:keys [chat-id chat-name admin participants signature message]}]
-    #js [chat-id chat-name admin participants signature message]))
+  (rep [this {:keys [chat-id chat-name admin participants leaves version signature message]}]
+    #js [chat-id chat-name admin participants leaves version signature message]))
 
 (def writer (transit/writer :json
                             {:handlers
@@ -110,8 +110,8 @@
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]
                                      (v1.contact/ContactUpdate. name profile-image address fcm-token))
-                              "g5" (fn [[chat-id chat-name admin participants signature message]]
-                                     (v1/GroupMembershipUpdate. chat-id chat-name admin participants nil signature message))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
+                              "g5" (fn [[chat-id chat-name admin participants leaves version signature message]]
+                                     (v1/GroupMembershipUpdate. chat-id chat-name admin participants leaves version signature message))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

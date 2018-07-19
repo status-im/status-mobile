@@ -10,7 +10,7 @@
 (extend-type transport.protocol/GroupMembershipUpdate
   message/StatusMessage
   (receive [this _ signature _ cofx]
-    (group-chats/handle-membership-update cofx this signature)))
+    (group-chats/handle-membership-update-received cofx this signature)))
 
 (extend-type transport.protocol/GroupLeave
   message/StatusMessage

@@ -2,7 +2,7 @@
   (:require [status-im.transport.message.core :as message]))
 
 (defrecord GroupMembershipUpdate
-           [chat-id chat-name admin participants leaves signature message]
+           [chat-id chat-name admin participants leaves version signature message]
   message/StatusMessage)
 
 (defrecord GroupLeave

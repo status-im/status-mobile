@@ -213,7 +213,7 @@
   (fx/merge cofx
             (add-public-chat topic)
             (navigate-to-chat topic {:modal?              modal?
-                                     :navigation-replace? true})
+                                     :navigation-reset? true})
             (public-chat/join-public-chat topic)))
 
 (fx/defn disable-chat-cooldown

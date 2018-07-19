@@ -9,7 +9,7 @@
             [status-im.react-native.resources :as resources]))
 
 (defn default-chat-icon [name styles]
-  (when name
+  (when-not (string/blank? name)
     [react/view (:default-chat-icon styles)
      [react/text {:style (:default-chat-icon-text styles)}
       (string/capitalize (first name))]]))

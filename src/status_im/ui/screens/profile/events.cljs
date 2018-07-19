@@ -50,11 +50,6 @@
    (profile.models/start-editing-group-chat-profile cofx)))
 
 (handlers/register-handler-fx
- :group-chat-profile/save-profile
- (fn [cofx _]
-   (profile.models/save-group-chat-profile cofx)))
-
-(handlers/register-handler-fx
  :my-profile/enter-two-random-words
  (fn [cofx _]
    (profile.models/enter-two-random-words cofx)))
