@@ -3,7 +3,12 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 
-(def tabs-height (if platform/ios? 52 56))
+(def tabs-height
+  (cond
+    platform/android? 56
+    platform/ios? 52
+    platform/desktop? 68))
+
 (def tab-height (dec tabs-height))
 
 (def tabs-container
