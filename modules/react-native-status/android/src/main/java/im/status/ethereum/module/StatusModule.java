@@ -419,6 +419,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void createX3DHBundle(final Callback callback) {
+        Log.d(TAG, "createBundle");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.CreateX3DHBundle();
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void notifyUsers(final String message, final String payloadJSON, final String tokensJSON, final Callback callback) {
         Log.d(TAG, "notifyUsers");
         if (!checkAvailability()) {
