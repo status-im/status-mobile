@@ -80,6 +80,7 @@
    :active-unknown                       "Unknown"
    :available                            "Available"
    :no-messages                          "No messages"
+   :no-messages-yet                      "No messages yet"
    :suggestions-requests                 "Requests"
    :suggestions-commands                 "Commands"
    :faucet-success                       "Faucet request has been received"
@@ -186,6 +187,7 @@
 
    ;;sharing
    :sharing-copy-to-clipboard            "Copy to clipboard"
+   :sharing-copied-to-clipboard          "Copied to clipboard"
    :sharing-share                        "Share..."
    :sharing-cancel                       "Cancel"
 
@@ -219,6 +221,7 @@
    ;;chats
    :new                                  "New"
    :new-chat                             "New chat"
+   :start-chat                           "Start chat"
    :start-new-chat                       "Start new chat"
    :start-group-chat                     "Start group chat"
    :invite-friends                       "Invite friends"
@@ -231,6 +234,7 @@
    :delete-group-chat-confirmation       "Are you sure you want to delete this group chat?"
    :new-group-chat                       "New group chat"
    :new-public-group-chat                "Join public chat"
+   :selected-for-you                     "Selected for you"
    :public-chat                          "Public chat"
    :edit-chats                           "Edit chats"
    :search-chats                         "Search chats"
@@ -280,8 +284,10 @@
    :search-contacts                      "Search contacts"
    :contacts-group-new-chat              "Start new chat"
    :choose-from-contacts                 "Choose from contacts"
+   :or-choose-a-contact                  "Or choose a contact"
    :no-contacts                          "No contacts yet"
    :show-qr                              "Show QR code"
+   :copy-qr                              "Copy code"
    :qr-code-public-key-hint              "Share this code to \nstart chatting"
    :enter-address                        "Enter address"
    :enter-contact-code                   "Enter contact code"
