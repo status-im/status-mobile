@@ -33,6 +33,7 @@ prepare: ##@prepare Install dependencies and prepare workspace
 	scripts/prepare-for-platform.sh mobile
 	npm install
 
+
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
 	cd ios && pod install && cd ..
