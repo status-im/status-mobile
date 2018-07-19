@@ -161,3 +161,8 @@ group_chat_users['C_USER']['public_key'] = "0x04dcdb5cac266328c41bdb0e33a266544a
                                            "3dba7e295445505ee55ea03ee99cb7d26bee05e6b486a9bdaaf6be73a0b"
 
 common_password = 'qwerty'
+
+bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
+                   "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
+mailserver_address = "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eab" \
+                     "fb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6:status-offline-inbox@35.225.227.79:30504"

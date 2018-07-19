@@ -111,3 +111,22 @@ class TestWallet(SingleDeviceTestCase):
             pytest.fail("'Backup your Recovery phrase' option is not shown on Wallet for an account with funds")
         profile = wallet.get_profile_view()
         profile.backup_recovery_phrase()
+
+    @marks.testrail_id(3777)
+    def test_no_collectibles_to_send_from_wallet(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        sign_in.sign_in()
+        wallet = sign_in.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.options_button.click()
+        wallet.manage_assets_button.click()
+        asset_name = 'CryptoKitties'
+        wallet.asset_checkbox_by_name(asset_name).click()
+        wallet.done_button.click()
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.select_asset_button.click()
+        if send_transaction.asset_by_name(asset_name).is_element_displayed():
+            pytest.fail('Collectibles can be sent from wallet')

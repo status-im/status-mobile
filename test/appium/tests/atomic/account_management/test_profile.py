@@ -1,8 +1,7 @@
 import pytest
 
-from tests import marks, group_chat_users
-from tests import marks, group_chat_users, basic_user
-from tests.base_test_case import SingleDeviceTestCase
+from tests import marks, group_chat_users, basic_user, bootnode_address, mailserver_address
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
@@ -192,3 +191,81 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view.view_profile_button.click()
         for text in basic_user['username'], 'In contacts', 'Send transaction', 'Send message', 'Contact code':
             chat_view.find_full_text(text)
+
+
+@marks.all
+@marks.account
+class TestProfileMultipleDevice(MultipleDeviceTestCase):
+
+    @marks.testrail_id(3708)
+    def test_custom_bootnodes(self):
+        self.create_drivers(2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_1, username_2 = 'user_1', 'user_2'
+        home_1, home_2 = sign_in_1.create_user(username=username_1), sign_in_2.create_user(username=username_2)
+        public_key = home_2.get_public_key()
+        home_2.home_button.click()
+
+        profile_1 = home_1.profile_button.click()
+        profile_1.advanced_button.click()
+        profile_1.bootnodes_button.click()
+        profile_1.plus_button.click()
+        profile_1.specify_name_input.set_value('test')
+        profile_1.bootnode_address_input.set_value(bootnode_address)
+        profile_1.save_button.click()
+        profile_1.enable_bootnodes.click()
+        sign_in_1.sign_in()
+
+        chat_1 = home_1.add_contact(public_key)
+        message = 'test message'
+        chat_1.chat_message_input.send_keys(message)
+        chat_1.send_message_button.click()
+        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
+        chat_2.add_to_contacts.click()
+
+        chat_1.get_back_to_home_view()
+        home_1.profile_button.click()
+        profile_1.advanced_button.click()
+        profile_1.bootnodes_button.click()
+        profile_1.enable_bootnodes.click()
+        sign_in_1.sign_in()
+
+        home_1.get_chat_with_user(username_2).click()
+        message_1 = 'new message'
+        chat_1.chat_message_input.send_keys(message_1)
+        chat_1.send_message_button.click()
+        chat_2.chat_element_by_text(message_1).wait_for_visibility_of_element()
+
+    @marks.testrail_id(3737)
+    def test_switch_mailserver(self):
+        self.create_drivers(2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_1, username_2 = 'user_1', 'user_2'
+        home_1, home_2 = sign_in_1.create_user(username=username_1), sign_in_2.create_user(username=username_2)
+        public_key = home_2.get_public_key()
+        home_2.home_button.click()
+
+        profile_1 = home_1.profile_button.click()
+        profile_1.advanced_button.click()
+        profile_1.mail_server_button.click()
+        profile_1.plus_button.click()
+        server_name = 'test'
+        profile_1.specify_name_input.set_value(server_name)
+        profile_1.mail_server_address_input.set_value(mailserver_address)
+        profile_1.save_button.click()
+        profile_1.mail_server_by_name(server_name).click()
+        profile_1.mail_server_connect_button.click()
+        profile_1.confirm_button.click()
+        sign_in_1.sign_in()
+
+        chat_1 = home_1.add_contact(public_key)
+        message = 'test message'
+        chat_1.chat_message_input.send_keys(message)
+        chat_1.send_message_button.click()
+        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
+        message_1 = 'new message'
+        chat_2.chat_message_input.send_keys(message_1)
+        chat_2.send_message_button.click()
+        chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
