@@ -28,7 +28,13 @@ timeout(90) {
           slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
           checkout scm
-          sh 'git rebase origin/develop'
+
+          try {
+            sh 'git rebase origin/desktop'
+          } catch (e) {
+            sh 'git rebase --abort'
+            throw e
+          }
 
           sh 'rm -rf node_modules'
           sh 'cp .env.jenkins .env'
