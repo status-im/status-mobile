@@ -193,24 +193,32 @@
      [chat-text-input]]))
 
 (views/defview chat-profile []
-  (views/letsubs [maybe-contact    [:get-current-chat-contact]
-                  contact-identity [:get-current-contact-identity]]
-                 (let [{:keys [pending? whisper-identity] :as contact} (or maybe-contact (utils.contacts/whisper-id->new-contact contact-identity))]
+  (views/letsubs [current-chat-contact   [:get-current-chat-contact]
+                  already-stored-contact [:get-current-contact]
+                  contact-identity       [:get-current-contact-identity]]
+                 ;; handle three possible cases
+                 ;; 1. coming from a private chat with all contact information readily available
+                 ;; 2. come from public chat with alrady saved user info in contacts
+                 ;; 3. come from a public chat with nothing but a whisper identity
+                 (let [{:keys [pending? whisper-identity] :as contact} (or current-chat-contact
+                                                                           already-stored-contact
+                                                                           (utils.contacts/whisper-id->new-contact contact-identity))]
                    [react/view {:style styles/chat-profile-body}
                     [profile.views/profile-badge contact]
                     [react/view
-                     (if pending?
+                     ;; pending? will come back as nil for public chat so explicitly check for false here
+                     (if (false? pending?)
+                       [react/view {:style styles/chat-profile-row}
+                        [react/view {:style styles/chat-profile-icon-container
+                                     :accessibility-label :add-contact-link}
+                         [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
+                        [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]]
                        [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
                         [react/view {:style styles/chat-profile-row}
                          [react/view {:style styles/chat-profile-icon-container
                                       :accessibility-label :add-contact-link}
                           [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
-                         [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
-                       [react/view {:style styles/chat-profile-row}
-                        [react/view {:style styles/chat-profile-icon-container
-                                     :accessibility-label :add-contact-link}
-                         [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
-                        [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
+                         [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]])
                      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat whisper-identity])}
                       [react/view {:style styles/chat-profile-row}
                        [react/view {:style styles/chat-profile-icon-container
