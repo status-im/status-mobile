@@ -46,7 +46,8 @@
             [status-im.test.utils.universal-links.core]
             [status-im.test.utils.http]
             [status-im.test.ui.screens.events]
-            [status-im.test.ui.screens.accounts.login.events]))
+            [status-im.test.ui.screens.accounts.login.events]
+            [status-im.test.ui.screens.wallet.db]))
 
 (enable-console-print!)
 
@@ -103,4 +104,5 @@
  'status-im.test.utils.http
  'status-im.test.ui.screens.events
  'status-im.test.ui.screens.accounts.login.events
+ 'status-im.test.ui.screens.wallet.db
  'status-im.test.browser.events)

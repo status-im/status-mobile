@@ -35,7 +35,7 @@
 (handlers/register-handler-fx
  :wallet.request/set-and-validate-amount
  (fn [{:keys [db]} [_ amount symbol decimals]]
-   (let [{:keys [value error]} (wallet-db/parse-amount amount symbol)]
+   (let [{:keys [value error]} (wallet-db/parse-amount amount decimals)]
      {:db (-> db
               (assoc-in [:wallet :request-transaction :amount] (money/formatted->internal value symbol decimals))
               (assoc-in [:wallet :request-transaction :amount-text] amount)

@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.db
-  (:require [clojure.string :as string]
-            [cljs.spec.alpha :as spec]
+  (:require [cljs.spec.alpha :as spec]
             [status-im.i18n :as i18n]
             status-im.ui.screens.wallet.request.db
             status-im.ui.screens.wallet.send.db
@@ -16,9 +15,14 @@
 ;; Placeholder namespace for wallet specs, which are a WIP depending on data
 ;; model we decide on for balances, prices, etc.
 
-(defn- too-precise-amount? [amount decimals]
-  (let [amount-splited (string/split amount #"[.]")]
-    (and (= (count amount-splited) 2) (> (count (last amount-splited)) decimals))))
+
+(defn- too-precise-amount?
+  "Checks if number has any extra digit beyond the allowed number of decimals.
+  It does so by checking the number against its rounded value."
+  [amount decimals]
+  (let [bn (money/bignumber amount)]
+    (not (.eq bn
+              (.round bn decimals)))))
 
 (defn parse-amount [amount decimals]
   (when-not (empty? amount)
