@@ -6,7 +6,8 @@
             [status-im.constants :as constants]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.wallet.transactions :as wallet.transactions]))
 
 ;;;; Handlers
 
@@ -46,7 +47,7 @@
       (let [{:keys [command params]} content
             tx-hash (:tx-hash params)]
         (handlers-macro/merge-fx cofx
-                                 (message-model/update-transactions command tx-hash {:with-delay? true})
+                                 (wallet.transactions/store-chat-transaction-hash tx-hash)
                                  (request-command-message-data message)))
       ;; regular non command message, we can add it right away
       (message-model/receive message cofx))))

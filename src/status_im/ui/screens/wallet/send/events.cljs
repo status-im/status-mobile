@@ -20,7 +20,8 @@
             [status-im.constants :as constants]
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.wallet.transactions :as wallet.transactions]))
 
 ;;;; FX
 
@@ -467,3 +468,10 @@
  (fn [{:keys [db]} [_ chat-id]]
    {:dispatch       [:navigate-back]
     :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))
+
+(handlers/register-handler-fx
+ :sync-wallet-transactions
+ (fn [cofx _]
+   (handlers-macro/merge-fx cofx
+                            (wallet.transactions/load-missing-chat-transactions)
+                            (wallet.transactions/sync))))

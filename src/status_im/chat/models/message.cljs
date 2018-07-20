@@ -433,16 +433,6 @@
                        :show?            true}
                       chat)))
 
-;; dispatch :update-transactions to update confirmations count
-;; to verify tx initiated with /send command is confirmed
-(defn update-transactions [command-name tx-hash {:keys [with-delay?]} _]
-  (when (and tx-hash
-             (= command-name constants/command-send))
-    (cond-> {:dispatch [:update-transactions]}
-      with-delay?
-      (assoc :dispatch-later [{:ms       constants/command-send-status-update-interval-ms
-                               :dispatch [:update-transactions]}]))))
-
 (defn send-command
   [{{:keys [current-public-key chats chain prices] :as db} :db :keys [now] :as cofx} params]
   (let [{{:keys [handler-data to-message command] :as content} :command chat-id :chat-id} params
@@ -456,8 +446,7 @@
                              (upsert-and-send (prepare-command-message current-public-key chat now request content
                                                                        chain currency prices tx-hash))
                              (console-events/console-respond-command-messages command handler-data)
-                             (requests-events/request-answered chat-id to-message)
-                             (update-transactions command-name tx-hash {:with-delay? false}))))
+                             (requests-events/request-answered chat-id to-message))))
 
 (defn invoke-console-command-handler
   [{:keys [db] :as cofx} {:keys [command] :as command-params}]

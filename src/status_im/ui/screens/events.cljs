@@ -378,6 +378,7 @@
                          [:update-wallet]
                          [:update-transactions]
                          (when platform/mobile? [:get-fcm-token])
+                         [:sync-wallet-transactions]
                          [:update-sign-in-time]]
                   (seq events-after) (into events-after))}))
 
@@ -489,10 +490,11 @@
 
 (handlers/register-handler-fx
  :app-state-change
- (fn [{{:keys [network-status mailserver-status]} :db :as cofx} [_ state]]
+ (fn [{:keys [db] :as cofx} [_ state]]
    (let [app-coming-from-background? (= state "active")]
      (handlers-macro/merge-fx cofx
-                              {::app-state-change-fx state}
+                              {::app-state-change-fx state
+                               :db                   (assoc db :app-state state)}
                               (inbox/request-messages app-coming-from-background?)))))
 
 (handlers/register-handler-fx
