@@ -17,7 +17,7 @@
 
 (defn body [style]
   `(let [style#            ~style
-         common#            (dissoc style# :android :ios)
+         common#            (dissoc style# :android :ios :desktop)
          platform#          (keyword status-im.utils.platform/os)
          platform-specific# (get style# platform#)]
      (if platform-specific#

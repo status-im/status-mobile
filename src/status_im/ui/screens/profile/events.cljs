@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.events
   (:require [clojure.spec.alpha :as spec]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.react :refer [show-image-picker]]
+            [status-im.ui.components.react :as react]
             [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
@@ -16,7 +16,7 @@
  :open-image-picker
   ;; the image picker is only used here for now, this effect can be use in other scenarios as well
  (fn [callback-event]
-   (show-image-picker
+   (react/show-image-picker
     (fn [image]
       (let [path (get (js->clj image) "path")
             _ (log/debug path)
@@ -115,3 +115,40 @@
    (handlers-macro/merge-fx cofx
                             {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
                             (accounts.utils/clean-seed-phrase))))
+
+(re-frame/reg-fx
+ :copy-to-clipboard
+ (fn [value]
+   (react/copy-to-clipboard value)))
+
+(handlers/register-handler-fx
+ :copy-to-clipboard
+ (fn [_ [_ value]]
+   {:copy-to-clipboard value}))
+
+(re-frame/reg-fx
+ :show-tooltip
+ (let [tooltips (atom {})]
+   (fn [tooltip-id]
+     (when-let [{:keys [interval-id]} (@tooltips tooltip-id)]
+       (js/clearInterval interval-id))
+     (let [interval-id (js/setInterval
+                        #(let [{:keys [opacity interval-id cnt]} (@tooltips tooltip-id)]
+                           (when opacity
+                             (swap! tooltips assoc-in [tooltip-id :cnt] (inc cnt))
+                             (if (and opacity (>= 0.0 opacity))
+                               (do
+                                 (log/debug "remove interval:" interval-id)
+                                 (js/clearInterval interval-id)
+                                 (re-frame/dispatch [:set-in [:tooltips tooltip-id] nil])
+                                 (swap! tooltips dissoc interval-id))
+                               (do (re-frame/dispatch [:set-in [:tooltips tooltip-id] opacity])
+                                   (when (< 10 cnt)
+                                     (swap! tooltips assoc-in [tooltip-id :opacity] (- opacity 0.05)))))))
+                        100)]
+       (swap! tooltips assoc tooltip-id {:opacity 1.0 :interval-id interval-id :cnt 0})))))
+
+(handlers/register-handler-fx
+ :show-tooltip
+ (fn [_ [_ tooltip-id]]
+   {:show-tooltip tooltip-id}))
