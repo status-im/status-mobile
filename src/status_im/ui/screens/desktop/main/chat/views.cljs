@@ -56,11 +56,10 @@
        [react/text {:style styles/author} name]])))
 
 (views/defview member-photo [from]
-  [react/text {:on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
-        (i18n/label :t/view-profile)]
-#_[react/view
-   [react/image {:source {:uri (identicon/identicon from)}
-                 :style  styles/photo-style}]])
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
+   [react/view
+    [react/image {:source {:uri (identicon/identicon from)}
+                  :style  styles/photo-style}]]])
 
 (views/defview my-photo [from]
   (views/letsubs [account [:get-current-account]]
