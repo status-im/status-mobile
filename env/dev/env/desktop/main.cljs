@@ -18,11 +18,11 @@
 ;; Do not delete, root-el is used by the figwheel-bridge.js
 (def root-el (r/as-element [reloader]))
 
-(figwheel/start {:websocket-url    (:ios conf/figwheel-urls)
+(figwheel/start {:websocket-url    (:desktop conf/figwheel-urls)
                  :heads-up-display false
                  :jsload-callback  #(swap! cnt inc)})
 
 (utils.handlers/add-pre-event-callback rr/pre-event-callback)
 
-(rr/enable-re-frisk-remote! {:host (env.utils/re-frisk-url (:ios conf/figwheel-urls))
+(rr/enable-re-frisk-remote! {:host (env.utils/re-frisk-url (:desktop conf/figwheel-urls))
                              :on-init core/init})
