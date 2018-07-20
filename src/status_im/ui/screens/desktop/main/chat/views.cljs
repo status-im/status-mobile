@@ -190,10 +190,11 @@
      [chat-text-input]]))
 
 (views/defview chat-profile []
-  (views/letsubs [{:keys [pending? whisper-identity public-key] :as contact} [:get-current-chat-contact]]
+  (views/letsubs [{:keys [pending? whisper-identity] :as contact} [:get-current-chat-contact]]
+                 ;; add an affordance for building some of these things if we don't have them already
+                 ;; whisper-id->new-contact will provide name, photo-path, and whisper-identity
                  [react/view {:style styles/chat-profile-body}
                   [profile.views/profile-badge contact]
-                  ;; for private chat, public key will be chat-id
                   [react/view
                    (if pending?
                      [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
@@ -207,7 +208,7 @@
                                     :accessibility-label :add-contact-link}
                         [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
                       [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
-                   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat public-key])}
+                   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat whisper-identity])}
                     [react/view {:style styles/chat-profile-row}
                      [react/view {:style styles/chat-profile-icon-container
                                   :accessibility-label :send-message-link}
@@ -216,4 +217,4 @@
                       (i18n/label :t/send-message)]]]
                    [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
                    [react/text {:style      {:font-size 14}
-                                :selectable true} public-key]]]))
+                                :selectable true} whisper-identity]]]))
