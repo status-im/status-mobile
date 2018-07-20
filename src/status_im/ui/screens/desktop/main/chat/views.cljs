@@ -4,6 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
             [status-im.chat.styles.message.message :as message.style]
+            [status-im.chat.views.message.message :as message]
             [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfycat]
@@ -12,6 +13,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.colors :as colors]
             [status-im.chat.views.message.datemark :as message.datemark]
             [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
@@ -56,7 +58,8 @@
        (i18n/label :t/clear-history)]
       [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/delete-chat-pressed chat-id])}
-       (i18n/label :t/delete-chat)]]]))
+       (i18n/label :t/delete-chat)]]]
+    [connectivity/error-view {:top 2}]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
@@ -133,9 +136,12 @@
         :reagent-render
         (fn []
           ^{:key (str "message" message-id)}
-          (if (and group-chat (not outgoing))
-            [message-with-name-and-avatar text message]
-            [text-only-message text message]))}))))
+          [react/view
+           (if (and group-chat (not outgoing))
+             [message-with-name-and-avatar text message]
+             [text-only-message text message])
+           [react/view (message.style/delivery-status outgoing)
+            [message/message-delivery-status message]]])}))))
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
   (views/letsubs [chat-id* (atom nil)
