@@ -1,7 +1,8 @@
 (ns status-im.utils.keychain.core
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.react-native.js-dependencies :as rn]))
+            [status-im.react-native.js-dependencies :as rn]
+            [status-im.utils.platform :as platform]))
 
 (def key-bytes 64)
 (def username "status-im.encryptionkey")
@@ -73,3 +74,6 @@
 (defn reset []
   (log/debug "resetting key...")
   (.resetGenericPassword rn/keychain))
+
+(defn set-username []
+  (when platform/desktop? (.setUsername rn/keychain username)))

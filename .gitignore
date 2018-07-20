@@ -108,3 +108,8 @@ fastlane/README.md
 # emacs
 .dir-locals.el
 
+#ignore platform-specific files in the root since they are only symlinks to files in folders 'desktop_files' and 'mobile_files'
+/VERSION
+/package-lock.json
+/package.json
+/.re-natal
