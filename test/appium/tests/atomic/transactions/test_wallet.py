@@ -1,4 +1,7 @@
 import random
+
+import pytest
+
 from tests import transaction_users, transaction_users_wallet, marks, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -260,7 +263,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1405)
-    def test_insufficient_funds_error_wallet(self):
+    def test_send_valid_amount_after_insufficient_funds_error(self):
         sender = transaction_users['H_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
@@ -286,6 +289,51 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction_button.click()
         send_transaction.got_it_button.click()
         self.network_api.find_transaction_by_unique_amount(sender['address'], valid_amount)
+
+    @marks.testrail_id(3764)
+    def test_insufficient_funds_wallet_0_balance(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.set_value(1)
+        error_text = send_transaction.element_by_text('Insufficient funds')
+        if not error_text.is_element_displayed():
+            self.errors.append("'Insufficient funds' error is now shown when sending 1 ETH from wallet with balance 0")
+        send_transaction.select_asset_button.click()
+        send_transaction.asset_by_name('STT').click()
+        send_transaction.amount_edit_box.set_value(1)
+        if not error_text.is_element_displayed():
+            self.errors.append("'Insufficient funds' error is now shown when sending 1 STT from wallet with balance 0")
+        self.verify_no_errors()
+
+    @marks.testrail_id(3792)
+    def test_insufficient_funds_wallet_positive_balance(self):
+        sender = transaction_users_wallet['A_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        eth_value = wallet_view.get_eth_value()
+        stt_value = wallet_view.get_stt_value()
+        if eth_value == 0 or stt_value == 0:
+            pytest.fail('No funds!')
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.set_value(round(eth_value + 1))
+        error_text = send_transaction.element_by_text('Insufficient funds')
+        if not error_text.is_element_displayed():
+            self.errors.append(
+                "'Insufficient funds' error is now shown when sending %s ETH from wallet with balance %s" % (
+                    round(eth_value + 1), eth_value))
+        send_transaction.select_asset_button.click()
+        send_transaction.asset_by_name('STT').click()
+        send_transaction.amount_edit_box.set_value(round(stt_value + 1))
+        if not error_text.is_element_displayed():
+            self.errors.append(
+                "'Insufficient funds' error is now shown when sending %s STT from wallet with balance %s" % (
+                    round(stt_value + 1), stt_value))
+        self.verify_no_errors()
 
     @marks.testrail_id(3728)
     def test_modify_transaction_fee_values(self):

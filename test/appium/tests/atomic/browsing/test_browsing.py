@@ -10,8 +10,7 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(1411)
     def test_browse_page_with_non_english_text(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        home_view = sign_in.get_home_view()
+        home_view = sign_in.create_user()
         start_new_chat = home_view.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.enter_url_editbox.set_value('www.wikipedia.org')
@@ -25,20 +24,21 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(1412)
     def test_open_invalid_link(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        home_view = sign_in.get_home_view()
+        home_view = sign_in.create_user()
         start_new_chat = home_view.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.enter_url_editbox.set_value('invalid.takoe')
         start_new_chat.confirm()
         browsing_view = home_view.get_base_web_view()
         browsing_view.find_text_part('Unable to load page')
+        browsing_view.browser_cross_icon.click()
+        if home_view.element_by_text('Browser').is_element_displayed():
+            pytest.fail('Browser entity is shown for an invalid link')
 
     @marks.testrail_id(3705)
     def test_connection_is_not_secure(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        home_view = sign_in.get_home_view()
+        home_view = sign_in.create_user()
         start_new_chat = home_view.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.enter_url_editbox.set_value('google.com')

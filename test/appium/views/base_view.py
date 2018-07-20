@@ -43,7 +43,7 @@ class AllowButton(BaseButton):
 class DenyButton(BaseButton):
     def __init__(self, driver):
         super(DenyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Deny']")
+        self.locator = self.Locator.xpath_selector("//*[@text='DENY']")
 
 
 class DeleteButton(BaseButton):
@@ -337,9 +337,15 @@ class BaseView(object):
         return element.wait_for_element(wait_time)
 
     def element_by_accessibility_id(self, accessibility_id, element_type='button'):
-        info("Looking for an element by text: '%s'" % accessibility_id)
+        info("Looking for an element by accessibility id: '%s'" % accessibility_id)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.accessibility_id(accessibility_id)
+        return element
+
+    def element_by_xpath(self, xpath, element_type='button'):
+        info("Looking for an element by xpath: '%s'" % xpath)
+        element = self.element_types[element_type](self.driver)
+        element.locator = element.Locator.xpath_selector(xpath)
         return element
 
     def swipe_down(self):

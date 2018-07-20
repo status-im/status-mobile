@@ -26,6 +26,12 @@ class PublicKeyEditBox(BaseEditBox):
         self.locator = self.Locator.accessibility_id('enter-contact-code-input')
 
 
+class ScanContactCodeButton(BaseEditBox):
+    def __init__(self, driver):
+        super(ScanContactCodeButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('scan-contact-code-button')
+
+
 class ConfirmPublicKeyButton(BaseButton):
     def __init__(self, driver):
         super(ConfirmPublicKeyButton, self).__init__(driver)
@@ -41,6 +47,7 @@ class ContactsView(BaseView):
 
         self.plus_button = PlusButton(self.driver)
         self.public_key_edit_box = PublicKeyEditBox(self.driver)
+        self.scan_contact_code_button = ScanContactCodeButton(self.driver)
         self.confirm_public_key_button = ConfirmPublicKeyButton(self.driver)
 
         self.status_test_dapp_button = StatusTestDAppButton(self.driver)

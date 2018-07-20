@@ -166,3 +166,6 @@ bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f198
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
 mailserver_address = "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eab" \
                      "fb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6:status-offline-inbox@35.225.227.79:30504"
+
+camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
+                           "and make sure that Status > Camera is selected."

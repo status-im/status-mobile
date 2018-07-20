@@ -1,6 +1,6 @@
 import pytest
 
-from tests import marks, group_chat_users, basic_user, bootnode_address, mailserver_address
+from tests import marks, group_chat_users, basic_user, bootnode_address, mailserver_address, camera_access_error_text
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -191,6 +191,38 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view.view_profile_button.click()
         for text in basic_user['username'], 'In contacts', 'Send transaction', 'Send message', 'Contact code':
             chat_view.find_full_text(text)
+
+    @marks.testrail_id(2177)
+    def test_deny_camera_access_changing_profile_photo(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.edit_button.click()
+        profile.edit_picture_button.click()
+        profile.capture_button.click()
+        for _ in range(2):
+            profile.deny_button.click()
+        profile.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        profile.ok_button.click()
+        profile.edit_picture_button.click()
+        profile.capture_button.click()
+        profile.deny_button.wait_for_visibility_of_element(2)
+
+    @marks.testrail_id(2178)
+    def test_deny_device_storage_access_changing_profile_photo(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.edit_button.click()
+        profile.edit_picture_button.click()
+        profile.select_from_gallery_button.click()
+        for _ in range(2):
+            profile.deny_button.click()
+        profile.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        profile.ok_button.click()
+        profile.edit_picture_button.click()
+        profile.select_from_gallery_button.click()
+        profile.deny_button.wait_for_visibility_of_element(2)
 
 
 @marks.all

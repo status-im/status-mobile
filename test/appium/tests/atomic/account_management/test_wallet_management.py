@@ -1,6 +1,6 @@
 import pytest
 
-from tests import marks, transaction_users
+from tests import marks, transaction_users, camera_access_error_text
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -130,3 +130,19 @@ class TestWallet(SingleDeviceTestCase):
         send_transaction.select_asset_button.click()
         if send_transaction.asset_by_name(asset_name).is_element_displayed():
             pytest.fail('Collectibles can be sent from wallet')
+
+    @marks.testrail_id(2176)
+    def test_deny_camera_access_scanning_wallet_adders(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        wallet = sign_in.wallet_button.click()
+        wallet.set_up_wallet()
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.scan_qr_code_button.click()
+        send_transaction.deny_button.click()
+        send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        send_transaction.ok_button.click()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.scan_qr_code_button.click()
+        send_transaction.deny_button.wait_for_visibility_of_element(2)

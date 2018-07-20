@@ -3,7 +3,7 @@ from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
 
-from tests import marks, transaction_users, common_password, group_chat_users
+from tests import marks, transaction_users, common_password, group_chat_users, transaction_users_wallet
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -408,3 +408,66 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         if not chat.chat_element_by_text(amount).contains_text('Confirmed', wait_time=90):
             pytest.fail('Transaction state is not updated on the sender side')
+
+    @marks.testrail_id(3790)
+    def test_insufficient_funds_1_1_chat_0_balance(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        home_view = wallet_view.home_button.click()
+        chat_view = home_view.add_contact(transaction_users['H_USER']['public_key'])
+        chat_view.commands_button.click()
+        chat_view.send_command.click()
+        chat_view.asset_by_name('ETH').click()
+        chat_view.send_as_keyevent('1')
+        chat_view.send_message_button.click()
+        send_transaction = chat_view.get_send_transaction_view()
+        error_text = send_transaction.element_by_text('Insufficient funds')
+        if not error_text.is_element_displayed():
+            self.errors.append("'Insufficient funds' error is now shown when sending 1 ETH from chat with balance 0")
+        send_transaction.back_button.click()
+        chat_view.commands_button.click()
+        chat_view.send_command.click()
+        chat_view.asset_by_name('STT').click()
+        chat_view.send_as_keyevent('1')
+        chat_view.send_message_button.click()
+        if not error_text.is_element_displayed():
+            self.errors.append("'Insufficient funds' error is now shown when sending 1 STT from chat with balance 0")
+        self.verify_no_errors()
+
+    @marks.testrail_id(3793)
+    def test_insufficient_funds_1_1_chat_positive_balance(self):
+        sender = transaction_users_wallet['A_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        eth_value = wallet_view.get_eth_value()
+        stt_value = wallet_view.get_stt_value()
+        if eth_value == 0 or stt_value == 0:
+            pytest.fail('No funds!')
+        home_view = wallet_view.home_button.click()
+        chat_view = home_view.add_contact(transaction_users['H_USER']['public_key'])
+        chat_view.commands_button.click()
+        chat_view.send_command.click()
+        chat_view.asset_by_name('ETH').click()
+        chat_view.send_as_keyevent(str(round(eth_value + 1)))
+        chat_view.send_message_button.click()
+        send_transaction = chat_view.get_send_transaction_view()
+        error_text = send_transaction.element_by_text('Insufficient funds')
+        if not error_text.is_element_displayed():
+            self.errors.append(
+                "'Insufficient funds' error is now shown when sending %s ETH from chat with balance %s" % (
+                    round(eth_value + 1), eth_value))
+        send_transaction.back_button.click()
+        chat_view.commands_button.click()
+        chat_view.send_command.click()
+        chat_view.asset_by_name('STT').click()
+        chat_view.send_as_keyevent(str(round(stt_value + 1)))
+        chat_view.send_message_button.click()
+        if not error_text.is_element_displayed():
+            self.errors.append(
+                "'Insufficient funds' error is now shown when sending %s STT from chat with balance %s" % (
+                    round(stt_value + 1), stt_value))
+        self.verify_no_errors()

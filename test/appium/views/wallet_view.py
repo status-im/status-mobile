@@ -60,7 +60,13 @@ class ChooseFromContactsButton(BaseButton):
 class EthAssetText(BaseText):
     def __init__(self, driver):
         super(EthAssetText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='ETH']/../android.widget.TextView[1]")
+        self.locator = self.Locator.accessibility_id('eth-asset-value-text')
+
+
+class STTAssetText(BaseText):
+    def __init__(self, driver):
+        super(STTAssetText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('stt-asset-value-text')
 
 
 class UsdTotalValueText(BaseText):
@@ -180,7 +186,8 @@ class WalletView(BaseView):
 
         self.send_transaction_button = SendTransactionButton(self.driver)
         self.transaction_history_button = TransactionHistoryButton(self.driver)
-        self.eth_asset = EthAssetText(self.driver)
+        self.eth_asset_value = EthAssetText(self.driver)
+        self.stt_asset_value = STTAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
 
         self.send_transaction_request = SendTransactionRequestButton(self.driver)
@@ -207,7 +214,10 @@ class WalletView(BaseView):
         return float(re.sub('[$,]', '', self.usd_total_value.text))
 
     def get_eth_value(self):
-        return float(self.eth_asset.text)
+        return float(self.eth_asset_value.text)
+
+    def get_stt_value(self):
+        return float(self.stt_asset_value.text)
 
     def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()

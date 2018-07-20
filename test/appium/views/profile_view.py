@@ -60,7 +60,7 @@ class NetworkSettingsButton(BaseButton):
     class NetworkButton(BaseButton):
         def __init__(self, driver, network):
             super(NetworkSettingsButton.NetworkButton, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector('//*[@text="' + network + '"]')
+            self.locator = self.Locator.text_selector(network)
 
     class ConnectButton(BaseButton):
 
@@ -95,7 +95,7 @@ class ConfirmLogoutButton(BaseButton):
 
     def __init__(self, driver):
         super(ConfirmLogoutButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='LOG OUT']")
+        self.locator = self.Locator.text_selector('LOG OUT')
 
 
 class UserNameText(BaseText):
@@ -157,7 +157,7 @@ class AdvancedButton(BaseButton):
 
     def __init__(self, driver):
         super(AdvancedButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Advanced"]')
+        self.locator = self.Locator.text_selector('Advanced')
 
     def click(self):
         self.scroll_to_element().click()
@@ -191,7 +191,7 @@ class RecoveryPhraseWordNumberText(BaseText):
 
     def __init__(self, driver):
         super(RecoveryPhraseWordNumberText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[contains(@text,'#')]")
+        self.locator = self.Locator.text_part_selector('#')
 
     @property
     def number(self):
@@ -210,7 +210,7 @@ class OkGotItButton(BaseButton):
 
     def __init__(self, driver):
         super(OkGotItButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='OK, GOT IT']")
+        self.locator = self.Locator.text_selector('OK, GOT IT')
 
 
 class DebugModeToggle(BaseButton):
@@ -228,7 +228,14 @@ class SelectFromGalleryButton(BaseButton):
 
     def __init__(self, driver):
         super(SelectFromGalleryButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Select from gallery']")
+        self.locator = self.Locator.text_selector('Select from gallery')
+
+
+class CaptureButton(BaseButton):
+
+    def __init__(self, driver):
+        super(CaptureButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Capture')
 
 
 class MainCurrencyButton(BaseButton):
@@ -406,7 +413,9 @@ class ProfileView(BaseView):
         self.recovery_phrase_word_number = RecoveryPhraseWordNumberText(self.driver)
         self.recovery_phrase_word_input = RecoveryPhraseWordInput(self.driver)
         self.ok_got_it_button = OkGotItButton(self.driver)
+
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
+        self.capture_button = CaptureButton(self.driver)
 
         self.help_button = HelpButton(self.driver)
         self.request_feature_button = RequestFeatureButton(self.driver)

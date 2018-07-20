@@ -1,6 +1,6 @@
 import pytest
 
-from tests import marks, group_chat_users, basic_user
+from tests import marks, group_chat_users, basic_user, camera_access_error_text
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -120,6 +120,30 @@ class TestChatManagement(SingleDeviceTestCase):
         if home.element_by_text(chat_name).is_element_present(5):
             self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
         self.verify_no_errors()
+
+    @marks.testrail_id(2172)
+    def test_incorrect_contact_code_start_new_chat(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        start_new_chat = home.plus_button.click()
+        start_new_chat.start_new_chat_button.click()
+        start_new_chat.public_key_edit_box.set_value(group_chat_users['B_USER']['public_key'][:-1])
+        start_new_chat.confirm()
+        if not start_new_chat.element_by_text('Please scan a valid contact code').is_element_displayed():
+            pytest.fail('Error is not shown for invalid public key')
+
+    @marks.testrail_id(2175)
+    def test_deny_camera_access_scanning_contact_code(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        start_new_chat = home.plus_button.click()
+        start_new_chat.start_new_chat_button.click()
+        start_new_chat.scan_contact_code_button.click()
+        start_new_chat.deny_button.click()
+        start_new_chat.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        start_new_chat.ok_button.click()
+        start_new_chat.scan_contact_code_button.click()
+        start_new_chat.deny_button.wait_for_visibility_of_element(2)
 
 
 @marks.chat
