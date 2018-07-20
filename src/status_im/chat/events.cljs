@@ -399,6 +399,11 @@
                               (navigation/navigate-to-clean :home)
                               (navigate-to-chat random-id {})
                               (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
+;; todo maybe give this a specific home with desktop events namespace
+(handlers/register-handler-fx
+ :set-public-chat-whisper-identity
+ (fn [{:keys [db] :as cofx} [_ whisper-identity]]
+   {:db (assoc db :contacts/identity whisper-identity)}))
 
 (handlers/register-handler-fx
  :show-profile
