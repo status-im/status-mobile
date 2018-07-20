@@ -1,7 +1,8 @@
 (ns status-im.utils.keychain.events
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.utils.keychain.core :as keychain]))
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.utils.platform :as platform]))
 
 (defn handle-key-error [event {:keys [error key]}]
   (if (= :weak-key error)
@@ -13,6 +14,7 @@
 (re-frame/reg-fx
  :get-encryption-key
  (fn [event]
+   (when platform/desktop? (keychain/set-username))
    (.. (keychain/get-encryption-key)
        (then #(re-frame/dispatch (conj event %)))
        (catch (partial handle-key-error event)))))

@@ -377,8 +377,8 @@
                          [:process-pending-messages]
                          [:update-wallet]
                          [:update-transactions]
+                         (when platform/mobile? [:get-fcm-token])
                          [:sync-wallet-transactions]
-                         [:get-fcm-token]
                          [:update-sign-in-time]]
                   (seq events-after) (into events-after))}))
 
