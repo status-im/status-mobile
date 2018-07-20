@@ -3,6 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
+            [taoensso.timbre :as log]
             [status-im.ui.components.connectivity.styles :as styles]
             [status-im.i18n :as i18n]))
 
