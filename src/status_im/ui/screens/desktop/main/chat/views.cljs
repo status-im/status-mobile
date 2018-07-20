@@ -4,6 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
             [status-im.chat.styles.message.message :as message.style]
+            [status-im.chat.views.message.message :as message]
             [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfycat]
@@ -11,6 +12,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.colors :as colors]
             [status-im.chat.views.message.datemark :as message.datemark]
             [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
@@ -20,33 +22,35 @@
 
 (views/defview toolbar-chat-view []
   (views/letsubs [{:keys [chat-id public-key public? group-chat color]} [:get-current-chat]
-                  {:keys [pending? whisper-identity photo-path]}                      [:get-current-chat-contact]
-                  current-chat-name                                                   [:get-current-chat-name]]
-    [react/view {:style styles/toolbar-chat-view}
-     [react/view {:style {:flex-direction  :row
-                          :align-items :center}}
+                  {:keys [pending? whisper-identity photo-path]}        [:get-current-chat-contact]
+                  current-chat-name                                     [:get-current-chat-name]]
+    [react/view
+     [react/view {:style styles/toolbar-chat-view}
+      [react/view {:style {:flex-direction  :row
+                           :align-items :center}}
 
-      [react/view {:style styles/img-container}
-       (if public?
-         [react/view {:style (styles/topic-image color)}
-          [react/text {:style styles/topic-text}
-           (string/capitalize (first current-chat-name))]]
-         [react/image {:style styles/photo-style-toolbar
-                       :source {:uri photo-path}}])]
+       [react/view {:style styles/img-container}
+        (if public?
+          [react/view {:style (styles/topic-image color)}
+           [react/text {:style styles/topic-text}
+            (string/capitalize (first current-chat-name))]]
+          [react/image {:style styles/photo-style-toolbar
+                        :source {:uri photo-path}}])]
 
-      [react/view
-       [react/text {:style styles/toolbar-chat-name} current-chat-name]
-       (when pending?
-         [react/touchable-highlight
-          {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
-          [react/view {:style styles/add-contact}
-           [react/text {:style styles/add-contact-text}
-            (i18n/label :t/add-to-contacts)]]])]
-      (when (and (not group-chat) (not public?))
-        [react/text {:style {:position :absolute
-                             :right 20}
-                     :on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
-         (i18n/label :t/view-profile)])]]))
+       [react/view
+        [react/text {:style styles/toolbar-chat-name} current-chat-name]
+        (when pending?
+          [react/touchable-highlight
+           {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+           [react/view {:style styles/add-contact}
+            [react/text {:style styles/add-contact-text}
+             (i18n/label :t/add-to-contacts)]]])]
+       (when (and (not group-chat) (not public?))
+         [react/text {:style {:position :absolute
+                              :right 20}
+                      :on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
+          (i18n/label :t/view-profile)])]]
+     [connectivity/error-view {:top 2}]]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
@@ -119,9 +123,12 @@
         :reagent-render
         (fn []
           ^{:key (str "message" message-id)}
-          (if (and group-chat (not outgoing))
-            [message-with-name-and-avatar text message]
-            [text-only-message text message]))}))))
+          [react/view
+           (if (and group-chat (not outgoing))
+             [message-with-name-and-avatar text message]
+             [text-only-message text message])
+           [react/view (message.style/delivery-status outgoing)
+            [message/message-delivery-status message]]])}))))
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
   (views/letsubs [chat-id* (atom nil)
