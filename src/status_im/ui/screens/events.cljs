@@ -372,6 +372,7 @@
                          [:load-contacts]
                          [:initialize-chats]
                          [:initialize-browsers]
+                         [:initialize-dapp-permissions]
                          [:send-account-update-if-needed]
                          [:process-pending-messages]
                          [:update-wallet]

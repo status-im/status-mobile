@@ -24,6 +24,9 @@
             :browser/history
             :browser/history-index]))
 
+<<<<<<< HEAD
+(spec/def :browser/browsers (spec/nilable (spec/map-of :global/not-empty-string :browser/browser)))
+=======
 (spec/def :browser/browsers (spec/nilable (spec/map-of :global/not-empty-string :browser/browser)))
 
 (spec/def :dapp/dapp (spec/nilable string?))
@@ -35,3 +38,4 @@
    :opt-un [:dapp/permissions]))
 
 (spec/def :dapps/permissions (spec/nilable (spec/map-of :global/not-empty-string :dapp/permission-map)))
+>>>>>>> develop

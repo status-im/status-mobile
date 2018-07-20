@@ -17,7 +17,21 @@
   (re-frame/reg-cofx
    :data-store/all-browsers
    (fn [coeffects _]
-     (assoc coeffects :all-stored-browsers []))))
+     (assoc coeffects :all-stored-browsers [])))
+
+  (re-frame/reg-cofx
+   :data-store/all-dapp-permissions
+   (fn [coeffects _]
+     (assoc coeffects :all-dapp-permissions [])))
+
+  (re-frame/reg-fx :send-to-bridge-fx #())
+
+  (re-frame/reg-fx
+   :show-dapp-permission-confirmation-fx
+   (fn [[permission {:keys [dapp-name permissions-data index] :as params}]]
+     (if (and (= dapp-name "test.com") (#{0 1} index))
+       (re-frame/dispatch [:next-dapp-permission params permission permissions-data])
+       (re-frame/dispatch [:next-dapp-permission params])))))
 
 (deftest browser-events
 
@@ -63,8 +77,7 @@
 
        (re-frame/dispatch [:open-browser (first (vals @browsers))])
 
-       (let [browser (re-frame/subscribe [:get-current-browser])
-             options (re-frame/subscribe [:get :browser/options])
+       (let [browser    (re-frame/subscribe [:get-current-browser])
              dapp2-url2 (str dapp2-url "/nav2")
              dapp2-url3 (str dapp2-url "/nav3")]
 
@@ -106,4 +119,67 @@
          (re-frame/dispatch [:browser-nav-forward @browser])
 
          (is (= 1 (:history-index @browser)))
-         (is (= [dapp2-url dapp2-url3] (:history @browser))))))))
+         (is (= [dapp2-url dapp2-url3] (:history @browser))))))
+
+   (re-frame/dispatch [:initialize-dapp-permissions])
+
+   (let [dapps-permissions (re-frame/subscribe [:get :dapps/permissions])
+         dapp-name         "test.com"
+         dapp-name2        "test2.org"]
+
+     (testing "dapps permissions"
+
+       (is (zero? (count @dapps-permissions)))
+
+       (re-frame/dispatch [:on-bridge-message {:type        "status-api-request"
+                                               :host        dapp-name
+                                               :permissions ["FAKE_PERMISSION"]}
+                           nil nil])
+
+       (is (= {:dapp        dapp-name
+               :permissions []}
+              (get @dapps-permissions dapp-name)))
+
+       (re-frame/dispatch [:on-bridge-message {:type        "status-api-request"
+                                               :host        dapp-name
+                                               :permissions ["CONTACT_CODE"]}
+                           nil nil])
+
+       (is (= 1 (count @dapps-permissions)))
+
+       (is (= {:dapp        dapp-name
+               :permissions ["CONTACT_CODE"]}
+              (get @dapps-permissions dapp-name)))
+
+       (re-frame/dispatch [:on-bridge-message {:type        "status-api-request"
+                                               :host        dapp-name
+                                               :permissions ["CONTACT_CODE" "FAKE_PERMISSION"]}
+                           nil nil])
+
+       (is (= 1 (count @dapps-permissions)))
+
+       (is (= {:dapp        dapp-name
+               :permissions ["CONTACT_CODE"]}
+              (get @dapps-permissions dapp-name)))
+
+       (re-frame/dispatch [:on-bridge-message {:type        "status-api-request"
+                                               :host        dapp-name
+                                               :permissions ["FAKE_PERMISSION"]}
+                           nil nil])
+
+       (is (= 1 (count @dapps-permissions)))
+
+       (is (= {:dapp        dapp-name
+               :permissions ["CONTACT_CODE"]}
+              (get @dapps-permissions dapp-name)))
+
+       (re-frame/dispatch [:on-bridge-message {:type        "status-api-request"
+                                               :host        dapp-name2
+                                               :permissions ["CONTACT_CODE"]}
+                           nil nil])
+
+       (is (= 2 (count @dapps-permissions)))
+
+       (is (= {:dapp        dapp-name2
+               :permissions []}
+              (get @dapps-permissions dapp-name2)))))))

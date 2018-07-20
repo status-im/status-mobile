@@ -87,6 +87,16 @@ class ChatElement(BaseButton):
             counter += 1
         self.swipe_delete_button.click()
 
+    @property
+    def new_messages_counter(self):
+        class UnreadMessagesCountText(BaseText):
+            def __init__(self, driver, parent_locator: str):
+                super(UnreadMessagesCountText, self).__init__(driver)
+                locator_str = "//*[@content-desc='unread-messages-count-text']"
+                self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
+
+        return UnreadMessagesCountText(self.driver, self.locator.value)
+
 
 class ChatNameText(BaseText):
     def __init__(self, driver):
@@ -146,7 +156,7 @@ class HomeView(BaseView):
             user_contact.click()
         start_new_chat.next_button.click()
         start_new_chat.chat_name_editbox.send_keys(group_chat_name)
-        start_new_chat.confirm_button.click()
+        start_new_chat.create_button.click()
 
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()

@@ -7,7 +7,7 @@ import re
 import zbarlight
 from tests import info, common_password
 from eth_keys import datatypes
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
 from datetime import datetime
 from io import BytesIO
@@ -84,7 +84,7 @@ class TabButton(BaseButton):
             def __init__(self, driver, parent_locator):
                 super(Counter, self).__init__(driver)
                 self.locator = self.Locator.xpath_selector(
-                    "//*[@content-desc='%s']/android.view.ViewGroup[2]/android.widget.TextView" % parent_locator)
+                    "//*[@content-desc='%s']//android.view.ViewGroup[2]/android.widget.TextView" % parent_locator)
 
         return Counter(self.driver, self.locator.value)
 
@@ -191,6 +191,12 @@ class DiscardButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='DISCARD']")
 
 
+class ConfirmButton(BaseButton):
+    def __init__(self, driver):
+        super(ConfirmButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -213,6 +219,7 @@ class BaseView(object):
         self.delete_button = DeleteButton(self.driver)
         self.ok_continue_button = OkContinueButton(self.driver)
         self.discard_button = DiscardButton(self.driver)
+        self.confirm_button = ConfirmButton(self.driver)
         self.connection_status = ConnectionStatusText(self.driver)
 
         self.apps_button = AppsButton(self.driver)
@@ -416,20 +423,21 @@ class BaseView(object):
     def reconnect(self):
         connect_status = self.connection_status
         for i in range(3):
-            if connect_status.is_element_displayed(5) and 'Tap to reconnect' in connect_status.text:
-                try:
-                    connect_status.click()
-                except AttributeError:
-                    pass
-                try:
-                    connect_status.wait_for_invisibility_of_element()
-                except TimeoutException as e:
-                    if i == 2:
-                        e.msg = "Can't reconnect to mail server after 3 attempts"
-                        raise e
+            if connect_status.is_element_displayed(5, ignored_exceptions=StaleElementReferenceException):
+                if 'Tap to reconnect' in connect_status.text:
+                    try:
+                        connect_status.click()
+                    except AttributeError:
+                        pass
+                    try:
+                        connect_status.wait_for_invisibility_of_element()
+                    except TimeoutException as e:
+                        if i == 2:
+                            e.msg = "Can't reconnect to mail server after 3 attempts"
+                            raise e
 
     def check_no_values_in_logcat(self, **kwargs):
         logcat = self.logcat
         for key, value in kwargs.items():
-            if re.findall('\W%s|\W%s\W' % (value, value), logcat):
+            if re.findall('\W%s$|\W%s\W' % (value, value), logcat):
                 pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)

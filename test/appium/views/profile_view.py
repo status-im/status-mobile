@@ -132,10 +132,10 @@ class EditPictureButton(BaseButton):
         self.locator = self.Locator.accessibility_id('edit-profile-photo-button')
 
 
-class ConfirmButton(BaseButton):
+class ConfirmEditButton(BaseButton):
 
     def __init__(self, driver):
-        super(ConfirmButton, self).__init__(driver)
+        super(ConfirmEditButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('done-button')
 
 
@@ -238,10 +238,10 @@ class MainCurrencyButton(BaseButton):
         self.locator = self.Locator.accessibility_id("currency-button")
 
 
-class NetworkPlusButton(BaseButton):
+class PlusButton(BaseButton):
 
     def __init__(self, driver):
-        super(NetworkPlusButton, self).__init__(driver)
+        super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("(//android.view.ViewGroup[@content-desc='icon'])[2]")
 
 
@@ -253,10 +253,10 @@ class RopstenChainButton(BaseButton):
             "//*[contains(@text,'Ropsten test network')]/following-sibling::android.widget.CheckBox[1]")
 
 
-class CustomNetworkName(BaseEditBox):
+class SpecifyNameInput(BaseEditBox):
 
     def __init__(self, driver):
-        super(CustomNetworkName, self).__init__(driver)
+        super(SpecifyNameInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Name']/following-sibling::*[1]/android.widget.EditText")
 
 
@@ -300,6 +300,69 @@ class FaqButton(BaseButton):
         return BaseWebView(self.driver)
 
 
+class BootnodesButton(BaseButton):
+
+    def __init__(self, driver):
+        super(BootnodesButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('bootnodes-settings-button')
+
+
+class AddBootnodeButton(BaseButton):
+
+    def __init__(self, driver):
+        super(AddBootnodeButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("(//*[@content-desc='icon'])[2]")
+
+
+class BootnodeNameInput(BaseEditBox):
+
+    def __init__(self, driver):
+        super(BootnodeNameInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify a name']")
+
+
+class BootnodeAddressInput(BaseEditBox):
+
+    def __init__(self, driver):
+        super(BootnodeAddressInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify bootnode address']")
+
+
+class EnableBootnodesToggle(BaseEditBox):
+
+    def __init__(self, driver):
+        super(EnableBootnodesToggle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.Switch')
+
+
+class MailServerButton(BaseButton):
+
+    def __init__(self, driver):
+        super(MailServerButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('offline-messages-settings-button')
+
+
+class MailServerAddressInput(BaseEditBox):
+
+    def __init__(self, driver):
+        super(MailServerAddressInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText[@text='Specify a mailserver address']")
+
+
+class MailServerElement(BaseButton):
+
+    def __init__(self, driver, server_name):
+        super(MailServerElement, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='mailserver-item']//*[@text='%s']" % server_name)
+
+
+class MailServerConnectButton(BaseButton):
+
+    def __init__(self, driver):
+        super(MailServerConnectButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('mailserver-connect-button')
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
@@ -314,10 +377,10 @@ class ProfileView(BaseView):
         self.profile_address_text = ProfileAddressText(self.driver)
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
-        self.network_plus_button = NetworkPlusButton(self.driver)
+        self.plus_button = PlusButton(self.driver)
         self.ropsten_chain_button = RopstenChainButton(self.driver)
         self.custom_network_url = CustomNetworkURL(self.driver)
-        self.custom_network_name = CustomNetworkName(self.driver)
+        self.specify_name_input = SpecifyNameInput(self.driver)
         self.connect_button = NetworkSettingsButton.ConnectButton(self.driver)
         self.logout_button = LogoutButton(self.driver)
         self.logout_dialog = LogoutDialog(self.driver)
@@ -330,7 +393,7 @@ class ProfileView(BaseView):
         self.edit_button = EditButton(self.driver)
         self.profile_picture = ProfilePictureElement(self.driver)
         self.edit_picture_button = EditPictureButton(self.driver)
-        self.confirm_button = ConfirmButton(self.driver)
+        self.confirm_edit_button = ConfirmEditButton(self.driver)
         self.cross_icon = CrossIcon(self.driver)
         self.share_button = ShareButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
@@ -350,6 +413,16 @@ class ProfileView(BaseView):
         self.submit_bug_button = SubmitBugButton(self.driver)
         self.faq_button = FaqButton(self.driver)
 
+        # Bootnodes
+        self.bootnodes_button = BootnodesButton(self.driver)
+        self.bootnode_address_input = BootnodeAddressInput(self.driver)
+        self.enable_bootnodes = EnableBootnodesToggle(self.driver)
+
+        # Mailservers
+        self.mail_server_button = MailServerButton(self.driver)
+        self.mail_server_address_input = MailServerAddressInput(self.driver)
+        self.mail_server_connect_button = MailServerConnectButton(self.driver)
+
     def switch_network(self, network):
         self.advanced_button.click()
         self.debug_mode_toggle.click()
@@ -366,10 +439,10 @@ class ProfileView(BaseView):
         self.debug_mode_toggle.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
-        self.network_plus_button.click_until_presence_of_element(self.ropsten_chain_button)
+        self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
         self.ropsten_chain_button.click()
         self.custom_network_url.send_keys('https://ropsten.infura.io/iMko0kJNQUdhbCSaJcox')
-        self.custom_network_name.send_keys('custom_ropsten')
+        self.specify_name_input.send_keys('custom_ropsten')
         self.save_button.click()
         self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
@@ -413,7 +486,7 @@ class ProfileView(BaseView):
             for element_text in 'Images', 'DCIM':
                 self.element_by_text(element_text).click()
         picture.click()
-        self.confirm_button.click()
+        self.confirm_edit_button.click()
 
     def logout(self):
         self.logout_button.click()
@@ -425,3 +498,5 @@ class ProfileView(BaseView):
         desired_currency.scroll_to_element()
         desired_currency.click()
 
+    def mail_server_by_name(self, server_name):
+        return MailServerElement(self.driver, server_name)

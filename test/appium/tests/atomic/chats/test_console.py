@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from tests import marks
@@ -46,3 +44,25 @@ class TestMessagesPublicChat(SingleDeviceTestCase):
                 break
         else:
             pytest.fail('Actual block number is not shown')
+
+    @marks.testrail_id(3732)
+    def test_show_hide_console_chat(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        home_view = profile_view.home_button.click()
+        console_chat = home_view.get_chat_with_user('Status Console')
+        console_chat.swipe_element()
+        chat_view = home_view.get_chat_view()
+        if console_chat.swipe_delete_button.is_element_displayed() or chat_view.chat_options.is_element_displayed():
+            self.errors.append('Console chat can be deleted')
+        home_view.get_back_to_home_view()
+        sign_in_view.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        profile_view.home_button.click()
+        if console_chat.is_element_displayed():
+            self.errors.append('Console chat is not hidden after turning off debug mode')
+        self.verify_no_errors()

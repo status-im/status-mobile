@@ -18,7 +18,6 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.models.browser :as model]
-            [status-im.utils.platform :as platform]
             [status-im.utils.http :as http]))
 
 (views/defview toolbar-content-dapp [name]
@@ -67,13 +66,6 @@
    [react/view styles/web-view-loading
     [components/activity-indicator {:animating true}]]))
 
-(defn on-bridge-message [message browser]
-  (let [{:strs [type navState]} (js->clj (.parse js/JSON message))
-        {:strs [url]} navState]
-    (when (and platform/ios? (= type "navStateChange"))
-      (when (not= "about:blank" url)
-        (re-frame/dispatch [:update-browser-on-nav-change browser url false])))))
-
 (defn on-navigation-change [event browser]
   (let [{:strs [url loading]} (js->clj event)]
     (when (not= "about:blank" url)
@@ -116,7 +108,11 @@
          :render-error                          web-view-error
          :render-loading                        web-view-loading
          :on-navigation-state-change            #(on-navigation-change % browser)
-         :on-bridge-message                     #(on-bridge-message % browser)
+         :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message
+                                                                     (js->clj (.parse js/JSON %)
+                                                                              :keywordize-keys true)
+                                                                     browser
+                                                                     webview])
          :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
          :on-error                              #(re-frame/dispatch [:update-browser-options {:error? true}])
          :injected-on-start-loading-java-script (str js-res/web3

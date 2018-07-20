@@ -1,5 +1,4 @@
 import random
-
 from tests import transaction_users, transaction_users_wallet, marks, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -259,6 +258,86 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if not send_transaction.element_by_text(error_text).is_element_displayed():
             self.errors.append('Warning about too precise amount is not shown when requesting a transaction')
         self.verify_no_errors()
+
+    @marks.testrail_id(1405)
+    def test_insufficient_funds_error_wallet(self):
+        sender = transaction_users['H_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        bigger_amount = wallet_view.get_eth_value() + 1
+        send_transaction = wallet_view.send_transaction_button.click()
+        amount_edit_box = send_transaction.amount_edit_box
+        amount_edit_box.click()
+        amount_edit_box.set_value(bigger_amount)
+        send_transaction.element_by_text('Insufficient funds').wait_for_visibility_of_element(5)
+
+        valid_amount = send_transaction.get_unique_amount()
+        amount_edit_box.clear()
+        amount_edit_box.set_value(valid_amount)
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(transaction_users['G_USER']['address'])
+        send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.enter_password_input.send_keys(sender['password'])
+        send_transaction.sign_transaction_button.click()
+        send_transaction.got_it_button.click()
+        self.network_api.find_transaction_by_unique_amount(sender['address'], valid_amount)
+
+    @marks.testrail_id(3728)
+    def test_modify_transaction_fee_values(self):
+        sender = transaction_users['H_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        send_transaction = wallet_view.send_transaction_button.click()
+
+        amount = send_transaction.get_unique_amount()
+        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        recipient_address = transaction_users['G_USER']['address']
+        send_transaction.enter_recipient_address_input.set_value(recipient_address)
+        send_transaction.done_button.click()
+        send_transaction.advanced_button.click()
+        send_transaction.transaction_fee_button.click()
+        send_transaction.gas_limit_input.clear()
+        send_transaction.gas_limit_input.set_value('1')
+        send_transaction.gas_price_input.clear()
+        send_transaction.gas_price_input.set_value('1')
+        send_transaction.total_fee_input.click()
+        send_transaction.done_button.click()
+        send_transaction.sign_transaction_button.click_until_presence_of_element(send_transaction.enter_password_input)
+        send_transaction.enter_password_input.send_keys(sender['password'])
+        send_transaction.sign_transaction_button.click()
+        send_transaction.element_by_text('intrinsic gas too low').wait_for_visibility_of_element()
+        send_transaction.ok_button.click()
+
+        wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(recipient_address)
+        send_transaction.done_button.click()
+
+        send_transaction.advanced_button.click()
+        send_transaction.transaction_fee_button.click()
+        send_transaction.gas_limit_input.clear()
+        gas_limit = '1005000'
+        send_transaction.gas_limit_input.set_value(gas_limit)
+        send_transaction.gas_price_input.clear()
+        gas_price = '24'
+        send_transaction.gas_price_input.set_value(gas_price)
+        send_transaction.total_fee_input.click()
+        send_transaction.done_button.click()
+        send_transaction.sign_transaction(sender['password'])
+        self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
 
 @marks.transaction

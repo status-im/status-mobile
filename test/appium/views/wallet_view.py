@@ -141,7 +141,12 @@ class AssetTextElement(BaseText):
 class AssetCheckBox(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetCheckBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % asset_name)
+        self.asset_name = asset_name
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % self.asset_name)
+
+    def click(self):
+        self.scroll_to_element().click()
+        info('Click %s asset checkbox' % self.asset_name)
 
 
 class TotalAmountText(BaseText):

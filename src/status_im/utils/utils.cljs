@@ -25,13 +25,16 @@
    (show-confirmation title content confirm-button-text on-accept nil))
   ([title content confirm-button-text on-accept on-cancel]
    (show-confirmation nil title content confirm-button-text on-accept on-cancel))
-  ([{:keys [ios-confirm-style] :or {ios-confirm-style "destructive"}} title content confirm-button-text on-accept on-cancel]
+  ([ios-style title content confirm-button-text on-accept on-cancel]
+   (show-confirmation ios-style title content confirm-button-text on-accept on-cancel nil))
+  ([{:keys [ios-confirm-style] :or {ios-confirm-style "destructive"}}
+    title content confirm-button-text on-accept on-cancel cancel-button-text]
    (.alert (.-Alert rn-dependencies/react-native)
            title
            content
            ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
            (clj->js
-            (vector (merge {:text                (i18n/label :t/cancel)
+            (vector (merge {:text                (or cancel-button-text (i18n/label :t/cancel))
                             :style               "cancel"
                             :accessibility-label :cancel-button}
                            (when on-cancel {:onPress on-cancel}))

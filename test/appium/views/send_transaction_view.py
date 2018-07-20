@@ -46,12 +46,6 @@ class EnterPasswordInput(BaseEditBox):
         self.locator = self.Locator.accessibility_id('enter-password-input')
 
 
-class ConfirmButton(BaseButton):
-    def __init__(self, driver):
-        super(ConfirmButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
-
-
 class GotItButton(BaseButton):
     def __init__(self, driver):
         super(GotItButton, self).__init__(driver)
@@ -161,7 +155,6 @@ class SendTransactionView(BaseView):
 
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
-        self.confirm_button = ConfirmButton(self.driver)
         self.sign_in_phrase_text = SignInPhraseText(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)

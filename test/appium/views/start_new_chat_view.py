@@ -40,9 +40,9 @@ class OpenButton(BaseButton):
         self.locator = self.Locator.accessibility_id('open-dapp-button')
 
 
-class ConfirmButton(BaseButton):
+class CreateButton(BaseButton):
     def __init__(self, driver):
-        super(ConfirmButton, self).__init__(driver)
+        super(CreateButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('create-button')
 
 
@@ -78,7 +78,7 @@ class StartNewChatView(ContactsView):
 
         self.chat_name_editbox = ChatNameEditBox(self.driver)
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
-        self.confirm_button = ConfirmButton(self.driver)
+        self.create_button = CreateButton(self.driver)
 
     def get_username_checkbox(self, username: str):
         return UsernameCheckbox(self.driver, username)
