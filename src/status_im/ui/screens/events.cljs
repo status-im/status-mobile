@@ -381,7 +381,6 @@
                          [:update-sign-in-time]]
                   (seq events-after) (into events-after))}))
 
-
 (handlers/register-handler-fx
  :initialize-geth
  (fn [{db :db} _]
