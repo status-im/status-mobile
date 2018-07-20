@@ -30,7 +30,7 @@ timeout(90) {
           checkout scm
 
           try {
-            sh 'git rebase origin/desktop'
+            sh 'git rebase origin/develop'
           } catch (e) {
             sh 'git rebase --abort'
             throw e
