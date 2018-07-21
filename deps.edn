@@ -1,4 +1,4 @@
-{:paths ["components/src" "src" "react-native/src" "resources"]
+{:paths ["components/src" "src" "react-native/src/cljsjs" "react-native/src/mobile" "resources"]
  :deps  {org.clojure/clojure         {:mvn/version "1.9.0"}
          org.clojure/clojurescript   {:mvn/version "1.10.238"}
          org.clojure/core.async      {:mvn/version "0.4.474"}
