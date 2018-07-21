@@ -19,7 +19,8 @@
             [status-im.native-module.core :as status]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.constants :as constants]
-            [status-im.utils.datetime :as datetime])
+            [status-im.utils.datetime :as datetime]
+            [clojure.string :as string])
   (:refer-clojure :exclude [name symbol]))
 
 (defn name [web3 contract cb]
@@ -161,7 +162,7 @@
         args {:jsonrpc "2.0"
               :id      2
               :method  constants/web3-get-logs
-              :params  [{:address   contracts
+              :params  [{:address   (map string/lower-case contracts)
                          :fromBlock "0x0"
                          :topics    [constants/event-transfer-hash
                                      (add-padding from)

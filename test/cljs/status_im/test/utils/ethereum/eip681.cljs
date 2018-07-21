@@ -37,7 +37,7 @@
          (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :SNT :value 5 :gas 10000 :gasPrice 10000})))
   (is (= "ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e/transfer?uint256=5&address=0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
          (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :SNT :chain-id 1 :value 5})))
-  (is (= "ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?uint256=5&address=0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
+  (is (= "ethereum:0xc55cF4B03948D7EBc8b9E8BAD92643703811d162@3/transfer?uint256=5&address=0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
          (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :STT :chain-id 3 :value 5}))))
 
 (deftest generate-uri
@@ -57,7 +57,7 @@
   (let [uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3?value=1&gas=100"
         {:keys [address] :as params} (eip681/parse-uri uri)]
     (is (= uri (eip681/generate-uri address (dissoc params :address)))))
-  (let [uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3/transfer?uint256=5&address=0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
+  (let [uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3/transfer?uint256=5&address=0xc55cF4B03948D7EBc8b9E8BAD92643703811d162"
         {:keys [address] :as params} (eip681/parse-uri uri)]
     (is (= uri (eip681/generate-uri address (dissoc params :address))))))
 
