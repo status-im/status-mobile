@@ -111,6 +111,7 @@
     :wallet-transaction-sent-modal transaction-sent-modal
     :wallet-sign-message-modal sign-message-modal
     :wallet-transaction-fee wallet.send/transaction-fee
+    :wallet-onboarding-setup-modal wallet.onboarding.setup/modal
     [react/view [react/text (str "Unknown modal view: " modal-view)]]))
 
 (defview main-modal []

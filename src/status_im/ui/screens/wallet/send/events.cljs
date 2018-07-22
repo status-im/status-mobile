@@ -194,20 +194,23 @@
           ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
 
-         (let [{:keys [gas gasPrice]}    args
-               transaction               (prepare-transaction queued-transaction now)
-               sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
-               new-db                    (assoc-in db' [:wallet :transactions-unsigned id] transaction)
-               sending-db                {:id         id
-                                          :method     method
-                                          :from-chat? (or
-                                                       sending-from-bot-or-dapp?
+         (let [{:keys [gas gasPrice]} args
+               transaction            (prepare-transaction queued-transaction now)
+               sending-from-dapp?     (not (get-in db [:wallet :send-transaction :waiting-signal?]))
+               new-db                 (assoc-in db' [:wallet :transactions-unsigned id] transaction)
+               sender-account         (:account/account db)
+               sending-db             {:id         id
+                                       :method     method
+                                       :from-chat? (or sending-from-dapp? ;;TODO(goranjovic): figure out why we need to
+                                                       ;; have from-chat? flag for dapp txs and get rid of this
                                                        (get-in db [:wallet :send-transaction :from-chat?]))}]
-           (if sending-from-bot-or-dapp?
-              ;;SENDING FROM BOT (CHAT) OR DAPP
+           (if sending-from-dapp?
+              ;;SENDING FROM DAPP
              {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
               :dispatch-n [[:update-wallet]
-                           [:navigate-to-modal :wallet-send-transaction-modal]
+                           [:navigate-to-modal (if (:wallet-set-up-passed? sender-account)
+                                                 :wallet-send-transaction-modal
+                                                 :wallet-onboarding-setup-modal)]
                            (when-not (seq gas)
                              [:wallet/update-estimated-gas transaction])
                            (when-not (seq gasPrice)

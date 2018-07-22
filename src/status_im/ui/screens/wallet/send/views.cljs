@@ -260,22 +260,20 @@
 
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
-            symbol      [:wallet.send/symbol]
             advanced?   [:wallet.send/advanced?]
             network     [:get-current-account-network]
             scroll      (atom nil)]
     [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced?
-                             :symbol symbol :network network}]))
+                             :network network}]))
 
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
-            symbol      [:wallet.send/symbol]
             advanced?   [:wallet.send/advanced?]
             network     [:get-current-account-network]
             scroll      (atom nil)]
     (if transaction
       [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced?
-                               symbol  symbol :network network}]
+                               :network network}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]
