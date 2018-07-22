@@ -94,7 +94,10 @@
                             (re-frame/dispatch [:remove-browser browser-id]))))]
         (if dapp?
           [toolbar-content-dapp name]
-          [toolbar-content url browser])]
+          [toolbar-content url browser])
+        [toolbar.view/actions [{:icon      :icons/wallet
+                                :icon-opts {:color :black}
+                                :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}]]]
        [react/view components.styles/flex
         [components.webview-bridge/webview-bridge
          {:ref                                   #(reset! webview %)

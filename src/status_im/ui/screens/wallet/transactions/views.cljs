@@ -43,20 +43,20 @@
 
 (defn- transaction-type->icon [k]
   (case k
-    :inbound                (transaction-icon :icons/arrow-left (colors/alpha colors/green 0.2) colors/green)
-    :outbound               (transaction-icon :icons/arrow-right (colors/alpha colors/blue 0.1) colors/blue)
-    :failed                 (transaction-icon :icons/exclamation-mark colors/gray-light colors/red)
-    (:postponed :pending)   (transaction-icon :icons/arrow-right colors/gray-light colors/gray)
+    :inbound (transaction-icon :icons/arrow-left (colors/alpha colors/green 0.2) colors/green)
+    :outbound (transaction-icon :icons/arrow-right (colors/alpha colors/blue 0.1) colors/blue)
+    :failed (transaction-icon :icons/exclamation-mark colors/gray-light colors/red)
+    (:postponed :pending) (transaction-icon :icons/arrow-right colors/gray-light colors/gray)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol]} network]
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value time-formatted symbol]} network hide-details?]
   (let [[label contact address
          contact-accessibility-label
          address-accessibility-label] (if (inbound? type)
                                         [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
                                         [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
         {:keys [decimals]}   (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-    [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
+    [list/touchable-item #(when-not hide-details? (re-frame/dispatch [:show-transaction-details hash]))
      [react/view {:accessibility-label :transaction-item}
       [list/item
        [list/item-icon (transaction-type->icon (keyword type))]
@@ -85,10 +85,11 @@
                       :number-of-lines     1
                       :accessibility-label address-accessibility-label}
           address]]]
-       [list/item-icon {:icon      :icons/forward
-                        :style     {:margin-top 10}
-                        :icon-opts (merge styles/forward
-                                          {:accessibility-label :show-transaction-button})}]]]]))
+       (when-not hide-details?
+         [list/item-icon {:icon      :icons/forward
+                          :style     {:margin-top 10}
+                          :icon-opts (merge styles/forward
+                                            {:accessibility-label :show-transaction-button})}])]]]))
 
 (defn filtered-transaction? [transaction filter-data]
   (:checked? (some #(when (= (:type transaction) (:id %)) %) (:type filter-data))))
@@ -96,14 +97,14 @@
 (defn update-transactions [m filter-data]
   (update m :data (fn [v] (filter #(filtered-transaction? % filter-data) v))))
 
-(defview history-list []
+(defview history-list [& [hide-details?]]
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             filter-data               [:wallet.transactions/filters]
             network                   [:get-current-account-network]]
     [react/view components.styles/flex
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :key-fn          :hash
-                         :render-fn       #(render-transaction % network)
+                         :render-fn       #(render-transaction % network hide-details?)
                          :empty-component [react/i18n-text {:style styles/empty-text
                                                             :key   :transactions-history-empty}]
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
@@ -127,10 +128,10 @@
      label]]])
 
 (defn- wrap-filter-data [m]
-  [{:title      (i18n/label :t/transactions-filter-type)
-    :key        :type
-    :render-fn  render-item-filter
-    :data       (:type m)}])
+  [{:title     (i18n/label :t/transactions-filter-type)
+    :key       :type
+    :render-fn render-item-filter
+    :data      (:type m)}])
 
 (defview filter-history []
   (letsubs [filter-data [:wallet.transactions/filters]]
@@ -194,9 +195,9 @@
   ([label props-value]
    (details-list-row label props-value nil))
   ([label props-value extra-props-value]
-   (let [[props value]             (if (string? props-value)
-                                     [nil props-value]
-                                     props-value)
+   (let [[props value] (if (string? props-value)
+                         [nil props-value]
+                         props-value)
          [extra-props extra-value] (if (string? extra-props-value)
                                      [nil extra-props-value]
                                      extra-props-value)]
@@ -240,8 +241,8 @@
 
 (defview transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
-            confirmations                           [:wallet.transactions.details/confirmations]
-            confirmations-progress                  [:wallet.transactions.details/confirmations-progress]]
+            confirmations          [:wallet.transactions.details/confirmations]
+            confirmations-progress [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
