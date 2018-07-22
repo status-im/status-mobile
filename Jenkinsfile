@@ -25,7 +25,7 @@ timeout(90) {
 
       try {
         stage('Git & Dependencies') {
-          slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
+          sendSlackNotification('good', BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL)
 
           checkout scm
           sh 'git rebase origin/develop'
@@ -93,8 +93,7 @@ timeout(90) {
 
         stage('Slack/GH Notifications') {
           def c = (testPassed ? 'good' : 'warning' )
-
-          slackSend color: c, message: ('Branch: ' + BRANCH_NAME + '\nAndroid: ' + apkUrl + '\niOS: ' + ipaUrl);
+          sendSlackNotification(c, 'Branch: ' + BRANCH_NAME + '\nAndroid: ' + apkUrl + '\niOS: ' + ipaUrl)
 
           withCredentials([string(credentialsId: 'GIT_HUB_TOKEN', variable: 'githubToken')]) {
             def commentMsg = ("branch " + BRANCH_NAME + ":\\napk uploaded to " + apkUrl + "\\nipa uploaded to " + ipaUrl)
@@ -126,7 +125,7 @@ timeout(90) {
         }
 
       } catch (e) {
-        slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+        sendSlackNotification('bad', BRANCH_NAME + ' failed to build. ' + env.BUILD_URL)
         throw e
       }
     }

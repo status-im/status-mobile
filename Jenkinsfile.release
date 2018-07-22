@@ -5,18 +5,6 @@ env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
 
-def installJSDeps() {
-    def attempt = 1
-    def maxAttempts = 10
-    def installed = false
-    while (!installed && attempt <= maxAttempts) {
-        println "#${attempt} attempt to install npm deps"
-        sh 'npm install'
-        installed = fileExists('node_modules/web3/index.js')
-        attemp = attempt + 1
-    }
-}
-
 timeout(90) {
     node ('macos'){
       def apkUrl = ''
@@ -30,35 +18,12 @@ timeout(90) {
       try {
 
         stage('Git & Dependencies') {
-          slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
-
-          checkout scm
-
-          version = readFile("${env.WORKSPACE}/VERSION").trim()
-
-          sh 'git fetch --tags'
-
-          sh 'rm -rf node_modules'
-          sh 'cp .env.prod .env'
-          sh 'lein deps'
-          installJSDeps()
-
-          sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
-          sh 'cd ios && pod install && cd ..'
+          sendSlackNotification('good', BRANCH_NAME + ' build started. ' + env.BUILD_URL)
+          gitDependencies()
         }
 
         stage('Tag Build') {
-          withCredentials([[
-            $class: 'UsernamePasswordMultiBinding',
-            credentialsId: 'jenkins-status-im',
-            usernameVariable: 'GIT_USER',
-            passwordVariable: 'GIT_PASS'
-          ]]) {
-            build_no = sh(
-              returnStdout: true,
-              script: './scripts/build_no.sh --increment'
-            ).trim()
-          }
+          buildTag()
         }
 
         stage('Tests') {
@@ -109,13 +74,13 @@ timeout(90) {
         }
 
       } catch (e) {
-        slackSend color: 'bad', message: 'Release build failed to build. ' + env.BUILD_URL
+        sendSlackNotification('bad', 'Release build failed to build. ' + env.BUILD_URL)
         throw e
       }
 
       stage('Slack Notification') {
         def c = (testPassed ? 'good' : 'warning' )
-        slackSend color: c, message: 'Release build \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl
+        sendSlackNotification(c, 'Release build \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl)
       }
 
       stage('Build (Android) for e2e tests') {
