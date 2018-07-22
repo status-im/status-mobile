@@ -41,7 +41,7 @@
                     :decimals 8}
                    {:symbol   :REP
                     :name     "Reputation"
-                    :address  "0xe94327d07fc17907b4db788e5adf2ed424addff6"
+                    :address  "0x1985365e9f78359a9B6AD760e32412f4a445E862"
                     :decimals 18}
                    {:symbol   :POWR
                     :name     "PowerLedger"
