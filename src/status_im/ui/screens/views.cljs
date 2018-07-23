@@ -120,6 +120,7 @@
                :on-request-close (fn []
                                    (cond
                                      (#{:wallet-send-transaction-modal
+                                        :wallet-sign-message-modal
                                         :wallet-transaction-fee}
                                       modal-view)
                                      (dispatch [:wallet/discard-transaction-navigate-back])

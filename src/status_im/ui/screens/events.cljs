@@ -1,8 +1,5 @@
 (ns status-im.ui.screens.events
-  (:require status-im.bots.events
-            status-im.chat.events
-            status-im.commands.handlers.jail
-            status-im.commands.events.loading
+  (:require status-im.chat.events
             status-im.network.events
             [status-im.transport.handlers :as transport.handlers]
             status-im.protocol.handlers
@@ -16,7 +13,6 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.dimensions :as dimensions]
             status-im.utils.universal-links.events
-            [status-im.chat.commands.core :as commands]
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
@@ -73,11 +69,7 @@
       :path    path
       :params  params
       :callback (fn [jail-response]
-                  (when-let [event (if callback-event-creator
-                                     (callback-event-creator jail-response)
-                                     [:chat-received-message/bot-response
-                                      {:chat-id chat-id}
-                                      jail-response])]
+                  (when-let [event (callback-event-creator jail-response)]
                     (re-frame/dispatch event)))})))
 
 ;;;; COFX
@@ -98,28 +90,6 @@
    (assoc coeffects :random-id-seq (repeatedly random/id))))
 
 ;;;; FX
-
-(re-frame/reg-fx
- :call-jail
- (fn [args]
-   (doseq [{:keys [callback-event-creator] :as opts} args]
-     (status/call-jail
-      (-> opts
-          (dissoc :callback-event-creator)
-          (assoc :callback
-                 (fn [jail-response]
-                   (when-let [event (callback-event-creator jail-response)]
-                     (re-frame/dispatch event)))))))))
-
-(re-frame/reg-fx
- :call-jail-function
- call-jail-function)
-
-(re-frame/reg-fx
- :call-jail-function-n
- (fn [opts-seq]
-   (doseq [opts opts-seq]
-     (call-jail-function opts))))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -336,7 +306,6 @@
  :initialize-account-db
  (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
               network network-status peers-count peers-summary view-id navigation-stack
-              access-scope->commands-responses
               status-module-initialized? status-node-started? device-UUID]
        :or   [network (get app-db :network)]} [_ address]]
    (let [console-contact (get contacts constants/console-chat-id)
@@ -344,7 +313,6 @@
          account-network-id (get current-account :network network)
          account-network (get-in current-account [:networks account-network-id])]
      (cond-> (assoc app-db
-                    :access-scope->commands-responses access-scope->commands-responses
                     :current-public-key (:public-key current-account)
                     :view-id view-id
                     :navigation-stack navigation-stack
@@ -414,31 +382,6 @@
  (fn [_ _]
    {::get-fcm-token-fx nil}))
 
-;; Because we send command to jail in params and command `:ref` is a lookup vector with
-;; keyword in it (for example `["transactor" :command 51 "send"]`), we lose that keyword
-;; information in the process of converting to/from JSON, and we need to restore it
-(defn- restore-command-ref-keyword
-  [orig-params]
-  (if [(get-in orig-params [:command :command :ref])]
-    (update-in orig-params [:command :command :ref 1] keyword)
-    orig-params))
-
-(defn handle-jail-signal [{:keys [chat_id data]}]
-  (let [{:keys [event data]} (types/json->clj data)]
-    (case event
-      "local-storage"    [:set-local-storage {:chat-id chat_id
-                                              :data    data}]
-      "show-suggestions" [:show-suggestions-from-jail {:chat-id chat_id
-                                                       :markup  data}]
-      "send-message"     [:chat-send-message/from-jail {:chat-id chat_id
-                                                        :message data}]
-      "handler-result"   (let [orig-params (:origParams data)]
-                           ;; TODO(janherich): figure out and fix chat_id from event
-                           [:command-handler! (:chat-id orig-params)
-                            (restore-command-ref-keyword orig-params)
-                            {:result {:returned (dissoc data :origParams)}}])
-      (log/debug "Unknown jail signal " event))))
-
 (handlers/register-handler-fx
  :discovery/summary
  (fn [{:keys [db] :as cofx} [_ peers-summary]]
@@ -463,7 +406,6 @@
                        "node.started"        [:status-node-started]
                        "node.stopped"        [:status-node-stopped]
                        "module.initialized"  [:status-module-initialized]
-                       "jail.signal"         (handle-jail-signal event)
                        "envelope.sent"       [:signals/envelope-status (:hash event) :sent]
                        "envelope.expired"    [:signals/envelope-status (:hash event) :not-sent]
                        "discovery.summary"   [:discovery/summary event]

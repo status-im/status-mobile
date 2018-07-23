@@ -118,12 +118,7 @@
                        2 active-chat-2
                        3 {:is-active false :chat-id 3}
                        const/console-chat-id console}]
-    (testing "in normal it returns only chats with is-active, without console"
+    (testing "it returns only chats with is-active, without console"
       (is (= {1 active-chat-1
               2 active-chat-2}
-             (s/active-chats [chats {:dev-mode? false}]))))
-    (testing "in dev-mode it returns only chats with is-active, keeping console"
-      (is (= {1 active-chat-1
-              2 active-chat-2
-              const/console-chat-id console}
-             (s/active-chats [chats {:dev-mode? true}]))))))
+             (s/active-chats chats))))))

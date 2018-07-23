@@ -18,11 +18,12 @@
 
 (defview validation-messages-view []
   (letsubs [chat-input-margin [:chat-input-margin]
-            input-height [:get-current-chat-ui-prop :input-height]
-            messages [:validation-messages]]
-    (when messages
-      [react/view (style/root (+ input-height chat-input-margin))
-       (if (string? messages)
-         [messages-list [validation-message {:title       (i18n/label :t/error)
-                                             :description messages}]]
-         [messages-list messages])])))
+            input-height      [:get-current-chat-ui-prop :input-height]
+            validation-result [:validation-messages]]
+    (when validation-result
+      (let [message (if (string? validation-result)
+                      {:title       (i18n/label :t/error)
+                       :description validation-result}
+                      validation-result)]
+        [react/view (style/root (+ input-height chat-input-margin))
+         [messages-list [validation-message message]]]))))

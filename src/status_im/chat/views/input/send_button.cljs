@@ -10,7 +10,7 @@
 
 (defn send-button-view-on-update [{:keys [spin-value command-completion]}]
   (fn [_]
-    (let [to-spin-value (if (some #{:complete :no-command} [@command-completion]) 1 0)]
+    (let [to-spin-value (if (#{:complete :no-command} command-completion) 1 0)]
       (animation/start
        (animation/timing spin-value {:toValue  to-spin-value
                                      :duration 300})))))
@@ -20,16 +20,14 @@
     (not (or (string/blank? trimmed) (= trimmed "/")))))
 
 (defview send-button-view []
-  (letsubs [command-completion                      [:command-completion]
-            selected-command                        [:selected-chat-command]
+  (letsubs [{:keys [command-completion]}            [:selected-chat-command]
             {:keys [input-text seq-arg-input-text]} [:get-current-chat]
-            spin-value                              (animation/create-value 1)
-            on-update                               (send-button-view-on-update {:spin-value         spin-value
-                                                                                 :command-completion command-completion})]
-    {:component-did-update on-update}
+            spin-value                              (animation/create-value 1)]
+    {:component-did-update (send-button-view-on-update {:spin-value         spin-value
+                                                        :command-completion command-completion})}
     (when (and (sendable? input-text)
-               (or (not selected-command)
-                   (some #{:complete :less-than-needed} [command-completion])))
+               (or (not command-completion)
+                   (#{:complete :less-than-needed} command-completion)))
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:send-current-message])}
        (let [spin (.interpolate spin-value (clj->js {:inputRange  [0 1]
                                                      :outputRange ["0deg" "90deg"]}))]
