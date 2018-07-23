@@ -9,10 +9,12 @@
 (spec/def :browser/error? (spec/nilable boolean?))
 (spec/def :browser/history (spec/nilable vector?))
 (spec/def :browser/history-index (spec/nilable int?))
+(spec/def :browser/loading? (spec/nilable boolean?))
 
 (spec/def :browser/options
   (allowed-keys
    :opt-un [:browser/browser-id
+            :browser/loading?
             :browser/error?]))
 
 (spec/def :browser/browser

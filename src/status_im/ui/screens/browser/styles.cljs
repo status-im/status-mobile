@@ -39,9 +39,15 @@
    :justify-content  :center})
 
 (def web-view-loading
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+  {:flex             1
+   :background-color colors/gray-transparent
+   :align-items      :center
+   :justify-content  :center
+   :position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0})
 
 (def web-view-error
   {:flex             1
