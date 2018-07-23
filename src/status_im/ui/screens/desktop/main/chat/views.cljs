@@ -198,8 +198,8 @@
                   contact-identity       [:get-current-contact-identity]]
                  ;; handle three possible cases
                  ;; 1. coming from a private chat with all contact information readily available
-                 ;; 2. come from public chat with alrady saved user info in contacts
-                 ;; 3. come from a public chat with nothing but a whisper identity
+                 ;; 2. coming from public chat with already saved user info in contacts
+                 ;; 3. coming from a public chat with nothing but a whisper identity
                  (let [{:keys [pending? whisper-identity] :as contact} (or current-chat-contact
                                                                            already-stored-contact
                                                                            (utils.contacts/whisper-id->new-contact contact-identity))]
