@@ -3,11 +3,12 @@
   (:require [re-frame.core :as re-frame]
             [clojure.string :as str]
             [status-im.constants :as constants]
+            [status-im.chat.commands.core :as commands]
+            [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.styles :as component.styles]
             [status-im.utils.core :as utils]
-            [status-im.commands.utils :as commands-utils]
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
@@ -19,18 +20,12 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.models.browser :as model]))
 
-(defn command-short-preview
-  [{:keys [command] {:keys [amount asset]} :params}]
-  [chat-preview/text {}
-   (str
-    (i18n/label (if (= command constants/command-request)
-                  :command-requesting
-                  :command-sending))
-    (i18n/label-number amount)
-    " "
-    asset)])
+(defview command-short-preview [message]
+  (letsubs [id->command [:get-id->command]]
+    (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
+      (commands/generate-short-preview command message))))
 
-(defn message-content-text [{:keys [content] :as message}]
+(defn message-content-text [{:keys [content content-type] :as message}]
   [react/view styles/last-message-container
    (cond
 
@@ -49,11 +44,10 @@
                   :accessibility-label :chat-message-text}
       (:content content)]
 
-     (and (:command content) (-> content :short-preview :markup))
-     (commands-utils/generate-hiccup (-> content :short-preview :markup))
-
-     (contains? #{constants/command-request constants/command-send} (:command content))
-     [command-short-preview content]
+     (contains? #{constants/content-type-command
+                  constants/content-type-command-request}
+                content-type)
+     [command-short-preview message]
 
      :else
      [react/text {:style               styles/last-message-text

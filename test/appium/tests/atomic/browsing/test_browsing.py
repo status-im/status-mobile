@@ -95,3 +95,17 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.browser_next_page_button.click()
         browsing_view.find_text_part('Избранная статья')
         browsing_view.back_to_home_button.click()
+
+    @marks.testrail_id(3783)
+    @marks.smoke_1
+    def test_refresh_button_browsing_app_webview(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        status_test_dapp = sign_in_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.transactions_button.click()
+        status_test_dapp.find_full_text('Sign message')
+        status_test_dapp.browser_refresh_page_button.click()
+        status_test_dapp.find_full_text('defaultAccount')
+
+

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.choose-recipient.events
   (:require [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.wallet.send.events :as send.events]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.handlers :as handlers]
@@ -42,7 +41,9 @@
 ;; NOTE(janherich) - whenever changing assets, we want to clear the previusly set amount/amount-text
 (defn changed-asset [{:keys [db] :as fx} old-symbol new-symbol]
   (-> fx
-      (merge (send.events/update-gas-price db))
+      (merge {:update-gas-price {:web3          (:web3 db)
+                                 :success-event :wallet/update-gas-price-success
+                                 :edit?         false}})
       (assoc-in [:db :wallet :send-transaction :amount] nil)
       (assoc-in [:db :wallet :send-transaction :amount-text] nil)
       (assoc-in [:db :wallet :send-transaction :asset-error]
