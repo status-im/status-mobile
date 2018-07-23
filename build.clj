@@ -8,7 +8,7 @@
 (def cljsbuild-config
   {:dev
    {:ios
-    {:source-paths     ["components/src" "react-native/src" "src"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
      :compiler         {:output-to     "target/ios/app.js"
                         :main          "env.ios.main"
                         :output-dir    "target/ios"
@@ -16,7 +16,7 @@
                         :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
-    {:source-paths     ["components/src" "react-native/src" "src"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
      :compiler         {:output-to     "target/android/app.js"
                         :main          "env.android.main"
                         :output-dir    "target/android"
@@ -26,7 +26,7 @@
 
    :prod
    {:ios
-    {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
      :compiler         {:output-to          "index.ios.js"
                         :output-dir         "target/ios-prod"
                         :static-fns         true
@@ -38,7 +38,7 @@
                         :language-in        :ecmascript5}
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
-    {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
      :compiler         {:output-to          "index.android.js"
                         :output-dir         "target/android-prod"
                         :static-fns         true
