@@ -8,24 +8,24 @@
             [status-im.react-native.js-dependencies :as js-dependencies])
   (:refer-clojure :exclude [use]))
 
-(if-not platform/desktop?
-  (do (defn get-property [name]
-        (object/get js-dependencies/svg name))
+(when-not platform/desktop?
+  (defn get-property [name]
+    (object/get js-dependencies/svg name))
 
-      (defn adapt-class [class]
-        (when class
-          (reagent/adapt-react-class class)))
+  (defn adapt-class [class]
+    (when class
+      (reagent/adapt-react-class class)))
 
-      (defn get-class [name]
-        (adapt-class (get-property name)))
+  (defn get-class [name]
+    (adapt-class (get-property name)))
 
-      (def svg (get-class "Svg"))
-      (def g (get-class "G"))
-      (def rect (get-class "Rect"))
-      (def path (get-class "Path"))
-      (def use (get-class "Use"))
-      (def defs (get-class "Defs"))
-      (def circle (get-class "Circle"))))
+  (def svg (get-class "Svg"))
+  (def g (get-class "G"))
+  (def rect (get-class "Rect"))
+  (def path (get-class "Path"))
+  (def use (get-class "Use"))
+  (def defs (get-class "Defs"))
+  (def circle (get-class "Circle")))
 
 (if platform/desktop?
   (def icons {:icons/discover            (js/require "./resources/icons/bottom/discover_gray.svg")
