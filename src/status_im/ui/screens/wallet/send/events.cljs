@@ -306,9 +306,13 @@
  (concat models.message/send-interceptors
          navigation/navigation-interceptors)
  (fn [{:keys [db] :as cofx} [chat-id params]]
-   (when-let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
+   ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
+   ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
+   (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
      (handlers-macro/merge-fx cofx
                               (commands-sending/send chat-id send-command params)
+                              (navigation/replace-view :wallet-transaction-sent))
+     (handlers-macro/merge-fx cofx
                               (navigation/replace-view :wallet-transaction-sent)))))
 
 (handlers/register-handler-fx
