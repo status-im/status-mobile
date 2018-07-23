@@ -53,7 +53,8 @@
          :placeholder-text-color components.styles/color-gray4
          :on-change-text         #(re-frame/dispatch [:wallet.send/set-password (security/mask-data %)])
          :style                  styles/password
-         :accessibility-label    :enter-password-input}]
+         :accessibility-label    :enter-password-input
+         :auto-capitalize        :none}]
        (when wrong-password?
          [tooltip/tooltip (i18n/label :t/wrong-password)])]]]))
 
