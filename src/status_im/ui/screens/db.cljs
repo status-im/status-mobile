@@ -19,7 +19,7 @@
 
 ;; initial state of app-db
 (def app-db {:current-public-key                 nil
-             :status-module-initialized?         (or platform/ios? js/goog.DEBUG)
+             :status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
              :keyboard-height                    0
              :tab-bar-visible?                   true
              :navigation-stack                   '()
@@ -51,6 +51,7 @@
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
+             :tooltips                           {}
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)})
 
@@ -128,6 +129,7 @@
                                                                          :navigation.screen-params/collectibles-list])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
+(spec/def ::tooltips (spec/nilable any?))
 
 ;;;;NETWORK
 
@@ -216,6 +218,7 @@
                  ::modal
                  ::was-modal?
                  ::rpc-url
+                 ::tooltips
                  ::web3
                  ::web3-node-version
                  ::webview-bridge

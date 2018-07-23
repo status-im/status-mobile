@@ -17,6 +17,7 @@
             status-im.ui.screens.currency-settings.subs
             status-im.ui.screens.browser.subs
             status-im.ui.screens.add-new.new-chat.subs
+            status-im.ui.screens.add-new.new-public-chat.subs
             status-im.ui.screens.profile.subs))
 
 (reg-sub :get

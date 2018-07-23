@@ -9,6 +9,7 @@ def installJSDeps() {
     def installed = false
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
+        sh 'scripts/prepare-for-platform.sh mobile'
         sh 'npm install'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
@@ -72,7 +73,7 @@ timeout(90) {
               hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
             }
             apkUrl = 'https://i.diawi.com/' + hash
-            
+
             sh ('echo ARTIFACT Android: ' + apkUrl)
           }
         }

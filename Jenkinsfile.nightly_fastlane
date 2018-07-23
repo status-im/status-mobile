@@ -12,6 +12,7 @@ def installJSDeps() {
     def installed = false
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
+        sh 'scripts/prepare-for-platform.sh mobile'
         sh 'npm install'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
