@@ -17,6 +17,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
             [status-im.utils.contacts :as utils.contacts]
+            [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.i18n :as i18n]))
 
 (views/defview toolbar-chat-view []
@@ -203,9 +204,11 @@
                  (let [{:keys [pending? whisper-identity] :as contact} (or current-chat-contact
                                                                            already-stored-contact
                                                                            (utils.contacts/whisper-id->new-contact contact-identity))]
-                   [react/view {:style styles/chat-profile-body}
+                   [react/view
+                    [react/view {:style styles/desktop-profile-back-button}
+                     toolbar.view/default-nav-back]
                     [profile.views/profile-badge contact]
-                    [react/view
+                    [react/view {:style styles/chat-profile-body}
                      ;; pending? will come back as nil for public chat so explicitly check for false here
                      (if (false? pending?)
                        [react/view {:style styles/chat-profile-row}

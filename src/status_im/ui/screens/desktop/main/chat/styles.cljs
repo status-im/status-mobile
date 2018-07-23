@@ -128,6 +128,11 @@
 (def chat-profile-body
   {:margin 32})
 
+
+(def desktop-profile-back-button
+  {:margin-left 20
+   :margin-top  10})
+
 (def chat-profile-row
   {:flex-direction :row
    :align-items    :center
