@@ -5,7 +5,6 @@
             [re-frame.core :refer [dispatch] :as re-frame]
             [taoensso.timbre :as log]
             [cljs.core.async :as async :refer [<!]]
-            [status-im.utils.js-resources :as js-res]
             [status-im.utils.platform :as p]
             [status-im.utils.types :as types]
             [status-im.utils.transducers :as transducers]
@@ -50,18 +49,6 @@
 (def status
   (when (exists? (.-NativeModules rn-dependencies/react-native))
     (.-Status (.-NativeModules rn-dependencies/react-native))))
-
-(defn init-jail []
-  (when status
-    (call-module
-     (fn []
-       (let [init-js (string/join [js-res/status-js
-                                   "I18n.locale = '"
-                                   rn-dependencies/i18n.locale
-                                   "'; "
-                                   js-res/web3])]
-         (.initJail status init-js #(do (re-frame/dispatch [:initialize-keychain])
-                                        (log/debug "JavaScriptCore jail initialized"))))))))
 
 (defonce listener-initialized (atom false))
 
@@ -138,86 +125,6 @@
 (defn- append-catalog-init [js]
   (str js "\n" "var catalog = JSON.stringify(_status_catalog); catalog;"))
 
-(defn parse-jail [bot-id file callback]
-  (when status
-    (call-module #(.parseJail status
-                              bot-id
-                              (append-catalog-init file)
-                              callback))))
-
-(defn execute-call [{:keys [jail-id path params callback]}]
-  (when status
-    (call-module
-     #(do
-        (log/debug :call-jail :jail-id jail-id)
-        (log/debug :call-jail :path path)
-        ;; this debug message can contain sensitive info
-        #_(log/debug :call-jail :params params)
-        (let [params' (update params :context assoc
-                              :debug js/goog.DEBUG
-                              :locale rn-dependencies/i18n.locale)
-              cb      (fn [jail-result]
-                        (let [result (-> jail-result
-                                         types/json->clj
-                                         (assoc :bot-id jail-id)
-                                         (update :result types/json->clj))]
-                          (callback result)))]
-          (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
-
-;; We want the mainting (time) windowed queue of all calls to the jail
-;; in order to de-duplicate certain type of calls made in rapid succession
-;; where it's beneficial to only execute the last call of that type.
-;;
-;; The reason why is to improve performance and user feedback, for example
-;; when making command argument suggestion lookups, everytime the command
-;; input changes (so the user types/deletes a character), we need to fetch
-;; new suggestions.
-;; However the process of asynchronously fetching and displaying them
-;; is unfortunately not instant, so without de-duplication, given that user
-;; typed N characters in rapid succession, N percievable suggestion updates
-;; will be performed after user already stopped typing, which gives
-;; impression of slow, unresponsive UI.
-;;
-;; With de-duplication in some timeframe (set to 400ms currently), only
-;; the last suggestion call for given jail-id jail-path combination is
-;; made, and the UI feedback is much better + we save some unnecessary
-;; calls to jail.
-
-(def ^:private queue-flush-time 400)
-
-(def ^:private call-queue (async/chan))
-(def ^:private deduplicated-calls (async/chan))
-
-(async-util/chunked-pipe! call-queue deduplicated-calls queue-flush-time)
-
-(defn compare-calls
-  "Used as comparator deciding which calls should be de-duplicated.
-  Whenever we fetch suggestions, we only want to issue the last call
-  done in the `queue-flush-time` window, for all other calls, we have
-  de-duplicate based on call identity"
-  [{:keys [jail-id path] :as call}]
-  (if (= :suggestions (last path))
-    [jail-id path]
-    call))
-
-(go-loop []
-  (doseq [call (sequence (transducers/last-distinct-by compare-calls) (<! deduplicated-calls))]
-    (execute-call call))
-  (recur))
-
-(defn call-jail [call]
-  (async/put! call-queue call))
-
-(defn call-function!
-  [{:keys [chat-id function callback] :as opts}]
-  (let [path   [:functions function]
-        params (select-keys opts [:parameters :context])]
-    (call-jail
-     {:jail-id  chat-id
-      :path     path
-      :params   params
-      :callback callback})))
-
 (defn set-soft-input-mode [mode]
   (when status
     (call-module #(.setSoftInputMode status mode))))
@@ -254,8 +161,7 @@
 (defrecord ReactNativeStatus []
   module/IReactNativeStatus
   ;; status-go calls
-  (-init-jail [this]
-    (init-jail))
+  (-init-jail [this])
   (-start-node [this config]
     (start-node config))
   (-stop-node [this]
@@ -272,12 +178,9 @@
     (approve-sign-request-with-args id password gas gas-price callback))
   (-discard-sign-request [this id]
     (discard-sign-request id))
-  (-parse-jail [this chat-id file callback]
-    (parse-jail chat-id file callback))
-  (-call-jail [this params]
-    (call-jail params))
-  (-call-function! [this params]
-    (call-function! params))
+  (-parse-jail [this chat-id file callback])
+  (-call-jail [this params])
+  (-call-function! [this params])
   (-call-web3 [this payload callback]
     (call-web3 payload callback))
   (-call-web3-private [this payload callback]

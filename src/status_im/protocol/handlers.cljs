@@ -32,11 +32,6 @@
       (fn [error sync]
         (re-frame/dispatch [:update-sync-state error sync]))))))
 
-(re-frame/reg-fx
- ::status-init-jail
- (fn []
-   (status/init-jail)))
-
 (defn- assert-correct-network
   [{:keys [db]}]
   ;; Assure that node was started correctly

@@ -19,9 +19,6 @@
       (log/debug :callback name args)
       (apply callback args)))
 
-(defn init-jail []
-  (module-interface/-init-jail rns-module))
-
 (defn move-to-internal-storage [callback]
   (module-interface/-move-to-internal-storage rns-module callback))
 
@@ -48,15 +45,6 @@
 
 (defn discard-sign-request [id]
   (module-interface/-discard-sign-request rns-module id))
-
-(defn parse-jail [chat-id file callback]
-  (module-interface/-parse-jail rns-module chat-id file callback))
-
-(defn call-jail [params]
-  (module-interface/-call-jail rns-module params))
-
-(defn call-function! [params]
-  (module-interface/-call-function! rns-module params))
 
 (defn set-soft-input-mode [mode]
   (module-interface/-set-soft-input-mode rns-module mode))

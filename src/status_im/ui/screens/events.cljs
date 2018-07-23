@@ -58,20 +58,6 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
-;;;; Helper fns
-
-(defn- call-jail-function
-  [{:keys [chat-id function callback-event-creator] :as opts}]
-  (let [path   [:functions function]
-        params (select-keys opts [:parameters :context])]
-    (status/call-jail
-     {:jail-id chat-id
-      :path    path
-      :params  params
-      :callback (fn [jail-response]
-                  (when-let [event (callback-event-creator jail-response)]
-                    (re-frame/dispatch event)))})))
-
 ;;;; COFX
 
 (re-frame/reg-cofx
