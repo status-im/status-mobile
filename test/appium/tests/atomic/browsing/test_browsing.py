@@ -107,5 +107,3 @@ class TestBrowsing(SingleDeviceTestCase):
         status_test_dapp.find_full_text('Sign message')
         status_test_dapp.browser_refresh_page_button.click()
         status_test_dapp.find_full_text('defaultAccount')
-
-

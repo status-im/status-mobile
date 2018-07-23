@@ -51,7 +51,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1.set_network_connection(2)  # turning on WiFi connection on primary device
 
-        home_1.reconnect()
+        home_1.connection_status.wait_for_invisibility_of_element()
         chat_element = home_1.get_chat_with_user(username_2)
         chat_element.wait_for_visibility_of_element(20)
         chat_1 = chat_element.click()

@@ -3,8 +3,8 @@ import time
 import pytest
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from tests import info
-from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
-from views.base_view import BaseView
+from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, PublicKeyText
 
 
@@ -36,13 +36,13 @@ class TransactionPopupText(BaseText):
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('send-payment-button')
+        self.locator = self.Locator.accessibility_id('send-button')
 
 
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('request-payment-button')
+        self.locator = self.Locator.accessibility_id('request-button')
 
 
 class AssetCommand(BaseButton):
@@ -198,11 +198,6 @@ class ChatElementByText(BaseText):
 
     @property
     def progress_bar(self):
-        class ProgressBar(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super(ProgressBar, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
-
         return ProgressBar(self.driver, self.locator.value)
 
     @property
@@ -348,7 +343,7 @@ class ChatView(BaseView):
         send_transaction_view.sign_transaction(password)
         chat_elem = self.chat_element_by_text(amount)
         chat_elem.wait_for_visibility_of_element()
-        chat_elem.progress_bar.wait_for_invisibility_of_element()
+        chat_elem.progress_bar.wait_for_invisibility_of_element(20)
         if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
             pytest.fail('Sent transaction message was not sent')
 

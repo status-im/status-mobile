@@ -95,3 +95,19 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.enter_password_input.send_keys(common_password)
         send_transaction_view.sign_transaction_button.click()
         send_transaction_view.check_no_values_in_logcat(password=common_password)
+
+    @marks.testrail_id(1380)
+    @marks.smoke_1
+    def test_request_eth_in_status_test_dapp(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        status_test_dapp = sign_in_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.assets_button.click()
+        status_test_dapp.request_eth_button.click()
+        status_test_dapp.element_by_text('Faucet request recieved').wait_for_visibility_of_element()
+        status_test_dapp.ok_button.click()
+        status_test_dapp.browser_cross_icon.click()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.wait_balance_changed_on_wallet_screen()

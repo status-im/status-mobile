@@ -222,7 +222,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
         send_transaction.enter_password_input.send_keys(sender['password'])
-        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction_button.click_until_presence_of_element(send_transaction.got_it_button)
         send_transaction.got_it_button.click()
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount, token=True, decimals=7)
 

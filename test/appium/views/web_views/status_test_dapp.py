@@ -7,6 +7,11 @@ class AssetsButton(BaseButton):
         super(AssetsButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Assets')
 
+    class RequestETHButton(BaseButton):
+        def __init__(self, driver):
+            super(AssetsButton.RequestETHButton, self).__init__(driver)
+            self.locator = self.Locator.text_selector('Request Ropsten ETH')
+
     class RequestSTTButton(BaseButton):
         def __init__(self, driver):
             super(AssetsButton.RequestSTTButton, self).__init__(driver)
@@ -54,6 +59,7 @@ class StatusTestDAppView(BaseWebView):
         self.driver = driver
 
         self.assets_button = AssetsButton(self.driver)
+        self.request_eth_button = AssetsButton.RequestETHButton(self.driver)
         self.request_stt_button = AssetsButton.RequestSTTButton(self.driver)
 
         self.transactions_button = TransactionsButton(self.driver)

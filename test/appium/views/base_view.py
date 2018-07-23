@@ -197,6 +197,12 @@ class ConfirmButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
 
 
+class ProgressBar(BaseElement):
+    def __init__(self, driver, parent_locator: str = ''):
+        super(ProgressBar, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver

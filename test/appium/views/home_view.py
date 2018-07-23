@@ -27,13 +27,6 @@ class PlusButton(BaseButton):
         return self.navigate()
 
 
-class ConsoleButton(BaseButton):
-    def __init__(self, driver):
-        super(ConsoleButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Console']")
-
-
 class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
         super(ChatElement, self).__init__(driver)
@@ -42,12 +35,8 @@ class ChatElement(BaseButton):
             "//*[@content-desc='chat-item'][.//*[starts-with(@text,'%s')]]" % self.username)
 
     def navigate(self):
-        if self.username == 'Status Console':
-            from views.console_view import ConsoleView
-            return ConsoleView(self.driver)
-        else:
-            from views.chat_view import ChatView
-            return ChatView(self.driver)
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
     def click(self):
         from views.chat_view import ChatMessageInput
@@ -115,7 +104,6 @@ class HomeView(BaseView):
         super(HomeView, self).__init__(driver)
         self.welcome_image = WelcomeImageElement(self.driver)
         self.plus_button = PlusButton(self.driver)
-        self.console_button = ConsoleButton(self.driver)
         self.chat_name_text = ChatNameText(self.driver)
         self.chat_url_text = ChatUrlText(self.driver)
 

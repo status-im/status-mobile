@@ -1,6 +1,6 @@
 from views.base_element import BaseText
 from views.base_element import BaseButton, BaseEditBox
-from views.base_view import BaseView, OkButton
+from views.base_view import BaseView, OkButton, ProgressBar
 
 
 class FirstRecipient(BaseButton):
@@ -165,11 +165,13 @@ class SendTransactionView(BaseView):
         self.error_dialog = ErrorDialog(self.driver)
 
         self.share_button = ShareButton(self.driver)
+        self.progress_bar = ProgressBar(self.driver)
 
     def sign_transaction(self, sender_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
-        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
+        self.sign_transaction_button.click()
+        self.progress_bar.wait_for_invisibility_of_element(30)
         self.got_it_button.click()
 
     def asset_by_name(self, asset_name):
