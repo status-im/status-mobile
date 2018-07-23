@@ -73,10 +73,13 @@
  :open-url-in-browser
  [re-frame/trim-v]
  (fn [cofx [url]]
-   (let [browser {:browser-id    (random/id)
+   (let [normalized-url          (http/normalize-and-decode-url url)
+         browser {:browser-id    (or (http/url-host normalized-url)
+                                     ;; purely as a fallback should url not parse...
+                                     (random/id))
                   :name          (i18n/label :t/browser)
                   :history-index 0
-                  :history       [(http/normalize-and-decode-url url)]}]
+                  :history       [normalized-url]}]
      (model/update-browser-and-navigate cofx browser))))
 
 (handlers/register-handler-fx

@@ -1,7 +1,9 @@
 (ns status-im.utils.http
   (:require [status-im.utils.utils :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [goog.Uri :as uri]
+            [clojure.string :as string])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms
@@ -64,6 +66,13 @@
   (str (when (and (string? url) (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
 
 (def normalize-and-decode-url (comp js/decodeURI normalize-url))
+
+(defn url-host [url]
+  (try
+    (when-let [host (.getDomain (goog.Uri. url))]
+      (when-not (string/blank? host)
+        host))
+    (catch :default _ nil)))
 
 (defn parse-payload [o]
   (when o
