@@ -70,8 +70,15 @@
       network->chain-keyword
       name))
 
-(defn sha3 [s]
-  (.sha3 dependencies/Web3.prototype (str s)))
+(defn sha3
+  ([s]
+   (.sha3 dependencies/Web3.prototype (str s)))
+  ([s opts]
+   (.sha3 dependencies/Web3.prototype (str s) (clj->js opts))))
+
+(defn hex->string [s]
+  (when s
+    (.toAscii dependencies/Web3.prototype s)))
 
 (defn hex->boolean [s]
   (= s "0x0"))

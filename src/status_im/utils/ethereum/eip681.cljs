@@ -1,5 +1,5 @@
 (ns status-im.utils.ethereum.eip681
-  "Utility function related to [EIP681](https://github.com/ethereum/EIPs/issues/681)
+  "Utility function related to [EIP681](https://eips.ethereum.org/EIPS/eip-681)
 
    This EIP standardize how ethereum payment request can be represented as URI (say to embed them in a QR code).
 
