@@ -12,7 +12,6 @@ def installJSDeps() {
     def installed = false
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
-        sh 'scripts/prepare-for-platform.sh mobile'
         sh 'npm install'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
@@ -39,13 +38,13 @@ timeout(90) {
 
           checkout scm
 
-          version = readFile("${env.WORKSPACE}/VERSION").trim()
-
           sh 'git fetch --tags'
 
           sh 'rm -rf node_modules'
           sh 'cp .env.prod .env'
 
+          sh 'scripts/prepare-for-platform.sh mobile'
+          version = readFile("${env.WORKSPACE}/VERSION").trim()
           installJSDeps()
 
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
