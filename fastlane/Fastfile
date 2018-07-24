@@ -7,44 +7,82 @@
 #
 
 # Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+update_fastlane
 
 
 platform :ios do
-  desc "Deploy a new internal build to iTunes Connect"
+
+  desc "Deploy a new nightly build to App Store Connect"
   lane :nightly do
     upload_to_testflight(
-      ipa: "status_appstore/StatusIm.ipa"
+      ipa: "status_appstore/StatusIm.ipa",
+      changelog: read_changelog,
+      metadata_path: "fastlane/metadata/ios/",
+      screenshots_path: "fastlane/metadata/ios/screenshots/"
     )
-    slack(message: "New nightly build uploaded to iTunes Connect")
+    slack(
+      message: "New nightly build uploaded to App Store Connect",
+      payload: {
+        "Release Notes" => changelog
+      },
+      default_payloads: []
+    )
   end
+
+  desc "Deploy a new release build to iTunes Connect"
   lane :release do
     upload_to_testflight(
-      ipa: "status_appstore/StatusIm.ipa"
+      ipa: "status_appstore/StatusIm.ipa",
+      changelog: read_changelog
     )
-    slack(message: "New release build uploaded to iTunes Connect")
+    slack(
+      message: "New release build uploaded to App Store Connect",
+      payload: {
+        "Release Notes" => changelog
+      },
+      default_payloads: []
+    )
   end
+
   desc "Remove inactive TestFlight users"
   lane :clean do
     clean_testflight_testers
   end
+
 end
 
 
 platform :android do
+
   desc "Deploy a new internal build to Google Play"
-  lane :nightly do
+  lane :nightly do |options|
+    changelog = read_changelog
+    if options[:build_no]
+      sh("echo '#{changelog}' > ./metadata/android/en-US/changelogs/#{options[:build_no]}.txt")
+    end
     upload_to_play_store(
       track: "internal",
       apk: "android/app/build/outputs/apk/release/app-release.apk"
     )
-    slack(message: "New nightly build uploaded to Google Play")
+    slack(
+      message: "New nightly build uploaded to Google Play",
+      payload: {
+        "Release Notes" => changelog
+      },
+      default_payloads: []
+    )
   end
+
+  desc "Deploy a new release build to Google Play"
   lane :release do
     upload_to_play_store(
       track: "alpha",
       apk: "android/app/build/outputs/apk/release/app-release.apk"
     )
-    slack(message: "New release build uploaded to Google Play")
+    slack(
+      message: "New release build uploaded to Google Play",
+      default_payloads: []
+    )
   end
+
 end

@@ -79,7 +79,7 @@ timeout(90) {
         }
 
         stage('Deploy (Android)') {
-          sh ('bundle exec fastlane android release')
+          sh 'bundle exec fastlane android release build_no:' + build_no
         }
 
         stage('Push build tag') {

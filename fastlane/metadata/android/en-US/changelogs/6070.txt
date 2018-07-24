@@ -1,0 +1,3 @@
+On the heels of our latest main-net opt-in release our beta version is rapidly approaching closer day by day. This release contains a whole lot of improvements to chatting stability with custom bootnodes, custom mail servers for an eventual distributed messaging experience, and some overall bug fixes and UI improvements. 
+
+NOTE:  ***To continue to use the chat feature, updating to 0.9.20 is required***
