@@ -23,9 +23,6 @@ if [ $# -eq 0 ]
 fi
 
 
-echo "Removing node_modules"
-rm -rf  node_modules
-
 echo "Creating link: package.json -> ${PLATFORM_FOLDER}/package.json "
 ln -sf  ${PLATFORM_FOLDER}/package.json package.json
 
