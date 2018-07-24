@@ -209,8 +209,10 @@
                      toolbar.view/default-nav-back]
                     [profile.views/profile-badge contact]
                     [react/view {:style styles/chat-profile-body}
-                     ;; pending? will come back as nil for public chat so explicitly check for false here
                      (if (false? pending?)
+                       ;; only display a user as "in contacts" if pending? is explicitly set to false here
+                       ;; nil should be interpreted as a user without this attribute set yet (and therefore is not a contact)
+                       ;; true indicates pending, therefor also not a contact
                        [react/view {:style styles/chat-profile-row}
                         [react/view {:style styles/chat-profile-icon-container
                                      :accessibility-label :add-contact-link}
