@@ -58,9 +58,7 @@
        [react/text {:style styles/author} name]])))
 
 (views/defview member-photo [from]
-  [react/touchable-highlight {:on-press #(do
-                                           (re-frame/dispatch [:set-public-chat-whisper-identity from])
-                                           (re-frame/dispatch [:navigate-to :chat-profile]))}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-public-chat-profile from])}
    [react/view
     [react/image {:source {:uri (identicon/identicon from)}
                   :style  styles/photo-style}]]])
@@ -233,4 +231,5 @@
                         (i18n/label :t/send-message)]]]
                      [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
                      [react/text {:style      {:font-size 14}
-                                  :selectable true} whisper-identity]]])))
+                                  :selectable true}
+                      whisper-identity]]])))
