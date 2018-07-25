@@ -178,7 +178,7 @@ class SendTransactionView(BaseView):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
         self.sign_transaction_button.click()
-        self.progress_bar.wait_for_invisibility_of_element(30)
+        self.progress_bar.wait_for_invisibility_of_element(60)
         self.got_it_button.click()
 
     def asset_by_name(self, asset_name):

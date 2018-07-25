@@ -30,6 +30,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_1_chat = device_1_home.add_contact(public_key)
         amount_1 = device_1_chat.get_unique_amount()
         device_1_chat.send_transaction_in_1_1_chat('ETH', amount_1, common_password, wallet_set_up=True)
+        device_1_chat.chat_element_by_text(amount_1).progress_bar.wait_for_invisibility_of_element()
         status_text_1 = device_1_chat.chat_element_by_text(amount_1).status.text
         if status_text_1 != 'Sent':
             self.errors.append("Message about sent funds has status '%s' instead of 'Sent'" % status_text_1)
@@ -38,6 +39,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_element_1 = device_2_chat.chat_element_by_text(amount_1)
         try:
             chat_element_1.wait_for_visibility_of_element(120)
+            chat_element_1.progress_bar.wait_for_invisibility_of_element()
             if chat_element_1.status.text != 'Network mismatch':
                 self.errors.append("'Network mismatch' warning is not shown for send transaction message")
             if not chat_element_1.contains_text('testnet'):
@@ -56,6 +58,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_element_2 = device_2_chat.chat_element_by_text(amount_2)
         try:
             chat_element_2.wait_for_visibility_of_element(120)
+            chat_element_2.progress_bar.wait_for_invisibility_of_element()
             if chat_element_2.status.text != 'Network mismatch':
                 self.errors.append("'Network mismatch' warning is not shown for request funds message")
             if not chat_element_2.contains_text('On testnet'):

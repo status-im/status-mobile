@@ -216,9 +216,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.edit_button.click()
         profile.edit_picture_button.click()
         profile.select_from_gallery_button.click()
-        for _ in range(2):
-            profile.deny_button.click()
-        profile.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        profile.deny_button.click()
+        profile.element_by_text(camera_access_error_text, element_type='text').wait_for_visibility_of_element(3)
         profile.ok_button.click()
         profile.edit_picture_button.click()
         profile.select_from_gallery_button.click()

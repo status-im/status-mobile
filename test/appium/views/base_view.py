@@ -98,6 +98,11 @@ class HomeButton(TabButton):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
+    def click(self):
+        from views.home_view import PlusButton
+        self.click_until_presence_of_element(PlusButton(self.driver))
+        return self.navigate()
+
 
 class WalletButton(TabButton):
     def __init__(self, driver):
@@ -108,6 +113,15 @@ class WalletButton(TabButton):
         from views.wallet_view import WalletView
         return WalletView(self.driver)
 
+    def click(self):
+        info('Tap on %s' % self.name)
+        from views.wallet_view import SetUpButton, SendTransactionButton
+        for _ in range(3):
+            self.find_element().click()
+            if SetUpButton(self.driver).is_element_displayed() or SendTransactionButton(
+                    self.driver).is_element_displayed():
+                return self.navigate()
+
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
@@ -117,6 +131,11 @@ class ProfileButton(TabButton):
     def navigate(self):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
+
+    def click(self):
+        from views.profile_view import ShareMyContactKeyButton
+        self.click_until_presence_of_element(ShareMyContactKeyButton(self.driver))
+        return self.navigate()
 
 
 class SaveButton(BaseButton):

@@ -45,8 +45,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recipient = transaction_users['E_USER']
         sender = transaction_users['F_USER']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
-        home_view = sign_in_view.get_home_view()
+        home_view = sign_in_view.recover_access(sender['passphrase'], sender['password'])
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         send_transaction = wallet_view.send_transaction_button.click()
@@ -223,7 +222,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction_button.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(sender['password'])
         send_transaction.sign_transaction_button.click_until_presence_of_element(send_transaction.got_it_button)
         send_transaction.got_it_button.click()

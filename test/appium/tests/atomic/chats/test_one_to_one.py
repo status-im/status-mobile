@@ -51,7 +51,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1.set_network_connection(2)  # turning on WiFi connection on primary device
 
-        home_1.connection_status.wait_for_invisibility_of_element()
+        home_1.connection_status.wait_for_invisibility_of_element(20)
         chat_element = home_1.get_chat_with_user(username_2)
         chat_element.wait_for_visibility_of_element(20)
         chat_1 = chat_element.click()
@@ -93,7 +93,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1.set_network_connection(2)  # turning on WiFi connection
         chat_1.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(30)
-        chat_1.reconnect()
         chat_1.element_by_text('Not sent. Tap for options').click()
         if not chat_1.element_by_text('Delete message').is_element_displayed():
             self.errors.append("'Delete message' button is not shown for not sent message")
