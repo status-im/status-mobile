@@ -88,6 +88,9 @@
         (< sync-interval-ms
            (- (time/timestamp) last-updated-at)))))
 
+(defn set-sync-started [{:keys [db]}]
+  {:db (assoc-in db [:wallet :transactions-sync-started?] true)})
+
 ; Fetch updated data for any unconfirmed transactions or incoming chat transactions missing in wallet
 ; and schedule new recurring sync request
 (defn sync [{:keys [db] :as cofx}]

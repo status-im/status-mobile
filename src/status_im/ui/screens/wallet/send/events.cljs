@@ -477,6 +477,13 @@
 (handlers/register-handler-fx
  :sync-wallet-transactions
  (fn [cofx _]
-   (handlers-macro/merge-fx cofx
-                            (wallet.transactions/load-missing-chat-transactions)
-                            (wallet.transactions/sync))))
+   (wallet.transactions/sync cofx)))
+
+(handlers/register-handler-fx
+ :start-wallet-transactions-sync
+ (fn [cofx _]
+   (when-not (get-in cofx [:db :wallet :transactions-sync-started?])
+     (handlers-macro/merge-fx cofx
+                              (wallet.transactions/load-missing-chat-transactions)
+                              (wallet.transactions/sync)
+                              (wallet.transactions/set-sync-started)))))
