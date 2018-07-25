@@ -32,9 +32,6 @@ public:
     QList<ModuleMethod*> methodsToExport() override;
     QVariantMap constantsToExport() override;
 
-    Q_INVOKABLE void initJail(QString js, double callbackId);
-    Q_INVOKABLE void parseJail(QString chatId, QString js, double callbackId);
-    Q_INVOKABLE void callJail(QString chatId, QString path, QString params, double callbackId);
     Q_INVOKABLE void startNode(QString configString);
     Q_INVOKABLE void shouldMoveToInternalStorage(double callbackId);
     Q_INVOKABLE void moveToInternalStorage(double callbackId);

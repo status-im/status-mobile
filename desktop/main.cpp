@@ -8,16 +8,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
- // #define BUILD_FOR_BUNDLE
+// #define BUILD_FOR_BUNDLE
 
 #include <QCommandLineParser>
 #include <QFile>
 #include <QGuiApplication>
 #include <QProcess>
 #include <QQuickView>
+#include <QStandardPaths>
 #include <QTimer>
 #include <QUrl>
-#include <QStandardPaths>
 
 #include "attachedproperties.h"
 #include "reactitem.h"
@@ -28,6 +28,9 @@
 QStringList consoleOutputStrings;
 bool ubuntuServerStarted = false;
 #endif
+
+const int MAIN_WINDOW_WIDTH = 1024;
+const int MAIN_WINDOW_HEIGHT = 768;
 
 // TODO: some way to change while running
 class ReactNativeProperties : public QObject {
@@ -141,14 +144,7 @@ int main(int argc, char **argv) {
   Q_INIT_RESOURCE(react_resources);
 
 #ifdef BUILD_FOR_BUNDLE
-  QString dataFolder = QDir::homePath() + "/Library/StatusIm/";
   qInstallMessageHandler(saveMessage);
-
-  QDir dir(dataFolder + "ethereum/mainnet_rpc");
-  if (!dir.exists()) {
-    dir.mkpath(".");
-  }
-
   runUbuntuServer();
 #endif
 
@@ -188,6 +184,7 @@ int main(int argc, char **argv) {
   view.rootContext()->setContextProperty("ReactNativeProperties", rnp);
   view.setSource(QUrl("qrc:///main.qml"));
   view.setResizeMode(QQuickView::SizeRootObjectToView);
+  view.resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
   view.show();
 
 #ifdef BUILD_FOR_BUNDLE
@@ -202,8 +199,18 @@ int main(int argc, char **argv) {
 
 #ifdef BUILD_FOR_BUNDLE
 
+QString getDataStoragePath() {
+  QString dataStoragePath =
+      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  QDir dir(dataStoragePath);
+  if (!dir.exists()) {
+    dir.mkpath(".");
+  }
+  return dataStoragePath;
+}
+
 void writeLogsToFile() {
-  QFile logFile(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/StatusIm.log");
+  QFile logFile(getDataStoragePath() + "/StatusIm.log");
   if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
     for (QString message : consoleOutputStrings) {
       logFile.write(message.toStdString().c_str());
@@ -217,6 +224,7 @@ void writeLogsToFile() {
 
 void runUbuntuServer() {
   QProcess *process = new QProcess();
+  process->setWorkingDirectory(getDataStoragePath());
   process->setProgram(QGuiApplication::applicationDirPath() + "/ubuntu-server");
   QObject::connect(process, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {

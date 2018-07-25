@@ -63,35 +63,6 @@ QVariantMap RCTStatus::constantsToExport() {
     return QVariantMap();
 }
 
-void RCTStatus::initJail(QString js, double callbackId) {
-    Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::initJail with param js:" << " and callback id: " << callbackId;
-
-    InitJail(js.toUtf8().data());
-
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
-}
-
-
-void RCTStatus::parseJail(QString chatId, QString js, double callbackId) {
-    Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::parseJail with param chatId: " << chatId << " js:" << " and callback id: " << callbackId;
-
-    const char* result = Parse(chatId.toUtf8().data(), js.toUtf8().data());
-    qDebug() << "RCTStatus::parseJail parseJail result: " << result;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-}
-
-
-void RCTStatus::callJail(QString chatId, QString path, QString params, double callbackId) {
-    Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::callJail with param chatId: " << chatId << " path: " << path << " params: " << params <<  " and callback id: " << callbackId;
-
-    const char* result = Call(chatId.toUtf8().data(), path.toUtf8().data(), params.toUtf8().data());
-    qDebug() << "RCTStatus::callJail callJail result: " << result;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-}
-
 void RCTStatus::getDeviceUUID(double callbackId) {
   Q_D(RCTStatus);
   qDebug() << "call of RCTStatus::getDeviceUUID";
@@ -113,12 +84,12 @@ void RCTStatus::startNode(QString configString) {
     qDebug() << " RCTStatus::startNode configString: " << jsonDoc.toVariant().toMap();
     QVariantMap configJSON = jsonDoc.toVariant().toMap();
 
-    QString newKeystoreUrl = "keystore";
-
     int networkId = configJSON["NetworkId"].toInt();
     QString dataDir = configJSON["DataDir"].toString();
 
-    QString networkDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + dataDir;
+    QString rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
+    QString networkDir = rootDirPath + dataDir;
+    QString keyStoreDir = rootDirPath + "keystore";
     QDir dir(networkDir);
     if (!dir.exists()) {
       dir.mkpath(".");
@@ -136,7 +107,7 @@ void RCTStatus::startNode(QString configString) {
 
     qDebug() << " RCTStatus::startNode GenerateConfig configString: " << jsonDoc.toVariant().toMap();
     QVariantMap generatedConfig = jsonDoc.toVariant().toMap();
-    generatedConfig["KeyStoreDir"] = newKeystoreUrl;
+    generatedConfig["KeyStoreDir"] = keyStoreDir;
     generatedConfig["LogEnabled"] = true;
     generatedConfig["LogFile"] = networkDir + "/geth.log";
     //generatedConfig["LogLevel"] = "DEBUG";
