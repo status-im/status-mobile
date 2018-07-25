@@ -90,15 +90,6 @@ gradle.projectsEvaluated {
                     extraArgs.add(bundleConfig);
                 }
 
-                println cliPath
-                println bundleCommand
-                println "--platform android --dev false --reset-cache --entry-file"
-                println entryFile
-                println "--bundle-output"
-                println jsBundleFile
-                println "--assets-dest"
-                println resourcesDir
-
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                     commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
