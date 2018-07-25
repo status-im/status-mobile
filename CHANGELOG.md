@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+
+### Fixed
+
+### Changed
+
+## 0.9.23 - 2018-07-23
+### Added
 - iPad support. Status is now displayed at full native resolution on iPad's
 - Deep links support
 - Persist browser history
