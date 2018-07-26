@@ -38,6 +38,9 @@ prepare-ios: prepare ##@prepare Install iOS specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
 	cd ios && pod install && cd ..
 
+prepare-android: prepare ##@prepare Install Android specific dependencies
+	cd android; ./gradlew react-native-android:installArchives
+
 #----------------
 # Release builds
 #----------------
@@ -71,26 +74,25 @@ full-prod-build: ##@build build prod for both Android and iOS
 # REPL
 # -------------
 
-repl-ios-real: ##@repl Start REPL for iOS real device
-	clj -R:repl build.clj figwheel --platform ios --ios-device real
+watch-ios-real: ##@watch Start development for iOS real device
+	clj -R:dev build.clj watch --platform ios --ios-device real
 
-repl-ios-simulator: ##@repl Start REPL for iOS simulator
-	clj -R:repl build.clj figwheel --platform ios --ios-device simulator
+watch-ios-simulator: ##@watch Start development for iOS simulator
+	clj -R:dev build.clj watch --platform ios --ios-device simulator
 
-repl-android-real: ##@repl Start REPL for Android real device
-	clj -R:repl build.clj figwheel --platform android --android-device real
+watch-android-real: ##@watch Start development for Android real device
+	clj -R:dev build.clj watch --platform android --android-device real
 
-repl-android-avd: ##@repl Start REPL for Android AVD
-	clj -R:repl build.clj figwheel --platform android --android-device avd
+watch-android-avd: ##@watch Start development for Android AVD
+	clj -R:dev build.clj watch --platform android --android-device avd
 
-repl-android-genymotion: ##@repl Start REPL for Android Genymotion
-	clj -R:repl build.clj figwheel --platform android --android-device genymotion
+watch-android-genymotion: ##@watch Start development for Android Genymotion
+	clj -R:dev build.clj watch --platform android --android-device genymotion
 
 #--------------
 # Run
 # -------------
 run-android: ##@run Run Android build
-	cd android; ./gradlew react-native-android:installArchives
 	react-native run-android --appIdSuffix debug
 
 SIMULATOR=
@@ -140,8 +142,5 @@ android-ports-real: ##@other Add reverse proxy to Android Device/Simulator
 startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	case "$(SYSTEM)" in \
-	  "android") ${MAKE} prepare;; \
-	  "ios")      ${MAKE} prepare-ios;; \
-	esac
-	${MAKE} repl-$(SYSTEM)-$(DEVICE)
+	${MAKE} prepare-${SYSTEM}
+	${MAKE} watch-$(SYSTEM)-$(DEVICE)
