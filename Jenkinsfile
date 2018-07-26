@@ -17,7 +17,7 @@ def installJSDeps() {
 }
 
 timeout(90) {
-    node ('macos_pr') {
+    node ('macos_test') {
       def apkUrl = ''
       def ipaUrl = ''
       def testPassed = true
