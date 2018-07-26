@@ -105,7 +105,10 @@
   (let [prepared-message (-> message
                              (prepare-message chat-id current-chat?)
                              (add-outgoing-status cofx))]
-(when (and platform/desktop? (not= from (:current-public-key db))) (#(.sendNotification react/desktop-notification content)))
+    (when (and platform/desktop?
+               (not= from (:current-public-key db))
+               (get-in db [:account/account :settings :desktop-notifications?]))
+      (#(.sendNotification react/desktop-notification content)))
     (let [fx {:db            (cond->
                               (-> db
                                   (update-in [:chats chat-id :messages] assoc message-id prepared-message)
