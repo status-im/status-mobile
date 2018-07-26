@@ -155,6 +155,13 @@
  (fn [cofx [_ dev-mode]]
    (accounts.utils/account-update {:dev-mode? dev-mode} cofx)))
 
+(handlers/register-handler-fx
+ :enable-notifications
+ (fn [{db :db} [_ desktop-notifications?]]
+   {:db (assoc-in db
+                  [:account/account :settings :desktop-notifications?]
+                  desktop-notifications?)}))
+
 (defn wallet-set-up-passed [db cofx]
   (let [transaction (get-in db [:wallet :send-transaction])]
     (merge
