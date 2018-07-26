@@ -13,6 +13,7 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.money :as money]
             [status-im.notifications.core :as notifications]
+            [taoensso.timbre :as log]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]
@@ -101,11 +102,17 @@
   (assoc message :outgoing (= from (:current-public-key db))))
 
 (defn- add-message
-  [batch? {:keys [chat-id message-id clock-value content from] :as message} current-chat? {:keys [db] :as cofx}]
+  [batch? {:keys [chat-id message-id
+                  clock-value timestamp
+                  content from] :as message} current-chat? {:keys [db] :as cofx}]
   (let [prepared-message (-> message
                              (prepare-message chat-id current-chat?)
                              (add-outgoing-status cofx))]
-(when (and platform/desktop? (not= from (:current-public-key db))) (#(.sendNotification react/desktop-notification content)))
+    (when (and platform/desktop?
+               (not= from (:current-public-key db))
+               (get-in db [:account/account :settings :desktop-notifications?])
+               (< (datetime/seconds-ago (datetime/to-date timestamp)) 86400))
+      (#(.sendNotification react/desktop-notification content)))
     (let [fx {:db            (cond->
                               (-> db
                                   (update-in [:chats chat-id :messages] assoc message-id prepared-message)

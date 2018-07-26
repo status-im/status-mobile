@@ -4,6 +4,8 @@
             [status-im.ui.screens.accounts.models :as models]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.ui.screens.accounts.models :as models]))
 
 ;;;; COFX
 
@@ -65,6 +67,15 @@
  :switch-dev-mode
  (fn [cofx [_ dev-mode]]
    (accounts.utils/account-update {:dev-mode? dev-mode} cofx)))
+
+(handlers/register-handler-fx
+ :enable-notifications
+ (fn [{:keys [db] :as cofx} [_ desktop-notifications?]]
+   (let [settings (get-in db [:account/account :settings])]
+     (handlers-macro/merge-fx cofx
+                              (models/update-settings
+                               (assoc settings :desktop-notifications? desktop-notifications?)
+                               [])))))
 
 (handlers/register-handler-fx
  :wallet-set-up-passed

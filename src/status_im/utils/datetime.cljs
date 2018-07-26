@@ -123,9 +123,11 @@
     (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
                                    :number diff
                                    :time-intervals name})))
+(defn seconds-ago [time]
+  (t/in-seconds (t/interval time (t/now))))
 
 (defn time-ago [time]
-  (let [diff (t/in-seconds (t/interval time (t/now)))]
+  (let [diff (seconds-ago time)]
     (if (< diff 60)
       (label :t/active-online)
       (let [unit (first (drop-while #(and (>= diff (:limit %))
