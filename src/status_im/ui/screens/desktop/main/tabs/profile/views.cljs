@@ -10,6 +10,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [taoensso.timbre :as log]
             [clojure.string :as string]
+            [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
             [status-im.ui.screens.profile.user.views :as profile]))
@@ -55,6 +56,20 @@
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))
 
+(views/defview advanced-settings []
+  (views/letsubs [current-wnode-id [:settings/current-wnode]
+                  wnodes           [:settings/network-wnodes]]
+    (let [render-fn (offline-messaging.views/render-row current-wnode-id)]
+      [react/view
+       [react/text {:style styles/advanced-settings-title} (i18n/label :advanced-settings)]
+       [react/view {:style styles/title-separator}]
+       [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
+       [react/view
+        (for [node (vals wnodes)]
+          ^{:key (:id node)}
+          [react/view {:style {:margin-vertical 8}}
+           [render-fn node]])]])))
+
 (defn share-contact-code []
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :qr-code])}
    [react/view {:style styles/share-contact-code}
@@ -69,10 +84,14 @@
   [react/view styles/profile-view
    [profile-badge user]
    [share-contact-code]
-   [react/view {:style styles/logout-row}
+   [react/view {:style styles/profile-row}
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :advanced-settings])}
+     [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/advanced-settings)]]
+    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]
+   [react/view {:style styles/profile-row}
     [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
-     [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
-    [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])
+     [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
+    [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])
 
 (views/defview profile-data []
   (views/letsubs

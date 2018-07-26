@@ -9,14 +9,14 @@
    :align-items   :center
    :margin-bottom 16})
 
-(def logout-row
+(def profile-row
   {:justify-content   :space-between
    :flex-direction    :row
    :margin-horizontal 24
    :align-self        :stretch
-   :margin-top        60})
+   :margin-top   40})
 
-(defn logout-row-text [color]
+(defn profile-row-text [color]
   {:color     color
    :font-size 16})
 
@@ -36,6 +36,7 @@
    :height            45
    :width             240
    :margin-horizontal 50
+   :margin-bottom     20
    :border-radius     8
    :background-color  (colors/alpha colors/blue 0.1)})
 
@@ -133,3 +134,18 @@
    :border-left-color  :transparent
    :border-right-color :transparent
    :border-top-color   colors/tooltip-green})
+
+(def advanced-settings-title
+  {:margin        24
+   :font-size     20
+   :font-weight  "600"})
+
+(def title-separator
+  {:height            1
+   :background-color  colors/gray-light})
+
+(def mailserver-title
+  {:margin-left      24
+   :margin-top       36
+   :margin-bottom    16
+   :font-size        16})

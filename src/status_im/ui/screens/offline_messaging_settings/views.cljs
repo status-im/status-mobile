@@ -12,8 +12,9 @@
             [status-im.ui.screens.offline-messaging-settings.styles :as styles]))
 
 (defn- wnode-icon [connected?]
-  [react/view (styles/wnode-icon connected?)
-   [vector-icons/icon :icons/wnode {:color (if connected? :white :gray)}]])
+  [react/view {:style (styles/wnode-icon-container connected?)}
+   [vector-icons/icon :icons/wnode
+    {:style (styles/wnode-icon connected?)}]])
 
 (defn connect-to-mailserver [id]
   (re-frame/dispatch [:connect-wnode id]))
@@ -21,7 +22,7 @@
 (defn navigate-to-add-mailserver [wnode-id]
   (re-frame/dispatch [:edit-mailserver wnode-id]))
 
-(defn- render-row [current-wnode-id]
+(defn render-row [current-wnode-id]
   (fn [{:keys [name id user-defined]}]
     (let [connected? (= id current-wnode-id)]
       [react/touchable-highlight
