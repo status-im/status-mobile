@@ -1,13 +1,13 @@
 import pytest
 
-from tests import marks, transaction_users, camera_access_error_text
+from tests import marks, transaction_users, camera_access_error_text, common_password, transaction_users_wallet
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
 @marks.all
 @marks.account
-class TestWallet(SingleDeviceTestCase):
+class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(3698)
     @marks.smoke_1
@@ -46,7 +46,7 @@ class TestWallet(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         transactions_view = wallet_view.transaction_history_button.click()
-        transaction_details = transactions_view.transactions_table.get_first_transaction().click()
+        transaction_details = transactions_view.transactions_table.transaction_by_index(0).click()
         transaction_hash = transaction_details.get_transaction_hash()
         transaction_details.options_button.click()
         transaction_details.open_transaction_on_etherscan_button.click()
@@ -62,7 +62,7 @@ class TestWallet(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         transactions_view = wallet_view.transaction_history_button.click()
-        transaction_details = transactions_view.transactions_table.get_first_transaction().click()
+        transaction_details = transactions_view.transactions_table.transaction_by_index(0).click()
         transaction_hash = transaction_details.get_transaction_hash()
         transaction_details.options_button.click()
         transaction_details.copy_transaction_hash_button.click()
@@ -146,3 +146,45 @@ class TestWallet(SingleDeviceTestCase):
         send_transaction.chose_recipient_button.click()
         send_transaction.scan_qr_code_button.click()
         send_transaction.deny_button.wait_for_visibility_of_element(2)
+
+    @marks.testrail_id(3730)
+    def test_filter_transactions_history(self):
+        user = transaction_users_wallet['C_USER']
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(passphrase=user['passphrase'], password=user['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+
+        transaction_history = wallet_view.transaction_history_button.click()
+        transaction_history.filters_button.click()
+        for filter_name in 'Outgoing', 'Pending', 'Failed':
+            transaction_history.filter_checkbox(filter_name).click()
+        wallet_view.done_button.click()
+        for i in range(transaction_history.transactions_table.get_transactions_number()):
+            details = transaction_history.transactions_table.transaction_by_index(i).click()
+            if details.get_recipient_address() != '0x' + user['address'] \
+                    or details.element_by_text('Failed').is_element_displayed():
+                pytest.fail('Incoming transactions are not filtered')
+            details.back_button.click()
+
+        transaction_history.filters_button.click()
+        for filter_name in 'Outgoing', 'Incoming':
+            transaction_history.filter_checkbox(filter_name).click()
+        wallet_view.done_button.click()
+        for i in range(transaction_history.transactions_table.get_transactions_number()):
+            details = transaction_history.transactions_table.transaction_by_index(i).click()
+            if details.get_sender_address() != '0x' + user['address'] \
+                    or details.element_by_text('Failed').is_element_displayed():
+                pytest.fail('Outgoing transactions are not filtered')
+            details.back_button.click()
+
+        transaction_history.filters_button.click()
+        for filter_name in 'Outgoing', 'Failed':
+            transaction_history.filter_checkbox(filter_name).click()
+        wallet_view.done_button.click()
+        for i in range(transaction_history.transactions_table.get_transactions_number()):
+            details = transaction_history.transactions_table.transaction_by_index(i).click()
+            if not details.element_by_text('Failed').is_element_displayed():
+                pytest.fail('Failed transactions are not filtered')
+            details.back_button.click()
+        self.verify_no_errors()

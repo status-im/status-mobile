@@ -51,10 +51,14 @@ class TransactionTable(BaseElement):
             def __init__(self, driver):
                 super(TransactionTable.TransactionElement.TransactionDetailsView, self).__init__(driver)
                 self.driver = driver
-                self.locators = dict(transaction_hash="//android.widget.TextView[@text='Hash']/following-sibling::*[1]")
+                self.locators = dict()
                 self.options_button = OptionsButton(driver)
                 self.copy_transaction_hash_button = OptionsButton.CopyTransactionHashButton(driver)
                 self.open_transaction_on_etherscan_button = OptionsButton.OpenOnEtherscanButton(driver)
+
+                self.locators['transaction_hash'] = "//android.widget.TextView[@text='Hash']/following-sibling::*[1]"
+                self.locators['sender_address'] = "//*[@content-desc='sender-address-text']"
+                self.locators['recipient_address'] = "//*[@content-desc='recipient-address-text']"
 
             class DetailsTextElement(BaseText):
                 def __init__(self, driver, locator):
@@ -65,16 +69,25 @@ class TransactionTable(BaseElement):
             def get_transaction_hash(self) -> str:
                 return self.DetailsTextElement(driver=self.driver, locator=self.locators['transaction_hash']).text
 
+            def get_sender_address(self) -> str:
+                return self.DetailsTextElement(driver=self.driver, locator=self.locators['sender_address']).text
+
+            def get_recipient_address(self) -> str:
+                return self.DetailsTextElement(driver=self.driver, locator=self.locators['recipient_address']).text
+
         def navigate(self):
             return self.TransactionDetailsView(self.driver)
 
-    def get_first_transaction(self):
-        return self.TransactionElement.by_index(self.driver, 0)
+    def transaction_by_index(self, index: int):
+        return self.TransactionElement.by_index(self.driver, index=index)
+
+    def transaction_by_amount(self, amount: str):
+        return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'))
 
     def find_transaction(self, amount: str) -> TransactionElement:
+        element = self.transaction_by_amount(amount=amount)
         for i in range(9):
             try:
-                element = self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'))
                 element.find_element()
                 return element
             except NoSuchElementException:
@@ -85,29 +98,31 @@ class TransactionTable(BaseElement):
     def refresh_transactions(self):
         self.driver.swipe(500, 500, 500, 1000)
 
+    def get_transactions_number(self):
+        element = self.TransactionElement(self.driver)
+        element.locator = element.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="transaction-item"]')
+        return len(element.find_elements())
 
-class HistoryTab(BaseButton):
+
+class FiltersButton(BaseButton):
     def __init__(self, driver):
-        super(HistoryTab, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('history-button')
+        super(FiltersButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('filters-button')
 
 
-class UnsignedTab(BaseButton):
-    def __init__(self, driver):
-        super(UnsignedTab, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('unsigned-transactions-button')
-
-    class SignButton(BaseButton):
-        def __init__(self, driver):
-            super(UnsignedTab.SignButton, self).__init__(driver)
-            self.locator = self.Locator.accessibility_id('sign-button')
+class FilterCheckbox(BaseButton):
+    def __init__(self, driver, filter_name):
+        super(FilterCheckbox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='%s']/following-sibling::*[@content-desc='checkbox']" % filter_name)
 
 
 class TransactionsView(BaseView):
     def __init__(self, driver):
         super(TransactionsView, self).__init__(driver)
         self.driver = driver
-        self.history_tab = HistoryTab(self.driver)
-        self.unsigned_tab = UnsignedTab(self.driver)
-        self.sign_button = UnsignedTab.SignButton(self.driver)
+        self.filters_button = FiltersButton(self.driver)
         self.transactions_table = TransactionTable(self.driver)
+
+    def filter_checkbox(self, filter_name):
+        return FilterCheckbox(self.driver, filter_name)

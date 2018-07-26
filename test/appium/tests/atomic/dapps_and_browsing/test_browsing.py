@@ -21,7 +21,7 @@ class TestBrowsing(SingleDeviceTestCase):
         for wiki_text in wiki_texts:
             browsing_view.find_text_part(wiki_text, 15)
 
-    @marks.testrail_id(1412)
+    @marks.testrail_id(2174)
     def test_open_invalid_link(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()

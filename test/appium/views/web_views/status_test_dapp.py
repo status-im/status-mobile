@@ -52,6 +52,23 @@ class TransactionsButton(BaseButton):
             self.locator = self.Locator.text_selector('Test filters')
 
 
+class StatusAPIButton(BaseButton):
+
+    def __init__(self, driver):
+        super(StatusAPIButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Status API')
+
+    class RequestContactCodeButton(BaseButton):
+        def __init__(self, driver):
+            super(StatusAPIButton.RequestContactCodeButton, self).__init__(driver)
+            self.locator = self.Locator.text_part_selector('Request contact code')
+
+    class DoNotAllowButton(BaseButton):
+        def __init__(self, driver):
+            super(StatusAPIButton.DoNotAllowButton, self).__init__(driver)
+            self.locator = self.Locator.text_selector("DON'T ALLOW")
+
+
 class StatusTestDAppView(BaseWebView):
 
     def __init__(self, driver):
@@ -66,3 +83,7 @@ class StatusTestDAppView(BaseWebView):
         self.sign_message_button = TransactionsButton.SignMessageButton(self.driver)
         self.deploy_contract_button = TransactionsButton.DeployContractButton(self.driver)
         self.test_filters_button = TransactionsButton.TestFiltersButton(self.driver)
+
+        self.status_api_button = StatusAPIButton(self.driver)
+        self.request_contact_code_button = StatusAPIButton.RequestContactCodeButton(self.driver)
+        self.do_not_allow_button = StatusAPIButton.DoNotAllowButton(self.driver)

@@ -55,19 +55,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
             if not status_test_dapp.element_by_text(text).is_element_displayed(120):
                 pytest.fail('Contract was not created')
 
-    @marks.testrail_id(3782)
-    @marks.smoke_1
-    def test_filters_from_daap(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        status_test_dapp = sign_in_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.transactions_button.click()
-        status_test_dapp.test_filters_button.click()
-        for element in status_test_dapp.element_by_text('eth_uninstallFilter'), status_test_dapp.ok_button:
-            if element.is_element_displayed(10):
-                pytest.fail("'Test filters' button produced an error")
-
     @marks.logcat
     @marks.testrail_id(3772)
     def test_logcat_send_transaction_from_daap(self):
