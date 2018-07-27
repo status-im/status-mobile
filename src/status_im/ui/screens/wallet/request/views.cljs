@@ -40,7 +40,8 @@
           [components/recipient-selector {:contact-only? true
                                           :address       to
                                           :name          to-name
-                                          :request?      true}]
+                                          :request?      true
+                                          :modal?        false}]
           [components/asset-selector {:disabled? false
                                       :type      :request
                                       :symbol    symbol}]

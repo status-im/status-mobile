@@ -173,10 +173,13 @@
        (when error
          [tooltip/tooltip error {}])])))
 
-(defn- recipient-address [address]
+(defn- recipient-address [address modal?]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))
                :accessibility-label :recipient-address-text}
-   (or (ethereum/normalized-address address) (i18n/label :t/specify-recipient))])
+   (or (ethereum/normalized-address address)
+       (if modal?
+         (i18n/label :t/new-contract)
+         (i18n/label :t/specify-recipient)))])
 
 (views/defview recipient-contact [address name request?]
   (views/letsubs [contact [:get-contact-by-address address]]
@@ -258,7 +261,7 @@
                                      {:label  (i18n/label :t/recipient-code)
                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
-(defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
+(defn recipient-selector [{:keys [name address disabled? contact-only? request? modal?]}]
   [cartouche {:on-press  #(on-choose-recipient contact-only?)
               :disabled? disabled?
               :icon      :icons/dots-horizontal
@@ -267,7 +270,7 @@
    [react/view {:accessibility-label :choose-recipient-button}
     (if name
       [recipient-contact address name request?]
-      [recipient-address address])]])
+      [recipient-address address modal?])]])
 
 (defn- amount-input [{:keys [input-options amount amount-text disabled?]}
                      {:keys [symbol decimals]}]

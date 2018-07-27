@@ -233,7 +233,8 @@
        [react/view styles/send-transaction-form
         [components/recipient-selector {:disabled? (or from-chat? modal?)
                                         :address   to
-                                        :name      to-name}]
+                                        :name      to-name
+                                        :modal?    modal?}]
         [components/asset-selector {:disabled? (or from-chat? modal?)
                                     :error     asset-error
                                     :type      :send
