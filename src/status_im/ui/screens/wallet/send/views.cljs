@@ -33,6 +33,8 @@
             opacity-value   (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (styles/animated-sign-panel bottom-value)}
+     (when wrong-password?
+       [tooltip/tooltip (i18n/label :t/wrong-password) styles/password-error-tooltip])
      [react/animated-view {:style (styles/sign-panel opacity-value)}
       [react/view styles/spinner-container
        ;;NOTE(goranjovic) - android build doesn't seem to react on change in `:animating` property, so
@@ -54,9 +56,7 @@
          :on-change-text         #(re-frame/dispatch [:wallet.send/set-password (security/mask-data %)])
          :style                  styles/password
          :accessibility-label    :enter-password-input
-         :auto-capitalize        :none}]
-       (when wrong-password?
-         [tooltip/tooltip (i18n/label :t/wrong-password)])]]]))
+         :auto-capitalize        :none}]]]]))
 
 ;; "Cancel" and "Sign Transaction >" buttons, signing with password
 (defview signing-buttons [spinning? cancel-handler sign-handler sign-label]

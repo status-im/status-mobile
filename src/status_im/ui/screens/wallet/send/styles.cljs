@@ -144,3 +144,7 @@
 
 (def fee-buttons
   {:background-color colors/blue})
+
+(def password-error-tooltip
+  {:bottom-value 15
+   :color        colors/red-light})
