@@ -63,61 +63,6 @@ static RCTBridge *bridge;
 RCT_EXPORT_MODULE();
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Jails functions
-//////////////////////////////////////////////////////////////////// initJail
-RCT_EXPORT_METHOD(initJail: (NSString *) js
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"InitJail() method called");
-#endif
-    if(_jail == nil) {
-        _jail = [Jail new];
-    }
-    [_jail initJail:js];
-    callback(@[[NSNull null]]);
-}
-
-//////////////////////////////////////////////////////////////////// parseJail
-RCT_EXPORT_METHOD(parseJail:(NSString *)chatId
-                  js:(NSString *)js
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"ParseJail() method called");
-#endif
-    NSString *stringResult;
-    if(_jail == nil) {
-        _jail = [Jail new];
-    }
-    NSDictionary *result = [_jail parseJail:chatId withCode:js];
-    stringResult = [result bv_jsonStringWithPrettyPrint:NO];
-
-    callback(@[stringResult]);
-}
-
-//////////////////////////////////////////////////////////////////// callJail
-RCT_EXPORT_METHOD(callJail:(NSString *)chatId
-                  path:(NSString *)path
-                  params:(NSString *)params
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"CallJail() method called");
-#endif
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-        NSString *stringResult;
-        if(_jail == nil) {
-            _jail = [Jail new];
-        }
-        NSDictionary *result = [_jail call:chatId path:path params:params];
-        stringResult = [result bv_jsonStringWithPrettyPrint:NO];
-
-        dispatch_async( dispatch_get_main_queue(), ^{
-            callback(@[stringResult]);
-        });
-    });
-}
-
-////////////////////////////////////////////////////////////////////
 #pragma mark - startNode
 //////////////////////////////////////////////////////////////////// startNode
 RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
@@ -301,9 +246,6 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 #if DEBUG
     NSLog(@"Login() method called");
 #endif
-    if(_jail != nil) {
-        [_jail reset];
-    }
     char * result = Login((char *) [address UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
@@ -452,25 +394,6 @@ RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
 #endif
     [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
                                             body:@{@"jsonEvent": sig}];
-
-    return;
-}
-
-+ (void)jailEvent:(NSString *)chatId
-             data:(NSString *)data
-{
-    NSData *signalData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:signalData options:NSJSONReadingMutableContainers error:nil];
-    [dict setValue:@"jail.signal" forKey:@"type"];
-    NSDictionary *event = [[NSDictionary alloc] initWithObjectsAndKeys:chatId, @"chat_id", data, @"data", nil];
-    [dict setValue:event forKey:@"event"];
-    NSString *signal = [dict bv_jsonStringWithPrettyPrint:NO];
-#if DEBUG
-    NSLog(@"SignalEventData");
-    NSLog(signal);
-#endif
-    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
-                                            body:@{@"jsonEvent": signal}];
 
     return;
 }

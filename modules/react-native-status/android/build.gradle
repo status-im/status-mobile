@@ -14,7 +14,6 @@ android {
 dependencies {
     implementation 'com.facebook.react:react-native:+'
     implementation 'com.instabug.library:instabug:3+'
-    implementation 'com.github.ericwlange:AndroidJSCore:3.0.1'
     implementation 'status-im:function:0.0.1'
 
     String statusGoVersion = 'develop-ga339d7ed'
