@@ -21,9 +21,32 @@
 ;; 1970-01-03 00:00:00 UTC
 (def epoch-plus-3d 172800000)
 
+(deftest is24Hour-locale-en-test
+  (is (= (d/is24Hour-locsym (d/locale-symbols "en")) false)))
+
+(deftest is24Hour-locale-it-test
+  (is (= (d/is24Hour-locsym (d/locale-symbols "it")) true)))
+
+(deftest is24Hour-locale-nb-test
+  (is (= (d/is24Hour-locsym (d/locale-symbols "nb-NO")) true)))
+
 (deftest to-short-str-today-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
                 d/time-fmt (d/mk-fmt "us" d/short-time-format)
+                d/time-zone-offset (t/period :hours 0)]
+    (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
+
+(deftest to-short-str-today-force-24H-test
+  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+                d/is24Hour (constantly true)
+                d/time-fmt (d/mk-fmt "us" d/short-time-format)
+                d/time-zone-offset (t/period :hours 0)]
+    (is (= (d/to-short-str epoch-plus-3d) "00:00"))))
+
+(deftest to-short-str-today-force-AMPM-test
+  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+                d/is24Hour (constantly false)
+                d/time-fmt (d/mk-fmt "it" d/short-time-format)
                 d/time-zone-offset (t/period :hours 0)]
     (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
 
@@ -50,3 +73,17 @@
                 d/time-zone-offset (t/period :hours 0)
                 d/date-fmt (d/mk-fmt "nb-NO" d/medium-date-time-format)]
     (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))
+
+(deftest day-relative-before-yesterday-force-24H-test
+  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+                d/is24Hour (constantly true)
+                d/time-zone-offset (t/period :hours 0)
+                d/date-fmt (d/mk-fmt "us" d/medium-date-time-format)]
+    (is (= (d/day-relative epoch) "Jan 1, 1970, 00:00:00"))))
+
+(deftest day-relative-before-yesterday-force-AMPM-test
+  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+                d/is24Hour (constantly false)
+                d/time-zone-offset (t/period :hours 0)
+                d/date-fmt (d/mk-fmt "it" d/medium-date-time-format)]
+    (is (= (d/day-relative epoch) "01 gen 1970, 12:00:00 AM"))))
