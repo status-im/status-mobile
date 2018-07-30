@@ -22,9 +22,8 @@
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
-  (views/letsubs [photo-path        [:get-chat-photo chat-id]
-                  chat-name         [:get-current-chat-name]
-                  {:keys [pending? whisper-identity]} [:get-current-chat-contact]]
+  (views/letsubs [chat-name         [:get-current-chat-name]
+                  {:keys [pending? whisper-identity photo-path]} [:get-current-chat-contact]]
     [react/view {:style styles/toolbar-chat-view}
      [react/view {:style {:flex-direction :row
                           :flex 1}}
