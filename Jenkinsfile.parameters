@@ -40,7 +40,6 @@ timeout(90) {
           // TODO(oskarth): Consider read/write from .env to avoid having to specify in Jenkins again
           // sh 'cp .env.jenkins .env'
           sh 'echo TESTFAIRY_ENABLED='           + TESTFAIRY_ENABLED            + '>>' + '.env'
-          sh 'echo STUB_STATUS_GO='              + STUB_STATUS_GO               + '>>' + '.env'
           sh 'echo ETHEREUM_DEV_CLUSTER='        + ETHEREUM_DEV_CLUSTER         + '>>' + '.env'
           sh 'echo MAINNET_NETWORKS_ENABLED='    + MAINNET_NETWORKS_ENABLED     + '>>' + '.env'
           sh 'echo LOG_LEVEL='                   + LOG_LEVEL                    + '>>' + '.env'

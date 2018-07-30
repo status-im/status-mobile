@@ -2,15 +2,12 @@
   (:require-macros
    [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.ui.components.react :as r]
-            [re-frame.core :refer [dispatch] :as re-frame]
+            [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [cljs.core.async :as async :refer [<!]]
+            [cljs.core.async :as async]
             [status-im.utils.platform :as p]
-            [status-im.utils.types :as types]
-            [status-im.utils.transducers :as transducers]
-            [status-im.utils.async :as async-util :refer [timeout]]
+            [status-im.utils.async :as async-util]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.native-module.module :as module]
             [clojure.string :as string]))
 
 ;; if StatusModule is not initialized better to store
@@ -44,7 +41,7 @@
                          (doseq [call calls]
                            (call))))
           (reset! loop-started false))
-      (recur (<! (timeout 500))))))
+      (recur (async/<! (async-util/timeout 500))))))
 
 (def status
   (when (exists? (.-NativeModules rn-dependencies/react-native))
@@ -55,7 +52,7 @@
 (when-not @listener-initialized
   (reset! listener-initialized true)
   (.addListener r/device-event-emitter "gethEvent"
-                #(dispatch [:signal-event (.-jsonEvent %)])))
+                #(re-frame/dispatch [:signal-event (.-jsonEvent %)])))
 
 (defn should-move-to-internal-storage? [on-result]
   (when status
@@ -157,55 +154,3 @@
      status
      (fn [UUID]
        (callback (string/upper-case UUID))))))
-
-(defrecord ReactNativeStatus []
-  module/IReactNativeStatus
-  ;; status-go calls
-  (-init-jail [this])
-  (-start-node [this config]
-    (start-node config))
-  (-stop-node [this]
-    (stop-node))
-  (-create-account [this password callback]
-    (create-account password callback))
-  (-recover-account [this passphrase password callback]
-    (recover-account passphrase password callback))
-  (-login [this address password callback]
-    (login address password callback))
-  (-approve-sign-request [this id password callback]
-    (approve-sign-request id password callback))
-  (-approve-sign-request-with-args [this id password gas gas-price callback]
-    (approve-sign-request-with-args id password gas gas-price callback))
-  (-discard-sign-request [this id]
-    (discard-sign-request id))
-  (-parse-jail [this chat-id file callback])
-  (-call-jail [this params])
-  (-call-function! [this params])
-  (-call-web3 [this payload callback]
-    (call-web3 payload callback))
-  (-call-web3-private [this payload callback]
-    (call-web3-private payload callback))
-  (-notify-users [this {:keys [message payload tokens] :as m} callback]
-    (notify-users m callback))
-  (-add-peer [this enode callback]
-    (add-peer enode callback))
-
-  ;; other calls
-  (-move-to-internal-storage [this callback]
-    (move-to-internal-storage callback))
-  (-set-soft-input-mode [this mode]
-    (set-soft-input-mode mode))
-  (-clear-web-data [this]
-    (clear-web-data))
-  (-module-initialized! [this]
-    (module-initialized!))
-  (-should-move-to-internal-storage? [this callback]
-    (should-move-to-internal-storage? callback))
-  (-close-application [this]
-    (close-application))
-  (-connection-change [this data]
-    (connection-change data))
-  (-app-state-change [this state]
-    (app-state-change state))
-  (-get-device-UUID [this callback]
-    (get-device-UUID callback)))
