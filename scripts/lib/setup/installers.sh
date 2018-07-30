@@ -37,6 +37,13 @@ function install_and_setup_package_manager() {
   fi
 }
 
+function install_wget() {
+  if is_macos; then
+    brew_install wget
+  fi
+  // it's installed on ubuntu/debian by default
+}
+
 function needs_java8_linux() {
   ! program_exists "java" || !(java -version 2>&1 | grep -q "1.8.0")
 }
@@ -296,16 +303,13 @@ function dependency_setup() {
 }
 
 function use_android_sdk() {
-  if [ -n "$ANDROID_SDK" ]; then
+  if [ -n "$ANDROID_SDK_ROOT" ]; then
     if ! grep -Fq "sdk.dir" $_localPropertiesPath; then
-      echo "sdk.dir=$ANDROID_SDK" | tee -a $_localPropertiesPath
+      echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
     fi
   else
-    local _docUrl="https://docs.status.im/docs/build_status_linux.html"
-    if is_macos; then
-      _docUrl="https://docs.status.im/docs/build_status_osx.html"
-    fi
-    cecho "@yellow[[ANDROID_SDK environment variable not defined, please install the Android SDK.]]"
+    local _docUrl="https://docs.status.im/docs/build_status.html"
+    cecho "@yellow[[ANDROID_SDK_ROOT environment variable not defined, please install the Android SDK.]]"
     cecho "@yellow[[(see $_docUrl).]]"
 
     echo

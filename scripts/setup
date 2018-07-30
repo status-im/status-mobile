@@ -24,6 +24,7 @@ load_rvm_if_available
 setup_header "Installing requirements..."
 
 install_and_setup_package_manager
+install_wget
 install_java8
 install_clojure_cli
 install_leiningen
