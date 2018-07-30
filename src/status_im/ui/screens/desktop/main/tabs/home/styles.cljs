@@ -16,6 +16,7 @@
 (def chat-list-header
   {:flex-direction :row
    :align-items    :center
+   :height         68
    :padding        11})
 
 (def img-container
@@ -41,7 +42,7 @@
 
 (defn unread-messages-text [large?]
   {:color     colors/white
-   :font-size (if large? 10 12)})
+   :font-size (if large? 11 12)})
 
 (def chat-list-separator
   {:height            1
@@ -49,6 +50,7 @@
 
 (def chat-name-box
   {:flex-direction :row
+   :flex           1
    :align-items    :center})
 
 (def chat-name-last-msg-box
