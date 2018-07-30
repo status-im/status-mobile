@@ -19,6 +19,9 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
+        wallet_view = send_transaction_view.get_wallet_view()
+        wallet_view.done_button.click()
+        wallet_view.yes_button.click()
         send_transaction_view.sign_transaction(sender['password'])
         self.network_api.verify_balance_is_updated(initial_balance, address)
 
@@ -44,6 +47,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_users['E_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -61,6 +66,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_users['B_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()

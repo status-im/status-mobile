@@ -37,7 +37,8 @@ class BrowserNextPageButton(BaseButton):
 class BrowserRefreshPageButton(BaseButton):
     def __init__(self, driver):
         super(BrowserRefreshPageButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[4]')
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='next-page-button']/following-sibling::*/*[@content-desc='icon']")
 
 
 class WebViewBrowserButton(BaseButton):
