@@ -71,7 +71,7 @@
   (try
     (when-let [host (.getDomain (goog.Uri. url))]
       (when-not (string/blank? host)
-        host))
+        (string/replace host #"www." "")))
     (catch :default _ nil)))
 
 (defn parse-payload [o]

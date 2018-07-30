@@ -43,16 +43,14 @@
    (re-frame/dispatch [:initialize-browsers])
 
    (let [browsers  (re-frame/subscribe [:browsers])
-         dapp1-url "test.com"
+         dapp1-url "cryptokitties.co"
          dapp2-url "http://test2.com"]
 
      (testing "open and remove dapps"
 
        (is (zero? (count @browsers)))
 
-       (re-frame/dispatch [:open-dapp-in-browser {:name        "Test Dapp"
-                                                  :dapp-url    dapp1-url
-                                                  :description "Test description"}])
+       (re-frame/dispatch [:open-url-in-browser dapp1-url])
 
        (is (= 1 (count @browsers)))
 
@@ -69,7 +67,7 @@
          (is (and (= [(str "http://" dapp1-url) (:history browser1)])
                   (= [dapp2-url] (:history browser2)))))
 
-       (re-frame/dispatch [:remove-browser "Test Dapp"])
+       (re-frame/dispatch [:remove-browser dapp1-url])
 
        (is (= 1 (count @browsers))))
 

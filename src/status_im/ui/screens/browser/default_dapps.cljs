@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.contacts.default-dapps)
+(ns status-im.ui.screens.browser.default-dapps)
 
 (def all
   [{:title "Exchanges"
@@ -94,11 +94,11 @@
             :description "The Beautiful (card) Game"}]}
    {:title "Social Networks"
     :data [{:name        "Cent"
-            :dapp-url    "https://beta.cent.co"
+            :dapp-url    "https://beta.cent.co/"
             :photo-path  "contacts://cent"
             :description "Get wisdom, get money"}
            {:name        "Peepeth"
-            :dapp-url    "http://peepeth.com/"
+            :dapp-url    "https://peepeth.com/"
             :photo-path  "contacts://peepeth"
             :description "Blockchain-powered microblogging"}
            {:name        "Purrbook"
@@ -124,6 +124,6 @@
             :developer?   true}]}
    {:title "Other: Media"
     :data [{:name        "LivePeer"
-            :dapp-url    "http://livepeer.tv"
+            :dapp-url    "https://media.livepeer.org/"
             :photo-path  "contacts://livepeer"
             :description "Decentralized video broadcasting"}]}])

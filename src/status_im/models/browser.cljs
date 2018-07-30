@@ -2,7 +2,9 @@
   (:require [status-im.data-store.browser :as browser-store]
             [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.i18n :as i18n]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.ui.screens.browser.default-dapps :as default-dapps]
+            [status-im.utils.http :as http]))
 
 (defn get-current-url [{:keys [history history-index]}]
   (when (and history-index history)
@@ -14,8 +16,15 @@
 (defn can-go-forward? [{:keys [history-index history]}]
   (< history-index (dec (count history))))
 
+(defn check-if-dapp-in-list [{:keys [history history-index] :as browser}]
+  (let [history-host  (http/url-host (try (nth history history-index) (catch js/Error _)))
+        dapp (first (filter #(= history-host (http/url-host (:dapp-url %))) (apply concat (mapv :data default-dapps/all))))]
+    (if dapp
+      (assoc browser :dapp? true :name (:name dapp))
+      (assoc browser :dapp? false :name (i18n/label :t/browser)))))
+
 (defn update-browser-fx [{:keys [db now]} browser]
-  (let [updated-browser (assoc browser :timestamp now)]
+  (let [updated-browser (check-if-dapp-in-list (assoc browser :timestamp now))]
     {:db            (update-in db [:browser/browsers (:browser-id updated-browser)]
                                merge updated-browser)
      :data-store/tx [(browser-store/save-browser-tx updated-browser)]}))

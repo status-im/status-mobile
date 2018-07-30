@@ -59,28 +59,13 @@
    {:browse link}))
 
 (handlers/register-handler-fx
- :open-dapp-in-browser
- [re-frame/trim-v]
- (fn [cofx [{:keys [name dapp-url]}]]
-   (let [browser {:browser-id    name
-                  :name          name
-                  :dapp?         true
-                  :history-index 0
-                  :history       [(http/normalize-and-decode-url dapp-url)]}]
-     (model/update-browser-and-navigate cofx browser))))
-
-(handlers/register-handler-fx
  :open-url-in-browser
  [re-frame/trim-v]
  (fn [cofx [url]]
-   (let [normalized-url          (http/normalize-and-decode-url url)
-         browser {:browser-id    (or (http/url-host normalized-url)
-                                     ;; purely as a fallback should url not parse...
-                                     (random/id))
-                  :name          (i18n/label :t/browser)
-                  :history-index 0
-                  :history       [normalized-url]}]
-     (model/update-browser-and-navigate cofx browser))))
+   (let [normalized-url (http/normalize-and-decode-url url)]
+     (model/update-browser-and-navigate cofx {:browser-id    (or (http/url-host normalized-url) (random/id))
+                                              :history-index 0
+                                              :history       [normalized-url]}))))
 
 (handlers/register-handler-fx
  :open-browser

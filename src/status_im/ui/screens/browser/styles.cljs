@@ -65,18 +65,20 @@
    :height             36
    :background-color   colors/gray-lighter
    :padding-horizontal 12
-   :android            {:align-items    :flex-start
-                        :margin-left    (if show-actions 66 20)
-                        :padding-bottom 6}
-   :ios                {:align-items       :center
-                        :margin-horizontal 15}})
+   :margin-right       5
+   :align-items        :center
+   :android            {:margin-left (if show-actions 66 20)}
+   :ios                {:margin-left 20}})
 
 (defstyle url-input
-  {:flex           1
-   :font-size      14
-   :letter-spacing -0.2
-   :android        {:padding 0}})
+  {:flex              1
+   :font-size         14
+   :letter-spacing    -0.2
+   :margin-horizontal 5
+   :android           {:padding 0}})
 
-(def toolbar-content-dapp
-  {:flex-direction    :row
-   :margin-horizontal 15})
+(def url-text
+  {:font-size         14
+   :letter-spacing    -0.2
+   :margin-horizontal 5})
+
