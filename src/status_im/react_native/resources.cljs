@@ -31,7 +31,7 @@
    :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
    :airswap            (js/require "./resources/images/contacts/airswap.png")
-
+   :civitas            (js/require "./resources/images/contacts/civitas.png")
    :dai                (js/require "./resources/images/contacts/dai.png")
    :local-ethereum     (js/require "./resources/images/contacts/local-ethereum.png")
    :eth2phone          (js/require "./resources/images/contacts/eth2phone.png")

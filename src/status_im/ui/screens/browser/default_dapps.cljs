@@ -106,7 +106,11 @@
             :photo-path  "contacts://cryptopurr"
             :description "A social network for CryptoKitties"}]}
    {:title "Utilities"
-    :data [{:name        "Hexel"
+    :data [{:name        "Civitas"
+            :dapp-url    "https://communities.colu.com/"
+            :photo-path  "contacts://civitas"
+            :description "Blockchain-powered local communities"}
+           {:name        "Hexel"
             :dapp-url    "https://www.onhexel.com/"
             :photo-path  "contacts://hexel"
             :description "Create your own cryptocurrency"}
