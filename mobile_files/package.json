@@ -56,7 +56,7 @@
     "react-native-tcp": "3.3.0",
     "react-native-testfairy": "2.10.0",
     "react-native-udp": "2.2.1",
-    "react-native-webview-bridge": "https://github.com/status-im/react-native-webview-bridge.git",
+    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#feature/cached-webviews",
     "realm": "2.3.3",
     "rn-snoopy": "https://github.com/status-im/rn-snoopy.git",
     "string_decoder": "0.10.31",
