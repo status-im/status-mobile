@@ -84,7 +84,7 @@ parallel (
 
           stage('Build MacOS binaries') {
             sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
-            sh 'export PATH=/Users/administrator/qt/5.9.1/clang_64/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;node_modules/react-native-keychain/desktop;node_modules/react-native-securerandom/desktop;modules/react-native-status/desktop"\
+            sh 'export PATH=/Users/administrator/qt/5.9.1/clang_64/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;node_modules/react-native-keychain/desktop;node_modules/react-native-securerandom/desktop;modules/react-native-status/desktop;modules/react-native-desktop-notification/desktop"\
             -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
           }
 
@@ -93,6 +93,9 @@ parallel (
             sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
             sh ('chmod +x ' + packageFolder + '/StatusIm.app/Contents/MacOs/ubuntu-server')
             sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
+            sh ('cp -f ./deployment/macos/info.plist ' + packageFolder +'/StatusIm.app/Contents')
+            sh ('cp -rf ./desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib ' + packageFolder+ '/StatusIm.app/Contents')
+            sh ('install_name_tool -change ' +  scriptPath  + '/desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/libsnore-qt5.0.7.dylib @rpath/libsnore-qt5.0.7.dylib ' + packageFolder+ '/StatusIm.app/Contents/lib/plugins/libsnore-qt5/libsnore_backend_osxnotificationcenter.so')
 
             sh ('export PATH=/Users/administrator/qt/5.9.1/clang_64/bin:$PATH && cd ' + packageFolder + ' && macdeployqt StatusIm.app -verbose=1 -dmg -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
 
@@ -154,7 +157,7 @@ parallel (
 
           stage('Build Linux binaries') {
             sh 'cd desktop && rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
-            sh 'export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;node_modules/react-native-keychain/desktop;node_modules/react-native-securerandom/desktop;modules/react-native-status/desktop"\
+            sh 'export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && cd desktop && cmake -DCMAKE_BUILD_TYPE=Release -DEXTERNAL_MODULES_DIR="node_modules/react-native-i18n/desktop;node_modules/react-native-config/desktop;node_modules/react-native-fs/desktop;node_modules/react-native-http-bridge/desktop;node_modules/react-native-webview-bridge/desktop;node_modules/react-native-keychain/desktop;node_modules/react-native-securerandom/desktop;modules/react-native-status/desktop;modules/react-native-desktop-notification/desktop"\
             -DJS_BUNDLE_PATH="' + scriptPath + '/' + packageFolder + '/StatusIm.jsbundle" -DCMAKE_CXX_FLAGS:="-DBUILD_FOR_BUNDLE=1" . && make'
           }
 
@@ -166,9 +169,13 @@ parallel (
             sh ('cp -r ./deployment/linux/usr  ' + packageFolder + '/AppDir')
             sh ('cp  ./deployment/linux/.env  ' + packageFolder + '/AppDir')
             sh ('cp ./desktop/bin/StatusIm ' + packageFolder+ '/AppDir/usr/bin')
+            sh ('ls ' + packageFolder+ '/AppDir/usr/lib')
 
             sh ('cp -f /home/maxr/qttools/linuxdeployqt-continuous-x86_64.AppImage ./')
             sh ('chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage')
+
+            sh ('cp -f /home/maxr/qttools/appimagetool-x86_64.AppImage ./')
+            sh ('chmod a+x ./appimagetool-x86_64.AppImage')
 
             sh 'rm -f Application-x86_64.AppImage'
             sh 'rm -f StatusIm-x86_64.AppImage'
@@ -177,13 +184,13 @@ parallel (
             sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -always-overwrite -no-strip -no-translations -bundle-non-qt-libs -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake -extra-plugins=imageformats/libqsvg.so -qmldir="' + scriptPath + '/node_modules/react-native"')
             sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
 
+            sh ('cp -rf ./desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/x86_64-linux-gnu/plugins ' + packageFolder+ '/AppDir/usr/lib')
             sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/AppDir/usr/bin')
             sh ('cp -rf ' + packageFolder + '/StatusImAppImage/* ' + packageFolder +'/AppDir/usr/bin')
             sh ('rm -f ' + packageFolder +'/AppDir/usr/bin/StatusIm.AppImage')
 
-            sh ('export PATH=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin:/usr/local/go/bin:$PATH && ./linuxdeployqt-continuous-x86_64.AppImage ' + packageFolder+ '/AppDir/usr/share/applications/StatusIm.desktop -verbose=3 -appimage -qmake=/home/maxr/Qt5.9.1/5.9.1/gcc_64/bin/qmake')
-            sh 'ldd ' + packageFolder+ '/AppDir/usr/bin/StatusIm'
-
+            sh ('./appimagetool-x86_64.AppImage ' + packageFolder + '/AppDir')
+            
             sh ('rm -rf ' + packageFolder +'/StatusIm.AppImage')
             sh ('cp -f ./StatusIm-x86_64.AppImage ' + packageFolder + '/StatusIm.AppImage')
 
