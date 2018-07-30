@@ -1,4 +1,5 @@
 (ns status-im.utils.ethereum.stateofus
+  (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]))

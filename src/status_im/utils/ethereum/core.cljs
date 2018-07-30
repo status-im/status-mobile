@@ -87,7 +87,9 @@
   (if b "0x0" "0x1"))
 
 (defn hex->int [s]
-  (js/parseInt s 16))
+  (if (= s hex-prefix)
+    0
+    (js/parseInt s 16)))
 
 (defn int->hex [i]
   (.toHex dependencies/Web3.prototype i))
@@ -95,8 +97,15 @@
 (defn hex->bignumber [s]
   (money/bignumber (if (= s hex-prefix) 0 s)))
 
+(defn hex->address [s]
+  (when (= 66 (count s))
+    (normalized-address (subs s 26))))
+
 (defn zero-pad-64 [s]
   (str (apply str (drop (count s) (repeat 64 "0"))) s))
+
+(defn string->hex [i]
+  (.fromAscii dependencies/Web3.prototype i))
 
 (defn format-param [param]
   (if (number? param)
