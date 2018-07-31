@@ -1,7 +1,8 @@
 (ns status-im.utils.keychain.core
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.react-native.js-dependencies :as rn]))
+            [status-im.react-native.js-dependencies :as rn]
+            [status-im.utils.platform :as platform]))
 
 (def key-bytes 64)
 (def username "status-im.encryptionkey")
@@ -61,6 +62,18 @@
            (handle-found res)
            (handle-not-found))))))
 
+(defn safe-get-encryption-key
+  "Return encryption key or empty string in case invalid/empty"
+  []
+  (log/debug "initializing realm encryption key...")
+  (.. (get-encryption-key)
+      (catch (fn [{:keys [_ key]}]
+               (log/warn "key is invalid, continuing")
+               (or key "")))))
+
 (defn reset []
   (log/debug "resetting key...")
   (.resetGenericPassword rn/keychain))
+
+(defn set-username []
+  (when platform/desktop? (.setUsername rn/keychain username)))

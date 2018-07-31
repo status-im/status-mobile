@@ -43,7 +43,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private boolean debug;
     private boolean devCluster;
     private String logLevel;
-    private Jail jail;
 
     StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
         super(reactContext);
@@ -54,7 +53,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.devCluster = devCluster;
         this.logLevel = logLevel;
         reactContext.addLifecycleEventListener(this);
-        jail = new JSCJail(this);
     }
 
     @Override
@@ -404,8 +402,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        jail.reset();
-
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -556,58 +552,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         };
 
         StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    // Jail
-
-    @ReactMethod
-    public void initJail(final String js, final Callback callback) {
-        Log.d(TAG, "initJail");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                jail.initJail(js);
-
-                callback.invoke(false);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
-    public void parseJail(final String chatId, final String js, final Callback callback) {
-        Log.d(TAG, "parseJail chatId:" + chatId);
-        //Log.d(TAG, js);
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        String res = jail.parseJail(chatId, js);
-        Log.d(TAG, res);
-        Log.d(TAG, "endParseJail");
-        callback.invoke(res);
-    }
-
-    @ReactMethod
-    public void callJail(final String chatId, final String path, final String params, final Callback callback) {
-        Log.d(TAG, "callJail");
-        Log.d(TAG, path);
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Log.d(TAG, "startCallJail");
-        String res = jail.callJail(chatId, path, params);
-        Log.d(TAG, "endCallJail");
-        callback.invoke(res);
     }
 
     @ReactMethod

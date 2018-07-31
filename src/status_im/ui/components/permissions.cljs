@@ -14,7 +14,7 @@
 (defn all-granted? [permissions]
   (let [permission-vals (distinct (vals permissions))]
     (and (= (count permission-vals) 1)
-         (not= (first permission-vals) "denied"))))
+         (not (#{"denied" "never_ask_again"} (first permission-vals))))))
 
 (defn request-permissions [{:keys [permissions on-allowed on-denied]
                             :or   {on-allowed #()

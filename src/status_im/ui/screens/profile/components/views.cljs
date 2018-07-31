@@ -50,9 +50,10 @@
     [profile-name-input name on-change-text-event
      (when group-chat {:accessibility-label :chat-name-input})]]])
 
-(defn profile-header [contact editing? allow-icon-change? options on-change-text-event]
+(defn profile-header
+  [{:keys [contact edited-contact editing? allow-icon-change? options on-change-text-event]}]
   (if editing?
-    [profile-header-edit contact options on-change-text-event allow-icon-change?]
+    [profile-header-edit (or edited-contact contact) options on-change-text-event allow-icon-change?]
     [profile-header-display contact]))
 
 ;; settings items elements
@@ -90,8 +91,7 @@
 (defn settings-switch-item [{:keys [label-kw value action-fn active?] :or {active? true}}]
   [react/view styles/settings-item
    [react/view styles/settings-item-text-wrapper
-    [react/text {:style styles/settings-item-text}
-     (i18n/label label-kw)]]
+    [react/i18n-text {:style styles/settings-item-text :key label-kw}]]
    [react/switch {:on-tint-color   colors/blue
                   :value           value
                   :on-value-change action-fn

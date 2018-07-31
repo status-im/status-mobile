@@ -14,9 +14,7 @@
 
 (defstyle badge-connected-text
   {:color   colors/gray
-   :ios     {:margin-top     5
-             :font-size      14
-             :letter-spacing -0.2}
+   :ios     {:margin-top 5}
    :android {:font-size 13}})
 
 (defstyle paste-json-text-input
@@ -45,10 +43,8 @@
 
 (defstyle connect-button-description
   {:color   colors/gray
-   :ios     {:margin-top     8
-             :height         20
-             :font-size      14
-             :letter-spacing -0.2}
+   :ios     {:margin-top 8
+             :height     20}
    :android {:margin-top 12
              :font-size  12}})
 

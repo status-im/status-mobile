@@ -1,3 +1,5 @@
+from selenium.common.exceptions import NoSuchElementException
+
 from tests import get_current_time, common_password
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
@@ -71,26 +73,11 @@ class NameInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
-class LearnMoreLink(BaseButton):
+class OtherAccountsButton(BaseButton):
 
     def __init__(self, driver):
-        super(LearnMoreLink, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Learn more about what we collect')
-
-
-class ShareDataButton(BaseButton):
-
-    def __init__(self, driver):
-        super(ShareDataButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Share data')
-
-
-class DonNotShareButton(BaseButton):
-
-    def __init__(self, driver):
-        super(DonNotShareButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="NO, I DON%sT WANT TO SHARE" '
-                                                   'or @text="Do not share"]' % "'")
+        super(OtherAccountsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('OTHER ACCOUNTS')
 
 
 class SignInView(BaseView):
@@ -110,9 +97,7 @@ class SignInView(BaseView):
         self.add_existing_account_button = AddExistingAccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.name_input = NameInput(self.driver)
-        self.learn_more_link = LearnMoreLink(self.driver)
-        self.share_data_button = ShareDataButton(self.driver)
-        self.do_not_share_button = DonNotShareButton(self.driver)
+        self.other_accounts_button = OtherAccountsButton(self.driver)
 
     def create_user(self, username: str = '', password=common_password):
         self.create_account_button.click()
@@ -123,11 +108,10 @@ class SignInView(BaseView):
 
         self.element_by_text_part('Display name').wait_for_element(30)
         username = username if username else 'user_%s' % get_current_time()
-        self.name_input.send_keys(username)
+        self.name_input.set_value(username)
+        self.confirm()
 
         self.next_button.click()
-        self.do_not_share_button.wait_for_visibility_of_element(10)
-        self.do_not_share_button.click_until_presence_of_element(self.home_button)
         return self.get_home_view()
 
     def recover_access(self, passphrase, password):
@@ -137,8 +121,6 @@ class SignInView(BaseView):
         recover_access_view.password_input.click()
         recover_access_view.send_as_keyevent(password)
         recover_access_view.sign_in_button.click()
-        self.do_not_share_button.wait_for_element(10)
-        self.do_not_share_button.click_until_presence_of_element(self.home_button)
         return self.get_home_view()
 
     def open_status_test_dapp(self):
@@ -154,8 +136,15 @@ class SignInView(BaseView):
         return status_test_daap
 
     def sign_in(self, password=common_password):
+        if self.ok_button.is_element_displayed():
+            self.ok_button.click()
         self.password_input.set_value(password)
         return self.sign_in_button.click()
 
     def click_account_by_position(self, position: int):
-        self.account_button.find_elements()[position].click()
+        if self.ok_button.is_element_displayed():
+            self.ok_button.click()
+        try:
+            self.account_button.find_elements()[position].click()
+        except IndexError:
+            raise NoSuchElementException('Unable to find account by position %s' % position) from None

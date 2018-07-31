@@ -1,7 +1,6 @@
 (ns status-im.test.utils.transducers
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.transducers :as transducers]
-            [status-im.native-module.impl.module :as native-module]))
+            [status-im.utils.transducers :as transducers]))
 
 (def ^:private preview-call-1
   {:jail-id 1
@@ -39,7 +38,11 @@
 (deftest last-distinct-by-test
   (testing "Elements are removed from input according to provided `compare-fn`,
            when duplicate elements are removed, the last one stays"
-    (is (= (sequence (transducers/last-distinct-by native-module/compare-calls) jail-calls)
+    (is (= (sequence (transducers/last-distinct-by (fn [{:keys [jail-id path] :as call}]
+                                                     (if (= :suggestions (last path))
+                                                       [jail-id path]
+                                                       call)))
+                     jail-calls)
            '({:jail-id 1
               :path [:suggestions]
               :params {:arg 2}}

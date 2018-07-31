@@ -24,6 +24,7 @@ load_rvm_if_available
 setup_header "Installing requirements..."
 
 install_and_setup_package_manager
+install_wget
 install_java8
 install_clojure_cli
 install_leiningen
@@ -31,24 +32,18 @@ install_node
 install_watchman
 install_react_native_cli
 install_android_sdk
+install_android_ndk
 install_maven
 install_cocoapods
 
 ####
 echo && setup_header "Installing dependencies..."
 
-dependency_setup lein deps
 dependency_setup npm install
-
-dependency_setup \
-  "ln -sf '$(repo_path)/node_modules/re-natal/index.js' '$(repo_path)/re-natal'"
-
-dependency_setup ./re-natal deps
-dependency_setup ./re-natal enable-source-maps
 
 dependency_setup \
   "mvn -f modules/react-native-status/ios/RCTStatus/pom.xml dependency:unpack"
 
-using_cocoapods && dependency_setup "cd ios && pod install && cd .."
+using_cocoapods && dependency_setup "pushd ios && pod install && popd"
 
 setup_complete

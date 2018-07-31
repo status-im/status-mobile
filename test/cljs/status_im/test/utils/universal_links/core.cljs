@@ -62,6 +62,9 @@
   (testing "https://get.status.im/blah"
     (testing "it returns true"
       (is (links/universal-link? "https://get.status.im/blah"))))
+  (testing "unicode characters"
+    (testing "it returns false"
+      (is (not (links/universal-link? "https://get.status.im/browse/www.аррӏе.com")))))
   (testing "not-status-im://blah"
     (testing "it returns false"
       (is (not (links/universal-link? "https://not.status.im/blah")))))

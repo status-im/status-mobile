@@ -60,7 +60,13 @@ class ChooseFromContactsButton(BaseButton):
 class EthAssetText(BaseText):
     def __init__(self, driver):
         super(EthAssetText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='ETH']/../android.widget.TextView[1]")
+        self.locator = self.Locator.accessibility_id('eth-asset-value-text')
+
+
+class STTAssetText(BaseText):
+    def __init__(self, driver):
+        super(STTAssetText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('stt-asset-value-text')
 
 
 class UsdTotalValueText(BaseText):
@@ -141,7 +147,12 @@ class AssetTextElement(BaseText):
 class AssetCheckBox(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetCheckBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % asset_name)
+        self.asset_name = asset_name
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../android.widget.CheckBox" % self.asset_name)
+
+    def click(self):
+        self.scroll_to_element().click()
+        info('Click %s asset checkbox' % self.asset_name)
 
 
 class TotalAmountText(BaseText):
@@ -158,6 +169,16 @@ class CurrencyText(BaseText):
         self.locator = self.Locator.accessibility_id('total-amount-currency-text')
 
 
+class BackupRecoveryPhrase(BaseButton):
+    def __init__(self, driver):
+        super(BackupRecoveryPhrase, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Backup your Recovery phrase')
+
+    def navigate(self):
+        from views.profile_view import ProfileView
+        return ProfileView(self.driver)
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super(WalletView, self).__init__(driver)
@@ -165,7 +186,8 @@ class WalletView(BaseView):
 
         self.send_transaction_button = SendTransactionButton(self.driver)
         self.transaction_history_button = TransactionHistoryButton(self.driver)
-        self.eth_asset = EthAssetText(self.driver)
+        self.eth_asset_value = EthAssetText(self.driver)
+        self.stt_asset_value = STTAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
 
         self.send_transaction_request = SendTransactionRequestButton(self.driver)
@@ -185,13 +207,17 @@ class WalletView(BaseView):
 
         self.total_amount_text = TotalAmountText(self.driver)
         self.currency_text = CurrencyText(self.driver)
+        self.backup_recovery_phrase = BackupRecoveryPhrase(self.driver)
 
     def get_usd_total_value(self):
         import re
         return float(re.sub('[$,]', '', self.usd_total_value.text))
 
     def get_eth_value(self):
-        return float(self.eth_asset.text)
+        return float(self.eth_asset_value.text)
+
+    def get_stt_value(self):
+        return float(self.stt_asset_value.text)
 
     def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()

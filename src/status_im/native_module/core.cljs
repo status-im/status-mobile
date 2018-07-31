@@ -1,95 +1,67 @@
 (ns status-im.native-module.core
-  (:require [status-im.native-module.module :as module-interface]
-            [status-im.native-module.impl.module :as native-module]
-            [status-im.native-module.impl.non-status-go-module :as non-status-go-module]
-            [taoensso.timbre :as log]
-            [status-im.utils.config :as config]))
-
-(def rns-module
-  (if config/stub-status-go?
-    (non-status-go-module/ReactNativeStatus.)
-    (native-module/ReactNativeStatus.)))
+  (:require [status-im.native-module.impl.module :as native-module]))
 
 (def adjust-resize 16)
-(def adjust-pan 32)
-
-#_(defn- wrap-and-print-callback [name callback]
-    (fn [& args]
-      (println :callback name (str args))
-      (log/debug :callback name args)
-      (apply callback args)))
-
-(defn init-jail []
-  (module-interface/-init-jail rns-module))
 
 (defn move-to-internal-storage [callback]
-  (module-interface/-move-to-internal-storage rns-module callback))
+  (native-module/move-to-internal-storage callback))
 
 (defn start-node [config]
-  (module-interface/-start-node rns-module config))
+  (native-module/start-node config))
 
 (defn stop-node []
-  (module-interface/-stop-node rns-module))
+  (native-module/stop-node))
 
 (defn create-account [password callback]
-  (module-interface/-create-account rns-module password callback))
+  (native-module/create-account password callback))
 
 (defn recover-account [passphrase password callback]
-  (module-interface/-recover-account rns-module passphrase password callback))
+  (native-module/recover-account passphrase password callback))
 
 (defn login [address password callback]
-  (module-interface/-login rns-module address password callback))
+  (native-module/login address password callback))
 
 (defn approve-sign-request [id password callback]
-  (module-interface/-approve-sign-request rns-module id password callback))
+  (native-module/approve-sign-request id password callback))
 
 (defn approve-sign-request-with-args [id password gas gas-price callback]
-  (module-interface/-approve-sign-request-with-args rns-module id password gas gas-price callback))
+  (native-module/approve-sign-request-with-args id password gas gas-price callback))
 
 (defn discard-sign-request [id]
-  (module-interface/-discard-sign-request rns-module id))
-
-(defn parse-jail [chat-id file callback]
-  (module-interface/-parse-jail rns-module chat-id file callback))
-
-(defn call-jail [params]
-  (module-interface/-call-jail rns-module params))
-
-(defn call-function! [params]
-  (module-interface/-call-function! rns-module params))
+  (native-module/discard-sign-request id))
 
 (defn set-soft-input-mode [mode]
-  (module-interface/-set-soft-input-mode rns-module mode))
+  (native-module/set-soft-input-mode mode))
 
 (defn clear-web-data []
-  (module-interface/-clear-web-data rns-module))
+  (native-module/clear-web-data))
 
 (defn call-web3 [payload callback]
-  (module-interface/-call-web3 rns-module payload callback))
+  (native-module/call-web3 payload callback))
 
 (defn call-web3-private [payload callback]
-  (module-interface/-call-web3-private rns-module payload callback))
+  (native-module/call-web3-private payload callback))
 
 (defn module-initialized! []
-  (module-interface/-module-initialized! rns-module))
+  (native-module/module-initialized!))
 
 (defn should-move-to-internal-storage? [callback]
-  (module-interface/-should-move-to-internal-storage? rns-module callback))
+  (native-module/should-move-to-internal-storage? callback))
 
-(defn notify-users [{:keys [message payload tokens] :as m} callback]
-  (module-interface/-notify-users rns-module m callback))
+(defn notify-users [m callback]
+  (native-module/notify-users m callback))
 
 (defn add-peer [enode callback]
-  (module-interface/-add-peer rns-module enode callback))
+  (native-module/add-peer enode callback))
 
 (defn close-application []
-  (module-interface/-close-application rns-module))
+  (native-module/close-application))
 
 (defn connection-change [data]
-  (module-interface/-connection-change rns-module data))
+  (native-module/connection-change data))
 
 (defn app-state-change [state]
-  (module-interface/-app-state-change rns-module state))
+  (native-module/app-state-change state))
 
 (defn get-device-UUID [callback]
-  (module-interface/-get-device-UUID rns-module callback))
+  (native-module/get-device-UUID callback))

@@ -3,20 +3,23 @@
             [re-frame.core :refer [reg-sub subscribe]]
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.models.commands :as commands-model]
-            [status-im.chat.views.input.utils :as input-utils]
-            [status-im.commands.utils :as commands-utils]
+            [status-im.chat.commands.core :as commands]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
-            [status-im.constants :as const]))
+            [status-im.constants :as const]
+            [status-im.wallet.transactions :as transactions]))
 
 (reg-sub :get-chats :chats)
 
 (reg-sub :get-current-chat-id :current-chat-id)
 
 (reg-sub :chat-ui-props :chat-ui-props)
+
+(reg-sub :get-id->command :id->command)
+
+(reg-sub :get-access-scope->command-id :access-scope->command-id)
 
 (reg-sub
  :get-current-chat-ui-props
@@ -62,13 +65,7 @@
  :validation-messages
  :<- [:get-current-chat-ui-props]
  (fn [ui-props]
-   (some-> ui-props :validation-messages commands-utils/generate-hiccup)))
-
-(reg-sub
- :result-box-markup
- :<- [:get-current-chat-ui-props]
- (fn [ui-props]
-   (some-> ui-props :result-box :markup commands-utils/generate-hiccup)))
+   (some-> ui-props :validation-messages)))
 
 (reg-sub
  :chat-input-margin
@@ -79,18 +76,16 @@
      platform/ios? kb-height
      :default 0)))
 
-(defn- active-chat? [dev-mode? [_ chat]]
+(defn- active-chat? [[_ chat]]
   (and (:is-active chat)
-       (or dev-mode?
-           (not= const/console-chat-id (:chat-id chat)))))
+       (not= const/console-chat-id (:chat-id chat))))
 
-(defn active-chats [[chats {:keys [dev-mode?]}]]
-  (into {} (filter (partial active-chat? dev-mode?) chats)))
+(defn active-chats [chats]
+  (into {} (filter active-chat? chats)))
 
 (reg-sub
  :get-active-chats
  :<- [:get-chats]
- :<- [:get-current-account]
  active-chats)
 
 (reg-sub
@@ -229,133 +224,83 @@
 
 (reg-sub
  :get-commands-for-chat
- :<- [:get-commands-responses-by-access-scope]
- :<- [:get-current-account]
+ :<- [:get-id->command]
+ :<- [:get-access-scope->command-id]
  :<- [:get-current-chat]
- :<- [:get-contacts]
- (fn [[commands-responses account chat contacts]]
-   (commands-model/commands-responses :command commands-responses account chat contacts)))
-
-(reg-sub
- :get-responses-for-chat
- :<- [:get-commands-responses-by-access-scope]
- :<- [:get-current-account]
- :<- [:get-current-chat]
- :<- [:get-contacts]
- (fn [[commands-responses account {:keys [requests] :as chat} contacts]]
-   (commands-model/requested-responses commands-responses account chat contacts (vals requests))))
+ (fn [[id->command access-scope->command-id chat]]
+   (commands/chat-commands id->command access-scope->command-id chat)))
 
 (def ^:private map->sorted-seq (comp (partial map second) (partial sort-by first)))
 
-(defn- available-commands-responses [[commands-responses {:keys [input-text]}]]
-  (->> commands-responses
+(defn- available-commands [[commands {:keys [input-text]}]]
+  (->> commands
        map->sorted-seq
-       (filter (fn [item]
+       (filter (fn [{:keys [type]}]
                  (when (input-model/starts-as-command? input-text)
-                   (string/includes? (commands-model/command-name item) input-text))))))
+                   (string/includes? (commands/command-name type) input-text))))))
 
 (reg-sub
  :get-available-commands
  :<- [:get-commands-for-chat]
  :<- [:get-current-chat]
- available-commands-responses)
+ available-commands)
 
 (reg-sub
- :get-available-responses
- :<- [:get-responses-for-chat]
- :<- [:get-current-chat]
- available-commands-responses)
-
-(reg-sub
- :get-available-commands-responses
+ :get-all-available-commands
  :<- [:get-commands-for-chat]
- :<- [:get-responses-for-chat]
- (fn [[commands responses]]
-   (map->sorted-seq (merge commands responses))))
+ (fn [commands]
+   (map->sorted-seq commands)))
 
 (reg-sub
  :selected-chat-command
  :<- [:get-current-chat]
+ :<- [:get-current-chat-ui-prop :selection]
  :<- [:get-commands-for-chat]
- :<- [:get-responses-for-chat]
- (fn [[chat commands responses]]
-   (input-model/selected-chat-command chat commands responses)))
+ (fn [[{:keys [input-text]} selection commands]]
+   (commands/selected-chat-command input-text selection commands)))
 
 (reg-sub
  :chat-input-placeholder
  :<- [:get-current-chat]
  :<- [:selected-chat-command]
- (fn [[{:keys [input-text]} command]]
-   (when (and (string/ends-with? (or input-text "") chat-constants/spacing-char)
-              (not (get-in command [:command :sequential-params])))
-     (let [real-args (remove string/blank? (:args command))]
-       (cond
-         (and command (empty? real-args))
-         (get-in command [:command :params 0 :placeholder])
-
-         (and command
-              (= (count real-args) 1))
-         (get-in command [:command :params 1 :placeholder]))))))
-
-(reg-sub
- :current-chat-argument-position
- :<- [:selected-chat-command]
- :<- [:get-current-chat]
- :<- [:get-current-chat-ui-prop :selection]
- (fn [[command {:keys [input-text seq-arguments]} selection]]
-   (input-model/current-chat-argument-position command input-text selection seq-arguments)))
+ (fn [[{:keys [input-text]} {:keys [params current-param-position]}]]
+   (when (string/ends-with? (or input-text "") chat-constants/spacing-char)
+     (get-in params [current-param-position :placeholder]))))
 
 (reg-sub
  :chat-parameter-box
  :<- [:get-current-chat]
  :<- [:selected-chat-command]
- :<- [:current-chat-argument-position]
- (fn [[current-chat selected-chat-command argument-position]]
-   (cond
-     (and selected-chat-command
-          (not= argument-position input-model/*no-argument-error*))
-     (get-in current-chat [:parameter-boxes
-                           (get-in selected-chat-command [:command :name])
-                           argument-position])
-
-     (not selected-chat-command)
-     (get-in current-chat [:parameter-boxes :message])
-
-     :default
-     nil)))
+ (fn [[current-chat {:keys [current-param-position params]}]]
+   (when (and params current-param-position)
+     (get-in params [current-param-position :suggestions]))))
 
 (reg-sub
  :show-parameter-box?
  :<- [:chat-parameter-box]
  :<- [:show-suggestions?]
- :<- [:get-current-chat]
  :<- [:validation-messages]
- (fn [[chat-parameter-box show-suggestions? {:keys [input-text]} validation-messages]]
-   (and (get chat-parameter-box :markup)
+ (fn [[chat-parameter-box show-suggestions? validation-messages]]
+   (and chat-parameter-box
         (not validation-messages)
         (not show-suggestions?))))
-
-(reg-sub
- :command-completion
- :<- [:selected-chat-command]
- input-model/command-completion)
 
 (reg-sub
  :show-suggestions-view?
  :<- [:get-current-chat-ui-prop :show-suggestions?]
  :<- [:get-current-chat]
- :<- [:selected-chat-command]
- :<- [:get-available-commands-responses]
- (fn [[show-suggestions? {:keys [input-text]} selected-command commands-responses]]
-   (and (or show-suggestions? (input-model/starts-as-command? (string/trim (or input-text ""))))
-        (seq commands-responses))))
+ :<- [:get-all-available-commands]
+ (fn [[show-suggestions? {:keys [input-text]} commands]]
+   (and (or show-suggestions?
+            (input-model/starts-as-command? (string/trim (or input-text ""))))
+        (seq commands))))
 
 (reg-sub
  :show-suggestions?
  :<- [:show-suggestions-view?]
  :<- [:selected-chat-command]
  (fn [[show-suggestions-box? selected-command]]
-   (and show-suggestions-box? (not (:command selected-command)))))
+   (and show-suggestions-box? (not selected-command))))
 
 (reg-sub
  :is-request-answered?
@@ -405,7 +350,7 @@
  (fn [db [_ tx-hash]]
    (-> (get-in db [:wallet :transactions tx-hash :confirmations] "0")
        (js/parseInt)
-       (pos?))))
+       (>= transactions/confirmations-count-threshold))))
 
 (reg-sub
  :wallet-transaction-exists?

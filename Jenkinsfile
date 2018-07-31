@@ -1,6 +1,7 @@
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
+env.FASTLANE_DISABLE_COLORS=1
 
 def installJSDeps() {
     def attempt = 1
@@ -8,6 +9,7 @@ def installJSDeps() {
     def installed = false
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
+        sh 'scripts/prepare-for-platform.sh mobile'
         sh 'npm install'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
@@ -15,7 +17,7 @@ def installJSDeps() {
 }
 
 timeout(90) {
-    node ('macos') {
+    node ('macos_pr') {
       def apkUrl = ''
       def ipaUrl = ''
       def testPassed = true
@@ -28,11 +30,16 @@ timeout(90) {
           slackSend color: 'good', message: BRANCH_NAME + '(' + env.CHANGE_BRANCH + ') build started. ' + env.BUILD_URL
 
           checkout scm
-          sh 'git rebase origin/develop'
+
+          try {
+            sh 'git rebase origin/develop'
+          } catch (e) {
+            sh 'git rebase --abort'
+            throw e
+          }
 
           sh 'rm -rf node_modules'
           sh 'cp .env.jenkins .env'
-          sh 'lein deps'
 
           installJSDeps()
 
@@ -66,7 +73,7 @@ timeout(90) {
               hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
             }
             apkUrl = 'https://i.diawi.com/' + hash
-            
+
             sh ('echo ARTIFACT Android: ' + apkUrl)
           }
         }

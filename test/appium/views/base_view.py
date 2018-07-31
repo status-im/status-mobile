@@ -2,10 +2,12 @@ import random
 import string
 import time
 import base64
+import pytest
+import re
 import zbarlight
 from tests import info, common_password
 from eth_keys import datatypes
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
 from datetime import datetime
 from io import BytesIO
@@ -41,7 +43,7 @@ class AllowButton(BaseButton):
 class DenyButton(BaseButton):
     def __init__(self, driver):
         super(DenyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Deny']")
+        self.locator = self.Locator.xpath_selector("//*[@text='DENY']")
 
 
 class DeleteButton(BaseButton):
@@ -82,7 +84,7 @@ class TabButton(BaseButton):
             def __init__(self, driver, parent_locator):
                 super(Counter, self).__init__(driver)
                 self.locator = self.Locator.xpath_selector(
-                    "//*[@content-desc='%s']/android.view.ViewGroup[2]/android.widget.TextView" % parent_locator)
+                    "//*[@content-desc='%s']//android.view.ViewGroup[2]/android.widget.TextView" % parent_locator)
 
         return Counter(self.driver, self.locator.value)
 
@@ -96,6 +98,11 @@ class HomeButton(TabButton):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
+    def click(self):
+        from views.home_view import PlusButton
+        self.click_until_presence_of_element(PlusButton(self.driver))
+        return self.navigate()
+
 
 class WalletButton(TabButton):
     def __init__(self, driver):
@@ -106,6 +113,15 @@ class WalletButton(TabButton):
         from views.wallet_view import WalletView
         return WalletView(self.driver)
 
+    def click(self):
+        info('Tap on %s' % self.name)
+        from views.wallet_view import SetUpButton, SendTransactionButton
+        for _ in range(3):
+            self.find_element().click()
+            if SetUpButton(self.driver).is_element_displayed() or SendTransactionButton(
+                    self.driver).is_element_displayed():
+                return self.navigate()
+
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
@@ -115,6 +131,11 @@ class ProfileButton(TabButton):
     def navigate(self):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
+
+    def click(self):
+        from views.profile_view import ShareMyContactKeyButton
+        self.click_until_presence_of_element(ShareMyContactKeyButton(self.driver))
+        return self.navigate()
 
 
 class SaveButton(BaseButton):
@@ -175,6 +196,32 @@ class TestFairyWarning(BaseText):
         self.is_shown = bool()
 
 
+class OkContinueButton(BaseButton):
+
+    def __init__(self, driver):
+        super(OkContinueButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK, CONTINUE']")
+
+
+class DiscardButton(BaseButton):
+
+    def __init__(self, driver):
+        super(DiscardButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='DISCARD']")
+
+
+class ConfirmButton(BaseButton):
+    def __init__(self, driver):
+        super(ConfirmButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
+
+
+class ProgressBar(BaseElement):
+    def __init__(self, driver, parent_locator: str = ''):
+        super(ProgressBar, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -195,6 +242,9 @@ class BaseView(object):
         self.save_button = SaveButton(self.driver)
         self.done_button = DoneButton(self.driver)
         self.delete_button = DeleteButton(self.driver)
+        self.ok_continue_button = OkContinueButton(self.driver)
+        self.discard_button = DiscardButton(self.driver)
+        self.confirm_button = ConfirmButton(self.driver)
         self.connection_status = ConnectionStatusText(self.driver)
 
         self.apps_button = AppsButton(self.driver)
@@ -212,13 +262,13 @@ class BaseView(object):
     def accept_agreements(self):
         iterations = int()
         from views.sign_in_view import CreateAccountButton, PasswordInput
-        while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed() or PasswordInput(
-                self.driver).is_element_displayed()):
+        if self.test_fairy_warning.is_element_displayed(10):
+            self.test_fairy_warning.is_shown = True
+        while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed(2) or PasswordInput(
+                self.driver).is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:
-                if self.test_fairy_warning.is_element_displayed():
-                    self.test_fairy_warning.is_shown = True
                 try:
-                    button.wait_for_element(15)
+                    button.wait_for_element(3)
                     button.click()
                 except (NoSuchElementException, TimeoutException):
                     pass
@@ -226,7 +276,10 @@ class BaseView(object):
 
     @property
     def logcat(self):
-        return self.driver.get_log("logcat")
+        logcat = self.driver.get_log("logcat")
+        if len(logcat) > 1000:
+            return str([i for i in logcat if 'appium' not in str(i).lower()])
+        raise TimeoutError('Logcat is empty')
 
     def confirm(self):
         info("Tap 'Confirm' on native keyboard")
@@ -235,6 +288,10 @@ class BaseView(object):
     def click_system_back_button(self):
         info('Click system back button')
         self.driver.press_keycode(4)
+
+    def cut_text(self):
+        info('Cut text')
+        self.driver.press_keycode(277)
 
     def copy_text(self):
         info('Copy text')
@@ -248,7 +305,7 @@ class BaseView(object):
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
 
                 ',': 55, '-': 69, '+': 81, '.': 56, '/': 76, '\\': 73, ';': 74, ' ': 62,
-                '[': 71, ']': 72, '=': 70, '\n': 66, '_': [69, 5],
+                '[': 71, ']': 72, '=': 70, '\n': 66, '_': [69, 5], ':': [74, 5],
 
                 'a': 29, 'b': 30, 'c': 31, 'd': 32, 'e': 33, 'f': 34, 'g': 35, 'h': 36, 'i': 37, 'j': 38,
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
@@ -299,9 +356,15 @@ class BaseView(object):
         return element.wait_for_element(wait_time)
 
     def element_by_accessibility_id(self, accessibility_id, element_type='button'):
-        info("Looking for an element by text: '%s'" % accessibility_id)
+        info("Looking for an element by accessibility id: '%s'" % accessibility_id)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.accessibility_id(accessibility_id)
+        return element
+
+    def element_by_xpath(self, xpath, element_type='button'):
+        info("Looking for an element by xpath: '%s'" % xpath)
+        element = self.element_types[element_type](self.driver)
+        element.locator = element.Locator.xpath_selector(xpath)
         return element
 
     def swipe_down(self):
@@ -369,13 +432,9 @@ class BaseView(object):
     def relogin(self, password=common_password):
         self.get_back_to_home_view()
         profile_view = self.profile_button.click()
-        profile_view.logout_button.click()
-        profile_view.confirm_logout_button.click()
+        profile_view.logout()
         sign_in_view = self.get_sign_in_view()
-        sign_in_view.click_account_by_position(0)
-        sign_in_view.password_input.send_keys(password)
-        sign_in_view.sign_in_button.click()
-        sign_in_view.home_button.wait_for_visibility_of_element()
+        sign_in_view.sign_in(password)
 
     def get_public_key(self):
         profile_view = self.profile_button.click()
@@ -391,3 +450,25 @@ class BaseView(object):
         self.send_as_keyevent('+0')
         self.confirm()
         self.element_by_accessibility_id('Send Message').click()
+
+    def reconnect(self):
+        connect_status = self.connection_status
+        for i in range(3):
+            if connect_status.is_element_displayed(5, ignored_exceptions=StaleElementReferenceException):
+                if 'Tap to reconnect' in connect_status.text:
+                    try:
+                        connect_status.click()
+                    except AttributeError:
+                        pass
+                    try:
+                        connect_status.wait_for_invisibility_of_element()
+                    except TimeoutException as e:
+                        if i == 2:
+                            e.msg = "Can't reconnect to mail server after 3 attempts"
+                            raise e
+
+    def check_no_values_in_logcat(self, **kwargs):
+        logcat = self.logcat
+        for key, value in kwargs.items():
+            if re.findall('\W%s$|\W%s\W' % (value, value), logcat):
+                pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)

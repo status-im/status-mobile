@@ -17,7 +17,6 @@
             [status-im.chat.views.message.options :as message-options]
             [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.message.message :as message]
-            [status-im.chat.views.input.input :as input]
             [status-im.chat.views.toolbar-content :as toolbar-content]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list.views :as list]
@@ -37,11 +36,10 @@
        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
         :accessibility-label :add-to-contacts-button}
        [react/view style/add-contact
-        [react/text {:style style/add-contact-text}
-         (i18n/label :t/add-to-contacts)]]])))
+        [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
-  (list-selection/show {:title   (if public? (str "#" chat-name) chat-name)
+  (list-selection/show {:title   chat-name
                         :options (actions/actions group-chat? chat-id public?)}))
 
 (defview chat-toolbar [public?]
@@ -54,7 +52,10 @@
        [toolbar/platform-agnostic-toolbar {}
         (toolbar/nav-back-count {:home? true})
         [toolbar-content/toolbar-content-view]
-        [toolbar/actions [{:icon      :icons/options
+        [toolbar/actions [{:icon      :icons/wallet
+                           :icon-opts {:color :black}
+                           :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}
+                          {:icon      :icons/options
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
                            :handler   #(on-options chat-id name group-chat public?)}]]])

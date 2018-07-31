@@ -4,7 +4,6 @@
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.utils.instabug :as instabug]
-            [status-im.utils.mixpanel :as mixpanel]
             [status-im.models.account :as models.account]
             [cljs.core.async :as async]
             [taoensso.timbre :as log]))
@@ -93,26 +92,6 @@
          (throw (ex-info (check-spec-msg event-id new-db) {})))
        context))))
 
-(def track-mixpanel
-  "send an event to mixpanel for tracking"
-  (->interceptor
-   :id track-mixpanel
-   :after
-   (fn track-handler
-     [context]
-     (let [new-db             (get-coeffect context :db)
-           [event-name]       (get-coeffect context :event)]
-       (when (get-in new-db [:account/account :sharing-usage-data?])
-         (let [event    (get-coeffect context :event)
-               offline? (or (= :offline (:network-status new-db))
-                            (= :offline (:sync-state new-db)))
-               anon-id  (:device-UUID new-db)]
-           (doseq [{:keys [label properties]}
-                   (mixpanel/matching-events new-db event mixpanel/event-by-trigger)]
-             (mixpanel/track anon-id label properties offline?)
-             (instabug/track label properties)))))
-     context)))
-
 (defn register-handler
   ([name handler] (register-handler name nil handler))
   ([name middleware handler]
@@ -121,8 +100,7 @@
 (def default-interceptors
   [debug-handlers-names
    (when js/goog.DEBUG check-spec)
-   (re-frame/inject-cofx :now)
-   track-mixpanel])
+   (re-frame/inject-cofx :now)])
 
 (defn register-handler-db
   ([name handler] (register-handler-db name nil handler))
@@ -146,8 +124,3 @@
        (remove (fn [{:keys [dapp? pending?]}]
                  (or pending? dapp?)))
        (map :whisper-identity)))
-
-(re-frame.core/reg-fx
- :drain-mixpanel-events
- (fn []
-   (async/go (async/<! (mixpanel/drain-events-queue!)))))

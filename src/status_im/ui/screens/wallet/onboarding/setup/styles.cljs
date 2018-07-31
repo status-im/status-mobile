@@ -41,3 +41,7 @@
 
 (def got-it-button-text
   {:padding-horizontal 0})
+
+(def modal
+  {:flex             1
+   :background-color colors/blue})

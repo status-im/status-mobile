@@ -104,16 +104,24 @@
 
 (deftest clear-history-test
   (let [chat-id "1"
-        cofx    {:db {:chats {chat-id {:message-groups {:something "a"}
-                                       :messages       {"1" {:clock-value 1}
-                                                        "2" {:clock-value 10}
-                                                        "3" {:clock-value 2}}}}}}]
+        cofx    {:db {:chats {chat-id {:message-groups        {:something "a"}
+                                       :messages              {"1" {:clock-value 1}
+                                                               "2" {:clock-value 10}
+                                                               "3" {:clock-value 2}}
+                                       :unviewed-messages      #{"3"}
+                                       :not-loaded-message-ids #{"2" "3"}}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/clear-history chat-id cofx)]
         (is (= {} (get-in actual [:db :chats chat-id :messages])))))
     (testing "it deletes all the message groups"
       (let [actual (chat/clear-history chat-id cofx)]
         (is (= {} (get-in actual [:db :chats chat-id :message-groups])))))
+    (testing "it deletes unviewed messages set"
+      (let [actual (chat/clear-history chat-id cofx)]
+        (is (= #{} (get-in actual [:db :chats chat-id :unviewed-messages])))))
+    (testing "it deletes not loaded message ids set"
+      (let [actual (chat/clear-history chat-id cofx)]
+        (is (= #{} (get-in actual [:db :chats chat-id :not-loaded-message-ids])))))
     (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
       (let [actual (chat/clear-history chat-id cofx)]
         (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))

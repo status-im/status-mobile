@@ -10,24 +10,6 @@
 
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
 
-(def transactor-js (slurp-bot :transactor))
-
-(def console-js (slurp-bot :console "web3_metadata.js"))
-
-(def demo-bot-js (slurp-bot :demo_bot))
-
-(def resources
-  {:transactor-bot transactor-js
-   :console-bot    console-js
-   :demo-bot       demo-bot-js})
-
-(defn get-resource [url]
-  (let [resource-name (keyword (subs url (count local-protocol)))]
-    (resources resource-name)))
-
-(def status-js (str (slurp "resources/js/status.js")
-                    (slurp "resources/js/i18n.js")))
-
 (def webview-js (slurp "resources/js/webview.js"))
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "node_modules/web3/dist/web3.min.js")

@@ -34,11 +34,11 @@
 
 (defn cartouche-content-wrapper [disabled?]
   (merge
-   {:flex-direction     :row
-    :margin-top         8
-    :border-radius      styles/border-radius
-    :padding-left       14
-    :padding-right      8}
+   {:flex-direction :row
+    :margin-top     8
+    :border-radius  styles/border-radius
+    :padding-left   14
+    :padding-right  8}
    (if disabled?
      {:border-color colors/white-light-transparent
       :border-width 1}
@@ -65,8 +65,9 @@
 ;; Main section
 
 (defstyle main-section
-  {:flex 1
-   :ios  {:background-color colors/blue}})
+  {:flex    1
+   :android {:background-color colors/white}
+   :ios     {:background-color colors/blue}})
 
 (defstyle scroll-bottom
   {:background-color colors/white
@@ -100,8 +101,7 @@
    :color       colors/white})
 
 (def backup-seed-phrase-description
-  {:font-size   14
-   :line-height 20
+  {:line-height 20
    :color       colors/white-lighter-transparent})
 
 (def total-balance-container
@@ -116,8 +116,7 @@
    :color     colors/white})
 
 (def total-value
-  {:font-size 14
-   :color     colors/white-transparent})
+  {:color colors/white-transparent})
 
 (defstyle total-balance-currency
   {:font-size   37
@@ -177,3 +176,21 @@
   {:font-size   16
    :color       colors/gray
    :margin-left 6})
+
+(def wallet-address
+  {:color          :white
+   :text-align     :center
+   :font-size      15
+   :letter-spacing -0.2
+   :line-height    20})
+
+(def address-section
+  (merge
+   section
+   {:flex-grow   1
+    :align-items :center
+    :padding     20}))
+
+(def modal-history
+  {:flex             1
+   :background-color :white})

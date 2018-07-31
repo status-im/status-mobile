@@ -1,8 +1,14 @@
 from tests import info
 import time
-from selenium.common.exceptions import TimeoutException
-from views.base_element import BaseButton, BaseText
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from views.base_element import BaseButton, BaseText, BaseElement
 from views.base_view import BaseView
+
+
+class WelcomeImageElement(BaseElement):
+    def __init__(self, driver):
+        super(WelcomeImageElement, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.ImageView')
 
 
 class PlusButton(BaseButton):
@@ -21,26 +27,16 @@ class PlusButton(BaseButton):
         return self.navigate()
 
 
-class ConsoleButton(BaseButton):
-    def __init__(self, driver):
-        super(ConsoleButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Console']")
-
-
 class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
         super(ChatElement, self).__init__(driver)
         self.username = username_part
-        self.locator = self.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % self.username)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='chat-item'][.//*[starts-with(@text,'%s')]]" % self.username)
 
     def navigate(self):
-        if self.username == 'Status Console':
-            from views.console_view import ConsoleView
-            return ConsoleView(self.driver)
-        else:
-            from views.chat_view import ChatView
-            return ChatView(self.driver)
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
     def click(self):
         from views.chat_view import ChatMessageInput
@@ -48,15 +44,47 @@ class ChatElement(BaseButton):
         self.click_until_presence_of_element(desired_element=desired_element)
         return self.navigate()
 
+    def find_element(self):
+        info('Looking for %s' % self.name)
+        for i in range(2):
+            try:
+                return super(ChatElement, self).find_element()
+            except NoSuchElementException as e:
+                if i == 0:
+                    HomeView(self.driver).reconnect()
+                else:
+                    e.msg = 'Unable to find chat with user %s' % self.username
+                    raise e
+
     @property
     def swipe_delete_button(self):
         class DeleteButton(BaseButton):
             def __init__(self, driver, parent_locator: str):
                 super(DeleteButton, self).__init__(driver)
-                locator_str = "/../../following-sibling::*[1][name()='android.view.ViewGroup']/*[@content-desc='icon']"
+                locator_str = "/android.view.ViewGroup/*[@content-desc='icon']"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
 
         return DeleteButton(self.driver, self.locator.value)
+
+    def swipe_and_delete(self):
+        counter = 0
+        while counter < 10:
+            self.swipe_element()
+            if self.swipe_delete_button.is_element_present():
+                break
+            time.sleep(10)
+            counter += 1
+        self.swipe_delete_button.click()
+
+    @property
+    def new_messages_counter(self):
+        class UnreadMessagesCountText(BaseText):
+            def __init__(self, driver, parent_locator: str):
+                super(UnreadMessagesCountText, self).__init__(driver)
+                locator_str = "//*[@content-desc='unread-messages-count-text']"
+                self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
+
+        return UnreadMessagesCountText(self.driver, self.locator.value)
 
 
 class ChatNameText(BaseText):
@@ -74,9 +102,8 @@ class ChatUrlText(BaseText):
 class HomeView(BaseView):
     def __init__(self, driver):
         super(HomeView, self).__init__(driver)
-
+        self.welcome_image = WelcomeImageElement(self.driver)
         self.plus_button = PlusButton(self.driver)
-        self.console_button = ConsoleButton(self.driver)
         self.chat_name_text = ChatNameText(self.driver)
         self.chat_url_text = ChatUrlText(self.driver)
 
@@ -117,24 +144,13 @@ class HomeView(BaseView):
             user_contact.click()
         start_new_chat.next_button.click()
         start_new_chat.chat_name_editbox.send_keys(group_chat_name)
-        start_new_chat.confirm_button.click()
+        start_new_chat.create_button.click()
 
     def join_public_chat(self, chat_name: str):
         start_new_chat = self.plus_button.click()
         start_new_chat.join_public_chat_button.click()
-        start_new_chat.chat_name_editbox.send_keys(chat_name)
+        start_new_chat.chat_name_editbox.set_value(chat_name)
         time.sleep(2)
         start_new_chat.confirm()
         from views.chat_view import ChatView
         return ChatView(self.driver)
-
-    def swipe_and_delete_chat(self, chat_name: str):
-        chat_element = self.get_chat_with_user(chat_name)
-        counter = 0
-        while counter < 10:
-            chat_element.swipe_element()
-            if chat_element.swipe_delete_button.is_element_present():
-                break
-            time.sleep(10)
-            counter += 1
-        chat_element.swipe_delete_button.click()

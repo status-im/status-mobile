@@ -4,13 +4,11 @@
             [re-frame.core :as rf]
             [day8.re-frame.test :refer [run-test-sync]]
             [status-im.constants :as const]
-            [status-im.chat.console :as console-chat]
             [status-im.chat.events :as chat-events]))
 
 (def test-db
   {:current-public-key "me"
-   :chats {const/console-chat-id console-chat/chat
-           "status" {:public? true
+   :chats {"status" {:public? true
                      :unviewed-messages #{"6" "5" "4" "3" "2" "1"}
                      :message-statuses {"6" {"me" {:message-id "6"
                                                    :chat-id "status"
@@ -43,27 +41,6 @@
                                                    :whisper-identity "me"
                                                    :status :received}}}}}})
 
-(deftest init-console-chat
-  (testing "initialising console if console is already added to chats, should not modify anything"
-    (let [fx (chat-events/init-console-chat {:db test-db})]
-      (is (not fx))))
-
-  (testing "initialising console without existing account and console chat not initialisated"
-    (let [fresh-db {:chats {}}
-          {:keys [db dispatch-n]} (chat-events/init-console-chat {:db fresh-db})]
-      (is (= (:current-chat-id db)
-             (:chat-id console-chat/chat)))
-      (is (= (:current-chat-id db)
-             const/console-chat-id))))
-
-  (testing "initialising console with existing account and console chat not initialisated"
-    (let [fresh-db {:chats {}}
-          {:keys [db dispatch-n]} (chat-events/init-console-chat {:db fresh-db})]
-      (is (= (:current-chat-id db)
-             (:chat-id console-chat/chat)))
-      (is (= (:current-chat-id db)
-             const/console-chat-id)))))
-
 (deftest mark-messages-seen
   (testing "Marking messages seen correctly marks loaded messages as seen and updates absolute unviewed set"
     (let [fx (chat-events/mark-messages-seen "status" {:db test-db})
@@ -83,3 +60,23 @@
     (is (= #{"4" "5" "6"}
            (set (get-in (chat-events/mark-messages-seen "1-1" {:db test-db})
                         [:shh/post 0 :message :payload :message-ids]))))))
+
+(deftest show-profile-test
+  (testing "default behaviour"
+    (testing "it navigates to profile but forgets the navigation"
+      (let [{:keys [db]} (chat-events/show-profile
+                          "a"
+                          false
+                          {:db {:navigation-stack '(:home)}})]
+        (is (= "a" (:contacts/identity db)))
+        (is (= '(:home) (:navigation-stack db)))
+        (is (= :profile (:view-id db))))))
+  (testing "keep-navigation? on"
+    (testing "it navigates to profile and keeps the navigation"
+      (let [{:keys [db]} (chat-events/show-profile
+                          "a"
+                          true
+                          {:db {:navigation-stack '(:home)}})]
+        (is (= "a" (:contacts/identity db)))
+        (is (= '(:profile :home) (:navigation-stack db)))
+        (is (= :profile (:view-id db)))))))

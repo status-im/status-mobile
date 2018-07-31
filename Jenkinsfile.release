@@ -4,6 +4,7 @@
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
+env.FASTLANE_DISABLE_COLORS=1
 
 def installJSDeps() {
     def attempt = 1
@@ -34,13 +35,13 @@ timeout(90) {
 
           checkout scm
 
-          version = readFile("${env.WORKSPACE}/VERSION").trim()
-
           sh 'git fetch --tags'
 
           sh 'rm -rf node_modules'
           sh 'cp .env.prod .env'
-          sh 'lein deps'
+
+          sh 'scripts/prepare-for-platform.sh mobile'
+          version = readFile("${env.WORKSPACE}/VERSION").trim()
           installJSDeps()
 
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'

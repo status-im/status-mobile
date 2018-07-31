@@ -8,7 +8,7 @@
 (def cljsbuild-config
   {:dev
    {:ios
-    {:source-paths     ["components/src" "react-native/src" "src"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
      :compiler         {:output-to     "target/ios/app.js"
                         :main          "env.ios.main"
                         :output-dir    "target/ios"
@@ -16,7 +16,7 @@
                         :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
-    {:source-paths     ["components/src" "react-native/src" "src"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
      :compiler         {:output-to     "target/android/app.js"
                         :main          "env.android.main"
                         :output-dir    "target/android"
@@ -26,7 +26,7 @@
 
    :prod
    {:ios
-    {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
      :compiler         {:output-to          "index.ios.js"
                         :output-dir         "target/ios-prod"
                         :static-fns         true
@@ -38,7 +38,7 @@
                         :language-in        :ecmascript5}
      :warning-handlers '[status-im.utils.build/warning-handler]}
     :android
-    {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
      :compiler         {:output-to          "index.android.js"
                         :output-dir         "target/android-prod"
                         :static-fns         true
@@ -81,10 +81,10 @@
                       "[env] (required): Pre-defined build environment. Allowed values: \"dev\", \"prod\", \"test\""
                       "[build-id] (optional): Build ID. When omitted, this task will compile all builds from the specified [env]."
                       "[type] (optional): Build type - value could be \"once\" or \"watch\". Default: \"once\"."]}
-   :figwheel {:desc  "Start figwheel + CLJS REPL / nREPL"
-              :usage ["Usage: clj -R:repl build.clj figwheel [options]"
-                      ""
-                      "[-h|--help] to see all available options"]}
+   :watch {:desc  "Start development"
+           :usage ["Usage: clj -R:dev build.clj watch [options]"
+                   ""
+                   "[-h|--help] to see all available options"]}
    :test     {:desc  "Run tests"
               :usage ["Usage: clj -R:test build.clj test [build-id]"
                       ""
@@ -202,86 +202,27 @@
     (compile-cljs :test build-id)
     (doo/run-script :node (->> build-id (get-cljsbuild-config :test) :compiler))))
 
-;;; Figwheeling task
+;;; :watch task
 
-(def figwheel-cli-opts
-  [["-p" "--platform BUILD-IDS" "CLJS Build IDs for platforms <android|ios>"
-    :id       :build-ids
-    :default  [:android]
-    :parse-fn #(->> (.split % ",")
-                    (map (comp keyword str/lower-case str/trim))
-                    vec)
-    :validate [(fn [build-ids] (every? #(some? (#{:android :ios} %)) build-ids)) "Allowed \"android\", and/or \"ios\""]]
-   ["-n" "--nrepl-port PORT" "nREPL Port"
-    :id       :port
-    :parse-fn #(if (string? %) (Integer/parseInt %) %)
-    :validate [#(or (true? %) (< 0 % 0x10000)) "Must be a number between 0 and 65536"]]
-   ["-a" "--android-device TYPE" "Android Device Type <avd|genymotion|real>"
-    :id       :android-device
-    :parse-fn #(keyword (str/lower-case %))
-    :validate [#(some? (#{:avd :genymotion :real} %)) "Must be \"avd\", \"genymotion\", or \"real\""]]
-   ["-i" "--ios-device TYPE" "iOS Device Type <simulator|real>"
-    :id       :ios-device
-    :parse-fn #(keyword (str/lower-case %))
-    :validate [#(some? (#{:simulator :real} %)) "Must be \"simulator\", or \"real\""]]
-   ["-h" "--help"]])
+(defn hawk-handler
+  [ctx e]
+  (let [path "src/status_im/utils/js_resources.cljs"
+        js-resourced (slurp path)]
+    (spit path (str js-resourced " ;;"))
+    (spit path js-resourced))
+  ctx)
 
-(defn print-and-exit [msg]
-  (println msg)
-  (System/exit 1))
-
-(defn parse-figwheel-cli-opts [args]
-  (with-namespaces [[clojure.tools.cli :as cli]]
-    (let [{:keys [options errors summary]} (cli/parse-opts args figwheel-cli-opts)]
-      (cond
-        (:help options)     (print-and-exit summary)
-        (not (nil? errors)) (print-and-exit errors)
-        :else               options))))
-
-(defmethod task "figwheel" [[_ & args]]
-  (with-namespaces [[figwheel-sidecar.repl-api :as ra]
-                    [hawk.core :as hawk]
+(defmethod task "watch" [[_ & args]]
+  (with-namespaces [[hawk.core :as hawk]
                     [re-frisk-sidecar.core :as rfs]
+                    [figwheel-sidecar.repl-api :as ra]
                     [clj-rn.core :as clj-rn]
-                    [clj-rn.main :refer [get-main-config] :rename {get-main-config get-cljrn-config}]]
-    (let [{:keys [build-ids
-                  port
-                  android-device
-                  ios-device]} (parse-figwheel-cli-opts args)
-          hosts-map            {:android (clj-rn/resolve-dev-host :android android-device)
-                                :ios     (clj-rn/resolve-dev-host :ios ios-device)}]
-      (clj-rn/enable-source-maps)
-      (clj-rn/write-env-dev hosts-map)
-      (doseq [build-id build-ids
-              :let     [host-ip                 (get hosts-map build-id)
-                        platform-name           (if (= build-id :ios) "iOS" "Android")
-                        {:keys [js-modules
-                                name
-                                resource-dirs]} (get-cljrn-config)]]
-        (clj-rn/rebuild-index-js build-id {:app-name      name
-                                           :host-ip       host-ip
-                                           :js-modules    js-modules
-                                           :resource-dirs resource-dirs})
-        (when (= build-id :ios)
-          (clj-rn/update-ios-rct-web-socket-executor host-ip)
-          (println-colorized "Host in RCTWebSocketExecutor.m was updated" green-color))
-        (println-colorized (format "Dev server host for %s: %s" platform-name host-ip) green-color))
-      (ra/start-figwheel!
-       {:figwheel-options (cond-> {:builds-to-start build-ids}
-                            port (merge {:nrepl-port       port
-                                         :nrepl-middleware ["cider.nrepl/cider-middleware"
-                                                            "refactor-nrepl.middleware/wrap-refactor"
-                                                            "cemerick.piggieback/wrap-cljs-repl"]}))
-        :all-builds       (into [] (for [[build-id {:keys [source-paths compiler warning-handlers]}]
-                                         (get-cljsbuild-config :dev)]
-                                     {:id           build-id
-                                      :source-paths (conj source-paths "env/dev")
-                                      :compiler     compiler
-                                      :figwheel     true}))})
+                    [clj-rn.main :as main]]
+    (let [options (main/parse-cli-options args main/watch-task-options)]
+      (clj-rn/watch (assoc options :start-cljs-repl false))
       (rfs/-main)
-      (if-not port
-        (ra/cljs-repl)
-        (spit ".nrepl-port" port)))))
+      (hawk/watch! [{:paths ["resources"] :handler hawk-handler}])
+      (when (:start-cljs-repl options) (ra/cljs-repl)))))
 
 ;;; Help
 

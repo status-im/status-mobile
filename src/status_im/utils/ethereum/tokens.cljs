@@ -41,7 +41,7 @@
                     :decimals 8}
                    {:symbol   :REP
                     :name     "Reputation"
-                    :address  "0xe94327d07fc17907b4db788e5adf2ed424addff6"
+                    :address  "0x1985365e9f78359a9B6AD760e32412f4a445E862"
                     :decimals 18}
                    {:symbol   :POWR
                     :name     "PowerLedger"
@@ -424,7 +424,8 @@
                    {:name     "Modest Test Token"
                     :symbol   :MDS
                     :decimals 18
-                    :address  "0x57cc9b83730e6d22b224e9dc3e370967b44a2de0"}])})
+                    :address  "0x57cc9b83730e6d22b224e9dc3e370967b44a2de0"}])
+   :custom []})
 
 (defn tokens-for [chain]
   (get all chain))

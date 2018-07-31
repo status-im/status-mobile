@@ -1,9 +1,9 @@
 import random
 import string
 import emoji
-import pytest
+from datetime import datetime
 from selenium.common.exceptions import TimeoutException
-from tests import marks, get_current_time, group_chat_users, basic_user
+from tests import marks, get_current_time, group_chat_users
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -12,12 +12,12 @@ from views.sign_in_view import SignInView
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(764)
+    @marks.smoke_1
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        for sign_in in device_1, device_2:
-            sign_in.create_user()
-        device_1_home, device_2_home = device_1.get_home_view(), device_2.get_home_view()
+        username_1 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
 
@@ -27,13 +27,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        device_2_home.element_by_text(message, 'button').click()
-        device_2_home.connection_status.wait_for_invisibility_of_element(30)
-
-        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
-            pytest.fail("'Seen' status is not shown under the sent text message")
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(772)
+    @marks.smoke_1
     def test_offline_messaging_1_1_chat(self):
         self.create_drivers(2, offline_mode=True)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -53,6 +51,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1.set_network_connection(2)  # turning on WiFi connection on primary device
 
+        home_1.connection_status.wait_for_invisibility_of_element(20)
         chat_element = home_1.get_chat_with_user(username_2)
         chat_element.wait_for_visibility_of_element(20)
         chat_1 = chat_element.click()
@@ -71,7 +70,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
-    @marks.testrail_case_id(3741)
+    @marks.smoke_1
     @marks.testrail_id(3701)
     def test_resend_message_offline(self):
         self.create_drivers(2, offline_mode=True)
@@ -93,14 +92,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Progress indicator is shown during %s seconds' % progress_time)
 
         device_1.set_network_connection(2)  # turning on WiFi connection
-
+        chat_1.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(30)
         chat_1.element_by_text('Not sent. Tap for options').click()
         if not chat_1.element_by_text('Delete message').is_element_displayed():
             self.errors.append("'Delete message' button is not shown for not sent message")
 
-        chat_1.connection_status.wait_for_invisibility_of_element(60)
+        chat_element = chat_1.chat_element_by_text(message)
         chat_1.element_by_text('Resend').click()
-        if chat_1.chat_element_by_text(message).status.text != 'Sent':
+        chat_element.status.wait_for_visibility_of_element()
+        if chat_element.status.text != 'Sent':
             self.errors.append("Message status is not 'Sent' after resending the message")
 
         chat_2 = home_2.get_chat_with_user(username_1).click()
@@ -109,8 +109,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
-    @marks.testrail_case_id(3743)
     @marks.testrail_id(3710)
+    @marks.smoke_1
     def test_messaging_in_different_networks(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -122,7 +122,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         public_key_2 = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         profile_2.switch_network('Mainnet with upstream RPC')
-        sign_in_2.click_account_by_position(0)
         sign_in_2.sign_in()
 
         chat_1 = home_1.add_contact(public_key_2)
@@ -144,6 +143,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(1386)
+    @marks.smoke_1
     def test_send_message_to_newly_added_contact(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -168,7 +168,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
-            self.erros.append("Message with test '%s' was not received" % message)
+            self.errors.append("Message with test '%s' was not received" % message)
         if not device_2_chat.add_to_contacts.is_element_displayed():
             self.errors.append('Add to contacts button is not shown')
         if device_2_chat.user_name_text.text != username_1:
@@ -180,6 +180,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1387)
+    @marks.smoke_1
     def test_add_to_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -203,7 +204,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
-            self.erros.append("Message with test '%s' was not received" % message)
+            self.errors.append("Message with text '%s' was not received" % message)
+        device_2_chat.reconnect()
         device_2_chat.add_to_contacts.click()
 
         device_2_chat.get_back_to_home_view()
@@ -221,6 +223,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1413)
+    @marks.smoke_1
     def test_send_and_open_links(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -235,10 +238,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(url_message)
         chat_1.send_message_button.click()
         chat_1.get_back_to_home_view()
-        home_2.connection_status.wait_for_invisibility_of_element(30)
         chat_2 = home_2.get_chat_with_user(username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_2.open_in_browser_button.click()
+        web_view = chat_2.open_in_status_button.click()
         try:
             web_view.find_full_text('Status, the Ethereum discovery tool.')
         except TimeoutException:
@@ -252,7 +254,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(url_message)
         chat_2.send_message_button.click()
         chat_1.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_1.open_in_browser_button.click()
+        web_view = chat_1.open_in_status_button.click()
         try:
             web_view.find_full_text('Status, the Ethereum discovery tool.')
         except TimeoutException:
@@ -260,25 +262,190 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1431)
+    @marks.smoke_1
     def test_offline_status(self):
         self.create_drivers(1, offline_mode=True)
         driver = self.drivers[0]
         sign_in = SignInView(driver)
-        home = sign_in.create_user()
+        home_view = sign_in.create_user()
+
+        # Dismiss "Welcome to Status" placeholder.
+        # When the placeholder is visible, the offline status bar does not appear
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.home_button.click()
 
         driver.set_network_connection(1)  # airplane mode
 
-        if home.connection_status.text != 'Offline':
+        if home_view.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in home screen')
 
-        chat = home.add_contact(group_chat_users['C_USER']['public_key'])
+        chat = home_view.add_contact(group_chat_users['C_USER']['public_key'])
         if chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()
 
-        public_chat = home.join_public_chat(home.get_public_chat_name())
+        public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
         if public_chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in a public chat')
+        self.verify_no_errors()
+
+    @marks.testrail_id(3695)
+    @marks.smoke_1
+    def test_message_marked_as_sent_and_seen_1_1_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_1 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = device_1.create_user(username=username_1), device_2.create_user()
+        device_2_public_key = device_2_home.get_public_key()
+        device_2_home.home_button.click()
+
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+
+        message = 'test message'
+        device_1_chat.chat_message_input.send_keys(message)
+        device_1_chat.send_message_button.click()
+        if device_1_chat.chat_element_by_text(message).status.text != 'Sent':
+            self.errors.append("'Sent' status is not shown under the sent text message")
+
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
+
+        if device_1_chat.chat_element_by_text(message).status.text != 'Seen':
+            self.errors.append("'Seen' status is not shown under the text message which was read by a receiver")
+        self.verify_no_errors()
+
+    @marks.testrail_id(3784)
+    def test_unread_messages_counter_1_1_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_2 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user(username=username_2)
+        device_1_public_key = device_1_home.get_public_key()
+        device_1_home.home_button.click()
+
+        device_2_chat = device_2_home.add_contact(device_1_public_key)
+
+        message = 'test message'
+        device_2_chat.chat_message_input.send_keys(message)
+        device_2_chat.send_message_button.click()
+
+        if device_1_home.home_button.counter.text != '1':
+            self.errors.append('New messages counter is not shown on Home button')
+
+        chat_element = device_1_home.get_chat_with_user(username_2)
+        if chat_element.new_messages_counter.text != '1':
+            self.errors.append('New messages counter is not shown on chat element')
+
+        chat_element.click()
+        device_1_home.get_back_to_home_view()
+
+        if device_1_home.home_button.counter.is_element_displayed():
+            self.errors.append('New messages counter is shown on Home button for already seen message')
+
+        if chat_element.new_messages_counter.is_element_displayed():
+            self.errors.append('New messages counter is shown on chat element for already seen message')
+        self.verify_no_errors()
+
+    @marks.testrail_id(1414)
+    def test_bold_and_italic_text_in_messages(self):
+        self.create_drivers(2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        username_2 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user(username=username_2)
+        device_1_public_key = device_1_home.get_public_key()
+        device_1_home.home_button.click()
+
+        device_2_chat = device_2_home.add_contact(device_1_public_key)
+
+        bold_text = 'bold text'
+        device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
+        device_2_chat.send_message_button.click()
+        if not device_2_chat.chat_element_by_text(bold_text).is_element_displayed():
+            self.errors.append('Bold text is not displayed in 1-1 chat for the sender')
+
+        device_1_chat = device_1_home.get_chat_with_user(username_2).click()
+        if not device_1_chat.chat_element_by_text(bold_text).is_element_displayed():
+            self.errors.append('Bold text is not displayed in 1-1 chat for the recipient')
+
+        italic_text = 'italic text'
+        device_2_chat.chat_message_input.send_keys('~%s~' % italic_text)
+        device_2_chat.send_message_button.click()
+        if not device_2_chat.chat_element_by_text(italic_text).is_element_displayed():
+            self.errors.append('Italic text is not displayed in 1-1 chat for the sender')
+
+        if not device_1_chat.chat_element_by_text(italic_text).is_element_displayed():
+            self.errors.append('Italic text is not displayed in 1-1 chat for the recipient')
+
+        device_1_chat.get_back_to_home_view()
+        device_2_chat.get_back_to_home_view()
+        chat_name = device_1_home.get_public_chat_name()
+        device_1_home.join_public_chat(chat_name)
+        device_2_home.join_public_chat(chat_name)
+
+        device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
+        device_2_chat.send_message_button.click()
+        if not device_2_chat.chat_element_by_text(bold_text).is_element_displayed():
+            self.errors.append('Bold text is not displayed in public chat for the sender')
+
+        if not device_1_chat.chat_element_by_text(bold_text).is_element_displayed():
+            self.errors.append('Bold text is not displayed in public chat for the recipient')
+
+        device_2_chat.chat_message_input.send_keys('~%s~' % italic_text)
+        device_2_chat.send_message_button.click()
+        if not device_2_chat.chat_element_by_text(italic_text).is_element_displayed():
+            self.errors.append('Italic text is not displayed in public chat for the sender')
+
+        if not device_1_chat.chat_element_by_text(italic_text).is_element_displayed():
+            self.errors.append('Italic text is not displayed in 1-1 chat for the recipient')
+
+        self.verify_no_errors()
+
+    @marks.testrail_id(2781)
+    def test_timestamp_in_chats(self):
+        self.create_drivers(2)
+        device_1, device_2 = self.drivers[0], self.drivers[1]
+        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        username_1 = 'user_%s' % get_current_time()
+        device_1_home, device_2_home = sign_in_1.create_user(username=username_1), sign_in_2.create_user()
+        device_2_public_key = device_2_home.get_public_key()
+        device_2_home.home_button.click()
+
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+
+        message = 'test text'
+        device_1_chat.chat_message_input.send_keys(message)
+        device_1_chat.send_message_button.click()
+        sent_time = datetime.strptime(device_1.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
+        if not device_1_chat.chat_element_by_text(message).contains_text(sent_time):
+            self.errors.append('Timestamp is not displayed in 1-1 chat for the sender')
+        if device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
+            self.errors.append('Member photo is displayed in 1-1 chat for the sender')
+
+        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        if not device_2_chat.chat_element_by_text(message).contains_text(sent_time):
+            self.errors.append('Timestamp is not displayed in 1-1 chat for the recipient')
+        if not device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
+            self.errors.append('Member photo is not displayed in 1-1 chat for the recipient')
+
+        device_1_chat.get_back_to_home_view()
+        device_2_chat.get_back_to_home_view()
+        chat_name = device_1_home.get_public_chat_name()
+        device_1_home.join_public_chat(chat_name)
+        device_2_home.join_public_chat(chat_name)
+
+        device_2_chat.chat_message_input.send_keys(message)
+        device_2_chat.send_message_button.click()
+        sent_time = datetime.strptime(device_2.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
+        if not device_2_chat.chat_element_by_text(message).contains_text(sent_time):
+            self.errors.append('Timestamp is not displayed in public chat for the sender')
+        if device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
+            self.errors.append('Member photo is displayed in public chat for the sender')
+
+        if not device_1_chat.chat_element_by_text(message).contains_text(sent_time):
+            self.errors.append('Timestamp is not displayed in public chat for the recipient')
+        if not device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
+            self.errors.append('Member photo is not displayed in 1-1 chat for the recipient')
+
         self.verify_no_errors()
 
 
@@ -287,6 +454,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(1390)
+    @marks.smoke_1
     def test_copy_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -319,6 +487,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(1398)
+    @marks.smoke_1
     def test_delete_cut_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -339,6 +508,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.chat_element_by_text(message_text[:-2] + ' ').wait_for_visibility_of_element(2)
 
     @marks.testrail_id(2106)
+    @marks.smoke_1
     def test_send_emoji(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -360,39 +530,4 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
             self.errors.append('Message with emoji was not sent in 1-1 chat')
-        self.verify_no_errors()
-
-
-class TestChatManagement(SingleDeviceTestCase):
-
-    @marks.testrail_id(1428)
-    def test_clear_history_one_to_one_chat(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        chat_view = home_view.add_contact(basic_user['public_key'])
-        for _ in range(2):
-            chat_view.chat_message_input.send_keys('test message')
-            chat_view.send_message_button.click()
-        chat_view.clear_history()
-        if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown')
-        home_view.relogin()
-        home_view.get_chat_with_user(basic_user['username']).click()
-        if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown after re-login')
-
-    @marks.testrail_id(3720)
-    def test_delete_one_to_one_chat_via_delete_button(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat_view = home.add_contact(basic_user['public_key'])
-        for _ in range(2):
-            chat_view.chat_message_input.send_keys('test message')
-            chat_view.send_message_button.click()
-        chat_view.delete_chat()
-        if home.get_chat_with_user(basic_user['username']).is_element_present(10):
-            self.errors.append("One-to-one' chat is shown, but the chat has been deleted")
-        home.relogin()
-        if home.get_chat_with_user(basic_user['username']).is_element_present(10):
-            self.errors.append("One-to-one' chat is shown after re-login, but the chat has been deleted")
         self.verify_no_errors()

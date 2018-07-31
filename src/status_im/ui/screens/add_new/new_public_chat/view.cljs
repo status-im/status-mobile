@@ -29,6 +29,7 @@
        :on-submit-editing   #(when (and topic (spec/valid? ::v/topic topic))
                                (re-frame/dispatch [:create-new-public-chat topic]))
        :auto-capitalize     :none
+       :auto-focus          false
        :accessibility-label :chat-name-input
        :placeholder         nil
        :return-key-type     :go

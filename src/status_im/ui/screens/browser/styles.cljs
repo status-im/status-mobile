@@ -16,8 +16,7 @@
 
 (defstyle dapp-text
   {:color   colors/gray
-   :ios     {:font-size  14
-             :margin-top 4}
+   :ios     {:margin-top 4}
    :android {:font-size 13}})
 
 (def toolbar
@@ -40,9 +39,15 @@
    :justify-content  :center})
 
 (def web-view-loading
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+  {:flex             1
+   :background-color colors/gray-transparent
+   :align-items      :center
+   :justify-content  :center
+   :position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0})
 
 (def web-view-error
   {:flex             1
@@ -60,18 +65,20 @@
    :height             36
    :background-color   colors/gray-lighter
    :padding-horizontal 12
-   :android            {:align-items    :flex-start
-                        :margin-left    (if show-actions 66 20)
-                        :padding-bottom 6}
-   :ios                {:align-items       :center
-                        :margin-horizontal 15}})
+   :margin-right       5
+   :align-items        :center
+   :android            {:margin-left (if show-actions 66 20)}
+   :ios                {:margin-left 20}})
 
 (defstyle url-input
-  {:flex           1
-   :font-size      14
-   :letter-spacing -0.2
-   :android        {:padding 0}})
+  {:flex              1
+   :font-size         14
+   :letter-spacing    -0.2
+   :margin-horizontal 5
+   :android           {:padding 0}})
 
-(def toolbar-content-dapp
-  {:flex-direction    :row
-   :margin-horizontal 15})
+(def url-text
+  {:font-size         14
+   :letter-spacing    -0.2
+   :margin-horizontal 5})
+

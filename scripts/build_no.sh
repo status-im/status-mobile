@@ -18,16 +18,16 @@ set -e
 # For more details see:
 # * https://developer.android.com/studio/publish/versioning
 # * https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# 
+#
 
 getNumber () {
     echo "$BUILD" | sed 's/[^0-9]*//g'
 }
 
-REGEX='^build-[0-9]\+$' 
+REGEX='^build-[0-9]\+$'
 
 # make sure we have all the tags
-git fetch --tags --quiet >/dev/null
+git fetch --tags --quiet >/dev/null || >&2 echo "Could not fetch tags from remote"
 
 # even if the current commit has a tag already, it is normal that the same commit
 # is built multiple times (with different build configurations, for instance),

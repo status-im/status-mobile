@@ -3,13 +3,13 @@
   (:require [cljs.spec.alpha :as spec]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
+            [status-im.utils.dimensions :as dimensions]
             status-im.transport.db
             status-im.ui.screens.accounts.db
             status-im.ui.screens.contacts.db
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs
-            status-im.commands.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
@@ -18,39 +18,42 @@
             status-im.ui.screens.add-new.new-public-chat.db))
 
 ;; initial state of app-db
-(def app-db {:current-public-key          nil
-             :status-module-initialized?  (or platform/ios? js/goog.DEBUG)
-             :keyboard-height             0
-             :tab-bar-visible?            true
-             :navigation-stack            '()
-             :contacts/contacts           {}
-             :qr-codes                    {}
-             :group/selected-contacts     #{}
-             :chats                       {}
-             :current-chat-id             nil
-             :selected-participants       #{}
-             :discoveries                 {}
-             :discover-search-tags        #{}
-             :discover-current-dapp       {}
-             :tags                        []
-             :sync-state                  :done
-             :wallet.transactions         constants/default-wallet-transactions
-             :wallet-selected-asset       {}
-             :prices                      {}
-             :peers-count                 0
-             :peers-summary               []
-             :notifications               {}
-             :network                     constants/default-network
-             :networks/networks           constants/default-networks
-             :inbox/wnodes                constants/default-wnodes
-             :my-profile/editing?         false
-             :transport/chats             {}
-             :transport/message-envelopes {}
+(def app-db {:current-public-key                 nil
+             :status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
+             :keyboard-height                    0
+             :tab-bar-visible?                   true
+             :navigation-stack                   '()
+             :contacts/contacts                  {}
+             :qr-codes                           {}
+             :group/selected-contacts            #{}
+             :chats                              {}
+             :current-chat-id                    nil
+             :selected-participants              #{}
+             :discoveries                        {}
+             :discover-search-tags               #{}
+             :discover-current-dapp              {}
+             :tags                               []
+             :sync-state                         :done
+             :app-state                          "active"
+             :wallet.transactions                constants/default-wallet-transactions
+             :wallet-selected-asset              {}
+             :prices                             {}
+             :peers-count                        0
+             :peers-summary                      []
+             :notifications                      {}
+             :network                            constants/default-network
+             :networks/networks                  constants/default-networks
+             :inbox/wnodes                       constants/default-wnodes
+             :my-profile/editing?                false
+             :transport/chats                    {}
+             :transport/message-envelopes        {}
              :chat/cooldowns                     0
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
-             :desktop/desktop             {:tab-view-id :home}})
+             :tooltips                           {}
+             :desktop/desktop                    {:tab-view-id :home}
+             :dimensions/window                  (dimensions/window)})
 
 ;;;;GLOBAL
 
@@ -75,6 +78,8 @@
 
 (spec/def ::mailserver-status (spec/nilable keyword?))
 
+(spec/def ::app-state string?)
+
 ;;;;NODE
 
 (spec/def ::sync-listening-started (spec/nilable boolean?))
@@ -93,7 +98,7 @@
 (spec/def :navigation/prev-view-id (spec/nilable keyword?))
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
-(spec/def :navigation.screen-params/browser (allowed-keys :req [:browser/browser-id]))
+(spec/def :navigation.screen-params/browser (spec/nilable string?))
 (spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
 (spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))
@@ -112,8 +117,6 @@
 (spec/def :navigation.screen-params.dapp-description/dapp :new/open-dapp)
 (spec/def :navigation.screen-params/dapp-description map?)
 
-(spec/def :navigation.screen-params/usage-data vector?)
-
 (spec/def :navigation.screen-params/collectibles-list map?)
 
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
@@ -123,14 +126,15 @@
                                                                          :navigation.screen-params/group-contacts
                                                                          :navigation.screen-params/edit-contact-group
                                                                          :navigation.screen-params/dapp-description
-                                                                         :navigation.screen-params/usage-data
                                                                          :navigation.screen-params/collectibles-list])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
+(spec/def ::tooltips (spec/nilable any?))
 
 ;;;;NETWORK
 
 (spec/def ::network (spec/nilable string?))
+(spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
 (spec/def :inbox/fetching? (spec/nilable boolean?))
@@ -153,6 +157,9 @@
 ;;;;UNIVERSAL LINKS
 
 (spec/def :universal-links/url (spec/nilable string?))
+
+;; DIMENSIONS
+(spec/def :dimensions/window map?)
 
 (spec/def ::db (allowed-keys
                 :opt
@@ -203,12 +210,15 @@
                  :transport/message-envelopes
                  :transport/chats
                  :transport/discovery-filter
-                 :desktop/desktop]
+                 :desktop/desktop
+                 :dimensions/window
+                 :dapps/permissions]
                 :opt-un
                 [::current-public-key
                  ::modal
                  ::was-modal?
                  ::rpc-url
+                 ::tooltips
                  ::web3
                  ::web3-node-version
                  ::webview-bridge
@@ -225,6 +235,8 @@
                  ::sync-state
                  ::sync-data
                  ::network
+                 ::chain
+                 ::app-state
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id
@@ -241,7 +253,6 @@
                  :chat/chat-ui-props
                  :chat/chat-list-ui-props
                  :chat/layout-height
-                 :chat/expandable-view-height-to-value
                  :chat/message-data
                  :chat/message-status
                  :chat/selected-participants
@@ -255,7 +266,8 @@
                  :chat/last-clock-value
                  :chat/loaded-chats
                  :chat/bot-db
-                 :commands/access-scope->commands-responses
+                 :chat/id->command
+                 :chat/access-scope->command-id
                  :discoveries/discoveries
                  :discoveries/discover-search-tags
                  :discoveries/discover-current-dapp

@@ -35,9 +35,10 @@
        (map :error)
        (not-any? identity)))
 
-(defn- new-network [{:keys [random-id] :as cofx} network-name upstream-url type]
+(defn- new-network [{:keys [random-id]} network-name upstream-url type network-id]
   (let [data-dir (str "/ethereum/" (name type) "_rpc")
-        config   {:NetworkId      (ethereum/chain-keyword->chain-id type)
+        config   {:NetworkId      (or (when network-id (int network-id))
+                                      (ethereum/chain-keyword->chain-id type))
                   :DataDir        data-dir
                   :UpstreamConfig {:Enabled true
                                    :URL     upstream-url}}]
@@ -56,8 +57,8 @@
 
 (defn save [{{:networks/keys [manage] :account/keys [account] :as db} :db :as cofx}]
   (when (valid-manage? manage)
-    (let [{:keys [name url chain]} manage
-          network                  (new-network cofx (:value name) (:value url) (:value chain))
+    (let [{:keys [name url chain network-id]} manage
+          network                  (new-network cofx (:value name) (:value url) (:value chain) (:value network-id))
           new-networks             (merge {(:id network) network} (:networks account))]
       (handlers-macro/merge-fx cofx
                                {:db       (dissoc db :networks/manage)

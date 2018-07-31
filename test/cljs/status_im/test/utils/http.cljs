@@ -38,3 +38,18 @@
   (testing "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"
     (testing "it returns false"
       (is (not (http/url-sanitized? "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"))))))
+
+(deftest url-host-check
+  (testing "Extract host/domain from URL"
+    (testing "Valid URL with endpoint"
+      (is (= "status.im" (http/url-host "https://status.im/testing"))))
+    (testing "Valid URL"
+      (is (= "status.im" (http/url-host "http://status.im"))))
+    (testing "Blank domainlocalhost"
+      (is (nil? (http/url-host "localhost:3000/testing")))))
+  (testing "Return nil for Invalid URL"
+    (testing "Bad scheme"
+      (is (nil? (http/url-host "invalid//status.im/testing"))))
+    (testing "No scheme"
+      (is (nil? (http/url-host "status.im/testing"))))))
+

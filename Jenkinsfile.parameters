@@ -1,6 +1,7 @@
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
+env.FASTLANE_DISABLE_COLORS=1
 
 def installJSDeps() {
     def attempt = 1
@@ -8,6 +9,7 @@ def installJSDeps() {
     def installed = false
     while (!installed && attempt <= maxAttempts) {
         println "#${attempt} attempt to install npm deps"
+        sh 'scripts/prepare-for-platform.sh mobile'
         sh 'npm install'
         installed = fileExists('node_modules/web3/index.js')
         attemp = attempt + 1
@@ -38,7 +40,6 @@ timeout(90) {
           // TODO(oskarth): Consider read/write from .env to avoid having to specify in Jenkins again
           // sh 'cp .env.jenkins .env'
           sh 'echo TESTFAIRY_ENABLED='           + TESTFAIRY_ENABLED            + '>>' + '.env'
-          sh 'echo STUB_STATUS_GO='              + STUB_STATUS_GO               + '>>' + '.env'
           sh 'echo ETHEREUM_DEV_CLUSTER='        + ETHEREUM_DEV_CLUSTER         + '>>' + '.env'
           sh 'echo MAINNET_NETWORKS_ENABLED='    + MAINNET_NETWORKS_ENABLED     + '>>' + '.env'
           sh 'echo LOG_LEVEL='                   + LOG_LEVEL                    + '>>' + '.env'
@@ -54,7 +55,6 @@ timeout(90) {
           sh 'cat .env'
           sh 'echo "**********************************************************************"'
 
-          sh 'lein deps'
           installJSDeps()
 
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'

@@ -81,9 +81,9 @@ class BaseElement(object):
                                                                                                seconds)
             raise exception
 
-    def wait_for_visibility_of_element(self, seconds=10):
+    def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
-            return WebDriverWait(self.driver, seconds) \
+            return WebDriverWait(self.driver, seconds, ignored_exceptions=ignored_exceptions) \
                 .until(expected_conditions.visibility_of_element_located((self.locator.by, self.locator.value)))
         except TimeoutException as exception:
             exception.msg = "'%s' is not found on screen, using: '%s', during '%s' seconds" % (self.name, self.locator,
@@ -115,10 +115,10 @@ class BaseElement(object):
         except TimeoutException:
             return False
 
-    def is_element_displayed(self, sec=5):
+    def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
             info('Wait for %s' % self.name)
-            return self.wait_for_visibility_of_element(sec)
+            return self.wait_for_visibility_of_element(sec, ignored_exceptions=ignored_exceptions)
         except TimeoutException:
             return False
 
@@ -151,7 +151,7 @@ class BaseElement(object):
         location, size = element.location, element.size
         x, y = location['x'], location['y']
         width, height = size['width'], size['height']
-        self.driver.swipe(start_x=x + width * 2, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+        self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
 
     def long_press_element(self):
         element = self.find_element()

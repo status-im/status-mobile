@@ -75,15 +75,32 @@
                        send-transaction)
                      edit)))
 
+(defn check-sufficient-funds [transaction balance symbol amount]
+  (assoc transaction :sufficient-funds?
+         (or (nil? amount)
+             (money/sufficient-funds? amount (get balance symbol)))))
+
+(defn check-sufficient-gas [transaction balance symbol amount]
+  (assoc transaction :sufficient-gas?
+         (or (nil? amount)
+             (let [available-ether   (get balance :ETH)
+                   available-for-gas (if (= :ETH symbol)
+                                       (.minus available-ether (money/bignumber amount))
+                                       available-ether)]
+               (money/sufficient-funds? (-> transaction
+                                            :max-fee
+                                            money/bignumber
+                                            (money/formatted->internal :ETH 18))
+                                        (money/bignumber available-for-gas))))))
+
 (re-frame/reg-sub :wallet.send/transaction
                   :<- [::send-transaction]
                   :<- [:balance]
                   (fn [[{:keys [amount symbol] :as transaction} balance]]
                     (-> transaction
                         (models.wallet/add-max-fee)
-                        (assoc :sufficient-funds?
-                               (or (nil? amount)
-                                   (money/sufficient-funds? amount (get balance symbol)))))))
+                        (check-sufficient-funds balance symbol amount)
+                        (check-sufficient-gas balance symbol amount))))
 
 (re-frame/reg-sub :wallet.send/unsigned-transaction
                   :<- [::unsigned-transaction]
@@ -91,9 +108,10 @@
                   :<- [:balance]
                   (fn [[{:keys [value to symbol] :as transaction} contacts balance]]
                     (when transaction
-                      (let [contact           (contacts (utils.hex/normalize-hex to))
-                            sufficient-funds? (money/sufficient-funds? value (get balance symbol))]
-                        (cond-> (assoc (models.wallet/add-max-fee transaction)
-                                       :amount value
-                                       :sufficient-funds? sufficient-funds?)
-                          contact                 (assoc :to-name (:name contact)))))))
+                      (let [contact (contacts (utils.hex/normalize-hex to))]
+                        (-> transaction
+                            (assoc :amount  value
+                                   :to-name (:name contact))
+                            (models.wallet/add-max-fee)
+                            (check-sufficient-funds balance symbol value)
+                            (check-sufficient-gas balance symbol value))))))

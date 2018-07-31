@@ -1,6 +1,7 @@
 (ns status-im.ui.components.text-input.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as p]))
 
 (def label
   {:font-size      14
@@ -15,11 +16,12 @@
    :border-radius    8
    :background-color colors/gray-lighter})
 
-(def input
+(defstyle input
   {:font-size      15
    :letter-spacing -0.2
    :color          colors/black
-   :padding        0})
+   :padding        0
+   :desktop        {:height 52}})
 
 (defn error [label?]
   {:bottom-value (if label? -20 0)

@@ -14,7 +14,8 @@
             status-im.ui.screens.wallet.request.events
             [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.wallet.transactions :as wallet.transactions]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -72,7 +73,7 @@
  (fn [{:keys [web3 chain account-id token-addresses success-event error-event]}]
    (transactions/get-transactions chain
                                   account-id
-                                  #(re-frame/dispatch [success-event %])
+                                  #(re-frame/dispatch [success-event % account-id])
                                   #(re-frame/dispatch [error-event %]))
    (doseq [direction [:inbound :outbound]]
      (erc20/get-token-transactions web3
@@ -80,7 +81,7 @@
                                    token-addresses
                                    direction
                                    account-id
-                                   #(re-frame/dispatch [success-event %])))))
+                                   #(re-frame/dispatch [success-event % account-id])))))
 
 ;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
 (reg-fx
@@ -141,21 +142,8 @@
 
 (handlers/register-handler-fx
  :update-transactions
- (fn [{{:keys [network network-status web3] :as db} :db} _]
-   (when (not= network-status :offline)
-     (let [network         (get-in db [:account/account :networks network])
-           chain           (ethereum/network->chain-keyword network)
-           all-tokens      (tokens/tokens-for chain)
-           token-addresses (map :address all-tokens)]
-       {:get-transactions {:account-id      (get-in db [:account/account :address])
-                           :token-addresses token-addresses
-                           :chain           chain
-                           :web3            web3
-                           :success-event   :update-transactions-success
-                           :error-event     :update-transactions-fail}
-        :db               (-> db
-                              (clear-error-message :transactions-update)
-                              (assoc-in [:wallet :transactions-loading?] true))}))))
+ (fn [cofx _]
+   (wallet.transactions/run-update cofx)))
 
 (defn combine-entries [transaction token-transfer]
   (merge transaction (select-keys token-transfer [:symbol :from :to :value :type :token :transfer])))
@@ -179,12 +167,22 @@
         (both-transfer? tx1 tx2)   (update-confirmations tx1 tx2)
         :else tx2))
 
+(defn own-transaction? [address [_ {:keys [type to from]}]]
+  (let [normalized (ethereum/normalized-address address)]
+    (or (and (= :inbound type) (= normalized (ethereum/normalized-address to)))
+        (and (= :outbound type) (= normalized (ethereum/normalized-address from)))
+        (and (= :failed type) (= normalized (ethereum/normalized-address from))))))
+
 (handlers/register-handler-db
  :update-transactions-success
- (fn [db [_ transactions]]
-   (-> db
-       (update-in [:wallet :transactions] #(merge-with dedupe-transactions % transactions))
-       (assoc-in [:wallet :transactions-loading?] false))))
+ (fn [db [_ transactions address]]
+   ;; NOTE(goranjovic): we want to only show transactions that belong to the current account
+   ;; this filter is to prevent any late transaction updates initated from another account on the same
+   ;; device from being applied in the current account.
+   (let [own-transactions (into {} (filter #(own-transaction? address %) transactions))]
+     (-> db
+         (update-in [:wallet :transactions] #(merge-with dedupe-transactions % own-transactions))
+         (assoc-in [:wallet :transactions-loading?] false)))))
 
 (handlers/register-handler-db
  :update-transactions-fail

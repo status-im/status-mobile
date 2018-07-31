@@ -30,6 +30,8 @@
    :on                                   "On"
    :off                                  "Off"
    :mailserver-connection-error          "Could not connect to mailserver"
+   :dont-allow                           "Don't Allow"
+   :custom                               "Custom"
 
    :camera-access-error                  "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                  "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
@@ -45,21 +47,12 @@
    :password-placeholder                 "At least 6 characters"
    :password-placeholder2                "Confirm your password"
    :name-placeholder                     "Display name"
+
    :password_error1                      "Passwords don't match"
    :password-description                 "You'll need this password to open the app and confirm transactions."
    :name-description                     "Change this anytime in your Profile."
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
-
-   :help-improve                         "Help improve Status\nby sharing usage patterns"
-   :help-improve?                        "Help improve Status?"
-   :help-improve-description             "We collect anonymous data to understand how Status is used and inform future development. Change your choice at any time in the Advanced section of your Profile settings."
-   :learn-what-we-collect-link           "Learn more about what we collect"
-   :share-usage-data                     "Share data"
-   :dont-want-to-share                   "Do not share"
-   :confirmation-title                   "Share data with Status?"
-   :confirmation-text                    "Are you sure you want to share anonymous data with Status?"
-   :confirmation-action                  "Share"
 
    ;;drawer
    :switch-users                         "Switch users"
@@ -89,6 +82,7 @@
    :active-unknown                       "Unknown"
    :available                            "Available"
    :no-messages                          "No messages"
+   :no-messages-yet                      "No messages yet"
    :suggestions-requests                 "Requests"
    :suggestions-commands                 "Commands"
    :faucet-success                       "Faucet request has been received"
@@ -157,23 +151,23 @@
    :testnet-text                         "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
    :mainnet-text                         "You’re on the Mainnet. Real ETH will be sent"
    :dev-mode                             "Development mode"
-   :backup-your-seed                     "Backup your recovery phrase"
+   :backup-your-recovery-phrase          "Backup your Recovery phrase"
 
-   ;;seed
+   ;;recovery phrase
    :your-data-belongs-to-you             "If you lose your recovery phrase you lose your data and funds"
    :your-data-belongs-to-you-description "Status can’t help you recover your account if you lose your recovery phrase. You are in charge of the security of your data, and backing up your recovery phrase is the best safeguard."
    :ok-continue                          "Ok, continue"
-   :your-seed-phrase                     "Your recovery phrase"
-   :your-seed-phrase-description         "This is your recovery phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet."
+   :your-recovery-phrase                 "Your recovery phrase"
+   :your-recovery-phrase-description     "This is your recovery phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet."
    :enter-word                           "Enter word"
-   :check-your-seed                      "Check your recovery phrase"
+   :check-your-recovery-phrase           "Check your recovery phrase"
    :wrong-word                           "Wrong word"
    :are-you-sure?                        "Are you sure?"
    :are-you-sure-description             "You will not be able to see the whole recovery phrase again"
    :you-are-all-set                      "You’re all set!"
-   :you-are-all-set-description          "Now if you lose your phone you can restore your wallet using the recovery phrase."
+   :you-are-all-set-description          "Now if you lose your phone you can restore your account and wallet using the recovery phrase."
    :ok-got-it                            "Ok, got it"
-   :backup-seed-phrase                   "Backup recovery phrase"
+   :backup-recovery-phrase               "Backup recovery phrase"
    :step-i-of-n                          "Step {{step}} of {{number}}"
    :word-n-description                   "In order to check if you have backed up your recovery phrase correctly, enter the word #{{number}} above."
    :word-n                               "Word #{{number}}"
@@ -185,8 +179,8 @@
    :wallet-set-up-signing-phrase         "This is your personal transaction phrase that you’ll use everytime you make a transaction. Make sure to write it down on a piece of paper, store it somewhere, and only confirm transactions when you see these three words."
    :wallet-set-up-confirm-title          "Wrote it down?"
    :wallet-set-up-confirm-description    "You won’t be able to see your 3-word transaction phrase again after this."
-   :wallet-backup-seed-title             "Backup your recovery phrase"
-   :wallet-backup-seed-description       "This will help you to keep your assets safe"
+   :wallet-backup-recovery-title         "Backup your Recovery phrase"
+   :wallet-backup-recovery-description   "This will help you to keep your money safe"
 
    ;;make_photo
    :image-source-title                   "Edit picture"
@@ -195,12 +189,13 @@
 
    ;;sharing
    :sharing-copy-to-clipboard            "Copy to clipboard"
+   :sharing-copied-to-clipboard          "Copied to clipboard"
    :sharing-share                        "Share..."
    :sharing-cancel                       "Cancel"
 
    :browsing-title                       "Browse"
-   :browsing-open-in-web-browser         "Open in system browser"
-   :browsing-open-in-browser             "Open in Status browser"
+   :browsing-open-in-web-browser         "Open in web browser"
+   :browsing-open-in-status              "Open in Status"
    :browsing-cancel                      "Cancel"
 
    ;;sign-up
@@ -228,10 +223,11 @@
    ;;chats
    :new                                  "New"
    :new-chat                             "New chat"
+   :start-chat                           "Start chat"
    :start-new-chat                       "Start new chat"
    :start-group-chat                     "Start group chat"
    :invite-friends                       "Invite friends"
-   :get-status-at                        "Get Status at http://status.im?refCode={{address}}"
+   :get-status-at                        "Get Status at http://status.im"
    :chats                                "Chats"
    :delete-chat                          "Delete chat"
    :group-chat                           "Group chat"
@@ -240,6 +236,7 @@
    :delete-group-chat-confirmation       "Are you sure you want to delete this group chat?"
    :new-group-chat                       "New group chat"
    :new-public-group-chat                "Join public chat"
+   :selected-for-you                     "Selected for you"
    :public-chat                          "Public chat"
    :edit-chats                           "Edit chats"
    :search-chats                         "Search chats"
@@ -289,8 +286,10 @@
    :search-contacts                      "Search contacts"
    :contacts-group-new-chat              "Start new chat"
    :choose-from-contacts                 "Choose from contacts"
+   :or-choose-a-contact                  "Or choose a contact"
    :no-contacts                          "No contacts yet"
    :show-qr                              "Show QR code"
+   :copy-qr                              "Copy code"
    :qr-code-public-key-hint              "Share this code to \nstart chatting"
    :enter-address                        "Enter address"
    :enter-contact-code                   "Enter contact code"
@@ -377,10 +376,11 @@
    :enter-password                       "Enter password"
 
    ;;recover
-   :passphrase                           "Recovery phrase"
+   :passphrase                           "Passphrase"
+   :recovery-phrase                      "Recovery phrase"
    :recover                              "Recover"
    :twelve-words-in-correct-order        "12 words in correct order"
-   :enter-12-words                       "Enter the 12 words of your recovery phrase"
+   :enter-12-words                       "Enter the 12 words of your recovery phrase, separated by single spaces"
 
    ;;accounts
    :recover-access                       "Recover access"
@@ -454,6 +454,7 @@
    :signing-message-phrase-description   "Sign the message by entering your password. Make sure that the words above match your secret signing phrase"
    :signing-phrase-description           "Sign the transaction by entering your password. Make sure that the words above match your secret signing phrase"
    :wallet-insufficient-funds            "Insufficient funds"
+   :wallet-insufficient-gas              "Not enough ETH for gas"
    :receive                              "Receive"
    :request-qr-legend                    "Share this code to receive assets"
    :send-request                         "Send request"
@@ -679,12 +680,20 @@
    :mainnet-network                      "Main network"
    :ropsten-network                      "Ropsten test network"
    :rinkeby-network                      "Rinkeby test network"
+   :network-id                           "Network ID"
+   :specify-network-id                   "Specify network id"
 
    ;; invalid-key
 
    :invalid-key-title                    "We detected a problem with the encryption key"
-   :invalid-key-content                  "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your seed phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted."
+   :invalid-key-content                  "To protect yourself, you need to create new account and erase your old data by tapping “Apply”. If you have an existing account and would like to save your recovery phrase then choose “Cancel”, back it up, and restart the app. We strongly recommend creating new account because the old one is stored unencrypted."
    :invalid-key-confirm                  "Apply"
+
+   ;; decryption-failed
+
+   :decryption-failed-title              "We were not able to decrypt your data"
+   :decryption-failed-content            "We were not able to decrypt your data, you might need to create new account and erase your old data by tapping “Apply”. Clicking on “Cancel”, will try again"
+   :decryption-failed-confirm            "Apply"
 
    ;; browser
    :browser                              "Browser"
@@ -692,4 +701,8 @@
    :dapp                                 "ÐApp"
    :selected                             "Selected"
    :selected-dapps                       "Selected ÐApps"
-   :browser-warning                      "Connection is not proven secure. Make sure you trust this site before signing transactions or entering personal data."})
+   :browser-secure                       "Connection is secure. Make sure you really trust this site before signing transactions or entering personal data."
+   :browser-not-secure                   "Connection is not secure! Do not sign transactions or send personal data on this site."
+   :make-sure-you-trust-dapp             "Make sure that you trust this DApp"
+   :would-like-to-access                 "Would like to Access"
+   :your-contact-code                    "Your Contact Code"})

@@ -21,7 +21,8 @@
     [react/view
      [vector-icons/icon icon style]]
     [react/view (merge options.styles/label style)
-     [react/text {:style (merge options.styles/label-text style)} (i18n/label label)]]]])
+     [react/i18n-text {:style   (merge options.styles/label-text style)
+                       :key     label}]]]])
 
 (defn view []
   (let [{:keys [chat-id message-id]} @(re-frame/subscribe [:get-current-chat-ui-prop :message-options])
@@ -30,7 +31,7 @@
      [bottom-info/container (* styles/item-height 2)
       [react/view
        [react/view options.styles/title
-        [react/text {:style options.styles/title-text} (i18n/label :message-not-sent)]]
+        [react/i18n-text {:style options.styles/title-text :key :message-not-sent}]]
        [action-item {:label    :resend-message
                      :icon     :icons/refresh
                      :on-press #(do

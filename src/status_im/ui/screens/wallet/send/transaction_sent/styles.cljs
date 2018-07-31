@@ -25,7 +25,6 @@
 (def transaction-sent-description
   {:color              :white
    :opacity            0.6
-   :font-size          14
    :text-align         :center
    :padding-horizontal 16})
 

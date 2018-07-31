@@ -1,5 +1,6 @@
 (ns status-im.chat.specs
-  (:require [cljs.spec.alpha :as s]))
+  (:require [cljs.spec.alpha :as s]
+            status-im.chat.commands.specs))
 
 (s/def :chat/chats (s/nilable map?))                              ; {id (string) chat (map)} active chats on chat's tab
 (s/def :chat/current-chat-id (s/nilable string?))                 ; current or last opened chat-id
@@ -8,8 +9,7 @@
 (s/def :chat/chat-animations (s/nilable map?))                    ; {id (string) props (map)}
 (s/def :chat/chat-ui-props (s/nilable map?))                      ; {id (string) props (map)}
 (s/def :chat/chat-list-ui-props (s/nilable map?))
-(s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout
-(s/def :chat/expandable-view-height-to-value (s/nilable number?))
+(s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout 
 (s/def :chat/selected-participants (s/nilable set?))
 (s/def :chat/chat-loaded-callbacks (s/nilable map?))
 (s/def :chat/public-group-topic (s/nilable string?))

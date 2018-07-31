@@ -2,7 +2,6 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
-            status-im.commands.subs
             status-im.ui.screens.accounts.subs
             status-im.ui.screens.home.subs
             status-im.ui.screens.contacts.subs
@@ -17,8 +16,8 @@
             status-im.ui.screens.bootnodes-settings.subs
             status-im.ui.screens.currency-settings.subs
             status-im.ui.screens.browser.subs
-            status-im.bots.subs
             status-im.ui.screens.add-new.new-chat.subs
+            status-im.ui.screens.add-new.new-public-chat.subs
             status-im.ui.screens.profile.subs))
 
 (reg-sub :get
@@ -39,7 +38,7 @@
          (fn [current-account]
            (get (:networks current-account) (:network current-account))))
 
-(reg-sub :network-name (comp ethereum/network-names :network))
+(reg-sub :network-name :chain)
 
 (reg-sub :sync-state :sync-state)
 (reg-sub :network-status :network-status)
@@ -92,3 +91,11 @@
 (reg-sub :get-current-account-network
          (fn [{:keys [network] :as db} [_]]
            (get-in db [:account/account :networks network])))
+
+(reg-sub :dimensions/window
+         (fn [db _]
+           (get db :dimensions/window)))
+
+(reg-sub :dimensions/window-width
+         :<- [:dimensions/window]
+         :width)

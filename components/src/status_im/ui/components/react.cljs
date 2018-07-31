@@ -36,7 +36,7 @@
 (def view (get-class "View"))
 (def safe-area-view (get-class "SafeAreaView"))
 
-(def status-bar (get-class "StatusBar"))
+(def status-bar (get-class (if platform/desktop? "View" "StatusBar")))
 
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
@@ -102,6 +102,12 @@
                         (-> opts
                             (dissoc :font)
                             (assoc :style (merge style font))))]))
+
+(defn i18n-text
+  [{:keys [style key]}]
+  (let [default-style {:letter-spacing -0.2
+                       :font-size      14}]
+    [text {:style (merge default-style style)} (i18n/label key)]))
 
 (defn icon
   ([n] (icon n styles/icon-default))

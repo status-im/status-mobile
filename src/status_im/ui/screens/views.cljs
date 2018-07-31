@@ -25,6 +25,7 @@
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
+            [status-im.ui.screens.wallet.views :refer [wallet-modal]]
             [status-im.ui.screens.wallet.collectibles.views :refer [collectibles-list]]
             [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal sign-message-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
@@ -49,7 +50,6 @@
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
-            [status-im.ui.screens.usage-data.views :refer [usage-data]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]))
 
 (defn get-main-component [view-id]
@@ -57,7 +57,6 @@
     :collectibles-list collectibles-list
     :intro intro
     :create-account create-account
-    :usage-data usage-data
     (:home :wallet :my-profile) main-tabs
     :browser browser
     :open-dapp open-dapp
@@ -105,12 +104,14 @@
   (case modal-view
     :qr-scanner qr-scanner
     :profile-qr-viewer profile.user/qr-viewer
+    :wallet-modal wallet-modal
     :wallet-transactions-filter wallet-transactions/filter-history
     :wallet-settings-assets wallet-settings/manage-assets
     :wallet-send-transaction-modal send-transaction-modal
     :wallet-transaction-sent-modal transaction-sent-modal
     :wallet-sign-message-modal sign-message-modal
     :wallet-transaction-fee wallet.send/transaction-fee
+    :wallet-onboarding-setup-modal wallet.onboarding.setup/modal
     [react/view [react/text (str "Unknown modal view: " modal-view)]]))
 
 (defview main-modal []
@@ -122,6 +123,7 @@
                :on-request-close (fn []
                                    (cond
                                      (#{:wallet-send-transaction-modal
+                                        :wallet-sign-message-modal
                                         :wallet-transaction-fee}
                                       modal-view)
                                      (dispatch [:wallet/discard-transaction-navigate-back])

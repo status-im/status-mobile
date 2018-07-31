@@ -1,7 +1,6 @@
-from views.base_element import BaseButton, BaseEditBox, BaseText
-from views.base_view import BaseView
-from views.base_element import BaseElement, BaseButton, BaseEditBox
-from views.base_view import BaseView, OkButton
+from views.base_element import BaseText
+from views.base_element import BaseButton, BaseEditBox
+from views.base_view import BaseView, OkButton, ProgressBar
 
 
 class FirstRecipient(BaseButton):
@@ -47,12 +46,6 @@ class EnterPasswordInput(BaseEditBox):
         self.locator = self.Locator.accessibility_id('enter-password-input')
 
 
-class ConfirmButton(BaseButton):
-    def __init__(self, driver):
-        super(ConfirmButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
-
-
 class GotItButton(BaseButton):
     def __init__(self, driver):
         super(GotItButton, self).__init__(driver)
@@ -70,6 +63,12 @@ class EnterRecipientAddressButton(BaseButton):
     def __init__(self, driver):
         super(EnterRecipientAddressButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
+
+
+class ScanQRCodeButton(BaseButton):
+    def __init__(self, driver):
+        super(ScanQRCodeButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Scan QR code')
 
 
 class EnterRecipientAddressInput(BaseEditBox):
@@ -90,10 +89,10 @@ class SelectAssetButton(BaseButton):
         self.locator = self.Locator.accessibility_id('choose-asset-button')
 
 
-class STTButton(BaseButton):
-    def __init__(self, driver):
-        super(STTButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Status Test Token']")
+class AssetButton(BaseButton):
+    def __init__(self, driver, asset_name):
+        super(AssetButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector(asset_name)
 
 
 class ErrorDialog(BaseView):
@@ -149,6 +148,7 @@ class SendTransactionView(BaseView):
 
         self.chose_recipient_button = ChooseRecipientButton(self.driver)
         self.enter_recipient_address_button = EnterRecipientAddressButton(self.driver)
+        self.scan_qr_code_button = ScanQRCodeButton(self.driver)
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
@@ -162,21 +162,24 @@ class SendTransactionView(BaseView):
 
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
-        self.confirm_button = ConfirmButton(self.driver)
         self.sign_in_phrase_text = SignInPhraseText(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.enter_password_input = EnterPasswordInput(self.driver)
         self.got_it_button = GotItButton(self.driver)
 
         self.select_asset_button = SelectAssetButton(self.driver)
-        self.stt_button = STTButton(self.driver)
 
         self.error_dialog = ErrorDialog(self.driver)
 
         self.share_button = ShareButton(self.driver)
+        self.progress_bar = ProgressBar(self.driver)
 
     def sign_transaction(self, sender_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
-        self.sign_transaction_button.click_until_presence_of_element(self.got_it_button)
+        self.sign_transaction_button.click_until_presence_of_element(self.progress_bar)
+        self.progress_bar.wait_for_invisibility_of_element(60)
         self.got_it_button.click()
+
+    def asset_by_name(self, asset_name):
+        return AssetButton(self.driver, asset_name)

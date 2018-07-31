@@ -6,8 +6,7 @@
             [status-im.i18n :as i18n]
             [status-im.chat.models :as models]
             [status-im.chat.models.message :as models.message]
-            [status-im.chat.console :as console]
-            [status-im.commands.events.loading :as events.loading]
+            [status-im.chat.commands.core :as commands]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -21,11 +20,10 @@
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im.chat.events.commands :as events.commands]
+            status-im.chat.events.input
             status-im.chat.events.requests
             status-im.chat.events.send-message
-            status-im.chat.events.receive-message
-            status-im.chat.events.console))
+            status-im.chat.events.receive-message))
 
 ;;;; Effects
 
@@ -109,14 +107,6 @@
                       db
                       updated-statuses)})))
 
-(defn init-console-chat
-  [{:keys [db]}]
-  (when-not (get-in db [:chats constants/console-chat-id])
-    {:db            (-> db
-                        (assoc :current-chat-id constants/console-chat-id)
-                        (update :chats assoc constants/console-chat-id console/chat))
-     :data-store/tx [(chats-store/save-chat-tx console/chat)]}))
-
 (defn- add-default-contacts
   [{:keys [db default-contacts] :as cofx}]
   (let [new-contacts      (-> {}
@@ -134,16 +124,12 @@
                                                           :dapp-url         (-> props :dapp-url :en)
                                                           :bot-url          (:bot-url props)
                                                           :description      (:description props)}])))
-                                    default-contacts)
-                              (assoc constants/console-chat-id console/contact))
+                                    default-contacts))
         existing-contacts (:contacts/contacts db)
         contacts-to-add   (select-keys new-contacts (set/difference (set (keys new-contacts))
                                                                     (set (keys existing-contacts))))]
-    (handlers-macro/merge-fx cofx
-                             {:db            (update db :contacts/contacts merge contacts-to-add)
-                              :data-store/tx [(contacts-store/save-contacts-tx
-                                               (vals contacts-to-add))]}
-                             (events.loading/load-commands))))
+    {:db            (update db :contacts/contacts merge contacts-to-add)
+     :data-store/tx [(contacts-store/save-contacts-tx (vals contacts-to-add))]}))
 
 (defn- group-chat-messages
   [{:keys [db]}]
@@ -193,9 +179,9 @@
                               {:db (assoc db
                                           :chats          chats
                                           :contacts/dapps default-dapps)}
-                              (init-console-chat)
                               (group-chat-messages)
-                              (add-default-contacts)))))
+                              (add-default-contacts)
+                              (commands/index-commands commands/register)))))
 
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
   (when (and (not (get-in db [:chats chat-id :public?]))
@@ -386,16 +372,16 @@
                               (navigate-to-chat random-id {})
                               (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
 
-(defn show-profile [identity {:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (assoc db :contacts/identity identity)}
-                           (navigation/navigate-forget :profile)))
+(defn show-profile [identity keep-navigation? {:keys [db] :as cofx}]
+  (cond->> {:db (assoc db :contacts/identity identity)}
+    keep-navigation? (navigation/navigate-to-cofx :profile nil)
+    :else            (navigation/navigate-forget :profile)))
 
 (handlers/register-handler-fx
  :show-profile
  [re-frame/trim-v]
- (fn [cofx [identity]]
-   (show-profile identity cofx)))
+ (fn [cofx [identity keep-navigation?]]
+   (show-profile identity keep-navigation? cofx)))
 
 (handlers/register-handler-fx
  :resend-message

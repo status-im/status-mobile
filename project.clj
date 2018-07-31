@@ -14,7 +14,7 @@
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]
             [lein-cljfmt "0.5.7"]
-            [rasom/lein-githooks "0.1.3"]]
+            [rasom/lein-githooks "0.1.5"]]
   :githooks {:auto-install true
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
   :cljfmt {:indents {letsubs [[:inner 0]]}}
@@ -22,13 +22,17 @@
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
-             ["with-profile" "prod" "cljsbuild" "once" "android"]]
+             ["with-profile" "prod" "cljsbuild" "once" "android"]
+             ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "prod-build-android" ^{:doc "Recompile code for Android with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
             "prod-build-ios"     ^{:doc "Recompile code for iOS with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]]
+            "prod-build-desktop"     ^{:doc "Recompile code for desktop with prod profile."}
+             ["do" "clean"
+              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
@@ -36,20 +40,20 @@
   :profiles {:dev      {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                         :cljsbuild    {:builds
                                        {:ios
-                                        {:source-paths ["components/src" "react-native/src" "src"]
+                                        {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
                                          :compiler     {:output-to     "target/ios/app.js"
                                                         :main          "env.ios.main"
                                                         :output-dir    "target/ios"
                                                         :optimizations :none}}
                                         :android
-                                        {:source-paths     ["components/src" "react-native/src" "src"]
+                                        {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
                                          :compiler         {:output-to     "target/android/app.js"
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
                                                             :optimizations :none}
                                          :warning-handlers [status-im.utils.build/warning-handler]}
                                         :desktop
-                                        {:source-paths ["components/src" "react-native/src" "src"]
+                                        {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src"]
                                          :compiler     {:output-to     "target/desktop/app.js"
                                                         :main          "env.desktop.main"
                                                         :output-dir    "target/desktop"
@@ -62,7 +66,7 @@
                                         [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]
                                         [hawk "0.2.11"]]
-                         :source-paths ["src" "env/dev" "react-native/src" "components/src"]}]
+                         :source-paths ["src" "env/dev" "react-native/src/cljsjs" "components/src"]}]
              :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.9"]]
                         :cljsbuild    {:builds
@@ -91,7 +95,7 @@
                                                         :target        :nodejs}}]}}
              :prod     {:cljsbuild {:builds
                                     {:ios
-                                     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
                                       :compiler         {:output-to          "index.ios.js"
                                                          :main               "env.ios.main"
                                                          :output-dir         "target/ios-prod"
@@ -104,10 +108,23 @@
                                                          :language-in        :ecmascript5}
                                       :warning-handlers [status-im.utils.build/warning-handler]}
                                      :android
-                                     {:source-paths     ["components/src" "react-native/src" "src" "env/prod"]
+                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
                                       :compiler         {:output-to          "index.android.js"
                                                          :main               "env.android.main"
                                                          :output-dir         "target/android-prod"
+                                                         :static-fns         true
+                                                         :optimize-constants true
+                                                         :optimizations      :simple
+                                                         :closure-defines    {"goog.DEBUG" false}
+                                                         :parallel-build     false
+                                                         :elide-asserts      true
+                                                         :language-in        :ecmascript5}
+                                      :warning-handlers [status-im.utils.build/warning-handler]}
+                                     :desktop
+                                     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod"]
+                                      :compiler         {:output-to          "index.desktop.js"
+                                                         :main               "env.desktop.main"
+                                                         :output-dir         "target/desktop-prod"
                                                          :static-fns         true
                                                          :optimize-constants true
                                                          :optimizations      :simple

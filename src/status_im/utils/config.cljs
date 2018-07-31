@@ -15,11 +15,9 @@
 ;; flags stay up to date and are removed once behavior introduced is stable.
 ;;
 ;; TESTFAIRY_ENABLED - indefinite
-;; STUB_STATUS_GO - indefinite
 ;; OFFLINE_INBOX_ENABLED - TBD, tenatively until #idea 1 is merged
 
 (def testfairy-enabled? (enabled? (get-config :TESTFAIRY_ENABLED)))
-(def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
 (def offline-inbox-enabled? (enabled? (get-config :OFFLINE_INBOX_ENABLED "1")))
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def universal-links-enabled? (enabled? (get-config :UNIVERSAL_LINK_ENABLED "1")))
@@ -30,7 +28,6 @@
 
 (def add-custom-mailservers-enabled? (enabled? (get-config :ADD_CUSTOM_MAILSERVERS_ENABLED "1")))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
-(def mixpanel-token (get-config :MIXPANEL_TOKEN))
 (def default-network (get-config :DEFAULT_NETWORK))
 ;; the default value should be a string for `enabled?` to work correctly.
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))

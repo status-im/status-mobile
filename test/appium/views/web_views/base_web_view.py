@@ -34,6 +34,13 @@ class BrowserNextPageButton(BaseButton):
         self.locator = self.Locator.accessibility_id('next-page-button')
 
 
+class BrowserRefreshPageButton(BaseButton):
+    def __init__(self, driver):
+        super(BrowserRefreshPageButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='next-page-button']/following-sibling::*/*[@content-desc='icon']")
+
+
 class WebViewBrowserButton(BaseButton):
     def __init__(self, driver):
         super(WebViewBrowserButton, self).__init__(driver)
@@ -73,6 +80,7 @@ class BaseWebView(BaseView):
         self.web_view_browser = WebViewBrowserButton(self.driver)
         self.always_button = AlwaysButton(self.driver)
         self.browser_cross_icon = BrowserCrossIcon(self.driver)
+        self.browser_refresh_page_button = BrowserRefreshPageButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0
@@ -81,3 +89,7 @@ class BaseWebView(BaseView):
             counter += 1
             if counter > wait_time:
                 pytest.fail("Page is not loaded during %s seconds" % wait_time)
+
+    def open_in_webview(self):
+        self.web_view_browser.click()
+        self.always_button.click()

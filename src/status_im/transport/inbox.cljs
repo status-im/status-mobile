@@ -39,7 +39,7 @@
 
 (def connection-timeout
   "Time after which mailserver connection is considered to have failed"
-  60000)
+  15000)
 
 (def fetching-timeout
   "Time we should wait after last message was fetch from mailserver before we
@@ -314,9 +314,13 @@
 
 (handlers/register-handler-fx
  :inbox/check-connection
- (fn [{:keys [db] :as cofx} [_ _]]
+ (fn [{:keys [db] :as cofx} _]
    (when (= :connecting (:mailserver-status db))
-     (update-mailserver-status :error cofx))))
+     (if (models.mailserver/preferred-mailserver-id cofx)
+       (update-mailserver-status :error cofx)
+       (handlers-macro/merge-fx cofx
+                                (models.mailserver/set-current-mailserver)
+                                (connect-to-mailserver))))))
 
 (defn update-last-request [last-request {:keys [db]}]
   (let [chats         (:transport/chats db)

@@ -26,6 +26,12 @@
       :out
       (string/replace "\n" "")))
 
+(defmacro get-current-sha []
+  "fetches the latest commit sha from the current branch"
+  (-> (shell/sh "bash" "-c" "git describe --always")
+      :out
+      (string/replace "\n" "")))
+
 (defmacro git-short-version []
   (let [version-file-path "VERSION"
         version-file      (io/file version-file-path)]

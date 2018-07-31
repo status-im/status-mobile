@@ -1,13 +1,14 @@
 import pytest
 from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase
+from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
 @marks.chat
-class TestPublicChat(MultipleDeviceTestCase):
+class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(1383)
+    @marks.smoke_1
     def test_public_chat_messaging(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -21,9 +22,6 @@ class TestPublicChat(MultipleDeviceTestCase):
 
         public_chat_name = home_1.get_public_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
-
-        if chat_2.connection_status.text != 'Fetching messages...':
-            self.errors.append("'Fetching messages...' status is not shown")
 
         message = 'hello'
         chat_1.chat_message_input.send_keys(message)
@@ -71,19 +69,53 @@ class TestPublicChat(MultipleDeviceTestCase):
             if chat_1.element_starts_with_text(message).is_element_present():
                 pytest.fail("Message '%s' is shown after re-login, but public chat history has been cleared" % message)
 
-    @marks.testrail_id(3720)
-    def test_delete_public_chat_via_delete_button(self):
-        self.create_drivers(1)
-        sign_in = SignInView(self.drivers[0])
+    @marks.testrail_id(3729)
+    def test_unread_messages_counter_public_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+
+        chat_name = home_1.get_public_chat_name()
+        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
+        home_1.get_back_to_home_view()
+
+        message = 'test message'
+        chat_2.chat_message_input.send_keys(message)
+        chat_2.send_message_button.click()
+
+        if home_1.home_button.counter.text != '1':
+            self.errors.append('New messages counter is not shown on Home button')
+
+        chat_element = home_1.get_chat_with_user('#' + chat_name)
+        if chat_element.new_messages_counter.text != '1':
+            self.errors.append('New messages counter is not shown on chat element')
+
+        chat_element.click()
+        home_1.get_back_to_home_view()
+
+        if home_1.home_button.counter.is_element_displayed():
+            self.errors.append('New messages counter is shown on Home button for already seen message')
+
+        if chat_element.new_messages_counter.is_element_displayed():
+            self.errors.append('New messages counter is shown on chat element for already seen message')
+        self.verify_no_errors()
+
+
+@marks.chat
+class TestPublicChatSingleDevice(SingleDeviceTestCase):
+
+    @marks.skip
+    @marks.testrail_id(3752)
+    def test_send_korean_characters(self):
+        sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         chat_name = home.get_public_chat_name()
         public_chat = home.join_public_chat(chat_name)
-        public_chat.chat_message_input.send_keys('takoe')
+        message = '파란하늘'
+        public_chat.chat_message_input.send_keys(message)
+        if public_chat.chat_message_input.text != message:
+            self.errors.append('Korean characters are not displayed properly in the chat message input')
         public_chat.send_message_button.click()
-        public_chat.delete_chat()
-        if home.element_by_text(chat_name).is_element_present(5):
-            self.errors.append("Public chat '%s' is shown, but the chat has been deleted" % chat_name)
-        home.relogin()
-        if home.element_by_text(chat_name).is_element_present(5):
-            self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
+        if not public_chat.chat_element_by_text(message).is_element_displayed():
+            self.errors.append('Message with korean characters is not shown')
         self.verify_no_errors()

@@ -1,11 +1,11 @@
 import time
 
 import pytest
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from tests import info
-from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
-from views.base_view import BaseView
-from views.profile_view import ProfilePictureElement
+from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_view import BaseView, ProgressBar
+from views.profile_view import ProfilePictureElement, PublicKeyText
 
 
 class ChatMessageInput(BaseEditBox):
@@ -36,19 +36,19 @@ class TransactionPopupText(BaseText):
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('send-payment-button')
+        self.locator = self.Locator.accessibility_id('send-button')
 
 
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('request-payment-button')
+        self.locator = self.Locator.accessibility_id('request-button')
 
 
-class EthAsset(BaseButton):
-    def __init__(self, driver):
-        super(EthAsset, self).__init__(driver)
-        self.locator = self.Locator.text_selector('ETH')
+class AssetCommand(BaseButton):
+    def __init__(self, driver, asset):
+        super(AssetCommand, self).__init__(driver)
+        self.locator = self.Locator.text_selector(asset)
 
 
 class ChatMenuButton(BaseButton):
@@ -129,10 +129,10 @@ class MoreUsersButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
-class OpenInBrowserButton(BaseButton):
+class OpenInStatusButton(BaseButton):
     def __init__(self, driver):
-        super(OpenInBrowserButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Open in browser']")
+        super(OpenInStatusButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Open in Status']")
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
@@ -173,32 +173,41 @@ class ProfileSendTransactionButton(BaseButton):
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
         super(ChatElementByText, self).__init__(driver)
+        self.message_text = text
         self.locator = self.Locator.xpath_selector(
             "//*[starts-with(@text,'%s')]/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % text)
+
+    def find_element(self):
+        info("Looking for message with text '%s'" % self.message_text)
+        for _ in range(2):
+            try:
+                return super(ChatElementByText, self).find_element()
+            except NoSuchElementException:
+                ChatView(self.driver).reconnect()
 
     @property
     def status(self):
         class StatusText(BaseText):
             def __init__(self, driver, parent_locator: str):
                 super(StatusText, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + '/android.widget.TextView')
+                text = "//android.widget.TextView[@text='Seen' or @text='Sent' or " \
+                       "@text='Not sent. Tap for options' or @text='Network mismatch']"
+                self.locator = self.Locator.xpath_selector(parent_locator + text)
 
         return StatusText(self.driver, self.locator.value)
 
     @property
     def progress_bar(self):
-        class ProgressBar(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super(ProgressBar, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
-
         return ProgressBar(self.driver, self.locator.value)
 
-    def contains_text(self, text) -> bool:
-        element = BaseText(self.driver)
-        element.locator = element.Locator.xpath_selector(
-            self.locator.value + "//android.view.ViewGroup//android.widget.TextView[@text='%s']" % text)
-        return element.is_element_displayed()
+    @property
+    def member_photo(self):
+        class MemberPhoto(BaseButton):
+            def __init__(self, driver, parent_locator):
+                super(MemberPhoto, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@content-desc='member-photo']")
+
+        return MemberPhoto(self.driver, self.locator.value)
 
     @property
     def username(self):
@@ -218,6 +227,12 @@ class ChatElementByText(BaseText):
 
         return SendRequestButton(self.driver, self.locator.value)
 
+    def contains_text(self, text, wait_time=5) -> bool:
+        element = BaseText(self.driver)
+        element.locator = element.Locator.xpath_selector(
+            self.locator.value + "//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
+        return element.is_element_displayed(wait_time)
+
 
 class ChatView(BaseView):
     def __init__(self, driver):
@@ -231,7 +246,6 @@ class ChatView(BaseView):
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
-        self.eth_asset = EthAsset(self.driver)
 
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
@@ -249,12 +263,13 @@ class ChatView(BaseView):
 
         self.first_recipient_button = FirstRecipient(self.driver)
 
-        self.open_in_browser_button = OpenInBrowserButton(self.driver)
+        self.open_in_status_button = OpenInStatusButton(self.driver)
 
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
+        self.public_key_text = PublicKeyText(self.driver)
 
     def wait_for_syncing_complete(self):
         info('Waiting for syncing complete:')
@@ -288,7 +303,7 @@ class ChatView(BaseView):
             errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
                 [i for i in list(set(expected_messages) - set(received_messages))])))
 
-    def send_eth_to_request(self, amount, sender_password, wallet_set_up=False):
+    def send_funds_to_request(self, amount, sender_password, wallet_set_up=False):
         gas_popup = self.element_by_text_part('Specify amount')
         send_request_button = self.chat_element_by_text(amount).send_request_button
         send_request_button.click_until_presence_of_element(gas_popup)
@@ -312,10 +327,10 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
 
-    def send_transaction_in_1_1_chat(self, amount, password, wallet_set_up=False):
+    def send_transaction_in_1_1_chat(self, asset, amount, password, wallet_set_up=False):
         self.commands_button.click()
         self.send_command.click()
-        self.eth_asset.click()
+        self.asset_by_name(asset).click()
         self.send_as_keyevent(amount)
         send_transaction_view = self.get_send_transaction_view()
         if wallet_set_up:
@@ -328,7 +343,7 @@ class ChatView(BaseView):
         send_transaction_view.sign_transaction(password)
         chat_elem = self.chat_element_by_text(amount)
         chat_elem.wait_for_visibility_of_element()
-        chat_elem.progress_bar.wait_for_invisibility_of_element()
+        chat_elem.progress_bar.wait_for_invisibility_of_element(20)
         if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
             pytest.fail('Sent transaction message was not sent')
 
@@ -345,15 +360,15 @@ class ChatView(BaseView):
         send_transaction_view.find_full_text(amount)
         self.find_full_text('to  ' + recipient['username'], 10)
 
-    def request_transaction_in_1_1_chat(self, amount):
+    def request_transaction_in_1_1_chat(self, asset, amount):
         self.commands_button.click()
         self.request_command.click()
-        self.eth_asset.click()
+        self.asset_by_name(asset).click()
         self.send_as_keyevent(amount)
         self.send_message_button.click()
 
     def chat_element_by_text(self, text):
-        info("Looking for full text: '%s'" % text)
+        info("Looking for a message by text: '%s'" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
@@ -364,4 +379,9 @@ class ChatView(BaseView):
         today_location = today_text_element.location['y']
         today_height = today_text_element.size['height']
         if message_location < today_location + today_height:
-            errors.append("Message '%s' is not uder 'Today' text" % text)
+            errors.append("Message '%s' is not under 'Today' text" % text)
+
+    def asset_by_name(self, asset_name):
+        element = BaseButton(self.driver)
+        element.locator = element.Locator.text_selector(asset_name)
+        return element

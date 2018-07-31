@@ -15,6 +15,10 @@ class NetworkApi:
         method = self.ropsten_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
+    def get_token_transaction(self, address: str) -> dict:
+        method = self.ropsten_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
+        return requests.request('GET', url=method).json()['result']
+
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.ropsten_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
         return not int(requests.request('GET', url=method).json()['result']['isError'])
@@ -39,7 +43,7 @@ class NetworkApi:
                 return
         pytest.fail('Transaction is not found in Ropsten network')
 
-    def find_transaction_by_unique_amount(self, address, amount, wait_time=600):
+    def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=600):
         counter = 0
         while True:
             if counter >= wait_time:
@@ -49,14 +53,26 @@ class NetworkApi:
             else:
                 counter += 10
                 time.sleep(10)
-                transactions = self.get_transactions(address=address)
+                if token:
+                    transactions = self.get_token_transaction(address=address)
+                else:
+                    transactions = self.get_transactions(address=address)
                 info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
                      (amount, address))
                 for transaction in transactions:
-                    if float(int(transaction['value']) / 10 ** 18) == float(amount):
+                    if float(int(transaction['value']) / 10 ** decimals) == float(amount):
                         info('Transaction with unique amount %s is found in list of transactions, address is %s' %
                              (amount, address))
-                        return
+                        return transaction
+
+    def wait_for_confirmation_of_transaction(self, address, amount):
+        start_time = time.time()
+        while round(time.time() - start_time, ndigits=2) < 10:
+            transaction = self.find_transaction_by_unique_amount(address, amount)
+            if int(transaction['confirmations']) > 1:
+                return
+            time.sleep(10)
+            pytest.fail('Transaction with amount %s was not confirmed, address is %s' % (amount, address))
 
     def verify_balance_is_updated(self, initial_balance, recipient_address, wait_time=360):
         counter = 0

@@ -1,6 +1,7 @@
 (ns status-im.data-store.core
   (:require [cljs.core.async :as async]
             [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [status-im.data-store.realm.core :as data-source]
             status-im.data-store.chats
             status-im.data-store.messages
@@ -13,12 +14,20 @@
             status-im.data-store.requests))
 
 (defn init [encryption-key]
-  (when-not @data-source/base-realm
-    (data-source/open-base-realm encryption-key))
-  (data-source/reset-account-realm encryption-key))
+  (if @data-source/base-realm
+    (js/Promise.resolve)
+    (..
+     (data-source/ensure-directories)
+     ;; This can be removed when we are confident all the users
+     ;; have migrated the data, introduced in 0.9.23
+     (then #(data-source/move-realms))
+     (catch (fn [error]
+              (log/error "Could not move realms" error)))
+     (then #(data-source/open-base-realm encryption-key)))))
 
-(defn change-account [address new-account? encryption-key handler]
-  (data-source/change-account address new-account? encryption-key handler))
+(defn change-account [address encryption-key]
+  (log/debug "changing account to: " address)
+  (data-source/change-account address encryption-key))
 
 (defn- perform-transactions [raw-transactions realm]
   (let [success-events (keep :success-event raw-transactions)

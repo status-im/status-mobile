@@ -17,10 +17,12 @@
             [status-im.utils.utils :as utils]
             [status-im.models.wallet :as models.wallet]
             [status-im.chat.models.message :as models.message]
+            [status-im.chat.commands.sending :as commands-sending]
             [status-im.constants :as constants]
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.wallet.transactions :as wallet.transactions]))
 
 ;;;; FX
 
@@ -51,8 +53,8 @@
                     (clj->js {:from from :to to :value value :gas gas :gasPrice gas-price})
                     #()))
 
-(defn- send-tokens [{:keys [web3 from to value gas gas-price symbol network]}]
-  (let [contract (:address (tokens/symbol->token (keyword (ethereum/network-names network)) symbol))]
+(defn- send-tokens [{:keys [web3 from to value gas gas-price symbol chain]}]
+  (let [contract (:address (tokens/symbol->token (keyword chain) symbol))]
     (erc20/transfer web3 contract from to value {:gas gas :gasPrice gas-price} #())))
 
 (re-frame/reg-fx
@@ -192,20 +194,23 @@
           ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
 
-         (let [{:keys [gas gasPrice]}    args
-               transaction               (prepare-transaction queued-transaction now)
-               sending-from-bot-or-dapp? (not (get-in db [:wallet :send-transaction :waiting-signal?]))
-               new-db                    (assoc-in db' [:wallet :transactions-unsigned id] transaction)
-               sending-db                {:id         id
-                                          :method     method
-                                          :from-chat? (or
-                                                       sending-from-bot-or-dapp?
+         (let [{:keys [gas gasPrice]} args
+               transaction            (prepare-transaction queued-transaction now)
+               sending-from-dapp?     (not (get-in db [:wallet :send-transaction :waiting-signal?]))
+               new-db                 (assoc-in db' [:wallet :transactions-unsigned id] transaction)
+               sender-account         (:account/account db)
+               sending-db             {:id         id
+                                       :method     method
+                                       :from-chat? (or sending-from-dapp? ;;TODO(goranjovic): figure out why we need to
+                                                       ;; have from-chat? flag for dapp txs and get rid of this
                                                        (get-in db [:wallet :send-transaction :from-chat?]))}]
-           (if sending-from-bot-or-dapp?
-              ;;SENDING FROM BOT (CHAT) OR DAPP
+           (if sending-from-dapp?
+              ;;SENDING FROM DAPP
              {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
               :dispatch-n [[:update-wallet]
-                           [:navigate-to-modal :wallet-send-transaction-modal]
+                           [:navigate-to-modal (if (:wallet-set-up-passed? sender-account)
+                                                 :wallet-send-transaction-modal
+                                                 :wallet-onboarding-setup-modal)]
                            (when-not (seq gas)
                              [:wallet/update-estimated-gas transaction])
                            (when-not (seq gasPrice)
@@ -277,8 +282,8 @@
       (dissoc :message-id :id)))
 
 (defn prepare-unconfirmed-status-transaction [db now hash transaction]
-  (let [network (:network db)
-        token   (tokens/symbol->token (keyword (ethereum/network-names network)) (:symbol transaction))]
+  (let [chain (:chain db)
+        token   (tokens/symbol->token (keyword chain) (:symbol transaction))]
     (-> transaction
         (assoc :confirmations "0"
                :timestamp (str now)
@@ -303,10 +308,15 @@
  :send-transaction-message
  (concat models.message/send-interceptors
          navigation/navigation-interceptors)
- (fn [cofx [{:keys [view-id] :as params}]]
-   (handlers-macro/merge-fx cofx
-                            (models.message/send-custom-send-command params)
-                            (navigation/replace-view view-id))))
+ (fn [{:keys [db] :as cofx} [chat-id params]]
+   ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
+   ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
+   (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
+     (handlers-macro/merge-fx cofx
+                              (commands-sending/send chat-id send-command params)
+                              (navigation/replace-view :wallet-transaction-sent))
+     (handlers-macro/merge-fx cofx
+                              (navigation/replace-view :wallet-transaction-sent)))))
 
 (handlers/register-handler-fx
  ::transaction-completed
@@ -330,11 +340,10 @@
             (= method constants/web3-send-transaction)
             (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
 
-          {:dispatch [:send-transaction-message {:view-id          :wallet-transaction-sent
-                                                 :whisper-identity whisper-identity
-                                                 :address          to
-                                                 :asset            (name symbol)
-                                                 :amount           amount-text}]}))))))
+          {:dispatch [:send-transaction-message whisper-identity {:address to
+                                                                  :asset   (name symbol)
+                                                                  :amount  amount-text
+                                                                  :tx-hash hash}]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [result (types/json->clj raw-results)]
@@ -342,9 +351,8 @@
 
 (handlers/register-handler-fx
  :wallet/sign-transaction
- (fn [{{:keys [web3] :as db} :db} [_ later?]]
+ (fn [{{:keys [web3 chain] :as db} :db} [_ later?]]
    (let [db' (assoc-in db [:wallet :send-transaction :wrong-password?] false)
-         network (:network db)
          {:keys [amount id password to symbol method gas gas-price]} (get-in db [:wallet :send-transaction])]
      (if id
        {::accept-transaction {:id              id
@@ -363,7 +371,8 @@
                             :gas-price gas-price
                             :symbol    symbol
                             :method    method
-                            :network   network}}))))
+                            :chain     chain}}))))
+
 (handlers/register-handler-fx
  :wallet/sign-message-modal
  (fn [{db :db} _]
@@ -467,3 +476,17 @@
  (fn [{:keys [db]} [_ chat-id]]
    {:dispatch       [:navigate-back]
     :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))
+
+(handlers/register-handler-fx
+ :sync-wallet-transactions
+ (fn [cofx _]
+   (wallet.transactions/sync cofx)))
+
+(handlers/register-handler-fx
+ :start-wallet-transactions-sync
+ (fn [cofx _]
+   (when-not (get-in cofx [:db :wallet :transactions-sync-started?])
+     (handlers-macro/merge-fx cofx
+                              (wallet.transactions/load-missing-chat-transactions)
+                              (wallet.transactions/sync)
+                              (wallet.transactions/set-sync-started)))))

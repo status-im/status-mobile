@@ -6,13 +6,48 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+
+### Fixed
+
+### Changed
+
+## 0.9.23 - 2018-07-23
+### Added
+- iPad support. Status is now displayed at full native resolution on iPad's
+- Deep links support
+- Persist browser history
+- Added refresh button
+- Added more dapps
+- Allow for setting custom network id
+
+### Fixed
+- Fixed Sign in: Cannot paste text within password field [#3931]
+- Fixed chat message layout for right-to-left languages
+- Fixed parsing of messages containing multiple dots (elipsis)
+- Fixed Webview: Screen cut off when using ERC dEX DApp [#3131]
+- Fixed links targeting new tabs [#4413]
+- Fixed blinking token amounts in transaction history
+- Fixed/corrected fiat values in /send and /request messages
+- Automatically converts recovery phrase to lowercase during account recovery
+- Fixed unread messages counter
+- Fixed incoming messages timestamp
+- Fixed gas validation: Showing message when total amount being sent plus the max gas cost exceed the balance [#3441]
+
+### Changed
+- Removed Mixpanel integration
+
+## [0.9.22] - 2018-07-09
+### Added
 - Added Farsi public #status channel
 - Spam moderation
 - Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
 - Added more dapps
+- Universal and deep links for public chats, browsing dapps, viewing profiles
 
 ### Fixed
 - Fixed mailservers connectivity issue
+- Clear chat action correctly clear the unread messages counter
+- Gracefully handle realm decryption failures by showing a pop up asking the user to reset the data
 
 ### Changed
 - Downgraded React Native to 0.53.3 for improved performance and decreased battery consumption

@@ -55,19 +55,13 @@
 
 (defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
+  [{:networks/keys [networks] :as db} {:keys [address] :as account}]
   (let [enriched-account (assoc account
-                                :network network
+                                :network config/default-network
                                 :networks networks
                                 :address address)]
     {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
-
-;; TODO(janherich) we have this handler here only because of the tests, refactor/improve tests ASAP
-(handlers/register-handler-fx
- :add-account
- (fn [{:keys [db]} [_ new-account]]
-   (add-account db new-account)))
 
 (handlers/register-handler-fx
  ::account-created
@@ -88,28 +82,12 @@
        (-> (add-account db account)
            (assoc :dispatch [:login-account normalized-address password]))))))
 
-(handlers/register-handler-fx
- :load-accounts
- [(re-frame/inject-cofx :data-store/get-all-accounts)]
- (fn [{:keys [db all-accounts]} _]
-   (let [accounts (->> all-accounts
-                       (map (fn [{:keys [address] :as account}]
-                              [address account]))
-                       (into {}))
-         ;;workaround for realm bug, migrating account v4
-         events   (mapv #(when (empty? (:networks %)) [:account-update-networks (:address %)]) (vals accounts))]
-     (merge
-      {:db (assoc db :accounts/accounts accounts)}
-      (when-not (empty? events)
-        {:dispatch-n events})))))
-
-(handlers/register-handler-fx
- :account-update-networks
- (fn [{{:accounts/keys [accounts] :networks/keys [networks] :as db} :db} [_ id]]
-   (let [current-account (get accounts id)
-         new-account     (assoc current-account :networks networks)]
-     {:db                 (assoc-in db [:accounts/accounts id] new-account)
-      :data-store/base-tx [(accounts-store/save-account-tx new-account)]})))
+(defn load-accounts [{:keys [db all-accounts]}]
+  (let [accounts (->> all-accounts
+                      (map (fn [{:keys [address] :as account}]
+                             [address account]))
+                      (into {}))]
+    {:db (assoc db :accounts/accounts accounts)}))
 
 (defn update-settings
   ([settings cofx] (update-settings settings nil cofx))
@@ -134,16 +112,10 @@
  :account-set-name
  (fn [{{:accounts/keys [create] :as db} :db :as cofx} _]
    (handlers-macro/merge-fx cofx
-                            {:db       db
-                             :dispatch [:navigate-to-clean :usage-data [:account-finalized true]]}
+                            {:db         (assoc db :accounts/create {:show-welcome? true})
+                             :dispatch-n [[:navigate-to-clean :home]
+                                          [:request-notifications]]}
                             (accounts.utils/account-update {:name (:name create)}))))
-
-(handlers/register-handler-fx
- :account-finalized
- (fn [{db :db} [_ show-welcome?]]
-   {:db         (assoc db :accounts/create {:show-welcome? show-welcome?})
-    :dispatch-n [[:navigate-to-clean :home]
-                 [:request-notifications]]}))
 
 (handlers/register-handler-fx
  :account-set-input-text
@@ -183,19 +155,22 @@
  (fn [cofx [_ dev-mode]]
    (accounts.utils/account-update {:dev-mode? dev-mode} cofx)))
 
-(defn wallet-set-up-passed [db cofx]
+(defn chat-send? [transaction]
+  (and (seq transaction)
+       (not (:in-progress? transaction))
+       (:from-chat? transaction)))
+
+(defn wallet-set-up-passed [db modal? cofx]
   (let [transaction (get-in db [:wallet :send-transaction])]
-    (merge
-     {:db (navigation/navigate-back db)}
-     (when (and (seq transaction)
-                (not (:in-progress? transaction))
-                (:from-chat? transaction))
-       {:dispatch [:navigate-to :wallet-send-transaction-chat]}))))
+    (cond modal? {:dispatch [:navigate-to-modal :wallet-send-transaction-modal]}
+          (chat-send? transaction) {:db       (navigation/navigate-back db)
+                                    :dispatch [:navigate-to :wallet-send-transaction-chat]}
+          :else {:db (navigation/navigate-back db)})))
 
 (handlers/register-handler-fx
  :wallet-set-up-passed
- (fn [{:keys [db] :as cofx}]
+ (fn [{:keys [db] :as cofx} [_ modal?]]
    (handlers-macro/merge-fx
     cofx
-    (wallet-set-up-passed db)
+    (wallet-set-up-passed db modal?)
     (accounts.utils/account-update {:wallet-set-up-passed? true}))))

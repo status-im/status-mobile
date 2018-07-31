@@ -53,7 +53,7 @@
            token]]]
         [bottom-buttons/bottom-buttons styles/bottom-buttons
          nil   ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
-         [button/button {:disabled?           (not (and to amount))
+         [button/button {:disabled?           (or amount-error (not (and to amount)))
                          :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount symbol decimals])
                          :text-style          {:padding-horizontal 0}
                          :accessibility-label :sent-request-button}

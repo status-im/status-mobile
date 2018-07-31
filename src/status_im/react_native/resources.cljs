@@ -12,6 +12,7 @@
    :commiteth          (js/require "./resources/images/contacts/commiteth.png")
    :etherplay          (js/require "./resources/images/contacts/etherplay.png")
    :ethcro             (js/require "./resources/images/contacts/ethcro.png")
+   :easytrade          (js/require "./resources/images/contacts/easytrade.png")
 
    :name-bazaar        (js/require "./resources/images/contacts/name-bazaar.png")
    :cryptopunks        (js/require "./resources/images/contacts/cryptopunks.png")
@@ -30,7 +31,7 @@
    :cryptocribs        (js/require "./resources/images/contacts/cryptocribs.png")
    :cryptofighters     (js/require "./resources/images/contacts/cryptofighters.png")
    :airswap            (js/require "./resources/images/contacts/airswap.png")
-
+   :civitas            (js/require "./resources/images/contacts/civitas.png")
    :dai                (js/require "./resources/images/contacts/dai.png")
    :local-ethereum     (js/require "./resources/images/contacts/local-ethereum.png")
    :eth2phone          (js/require "./resources/images/contacts/eth2phone.png")
@@ -38,6 +39,10 @@
    :cryptopurr         (js/require "./resources/images/contacts/cryptopurr.png")
    :ethlend            (js/require "./resources/images/contacts/ethlend.png")
    :smartz             (js/require "./resources/images/contacts/smartz.png")
+
+   :ddex               (js/require "./resources/images/contacts/ddex.png")
+   :emoon              (js/require "./resources/images/contacts/emoon.png")
+   :livepeer           (js/require "./resources/images/contacts/livepeer.png")
 
    :console            (js/require "./resources/images/contacts/console.png")})
 

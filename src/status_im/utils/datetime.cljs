@@ -32,19 +32,53 @@
           loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
-(def medium-date-time-format (.-MEDIUM_DATETIME goog.i18n.DateTimeFormat.Format))
-(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format))
-(def short-time-format (.-SHORT_TIME goog.i18n.DateTimeFormat.Format))
+;; detects if given locale symbols timeformat generates AM/PM ("a")
+(defn- is24Hour-locsym [locsym]
+  (not (s/includes?
+        (nth (get locsym 'TIMEFORMATS) 2)
+        "a")))
 
-(defn mk-fmt [locale format]
-  (goog.i18n.DateTimeFormat. format (locale-symbols locale)))
+;; returns is24Hour from device or from given locale symbols
+;; when device-info module is not available (ie. desktop) returns from the given locale
+;
+; TODO integrate with native module. example:
+; (defn- is24Hour [locsym]
+;   (if rn/device-info
+;     (.is24Hour rn/device-info)
+;     (is24Hour-locsym locsym)))
 
+(defn- is24Hour [locsym]
+  (is24Hour-locsym locsym))
+
+;; time formats 
+(defn- short-time-format [locsym] (if (is24Hour locsym) "HH:mm" "h:mm a"))
+(defn- time-format [locsym] (if (is24Hour locsym) "HH:mm:ss" "h:mm:ss a"))
+
+;; date formats
+(defn- short-date-format [locsym] "dd MMM")
+(defn- medium-date-format [locsym] (nth (get locsym 'DATEFORMATS) 2)) ; get medium format from current locale symbols
+
+;; date-time formats
+(defn- medium-date-time-format [locsym] (str (medium-date-format locsym) ", " (time-format locsym)))
+
+;; get formatter for current locale symbols and format function
+(defn- mk-fmt [locale format-fn]
+  (let [locsym (locale-symbols locale)]
+    (goog.i18n.DateTimeFormat. (format-fn locsym) locsym)))
+
+;; generate formatters for different formats
 (def date-time-fmt
   (mk-fmt status-im.i18n/locale medium-date-time-format))
 (def date-fmt
   (mk-fmt status-im.i18n/locale medium-date-format))
 (def time-fmt
   (mk-fmt status-im.i18n/locale short-time-format))
+(def short-date-fmt
+  (mk-fmt status-im.i18n/locale short-date-format))
+
+;;
+;; functions which apply formats for the given timestamp
+;;
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date (from-long ms)
@@ -69,9 +103,9 @@
           #(label :t/datetime-today)))
 
 (defn timestamp->mini-date [ms]
-  (unparse (formatter "dd MMM") (-> ms
-                                    from-long
-                                    (plus time-zone-offset))))
+  (.format short-date-fmt (-> ms
+                              from-long
+                              (plus time-zone-offset))))
 
 (defn timestamp->time [ms]
   (.format time-fmt (-> ms
@@ -84,10 +118,9 @@
                                                (plus time-zone-offset)))))
 
 (defn timestamp->long-date [ms]
-  (keyword (unparse (formatter "MMM DD YYYY HH:mm:ss")
-                    (-> ms
-                        from-long
-                        (plus time-zone-offset)))))
+  (.format date-time-fmt  (-> ms
+                              from-long
+                              (plus time-zone-offset))))
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]

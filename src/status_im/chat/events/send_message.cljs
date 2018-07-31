@@ -13,19 +13,3 @@
          tokens-json  (types/clj->json tokens)]
      (log/debug "send-notification message: " message " payload-json: " payload-json " tokens-json: " tokens-json)
      (status/notify-users {:message message :payload payload-json :tokens tokens-json} #(log/debug "send-notification cb result: " %)))))
-
-;;;; Handlers
-
-(handlers/register-handler-fx
- :chat-send-message/send-command
- message-model/send-interceptors
- (fn [cofx [_ params]]
-   (message-model/send-command cofx params)))
-
-(handlers/register-handler-fx
- :chat-send-message/from-jail
- [re-frame/trim-v]
- (fn [cofx [{:keys [chat-id message]}]]
-   (let [parsed-message (types/json->clj message)]
-     (message-model/handle-message-from-bot cofx {:message parsed-message
-                                                  :chat-id chat-id}))))

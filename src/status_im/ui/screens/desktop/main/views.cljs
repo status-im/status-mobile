@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
             [status-im.ui.screens.desktop.main.tabs.home.views :as home.views]
+            [status-im.ui.screens.desktop.main.styles :as styles]
             [status-im.ui.screens.desktop.main.chat.views :as chat.views]
             [status-im.ui.screens.desktop.main.add-new.views :as add-new.views]
             [status-im.ui.components.desktop.tabs :as tabs]
@@ -15,7 +16,7 @@
 (views/defview tab-views []
   (views/letsubs [tab [:get-in [:desktop/desktop :tab-view-id]]]
     (let [component (case tab
-                      :profile profile.views/profile
+                      :profile profile.views/profile-data
                       :home home.views/chat-list-view
                       react/view)]
       [react/view {:style {:flex 1}}
@@ -24,17 +25,19 @@
 (views/defview main-view []
   (views/letsubs [view-id [:get :view-id]]
     (let [component (case view-id
-                      :chat chat.views/chat-view
-                      :new-contact add-new.views/new-contact
+                      :chat         chat.views/chat-view
+                      :new-contact  add-new.views/new-contact
+                      :qr-code      profile.views/qr-code
+                      :chat-profile chat.views/chat-profile
                       status-view)]
       [react/view {:style {:flex 1}}
        [component]])))
 
 (views/defview main-views []
-  [react/view {:style {:flex 1 :flex-direction :row}}
-   [react/view {:style {:width 280 :background-color :white}}
+  [react/view {:style styles/main-views}
+   [react/view {:style styles/left-sidebar}
     [react/view {:style {:flex 1}}
      [tab-views]]
     [tabs/main-tabs]]
-   [react/view {:style {:width 1 :background-color "#e8ebec"}}]
+   [react/view {:style styles/pane-separator}]
    [main-view]])

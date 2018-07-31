@@ -1,13 +1,18 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (defmethod navigation/preload-data! :wallet
   [db _]
   (re-frame/dispatch [:update-wallet])
   (assoc-in db [:wallet :current-tab] 0))
+
+(defmethod navigation/preload-data! :wallet-modal
+  [db _]
+  (re-frame/dispatch [:update-wallet])
+  (re-frame/dispatch [:update-transactions])
+  (assoc-in db [:wallet :modal-history?] false))
 
 (defmethod navigation/preload-data! :transactions-history
   [db _]
