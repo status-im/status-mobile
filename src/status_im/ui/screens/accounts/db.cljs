@@ -43,7 +43,7 @@
                                       :account/email :account/signed-up? :account/network
                                       :account/networks :account/settings :account/wnode
                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
-                                      :account/seed-backed-up? :account/mnemonic
+                                      :account/seed-backed-up? :account/mnemonic :account/desktop-notifications?
                                       :account/wallet-set-up-passed? :account/last-request
                                       :account/bootnodes :account/mainnet-warning-shown?]))
 
