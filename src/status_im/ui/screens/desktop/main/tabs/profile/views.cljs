@@ -73,9 +73,9 @@
        [share-contact-code]
        [react/view {:style styles/logout-row}
         [react/text {:style (styles/logout-row-text colors/black)} (i18n/label :notifications)]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:enable-notifications (not notifications?)])}
-         [react/text {:style (styles/logout-row-text (if notifications? colors/black colors/red))}
-          (if notifications? "ON" "OFF")]]]
+        [react/switch {:on-tint-color   colors/blue
+                       :value           notifications?
+                       :on-value-change #(re-frame/dispatch [:enable-notifications (not notifications?)])}]]
        [react/view {:style styles/logout-row}
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
          [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
