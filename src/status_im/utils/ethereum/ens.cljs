@@ -48,12 +48,6 @@
                  (fn [_ ttl] (cb (ethereum/hex->int ttl)))))
 
 ;; Resolver contract
-
-(def status-resolvers
-  {:mainnet "0x314159265dd8dbb310642f98f50c066173c1259b"
-   :ropsten "0x5FfC014343cd971B7eb70732021E26C35B744cc4"
-   :rinkeby "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"})
-
 ;; Resolver must implement EIP65 (supportsInterface). When interacting with an unknown resolver it's safer to rely on it.
 
 (def addr-hash "0x3b3b57de")
@@ -62,13 +56,6 @@
   (ethereum/call web3
                  (ethereum/call-params resolver "addr(bytes32)" (namehash ens-name))
                  (fn [_ address] (cb (ethereum/hex->address address)))))
-
-(defn content [web3 resolver ens-name cb]
-  (ethereum/call web3
-                 (ethereum/call-params resolver
-                                       "content(bytes32)"
-                                       (namehash ens-name))
-                 (fn [_ content] (cb content #_(ethereum/hex->string content)))))
 
 (def name-hash "0x691f3431")
 
@@ -81,30 +68,7 @@
                                        (namehash ens-name))
                  (fn [_ address] (cb (ethereum/hex->address address)))))
 
-(defn text [web3 resolver ens-name key cb]
-  (ethereum/call web3
-                 (ethereum/call-params resolver
-                                       "text(bytes32)"
-                                       (namehash ens-name)
-                                       (ethereum/string->hex key))
-                 (fn [err text] (cb err text))))
-
 (def ABI-hash "0x2203ab56")
 (def pubkey-hash "0xc8690233")
 
 ;; TODO ABI, pubkey
-
-(comment
-  (let [web3-o (:web3 @re-frame.db/app-db)]
-    (resolver web3-o (:ropsten ens-registries) "test.stateofus.eth" println))
-
-  (let [web3-o (:web3 @re-frame.db/app-db)]
-    (addr web3-o  "0x5FfC014343cd971B7eb70732021E26C35B744cc4" "test.stateofus.eth" #(println %)))
-
-  (let [web3-o (:web3 @re-frame.db/app-db)]
-    (text web3-o  "0x5FfC014343cd971B7eb70732021E26C35B744cc4" "test.stateofus.eth" "statusAccount" println))
-
-  (ethereum/call-params "0x5FfC014343cd971B7eb70732021E26C35B744cc4"
-                        "text(bytes32,string)"
-                        (namehash "test.stateofus.eth")
-                        (ethereum/string->hex "statusAccount")))
