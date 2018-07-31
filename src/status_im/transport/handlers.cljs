@@ -21,10 +21,15 @@
   (when (> (- now-in-s timestamp) ttl)
     {:db (assoc db :inbox/last-received now)}))
 
+(defn inspect [a]
+  (println a)
+  a)
 (defn receive-message [cofx now-in-s chat-id js-message]
   (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
+                           inspect
                            transport.utils/to-utf8
+                           inspect
                            transit/deserialize)]
     (when (and sig status-message)
       (try

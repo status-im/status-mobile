@@ -58,6 +58,46 @@
                                              (on-success resp)
                                              (on-error err))))))
 
+(defn handle-response [success-event error-event]
+  (fn [err resp]
+    (if-not err
+      (if success-event
+        (re-frame/dispatch (conj success-event resp))
+        (log/debug :shh/post-success))
+      (re-frame/dispatch [error-event err resp]))))
+
+(re-frame/reg-fx
+ :shh/send-direct-message
+ (fn [post-calls]
+   (doseq [{:keys [web3 payload src dst success-event error-event]
+            :or   {error-event :protocol/send-status-message-error}} post-calls]
+     (let [direct-message (clj->js {:pubKey dst
+                                    :sig src
+                                    :payload (-> payload
+                                                 transit/serialize
+                                                 transport.utils/from-utf8)})]
+       (.. web3
+           -shh
+           (sendDirectMessage
+            direct-message
+            (handle-response success-event error-event)))))))
+
+(re-frame/reg-fx
+ :shh/send-public-message
+ (fn [post-calls]
+   (doseq [{:keys [web3 payload src chat success-event error-event]
+            :or   {error-event :protocol/send-status-message-error}} post-calls]
+     (let [message (clj->js {:chat chat
+                             :sig src
+                             :payload (-> payload
+                                          transit/serialize
+                                          transport.utils/from-utf8)})]
+       (.. web3
+           -shh
+           (sendPublicMessage
+            message
+            (handle-response success-event error-event)))))))
+
 (re-frame/reg-fx
  :shh/post
  (fn [post-calls]

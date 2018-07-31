@@ -2,6 +2,7 @@
  status-im.transport.message.v1.protocol
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.chat.core :as chat]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.core :as message]
@@ -42,6 +43,26 @@
                                         :payload  payload
                                         :topic    topic}
                                        whisper-opts)}]}))
+
+(defn send-direct-message
+  "Sends the payload using to dst"
+  [dst success-event payload {:keys [db] :as cofx}]
+  (let [{:keys [current-public-key web3]} db]
+    {:shh/send-direct-message [{:web3 web3
+                                :success-event success-event
+                                :src     current-public-key
+                                :dst     dst
+                                :payload payload}]}))
+
+(defn send-public-message
+  "Sends the payload to topic"
+  [chat-id success-event payload {:keys [db] :as cofx}]
+  (let [{:keys [current-public-key web3]} db]
+    {:shh/send-public-message [{:web3 web3
+                                :success-event success-event
+                                :src     current-public-key
+                                :chat    chat-id
+                                :payload payload}]}))
 
 (defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
@@ -86,16 +107,28 @@
 (defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
   (send [this chat-id cofx]
+    (println "CHAT_ID" chat-id this)
     (let [params     {:chat-id       chat-id
                       :payload       this
                       :success-event [:transport/set-message-envelope-hash
                                       chat-id
                                       (transport.utils/message-id this)
-                                      message-type]}
-          group-chat (get-in cofx [:db :chats chat-id :group-chat])]
-      (if (or group-chat
-              config/use-sym-key)
-        (send params cofx)
+                                      message-type]}]
+      (if config/encryption-enabled?
+        (case (:message-type this)
+          :public-group-user-message
+          (send-public-message
+           chat-id
+           (:success-event params)
+           this
+           cofx)
+
+          :user-message
+          (send-direct-message
+           chat-id
+           (:success-event params)
+           this
+           cofx))
         (send-with-pubkey params cofx))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
