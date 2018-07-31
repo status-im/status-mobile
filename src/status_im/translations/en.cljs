@@ -39,17 +39,17 @@
    :status-console                       "Status Console"
 
    ;;sign in
-   :intro-text                           "Status is an open source decentralized chat and Ethereum browser"
-   :intro-text-description               "Status is built with the help of the community to help you use all the benefits of decentralized web in your mobile phone"
+   :intro-text                           "Status is your gateway to the decentralized web"
+   :intro-text-description               "A community-powered platform to securely chat and transact on the Ethereum blockchain"
    :create-account                       "Create account"
    :already-have-account                 "I already have an account"
-   :creating-your-account                "Creating your account on the blockchain. We can't touch it, no one can, except for you!"
-   :password-placeholder                 "Type your password"
+   :creating-your-account                "Creating your account..."
+   :password-placeholder                 "At least 6 characters"
    :password-placeholder2                "Confirm your password"
    :name-placeholder                     "Display name"
-   :password_error1                      "Password confirmation doesn't match password."
+   :password_error1                      "Passwords don't match."
    :password-description                 "You'll need this password to open the app and confirm transactions."
-   :name-description                     "This will be the name everybody who uses Status will see. You can change it later."
+   :name-description                     "Change this anytime in your Profile."
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
 
@@ -64,7 +64,7 @@
    :home                                 "Home"
    :no-recent-chats                      "There are no recent Chats or DApps here yet. Tap the “Plus” button to see the list of Dapps or discover people to chat with."
    :welcome-to-status                    "Welcome to Status"
-   :welcome-to-status-description        "Here you can chat with people in a secure\n private chat, browse and interact with DApps.\n Use the “Plus” icon to explore Status"
+   :welcome-to-status-description        "Tap the plus (+) button to get started"
 
    ;;chat
    :is-typing                            "is typing"
@@ -150,7 +150,7 @@
    :testnet-text                         "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
    :mainnet-text                         "You’re on the Mainnet. Real ETH will be sent"
    :dev-mode                             "Development mode"
-   :backup-your-recovery-phrase          "Backup your Recovery phrase"
+   :backup-your-recovery-phrase          "Backup your recovery phrase"
 
    ;;recovery phrase
    :your-data-belongs-to-you             "If you lose your recovery phrase you lose your data and funds"
@@ -166,7 +166,7 @@
    :you-are-all-set                      "You’re all set!"
    :you-are-all-set-description          "Now if you lose your phone you can restore your account and wallet using the recovery phrase."
    :ok-got-it                            "Ok, got it"
-   :backup-recovery-phrase               "Backup Recovery phrase"
+   :backup-recovery-phrase               "Backup recovery phrase"
    :step-i-of-n                          "Step {{step}} of {{number}}"
    :word-n-description                   "In order to check if you have backed up your recovery phrase correctly, enter the word #{{number}} above."
    :word-n                               "Word #{{number}}"
@@ -178,8 +178,8 @@
    :wallet-set-up-signing-phrase         "This is your personal transaction phrase that you’ll use everytime you make a transaction. Make sure to write it down on a piece of paper, store it somewhere, and only confirm transactions when you see these three words."
    :wallet-set-up-confirm-title          "Wrote it down?"
    :wallet-set-up-confirm-description    "You won’t be able to see your 3-word transaction phrase again after this."
-   :wallet-backup-recovery-title         "Backup your Recovery phrase"
-   :wallet-backup-recovery-description   "This will help you to keep your money safe"
+   :wallet-backup-recovery-title         "Backup your recovery phrase"
+   :wallet-backup-recovery-description   "This will help you to keep your assets safe"
 
    ;;make_photo
    :image-source-title                   "Edit picture"
@@ -416,8 +416,8 @@
    :cost-fee                             "Cost/Fee"
    :nonce                                "Nonce"
    :confirmations                        "Confirmations"
-   :confirmations-helper-text            "Please wait for at least 12 confirmations to make sure your transaction is processed securely"
-   :copy-transaction-hash                "Copy transaction hash"
+   :confirmations-helper-text            "Consider transactions complete after 12 confirmations"
+   :copy-transaction-hash                "Copy transaction ID"
    :open-on-etherscan                    "Open on Etherscan.io"
    :incoming                             "Incoming"
    :outgoing                             "Outgoing"
@@ -430,7 +430,7 @@
 
    ;;testfairy warning
    :testfairy-title                      "Warning!"
-   :testfairy-message                    "You are using an app installed from a nightly build. For testing purposes this build includes session recording if wifi connection is used, so all your interactions with this app is saved (as video and logs) and might be used by our development team to investigate possible issues. Saved video/logs do not include your passwords. Recording is done only if the app is installed from a nightly build. Nothing is recorded if the app is installed from PlayStore or TestFlight."
+   :testfairy-message                    "You are using an app installed from a nightly build. If you're connected to WiFi, your interactions with the app will be saved as video and logs. These recordings do not save your passwords. They are used by our development team to investigate possible issues and only occur if the app is install from a nightly build. Nothing is recorded if the app is installed from PlayStore or TestFlight."
 
    ;; wallet
    :wallet                               "Wallet"
@@ -593,7 +593,7 @@
 
    ;; Wallet Send
    :wallet-choose-recipient              "Choose Recipient"
-   :wallet-choose-from-contacts          "Choose From Contacts"
+   :wallet-choose-from-contacts          "Choose from Contacts"
    :wallet-address-from-clipboard        "Use Address From Clipboard"
    :wallet-invalid-address               "Invalid address: \n {{data}}"
    :wallet-invalid-chain-id              "Network does not match: \n {{data}} but current chain is {{chain}}"
@@ -602,7 +602,7 @@
    :wallet-browse-photos                 "Browse Photos"
    :wallet-advanced                      "Advanced"
    :wallet-transaction-fee               "Transaction Fee"
-   :wallet-transaction-fee-details       "Gas limit is the amount of gas to send with your transaction. Increasing this number will not get your transaction processed faster"
+   :wallet-transaction-fee-details       "Gas limit caps the units of gas spent on the transaction. Gas price sets the price per unit of gas. Increasing gas price can make your transaction faster."
    :wallet-transaction-total-fee         "Total Fee"
    :validation-amount-invalid-number     "Amount is not a valid number"
    :validation-amount-is-too-precise     "Amount is too precise. Max number of decimals is {{decimals}}."
@@ -649,7 +649,7 @@
    :network-settings                     "Network settings"
    :offline-messaging                    "Mailserver"
    :offline-messaging-settings           "Mailserver settings"
-   :edit-network-warning                 "Be careful, editing the network data may disable this network for you"
+   :edit-network-warning                 "Be careful! Editing the network data may disable this network for you"
    :delete-network-error                 "Please connect to a different network before deleting this one"
    :connecting-requires-login            "Connecting to another network requires login"
    :close-app-title                      "Warning!"
