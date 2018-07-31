@@ -39,17 +39,18 @@
    :status-console                       "Status Console"
 
    ;;sign in
-   :intro-text                           "Status is an open source decentralized chat and Ethereum browser"
-   :intro-text-description               "Status is built with the help of the community to help you use all the benefits of decentralized web in your mobile phone"
+   :intro-text                           "Status is your gateway to the decentralized web"
+   :intro-text-description               "A community-powered platform to securely chat and transact on the Ethereum blockchain"
    :create-account                       "Create account"
    :already-have-account                 "I already have an account"
-   :creating-your-account                "Creating your account on the blockchain. We can't touch it, no one can, except for you!"
-   :password-placeholder                 "Type your password"
+   :creating-your-account                "Creating your account..."
+   :password-placeholder                 "At least 6 characters"
    :password-placeholder2                "Confirm your password"
    :name-placeholder                     "Display name"
-   :password_error1                      "Password confirmation doesn't match password."
+
+   :password_error1                      "Passwords don't match"
    :password-description                 "You'll need this password to open the app and confirm transactions."
-   :name-description                     "This will be the name everybody who uses Status will see. You can change it later."
+   :name-description                     "Change this anytime in your Profile."
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
 
@@ -64,7 +65,7 @@
    :home                                 "Home"
    :no-recent-chats                      "There are no recent Chats or DApps here yet. Tap the “Plus” button to see the list of Dapps or discover people to chat with."
    :welcome-to-status                    "Welcome to Status"
-   :welcome-to-status-description        "Here you can chat with people in a secure\n private chat, browse and interact with DApps.\n Use the “Plus” icon to explore Status"
+   :welcome-to-status-description        "Tap the plus (+) button to open a DApp or start a secure chat"
 
    ;;chat
    :is-typing                            "is typing"
@@ -166,7 +167,7 @@
    :you-are-all-set                      "You’re all set!"
    :you-are-all-set-description          "Now if you lose your phone you can restore your account and wallet using the recovery phrase."
    :ok-got-it                            "Ok, got it"
-   :backup-recovery-phrase               "Backup Recovery phrase"
+   :backup-recovery-phrase               "Backup recovery phrase"
    :step-i-of-n                          "Step {{step}} of {{number}}"
    :word-n-description                   "In order to check if you have backed up your recovery phrase correctly, enter the word #{{number}} above."
    :word-n                               "Word #{{number}}"
@@ -202,8 +203,8 @@
    :confirmation-code                    (str "Thanks! We've sent you a text message with a confirmation "
                                               "code. Please provide that code to confirm your phone number")
    :incorrect-code                       (str "Sorry the code was incorrect, please enter it again")
-   :phew-here-is-your-passphrase         "Phew, that was hard. Here is your passphrase, *write this down and keep it safe!* You will need it to recover your account."
-   :here-is-your-passphrase              "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
+   :phew-here-is-your-passphrase         "Phew, that was hard. Here is your recovery phrase, *write this down and keep it safe!* You will need it to recover your account."
+   :here-is-your-passphrase              "Here is your recovery phrase, *write this down and keep this safe!* You will need it to recover your account."
    :here-is-your-signing-phrase          "Here is your signing phrase. You will use it to verify your transactions. *Write it down and keep it safe!*"
    :phone-number-required                "Tap here to validate your phone number & I'll find your friends."
    :shake-your-phone                     "Found a bug or have a suggestion? Just ~shake~ your phone!"
@@ -416,8 +417,8 @@
    :cost-fee                             "Cost/Fee"
    :nonce                                "Nonce"
    :confirmations                        "Confirmations"
-   :confirmations-helper-text            "Please wait for at least 12 confirmations to make sure your transaction is processed securely"
-   :copy-transaction-hash                "Copy transaction hash"
+   :confirmations-helper-text            "Consider transactions complete after 12 confirmations."
+   :copy-transaction-hash                "Copy transaction ID"
    :open-on-etherscan                    "Open on Etherscan.io"
    :incoming                             "Incoming"
    :outgoing                             "Outgoing"
@@ -430,7 +431,7 @@
 
    ;;testfairy warning
    :testfairy-title                      "Warning!"
-   :testfairy-message                    "You are using an app installed from a nightly build. For testing purposes this build includes session recording if wifi connection is used, so all your interactions with this app is saved (as video and logs) and might be used by our development team to investigate possible issues. Saved video/logs do not include your passwords. Recording is done only if the app is installed from a nightly build. Nothing is recorded if the app is installed from PlayStore or TestFlight."
+   :testfairy-message                    "You are using an app installed from a nightly build. If you're connected to WiFi, your interactions with the app will be saved as video and logs. These recordings do not save your passwords. They are used by our development team to investigate possible issues and only occur if the app is install from a nightly build. Nothing is recorded if the app is installed from PlayStore or TestFlight."
 
    ;; wallet
    :wallet                               "Wallet"
@@ -576,7 +577,7 @@
    :transactions-filter-type             "Type"
    :transactions-filter-select-all       "Select all"
    :view-transaction-details             "View transaction details"
-   :transaction-description              "Please wait for at least 12 confirmations to make sure your transaction is processed securely"
+   :transaction-description              "Consider your transaction complete after 12 confirmations"
    :transaction-sent                     "Transaction sent"
    :transaction-moved-text               "The transaction will remain in the 'Unsigned' list for the next 5 mins"
    :transaction-moved-title              "Transaction moved"
@@ -593,7 +594,7 @@
 
    ;; Wallet Send
    :wallet-choose-recipient              "Choose Recipient"
-   :wallet-choose-from-contacts          "Choose From Contacts"
+   :wallet-choose-from-contacts          "Choose from Contacts"
    :wallet-address-from-clipboard        "Use Address From Clipboard"
    :wallet-invalid-address               "Invalid address: \n {{data}}"
    :wallet-invalid-chain-id              "Network does not match: \n {{data}} but current chain is {{chain}}"
@@ -602,7 +603,7 @@
    :wallet-browse-photos                 "Browse Photos"
    :wallet-advanced                      "Advanced"
    :wallet-transaction-fee               "Transaction Fee"
-   :wallet-transaction-fee-details       "Gas limit is the amount of gas to send with your transaction. Increasing this number will not get your transaction processed faster"
+   :wallet-transaction-fee-details       "Gas limit is the maximum units of gas you’re willing to spend on this transaction.\n\nGas price is the amount you’re willing to pay per unit of gas. Increasing gas price can help your transaction get processed faster."
    :wallet-transaction-total-fee         "Total Fee"
    :validation-amount-invalid-number     "Amount is not a valid number"
    :validation-amount-is-too-precise     "Amount is too precise. Max number of decimals is {{decimals}}."
@@ -649,7 +650,7 @@
    :network-settings                     "Network settings"
    :offline-messaging                    "Mailserver"
    :offline-messaging-settings           "Mailserver settings"
-   :edit-network-warning                 "Be careful, editing the network data may disable this network for you"
+   :edit-network-warning                 "Be careful! Editing the network data may disable this network for you"
    :delete-network-error                 "Please connect to a different network before deleting this one"
    :connecting-requires-login            "Connecting to another network requires login"
    :close-app-title                      "Warning!"
@@ -670,7 +671,7 @@
    :delete-bootnode                      "Delete bootnode"
 
    :mainnet-is-default-alert-title       "Hello"
-   :mainnet-is-default-alert-text        "Thanks for choosing Status! We are now in Beta, which means new installs are automatically connected to the Mainnet. If you upgraded, you may still need to switch networks, which you can do easily by navigating to your Profile -> Advanced Mode -> Switch Developer Mode on -> Choose your network. Now just have fun! Browse DApps, exchange assets, start your own #chats, and message your friends, all from the world's first decentralised, mobile client for Ethereum.\n\nPlease note that this is a beta release and we advise you that using this app should be done for testing purposes only and you assume the full responsibility for all risks concerning your data and funds."
+   :mainnet-is-default-alert-text        "Thanks for choosing Status! We are now in Beta and new installs are automatically connected to the Mainnet, where real Ether and tokens can be sent and received. If you upgraded from a previous version, you may need to switch networks manually by navigating to your Profile -> Advanced Mode -> Switch Developer Mode on -> Choose your network.\n\nNow your ready browse DApps, exchange assets, start your own #chats, and message your friends, all from the world's first decentralized, mobile client for Ethereum.\n\nPlease note that this is a beta release and you are advised to use this app for testing purposes only. You assume the full responsibility for all risks concerning your data and funds."
 
    :main-networks                        "Main networks"
    :test-networks                        "Test networks"
