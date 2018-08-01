@@ -4,7 +4,6 @@
             [status-im.native-module.core :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.utils.identicon :refer [identicon]]
-            [status-im.utils.random :as random]
             [clojure.string :as str]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
@@ -17,12 +16,11 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.hex :as utils.hex]
             [status-im.constants :as constants]
-            [status-im.transport.message.core :as transport]
             status-im.ui.screens.accounts.create.navigation
-            [status-im.chat.models :as chat.models]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.data-store.accounts :as accounts-store]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]))
 
 ;;;; COFX
 
@@ -173,4 +171,5 @@
    (handlers-macro/merge-fx
     cofx
     (wallet-set-up-passed db modal?)
+    (wallet.settings.models/wallet-autoconfig-tokens)
     (accounts.utils/account-update {:wallet-set-up-passed? true}))))

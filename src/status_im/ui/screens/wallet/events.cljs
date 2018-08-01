@@ -207,12 +207,15 @@
        (assoc-error-message :balance-update err)
        (assoc-in [:wallet :balance-loading?] false))))
 
-(handlers/register-handler-db
+(defn update-token-balance-success [symbol balance {:keys [db]}]
+  {:db (-> db
+           (assoc-in [:wallet :balance symbol] balance)
+           (assoc-in [:wallet :balance-loading?] false))})
+
+(handlers/register-handler-fx
  :update-token-balance-success
- (fn [db [_ symbol balance]]
-   (-> db
-       (assoc-in [:wallet :balance symbol] balance)
-       (assoc-in [:wallet :balance-loading?] false))))
+ (fn [cofx [_ symbol balance]]
+   (update-token-balance-success symbol balance cofx)))
 
 (handlers/register-handler-db
  :update-token-balance-fail
