@@ -47,8 +47,7 @@
           [components/amount-selector {:error         amount-error
                                        :amount        amount
                                        :amount-text   amount-text
-                                       :input-options {:max-length     21
-                                                       :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
+                                       :input-options {:on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                        :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount % symbol decimals])}}
            token]]]
         [bottom-buttons/bottom-buttons styles/bottom-buttons

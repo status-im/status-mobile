@@ -244,8 +244,7 @@
                                                         (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
                                      :amount        amount
                                      :amount-text   amount-text
-                                     :input-options {:max-length     21
-                                                     :on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
+                                     :input-options {:on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
         [advanced-options advanced? transaction modal? scroll]]]
       (if signing?
