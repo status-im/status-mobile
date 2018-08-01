@@ -16,13 +16,18 @@
    :height             56
    :align-self         :stretch
    :align-items        :center
-   :background-color   (if active? colors/gray-lighter colors/white)
-   :margin-top         20})
+   :background-color   (if active? colors/gray-lighter colors/white)})
 
 (defn profile-row-text [color active?]
   {:color       color
    :font-weight (if active? "600" :normal)
    :font-size   16})
+
+(def adv-settings
+  {:justify-content :space-between
+   :flex-direction  :row
+   :align-items     :center
+   :flex            1})
 
 (def profile-photo
   {:border-radius 100
@@ -40,7 +45,7 @@
    :height            45
    :width             240
    :margin-horizontal 50
-   :margin-bottom     20
+   :margin-bottom     48
    :border-radius     8
    :background-color  (colors/alpha colors/blue 0.1)})
 

@@ -86,10 +86,10 @@
       [react/view styles/profile-view
        [profile-badge user]
        [share-contact-code]
-       [react/view {:style (styles/profile-row adv-settings-open?)}
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
-         [react/text {:style (styles/profile-row-text colors/black adv-settings-open?)} (i18n/label :t/advanced-settings)]]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :intro :home)])}
+       [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
+                                   :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
+        [react/view {:style styles/adv-settings}
+         [react/text {:style (styles/profile-row-text colors/black adv-settings-open?)} (i18n/label :t/advanced-settings)]
          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
        [react/view {:style (styles/profile-row false)}
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
