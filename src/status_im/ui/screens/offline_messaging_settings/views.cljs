@@ -7,14 +7,18 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.screens.offline-messaging-settings.styles :as styles]))
 
 (defn- wnode-icon [connected?]
-  [react/view {:style (styles/wnode-icon-container connected?)}
+  [react/view (if platform/desktop?
+                {:style (styles/wnode-icon-container connected?)}
+                (styles/wnode-icon-container connected?))
    [vector-icons/icon :icons/wnode
-    {:style (styles/wnode-icon connected?)}]])
+    (if platform/desktop? {:style (styles/wnode-icon connected?)}
+        (styles/wnode-icon connected?))]])
 
 (defn connect-to-mailserver [id]
   (re-frame/dispatch [:connect-wnode id]))
