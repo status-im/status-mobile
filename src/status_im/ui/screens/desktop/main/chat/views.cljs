@@ -140,19 +140,19 @@
            (if (and group-chat (not outgoing))
              [message-with-name-and-avatar text message]
              [text-only-message text message])
-           [react/view (message.style/delivery-status outgoing)
+           [react/view {:style (message.style/delivery-status outgoing)}
             [message/message-delivery-status message]]])}))))
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
-  (views/letsubs [chat-id* (atom nil)
-                  scroll-ref (atom nil)
-                  scroll-timer (atom nil)
-                  scroll-height (atom nil)]
-    (let [_ (when (or (not @chat-id*) (not= @chat-id* chat-id))
+  (views/letsubs [messages [:get-current-chat-messages-stream]
+                  current-public-key [:get-current-public-key]]
+    (let [chat-id* (atom nil)
+          scroll-ref (atom nil)
+          scroll-timer (atom nil)
+          scroll-height (atom nil)
+          _ (when (or (not @chat-id*) (not= @chat-id* chat-id))
               (reset! chat-id* chat-id)
-              (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
-          messages (re-frame/subscribe [:get-current-chat-messages-stream])
-          current-public-key (re-frame/subscribe [:get-current-public-key])]
+              (js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
       [react/view {:style styles/messages-view}
        [react/scroll-view {:scrollEventThrottle    16
                            :headerHeight styles/messages-list-vertical-padding
@@ -169,9 +169,11 @@
                            :ref                    #(reset! scroll-ref %)}
         [react/view
          (doall
-          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse @messages))]
+          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse messages))]
             ^{:key (or message-id (str type value))}
-            [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
+            [message content (= from current-public-key)
+             (assoc message-obj :group-chat group-chat
+                    :current-public-key current-public-key)]))]]])))
 
 (views/defview chat-text-input []
   (views/letsubs [inp-ref (atom nil)]
