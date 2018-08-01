@@ -17,7 +17,7 @@ def installJSDeps() {
 }
 
 timeout(90) {
-    node ('macos_3') {
+    node ('macos2') {
       def apkUrl = ''
       def ipaUrl = ''
       def testPassed = true
@@ -80,7 +80,7 @@ timeout(90) {
 
         // iOS
         stage('Build (iOS)') {
-          withCredentials([string(credentialsId: 'jenkins_pass2', variable: 'password')]) {
+          withCredentials([string(credentialsId: 'jenkins_pass1', variable: 'password')]) {
           sh ('security unlock-keychain -p ' + password + ' login.keychain')
           sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
           sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
