@@ -81,17 +81,20 @@
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
 (views/defview profile [user]
-  [react/view styles/profile-view
-   [profile-badge user]
-   [share-contact-code]
-   [react/view {:style styles/profile-row}
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :advanced-settings])}
-     [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :t/advanced-settings)]]
-    [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]
-   [react/view {:style styles/profile-row}
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
-     [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-    [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])
+  (views/letsubs [current-view-id [:get :view-id]]
+    (let [adv-settings-open? (= current-view-id :advanced-settings)]
+      [react/view styles/profile-view
+       [profile-badge user]
+       [share-contact-code]
+       [react/view {:style (styles/profile-row adv-settings-open?)}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
+         [react/text {:style (styles/profile-row-text colors/black adv-settings-open?)} (i18n/label :t/advanced-settings)]]
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :intro :home)])}
+         [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
+       [react/view {:style (styles/profile-row false)}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
+         [react/text {:style (styles/profile-row-text colors/red false)} (i18n/label :t/logout)]]
+        [react/view [react/text {:style (styles/profile-row-text colors/gray false)} "V" build/version " (" build/commit-sha ")"]]]])))
 
 (views/defview profile-data []
   (views/letsubs

@@ -9,16 +9,20 @@
    :align-items   :center
    :margin-bottom 16})
 
-(def profile-row
-  {:justify-content   :space-between
-   :flex-direction    :row
-   :margin-horizontal 24
-   :align-self        :stretch
-   :margin-top   40})
+(defn profile-row [active?]
+  {:justify-content    :space-between
+   :flex-direction     :row
+   :padding-horizontal 24
+   :height             56
+   :align-self         :stretch
+   :align-items        :center
+   :background-color   (if active? colors/gray-lighter colors/white)
+   :margin-top         20})
 
-(defn profile-row-text [color]
-  {:color     color
-   :font-size 16})
+(defn profile-row-text [color active?]
+  {:color       color
+   :font-weight (if active? "600" :normal)
+   :font-size   16})
 
 (def profile-photo
   {:border-radius 100
@@ -138,7 +142,7 @@
 (def advanced-settings-title
   {:margin        24
    :font-size     20
-   :font-weight  "600"})
+   :font-weight   "600"})
 
 (def title-separator
   {:height            1
