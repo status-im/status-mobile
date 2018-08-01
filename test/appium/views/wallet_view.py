@@ -72,7 +72,7 @@ class STTAssetText(BaseText):
 class UsdTotalValueText(BaseText):
     def __init__(self, driver):
         super(UsdTotalValueText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='USD']/../android.widget.TextView[1]")
+        self.locator = self.Locator.accessibility_id('total-amount-value-text')
 
 
 class SendTransactionRequestButton(BaseButton):

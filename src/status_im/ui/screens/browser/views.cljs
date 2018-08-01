@@ -96,7 +96,8 @@
                             (re-frame/dispatch [:remove-browser browser-id]))))]
         [toolbar-content url browser error? url-editing?]
         [toolbar.view/actions [{:icon      :icons/wallet
-                                :icon-opts {:color :black}
+                                :icon-opts {:color               :black
+                                            :accessibility-label :wallet-modal-button}
                                 :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}]]]
        [react/view components.styles/flex
         [components.webview-bridge/webview-bridge

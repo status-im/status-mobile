@@ -31,7 +31,7 @@ class TestBrowsing(SingleDeviceTestCase):
         start_new_chat.confirm()
         browsing_view = home_view.get_base_web_view()
         browsing_view.find_text_part('Unable to load page')
-        browsing_view.browser_cross_icon.click()
+        browsing_view.cross_icon.click()
         if home_view.element_by_text('Browser').is_element_displayed():
             pytest.fail('Browser entity is shown for an invalid link')
 
@@ -58,7 +58,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view = home_view.get_base_web_view()
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
-        browsing_view.browser_cross_icon.click()
+        browsing_view.cross_icon.click()
         start_new_chat_view = home_view.plus_button.click()
         start_new_chat_view.open_d_app_button.click()
         start_new_chat_view.element_by_text('Airswap').click()
@@ -75,7 +75,7 @@ class TestBrowsing(SingleDeviceTestCase):
         start_new_chat.enter_url_editbox.set_value('google.com')
         start_new_chat.confirm()
         browsing_view = home_view.get_base_web_view()
-        browsing_view.browser_cross_icon.click()
+        browsing_view.cross_icon.click()
         home_view.get_chat_with_user('Browser').swipe_and_delete()
         home_view.relogin()
         if home_view.get_chat_with_user('Browser').is_element_present(20):

@@ -53,7 +53,8 @@
         (toolbar/nav-back-count {:home? true})
         [toolbar-content/toolbar-content-view]
         [toolbar/actions [{:icon      :icons/wallet
-                           :icon-opts {:color :black}
+                           :icon-opts {:color               :black
+                                       :accessibility-label :wallet-modal-button}
                            :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}
                           {:icon      :icons/options
                            :icon-opts {:color               :black

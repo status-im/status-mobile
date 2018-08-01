@@ -222,6 +222,23 @@ class ProgressBar(BaseElement):
         self.locator = self.Locator.xpath_selector(parent_locator + '//android.widget.ProgressBar')
 
 
+class WalletModalButton(BaseButton):
+    def __init__(self, driver):
+        super(WalletModalButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('wallet-modal-button')
+
+    def navigate(self):
+        from views.wallet_view import WalletView
+        return WalletView(self.driver)
+
+
+class CrossIcon(BaseButton):
+
+    def __init__(self, driver):
+        super(CrossIcon, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -246,11 +263,14 @@ class BaseView(object):
         self.discard_button = DiscardButton(self.driver)
         self.confirm_button = ConfirmButton(self.driver)
         self.connection_status = ConnectionStatusText(self.driver)
+        self.cross_icon = CrossIcon(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
 
         self.test_fairy_warning = TestFairyWarning(self.driver)
+
+        self.wallet_modal_button = WalletModalButton(self.driver)
 
         self.element_types = {
             'base': BaseElement,

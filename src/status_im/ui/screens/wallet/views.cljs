@@ -38,7 +38,8 @@
     [toolbar/content-wrapper]
     [toolbar/actions
      [{:icon      (if modal-history? :icons/wallet :icons/transaction-history)
-       :icon-opts {:color :white}
+       :icon-opts {:color               :white
+                   :accessibility-label (if modal-history? :wallet-modal-button :transaction-history-button)}
        :handler #(re-frame/dispatch [:set-in [:wallet :modal-history?] (not modal-history?)])}]]]])
 
 (defn- total-section [value currency]

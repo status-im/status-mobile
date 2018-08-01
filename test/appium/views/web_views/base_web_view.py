@@ -1,5 +1,8 @@
-from views.base_view import *
+import time
 import pytest
+
+from views.base_element import BaseElement, BaseEditBox, BaseButton
+from views.base_view import BaseView
 
 
 class ProgressBarIcon(BaseElement):
@@ -7,6 +10,13 @@ class ProgressBarIcon(BaseElement):
     def __init__(self, driver):
         super(ProgressBarIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.ProgressBar")
+
+
+class WebLinkEditBox(BaseEditBox):
+
+    def __init__(self, driver):
+        super(WebLinkEditBox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
 
 
 class BackToHomeButton(BaseButton):
@@ -46,17 +56,6 @@ class AlwaysButton(BaseButton):
         self.locator = self.Locator.text_part_selector('ALWAYS')
 
 
-class BrowserCrossIcon(BaseButton):
-
-    def __init__(self, driver):
-        super(BrowserCrossIcon, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
-
-    def navigate(self):
-        from views.home_view import HomeView
-        return HomeView(self.driver)
-
-
 class URLEditBoxLockIcon(BaseEditBox):
 
     def __init__(self, driver):
@@ -80,7 +79,6 @@ class BaseWebView(BaseView):
 
         self.web_view_browser = WebViewBrowserButton(self.driver)
         self.always_button = AlwaysButton(self.driver)
-        self.browser_cross_icon = BrowserCrossIcon(self.driver)
         self.browser_refresh_page_button = BrowserRefreshPageButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
