@@ -205,7 +205,6 @@ dependencies {
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
     implementation project(':react-native-http-bridge')
-    implementation project(':nfc-react-native')
     implementation project(':instabug-reactnative')
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')

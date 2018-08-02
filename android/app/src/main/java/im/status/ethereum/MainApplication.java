@@ -19,7 +19,6 @@ import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
-import es.tiarg.nfcreactnative.NfcReactNativePackage;
 import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import im.status.ethereum.module.StatusPackage;
 import io.realm.react.RealmReactPackage;
@@ -61,7 +60,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new SvgPackage(),
                     new FIRMessagingPackage(),
                     new HttpServerReactPackage(),
-                    new NfcReactNativePackage(),
                     new SplashScreenReactPackage(),
                     statusPackage,
                     new RealmReactPackage(),

@@ -18,7 +18,6 @@
 (def image-crop-picker      (js/require "react-native-image-crop-picker"))
 (def image-resizer          (js/require "react-native-image-resizer"))
 (def instabug               (js/require "instabug-reactnative"))
-(def nfc                    (js/require "nfc-react-native"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-fcm       (js/require "react-native-fcm"))
 (def snoopy                 (js/require "rn-snoopy"))

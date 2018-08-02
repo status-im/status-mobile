@@ -26,7 +26,6 @@
     "identicon.js": "https://github.com/status-im/identicon.js.git",
     "instabug-reactnative": "2.12.0",
     "level-filesystem": "1.2.0",
-    "nfc-react-native": "https://github.com/status-im/nfc-react-native.git",
     "process": "0.11.10",
     "prop-types": "15.6.0",
     "punycode": "1.4.1",
