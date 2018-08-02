@@ -89,14 +89,14 @@ parallel (
           }
 
           stage('Prepare and create MacOS Bundle') {
-            sh ('cd ' + packageFolder + ' && ../scripts/download-package-files.sh "StatusIm.app.zip" "1Vkb6MD3nsmT02Az6rRRZywQSwCz1ZN9V" && unzip ./StatusIm.app.zip')
+            sh ('cd ' + packageFolder + ' && git clone git clone https://github.com/vkjr/StatusAppFiles.git && unzip StatusAppFiles/StatusIm.app.zip')
             sh ('cp -r ' + packageFolder + '/assets/share/assets ' + packageFolder +'/StatusIm.app/Contents/MacOs')
             sh ('chmod +x ' + packageFolder + '/StatusIm.app/Contents/MacOs/ubuntu-server')
             sh ('cp ./desktop/bin/StatusIm ' + packageFolder +'/StatusIm.app/Contents/MacOs')
 
             sh ('export PATH=/Users/administrator/qt/5.9.1/clang_64/bin:$PATH && cd ' + packageFolder + ' && macdeployqt StatusIm.app -verbose=1 -dmg -qmldir="' + scriptPath + '/node_modules/react-native/ReactQt/runtime/src/qml/"')
 
-            sh 'rm -f StatusIm.app.zip'
+            sh 'rm -rf StatusAppFiles'
           }
 
           stage('Archive built artifact') {
