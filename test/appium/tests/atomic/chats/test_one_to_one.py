@@ -400,6 +400,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
+    @marks.skip
     @marks.testrail_id(2781)
     def test_timestamp_in_chats(self):
         self.create_drivers(2)

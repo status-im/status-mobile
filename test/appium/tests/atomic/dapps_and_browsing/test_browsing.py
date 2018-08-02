@@ -1,5 +1,5 @@
 import pytest
-from tests import marks
+from tests import marks, connection_not_secure_text, connection_is_secure_text
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -41,11 +41,30 @@ class TestBrowsing(SingleDeviceTestCase):
         home_view = sign_in.create_user()
         start_new_chat = home_view.plus_button.click()
         start_new_chat.open_d_app_button.click()
-        start_new_chat.enter_url_editbox.set_value('google.com')
+        start_new_chat.enter_url_editbox.set_value('www.bbc.com')
         start_new_chat.confirm()
         browsing_view = home_view.get_base_web_view()
-        browsing_view.find_full_text("Connection is not proven secure. Make sure you trust this site before signing "
-                                     "transactions or entering personal data.")
+        browsing_view.url_edit_box_lock_icon.click()
+        browsing_view.find_full_text(connection_not_secure_text)
+
+    @marks.testrail_id(3814)
+    def test_connection_is_secure(self):
+        sign_in = SignInView(self.driver)
+        home_view = sign_in.create_user()
+        start_new_chat = home_view.plus_button.click()
+        start_new_chat.open_d_app_button.click()
+        start_new_chat.enter_url_editbox.set_value('https://www.bbc.com')
+        start_new_chat.confirm()
+        browsing_view = home_view.get_base_web_view()
+        browsing_view.url_edit_box_lock_icon.click()
+        browsing_view.find_full_text(connection_is_secure_text)
+        browsing_view.browser_cross_icon.click()
+        start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.open_d_app_button.click()
+        start_new_chat_view.element_by_text('Airswap').click()
+        start_new_chat_view.open_button.click()
+        browsing_view.url_edit_box_lock_icon.click()
+        browsing_view.find_full_text(connection_is_secure_text)
 
     @marks.testrail_id(3731)
     def test_swipe_to_delete_browser_entry(self):

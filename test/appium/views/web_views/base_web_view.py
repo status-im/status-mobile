@@ -9,13 +9,6 @@ class ProgressBarIcon(BaseElement):
         self.locator = self.Locator.xpath_selector("//android.widget.ProgressBar")
 
 
-class WebLinkEditBox(BaseEditBox):
-
-    def __init__(self, driver):
-        super(WebLinkEditBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
-
-
 class BackToHomeButton(BaseButton):
     def __init__(self, driver):
         super(BackToHomeButton, self).__init__(driver)
@@ -64,6 +57,14 @@ class BrowserCrossIcon(BaseButton):
         return HomeView(self.driver)
 
 
+class URLEditBoxLockIcon(BaseEditBox):
+
+    def __init__(self, driver):
+        super(URLEditBoxLockIcon, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='wallet-modal-button']/../preceding-sibling::*[1]//*[@content-desc='icon']")
+
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -72,7 +73,7 @@ class BaseWebView(BaseView):
 
         self.progress_bar_icon = ProgressBarIcon(self.driver)
 
-        self.web_link_edit_box = WebLinkEditBox(self.driver)
+        self.url_edit_box_lock_icon = URLEditBoxLockIcon(self.driver)
         self.back_to_home_button = BackToHomeButton(self.driver)
         self.browser_previous_page_button = BrowserPreviousPageButton(self.driver)
         self.browser_next_page_button = BrowserNextPageButton(self.driver)
