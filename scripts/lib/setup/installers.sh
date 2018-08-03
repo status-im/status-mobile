@@ -15,7 +15,15 @@ function install_and_setup_package_manager() {
     install_homebrew_if_needed
     brew_tap "caskroom/cask"
   elif is_linux; then
-    # Linux
+
+    #increase watches
+    echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches
+    watchman watch-del-all
+    watchman shutdown-server
+
+    echo "fs.inotify.max_user_watches = 524288" | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p --system
+
     buildtools=(
       autoconf
       automake
@@ -29,6 +37,7 @@ function install_and_setup_package_manager() {
       python-dev
       wget
       unzip
+      rlwrap
     )
 
     for package in "${buildtools[@]}"; do
@@ -58,6 +67,7 @@ function install_java8() {
        apt update
        echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
        apt install -y oracle-java8-installer
+       apt install oracle-java8-set-default
 EOF
     else
       already_installed "java8"
@@ -170,9 +180,25 @@ function install_android_sdk() {
 }
 
 function install_android_sdk_linux() {
-  cecho "@b@yellow[[+ Skipping Android SDK setup, not implemented on Linux]]"
-
-  return 1
+  if [ -e ~/Android ]; then
+    cecho "@green[[+ Skipping Android SDK setup- the ~/Android already exists ]]"
+  else
+    mkdir -p ~/Android/Sdk
+    cd ~/Android/Sdk
+    wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+    unzip sdk-tools-linux-3859397.zip
+    export ANDROID_HOME=$(pwd)
+    echo "export ANDROID_HOME=$(pwd)" >> ~/.profile
+    $ANDROID_HOME/tools/bin/sdkmanager --no_https "system-images;android-26;google_apis;x86" "platforms;android-26" "platform-tools" "emulator" "ndk-bundle"
+    $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --name Status --device pixel_xl --package system-images\;android-26\;google_apis\;x86 --tag google_apis
+    export PATH=$ANDROID_HOME/platform-tools:$PATH
+    echo 'export PATH=$ANDROID_HOME/platform-tools:$PATH' >> ~/.profile
+    export PATH=$ANDROID_HOME/tools:$PATH
+    echo 'export PATH=$ANDROID_HOME/tools:$PATH' >> ~/.profile
+    export ANDROID_SDK_ROOT=$ANDROID_HOME
+    echo 'export ANDROID_SDK_ROOT=$ANDROID_HOME' >> ~/.profile
+    $ANDROID_HOME/tools/emulator -avd Status -skin "1440x2560"
+  fi
 }
 
 function install_maven() {
@@ -319,6 +345,30 @@ function use_android_sdk() {
 }
 
 function install_android_ndk() {
+  if is_macos; then
+    install_android_ndk_mac
+  elif is_linux; then
+    install_android_ndk_linux
+  fi
+}
+
+function install_android_ndk_linux() {
+  if [ -e ~/Android/android-ndk-r10e/ ]; then
+    cecho "@green[[+ Skipping Android NDK setup- the ~/Android/android-ndk-r10e/ already exists ]]"
+  else
+    cd ~/Android/
+    wget http://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+    unzip android-ndk-r10e-linux-x86_64.zip
+    cd android-ndk-r10e/
+    export ANDROID_NDK=$(pwd)
+    echo "export ANDROID_NDK=$(pwd)" >> ~/.profile
+    export ANDROID_NDK_HOME=$(pwd)
+    echo "export ANDROID_NDK_HOME=$(pwd)" >> ~/.profile
+    echo "ndk.dir=$(pwd)" >> ~/android/local.properties
+   fi
+}
+
+function install_android_ndk_mac() {
   if grep -Fq "ndk.dir" $_localPropertiesPath; then
     cecho "@green[[Android NDK already declared.]]"
   else
