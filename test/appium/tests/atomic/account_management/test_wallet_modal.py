@@ -23,7 +23,8 @@ class TestWalletModal(SingleDeviceTestCase):
         wallet_modal = chat.wallet_modal_button.click()
         if wallet_modal.address_text.text != '0x' + user['address']:
             self.errors.append('Wallet address is not shown in wallet modal')
-        if wallet_modal.get_usd_total_value() != usd_value:
+        modal_usd_value = wallet_modal.get_usd_total_value()
+        if modal_usd_value > usd_value * 1.001 or modal_usd_value < usd_value * 0.999:
             self.errors.append('Total value in USD is not correct in wallet modal')
         if wallet_modal.get_eth_value() != eth_value:
             self.errors.append('ETH value is not correct in wallet modal')
@@ -51,7 +52,8 @@ class TestWalletModal(SingleDeviceTestCase):
         wallet_modal = start_new_chat.wallet_modal_button.click()
         if wallet_modal.address_text.text != '0x' + user['address']:
             self.errors.append('Wallet address is not shown in wallet modal')
-        if wallet_modal.get_usd_total_value() != usd_value:
+        modal_usd_value = wallet_modal.get_usd_total_value()
+        if modal_usd_value > usd_value * 1.001 or modal_usd_value < usd_value * 0.999:
             self.errors.append('Total value in USD is not correct in wallet modal')
         if wallet_modal.get_eth_value() != eth_value:
             self.errors.append('ETH value is not correct in wallet modal')
