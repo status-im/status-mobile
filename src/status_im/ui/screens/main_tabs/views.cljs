@@ -7,7 +7,7 @@
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.components.styles :as common.styles]
             [status-im.ui.screens.home.views :as home]
-            [status-im.ui.screens.wallet.views :as wallet]
+            [status-im.ui.screens.wallet.main.views :as wallet.main]
             [status-im.ui.screens.main-tabs.styles :as styles]
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.components.common.common :as components.common]))
@@ -73,7 +73,7 @@
 
       (case view-id
         :home [home/home]
-        :wallet [wallet/wallet]
+        :wallet [wallet.main/wallet]
         :my-profile [profile.user/my-profile])
 
       (when tab-bar-visible?

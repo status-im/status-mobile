@@ -25,7 +25,7 @@
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
-            [status-im.ui.screens.wallet.views :refer [wallet-modal]]
+            [status-im.ui.screens.wallet.main.views :as wallet.main]
             [status-im.ui.screens.wallet.collectibles.views :refer [collectibles-list]]
             [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal sign-message-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
@@ -104,7 +104,7 @@
   (case modal-view
     :qr-scanner qr-scanner
     :profile-qr-viewer profile.user/qr-viewer
-    :wallet-modal wallet-modal
+    :wallet-modal wallet.main/wallet-modal
     :wallet-transactions-filter wallet-transactions/filter-history
     :wallet-settings-assets wallet-settings/manage-assets
     :wallet-send-transaction-modal send-transaction-modal

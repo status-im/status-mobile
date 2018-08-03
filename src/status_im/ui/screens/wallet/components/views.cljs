@@ -12,10 +12,8 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.wallet.components :as components]
             [status-im.ui.screens.wallet.components.styles :as styles]
             [status-im.ui.screens.wallet.choose-recipient.views :as choose-recipient]
-            [status-im.ui.screens.wallet.views :as wallet]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.ethereum.core :as ethereum]
@@ -23,7 +21,87 @@
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.utils.utils :as utils]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]))
+
+;; Wallet tab has a different coloring scheme (dark) that forces color changes (background, text)
+;; It might be replaced by some theme mechanism
+
+(defn text-input [props text]
+  [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/white-lighter-transparent
+                                            :selection-color        colors/white
+                                            :style                  {:color          colors/white
+                                                                     :font-size      15
+                                                                     :height         52
+                                                                     :letter-spacing -0.2}}
+                                           props)
+   text])
+
+(def default-action (actions/back-white actions/default-handler))
+
+(defn- toolbar
+  ([title] (toolbar {} title))
+  ([props title] (toolbar props default-action title))
+  ([props action title] (toolbar props action title nil))
+  ([props action title options]
+   [toolbar/toolbar (utils.core/deep-merge {:style wallet.styles/toolbar}
+                                           props)
+    [toolbar/nav-button action]
+    [toolbar/content-title {:color :white}
+     title]
+    options]))
+
+(defn- top-view [avoid-keyboard?]
+  (if avoid-keyboard?
+    react/keyboard-avoiding-view
+    react/view))
+
+(defn simple-screen
+  ([toolbar content] (simple-screen nil toolbar content))
+  ([{:keys [avoid-keyboard? status-bar-type]} toolbar content]
+   [(top-view avoid-keyboard?) {:flex 1 :background-color colors/blue}
+    [status-bar/status-bar {:type (or status-bar-type :wallet)}]
+    toolbar
+    content]))
+
+(defn- cartouche-content [{:keys [disabled?]} content]
+  [react/view {:style (styles/cartouche-content-wrapper disabled?)}
+   [react/view {:flex 1}
+    content]])
+
+(defn cartouche [{:keys [disabled? on-press icon icon-opts] :or {icon :icons/forward} :as m} header content]
+  [react/view {:style styles/cartouche-container}
+   [react/text {:style styles/cartouche-header}
+    header]
+   (if (or disabled? (nil? on-press))
+     [cartouche-content m content]
+     [react/touchable-highlight {:on-press on-press}
+      [react/view
+       [cartouche-content m
+        (if-not (true? disabled?)
+          [react/view styles/cartouche-icon-wrapper
+           [react/view {:flex 1} ;; Let content shrink if needed
+            content]
+           [vector-icons/icon icon (merge {:color :white} icon-opts)]]
+          content)]]])])
+
+(defn- cartouche-primary-text [s]
+  [react/text {:style styles/cartouche-primary-text}
+   s])
+
+(defn- cartouche-secondary-text [s]
+  [react/text {:style styles/cartouche-secondary-text}
+   s])
+
+(defn cartouche-text-content [primary secondary]
+  [react/view styles/cartouche-text-wrapper
+   [cartouche-primary-text primary]
+   [cartouche-secondary-text secondary]])
 
 (defn view-asset [symbol]
   [react/view
@@ -54,8 +132,8 @@
 
 (views/defview assets [type]
   (views/letsubs [assets [:wallet/transferrable-assets-with-amount]]
-    [components/simple-screen
-     [components/toolbar (i18n/label :t/wallet-assets)]
+    [simple-screen
+     [toolbar (i18n/label :t/wallet-assets)]
      [react/view {:style (assoc components.styles/flex :background-color :white)}
       [list/flat-list {:default-separator? true
                        :data               assets
@@ -79,7 +157,7 @@
                   network  [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [react/view
-       [components/cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+       [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
         (i18n/label :t/wallet-asset)
         [react/view {:style               styles/asset-content-container
                      :accessibility-label :choose-asset-button}
@@ -129,8 +207,8 @@
 
 (views/defview recent-recipients []
   (views/letsubs [contacts [:all-added-people-contacts]]
-    [components/simple-screen
-     [components/toolbar (i18n/label :t/recipient)]
+    [simple-screen
+     [toolbar (i18n/label :t/recipient)]
      [react/view styles/recent-recipients
       [list/flat-list {:data      contacts
                        :key-fn    :address
@@ -139,18 +217,18 @@
 (defn contact-code []
   (let [content (reagent/atom nil)]
     (fn []
-      [components/simple-screen {:avoid-keyboard? true}
-       [components/toolbar {:style wallet.styles/toolbar-bottom-line}
-        components/default-action
+      [simple-screen {:avoid-keyboard? true}
+       [toolbar {:style wallet.styles/toolbar-bottom-line}
+        default-action
         (i18n/label :t/recipient)]
        [react/view components.styles/flex
-        [components/cartouche {}
+        [cartouche {}
          (i18n/label :t/recipient)
-         [components/text-input {:multiline           true
-                                 :style               styles/contact-code-text-input
-                                 :placeholder         (i18n/label :t/recipient-code)
-                                 :on-change-text      #(reset! content %)
-                                 :accessibility-label :recipient-address-input}]]
+         [text-input {:multiline           true
+                      :style               styles/contact-code-text-input
+                      :placeholder         (i18n/label :t/recipient-code)
+                      :on-change-text      #(reset! content %)
+                      :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
          [button/button {:disabled?    (string/blank? @content)
                          :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content :code])
@@ -163,10 +241,10 @@
 (defn- request-camera-permissions []
   (re-frame/dispatch [:request-permissions {:permissions [:camera]
                                             :on-allowed  #(re-frame/dispatch [:navigate-to :recipient-qr-code])
-                                            :on-denied   #(utils/set-timeout
+                                            :on-denied   #(utils.utils/set-timeout
                                                            (fn []
-                                                             (utils/show-popup (i18n/label :t/error)
-                                                                               (i18n/label :t/camera-access-error)))
+                                                             (utils.utils/show-popup (i18n/label :t/error)
+                                                                                     (i18n/label :t/camera-access-error)))
                                                            50)}]))
 
 (defn- on-choose-recipient [contact-only?]
@@ -181,10 +259,10 @@
                                       :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request?]}]
-  [components/cartouche {:on-press  #(on-choose-recipient contact-only?)
-                         :disabled? disabled?
-                         :icon      :icons/dots-horizontal
-                         :icon-opts {:accessibility-label :choose-contact-button}}
+  [cartouche {:on-press  #(on-choose-recipient contact-only?)
+              :disabled? disabled?
+              :icon      :icons/dots-horizontal
+              :icon-opts {:accessibility-label :choose-contact-button}}
    (i18n/label :t/wallet-choose-recipient)
    [react/view {:accessibility-label :choose-recipient-button}
     (if name
@@ -195,7 +273,7 @@
                      {:keys [symbol decimals]}]
   [react/view {:style               components.styles/flex
                :accessibility-label :specify-amount-button}
-   [components/text-input
+   [text-input
     (merge
      input-options
      ;; We only auto-correct and prettify user's input when it is valid and positive.
@@ -214,7 +292,7 @@
 
 (defn amount-selector [{:keys [error disabled?] :as m} token]
   [react/view
-   [components/cartouche {:disabled? disabled?}
+   [cartouche {:disabled? disabled?}
     (i18n/label :t/amount)
     [amount-input m token]]
    (when error

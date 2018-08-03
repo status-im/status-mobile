@@ -6,7 +6,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.wallet.components :as wallet.components]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.onboarding.setup.styles :as styles]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]

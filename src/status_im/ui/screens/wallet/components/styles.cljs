@@ -3,6 +3,46 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as styles]))
 
+;; Components
+
+(def cartouche-container
+  {:flex              1
+   :margin-top        16
+   :margin-horizontal 16})
+
+(def cartouche-header
+  {:color colors/white})
+
+(defn cartouche-content-wrapper [disabled?]
+  (merge
+   {:flex-direction :row
+    :margin-top     8
+    :border-radius  styles/border-radius
+    :padding-left   14
+    :padding-right  8}
+   (if disabled?
+     {:border-color colors/white-light-transparent
+      :border-width 1}
+     {:background-color colors/white-transparent})))
+
+(def cartouche-icon-wrapper
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
+
+(def cartouche-text-wrapper
+  {:flex-direction     :row
+   :justify-content    :space-between
+   :padding-horizontal 15
+   :padding-vertical   15})
+
+(def cartouche-primary-text
+  {:color colors/white})
+
+(def cartouche-secondary-text
+  {:color colors/white-transparent})
+
 (def text-content
   {:color colors/white})
 

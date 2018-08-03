@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.views
+(ns status-im.ui.screens.wallet.main.views
   (:require-macros [status-im.utils.views :as views])
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
@@ -8,7 +8,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
-            [status-im.ui.screens.wallet.styles :as styles]
+            [status-im.ui.screens.wallet.styles :as wallet.styles]
+            [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.utils.money :as money]
             [status-im.ui.components.toolbar.actions :as action]
@@ -20,7 +21,7 @@
             [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
 
 (defn toolbar-view []
-  [toolbar/toolbar {:style styles/toolbar :flat? true}
+  [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
    nil
    [toolbar/content-wrapper]
    [toolbar/actions
@@ -33,7 +34,7 @@
 (defn toolbar-modal [modal-history?]
   [react/view
    [status-bar.view/status-bar {:type :modal-wallet}]
-   [toolbar/toolbar {:style styles/toolbar :flat? true}
+   [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
     [toolbar/nav-button (action/close-white action/default-handler)]
     [toolbar/content-wrapper]
     [toolbar/actions

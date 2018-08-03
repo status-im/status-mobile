@@ -15,7 +15,7 @@
             [status-im.ui.screens.wallet.request.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.wallet.components :as comp]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
@@ -31,8 +31,8 @@
                   {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
                   scroll (atom nil)]
     (let [{:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [comp/simple-screen {:avoid-keyboard? true}
-       [comp/toolbar (i18n/label :t/new-request)]
+      [wallet.components/simple-screen {:avoid-keyboard? true}
+       [wallet.components/toolbar (i18n/label :t/new-request)]
        [react/view components.styles/flex
         [common/network-info {:text-color :white}]
         [react/scroll-view {:ref #(reset! scroll %) :keyboardShouldPersistTaps :always}
@@ -70,9 +70,9 @@
 (views/defview request-transaction []
   (views/letsubs [address-hex       [:get-current-account-hex]
                   chain-id          [:get-network-id]]
-    [comp/simple-screen
-     [comp/toolbar {}
-      comp/default-action
+    [wallet.components/simple-screen
+     [wallet.components/toolbar {}
+      wallet.components/default-action
       (i18n/label :t/receive)
       [toolbar/actions [{:icon      :icons/share
                          :icon-opts {:color               :white

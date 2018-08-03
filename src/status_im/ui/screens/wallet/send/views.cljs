@@ -15,7 +15,7 @@
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]
             [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.ui.screens.wallet.components :as wallet.components]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.send.animations :as send.animations]
             [status-im.ui.screens.wallet.send.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
