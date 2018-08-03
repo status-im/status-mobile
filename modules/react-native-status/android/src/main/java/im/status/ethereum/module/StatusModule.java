@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +31,8 @@ import java.util.concurrent.Executors;
 import org.json.JSONObject;
 import org.json.JSONException;
 import com.instabug.library.Instabug;
+
+import javax.annotation.Nullable;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
@@ -43,6 +46,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private boolean debug;
     private boolean devCluster;
     private String logLevel;
+    private ReactApplicationContext reactContext;
 
     StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
         super(reactContext);
@@ -52,6 +56,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.debug = debug;
         this.devCluster = devCluster;
         this.logLevel = logLevel;
+        this.reactContext = reactContext;
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -703,7 +708,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Log.d(TAG, "AppStateChange: " + type);
         Statusgo.AppStateChange(type);
     }
-
+    
     private static String uniqueID = null;
     private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
 
@@ -722,4 +727,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
         callback.invoke(uniqueID);
     }
+
+  private Boolean is24Hour() {
+    return android.text.format.DateFormat.is24HourFormat(this.reactContext.getApplicationContext());
+  }
+
+  @Override
+  public @Nullable
+  Map<String, Object> getConstants() {
+    HashMap<String, Object> constants = new HashMap<String, Object>();
+
+    constants.put("is24Hour", this.is24Hour());
+    return constants;
+  }
 }

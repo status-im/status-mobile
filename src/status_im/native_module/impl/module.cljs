@@ -154,3 +154,7 @@
      status
      (fn [UUID]
        (callback (string/upper-case UUID))))))
+
+(defn is24Hour []
+  (when status
+    (.-is24Hour status)))

@@ -65,3 +65,6 @@
 
 (defn get-device-UUID [callback]
   (native-module/get-device-UUID callback))
+
+(defn is24Hour []
+  (native-module/is24Hour))

@@ -5,6 +5,7 @@
                                       formatter
                                       unparse]]
             [status-im.i18n :refer [label label-pluralize]]
+            [status-im.native-module.core :as status]
             [goog.string :as gstring]
             goog.string.format
             goog.i18n.DateTimeFormat
@@ -39,16 +40,11 @@
         "a")))
 
 ;; returns is24Hour from device or from given locale symbols
-;; when device-info module is not available (ie. desktop) returns from the given locale
-;
-; TODO integrate with native module. example:
-; (defn- is24Hour [locsym]
-;   (if rn/device-info
-;     (.is24Hour rn/device-info)
-;     (is24Hour-locsym locsym)))
-
+;; whenever we get non-nil value use it, else calculate it from the given locale symbol
 (defn- is24Hour [locsym]
-  (is24Hour-locsym locsym))
+  (if-some [fromdev (status/is24Hour)]
+    fromdev
+    (is24Hour-locsym locsym)))
 
 ;; time formats 
 (defn- short-time-format [locsym] (if (is24Hour locsym) "HH:mm" "h:mm a"))

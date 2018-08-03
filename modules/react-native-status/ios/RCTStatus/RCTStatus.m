@@ -398,4 +398,17 @@ RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
     return;
 }
 
+- (bool) is24Hour
+{
+    NSString *format = [NSDateFormatter dateFormatFromTemplate:@"j" options:0 locale:[NSLocale currentLocale]];
+    return ([format rangeOfString:@"a"].location == NSNotFound);
+}
+
+- (NSDictionary *)constantsToExport
+{
+    return @{
+             @"is24Hour": @(self.is24Hour),
+             };
+}
+
 @end
