@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.ui.screens.accounts.models :as accounts.models]
             [status-im.i18n :as i18n]
             [status-im.transport.core :as transport]
             [status-im.models.mailserver :as models.mailserver]
