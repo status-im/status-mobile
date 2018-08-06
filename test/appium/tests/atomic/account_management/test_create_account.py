@@ -50,10 +50,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not home.welcome_image.is_element_displayed():
             self.errors.append('Welcome image is not shown')
         for text in ['Welcome to Status',
-                     'Here you can chat with people in a secure\n'
-                     ' private chat, browse and interact with DApps.\n'
-                     ' Use the “Plus” icon to explore Status',
-                     ]:
+                     'Tap the plus (+) button to get started']:
             if not home.element_by_text(text).is_element_displayed():
                 self.errors.append("'%s' text is not shown" % text)
         home.profile_button.click()
@@ -70,7 +67,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.create_account_button.click()
         sign_in.password_input.set_value('12345')
 
-        mismatch_error = "Password confirmation doesn't match password"
+        mismatch_error = "Passwords don't match"
 
         sign_in.next_button.click()
         if sign_in.confirm_password_input.is_element_displayed():

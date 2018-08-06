@@ -45,6 +45,12 @@ def pytest_addoption(parser):
                      action='store',
                      default=False,
                      help='boolean; For creating testrail report per run')
+    parser.addoption('--network',
+                     action='store',
+                     default='ropsten',
+                     help='string; ropsten or rinkeby')
+
+    # message reliability
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
@@ -95,7 +101,13 @@ def pytest_configure(config):
                                                  if '.apk' in i]])[0]
         if is_master(config):
             if config.getoption('testrail_report'):
-                testrail_report.add_run(test_suite_data.apk_name)
+                pr_number = config.getoption('pr_number')
+                if pr_number:
+                    run_number = len(testrail_report.get_runs(pr_number)) + 1
+                    run_name = 'PR-%s run #%s' % (pr_number, run_number)
+                else:
+                    run_name = test_suite_data.apk_name
+                testrail_report.add_run(run_name)
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
                     if 'http' in config.getoption('apk'):

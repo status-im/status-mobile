@@ -74,13 +74,16 @@ timeout(90) {
         }
 
         stage('Build (iOS)') {
-          withCredentials([string(credentialsId: 'jenkins_pass', variable: 'password')]) {
-            sh ('plutil -replace CFBundleShortVersionString  -string ' + version + ' ios/StatusIm/Info.plist')
-            sh ('plutil -replace CFBundleVersion  -string ' + build_no + ' ios/StatusIm/Info.plist')
-            sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
-            sh ('security unlock-keychain -p ' + password + ' login.keychain')
-            sh 'xcodebuild -exportArchive -exportPath status_appstore -archivePath status.xcarchive -exportOptionsPlist ~/archive-release.plist'
-            sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
+          withCredentials([
+            string(credentialsId: 'jenkins_pass', variable: 'password')
+          ]) {
+            sh "plutil -replace CFBundleShortVersionString  -string ${version} ios/StatusIm/Info.plist"
+            sh "plutil -replace CFBundleVersion -string ${build_no} ios/StatusIm/Info.plist"
+            env.RCT_NO_LAUNCH_PACKAGER = true
+            sh 'xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
+            sh "security unlock-keychain -p ${password} login.keychain"
+            sh 'xcodebuild -exportArchive -exportPath status_appstore -archivePath status.xcarchive -exportOptionsPlist ios/archive-release.plist'
+            sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ios/archive-develop.plist'
           }
         }
 
