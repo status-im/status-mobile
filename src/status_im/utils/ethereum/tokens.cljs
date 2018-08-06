@@ -425,6 +425,14 @@
                     :symbol   :MDS
                     :decimals 18
                     :address  "0x57cc9b83730e6d22b224e9dc3e370967b44a2de0"}])
+
+   :rinkeby
+   (resolve-icons :rinkeby
+                  [{:name     "Moksha Coin"
+                    :symbol   :MOKSHA
+                    :decimals 18
+                    :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}])
+
    :custom []})
 
 (defn tokens-for [chain]

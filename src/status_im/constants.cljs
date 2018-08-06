@@ -147,7 +147,8 @@
 
 (defn default-account-settings []
   {:wallet {:visible-tokens {:testnet #{:STT :ATT}
-                             :mainnet #{:SNT}}}})
+                             :mainnet #{:SNT}
+                             :rinkeby #{:MOKSHA}}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}
