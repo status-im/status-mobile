@@ -133,14 +133,30 @@
                              :name    "Status mailserver F"
                              :password inbox-password
                              :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}
-   :rinkeby {"mailserver-a" {:id     "mailserver-a"
-                             :name   "Status mailserver A"
+   :rinkeby {"mailserver-a" {:id      "mailserver-a" ;mail-01.do-ams3.eth.beta
+                             :name    "Status mailserver A"
                              :password inbox-password
-                             :address "enode://43829580446ad138386dadb7fa50b6bd4d99f7c28659a0bc08115f8c0380005922a340962496f6af756a42b94a1522baa38a694fa27de59c3a73d4e08d5dbb31@206.189.6.48:30504"}
-             "mailserver-b" {:id      "mailserver-b"
+                             :address "enode://c42f368a23fa98ee546fd247220759062323249ef657d26d357a777443aec04db1b29a3a22ef3e7c548e18493ddaf51a31b0aed6079bd6ebe5ae838fcfaf3a49@206.189.243.162:30504"}
+             "mailserver-b" {:id      "mailserver-b" ;mail-02.do-ams3.eth.beta
                              :name    "Status mailserver B"
                              :password inbox-password
-                             :address "enode://70a2004e78399075f566033c42e9a0b1d43c683d4742755bb5457d03191be66a1b48c2b4fb259696839f28646a5828a1958b900860e27897f984ad0fc8482404@206.189.56.154:30504"}}})
+                             :address "enode://7aa648d6e855950b2e3d3bf220c496e0cae4adfddef3e1e6062e6b177aec93bc6cdcf1282cb40d1656932ebfdd565729da440368d7c4da7dbd4d004b1ac02bf8@206.189.243.169:30504"}
+             "mailserver-c" {:id      "mailserver-c" ;mail-03.do-ams3.eth.beta
+                             :name    "Status mailserver C"
+                             :password inbox-password
+                             :address "enode://8a64b3c349a2e0ef4a32ea49609ed6eb3364be1110253c20adc17a3cebbc39a219e5d3e13b151c0eee5d8e0f9a8ba2cd026014e67b41a4ab7d1d5dd67ca27427@206.189.243.168:30504"}
+             "mailserver-d" {:id      "mailserver-d" ;mail-01.gc-us-central1-a.eth.beta
+                             :name    "Status mailserver D"
+                             :password inbox-password
+                             :address "enode://7de99e4cb1b3523bd26ca212369540646607c721ad4f3e5c821ed9148150ce6ce2e72631723002210fac1fd52dfa8bbdf3555e05379af79515e1179da37cc3db@35.188.19.210:30504"}
+             "mailserver-e" {:id      "mailserver-e" ;mail-02.gc-us-central1-a.eth.beta
+                             :name    "Status mailserver E"
+                             :password inbox-password
+                             :address "enode://015e22f6cd2b44c8a51bd7a23555e271e0759c7d7f52432719665a74966f2da456d28e154e836bee6092b4d686fe67e331655586c57b718be3997c1629d24167@35.226.21.19:30504"}
+             "mailserver-f" {:id      "mailserver-f" ;mail-03.gc-us-central1-a.eth.beta
+                             :name    "Status mailserver F"
+                             :password inbox-password
+                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}})
 
 (def default-wnodes
   (assoc default-wnodes-without-custom :custom (:testnet default-wnodes-without-custom)))
