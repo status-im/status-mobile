@@ -305,6 +305,17 @@ class BaseView(object):
         info("Tap 'Confirm' on native keyboard")
         self.driver.press_keycode(66)
 
+    def confirm_until_presence_of_element(self, desired_element, attempts=3):
+        counter = 0
+        while not desired_element.is_element_present(1) and counter <= attempts:
+            try:
+                self.confirm()
+                info('Wait for %s' % desired_element.name)
+                desired_element.wait_for_element(5)
+                return
+            except TimeoutException:
+                counter += 1
+
     def click_system_back_button(self):
         info('Click system back button')
         self.driver.press_keycode(4)
