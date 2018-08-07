@@ -4,7 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.26 - Unreleased]
+### Added
+
+### Fixed
+
+### Changed
+
+## [0.9.25 - Unreleased]
+### Added
+- Add MOKSHA token on Rinkeby
+
+### Changed
+- Update REP contract address
+- Update mailservers on Rinkeby network
+- Update url of Bounties Network DApp
+
+## [0.9.24 - 2018-08-01]
+### Fixed
+- Security patch for DApp browser
+
+## [0.9.23 - 2018-07-23]
 ### Added
 - Added dismiss button to "Add to contacts" bar
 
