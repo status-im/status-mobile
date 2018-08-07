@@ -83,7 +83,7 @@ timeout(90) {
             sh 'xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
             sh "security unlock-keychain -p ${password} login.keychain"
             sh 'xcodebuild -exportArchive -exportPath status_appstore -archivePath status.xcarchive -exportOptionsPlist ios/archive-release.plist'
-            sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ios/archive.plist'
+            sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ios/archive-develop.plist'
           }
         }
 
