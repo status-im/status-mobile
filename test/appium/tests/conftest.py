@@ -45,6 +45,12 @@ def pytest_addoption(parser):
                      action='store',
                      default=False,
                      help='boolean; For creating testrail report per run')
+    parser.addoption('--network',
+                     action='store',
+                     default='ropsten',
+                     help='string; ropsten or rinkeby')
+
+    # message reliability
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
