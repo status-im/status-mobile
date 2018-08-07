@@ -7,24 +7,24 @@ from tests import info
 class NetworkApi:
 
     def __init__(self):
-        self.ropsten_url = 'http://api-ropsten.etherscan.io/api?'
+        self.network_url = 'http://api-%s.etherscan.io/api?' % pytest.config.getoption('network')
         self.faucet_url = 'http://51.15.45.169:3001/donate'
         self.chat_bot_url = 'http://offsite.chat:8099'
 
     def get_transactions(self, address: str) -> dict:
-        method = self.ropsten_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
+        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
     def get_token_transaction(self, address: str) -> dict:
-        method = self.ropsten_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
+        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
-        method = self.ropsten_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
+        method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
         return not int(requests.request('GET', url=method).json()['result']['isError'])
 
     def get_balance(self, address):
-        method = self.ropsten_url + 'module=account&action=balance&address=0x%s&tag=latest' % address
+        method = self.network_url + 'module=account&action=balance&address=0x%s&tag=latest' % address
         for i in range(5):
             try:
                 return int(requests.request('GET', method).json()["result"])
@@ -32,7 +32,7 @@ class NetworkApi:
                 pass
 
     def get_latest_block_number(self) -> int:
-        method = self.ropsten_url + 'module=proxy&action=eth_blockNumber'
+        method = self.network_url + 'module=proxy&action=eth_blockNumber'
         return int(requests.request('GET', url=method).json()['result'], 0)
 
     def find_transaction_by_hash(self, address: str, transaction_hash: str):
