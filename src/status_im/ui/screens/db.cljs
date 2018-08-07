@@ -174,7 +174,7 @@
                 [:contacts/contacts
                  :contacts/dapps
                  :contacts/new-identity
-                 :contacts/new-public-key-error
+                 :contacts/new-identity-error
                  :contacts/identity
                  :contacts/ui-props
                  :contacts/list-ui-props

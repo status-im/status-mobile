@@ -4,7 +4,7 @@
             [cljs.spec.alpha :as spec]
             [clojure.string :as string]))
 
-(defn- validate-pub-key [whisper-identity {:keys [address public-key]}]
+(defn validate-pub-key [whisper-identity {:keys [address public-key]}]
   (cond
     (string/blank? whisper-identity)
     (i18n/label :t/use-valid-contact-code)
