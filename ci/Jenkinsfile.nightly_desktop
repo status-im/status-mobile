@@ -300,7 +300,7 @@ stage('Update nightly links') {
     job: 'misc/status-im.github.io-update_env',
     parameters: [
       [$class: 'StringParameterValue', name: 'DMG_URL', value: dmg_url],
-      [$class: 'StringParameterValue', name: 'IOS_URL', value: app_url]
+      [$class: 'StringParameterValue', name: 'NIX_URL', value: app_url]
     ]
   )
 }
