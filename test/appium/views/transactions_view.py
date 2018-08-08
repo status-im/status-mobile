@@ -15,7 +15,7 @@ class OptionsButton(BaseButton):
     class CopyTransactionHashButton(BaseButton):
         def __init__(self, driver):
             super(OptionsButton.CopyTransactionHashButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Copy transaction hash')
+            self.locator = self.Locator.text_selector('Copy transaction ID')
 
     class OpenOnEtherscanButton(BaseButton):
         def __init__(self, driver):

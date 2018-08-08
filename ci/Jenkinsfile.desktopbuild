@@ -122,7 +122,7 @@ parallel(
 
           stage('Create MacOS Bundle') {
             dir(packageFolder) {
-              sh 'git clone https://github.com/vkjr/StatusAppFiles.git 
+              sh 'git clone https://github.com/vkjr/StatusAppFiles.git'
               sh 'unzip StatusAppFiles/StatusIm.app.zip'
               sh 'cp -r assets/share/assets StatusIm.app/Contents/MacOs'
               sh 'chmod +x StatusIm.app/Contents/MacOs/ubuntu-server'
@@ -131,7 +131,7 @@ parallel(
                 macdeployqt StatusIm.app -verbose=1 -dmg \\
                   -qmldir='${workspace}/node_modules/react-native/ReactQt/runtime/src/qml/'
               """
-              sh 'rm -f StatusAppFiles'
+              sh 'rm -fr StatusAppFiles'
             }
           }
 

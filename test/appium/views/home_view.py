@@ -123,9 +123,8 @@ class HomeView(BaseView):
         start_new_chat = self.plus_button.click()
         start_new_chat.start_new_chat_button.click()
         start_new_chat.public_key_edit_box.set_value(public_key)
-        start_new_chat.confirm()
         one_to_one_chat = self.get_chat_view()
-        one_to_one_chat.chat_message_input.wait_for_element(60)
+        start_new_chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
         return one_to_one_chat
 
     def start_1_1_chat(self, username):
@@ -151,6 +150,6 @@ class HomeView(BaseView):
         start_new_chat.join_public_chat_button.click()
         start_new_chat.chat_name_editbox.set_value(chat_name)
         time.sleep(2)
-        start_new_chat.confirm()
-        from views.chat_view import ChatView
-        return ChatView(self.driver)
+        chat_view = self.get_chat_view()
+        start_new_chat.confirm_until_presence_of_element(chat_view.chat_message_input)
+        return chat_view

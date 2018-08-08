@@ -3,7 +3,7 @@
             status-im.network.events
             [status-im.transport.handlers :as transport.handlers]
             status-im.protocol.handlers
-            [status-im.ui.screens.accounts.events :as accounts.events]
+            [status-im.ui.screens.accounts.models :as accounts.models]
             status-im.ui.screens.accounts.login.events
             status-im.ui.screens.accounts.recover.events
             [status-im.ui.screens.contacts.events :as contacts]
@@ -276,7 +276,7 @@
                             {:dispatch-n
                              [[:listen-to-network-status]
                               [:initialize-geth]]}
-                            (accounts.events/load-accounts)
+                            (accounts.models/load-accounts)
                             (initialize-views))))
 
 (handlers/register-handler-fx
