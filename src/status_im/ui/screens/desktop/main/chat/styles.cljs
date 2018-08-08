@@ -66,8 +66,7 @@
   {:height          56
    :justify-content :center})
 
-(def messages-scrollview-inner
-  {:padding-vertical 46})
+(def messages-list-vertical-padding 46)
 
 (def photo-style
   {:border-radius 20
