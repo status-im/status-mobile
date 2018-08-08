@@ -172,7 +172,7 @@ class CurrencyText(BaseText):
 class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
         super(BackupRecoveryPhrase, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Backup your Recovery phrase')
+        self.locator = self.Locator.text_selector('Backup your recovery phrase')
 
     def navigate(self):
         from views.profile_view import ProfileView

@@ -169,7 +169,7 @@ class BackupRecoveryPhraseButton(BaseButton):
 
     def __init__(self, driver):
         super(BackupRecoveryPhraseButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Backup your Recovery phrase')
+        self.locator = self.Locator.text_selector('Backup your recovery phrase')
 
 
 class OkContinueButton(BaseButton):
