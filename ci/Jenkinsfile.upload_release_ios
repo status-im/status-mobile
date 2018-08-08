@@ -54,7 +54,7 @@ timeout(90) {
         stage('Tag Build') {
           withCredentials([[
             $class: 'UsernamePasswordMultiBinding',
-            credentialsId: 'jenkins-status-im',
+            credentialsId: 'status-im-auto',
             usernameVariable: 'GIT_USER',
             passwordVariable: 'GIT_PASS'
           ]]) {
@@ -86,17 +86,6 @@ timeout(90) {
 
         stage('Deploy (iOS)') {
           sh ('bundle exec fastlane ios release')
-        }
-
-        stage('Push build tag') {
-          withCredentials([[
-            $class: 'UsernamePasswordMultiBinding',
-            credentialsId: 'jenkins-status-im',
-            usernameVariable: 'GIT_USER',
-            passwordVariable: 'GIT_PASS'
-          ]]) {
-            sh ('git push --tags https://${GIT_USER}:${GIT_PASS}@github.com/status-im/status-react --tags')
-          }
         }
       } catch (e) {
         slackSend color: 'bad', message: 'Release build failed uploading to iTunes Connect. ' + env.BUILD_URL
