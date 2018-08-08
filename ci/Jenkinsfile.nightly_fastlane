@@ -121,7 +121,13 @@ timeout(90) {
       }
 
       stage('Run status-nightly-publish-link job') {
-        build job: 'status-react/status-nightly-publish-link', parameters: [[$class: 'StringParameterValue', name: 'APK_URL', value: apkUrl], [$class: 'StringParameterValue', name: 'IOS_URL', value: ipaUrl]]
+        build(
+          job: 'misc/status-im.github.io-update_env',
+          parameters: [
+            [$class: 'StringParameterValue', name: 'APK_URL', value: apkUrl],
+            [$class: 'StringParameterValue', name: 'IOS_URL', value: ipaUrl]
+          ]
+        )
       }
 
       stage('Build (Android) for e2e tests') {
