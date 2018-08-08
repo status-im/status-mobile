@@ -135,16 +135,19 @@
           current-public-key (re-frame/subscribe [:get-current-public-key])]
       [react/view {:style styles/messages-view}
        [react/scroll-view {:scrollEventThrottle    16
+                           :headerHeight styles/messages-list-vertical-padding
+                           :footerWidth styles/messages-list-vertical-padding
+                           :enableArrayScrollingOptimization true
                            :on-scroll              (fn [e]
                                                      (let [ne (.-nativeEvent e)
                                                            y (.-y (.-contentOffset ne))]
-                                                       (when (zero? y)
+                                                       (when (<= y 0)
                                                          (when @scroll-timer (js/clearTimeout @scroll-timer))
                                                          (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
                                                        (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
                            :on-content-size-change #(.scrollToEnd @scroll-ref)
                            :ref                    #(reset! scroll-ref %)}
-        [react/view {:style styles/messages-scrollview-inner}
+        [react/view
          (doall
           (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse @messages))]
             ^{:key (or message-id (str type value))}
