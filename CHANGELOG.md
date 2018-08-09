@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added dismiss button to "Add to contacts" bar
 
 ### Fixed
+- Partially fixed issue with 0 fiat in main Wallet screen. We are now explicitly showing an error when app can't fetch 
+asset prices, instead of silently failing.
 
 ### Changed
 

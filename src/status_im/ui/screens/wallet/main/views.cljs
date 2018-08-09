@@ -18,7 +18,8 @@
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.components.text :as text]
-            [status-im.ui.screens.wallet.transactions.views :as transactions.views]))
+            [status-im.ui.screens.wallet.transactions.views :as transactions.views]
+            [status-im.ui.components.colors :as colors]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style wallet.styles/toolbar :flat? true}
@@ -147,12 +148,18 @@
                              :data      nfts
                              :render-fn #(render-collectible address-hex % modal?)}]}]]))
 
+(defn snackbar [error-message]
+  [react/view styles/snackbar-container
+   [react/text {:style styles/snackbar-text}
+    (i18n/label error-message)]])
+
 (views/defview wallet-root [modal?]
   (views/letsubs [assets          [:wallet/visible-assets-with-amount]
                   currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
                   {:keys [modal-history?]} [:get :wallet]
                   {:keys [seed-backed-up?]} [:get-current-account]
+                  error-message   [:wallet/error-message]
                   address-hex     [:get-current-account-hex]]
     [react/view styles/main-section
      (if modal?
@@ -166,7 +173,9 @@
                             [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
                                                     :tint-color :white
                                                     :refreshing false}])}
-        [total-section portfolio-value currency]
+        (if error-message
+          [snackbar error-message]
+          [total-section portfolio-value currency])
         (when (and (not modal?)
                    (not seed-backed-up?)
                    (some (fn [{:keys [amount]}]

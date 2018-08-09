@@ -80,7 +80,7 @@
                   (fn [wallet]
                     (:balance-loading? wallet)))
 
-(re-frame/reg-sub :wallet/error-message?
+(re-frame/reg-sub :wallet/error-message
                   :<- [:wallet]
                   (fn [wallet]
                     (or (get-in wallet [:errors :balance-update])

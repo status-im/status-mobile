@@ -146,7 +146,7 @@
   (assoc default-wnodes-without-custom :custom (:testnet default-wnodes-without-custom)))
 
 (defn default-account-settings []
-  {:wallet {:visible-tokens {:testnet #{:STT :ATT}
+  {:wallet {:visible-tokens {:testnet #{:STT :HND}
                              :mainnet #{:SNT}
                              :rinkeby #{:MOKSHA}}}})
 

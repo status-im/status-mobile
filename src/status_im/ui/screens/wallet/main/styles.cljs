@@ -65,6 +65,15 @@
    :android     {:letter-spacing 1.5}
    :ios         {:letter-spacing 1.16}})
 
+(def snackbar-container
+  {:background-color colors/gray-notifications})
+
+(def snackbar-text
+  {:color             colors/white
+   :margin-horizontal 50
+   :margin-vertical   10
+   :text-align        :center})
+
 ;; Actions section
 
 (def action-section
