@@ -10,7 +10,8 @@
             [status-im.ui.screens.add-new.new-public-chat.view :refer [default-public-chats]]
             [status-im.ui.screens.add-new.new-public-chat.db :as public-chat-db]
             [taoensso.timbre :as log]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.colors :as colors]))
 
 (views/defview new-contact []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
@@ -29,13 +30,14 @@
       [react/text {:style styles/new-contact-subtitle} (i18n/label :contact-code)]
       [react/view {:style styles/new-contact-separator}]
       [react/view {:style styles/add-contact-edit-view}
-       [react/text-input {:placeholder "0x..."
-                          :flex        1
-                          :style       styles/add-contact-input
-                          :on-change   (fn [e]
-                                         (let [native-event (.-nativeEvent e)
-                                               text (.-text native-event)]
-                                           (re-frame/dispatch [:set :contacts/new-identity text])))}]
+       [react/text-input {:placeholder      "0x..."
+                          :flex             1
+                          :style            styles/add-contact-input
+                          :selection-color  colors/hawkes-blue
+                          :on-change        (fn [e]
+                                              (let [native-event (.-nativeEvent e)
+                                                    text (.-text native-event)]
+                                                (re-frame/dispatch [:set :contacts/new-identity text])))}]
        [react/touchable-highlight {:disabled chat-error :on-press #(when-not chat-error (re-frame/dispatch [:add-contact-handler new-contact-identity]))}
         [react/view
          {:style (styles/add-contact-button chat-error)}
@@ -64,17 +66,18 @@
       [react/view {:style styles/new-contact-separator}]
       [react/view {:style styles/add-contact-edit-view}
        [react/view {:style {:flex 1}}
-        [react/text-input {:flex        1
-                           :ref         #(when (and (nil? @topic-input-ref) %)
-                                           (.setNativeProps % (js-obj "text" "#"))
-                                           (reset! topic-input-ref %))
-                           :style       styles/add-contact-input
-                           :on-change   (fn [e]
-                                          (let [native-event (.-nativeEvent e)
-                                                text (.-text native-event)
-                                                [_ before after] (first (re-seq #"(.*)\#(.*)" text))]
-                                            (.setNativeProps @topic-input-ref (js-obj "text" (str "#" before after)))
-                                            (re-frame/dispatch [:set :public-group-topic (subs text 1)])))}]]
+        [react/text-input {:flex             1
+                           :ref              #(when (and (nil? @topic-input-ref) %)
+                                                (.setNativeProps % (js-obj "text" "#"))
+                                                (reset! topic-input-ref %))
+                           :style            styles/add-contact-input
+                           :selection-color  colors/hawkes-blue
+                           :on-change        (fn [e]
+                                               (let [native-event (.-nativeEvent e)
+                                                     text (.-text native-event)
+                                                     [_ before after] (first (re-seq #"(.*)\#(.*)" text))]
+                                                 (.setNativeProps @topic-input-ref (js-obj "text" (str "#" before after)))
+                                                 (re-frame/dispatch [:set :public-group-topic (subs text 1)])))}]]
        [react/touchable-highlight {:disabled topic-error
                                    :on-press #(when-not topic-error
                                                 (do

@@ -69,11 +69,12 @@
                                      photo-path)}
                      :style  styles/photo-style}]])))
 
-(views/defview message-with-timestamp [text {:keys [timestamp] :as message} style]
+(views/defview message-with-timestamp [text {:keys [timestamp outgoing] :as message} style]
   [react/view {:style style}
    [react/view {:style styles/message-wrapper}
-    [react/text {:style      styles/message-text
-                 :selectable true}
+    [react/text {:style           (styles/message-text message)
+                 :selectable      true
+                 :selection-color (if outgoing colors/white colors/hawkes-blue)}
      text]
     [react/text {:style (styles/message-timestamp-placeholder)}
      (time/timestamp->time timestamp)]
@@ -214,5 +215,6 @@
         [react/text {:style (styles/contact-card-text colors/blue)}
          (i18n/label :t/send-message)]]]
       [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
-      [react/text {:style      {:font-size 14}
-                   :selectable true} public-key]]]))
+      [react/text {:style           {:font-size 14}
+                   :selectable      true
+                   :selection-color colors/hawkes-blue} public-key]]]))
