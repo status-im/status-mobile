@@ -50,7 +50,7 @@ timeout(90) {
         stage('Tag Build') {
           withCredentials([[
             $class: 'UsernamePasswordMultiBinding',
-            credentialsId: 'jenkins-status-im',
+            credentialsId: 'status-im-auto',
             usernameVariable: 'GIT_USER',
             passwordVariable: 'GIT_PASS'
           ]]) {
