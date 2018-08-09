@@ -32,6 +32,7 @@
        [react/text-input {:placeholder "0x..."
                           :flex        1
                           :style       styles/add-contact-input
+                          :font        :default
                           :on-change   (fn [e]
                                          (let [native-event (.-nativeEvent e)
                                                text (.-text native-event)]
@@ -69,6 +70,7 @@
                                            (.setNativeProps % (js-obj "text" "#"))
                                            (reset! topic-input-ref %))
                            :style       styles/add-contact-input
+                           :font        :default
                            :on-change   (fn [e]
                                           (let [native-event (.-nativeEvent e)
                                                 text (.-text native-event)

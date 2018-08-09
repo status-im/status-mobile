@@ -16,6 +16,11 @@
     "node_modules/react-native-securerandom/desktop",
     "modules/react-native-status/desktop"
   ],
+  "desktopFonts": [
+    "../../../../../resources/fonts/SF-Pro-Text-Regular.otf",
+    "../../../../../resources/fonts/SF-Pro-Text-Medium.otf",
+    "../../../../../resources/fonts/SF-Pro-Text-Light.otf"
+  ],
   "dependencies": {
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",
