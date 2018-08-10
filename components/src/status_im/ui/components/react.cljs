@@ -265,7 +265,7 @@
   view)
 
 (views/defview main-screen-modal-view [current-view & components]
-  (views/letsubs [signing? [:get-in [:wallet :send-transaction :signing?]]]
+  (views/letsubs [signing? [:get-in [:wallet :send-transaction :show-password-input?]]]
     (let [main-screen-view (create-main-screen-view current-view)]
       [main-screen-view styles/flex
        [keyboard-avoiding-view {:flex 1 :flex-direction :column}

@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.constants :as constants]))
 
 (defmethod navigation/preload-data! :wallet
   [db _]
@@ -22,6 +23,7 @@
 (def transaction-send-default
   (let [symbol :ETH]
     {:gas    (ethereum/estimate-gas symbol)
+     :method constants/web3-send-transaction
      :symbol symbol}))
 
 (def transaction-request-default

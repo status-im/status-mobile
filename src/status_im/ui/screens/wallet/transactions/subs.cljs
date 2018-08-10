@@ -42,45 +42,6 @@
          (fn [transactions]
            (group-by :type (vals transactions))))
 
-(defn- format-unsigned-transaction [{:keys [id] :as transaction}]
-  (assoc transaction
-         :type           :unsigned
-         :confirmations  0
-         ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
-         :hash           id))
-
-(reg-sub :wallet/unsigned-transactions
-         :<- [:wallet]
-         :<- [:get-contacts-by-address]
-         (fn [[wallet contacts]]
-           (map #(enrich-transaction % contacts) (vals (:transactions-unsigned wallet)))))
-
-(reg-sub :wallet.transactions/unsigned-transactions
-         :<- [:wallet/unsigned-transactions]
-         (fn [transactions]
-           (reduce (fn [acc {:keys [id] :as transaction}]
-                     (assoc acc id (format-unsigned-transaction transaction)))
-                   {}
-                   transactions)))
-
-(reg-sub :wallet.transactions/unsigned-transactions-count
-         :<- [:wallet.transactions/unsigned-transactions]
-         (fn [unsigned-transactions]
-           (count unsigned-transactions)))
-
-(reg-sub :wallet.transactions/unsigned-transactions-list
-         :<- [:wallet.transactions/unsigned-transactions]
-         (fn [unsigned-transactions]
-           (vals unsigned-transactions)))
-
-(reg-sub :wallet.transactions/postponed-transactions-list
-         :<- [:wallet.transactions/grouped-transactions]
-         (fn [{:keys [postponed]}]
-           (when postponed
-             {:title "Postponed"
-              :key   :postponed
-              :data  postponed})))
-
 (reg-sub :wallet.transactions/pending-transactions-list
          :<- [:wallet.transactions/grouped-transactions]
          (fn [{:keys [pending]}]
@@ -113,12 +74,10 @@
            (group-transactions-by-date (concat inbound outbound failed))))
 
 (reg-sub :wallet.transactions/transactions-history-list
-         :<- [:wallet.transactions/postponed-transactions-list]
          :<- [:wallet.transactions/pending-transactions-list]
          :<- [:wallet.transactions/completed-transactions-list]
-         (fn [[postponed pending completed]]
+         (fn [[pending completed]]
            (cond-> []
-             postponed (into postponed)
              pending   (into pending)
              completed (into completed))))
 
@@ -128,13 +87,11 @@
            (:current-transaction wallet)))
 
 (reg-sub :wallet.transactions/transaction-details
-         :<- [:wallet.transactions/unsigned-transactions]
          :<- [:wallet.transactions/transactions]
          :<- [:wallet.transactions/current-transaction]
          :<- [:network]
-         (fn [[unsigned-transactions transactions current-transaction network]]
-           (let [transactions (merge transactions unsigned-transactions)
-                 {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)
+         (fn [[transactions current-transaction network]]
+           (let [{:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)
                  chain (ethereum/network->chain-keyword network)]
              (when transaction
                (merge transaction

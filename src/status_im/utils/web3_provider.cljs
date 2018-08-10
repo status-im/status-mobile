@@ -9,7 +9,7 @@
 (defn make-internal-web3 []
   (dependencies/Web3.
    #js {:sendAsync (fn [payload callback]
-                     (status/call-web3-private
+                     (status/call-private-rpc
                       (.stringify js/JSON payload)
                       (fn [response]
                         (if (= "" response)

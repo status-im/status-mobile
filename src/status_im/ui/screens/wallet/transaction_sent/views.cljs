@@ -1,10 +1,10 @@
-(ns status-im.ui.screens.wallet.send.transaction-sent.views
+(ns status-im.ui.screens.wallet.transaction-sent.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.ui.screens.wallet.send.transaction-sent.styles :as styles]
+            [status-im.ui.screens.wallet.transaction-sent.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.components.views :as components]

@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.send.transaction-sent.styles
+(ns status-im.ui.screens.wallet.transaction-sent.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 

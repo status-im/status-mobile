@@ -2,27 +2,31 @@ if(typeof StatusHttpProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
 
-function httpCallback(id, data) {
-    var result = data;
-    var error = null;
+WebViewBridge.onMessage = function (message) {
+    data = JSON.parse(message);
 
-    try {
-        result = JSON.parse(data);
-    } catch (e) {
-        error = {message: "InvalidResponse"};
+    if (data.type === "navigate-to-blank")
+        window.location.href = "about:blank";
+
+    else if (data.type === "status-api-success")
+    {
+        window.STATUS_API = data.data;
+        window.postMessage({ type: 'STATUS_API_SUCCESS', permissions: data.keys }, "*");
     }
 
-    if (callbacks[id]) {
-        callbacks[id](error, result);
+    else if (data.type === "web3-send-async-callback")
+    {
+        var id = data.messageId;
+        if (callbacks[id]) {
+            callbacks[id](data.error, data.result);
+        }
     }
-}
-
-var StatusHttpProvider = function (host, timeout) {
-    this.host = host || 'http://localhost:8545';
-    this.timeout = timeout || 0;
 };
 
+var StatusHttpProvider = function () {};
+
 StatusHttpProvider.prototype.isStatus = true;
+StatusHttpProvider.prototype.isConnected = function () { return true; };
 
 function web3Response (payload, result){
     return {id: payload.id,
@@ -66,57 +70,19 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
     else {
         var messageId = callbackId++;
         callbacks[messageId] = callback;
-        if (typeof StatusBridge == "undefined") {
-            var data = {
-                payload: JSON.stringify(payload),
-                callbackId: JSON.stringify(messageId),
-                host: this.host
-            };
-
-            webkit.messageHandlers.sendRequest.postMessage(JSON.stringify(data));
-        } else {
-            StatusBridge.sendRequest(this.host, JSON.stringify(messageId), JSON.stringify(payload));
-        }
-    }
-};
-
-StatusHttpProvider.prototype.prepareRequest = function () {
-    var request = new XMLHttpRequest();
-
-    request.open('POST', this.host, false);
-    request.setRequestHeader('Content-Type', 'application/json');
-    return request;
-};
-
-/**
- * Synchronously tries to make Http request
- *
- * @method isConnected
- * @return {Boolean} returns true if request haven't failed. Otherwise false
- */
-StatusHttpProvider.prototype.isConnected = function () {
-    try {
-        this.sendAsync({
-            id: 9999999999,
-            jsonrpc: '2.0',
-            method: 'net_listening',
-            params: []
-        }, function () {
-        });
-        return true;
-    } catch (e) {
-        return false;
+        WebViewBridge.send(JSON.stringify({type:      'web3-send-async',
+                                           messageId: messageId,
+                                           payload:   payload}));
     }
 };
 }
 
 var protocol = window.location.protocol
-var address = providerAddress || "http://localhost:8545";
-console.log(protocol);
 if (typeof web3 === "undefined") {
+    //why do we need this condition?
     if (protocol == "https:" || protocol == "http:") {
         console.log("StatusHttpProvider");
-        web3 = new Web3(new StatusHttpProvider(address));
-        web3.eth.defaultAccount = currentAccountAddress;
+        web3 = new Web3(new StatusHttpProvider());
+        web3.eth.defaultAccount = currentAccountAddress; // currentAccountAddress - injected from status-react
     }
 }

@@ -365,11 +365,6 @@
    nil))
 
 (handlers/register-handler-fx
- :webview-geo-permissions-granted
- (fn [{{:keys [webview-bridge]} :db} _]
-   (.geoPermissionsGranted webview-bridge)))
-
-(handlers/register-handler-fx
  :get-fcm-token
  (fn [_ _]
    {::get-fcm-token-fx nil}))
@@ -393,8 +388,6 @@
    (instabug/log (str "Signal event: " event-str))
    (let [{:keys [type event]} (types/json->clj event-str)
          to-dispatch (case type
-                       "sign-request.queued" [:sign-request-queued event]
-                       "sign-request.failed" [:sign-request-failed event]
                        "node.started"        [:status-node-started]
                        "node.stopped"        [:status-node-stopped]
                        "module.initialized"  [:status-module-initialized]

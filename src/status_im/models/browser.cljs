@@ -4,7 +4,8 @@
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.screens.browser.default-dapps :as default-dapps]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [re-frame.core :as re-frame]))
 
 (defn get-current-url [{:keys [history history-index]}]
   (when (and history-index history)
@@ -17,8 +18,8 @@
   (< history-index (dec (count history))))
 
 (defn check-if-dapp-in-list [{:keys [history history-index] :as browser}]
-  (let [history-host  (http/url-host (try (nth history history-index) (catch js/Error _)))
-        dapp (first (filter #(= history-host (http/url-host (:dapp-url %))) (apply concat (mapv :data default-dapps/all))))]
+  (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))
+        dapp         (first (filter #(= history-host (http/url-host (:dapp-url %))) (apply concat (mapv :data default-dapps/all))))]
     (if dapp
       (assoc browser :dapp? true :name (:name dapp))
       (assoc browser :dapp? false :name (i18n/label :t/browser)))))
@@ -72,7 +73,10 @@
     (assoc (update-dapp-permissions-fx cofx {:dapp        dapp-name
                                              :permissions (vec (set (concat (keys permissions-allowed)
                                                                             user-permissions)))})
-           :send-to-bridge-fx [permissions-allowed webview])))
+           :send-to-bridge-fx [{:type constants/status-api-success
+                                :data permissions-allowed
+                                :keys (keys permissions-allowed)}
+                               webview])))
 
 (defn next-permission [cofx params & [permission permissions-data]]
   (request-permission
@@ -83,3 +87,15 @@
 
      (and permission permissions-data)
      (assoc-in [:permissions-allowed permission] (get permissions-data permission)))))
+
+(defn web3-send-async [{:keys [db]} {:keys [method] :as payload} message-id]
+  (if (or (= method constants/web3-send-transaction)
+          (= method constants/web3-personal-sign))
+    {:db       (update-in db [:wallet :transactions-queue] conj {:message-id message-id :payload payload})
+     :dispatch [:check-dapps-transactions-queue]}
+    {:call-rpc [payload
+                #(re-frame/dispatch [:send-to-bridge
+                                     {:type      constants/web3-send-async-callback
+                                      :messageId message-id
+                                      :error     %1
+                                      :result    %2}])]}))

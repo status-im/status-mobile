@@ -28,11 +28,6 @@
          (fn [db [_ path]]
            (get-in db path)))
 
-(reg-sub :signed-up?
-         :<- [:get-current-account]
-         (fn [current-account]
-           (:signed-up? current-account)))
-
 (reg-sub :network
          :<- [:get-current-account]
          (fn [current-account]

@@ -1,16 +1,13 @@
 (ns status-im.ui.screens.wallet.send.events
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
-            [status-im.ui.screens.db :as db]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
@@ -19,70 +16,153 @@
             [status-im.chat.models.message :as models.message]
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.constants :as constants]
-            [status-im.transport.utils :as transport.utils]
-            [taoensso.timbre :as log]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.wallet.transactions :as wallet.transactions]))
 
 ;;;; FX
 
-(re-frame/reg-fx
- ::accept-transaction
- (fn [{:keys [masked-password id on-completed]}]
-  ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (status/approve-sign-request id
-                                (security/unmask masked-password)
-                                on-completed)))
+(defn- send-ethers [params on-completed masked-password]
+  (status/send-transaction (types/clj->json params)
+                           (security/unmask masked-password)
+                           on-completed))
 
-(re-frame/reg-fx
- ::accept-transaction-with-changed-gas
- (fn [{:keys [masked-password id on-completed gas gas-price default-gas-price]}]
-   ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (if gas
-     (status/approve-sign-request-with-args id
-                                            (security/unmask masked-password)
-                                            (money/to-fixed gas)
-                                            (money/to-fixed (or gas-price default-gas-price))
-                                            on-completed)
-     (status/approve-sign-request id
-                                  (security/unmask masked-password)
-                                  on-completed))))
-
-(defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
-  (.sendTransaction (.-eth web3)
-                    (clj->js {:from from :to to :value value :gas gas :gasPrice gas-price})
-                    #()))
-
-(defn- send-tokens [{:keys [web3 from to value gas gas-price symbol chain]}]
+(defn- send-tokens [symbol chain {:keys [from to value gas gas-price]} on-completed masked-password]
   (let [contract (:address (tokens/symbol->token (keyword chain) symbol))]
-    (erc20/transfer web3 contract from to value {:gas gas :gasPrice gas-price} #())))
+    (erc20/transfer contract from to value gas gas-price masked-password on-completed)))
 
 (re-frame/reg-fx
  ::send-transaction
- (fn [{:keys [symbol] :as params}]
+ (fn [[params symbol chain on-completed masked-password]]
    (case symbol
-     :ETH (send-ethers params)
-     (send-tokens params))))
+     :ETH (send-ethers params on-completed masked-password)
+     (send-tokens symbol chain params on-completed masked-password))))
 
 (re-frame/reg-fx
- ::show-transaction-error
+ ::sign-message
+ (fn [{:keys [params on-completed]}]
+   (status/sign-message (types/clj->json params)
+                        on-completed)))
+
+(re-frame/reg-fx
+ :wallet/show-transaction-error
  (fn [message]
-    ;; (andrey) we need this timeout because modal window conflicts with alert
+   ;; (andrey) we need this timeout because modal window conflicts with alert
    (utils/set-timeout #(utils/show-popup (i18n/label :t/transaction-failed) message) 1000)))
 
-(re-frame/reg-fx
- :discard-transaction
- (fn [id]
-   (status/discard-sign-request id)))
-
-;;Helper functions
-
-(defn transaction-valid? [{{:keys [to data]} :args}]
-  (or (and to (utils.hex/valid-hex? to)) (and data (not= data "0x"))))
-
-(defn dispatch-transaction-completed [result & [modal?]]
-  (re-frame/dispatch [::transaction-completed {:id (:id result) :response result} modal?]))
 ;;;; Handlers
+
+;; SEND TRANSACTION
+(handlers/register-handler-fx
+ :wallet/send-transaction
+ (fn [{{:keys [chain] :as db} :db} _]
+   (let [{:keys [password symbol in-progress?] :as transaction} (get-in db [:wallet :send-transaction])
+         from (get-in db [:account/account :address])]
+     (when-not in-progress?
+       {:db                (-> db
+                               (assoc-in [:wallet :send-transaction :wrong-password?] false)
+                               (assoc-in [:wallet :send-transaction :in-progress?] true))
+        ::send-transaction [(models.wallet/prepare-send-transaction from transaction)
+                            symbol
+                            chain
+                            #(re-frame/dispatch [::transaction-completed (types/json->clj %)])
+                            password]}))))
+
+;; SIGN MESSAGE
+(handlers/register-handler-fx
+ :wallet/sign-message
+ (fn [{db :db} _]
+   (let [{:keys [data from password]} (get-in db [:wallet :send-transaction])]
+     {:db            (assoc-in db [:wallet :send-transaction :in-progress?] true)
+      ::sign-message {:params       {:data     data
+                                     :password (security/unmask password)
+                                     :account  from}
+                      :on-completed #(re-frame/dispatch [::transaction-completed (types/json->clj %)])}})))
+
+;; SEND TRANSACTION (SIGN MESSAGE) CALLBACK
+(handlers/register-handler-fx
+ ::transaction-completed
+ (fn [{:keys [db now]} [_ {:keys [result error]}]]
+   (let [{:keys [id method whisper-identity to symbol amount-text dapp-transaction]} (get-in db [:wallet :send-transaction])
+         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
+     (if error
+       ;; ERROR
+       (models.wallet/handle-transaction-error db' error)
+       ;; RESULT
+       (merge
+        {:db (cond-> (assoc-in db' [:wallet :send-transaction] {})
+
+               (not= method constants/web3-personal-sign)
+               (assoc-in [:wallet :transactions result]
+                         (models.wallet/prepare-unconfirmed-transaction db now result)))}
+
+        (if dapp-transaction
+          (let [{:keys [message-id]} dapp-transaction
+                webview (:webview-bridge db)]
+            (models.wallet/dapp-complete-transaction (int id) result method message-id webview))
+          {:dispatch [:send-transaction-message whisper-identity {:address to
+                                                                  :asset   (name symbol)
+                                                                  :amount  amount-text
+                                                                  :tx-hash result}]}))))))
+
+;; DISCARD TRANSACTION
+(handlers/register-handler-fx
+ :wallet/discard-transaction
+ (fn [cofx _]
+   (models.wallet/discard-transaction cofx)))
+
+;; DAPP TRANSACTIONS QUEUE
+;; NOTE(andrey) We need this queue because dapp can send several transactions in a row, this is bad behaviour
+;; but we need to support it
+(handlers/register-handler-fx
+ :check-dapps-transactions-queue
+ (fn [{:keys [db]} _]
+   (let [{:keys [send-transaction transactions-queue]} (:wallet db)
+         {:keys [payload message-id] :as queued-transaction} (last transactions-queue)
+         {:keys [method params]} payload
+         db' (update-in db [:wallet :transactions-queue] drop-last)]
+     (when (and (not (:id send-transaction)) queued-transaction)
+       (cond
+
+         ;;SEND TRANSACTION
+         (= method constants/web3-send-transaction)
+         (let [{:keys [gas gasPrice] :as transaction} (models.wallet/prepare-dapp-transaction
+                                                       queued-transaction (:contacts/contacts db))
+               {:keys [wallet-set-up-passed?]} (:account/account db)]
+           {:db         (assoc-in db' [:wallet :send-transaction] transaction)
+            :dispatch-n [[:update-wallet]
+                         (when-not gas
+                           [:wallet/update-estimated-gas (first params)])
+                         (when-not gasPrice
+                           [:wallet/update-gas-price])
+                         [:navigate-to-modal (if wallet-set-up-passed?
+                                               :wallet-send-transaction-modal
+                                               :wallet-onboarding-setup-modal)]]})
+
+         ;;SIGN MESSAGE
+         (= method constants/web3-personal-sign)
+         (let [[address data] (models.wallet/normalize-sign-message-params params)]
+           (if (and address data)
+             {:db       (assoc-in db' [:wallet :send-transaction] {:id               (str message-id)
+                                                                   :from             address
+                                                                   :data             data
+                                                                   :dapp-transaction queued-transaction
+                                                                   :method           method})
+              :dispatch [:navigate-to-modal :wallet-sign-message-modal]}
+             {:db db'})))))))
+
+(handlers/register-handler-fx
+ :send-transaction-message
+ (concat models.message/send-interceptors
+         navigation/navigation-interceptors)
+ (fn [{:keys [db] :as cofx} [chat-id params]]
+   ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
+   ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
+   (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
+     (handlers-macro/merge-fx cofx
+                              (commands-sending/send chat-id send-command params)
+                              (navigation/replace-view :wallet-transaction-sent))
+     (handlers-macro/merge-fx cofx
+                              (navigation/replace-view :wallet-transaction-sent)))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
@@ -95,6 +175,13 @@
  :wallet.send/set-and-validate-amount
  (fn [{:keys [db]} [_ amount symbol decimals]]
    {:db (set-and-validate-amount-db db amount symbol decimals)}))
+
+(handlers/register-handler-fx
+ :wallet/discard-transaction-navigate-back
+ (fn [cofx _]
+   (-> cofx
+       models.wallet/discard-transaction
+       (assoc :dispatch [:navigate-back]))))
 
 (defn update-gas-price
   ([db edit? success-event]
@@ -130,305 +217,11 @@
  (fn [{:keys [db]} [_ advanced?]]
    {:db (assoc-in db [:wallet :send-transaction :advanced?] advanced?)}))
 
-(def ^:private clear-send-properties {:id              nil
-                                      :signing?        false
-                                      :wrong-password? false
-                                      :waiting-signal? false
-                                      :from-chat?      false
-                                      :in-progress?    false
-                                      :password        nil})
-
-;; TODO(goranjovic) - this is a temporary workaround because in regular `clear-send-properties` we need `:from-chat?`
-;; to be false to avoid the wallet onboarding crash if the user accessed transactions from dapps first.
-;; On the other hand, if we reset the same flag to false every time we clear the current transaction that would also
-;; happen when user clicks Cancel in chat initiated transaction and then all fields would become editable, which is
-;; another bug.
-;; This temporary workaround resets all fields except the flag if we are in a chat /send transaction.
-;; A permanent solution would be to add onboarding check to dapp transaction and/or review the workflow.
-(def ^:private partial-clear-send-properties {:id              nil
-                                              :signing?        false
-                                              :wrong-password? false
-                                              :waiting-signal? false
-                                              :in-progress?    false
-                                              :password        nil})
-
-(defn on-transactions-completed [raw-results]
-  (let [result (types/json->clj raw-results)]
-    (dispatch-transaction-completed result)))
-
-(defn prepare-transaction [{:keys [id message_id method args]} now]
-  ;;NOTE(goranjovic): the transactions started from chat using /send command
-  ;; are only in ether, so this parameter defaults to ETH
-  (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args]
-    {:id         id
-     :from       from
-     :to         to
-     :to-name    (when (nil? to)
-                   (i18n/label :t/new-contract))
-     :symbol     symbol
-     :method     method
-     :value      (money/bignumber (or value 0))
-     :data       data
-     :gas        (when (seq gas)
-                   (money/bignumber (money/to-decimal gas)))
-     :gas-price  (when (seq gasPrice)
-                   (money/bignumber (money/to-decimal gasPrice)))
-     :timestamp  now
-     :message-id message_id}))
-
-;;TRANSACTION QUEUED signal from status-go
 (handlers/register-handler-fx
- :sign-request-queued
- (fn [{:keys [db]} [_ transaction]]
-   {:db (update-in db [:wallet :transactions-queue] conj transaction)
-    :dispatch [:check-transactions-queue]}))
-
-(handlers/register-handler-fx
- :check-transactions-queue
- (fn [{:keys [db now]} _]
-   (let [{:keys [send-transaction transactions-queue]} (:wallet db)
-         {:keys [id method args] :as queued-transaction} (last transactions-queue)
-         db' (update-in db [:wallet :transactions-queue] drop-last)]
-     (when (and (not (:id send-transaction)) queued-transaction)
-       (cond
-          ;;SEND TRANSACTION
-         (= method constants/web3-send-transaction)
-
-         (let [{:keys [gas gasPrice]} args
-               transaction            (prepare-transaction queued-transaction now)
-               sending-from-dapp?     (not (get-in db [:wallet :send-transaction :waiting-signal?]))
-               new-db                 (assoc-in db' [:wallet :transactions-unsigned id] transaction)
-               sender-account         (:account/account db)
-               sending-db             {:id         id
-                                       :method     method
-                                       :from-chat? (or sending-from-dapp? ;;TODO(goranjovic): figure out why we need to
-                                                       ;; have from-chat? flag for dapp txs and get rid of this
-                                                       (get-in db [:wallet :send-transaction :from-chat?]))}]
-           (if sending-from-dapp?
-              ;;SENDING FROM DAPP
-             {:db         (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
-              :dispatch-n [[:update-wallet]
-                           [:navigate-to-modal (if (:wallet-set-up-passed? sender-account)
-                                                 :wallet-send-transaction-modal
-                                                 :wallet-onboarding-setup-modal)]
-                           (when-not (seq gas)
-                             [:wallet/update-estimated-gas transaction])
-                           (when-not (seq gasPrice)
-                             [:wallet/update-gas-price])]}
-             ;;WALLET SEND SCREEN WAITING SIGNAL
-             (let [{:keys [password]} (get-in db [:wallet :send-transaction])
-                   new-db'            (update-in new-db [:wallet :send-transaction] merge sending-db)] ; just update sending state as we are in wallet flow
-               {:db                  new-db'
-                ::accept-transaction {:id              id
-                                      :masked-password password
-                                      :on-completed    on-transactions-completed}})))
-          ;;SIGN MESSAGE
-         (= method constants/web3-personal-sign)
-
-         (let [{:keys [data]} args
-               data' (transport.utils/to-utf8 data)]
-           (if data'
-             {:db (-> db'
-                      (assoc-in [:wallet :transactions-unsigned id] {:data data' :id id})
-                      (assoc-in [:wallet :send-transaction] {:id id :method method}))
-              :dispatch [:navigate-to-modal :wallet-sign-message-modal]}
-             {:db db'})))))))
-
-(defn this-transaction-signing? [id signing-id view-id modal]
-  (and (= signing-id id)
-       (or (= view-id :wallet-send-transaction)
-           (= view-id :wallet-send-transaction-chat)
-           (= modal :wallet-send-transaction-modal)
-           (= modal :wallet-sign-message-modal))))
-
-(defn handle-failed-tx [cofx error_message]
-  (-> cofx
-      (assoc ::show-transaction-error error_message)
-      (update-in [:db :wallet] dissoc :send-transaction)))
-
-;;TRANSACTION FAILED signal from status-go
-(handlers/register-handler-fx
- :sign-request-failed
- (fn [{{:keys [view-id modal] :as db} :db} [_ {:keys [id method error_code error_message]}]]
-   (let [send-transaction (get-in db [:wallet :send-transaction])]
-     (case error_code
-
-        ;;WRONG PASSWORD
-       constants/send-transaction-password-error-code
-       {:db (-> db
-                (assoc-in [:wallet :send-transaction :wrong-password?] true)
-                (assoc-in [:wallet :send-transaction :waiting-signal?] false))}
-
-        ;;NO ERROR, DISCARDED, TIMEOUT or DEFAULT ERROR
-       (if (this-transaction-signing? id (:id send-transaction) view-id modal)
-         (cond-> {:db                      (-> db
-                                               navigation/navigate-back
-                                               (assoc-in [:wallet :transactions-queue] nil)
-                                               (update-in [:wallet :transactions-unsigned] dissoc id)
-                                               (update-in [:wallet :send-transaction] merge clear-send-properties))}
-           (= method constants/web3-send-transaction)
-           (handle-failed-tx error_message))
-         {:db (update-in db [:wallet :transactions-unsigned] dissoc id)})))))
-
-(defn prepare-unconfirmed-dapp-transaction [now hash transaction]
-  (-> transaction
-      (assoc :confirmations "0"
-             :timestamp (str now)
-             :type :outbound
-             :hash hash)
-      (update :gas-price str)
-      (update :value str)
-      (update :gas str)
-      (dissoc :message-id :id)))
-
-(defn prepare-unconfirmed-status-transaction [db now hash transaction]
-  (let [chain (:chain db)
-        token   (tokens/symbol->token (keyword chain) (:symbol transaction))]
-    (-> transaction
-        (assoc :confirmations "0"
-               :timestamp (str now)
-               :type :outbound
-               :hash hash)
-        (update :gas-price str)
-        (assoc :value (:amount transaction))
-        (assoc :token token)
-        (update :gas str)
-        (dissoc :message-id :id))))
-
-(defn prepare-unconfirmed-transaction [db now hash id]
-  (let [unsigned-transaction (get-in db [:wallet :transactions-unsigned id])
-        send-transaction     (get-in db [:wallet :send-transaction])]
-    ;;TODO(goranjovic) - unify `send-transaction` with transactions-unsigned`
-    ;; currently the latter is only used for transactions initiated from dapps
-    (if-not (:symbol send-transaction)
-      (prepare-unconfirmed-dapp-transaction now hash unsigned-transaction)
-      (prepare-unconfirmed-status-transaction db now hash send-transaction))))
-
-(handlers/register-handler-fx
- :send-transaction-message
- (concat models.message/send-interceptors
-         navigation/navigation-interceptors)
- (fn [{:keys [db] :as cofx} [chat-id params]]
-   ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
-   ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
-   (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
-     (handlers-macro/merge-fx cofx
-                              (commands-sending/send chat-id send-command params)
-                              (navigation/replace-view :wallet-transaction-sent))
-     (handlers-macro/merge-fx cofx
-                              (navigation/replace-view :wallet-transaction-sent)))))
-
-(handlers/register-handler-fx
- ::transaction-completed
- (fn [{db :db now :now} [_ {:keys [id response] :as params} modal?]]
-   (let [{:keys [hash error]}                            response
-         {:keys [method whisper-identity to symbol amount-text]}  (get-in db [:wallet :send-transaction])
-         db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
-     (if (and error (string? error) (not (string/blank? error))) ;; ignore error here, error will be handled in :transaction-failed
-       {:db db'}
-       (merge
-        {:db (cond-> db'
-               (= method constants/web3-send-transaction)
-               (assoc-in [:wallet :transactions hash] (prepare-unconfirmed-transaction db now hash id))
-               true
-               (update-in [:wallet :transactions-unsigned] dissoc id)
-               true
-               (update-in [:wallet :send-transaction] merge clear-send-properties {:tx-hash hash}))}
-        (if modal?
-
-          (cond-> {:dispatch [:navigate-back]}
-            (= method constants/web3-send-transaction)
-            (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]))
-
-          {:dispatch [:send-transaction-message whisper-identity {:address to
-                                                                  :asset   (name symbol)
-                                                                  :amount  amount-text
-                                                                  :tx-hash hash}]}))))))
-
-(defn on-transactions-modal-completed [raw-results]
-  (let [result (types/json->clj raw-results)]
-    (dispatch-transaction-completed result true)))
-
-(handlers/register-handler-fx
- :wallet/sign-transaction
- (fn [{{:keys [web3 chain] :as db} :db} [_ later?]]
-   (let [db' (assoc-in db [:wallet :send-transaction :wrong-password?] false)
-         {:keys [amount id password to symbol method gas gas-price]} (get-in db [:wallet :send-transaction])]
-     (if id
-       {::accept-transaction {:id              id
-                              :masked-password password
-                              :on-completed    on-transactions-completed}
-        :db                  (assoc-in db' [:wallet :send-transaction :in-progress?] true)}
-       {:db                (update-in db' [:wallet :send-transaction] assoc
-                                      :waiting-signal? true
-                                      :later? later?
-                                      :in-progress? true)
-        ::send-transaction {:web3      web3
-                            :from      (get-in db [:account/account :address])
-                            :to        to
-                            :value     amount
-                            :gas       gas
-                            :gas-price gas-price
-                            :symbol    symbol
-                            :method    method
-                            :chain     chain}}))))
-
-(handlers/register-handler-fx
- :wallet/sign-message-modal
- (fn [{db :db} _]
-   (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
-     {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
-      ::accept-transaction {:id              id
-                            :masked-password password
-                            :on-completed    on-transactions-modal-completed}})))
-
-(defn sign-transaction-modal [{:keys [db]} default-gas-price]
-  ;;TODO(goranjovic) - unify send-transaction and unsigned-transaction
-  (let [{:keys [id password] :as send-transaction}   (get-in db [:wallet :send-transaction])
-        {:keys [gas gas-price]} [:wallet.send/unsigned-transaction]]
-    {:db                                   (assoc-in db [:wallet :send-transaction :in-progress?] true)
-     ::accept-transaction-with-changed-gas {:id                id
-                                            :masked-password   password
-                                            :gas               (or gas (:gas send-transaction))
-                                            :gas-price         (or gas-price (:gas-price send-transaction))
-                                            :default-gas-price default-gas-price
-                                            :on-completed      on-transactions-modal-completed}}))
-
-(handlers/register-handler-fx
- :wallet/sign-transaction-modal-update-gas-success
- (fn [cofx [_ default-gas-price]]
-   (sign-transaction-modal cofx default-gas-price)))
-
-(handlers/register-handler-fx
- :wallet/sign-transaction-modal
- (fn [{:keys [db]} _]
-   (update-gas-price db false :wallet/sign-transaction-modal-update-gas-success)))
-
-(defn discard-transaction
-  [{:keys [db]}]
-  (let [{:keys [id from-chat?]} (get-in db [:wallet :send-transaction])
-        clear-fields            (if from-chat? partial-clear-send-properties clear-send-properties)]
-    (merge {:db (update-in db [:wallet :send-transaction] merge clear-fields)}
-           (when id
-             {:discard-transaction id}))))
-
-(handlers/register-handler-fx
- :wallet/discard-transaction
- (fn [cofx _]
-   (discard-transaction cofx)))
-
-(handlers/register-handler-fx
- :wallet/discard-transaction-navigate-back
- (fn [cofx _]
-   (-> cofx
-       discard-transaction
-       (assoc :dispatch [:navigate-back]))))
-
-(handlers/register-handler-fx
- :wallet/cancel-signing-modal
+ :wallet/cancel-entering-password
  (fn [{:keys [db]} _]
    {:db (update-in db [:wallet :send-transaction] assoc
-                   :signing? false
+                   :show-password-input? false
                    :wrong-password? false
                    :password nil)}))
 
@@ -436,11 +229,6 @@
  :wallet.send/set-password
  (fn [{:keys [db]} [_ masked-password]]
    {:db (assoc-in db [:wallet :send-transaction :password] masked-password)}))
-
-(handlers/register-handler-fx
- :wallet.send/set-signing?
- (fn [{:keys [db]} [_ signing?]]
-   {:db (assoc-in db [:wallet :send-transaction :signing?] signing?)}))
 
 (handlers/register-handler-fx
  :wallet.send/edit-value
@@ -475,7 +263,7 @@
  :close-transaction-sent-screen
  (fn [{:keys [db]} [_ chat-id]]
    {:dispatch       [:navigate-back]
-    :dispatch-later [{:ms 400 :dispatch [:check-transactions-queue]}]}))
+    :dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}))
 
 (handlers/register-handler-fx
  :sync-wallet-transactions

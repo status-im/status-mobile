@@ -20,7 +20,9 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.constants :as constants]
             [status-im.utils.datetime :as datetime]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [status-im.utils.security :as security]
+            [status-im.utils.types :as types])
   (:refer-clojure :exclude [name symbol]))
 
 (defn name [web3 contract cb]
@@ -42,12 +44,14 @@
                  (ethereum/call-params contract "balanceOf(address)" (ethereum/normalized-address address))
                  #(cb %1 (ethereum/hex->bignumber %2))))
 
-(defn transfer [web3 contract from address value params cb]
-  (ethereum/send-transaction web3
-                             (merge (ethereum/call-params contract "transfer(address,uint256)" (ethereum/normalized-address address) (ethereum/int->hex value))
-                                    {:from from}
-                                    params)
-                             #(cb %1 (ethereum/hex->boolean %2))))
+(defn transfer [contract from to value gas gas-price masked-password on-completed]
+  (status/send-transaction (types/clj->json
+                            (merge (ethereum/call-params contract "transfer(address,uint256)" to value)
+                                   {:from     from
+                                    :gas      gas
+                                    :gasPrice gas-price}))
+                           (security/unmask masked-password)
+                           on-completed))
 
 (defn transfer-from [web3 contract from-address to-address value cb]
   (ethereum/call web3
@@ -168,8 +172,8 @@
                                      (add-padding from)
                                      (add-padding to)]}]}
         payload (.stringify js/JSON (clj->js args))]
-    (status/call-web3-private payload
-                              (response-handler web3 current-block-number chain direction ethereum/handle-error cb))))
+    (status/call-private-rpc payload
+                             (response-handler web3 current-block-number chain direction ethereum/handle-error cb))))
 
 (defn get-token-transactions
   [web3 chain contracts direction address cb]

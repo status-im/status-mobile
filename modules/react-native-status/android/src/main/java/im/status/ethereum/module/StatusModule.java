@@ -504,8 +504,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void approveSignRequest(final String id, final String password, final Callback callback) {
-        Log.d(TAG, "approveSignRequest");
+    public void sendTransaction(final String txArgsJSON, final String password, final Callback callback) {
+        Log.d(TAG, "sendTransaction");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -514,7 +514,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.ApproveSignRequest(id, password);
+                String res = Statusgo.SendTransaction(txArgsJSON, password);
                 callback.invoke(res);
             }
         };
@@ -523,8 +523,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void approveSignRequestWithArgs(final String id, final String password, final String gas, final String gasPrice, final Callback callback) {
-        Log.d(TAG, "approveSignRequestWithArgs");
+    public void signMessage(final String rpcParams, final Callback callback) {
+        Log.d(TAG, "signMessage");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -533,26 +533,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.ApproveSignRequestWithArgs(id, password, Long.parseLong(gas), Long.parseLong(gasPrice));
+                String res = Statusgo.SignMessage(rpcParams);
                 callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-
-    @ReactMethod
-    public void discardSignRequest(final String id) {
-        Log.d(TAG, "discardSignRequest");
-        if (!checkAvailability()) {
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Statusgo.DiscardSignRequest(id);
             }
         };
 
@@ -667,7 +649,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void sendWeb3Request(final String payload, final Callback callback) {
+    public void callRPC(final String payload, final Callback callback) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -680,7 +662,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void sendWeb3PrivateRequest(final String payload, final Callback callback) {
+    public void callPrivateRPC(final String payload, final Callback callback) {
         Runnable r = new Runnable() {
             @Override
             public void run() {

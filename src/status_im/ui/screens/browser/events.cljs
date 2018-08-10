@@ -11,7 +11,10 @@
             [status-im.models.browser :as model]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.native-module.core :as status]
+            [taoensso.timbre :as log]
+            [status-im.utils.types :as types]))
 
 (re-frame/reg-fx
  :browse
@@ -21,11 +24,21 @@
      (list-selection/browse link))))
 
 (re-frame/reg-fx
+ :call-rpc
+ (fn [[payload callback]]
+   (status/call-rpc
+    (types/clj->json payload)
+    (fn [response]
+      (if (= "" response)
+        (do
+          (log/warn :web3-response-error)
+          (callback "web3-response-error" nil))
+        (callback nil (.parse js/JSON response)))))))
+
+(re-frame/reg-fx
  :send-to-bridge-fx
- (fn [[permissions-allowed webview]]
-   (.sendToBridge @webview (.stringify js/JSON (clj->js {:type constants/status-api-success
-                                                         :data permissions-allowed
-                                                         :keys (keys permissions-allowed)})))))
+ (fn [[message webview]]
+   (.sendToBridge webview (types/clj->json message))))
 
 (re-frame/reg-fx
  :show-dapp-permission-confirmation-fx
@@ -66,6 +79,12 @@
      (model/update-browser-and-navigate cofx {:browser-id    (or (http/url-host normalized-url) (random/id))
                                               :history-index 0
                                               :history       [normalized-url]}))))
+
+(handlers/register-handler-fx
+ :send-to-bridge
+ [re-frame/trim-v]
+ (fn [cofx [message]]
+   {:send-to-bridge-fx [message (get-in cofx [:db :webview-bridge])]}))
 
 (handlers/register-handler-fx
  :open-browser
@@ -112,24 +131,32 @@
 (handlers/register-handler-fx
  :on-bridge-message
  [re-frame/trim-v]
- (fn [{:keys [db] :as cofx} [{{:keys [url]} :navState :keys [type host permissions]} browser webview]]
-   (cond
+ (fn [{:keys [db] :as cofx} [message]]
+   (let [{:browser/keys [options browsers] :keys [webview-bridge]} db
+         {:keys [browser-id]} options
+         browser (get browsers browser-id)
+         data (types/json->clj message)
+         {{:keys [url]} :navState :keys [type host permissions payload messageId]} data]
+     (cond
 
-     (and (= type constants/history-state-changed) platform/ios? (not= "about:blank" url))
-     (model/update-browser-history-fx cofx browser url false)
+       (and (= type constants/history-state-changed) platform/ios? (not= "about:blank" url))
+       (model/update-browser-history-fx cofx browser url false)
 
-     (= type constants/status-api-request)
-     (let [{:account/keys [account]} db
-           {:keys [dapp? name]} browser
-           dapp-name (if dapp? name host)]
-       (model/request-permission
-        cofx
-        {:dapp-name             dapp-name
-         :webview               webview
-         :index                 0
-         :user-permissions      (get-in db [:dapps/permissions dapp-name :permissions])
-         :requested-permissions permissions
-         :permissions-data      {constants/dapp-permission-contact-code (:public-key account)}})))))
+       (= type constants/web3-send-async)
+       (model/web3-send-async cofx payload messageId)
+
+       (= type constants/status-api-request)
+       (let [{:account/keys [account]} db
+             {:keys [dapp? name]} browser
+             dapp-name (if dapp? name host)]
+         (model/request-permission
+          cofx
+          {:dapp-name             dapp-name
+           :webview               webview-bridge
+           :index                 0
+           :user-permissions      (get-in db [:dapps/permissions dapp-name :permissions])
+           :requested-permissions permissions
+           :permissions-data      {constants/dapp-permission-contact-code (:public-key account)}}))))))
 
 (handlers/register-handler-fx
  :next-dapp-permission

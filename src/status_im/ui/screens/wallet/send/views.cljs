@@ -23,9 +23,45 @@
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.transport.utils :as transport.utils]))
 
-(defview sign-panel [message-label spinning?]
+(defn- toolbar [modal? title]
+  (let [action (if modal? act/close-white act/back-white)]
+    [toolbar/toolbar {:style wallet.styles/toolbar}
+     [toolbar/nav-button (action (if modal?
+                                   #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
+                                   #(act/default-handler)))]
+     [toolbar/content-title {:color :white} title]]))
+
+(defn- advanced-cartouche [{:keys [max-fee gas gas-price]}]
+  [react/view
+   [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
+                                                 (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
+    (i18n/label :t/wallet-transaction-fee)
+    [react/view {:style               styles/advanced-options-text-wrapper
+                 :accessibility-label :transaction-fee-button}
+     [react/text {:style styles/advanced-fees-text}
+      (str max-fee  " " (i18n/label :t/eth))]
+     [react/text {:style styles/advanced-fees-details-text}
+      (str (money/to-fixed gas) " * " (money/to-fixed (money/wei-> :gwei gas-price)) (i18n/label :t/gwei))]]]])
+
+(defn- advanced-options [advanced? transaction scroll]
+  [react/view {:style styles/advanced-wrapper}
+   [react/touchable-highlight {:on-press (fn []
+                                           (re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])
+                                           (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 350)))}
+    [react/view {:style styles/advanced-button-wrapper}
+     [react/view {:style               styles/advanced-button
+                  :accessibility-label :advanced-button}
+      [react/i18n-text {:style (merge wallet.components.styles/label
+                                      styles/advanced-label)
+                        :key   :wallet-advanced}]
+      [vector-icons/icon (if advanced? :icons/up :icons/down) {:color :white}]]]]
+   (when advanced?
+     [advanced-cartouche transaction])])
+
+(defview password-input-panel [message-label spinning?]
   (letsubs [account         [:get-current-account]
             wrong-password? [:wallet.send/wrong-password?]
             signing-phrase  (:signing-phrase @account)
@@ -37,8 +73,6 @@
        [tooltip/tooltip (i18n/label :t/wrong-password) styles/password-error-tooltip])
      [react/animated-view {:style (styles/sign-panel opacity-value)}
       [react/view styles/spinner-container
-       ;;NOTE(goranjovic) - android build doesn't seem to react on change in `:animating` property, so
-       ;;we have this workaround of just using `when` around the whole element.
        (when spinning?
          [react/activity-indicator {:animating true
                                     :size      :large}])]
@@ -58,8 +92,8 @@
          :accessibility-label    :enter-password-input
          :auto-capitalize        :none}]]]]))
 
-;; "Cancel" and "Sign Transaction >" buttons, signing with password
-(defview signing-buttons [spinning? cancel-handler sign-handler sign-label]
+;; "Cancel" and "Sign Transaction >" or "Sign >" buttons, signing with password
+(defview enter-password-buttons [spinning? cancel-handler sign-handler sign-label]
   (letsubs [sign-enabled? [:wallet.send/sign-password-enabled?]]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons
@@ -74,156 +108,34 @@
       (i18n/label sign-label)
       [vector-icons/icon :icons/forward {:color :white}]]]))
 
-(defn- sign-enabled? [amount-error to amount modal?]
-  (and
-   (nil? amount-error)
-   (or modal? (not (empty? to))) ;;NOTE(goranjovic) - contract creation will have empty `to`
-   (not (nil? amount))))
-
-;; "Sign Later" and "Sign Transaction >" buttons
-(defn- sign-button [amount-error to amount sufficient-funds? sufficient-gas? modal?]
-  (let [sign-enabled?           (sign-enabled? amount-error to amount modal?)
-        immediate-sign-enabled? (and sign-enabled? sufficient-funds? sufficient-gas?)]
+;; "Sign Transaction >" button
+(defn- sign-transaction-button [amount-error to amount sufficient-funds? sufficient-gas? modal?]
+  (let [sign-enabled? (and (nil? amount-error)
+                           (or modal? (not (empty? to))) ;;NOTE(goranjovic) - contract creation will have empty `to`
+                           (not (nil? amount))
+                           sufficient-funds?
+                           sufficient-gas?)]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons
      [react/view]
      [button/button {:style               components.styles/flex
-                     :disabled?           (not immediate-sign-enabled?)
-                     :on-press            #(re-frame/dispatch [:wallet.send/set-signing? true])
+                     :disabled?           (not sign-enabled?)
+                     :on-press            #(re-frame/dispatch [:set-in
+                                                               [:wallet :send-transaction :show-password-input?]
+                                                               true])
                      :text-style          {:color :white}
                      :accessibility-label :sign-transaction-button}
       (i18n/label :t/transactions-sign-transaction)
-      [vector-icons/icon :icons/forward {:color (if immediate-sign-enabled? :white :gray)}]]]))
+      [vector-icons/icon :icons/forward {:color (if sign-enabled? :white :gray)}]]]))
 
-(defn return-to-transaction [dapp-transaction?]
-  (if dapp-transaction?
-    (re-frame/dispatch [:navigate-to-modal :wallet-send-transaction-modal])
-    (act/default-handler)))
-
-(defn handler [discard? dapp-transaction?]
-  (if discard?
-    #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-    #(return-to-transaction dapp-transaction?)))
-
-(defn- toolbar [discard? dapp-transaction? action title]
-  [toolbar/toolbar {:style wallet.styles/toolbar}
-   [toolbar/nav-button (action (handler discard? dapp-transaction?))]
-   [toolbar/content-title {:color :white} title]])
-
-(defview transaction-fee []
-  (letsubs [send-transaction            [:wallet.send/transaction]
-            unsigned-transaction        [:wallet.send/unsigned-transaction]
-            network                     [:get-current-account-network]
-            {gas-edit       :gas
-             max-fee        :max-fee
-             gas-price-edit :gas-price} [:wallet/edit]]
-    (let [modal?         (:id send-transaction)
-          ;;TODO(goranjovic) - unify unsigned and regular transaction subs
-          {:keys [amount symbol] :as transaction} (if modal? unsigned-transaction send-transaction)
-          gas            (:value gas-edit)
-          gas-price      (:value gas-price-edit)
-          {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [wallet.components/simple-screen {:status-bar-type :modal-wallet}
-       [toolbar false modal? act/close-white
-        (i18n/label :t/wallet-transaction-fee)]
-       [react/view components.styles/flex
-        [react/view {:flex-direction :row}
-
-         [react/view styles/gas-container-wrapper
-          [wallet.components/cartouche {}
-           (i18n/label :t/gas-limit)
-           [react/view styles/gas-input-wrapper
-            [react/text-input (merge styles/transaction-fee-input
-                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-value :gas %])
-                                      :default-value       gas
-                                      :accessibility-label :gas-limit-input})]]]
-          (when (:invalid? gas-edit)
-            [tooltip/tooltip (i18n/label :t/invalid-number)])]
-
-         [react/view styles/gas-container-wrapper
-          [wallet.components/cartouche {}
-           (i18n/label :t/gas-price)
-           [react/view styles/gas-input-wrapper
-            [react/text-input (merge styles/transaction-fee-input
-                                     {:on-change-text      #(re-frame/dispatch [:wallet.send/edit-value :gas-price %])
-                                      :default-value       gas-price
-                                      :accessibility-label :gas-price-input})]
-            [wallet.components/cartouche-secondary-text
-             (i18n/label :t/gwei)]]]
-          (when (:invalid? gas-price-edit)
-            [tooltip/tooltip (i18n/label (if (= :invalid-number (:invalid? gas-price-edit))
-                                           :t/invalid-number
-                                           :t/wallet-send-min-wei))])]]
-
-        [react/view styles/transaction-fee-info
-         [react/view styles/transaction-fee-info-icon
-          [react/text {:style styles/transaction-fee-info-icon-text} "?"]]
-         [react/view styles/transaction-fee-info-text-wrapper
-          [react/i18n-text {:style styles/advanced-fees-text
-                            :key   :wallet-transaction-fee-details}]]]
-        [components/separator]
-        [react/view styles/transaction-fee-block-wrapper
-         [wallet.components/cartouche {:disabled? true}
-          (i18n/label :t/amount)
-          [react/view {:accessibility-label :amount-input}
-           [wallet.components/cartouche-text-content
-            (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
-            (name symbol)]]]
-         [wallet.components/cartouche {:disabled? true}
-          (i18n/label :t/wallet-transaction-total-fee)
-          [react/view {:accessibility-label :total-fee-input}
-           [wallet.components/cartouche-text-content
-            (str max-fee " " (i18n/label :t/eth))]]]]
-
-        [bottom-buttons/bottom-buttons styles/fee-buttons
-         [button/button {:on-press            #(re-frame/dispatch [:wallet.send/reset-gas-default])
-                         :accessibility-label :reset-to-default-button}
-          (i18n/label :t/reset-default)]
-         [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details
-                                                                       (:value-number gas-edit)
-                                                                       (:value-number gas-price-edit)])
-                                                   (return-to-transaction modal?))
-                         :accessibility-label :done-button
-                         :disabled?           (or (:invalid? gas-edit)
-                                                  (:invalid? gas-price-edit))}
-          (i18n/label :t/done)]]]])))
-
-(defn- advanced-cartouche [{:keys [max-fee gas gas-price]}]
-  [react/view
-   [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
-                                                 (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
-    (i18n/label :t/wallet-transaction-fee)
-    [react/view {:style               styles/advanced-options-text-wrapper
-                 :accessibility-label :transaction-fee-button}
-     [react/text {:style styles/advanced-fees-text}
-      (str max-fee  " " (i18n/label :t/eth))]
-     [react/text {:style styles/advanced-fees-details-text}
-      (str (money/to-fixed gas) " * " (money/to-fixed (money/wei-> :gwei gas-price)) (i18n/label :t/gwei))]]]])
-
-(defn- advanced-options [advanced? transaction modal? scroll]
-  [react/view {:style styles/advanced-wrapper}
-   [react/touchable-highlight {:on-press (fn []
-                                           (re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])
-                                           (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 350)))}
-    [react/view {:style styles/advanced-button-wrapper}
-     [react/view {:style               styles/advanced-button
-                  :accessibility-label :advanced-button}
-      [react/i18n-text {:style (merge wallet.components.styles/label
-                                      styles/advanced-label)
-                        :key   :wallet-advanced}]
-      [vector-icons/icon (if advanced? :icons/up :icons/down) {:color :white}]]]]
-   (when advanced?
-     [advanced-cartouche transaction])])
-
-(defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? network]}]
-  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? sufficient-gas?
-                in-progress? from-chat? symbol]} transaction
-        {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
-        timeout (atom nil)]
+;; MAIN SEND TRANSACTION VIEW
+(defn- send-transaction-view [{:keys [modal? transaction scroll advanced? network]}]
+  (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
+                sufficient-gas? in-progress? from-chat? symbol]} transaction
+        {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}
-     [toolbar from-chat? false (if modal? act/close-white act/back-white)
-      (i18n/label :t/send-transaction)]
+     [toolbar modal? (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
       [common/network-info {:text-color :white}]
       [react/scroll-view {:keyboard-should-persist-taps :always
@@ -247,46 +159,47 @@
                                      :amount-text   amount-text
                                      :input-options {:on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
-        [advanced-options advanced? transaction modal? scroll]]]
-      (if signing?
-        [signing-buttons in-progress?
-         #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
-         #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))
+        [advanced-options advanced? transaction scroll]]]
+      (if show-password-input?
+        [enter-password-buttons in-progress?
+         #(re-frame/dispatch [:wallet/cancel-entering-password])
+         #(re-frame/dispatch [:wallet/send-transaction])
          :t/transactions-sign-transaction]
-        [sign-button amount-error to amount sufficient-funds? sufficient-gas? modal?])
-      (when signing?
-        [sign-panel :t/signing-phrase-description in-progress?])
+        [sign-transaction-button amount-error to amount sufficient-funds? sufficient-gas? modal?])
+      (when show-password-input?
+        [password-input-panel :t/signing-phrase-description in-progress?])
       (when in-progress? [react/view styles/processing-view])]]))
 
+;; SEND TRANSACTION FROM WALLET (CHAT)
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
             advanced?   [:wallet.send/advanced?]
             network     [:get-current-account-network]
             scroll      (atom nil)]
-    [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced?
-                             :network network}]))
+    [send-transaction-view {:modal? false :transaction transaction :scroll scroll :advanced? advanced?
+                            :network network}]))
 
+;; SEND TRANSACTION FROM DAPP
 (defview send-transaction-modal []
-  (letsubs [transaction [:wallet.send/unsigned-transaction]
+  (letsubs [transaction [:wallet.send/transaction]
             advanced?   [:wallet.send/advanced?]
             network     [:get-current-account-network]
             scroll      (atom nil)]
     (if transaction
-      [send-transaction-panel {:modal? true :transaction transaction :scroll scroll :advanced? advanced?
-                               :network network}]
+      [send-transaction-view {:modal? true :transaction transaction :scroll scroll :advanced? advanced?
+                              :network network}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]
-        [toolbar false false act/close-white
-         (i18n/label :t/send-transaction)]
+        [toolbar true (i18n/label :t/send-transaction)]
         [react/i18n-text {:style styles/empty-text
                           :key   :unsigned-transaction-expired}]]])))
 
+;; SIGN MESSAGE FROM DAPP
 (defview sign-message-modal []
-  (letsubs [{:keys [data in-progress?]} [:wallet.send/unsigned-transaction]]
+  (letsubs [{:keys [data in-progress?]} [:wallet.send/transaction]]
     [wallet.components/simple-screen {:status-bar-type :modal-wallet}
-     [toolbar true false act/close-white
-      (i18n/label :t/sign-message)]
+     [toolbar true (i18n/label :t/sign-message)]
      [react/view components.styles/flex
       [react/scroll-view
        [react/view styles/send-transaction-form
@@ -297,10 +210,10 @@
            :input-options {:multiline true}
            :amount-text   data}
           nil]]]]
-      [signing-buttons false
+      [enter-password-buttons false
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-       #(re-frame/dispatch [:wallet/sign-message-modal])
+       #(re-frame/dispatch [:wallet/sign-message])
        :t/transactions-sign]
-      [sign-panel :t/signing-message-phrase-description false]
+      [password-input-panel :t/signing-message-phrase-description false]
       (when in-progress?
         [react/view styles/processing-view])]]))

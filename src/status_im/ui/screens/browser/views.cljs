@@ -103,18 +103,16 @@
         [components.webview-bridge/webview-bridge
          {:dapp?                                 dapp?
           :dapp-name                             name
-          :ref                                   #(reset! webview %)
+          :ref                                   #(do
+                                                    (reset! webview %)
+                                                    (re-frame/dispatch [:set :webview-bridge %]))
           :source                                {:uri url}
           :java-script-enabled                   true
           :bounces                               false
           :local-storage-enabled                 true
           :render-error                          web-view-error
           :on-navigation-state-change            #(on-navigation-change % browser)
-          :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message
-                                                                      (js->clj (.parse js/JSON %)
-                                                                               :keywordize-keys true)
-                                                                      browser
-                                                                      webview])
+          :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message %])
           :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
           :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
                                                                                                :loading? false}])

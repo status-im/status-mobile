@@ -32,10 +32,10 @@
             [status-im.ui.screens.wallet.request.views :refer [request-transaction send-transaction-request]]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.wallet.onboarding.setup.views :as wallet.onboarding.setup]
-            [status-im.ui.screens.wallet.send.views :as wallet.send]
+            [status-im.ui.screens.wallet.transaction-fee.views :as wallet.transaction-fee]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
+            [status-im.ui.screens.wallet.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.components.views :refer [contact-code recent-recipients recipient-qr-code]]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
@@ -110,7 +110,7 @@
     :wallet-send-transaction-modal send-transaction-modal
     :wallet-transaction-sent-modal transaction-sent-modal
     :wallet-sign-message-modal sign-message-modal
-    :wallet-transaction-fee wallet.send/transaction-fee
+    :wallet-transaction-fee wallet.transaction-fee/transaction-fee
     :wallet-onboarding-setup-modal wallet.onboarding.setup/modal
     [react/view [react/text (str "Unknown modal view: " modal-view)]]))
 
@@ -135,8 +135,7 @@
            [component]])]])))
 
 (defview main []
-  (letsubs [signed-up? [:signed-up?]
-            view-id    [:get :view-id]]
+  (letsubs [view-id [:get :view-id]]
     {:component-did-mount    utils.universal-links/initialize
      :component-will-unmount utils.universal-links/finalize
      :component-will-update  (fn [] (react/dismiss-keyboard!))}

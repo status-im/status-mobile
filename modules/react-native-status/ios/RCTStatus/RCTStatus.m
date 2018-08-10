@@ -251,41 +251,28 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Approve Sign Request
-//////////////////////////////////////////////////////////////////// approveSignRequests
-RCT_EXPORT_METHOD(approveSignRequest:(NSString *)id
+#pragma mark - SendTransaction
+//////////////////////////////////////////////////////////////////// sendTransaction
+RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"ApproveSignRequest() method called");
+    NSLog(@"SendTransaction() method called");
 #endif
-    char * result = ApproveSignRequest((char *) [id UTF8String], (char *) [password UTF8String]);
+    char * result = SendTransaction((char *) [txArgsJSON UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Approve Sign Request With Args
-//////////////////////////////////////////////////////////////////// approveSignRequestWithArgs
-RCT_EXPORT_METHOD(approveSignRequestWithArgs:(NSString *)id
-                  password:(NSString *)password
-                  gas:(NSString *)gas
-                  gasPrice:(NSString *)gasPrice
+#pragma mark - SignMessage
+//////////////////////////////////////////////////////////////////// signMessage
+RCT_EXPORT_METHOD(signMessage:(NSString *)message
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"ApproveSignRequestWithArgs() method called");
+    NSLog(@"SignMessage() method called");
 #endif
-    char * result = ApproveSignRequestWithArgs((char *) [id UTF8String], (char *) [password UTF8String], (long long) [gas longLongValue], (long long) [gasPrice longLongValue]);
+    char * result = SignMessage((char *) [message UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
-}
-
-////////////////////////////////////////////////////////////////////
-#pragma mark - Discard Sign Request
-//////////////////////////////////////////////////////////////////// discardSignRequest
-RCT_EXPORT_METHOD(discardSignRequest:(NSString *)id) {
-#if DEBUG
-    NSLog(@"DiscardSignRequest() method called");
-#endif
-    DiscardSignRequest((char *) [id UTF8String]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -329,7 +316,7 @@ RCT_EXPORT_METHOD(clearStorageAPIs) {
     }
 }
 
-RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)payload
+RCT_EXPORT_METHOD(callRPC:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         char * result = CallRPC((char *) [payload UTF8String]);
@@ -339,7 +326,7 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)payload
     });
 }
 
-RCT_EXPORT_METHOD(sendWeb3PrivateRequest:(NSString *)payload
+RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         char * result = CallPrivateRPC((char *) [payload UTF8String]);

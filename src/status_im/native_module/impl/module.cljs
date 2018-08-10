@@ -54,14 +54,6 @@
   (.addListener r/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signal-event (.-jsonEvent %)])))
 
-(defn should-move-to-internal-storage? [on-result]
-  (when status
-    (call-module #(.shouldMoveToInternalStorage status on-result))))
-
-(defn move-to-internal-storage [on-result]
-  (when status
-    (call-module #(.moveToInternalStorage status on-result))))
-
 (defn stop-node []
   (when status
     (call-module #(.stopNode status))))
@@ -101,27 +93,6 @@
   (when status
     (call-module #(.login status address password on-result))))
 
-(defn approve-sign-request
-  [id password callback]
-  (log/debug :approve-sign-request (boolean status) id)
-  (when status
-    (call-module #(.approveSignRequest status id password callback))))
-
-(defn approve-sign-request-with-args
-  [id password gas gas-price callback]
-  (log/debug :approve-sign-request-with-args (boolean status) id gas gas-price)
-  (when status
-    (call-module #(.approveSignRequestWithArgs status id password gas gas-price callback))))
-
-(defn discard-sign-request
-  [id]
-  (log/debug :discard-sign-request id)
-  (when status
-    (call-module #(.discardSignRequest status id))))
-
-(defn- append-catalog-init [js]
-  (str js "\n" "var catalog = JSON.stringify(_status_catalog); catalog;"))
-
 (defn set-soft-input-mode [mode]
   (when status
     (call-module #(.setSoftInputMode status mode))))
@@ -131,13 +102,21 @@
     (call-module #(.clearCookies status))
     (call-module #(.clearStorageAPIs status))))
 
-(defn call-web3 [payload callback]
+(defn call-rpc [payload callback]
   (when status
-    (call-module #(.sendWeb3Request status payload callback))))
+    (call-module #(.callRPC status payload callback))))
 
-(defn call-web3-private [payload callback]
+(defn call-private-rpc [payload callback]
   (when status
-    (call-module #(.sendWeb3PrivateRequest status payload callback))))
+    (call-module #(.callPrivateRPC status payload callback))))
+
+(defn sign-message [rpcParams callback]
+  (when status
+    (call-module #(.signMessage status rpcParams callback))))
+
+(defn send-transaction [rpcParams password callback]
+  (when status
+    (call-module #(.sendTransaction status rpcParams password callback))))
 
 (defn close-application []
   (.closeApplication status))
