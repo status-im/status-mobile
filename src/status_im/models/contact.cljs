@@ -28,6 +28,7 @@
 (defn- add-new-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
   (let [new-contact (assoc contact
                            :pending? false
+                           :hide-contact? false
                            :public-key whisper-identity)]
     {:db            (-> db
                         (update-in [:contacts/contacts whisper-identity]
