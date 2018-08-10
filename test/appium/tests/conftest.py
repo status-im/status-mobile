@@ -1,9 +1,9 @@
-from _pytest.runner import runtestprotocol
-
-from support.test_rerun import should_rerun_test
-from tests import test_suite_data
 import requests
 import pytest
+import re
+from _pytest.runner import runtestprotocol
+from support.test_rerun import should_rerun_test
+from tests import test_suite_data
 from datetime import datetime
 from os import environ
 from io import BytesIO
@@ -143,10 +143,13 @@ def pytest_runtest_makereport(item, call):
         is_sauce_env = pytest.config.getoption('env') == 'sauce'
         current_test = test_suite_data.current_test
         if report.failed:
-            current_test.testruns[-1].error = report.longreprtext
+            error = report.longreprtext
+            exception = re.findall('E.*:', error)
+            if exception:
+                error = error.replace(re.findall('E.*:', report.longreprtext)[0], '')
+            current_test.testruns[-1].error = error
         if is_sauce_env:
             update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
-        github_report.save_test(current_test)
 
 
 def update_sauce_jobs(test_name, job_ids, passed):

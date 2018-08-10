@@ -242,7 +242,6 @@ class CrossIcon(BaseButton):
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
-
         self.send_message_button = SendMessageButton(self.driver)
         self.home_button = HomeButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
@@ -282,8 +281,6 @@ class BaseView(object):
     def accept_agreements(self):
         iterations = int()
         from views.sign_in_view import CreateAccountButton, PasswordInput
-        if self.test_fairy_warning.is_element_displayed(10):
-            self.test_fairy_warning.is_shown = True
         while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed(2) or PasswordInput(
                 self.driver).is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:

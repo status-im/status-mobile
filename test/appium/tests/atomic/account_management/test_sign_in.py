@@ -15,13 +15,9 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         username = 'test_user'
         sign_in.create_user(username=username)
-
         self.driver.close_app()
         self.driver.launch_app()
-
         sign_in.accept_agreements()
-        if not sign_in.test_fairy_warning.is_shown:
-            self.errors.append('TestFairy warning is not shown')
         if not sign_in.element_by_text(username).is_element_displayed():
             self.errors.append('Username is not shown while login')
         sign_in.sign_in()
