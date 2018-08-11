@@ -97,7 +97,11 @@
 (defn hex->bignumber [s]
   (money/bignumber (if (= s hex-prefix) 0 s)))
 
-(defn hex->address [s]
+(defn hex->address
+  "When hex value is 66 char in length (2 for 0x, 64 for
+  the 32 bytes used by abi-spec for an address), only keep
+  the part that constitute the address and normalize it,"
+  [s]
   (when (= 66 (count s))
     (normalized-address (subs s 26))))
 

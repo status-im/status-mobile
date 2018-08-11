@@ -4,11 +4,11 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]))
 
-(defn is-stateofus-name? [ens-name]
+(defn is-valid-name? [ens-name]
   (string/ends-with? ens-name ".stateofus.eth"))
 
 (defn addr [web3 registry ens-name cb]
-  {:pre [(is-stateofus-name? ens-name)]}
+  {:pre [(is-valid-name? ens-name)]}
   (ens/resolver web3
                 registry
                 ens-name
@@ -19,7 +19,7 @@
   TODO: https://solidity.readthedocs.io/en/develop/abi-spec.html needs to be implemented
   to replace this by dynamic parameters"
   [web3 registry ens-name cb]
-  {:pre [(is-stateofus-name? ens-name)]}
+  {:pre [(is-valid-name? ens-name)]}
   (ens/resolver web3
                 registry
                 ens-name

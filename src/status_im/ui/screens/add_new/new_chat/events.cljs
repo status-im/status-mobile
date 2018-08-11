@@ -17,7 +17,7 @@
  :new-chat/set-new-identity
  (fn [{{:keys [web3 network network-status] :as db} :db} [_ new-identity]]
    (let [new-identity-error (db/validate-pub-key new-identity (:account/account db))]
-     (if (stateofus/is-stateofus-name? new-identity)
+     (if (stateofus/is-valid-name? new-identity)
        (let [network (get-in db [:account/account :networks network])
              chain   (ethereum/network->chain-keyword network)]
          {:resolve-whisper-identity {:web3 web3

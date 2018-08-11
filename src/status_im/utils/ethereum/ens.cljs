@@ -19,7 +19,9 @@
 (defn namehash [s]
   (ethereum/normalized-address (if (string/blank? s)
                                  default-namehash
-                                 (let [[label remainder] (string/split s #"\." 2)]
+                                 (let [[label remainder] (-> s
+                                                             string/lower-case
+                                                             (string/split #"\." 2))]
                                    (ethereum/sha3 (+ (namehash remainder)
                                                      (subs (ethereum/sha3 label) 2))
                                                   {:encoding "hex"})))))
