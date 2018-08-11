@@ -8,3 +8,4 @@
 (def Web3                (js/require "web3"))
 (def text-encoding       (js/require "text-encoding"))
 (def js-sha3             (js/require "js-sha3"))
+(def web3-utils          (js/require "web3-utils"))

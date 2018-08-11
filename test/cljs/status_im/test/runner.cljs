@@ -37,6 +37,7 @@
             [status-im.test.utils.clocks]
             [status-im.test.utils.ethereum.eip681]
             [status-im.test.utils.ethereum.core]
+            [status-im.test.utils.ethereum.abi-spec]
             [status-im.test.utils.ethereum.ens]
             [status-im.test.utils.ethereum.mnemonic]
             [status-im.test.utils.random]
@@ -104,6 +105,7 @@
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
  'status-im.test.utils.ethereum.mnemonic
+ 'status-im.test.utils.ethereum.abi-spec
  'status-im.test.utils.ethereum.ens
  'status-im.test.utils.random
  'status-im.test.utils.gfycat.core
