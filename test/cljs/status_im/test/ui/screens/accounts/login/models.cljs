@@ -1,4 +1,4 @@
-(ns status-im.test.ui.screens.accounts.login.events
+(ns status-im.test.ui.screens.accounts.login.models
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.config :as config]
             [status-im.ui.screens.accounts.login.models :as models]))

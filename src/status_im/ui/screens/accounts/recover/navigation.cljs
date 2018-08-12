@@ -3,4 +3,4 @@
 
 (defmethod nav/preload-data! :recover
   [db]
-  (update db :accounts/recover dissoc :password :passphrase :processing))
+  (update db :accounts/recover dissoc :password :passphrase :processing?))
