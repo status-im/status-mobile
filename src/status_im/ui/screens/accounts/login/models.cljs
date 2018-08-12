@@ -7,6 +7,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.notifications :as notifications]
+            [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]))
 
 ;;;; FX
@@ -133,4 +134,4 @@
               (when (not= view-id :create-account)
                 [[:navigate-to-clean :home]
                  (universal-links/stored-url-event cofx)
-                 (notifications/stored-event address cofx)])]})
+                 (when-not platform/desktop? (notifications/stored-event address cofx))])]})
