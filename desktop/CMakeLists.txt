@@ -11,6 +11,8 @@ cmake_minimum_required(VERSION 2.8.11)
 set(APP_NAME StatusIm)
 set(REACT_BUILD_STATIC_LIB ON)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
+
 message(STATUS "EXTERNAL_MODULES_DIR: ${EXTERNAL_MODULES_DIR}")
 
 foreach(external_module ${EXTERNAL_MODULES_DIR})
