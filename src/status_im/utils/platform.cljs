@@ -25,4 +25,4 @@
   (cond
     android? android/platform-specific
     ios? ios/platform-specific
-    :else desktop/platform-specific))
+    :else (desktop/platform-specific (.-isMacOs platform))))

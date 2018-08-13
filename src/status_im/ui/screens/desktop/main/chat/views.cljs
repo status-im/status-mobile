@@ -163,6 +163,7 @@
                           :multiline      true
                           :blur-on-submit true
                           :style          styles/chat-text-input
+                          :font           :default
                           :ref            #(reset! inp-ref %)
                           :on-key-press   (fn [e]
                                             (let [native-event (.-nativeEvent e)
