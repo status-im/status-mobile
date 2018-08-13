@@ -80,9 +80,12 @@ timeout(90) {
 
         // iOS
         stage('Build (iOS)') {
+        withCredentials([string(credentialsId: 'jenkins_pass1', variable: 'password')]) {
+        sh ('security unlock-keychain -p ' + password + ' login.keychain')
           env.RCT_NO_LAUNCH_PACKAGER = true
           sh 'xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
           sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ios/archive-develop.plist'
+          }
         }
 
         stage('Deploy (iOS)') {
