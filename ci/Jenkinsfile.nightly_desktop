@@ -10,6 +10,7 @@ properties([
 env.LANG = 'en_US.UTF-8'
 env.LANGUAGE = 'en_US.UTF-8'
 env.LC_ALL = 'en_US.UTF-8'
+env.REALM_DISABLE_ANALYTICS=1
 
 app_url = ''
 dmg_url = ''
@@ -279,7 +280,7 @@ parallel(
               app_url = uploadArtifact(app_file)
             }
           }
-    
+
           slackNotify('Linux build finished successfully.')
         } catch (e) {
           slackNotify('Failed to build on Linux.', color: 'bad')

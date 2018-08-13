@@ -2,6 +2,7 @@ env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
 env.FASTLANE_DISABLE_COLORS=1
+env.REALM_DISABLE_ANALYTICS=1
 
 def installJSDeps() {
   def attempt = 1
