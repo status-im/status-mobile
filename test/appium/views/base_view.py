@@ -5,7 +5,7 @@ import base64
 import pytest
 import re
 import zbarlight
-from tests import info, common_password
+from tests import info, common_password, test_fairy_warning_text
 from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
@@ -192,7 +192,7 @@ class ConnectionStatusText(BaseText):
 class TestFairyWarning(BaseText):
     def __init__(self, driver):
         super(TestFairyWarning, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('session recording')
+        self.locator = self.Locator.text_selector(test_fairy_warning_text)
         self.is_shown = bool()
 
 
