@@ -6,25 +6,112 @@
 #     https://docs.fastlane.tools/actions
 #
 
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+# There are a few env variables defined in the .env file in
+# this directory (fastlane/.env)
+
+
+# unlocks keychain if KEYCHAIN_PASSWORD variable is present
+# (to be used on CI machines)
+def unlock_keychain_if_needed
+    if ENV["KEYCHAIN_PASSWORD"]
+        unlock_keychain(
+            path:"login.keychain", 
+            password:ENV["password"],
+            set_default: true)
+    end
+end
+
+
+# builds an ios app with ad-hoc configuration and put it 
+# to "status-adhoc" output folder
+def build_ios_adhoc
+    match(
+        type: "adhoc",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
+    )
+    build_ios_app(
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        clean: true,
+        export_method: "ad-hoc",
+        output_directory: "status-adhoc"
+    )
+end
 
 
 platform :ios do
-  desc "Deploy a new internal build to iTunes Connect"
+  desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
+  desc "This lane is used PRs, Releases, etc."
+  desc "It creates an .ipa that can be used by a list of devices, registeded in the App Store Connect."
+  desc "This .ipa is ready to be distibuted through diawi.com"
+  lane :adhoc do
+    unlock_keychain_if_needed
+    build_ios_adhoc
+  end
+
+  desc "`fastlane ios nightly` - makes a new nightly in TestFlight"
+  desc "This lane builds a new nightly and uploads it to TestFlight"
+  desc "It also leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
+    unlock_keychain_if_needed
+
+    match(
+        type: "appstore",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
+    )
+    build_ios_app(
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        clean: true,
+        export_method: "app-store",
+        output_directory: "status_appstore"
+    )
     upload_to_testflight(
       ipa: "status_appstore/StatusIm.ipa"
     )
-    slack(message: "New nightly build uploaded to iTunes Connect")
+    slack(message: "New nightly build uploaded to TestFlight")
+
+    # additional .ipa is for diawi
+    # we have to re-build it because it uses different config
+    build_ios_adhoc
   end
+
+  desc "`fastlane ios release` builds a release & uploads it to TestFlight"
   lane :release do
+    match(
+        type: "appstore",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
+    )
+    build_ios_app(
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        clean: true,
+        export_method: "app-store",
+        output_directory: "status_appstore",
+        export_options: {
+            "combileBitcode": true,
+            "uploadBitcode": false,
+            "ITSAppUsesNonExemptEncryption": false
+        }
+    )
     upload_to_testflight(
       ipa: "status_appstore/StatusIm.ipa"
     )
-    slack(message: "New release build uploaded to iTunes Connect")
+    slack(message: "New release build uploaded to TestFlight")
   end
-  desc "Remove inactive TestFlight users"
+
+  desc "`fastlane ios clean` - remove inactive TestFlight users"
+  desc "uses custom plugin, installed via"
+  desc "`sudo get install fastlane-plugin-clean_testflight_testers`"
   lane :clean do
     clean_testflight_testers
   end

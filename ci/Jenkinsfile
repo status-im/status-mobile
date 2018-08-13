@@ -24,7 +24,7 @@ def installJSDeps() {
 }
 
 timeout(90) {
-    node ('macos_pr') {
+    node ('fastlane') {
       def apkUrl = ''
       def ipaUrl = ''
       def testPassed = true
@@ -87,20 +87,22 @@ timeout(90) {
 
         // iOS
         stage('Build (iOS)') {
-          withCredentials([string(
-            credentialsId: "slave-pass-${env.NODE_NAME}",
-            variable: 'password'
-          )]) {
-            env.RCT_NO_LAUNCH_PACKAGER = true
-            sh "security unlock-keychain -p ${password} login.keychain"
-            sh 'xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
-            sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ios/archive-develop.plist'
+          withCredentials([
+              string(
+                credentialsId: "slave-pass-${env.NODE_NAME}",
+                variable: 'password'
+              ),
+              string(
+                credentialsId: 'fastlane-match-password',
+                variable:'KEYCHAIN_PASSWORD'
+              )]) {
+            sh 'fastlane ios adhoc'
           }
         }
 
         stage('Deploy (iOS)') {
           withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status-adhoc/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
             def hash = 'null'
             for (int r = 0; r < 6 && hash == 'null'; r++) {
               sh 'sleep 10'

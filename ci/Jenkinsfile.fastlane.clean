@@ -5,7 +5,7 @@ env.FASTLANE_DISABLE_COLORS=1
 env.REALM_DISABLE_ANALYTICS=1
 
 timeout(90) {
-    node ('macos'){
+    node ('fastlane'){
 
     stage('Git & Dependencies'){
 
