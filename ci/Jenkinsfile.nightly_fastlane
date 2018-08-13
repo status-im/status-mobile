@@ -1,5 +1,11 @@
 // We need nightly builds for users who want to test apps, diawi removes old builds and limits downloads, hence the need for Artifactory.
 // To see env: echo sh(returnStdout: true, script: 'env')
+properties([
+  buildDiscarder(logRotator(
+    numToKeepStr: '30',
+    daysToKeepStr: '30',
+  ))
+])
 
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
