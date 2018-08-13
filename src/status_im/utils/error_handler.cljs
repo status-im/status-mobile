@@ -1,6 +1,7 @@
 (ns status-im.utils.error-handler
   (:require [clojure.string :as string]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.instabug :as instabug]))
 
 ;; Error handling code based on https://gist.github.com/pesterhazy/e6846be1b6712a9038537022d131ce46
 
@@ -54,4 +55,6 @@
          (handle-error e isFatal)
          (if js/goog.DEBUG
            (some-> orig-handler (.call nil e isFatal))
-           (utils/show-popup "Error" (.-message e))))))))
+           (do
+             (utils/show-popup "Error" (.-message e))
+             (instabug/report-js-exception e))))))))
