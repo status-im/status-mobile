@@ -11,6 +11,8 @@
 // #define BUILD_FOR_BUNDLE
 
 #include <QCommandLineParser>
+#include <QDirIterator>
+#include <QFontDatabase>
 #include <QFile>
 #include <QGuiApplication>
 #include <QProcess>
@@ -139,12 +141,25 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
 void writeLogsToFile();
 #endif
 
+void loadFontsFromResources() {
+
+    QDirIterator it(":", QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        QString resourceFile = it.next();
+        if (resourceFile.endsWith(".otf", Qt::CaseInsensitive) || resourceFile.endsWith(".ttf", Qt::CaseInsensitive)) {
+            QFontDatabase::addApplicationFont(resourceFile);
+        }
+    }
+}
+
 int main(int argc, char **argv) {
 
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QGuiApplication app(argc, argv);
 
   Q_INIT_RESOURCE(react_resources);
+
+  loadFontsFromResources();
 
 #ifdef BUILD_FOR_BUNDLE
   qInstallMessageHandler(saveMessage);

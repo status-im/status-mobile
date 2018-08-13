@@ -19,14 +19,19 @@ if [[ $1 == "-j" ]]; then
   shift
 	JsBundlePath="$1"
 fi
+if [[ $1 == "-f" ]]; then
+  shift
+	desktopFonts="$1"
+fi
 shift
 done
 
 echo "build.sh external modules paths: "$ExternalModulesPaths
 echo "build.sh JS bundle path: "$JsBundlePath
+echo "build.sh desktop fonts: "$desktopFonts
 
 # Workaround
 rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile
 
 # Build project
-cmake -DCMAKE_BUILD_TYPE=Debug -DEXTERNAL_MODULES_DIR="$ExternalModulesPaths" -DJS_BUNDLE_PATH="$JsBundlePath" . && make
+cmake -DCMAKE_BUILD_TYPE=Debug -DEXTERNAL_MODULES_DIR="$ExternalModulesPaths" -DJS_BUNDLE_PATH="$JsBundlePath" -DDESKTOP_FONTS="$desktopFonts" . && make

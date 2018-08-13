@@ -34,6 +34,7 @@
                           :flex             1
                           :style            styles/add-contact-input
                           :selection-color  colors/hawkes-blue
+                          :font             :default
                           :on-change        (fn [e]
                                               (let [native-event (.-nativeEvent e)
                                                     text (.-text native-event)]
@@ -71,6 +72,7 @@
                                                 (.setNativeProps % (js-obj "text" "#"))
                                                 (reset! topic-input-ref %))
                            :style            styles/add-contact-input
+                           :font             :default
                            :selection-color  colors/hawkes-blue
                            :on-change        (fn [e]
                                                (let [native-event (.-nativeEvent e)
