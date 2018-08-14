@@ -12,6 +12,8 @@
 (spec/def :browser/loading? (spec/nilable boolean?))
 (spec/def :browser/url-editing? (spec/nilable boolean?))
 (spec/def :browser/show-tooltip (spec/nilable keyword?))
+(spec/def :browser/show-permission (spec/nilable map?))
+(spec/def :browser/permissions-queue (spec/nilable any?))
 
 (spec/def :browser/options
   (allowed-keys
@@ -19,6 +21,8 @@
             :browser/loading?
             :browser/url-editing?
             :browser/show-tooltip
+            :browser/show-permission
+            :browser/permissions-queue
             :browser/error?]))
 
 (spec/def :browser/browser

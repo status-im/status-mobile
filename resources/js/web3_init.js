@@ -10,8 +10,15 @@ WebViewBridge.onMessage = function (message) {
 
     else if (data.type === "status-api-success")
     {
-        window.STATUS_API = data.data;
-        window.postMessage({ type: 'STATUS_API_SUCCESS', permissions: data.keys }, "*");
+        if (data.keys == 'WEB3')
+        {
+            window.dispatchEvent(new CustomEvent('ethereumprovider', { detail: { ethereum: new StatusHttpProvider("")} }));
+        }
+        else
+        {
+            window.STATUS_API = data.data;
+            window.postMessage({ type: 'STATUS_API_SUCCESS', permissions: data.keys }, "*");
+        }
     }
 
     else if (data.type === "web3-send-async-callback")

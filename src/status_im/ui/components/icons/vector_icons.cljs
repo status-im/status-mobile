@@ -151,7 +151,8 @@
      :icons/camera              (components.svg/slurp-svg "./resources/icons/camera.svg")
      :icons/check               (components.svg/slurp-svg "./resources/icons/check.svg")
      :icons/dots                (components.svg/slurp-svg "./resources/icons/dots.svg")
-     :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")}))
+     :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")
+     :icons/settings            (components.svg/slurp-svg "./resources/icons/settings.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

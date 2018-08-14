@@ -50,16 +50,23 @@
   (merge (update-browser-fx cofx browser)
          {:dispatch [:navigate-to :browser (:browser-id browser)]}))
 
-(def permissions {constants/dapp-permission-contact-code {:label (i18n/label :t/your-contact-code)}})
+(def permissions {constants/dapp-permission-contact-code {:title       (i18n/label :t/wants-to-access-profile)
+                                                          :description (i18n/label :t/your-contact-code)
+                                                          :icon        :icons/profile-active}
+                  constants/dapp-permission-web3         {:title       (i18n/label :t/dapp-would-like-to-connect-wallet)
+                                                          :description (i18n/label :t/allowing-authorizes-this-dapp)
+                                                          :icon        :icons/wallet-active}})
 
 (defn update-dapp-permissions-fx [{:keys [db]} permissions]
-  {:db            (assoc-in db [:dapps/permissions (:dapp permissions)] permissions)
+  {:db            (-> db
+                      (assoc-in [:browser/options :show-permission] nil)
+                      (assoc-in [:dapps/permissions (:dapp permissions)] permissions))
    :data-store/tx [(dapp-permissions/save-dapp-permissions permissions)]})
 
-(defn request-permission [cofx
-                          {:keys [dapp-name index requested-permissions permissions-allowed user-permissions
-                                  permissions-data webview]
-                           :as   params}]
+(defn request-permission [{:keys [dapp-name index requested-permissions permissions-allowed user-permissions
+                                  permissions-data]
+                           :as   params}
+                          {:keys [db] :as cofx}]
   ;; iterate all requested permissions
   (if (< index (count requested-permissions))
     (let [requested-permission (get requested-permissions index)]
@@ -68,7 +75,8 @@
         ;; if permission already allowed go to next, if not, show confirmation dialog
         (if ((set user-permissions) requested-permission)
           {:dispatch [:next-dapp-permission params requested-permission permissions-data]}
-          {:show-dapp-permission-confirmation-fx [requested-permission params]})
+          {:db (assoc-in db [:browser/options :show-permission] {:requested-permission requested-permission
+                                                                 :params               params})})
         {:dispatch [:next-dapp-permission params]}))
     (assoc (update-dapp-permissions-fx cofx {:dapp        dapp-name
                                              :permissions (vec (set (concat (keys permissions-allowed)
@@ -76,19 +84,20 @@
            :send-to-bridge-fx [{:type constants/status-api-success
                                 :data permissions-allowed
                                 :keys (keys permissions-allowed)}
-                               webview])))
+                               (:webview-bridge db)]
+           :dispatch [:check-permissions-queue])))
 
-(defn next-permission [cofx params & [permission permissions-data]]
+(defn next-permission [{:keys [params permission permissions-data]} cofx]
   (request-permission
-   cofx
    (cond-> params
      true
      (update :index inc)
 
      (and permission permissions-data)
-     (assoc-in [:permissions-allowed permission] (get permissions-data permission)))))
+     (assoc-in [:permissions-allowed permission] (get permissions-data permission)))
+   cofx))
 
-(defn web3-send-async [{:keys [db]} {:keys [method] :as payload} message-id]
+(defn web3-send-async [{:keys [method] :as payload} message-id {:keys [db]}]
   (if (or (= method constants/web3-send-transaction)
           (= method constants/web3-personal-sign))
     {:db       (update-in db [:wallet :transactions-queue] conj {:message-id message-id :payload payload})

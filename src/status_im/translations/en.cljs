@@ -720,5 +720,10 @@
    :browser-secure                       "Connection is secure. Make sure you really trust this site before signing transactions or entering personal data."
    :browser-not-secure                   "Connection is not secure! Do not sign transactions or send personal data on this site."
    :make-sure-you-trust-dapp             "Make sure that you trust this DApp"
-   :would-like-to-access                 "Would like to Access"
-   :your-contact-code                    "Your Contact Code"})
+   :wants-to-access-profile              "wants to access to your profile"
+   :your-contact-code                    "Granting access authorizes this DApp to retrieve your contact code"
+   :dapp-would-like-to-connect-wallet    "would like\n to connect to your wallet"
+   :allowing-authorizes-this-dapp        "Allowing authorizes this DApp to retrieve your wallet address and enable Web3"
+   :manage-permissions                   "Manage permissions"
+   :deny                                 "Deny"
+   :allow                                "Allow"})

@@ -149,6 +149,18 @@
     :default-chat-icon      (styles/default-chat-icon-chat-list components.styles/default-chat-color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
+(defn dapp-icon-permission [contact size]
+  [contact-icon-view contact
+   {:container              {:width size :height size}
+    :online-view-wrapper    styles/online-view-wrapper
+    :online-view            styles/online-view
+    :online-dot-left        styles/online-dot-left
+    :online-dot-right       styles/online-dot-right
+    :size                   size
+    :chat-icon              (styles/custom-size-icon size)
+    :default-chat-icon      (styles/default-chat-icon-profile components.styles/default-chat-color size)
+    :default-chat-icon-text styles/default-chat-icon-text}])
+
 (defn profile-icon-view [photo-path name color edit? size]
   (let [styles {:container              {:width size :height size}
                 :online-view            styles/online-view-profile

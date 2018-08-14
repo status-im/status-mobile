@@ -135,6 +135,12 @@
                                                                 :permissions ["FAKE_PERMISSION"]})
                            nil nil])
 
+       (re-frame/dispatch [:next-dapp-permission
+                           {:dapp-name             dapp-name
+                            :index                 0
+                            :requested-permissions ["FAKE_PERMISSION"]
+                            :permissions-data "Data"}])
+
        (is (= {:dapp        dapp-name
                :permissions []}
               (get @dapps-permissions dapp-name)))
@@ -143,6 +149,14 @@
                                                                 :host        dapp-name
                                                                 :permissions ["CONTACT_CODE"]})
                            nil nil])
+
+       (re-frame/dispatch [:next-dapp-permission
+                           {:dapp-name             dapp-name
+                            :index                 0
+                            :requested-permissions ["CONTACT_CODE"]
+                            :permissions-data {"CONTACT_CODE" "Data"}}
+                           "CONTACT_CODE"
+                           {"CONTACT_CODE" "Data"}])
 
        (is (= 1 (count @dapps-permissions)))
 
@@ -176,6 +190,12 @@
                                                                 :host        dapp-name2
                                                                 :permissions ["CONTACT_CODE"]})
                            nil nil])
+
+       (re-frame/dispatch [:next-dapp-permission
+                           {:dapp-name             dapp-name2
+                            :index                 0
+                            :requested-permissions ["CONTACT_CODE" "FAKE_PERMISSION"]
+                            :permissions-data "Data"}])
 
        (is (= 2 (count @dapps-permissions)))
 

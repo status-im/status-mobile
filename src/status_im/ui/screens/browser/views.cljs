@@ -20,7 +20,8 @@
             [status-im.utils.http :as http]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.colors :as colors]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.ui.screens.browser.permissions.views :as permissions.views]))
 
 (def browser-config
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
@@ -55,6 +56,21 @@
         [react/touchable-highlight {:style {:flex 1} :on-press #(re-frame/dispatch [:update-browser-options {:url-editing? true}])}
          [react/text {:style styles/url-text} (http/url-host url)]])]]))
 
+(defn toolbar [webview error? url browser browser-id url-editing?]
+  [toolbar.view/toolbar {}
+   [toolbar.view/nav-button-with-count
+    (actions/close (fn []
+                     (when @webview
+                       (.sendToBridge @webview "navigate-to-blank"))
+                     (re-frame/dispatch [:navigate-back])
+                     (when error?
+                       (re-frame/dispatch [:remove-browser browser-id]))))]
+   [toolbar-content url browser error? url-editing?]
+   [toolbar.view/actions [{:icon      :icons/wallet
+                           :icon-opts {:color               :black
+                                       :accessibility-label :wallet-modal-button}
+                           :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}]]])
+
 (defn- web-view-error [_ code desc]
   (reagent/as-element
    [react/view styles/web-view-error
@@ -74,11 +90,30 @@
   (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
     (get (:inject-js browser-config) domain-name)))
 
+(defn navigation [webview browser can-go-back? can-go-forward?]
+  [react/view styles/toolbar
+   [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-back browser])
+                               :disabled            (not can-go-back?)
+                               :style               (when-not can-go-back? styles/disabled-button)
+                               :accessibility-label :previou-page-button}
+    [react/view
+     [icons/icon :icons/arrow-left]]]
+   [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-forward browser])
+                               :disabled            (not can-go-forward?)
+                               :style               (merge styles/forward-button
+                                                           (when-not can-go-forward? styles/disabled-button))
+                               :accessibility-label :next-page-button}
+    [react/view
+     [icons/icon :icons/arrow-right]]]
+   [react/view {:flex 1}]
+   [react/touchable-highlight {:on-press #(.reload @webview)}
+    [icons/icon :icons/refresh]]])
+
 (views/defview browser []
   (views/letsubs [webview    (atom nil)
                   {:keys [address]} [:get-current-account]
                   {:keys [browser-id dapp? name] :as browser} [:get-current-browser]
-                  {:keys [error? loading? url-editing? show-tooltip]} [:get :browser/options]
+                  {:keys [error? loading? url-editing? show-tooltip show-permission]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]
                   network-id [:get-network-id]]
     (let [can-go-back?    (model/can-go-back? browser)
@@ -86,19 +121,7 @@
           url             (model/get-current-url browser)]
       [react/view styles/browser
        [status-bar/status-bar]
-       [toolbar.view/toolbar {}
-        [toolbar.view/nav-button-with-count
-         (actions/close (fn []
-                          (when @webview
-                            (.sendToBridge @webview "navigate-to-blank"))
-                          (re-frame/dispatch [:navigate-back])
-                          (when error?
-                            (re-frame/dispatch [:remove-browser browser-id]))))]
-        [toolbar-content url browser error? url-editing?]
-        [toolbar.view/actions [{:icon      :icons/wallet
-                                :icon-opts {:color               :black
-                                            :accessibility-label :wallet-modal-button}
-                                :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}]]]
+       [toolbar webview error? url browser browser-id url-editing?]
        [react/view components.styles/flex
         [components.webview-bridge/webview-bridge
          {:dapp?                                 dapp?
@@ -126,23 +149,8 @@
         (when loading?
           [react/view styles/web-view-loading
            [components/activity-indicator {:animating true}]])]
-       [react/view styles/toolbar
-        [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-back browser])
-                                    :disabled            (not can-go-back?)
-                                    :style               (when-not can-go-back? styles/disabled-button)
-                                    :accessibility-label :previou-page-button}
-         [react/view
-          [icons/icon :icons/arrow-left]]]
-        [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser-nav-forward browser])
-                                    :disabled            (not can-go-forward?)
-                                    :style               (merge styles/forward-button
-                                                                (when-not can-go-forward? styles/disabled-button))
-                                    :accessibility-label :next-page-button}
-         [react/view
-          [icons/icon :icons/arrow-right]]]
-        [react/view {:flex 1}]
-        [react/touchable-highlight {:on-press #(.reload @webview)}
-         [icons/icon :icons/refresh]]]
+       [navigation webview browser can-go-back? can-go-forward?]
+       [permissions.views/permissions-anim-panel browser show-permission]
        (when show-tooltip
          [tooltip/bottom-tooltip-info
           (if (= show-tooltip :secure)

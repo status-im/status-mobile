@@ -24,5 +24,12 @@
                 host: window.location.hostname
             });
         }
+        else if (event.data.type === 'ETHEREUM_PROVIDER_REQUEST') {
+            bridgeSend({
+                type: 'status-api-request',
+                permissions: ['WEB3'],
+                host: window.location.hostname
+            });
+        }
     });
 }());
