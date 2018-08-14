@@ -150,7 +150,10 @@ timeout(90) {
       }
 
       stage('Build (Android) for e2e tests') {
-        sh 'cd android && mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release.original.apk && ENVFILE=.env.e2e ./gradlew assembleRelease'
+        sh 'cd android && \
+        mv app/build/outputs/apk/release/app-release.apk \
+        app/build/outputs/apk/release/app-release.original.apk \
+        && ENVFILE=.env.e2e ./gradlew assembleRelease'
       }
 
       stage('Upload apk for e2e tests') {

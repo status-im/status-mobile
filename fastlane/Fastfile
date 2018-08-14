@@ -156,9 +156,6 @@ platform :ios do
         export_method: "app-store",
         output_directory: "status_appstore"
     )
-    upload_to_testflight(
-        ipa: "status_appstore/StatusIm.ipa"
-    )
 
     slack(
         message: "New nightly build uploaded to TestFlight",
@@ -227,7 +224,6 @@ platform :ios do
     )
   end
 
-
   desc "This fastlane step is a workaround!"
   desc "every now and then Realm fails on iOS on the 'Download Core` step"
   desc "the issue is because multiple downloads use the same temp dir"
@@ -241,6 +237,10 @@ platform :ios do
       )
   end
 
+  desc "This fastlane step cleans up XCode DerivedData folder"
+  lane :cleanup do
+    clear_derived_data
+  end
 end
 
 

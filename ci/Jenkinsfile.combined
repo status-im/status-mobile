@@ -1,0 +1,115 @@
+pipeline {
+  agent { label 'master' }
+
+  options {
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '30',
+      artifactNumToKeepStr: '10',
+    ))
+  }
+  
+  stages {
+    stage('Tag') {
+      steps { script {
+        common = load('ci/common.groovy')
+        /* to avoid race conditions in parallel builds */
+        print "Build Number: ${common.tagBuild()}"
+      } }
+    }
+    stage('Build') {
+      parallel {
+        stage('MacOS') {
+          steps { script {
+            osx = build('status-react/combined/desktop-macos')
+          } }
+        }
+        stage('Linux') {
+          steps { script {
+            nix = build('status-react/combined/desktop-linux')
+          } }
+        }
+        stage('iOS') {
+          steps { script {
+            ios = build('status-react/combined/mobile-ios')
+          } }
+        }
+        stage('Android') {
+          steps { script {
+            dro = build('status-react/combined/mobile-android')
+          } }
+        }
+        stage('Android e2e') {
+          steps {
+            build('status-react/combined/mobile-android-e2e')
+          }
+        }
+      }
+    }
+    stage('Archive') {
+      steps {
+        sh('rm -f pkg/*')
+        copyArtifacts(
+          projectName: 'status-react/combined/mobile-ios', target: 'pkg',
+          flatten: true, selector: specific("${ios.number}")
+        )
+        copyArtifacts(
+          projectName: 'status-react/combined/mobile-android', target: 'pkg',
+          flatten: true, selector: specific("${dro.number}")
+        )
+        copyArtifacts(
+          projectName: 'status-react/combined/desktop-macos', target: 'pkg',
+          flatten: true, selector: specific("${osx.number}")
+        )
+        copyArtifacts(
+          projectName: 'status-react/combined/desktop-linux', target: 'pkg',
+          flatten: true, selector: specific("${nix.number}")
+        )
+        archiveArtifacts('pkg/*')
+      }
+    }
+    stage('Upload') {
+      when { expression { params.PUBLISH } }
+      steps { script {
+        def pkg = "pkg/StatusIm-${GIT_COMMIT.take(6)}"
+        apkUrl = common.uploadArtifact("${pkg}.apk")
+        ipaUrl = common.uploadArtifact("${pkg}.ipa")
+        dmgUrl = common.uploadArtifact("${pkg}.dmg")
+        appUrl = common.uploadArtifact("${pkg}.AppImage")
+      } }
+    }
+    stage('Notify') {
+      steps {
+        slackSend(
+          message: (
+            "Build success! "+
+            "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
+            "(${currentBuild.durationString})\n"+
+            (params.PUBLISH ?
+              "APK: ${apkUrl}\n"+
+              "IPA: ${ipaUrl}\n"+
+              "DMG: ${dmgUrl}\n"+
+              "APP: ${appUrl}\n"
+            : '')
+          ),
+          color: 'good'
+        )
+      }
+    }
+    stage('Publish') {
+      when { expression { params.PUBLISH } }
+      steps {
+        build(
+          job: 'misc/status-im.github.io-update_env',
+          parameters: [
+            [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
+            [name: 'IOS_URL', value: ipaUrl, $class: 'StringParameterValue'],
+            [name: 'DMG_URL', value: dmgUrl, $class: 'StringParameterValue'],
+            [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue']
+          ]
+        )
+      }
+    }
+  }
+}

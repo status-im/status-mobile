@@ -1,0 +1,47 @@
+pipeline {
+  agent { label 'linux-new' }
+
+  options {
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '30',
+      artifactNumToKeepStr: '1',
+    ))
+  }
+  
+  environment {
+    LANG = 'en_US.UTF-8'
+    LANGUAGE = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
+  }
+  
+  stages {
+    stage('Prep') {
+      steps {
+        script {
+          /* Necessary to load methods */
+          desktop = load 'ci/desktop.groovy'
+          desktop.prepDeps()
+        }
+      }
+    }
+    stage('Build') {
+      steps {
+        script { desktop.buildClojureScript() }
+      }
+    }
+    stage('Compile') {
+      steps {
+        script { desktop.compileLinux() }
+      }
+    }
+    stage('Bundle') {
+      steps {
+        script { app = desktop.bundleLinux() }
+      }
+    }
+    stage('Archive') {
+      steps { archiveArtifacts app }
+    }
+  }
+}
