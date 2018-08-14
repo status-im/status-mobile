@@ -151,18 +151,19 @@ timeout(90) {
       }
 
       stage('Upload apk for e2e tests') {
-        withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){
-          apk_name = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
-          sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
-        }
-
-        withCredentials([
-            string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
-            string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
-            string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
-        ]) {
-            sh 'fastlane android upload_diawi'
-        }
+          if (env.CHANGE_ID != null) {
+              env.SAUCE_LABS_APK = 'im.status.ethereum-e2e-' + env.CHANGE_ID + '.apk'
+              withCredentials([
+                  string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
+                  string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+                  string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+                  string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+                  string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+              ]) {
+                sh 'fastlane android saucelabs'
+                sh 'fastlane android upload_diawi'
+              }
+          }
       }
 
       stage('Slack Notification') {
@@ -171,7 +172,7 @@ timeout(90) {
       }
 
       stage('Run extended e2e tests') {
-        build job: 'end-to-end-tests/status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + apk_name)], wait: false
+        build job: 'end-to-end-tests/status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + env.SAUCE_LABS_APK)], wait: false
       }
     }
 }

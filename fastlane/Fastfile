@@ -22,6 +22,33 @@ def unlock_keychain_if_needed
 end
 
 
+# uploads `file` to sauce labs (overwrites if there is anoter file from the
+# same commit)
+def upload_to_saucelabs(file)
+    username = ENV["SAUCE_USERNAME"]
+    key = ENV["SAUCE_ACCESS_KEY"]
+    unique_name = ENV["SAUCE_LABS_APK"]
+
+    url = "https://saucelabs.com/rest/v1/storage/" + username + '/' + unique_name + "?overwrite=true"
+
+    upload_result = sh(
+        "curl",
+        "-u", username + ':' + key,
+        "-X", "POST", 
+        "-H", "Content-Type: application/octet-stream",
+        url,
+        # this command has `status-react/fastlane` as cwd
+        # so we need to jump outside this folder to get a file
+        "--data-binary", "@" + "../" + file
+    )
+
+    # fail the lane if upload fails
+    UI.user_error!(
+        "failed to upload file to saucelabs: " + upload_result
+    ) unless upload_result.include? "filename"
+end
+
+
 # builds an ios app with ad-hoc configuration and put it 
 # to "status-adhoc" output folder
 def build_ios_adhoc
@@ -208,7 +235,7 @@ platform :android do
     )
   end
 
-  desc "`fastlane android upload-diawi` - upload .ipa to diawi"
+  desc "`fastlane android upload_diawi` - upload .apk to diawi"
   desc "also notifies in a GitHub comments and in Slack #jenkins channel"
   desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
   desc "expects to have a diawi token as DIAWI_TOKEN env variable"
@@ -217,6 +244,19 @@ platform :android do
   desc "will fails if file isn't there"
   lane :upload_diawi do
     upload_to_diawi_and_notify(
+        "android/app/build/outputs/apk/release/app-release.apk"
+    )
+  end
+
+  desc "`fastlane android saucelabs` - upload .apk to sauce labs"
+  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
+  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
+  desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
+  desc "expects to have a saucelabs destination name as SAUCE_LABS_APK env variable"
+  desc "will fails if file isn't there"
+  lane :saucelabs do
+    upload_to_saucelabs(
         "android/app/build/outputs/apk/release/app-release.apk"
     )
   end
