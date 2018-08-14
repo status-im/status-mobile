@@ -110,7 +110,7 @@
 (re-frame/reg-fx
  :initialize-geth-fx
  (fn [config]
-   (status/start-node (types/clj->json config))))
+   (status/start-node (types/clj->json config) config/fleet)))
 
 (re-frame/reg-fx
  ::status-module-initialized-fx

@@ -65,7 +65,8 @@ RCT_EXPORT_MODULE();
 ////////////////////////////////////////////////////////////////////
 #pragma mark - startNode
 //////////////////////////////////////////////////////////////////// startNode
-RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
+RCT_EXPORT_METHOD(startNode:(NSString *)configString
+                      fleet:(NSString *)fleet) {
 #if DEBUG
     NSLog(@"StartNode() method called");
 #endif
@@ -116,7 +117,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
     NSString *devCluster = [ReactNativeConfig envFor:@"ETHEREUM_DEV_CLUSTER"];
     NSString *logLevel = [[ReactNativeConfig envFor:@"LOG_LEVEL_STATUS_GO"] uppercaseString];
-    char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId);
+    char *configChars = GenerateConfig((char *)[networkDir UTF8String], (char *)[fleet UTF8String], networkId);
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
@@ -139,6 +140,9 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
         [resultingConfigJson setValue:bootnodes forKeyPath:@"ClusterConfig.BootNodes"];
     }
 
+    if([fleet length] > 0) {
+        [resultingConfigJson setValue:fleet forKeyPath:@"ClusterConfig.Fleet"];
+    }
 
     NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);

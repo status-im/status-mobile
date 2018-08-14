@@ -58,9 +58,9 @@
   (when status
     (call-module #(.stopNode status))))
 
-(defn start-node [config]
+(defn start-node [config fleet]
   (when status
-    (call-module #(.startNode status config))))
+    (call-module #(.startNode status config fleet))))
 
 (defonce account-creation? (atom false))
 

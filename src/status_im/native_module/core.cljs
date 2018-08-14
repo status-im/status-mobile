@@ -3,8 +3,8 @@
 
 (def adjust-resize 16)
 
-(defn start-node [config]
-  (native-module/start-node config))
+(defn start-node [config fleet]
+  (native-module/start-node config fleet))
 
 (defn stop-node []
   (native-module/stop-node))

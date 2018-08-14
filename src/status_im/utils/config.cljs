@@ -26,6 +26,7 @@
       string/lower-case
       keyword))
 
+(def fleet (get-config :FLEET "eth.beta"))
 (def add-custom-mailservers-enabled? (enabled? (get-config :ADD_CUSTOM_MAILSERVERS_ENABLED "1")))
 (def rn-bridge-threshold-warnings-enabled? (enabled? (get-config :RN_BRIDGE_THRESHOLD_WARNINGS 0)))
 (def default-network (get-config :DEFAULT_NETWORK))

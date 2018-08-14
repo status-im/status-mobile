@@ -43,6 +43,7 @@ timeout(90) {
         sh 'echo MAINNET_NETWORKS_ENABLED='    + MAINNET_NETWORKS_ENABLED     + '>>' + '.env'
         sh 'echo LOG_LEVEL='                   + LOG_LEVEL                    + '>>' + '.env'
         sh 'echo LOG_LEVEL_STATUS_GO='         + LOG_LEVEL_STATUS_GO          + '>>' + '.env'
+        sh 'echo FLEET='                       + FLEET                        + '>>' + '.env'
         sh 'echo OFFLINE_INBOX_ENABLED='       + OFFLINE_INBOX_ENABLED        + '>>' + '.env'
         sh 'echo POW_TARGET='                  + POW_TARGET                   + '>>' + '.env'
         sh 'echo POW_TIME='                    + POW_TIME                     + '>>' + '.env'
