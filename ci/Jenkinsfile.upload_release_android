@@ -80,7 +80,18 @@ timeout(90) {
         }
 
         stage('Deploy (Android)') {
-          sh ('bundle exec fastlane android release')
+          withCredentials([
+              string(
+                credentialsId: "SUPPLY_JSON_KEY_DATA",
+                variable: 'GOOGLE_PLAY_JSON_KEY'
+              ),
+              string(
+                credentialsId: "SLACK_URL",
+                variable: 'SLACK_URL'
+              )
+          ]) {
+              sh ('bundle exec fastlane android release')
+          }
         }
       } catch (e) {
         slackSend color: 'bad', message: 'Release build failed uploading to the Play Market. ' + env.BUILD_URL

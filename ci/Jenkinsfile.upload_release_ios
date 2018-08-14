@@ -76,16 +76,11 @@ timeout(90) {
 
         stage('Build & TestFlight (iOS)') {
           withCredentials([
-              string(
-                credentialsId: "slave-pass-${env.NODE_NAME}",
-                variable: 'KEYCHAIN_PASSWORD'
-              ),
-              string(
-                credentialsId: 'fastlane-match-password',
-                variable:'MATCH_PASSWORD'
-              )]) {
-
-
+              string(credentialsId: "slave-pass-${env.NODE_NAME}", variable: 'KEYCHAIN_PASSWORD'),
+              string(credentialsId: "SLACK_URL", variable: 'SLACK_URL'),
+              string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
+              string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID'),
+              string(credentialsId: 'fastlane-match-password', variable:'MATCH_PASSWORD')]) {
                 sh "plutil -replace CFBundleShortVersionString  -string ${version} ios/StatusIm/Info.plist"
                 sh "plutil -replace CFBundleVersion  -string ${build_no} ios/StatusIm/Info.plist"
                 sh 'fastlane ios release'
