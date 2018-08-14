@@ -53,7 +53,6 @@ timeout(90) {
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
           sh 'cd ios && pod install && cd ..'
         }
-
         stage('Code style checks') {
             sh 'lein cljfmt check'
         }
@@ -72,16 +71,12 @@ timeout(90) {
         }
 
         stage('Deploy (Android)') {
-          withCredentials([string(credentialsId: 'diawi-token', variable: 'token')] ) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-            def hash = 'null'
-            for (int r = 0; r < 6 && hash == 'null'; r++) {
-              sh 'sleep 10'
-              hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-            }
-            apkUrl = 'https://i.diawi.com/' + hash
-
-            sh ('echo ARTIFACT Android: ' + apkUrl)
+          withCredentials([
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+            sh 'fastlane android upload_diawi'
           }
         }
 
@@ -101,28 +96,12 @@ timeout(90) {
         }
 
         stage('Deploy (iOS)') {
-          withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status-adhoc/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-            def hash = 'null'
-            for (int r = 0; r < 6 && hash == 'null'; r++) {
-              sh 'sleep 10'
-              hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-            }
-            ipaUrl = 'https://i.diawi.com/' + hash
-
-            sh ('echo ARTIFACT iOS: ' + ipaUrl)
-          }
-        }
-
-        stage('Slack/GH Notifications') {
-          def c = (testPassed ? 'good' : 'warning' )
-
-          slackSend color: c, message: ('Branch: ' + BRANCH_NAME + '\nAndroid: ' + apkUrl + '\niOS: ' + ipaUrl);
-
-          withCredentials([string(credentialsId: 'GIT_HUB_TOKEN', variable: 'githubToken')]) {
-            def commentMsg = ("branch " + BRANCH_NAME + ":\\napk uploaded to " + apkUrl + "\\nipa uploaded to " + ipaUrl)
-            def ghOutput = sh(returnStdout: true, script: "curl -u status-im:" + githubToken + " -H 'Content-Type: application/json'  --data '{\"body\": \"" + commentMsg + "\"}' https://api.github.com/repos/status-im/status-react/issues/" + CHANGE_ID + "/comments")
-            println("Result of github comment curl: " + ghOutput);
+          withCredentials([
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+            sh 'fastlane ios upload_diawi'
           }
         }
 
@@ -132,20 +111,24 @@ timeout(90) {
         }
 
         stage('Upload apk for e2e tests') {
-          if (env.CHANGE_ID != null){
-          withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){
-            def apk_name = env.CHANGE_ID + '.apk'
-            sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
-          }
-          withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-            sh 'sleep 10'
-            def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-            apkUrl = 'https://i.diawi.com/' + hash
+          if (env.CHANGE_ID != null) {
 
-            sh ('echo ARTIFACT Android for e2e tests: ' + apkUrl)
+              withCredentials([
+                  string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'),
+                  string(credentialsId: 'SAUCE_USERNAME', variable: 'username')
+              ]) {
+                def apk_name = env.CHANGE_ID + '.apk'
+                sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
+              }
+
+              withCredentials([
+                  string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+                  string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+                  string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+              ]) {
+                sh 'fastlane android upload_diawi'
+              }
           }
-         }
         }
 
       } catch (e) {

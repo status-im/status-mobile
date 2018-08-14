@@ -42,6 +42,47 @@ def build_ios_adhoc
 end
 
 
+def notify_about_new_build(source, url)
+
+    msg = "Branch: " + ENV["BRANCH_NAME"] + ", "
+
+    if source.end_with? ".ipa"
+        msg = msg + "iOS build uploaded to diawi: " + url
+    else
+        msg = msg + "Android build uploaded to diawi: " + url
+    end
+
+    slack(
+        message: msg,
+        slack_url: ENV["SLACK_URL"]
+    )
+
+    github_api(
+        server_url: "https://api.github.com",
+        api_token: ENV["GITHUB_TOKEN"],
+        http_method: "POST",
+        path: "/repos/status-im/status-react/issues/" + ENV["CHANGE_ID"] + "/comments",
+        body: {
+           "body": msg
+        }
+    )
+
+end
+
+
+def upload_to_diawi_and_notify(source)
+    diawi(
+        token: ENV["DIAWI_TOKEN"],
+        file: source
+    )
+
+    notify_about_new_build(
+        source,
+        lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI]
+    )
+end
+
+
 platform :ios do
   desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
   desc "This lane is used PRs, Releases, etc."
@@ -122,6 +163,19 @@ platform :ios do
   lane :clean do
     clean_testflight_testers
   end
+
+  desc "`fastlane ios upload-diawi` - upload .ipa to diawi"
+  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
+  desc "expects to have an .ipa prepared: `status-adhoc/StatusIm.ipa`"
+  desc "expects to have a diawi token as DIAWI_TOKEN env variable"
+  desc "expects to have a github token as GITHUB_TOKEN env variable"
+  desc "expects to have a slack webhook URL as SLACK_URL env variable"
+  desc "will fails if file isn't there"
+  lane :upload_diawi do
+    upload_to_diawi_and_notify(
+        "status-adhoc/StatusIm.ipa"
+    )
+  end
 end
 
 
@@ -151,6 +205,19 @@ platform :android do
     slack(
         message: "New release build uploaded to Google Play",
         slack_url: ENV["SLACK_URL"]
+    )
+  end
+
+  desc "`fastlane android upload-diawi` - upload .ipa to diawi"
+  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
+  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have a diawi token as DIAWI_TOKEN env variable"
+  desc "expects to have a github token as GITHUB_TOKEN env variable"
+  desc "expects to have a slack webhook URL as SLACK_URL env variable"
+  desc "will fails if file isn't there"
+  lane :upload_diawi do
+    upload_to_diawi_and_notify(
+        "android/app/build/outputs/apk/release/app-release.apk"
     )
   end
 end

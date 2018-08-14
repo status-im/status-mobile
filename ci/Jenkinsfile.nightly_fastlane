@@ -123,13 +123,12 @@ timeout(90) {
         }
 
         stage('Deploy diawi (iOS)') {
-          withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status-adhoc/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-            sh 'sleep 10'
-            def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-            ipaUrl = 'https://i.diawi.com/' + hash
-
-            sh ('echo ARTIFACT iOS: ' + ipaUrl)
+          withCredentials([
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+              sh 'fastlane ios upload_diawi'
           }
         }
       } catch (e) {
@@ -156,13 +155,13 @@ timeout(90) {
           apk_name = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
           sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
         }
-        withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-          def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-          sh 'sleep 10'
-          def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-          testApkUrl = 'https://i.diawi.com/' + hash
 
-          sh ('echo ARTIFACT Android for e2e tests: ' + testApkUrl)
+        withCredentials([
+            string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+            string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+            string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+        ]) {
+            sh 'fastlane android upload_diawi'
         }
       }
 
