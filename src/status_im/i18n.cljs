@@ -233,18 +233,110 @@
 ;; NOTE: the rest checkpoints are based on the previous one, defined
 ;;       like this:
 ;; (def checkpoint-2-labels (set/union checkpoint-1-labels #{:foo :bar})
-;; (def checkpoint-3-labels (set/union checkpoint-2-labels #{:baz})
+(def checkpoint-0-9-21-labels (set/union checkpoint-0-9-12-labels
+                                         #{:disconnected :connection-problem :mailserver-reconnect :fetching-messages
+                                           :enter-url :open-dapp :type-a-command :add :on :off
+                                           :mailserver-connection-error :status-console :intro-text
+                                           :intro-text-description :create-account :already-have-account
+                                           :creating-your-account :password-placeholder :password-placeholder2
+                                           :name-placeholder :password_error1 :password-description :name-description
+                                           :other-accounts :sign-you-in :help-improve :help-improve?
+                                           :help-improve-description :learn-what-we-collect-link :share-usage-data
+                                           :dont-want-to-share :confirmation-title :confirmation-text :confirmation-action
+                                           :logout-title :logout-are-you-sure :logout :home :no-recent-chats
+                                           :welcome-to-status :welcome-to-status-description :network-mismatch
+                                           :status-not-sent :message-not-sent :resend-message :delete-message
+                                           :view-profile :main-currency :notifications :phone-number
+                                           :share-contact-code :contact-code :send-message :dev-mode
+                                           :backup-your-seed :your-data-belongs-to-you :your-data-belongs-to-you-description
+                                           :ok-continue :your-seed-phrase :your-seed-phrase-description :enter-word
+                                           :check-your-seed :wrong-word :are-you-sure? :are-you-sure-description
+                                           :you-are-all-set :you-are-all-set-description :ok-got-it
+                                           :backup-seed-phrase :step-i-of-n :word-n-description :word-n
+                                           :wallet-onboarding-title :wallet-onboarding-description
+                                           :wallet-onboarding-set-up :wallet-set-up-title :wallet-set-up-signing-phrase
+                                           :wallet-set-up-confirm-title :wallet-set-up-confirm-description
+                                           :wallet-backup-seed-title :wallet-backup-seed-description
+                                           :browsing-open-in-browser :contacts-syncronized :confirmation-code
+                                           :incorrect-code :phone-number-required :phone-e164 :phone-international
+                                           :phone-significant :new :new-chat :start-new-chat :start-group-chat
+                                           :invite-friends :get-status-at :group-chat :group-info
+                                           :delete-chat-confirmation :delete-group-chat-confirmation
+                                           :public-chat :topic-name-error :set-a-topic :empty-chat-description
+                                           :empty-chat-description-console :empty-chat-description-one-to-one
+                                           :counter-99-plus :show-more :show-less :qr-code-public-key-hint
+                                           :enter-contact-code :create :delete-confirmation :leave
+                                           :leave-confirmation :clear :clear-history-title
+                                           :clear-history-confirmation-content :clear-history-confirmation
+                                           :clear-history-action :leave-group-action :leave-group-title
+                                           :leave-group-confirmation :leave-group-chat-confirmation :leave-group-chat
+                                           :leave-group :remove-from-chat :delete-chat-title :leave-public-chat
+                                           :specify-name :unable-to-read-this-code :use-valid-contact-code
+                                           :sign-in-to-another :enter-12-words :add-existing-account :invalid-phone
+                                           :invalid-number :specify-recipient :recipient-code :recent-recipients
+                                           :incoming :outgoing :pending :postponed :wallet-send-token :wallet-asset
+                                           :wallet-manage-assets :sign-message :signing-message-phrase-description
+                                           :receive :request-qr-legend :send-transaction-request
+                                           :gwei :currency-display-name-aed :currency-display-name-afn
+                                           :currency-display-name-ars :currency-display-name-aud :currency-display-name-bbd
+                                           :currency-display-name-bdt :currency-display-name-bgn :currency-display-name-bhd
+                                           :currency-display-name-bmd :currency-display-name-bnd :currency-display-name-bob
+                                           :currency-display-name-brl :currency-display-name-btn :currency-display-name-bzd
+                                           :currency-display-name-cad :currency-display-name-chf :currency-display-name-clp
+                                           :currency-display-name-cny :currency-display-name-cop :currency-display-name-crc
+                                           :currency-display-name-czk :currency-display-name-dkk :currency-display-name-dop
+                                           :currency-display-name-egp :currency-display-name-etb :currency-display-name-eur
+                                           :currency-display-name-gbp :currency-display-name-gel :currency-display-name-ghs
+                                           :currency-display-name-gmd :currency-display-name-gyd :currency-display-name-hkd
+                                           :currency-display-name-hrk :currency-display-name-huf :currency-display-name-idr
+                                           :currency-display-name-ils :currency-display-name-inr :currency-display-name-isk
+                                           :currency-display-name-jmd :currency-display-name-jpy :currency-display-name-kes
+                                           :currency-display-name-krw :currency-display-name-kwd :currency-display-name-kyd
+                                           :currency-display-name-kzt :currency-display-name-lak :currency-display-name-lkr
+                                           :currency-display-name-lrd :currency-display-name-ltl :currency-display-name-mad
+                                           :currency-display-name-mdl :currency-display-name-mkd :currency-display-name-mnt
+                                           :currency-display-name-mur :currency-display-name-mwk :currency-display-name-mxn
+                                           :currency-display-name-myr :currency-display-name-mzn :currency-display-name-nad
+                                           :currency-display-name-ngn :currency-display-name-nio :currency-display-name-nok
+                                           :currency-display-name-npr :currency-display-name-nzd :currency-display-name-omr
+                                           :currency-display-name-pen :currency-display-name-pgk :currency-display-name-php
+                                           :currency-display-name-pkr :currency-display-name-pln :currency-display-name-pyg
+                                           :currency-display-name-qar :currency-display-name-ron :currency-display-name-rsd
+                                           :currency-display-name-rub :currency-display-name-sar :currency-display-name-sek
+                                           :currency-display-name-sgd :currency-display-name-sos :currency-display-name-srd
+                                           :currency-display-name-thb :currency-display-name-ttd :currency-display-name-twd
+                                           :currency-display-name-tzs :currency-display-name-try :currency-display-name-uah
+                                           :currency-display-name-ugx :currency-display-name-uyu :currency-display-name-usd
+                                           :currency-display-name-vef :currency-display-name-vnd :currency-display-name-yer
+                                           :currency-display-name-zar :amount-placeholder :new-request
+                                           :receive-transaction :new-transaction :transaction-history :new-contract
+                                           :wallet-invalid-chain-id :changed-asset-warning :changed-amount-warning
+                                           :wallet-advanced :wallet-transaction-fee :wallet-transaction-fee-details
+                                           :wallet-transaction-total-fee :scan-qr-code :reset-default :add-wnode
+                                           :delete-network-title :delete-network-confirmation :existing-wnodes
+                                           :add-mailserver :mailserver-details :delete-mailserver-title
+                                           :delete-mailserver-are-you-sure :delete-mailserver :mailserver-address
+                                           :specify-mailserver-address :network-chain :network :network-details
+                                           :offline-messaging :offline-messaging-settings :delete-network-error
+                                           :connect-wnode-content :bootnodes :bootnodes-settings :bootnodes-enabled
+                                           :bootnode-address :add-bootnode :bootnode-details :specify-bootnode-address
+                                           :delete-bootnode-title :delete-bootnode-are-you-sure :delete-bootnode
+                                           :mainnet-warning-title :mainnet-warning-text :mainnet-warning-ok-text
+                                           :main-networks :test-networks :custom-networks :mainnet-network
+                                           :ropsten-network :rinkeby-network :browser :enter-dapp-url
+                                           :dapp :selected :selected-dapps :browser-warning}))
 
 ;; NOTE: This defines the scope of each checkpoint. To support a checkpoint,
 ;;       change the var `checkpoint-to-consider-locale-supported` a few lines
 ;;       below.
 (def checkpoints-def (spec/assert ::checkpoint-defs
-                                  {::checkpoint-0-9-12 checkpoint-0-9-12-labels}))
+                                  {::checkpoint-0-9-12 checkpoint-0-9-12-labels
+                                   ::checkpoint-0-9-21 checkpoint-0-9-21-labels}))
 (def checkpoints (set (keys checkpoints-def)))
 
 (spec/def ::checkpoint checkpoints)
 
-(def checkpoint-to-consider-locale-supported ::checkpoint-0-9-12)
+(def checkpoint-to-consider-locale-supported ::checkpoint-0-9-21)
 
 (defn checkpoint->labels [checkpoint]
   (get checkpoints-def checkpoint))
