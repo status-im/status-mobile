@@ -56,14 +56,13 @@ class TestSignInOffline(MultipleDeviceTestCase):
     @marks.testrail_id(1432)
     def test_offline_login(self):
         self.create_drivers(1, offline_mode=True)
-        driver = self.drivers[0]
-        sign_in = SignInView(driver)
+        sign_in = SignInView(self.drivers[0])
         sign_in.create_user()
 
-        driver.close_app()
-        driver.set_network_connection(1)  # airplane mode
+        sign_in.driver.close_app()
+        sign_in.driver.set_network_connection(1)  # airplane mode
 
-        driver.launch_app()
+        sign_in.driver.launch_app()
         sign_in.accept_agreements()
         home = sign_in.sign_in()
         home.home_button.wait_for_visibility_of_element()

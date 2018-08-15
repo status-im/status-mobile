@@ -328,7 +328,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2 = home_2.get_chat_with_user(sender['username']).click()
         self.network_api.wait_for_confirmation_of_transaction(recipient['address'], amount)
         if not chat_2.chat_element_by_text(amount).contains_text('Confirmed', 60):
-            pytest.fail('Transaction state is not updated on the recipient side')
+            chat_2.driver.fail('Transaction state is not updated on the recipient side')
 
 
 @marks.chat

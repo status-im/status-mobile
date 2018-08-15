@@ -93,7 +93,7 @@ class TransactionTable(BaseElement):
             except NoSuchElementException:
                 time.sleep(5)
                 self.refresh_transactions()
-        pytest.fail('Transaction was not found on Wallet/Transaction screen')
+        self.driver.fail('Transaction was not found on Wallet/Transaction screen')
 
     def refresh_transactions(self):
         self.driver.swipe(500, 500, 500, 1000)

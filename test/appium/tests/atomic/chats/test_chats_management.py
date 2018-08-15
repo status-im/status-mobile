@@ -162,7 +162,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         chat_2.chat_message_input.send_keys(message)
         chat_2.send_message_button.click()
-        self.drivers[1].quit()
+        chat_2.driver.quit()
 
         chat_element = chat_1.chat_element_by_text(message)
         chat_element.find_element()

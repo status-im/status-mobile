@@ -19,12 +19,6 @@ def get_current_time():
     return datetime.now().strftime('%-m%-d%-H%-M%-S')
 
 
-def info(text: str):
-    if "Base" not in text:
-        logging.info(text)
-        test_suite_data.current_test.testruns[-1].steps.append(text)
-
-
 def debug(text: str):
     logging.debug(text)
 

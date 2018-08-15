@@ -1,7 +1,7 @@
+import logging
 import pytest
 import requests
 import time
-from tests import info
 
 
 class NetworkApi:
@@ -39,7 +39,7 @@ class NetworkApi:
         transactions = self.get_transactions(address=address)
         for transaction in transactions:
             if transaction['hash'] == transaction_hash:
-                info('Transaction is found in Ropsten network')
+                logging.info('Transaction is found in Ropsten network')
                 return
         pytest.fail('Transaction is not found in Ropsten network')
 
@@ -57,12 +57,13 @@ class NetworkApi:
                     transactions = self.get_token_transaction(address=address)
                 else:
                     transactions = self.get_transactions(address=address)
-                info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
-                     (amount, address))
+                logging.info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
+                             (amount, address))
                 for transaction in transactions:
                     if float(int(transaction['value']) / 10 ** decimals) == float(amount):
-                        info('Transaction with unique amount %s is found in list of transactions, address is %s' %
-                             (amount, address))
+                        logging.info(
+                            'Transaction with unique amount %s is found in list of transactions, address is %s' %
+                            (amount, address))
                         return transaction
 
     def wait_for_confirmation_of_transaction(self, address, amount):
@@ -82,9 +83,9 @@ class NetworkApi:
             elif initial_balance == self.get_balance(recipient_address):
                 counter += 10
                 time.sleep(10)
-                info('Waiting %s seconds for funds' % counter)
+                logging.info('Waiting %s seconds for funds' % counter)
             else:
-                info('Transaction is received')
+                logging.info('Transaction is received')
                 return
 
     def verify_balance_is(self, expected_balance: int, recipient_address: str, errors: list):
@@ -106,9 +107,9 @@ class NetworkApi:
                 elif self.get_balance(address) == initial_balance:
                     counter += 10
                     time.sleep(10)
-                    info('Waiting %s seconds for donation' % counter)
+                    logging.info('Waiting %s seconds for donation' % counter)
                 else:
-                    info('Got %s for %s' % (response["amount_eth"], address))
+                    logging.info('Got %s for %s' % (response["amount_eth"], address))
                     return
 
     def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:
