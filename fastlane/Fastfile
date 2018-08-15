@@ -22,15 +22,6 @@ def unlock_keychain_if_needed
 end
 
 
-def clean_up_realm_core_ios
-    realm_dir ="../node_modules/realm/vendor/realm-ios/" 
-    if Dir.exists?(realm_dir)
-        FileUtils.remove_dir(realm_dir)
-    end
-    FileUtils.mkdir(realm_dir)
-end
-
-
 # uploads `file` to sauce labs (overwrites if there is anoter file from the
 # same commit)
 def upload_to_saucelabs(file)
@@ -236,11 +227,15 @@ platform :ios do
 
   desc "This fastlane step is a workaround!"
   desc "every now and then Realm fails on iOS on the 'Download Core` step"
-  desc "the issue is being `node_modules/realm/vendor/realm-ios/` dir not being empty"
-  desc "but missing the lock file"
-  desc "as a workaround, we clean up this directory"
+  desc "the issue is because multiple downloads use the same temp dir"
+  desc "now we are replacing the original download script with another"
+  desc "that generates a random folder for each run"
   lane :workaround_realm_core_sync_issues do
-      clean_up_realm_core_ios
+      FileUtils.cp_r(
+          '../ci/download-realm.js',
+          '../node_modules/realm/scripts',
+          remove_destination: true
+      )    
   end
 
 end
