@@ -105,6 +105,9 @@ timeout(90) {
               string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
           ]) {
             sh 'fastlane ios upload_diawi'
+
+            env.WORKSPACE = pwd()
+            ipaUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
           }
       }
 

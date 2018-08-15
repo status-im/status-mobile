@@ -28,6 +28,7 @@ def installJSDeps() {
 timeout(90) {
     node ('fastlane'){
       def apkUrl = ''
+      def testApkUrl = ''
       def ipaUrl = ''
       def testPassed = true
       def version
@@ -129,6 +130,9 @@ timeout(90) {
               string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
           ]) {
               sh 'fastlane ios upload_diawi'
+
+              env.WORKSPACE = pwd()
+              ipaUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
           }
         }
       } catch (e) {
@@ -151,18 +155,17 @@ timeout(90) {
       }
 
       stage('Upload apk for e2e tests') {
-          if (env.CHANGE_ID != null) {
-              env.SAUCE_LABS_APK = 'im.status.ethereum-e2e-' + env.CHANGE_ID + '.apk'
-              withCredentials([
-                  string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
-                  string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
-                  string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
-                  string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
-                  string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
-              ]) {
-                sh 'fastlane android saucelabs'
-                sh 'fastlane android upload_diawi'
-              }
+          env.SAUCE_LABS_APK = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
+          withCredentials([
+              string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
+              string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+            sh 'fastlane android saucelabs'
+            sh 'fastlane android upload_diawi'
+            testApkUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
           }
       }
 

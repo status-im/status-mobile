@@ -22,6 +22,15 @@ def unlock_keychain_if_needed
 end
 
 
+def clean_up_realm_core_ios
+    realm_dir ="../node_modules/realm/vendor/realm-ios/" 
+    if Dir.exists?(realm_dir)
+        FileUtils.remove_dir(realm_dir)
+    end
+    FileUtils.mkdir(realm_dir)
+end
+
+
 # uploads `file` to sauce labs (overwrites if there is anoter file from the
 # same commit)
 def upload_to_saucelabs(file)
@@ -58,6 +67,9 @@ def build_ios_adhoc
         readonly: true,
         keychain_name: "login.keychain"
     )
+
+    workaround_realm_core_sync_issues
+
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -70,8 +82,10 @@ end
 
 
 def notify_about_new_build(source, url)
+    branch_name = ENV["BRANCH_NAME"]
+    branch_name = "develop" if branch_name.nil?
 
-    msg = "Branch: " + ENV["BRANCH_NAME"] + ", "
+    msg = "Branch: " + branch_name + ", "
 
     if source.end_with? ".ipa"
         msg = msg + "iOS build uploaded to diawi: " + url
@@ -84,15 +98,21 @@ def notify_about_new_build(source, url)
         slack_url: ENV["SLACK_URL"]
     )
 
-    github_api(
-        server_url: "https://api.github.com",
-        api_token: ENV["GITHUB_TOKEN"],
-        http_method: "POST",
-        path: "/repos/status-im/status-react/issues/" + ENV["CHANGE_ID"] + "/comments",
-        body: {
-           "body": msg
-        }
-    )
+    change_id = ENV["CHANGE_ID"]
+
+    unless change_id.nil?
+
+        github_api(
+            server_url: "https://api.github.com",
+            api_token: ENV["GITHUB_TOKEN"],
+            http_method: "POST",
+            path: "/repos/status-im/status-react/issues/" + change_id + "/comments",
+            body: {
+               "body": msg
+            }
+        )
+
+    end
 
 end
 
@@ -103,12 +123,13 @@ def upload_to_diawi_and_notify(source)
         file: source
     )
 
+    File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
+
     notify_about_new_build(
         source,
         lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI]
     )
 end
-
 
 platform :ios do
   desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
@@ -132,6 +153,9 @@ platform :ios do
         readonly: true,
         keychain_name: "login.keychain"
     )
+
+    workaround_realm_core_sync_issues
+
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -162,6 +186,9 @@ platform :ios do
         readonly: true,
         keychain_name: "login.keychain"
     )
+
+    workaround_realm_core_sync_issues
+
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -198,11 +225,24 @@ platform :ios do
   desc "expects to have a github token as GITHUB_TOKEN env variable"
   desc "expects to have a slack webhook URL as SLACK_URL env variable"
   desc "will fails if file isn't there"
+  desc "---"
+  desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
     upload_to_diawi_and_notify(
         "status-adhoc/StatusIm.ipa"
     )
   end
+
+
+  desc "This fastlane step is a workaround!"
+  desc "every now and then Realm fails on iOS on the 'Download Core` step"
+  desc "the issue is being `node_modules/realm/vendor/realm-ios/` dir not being empty"
+  desc "but missing the lock file"
+  desc "as a workaround, we clean up this directory"
+  lane :workaround_realm_core_sync_issues do
+      clean_up_realm_core_ios
+  end
+
 end
 
 
@@ -242,6 +282,8 @@ platform :android do
   desc "expects to have a github token as GITHUB_TOKEN env variable"
   desc "expects to have a slack webhook URL as SLACK_URL env variable"
   desc "will fails if file isn't there"
+  desc "---"
+  desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
     upload_to_diawi_and_notify(
         "android/app/build/outputs/apk/release/app-release.apk"

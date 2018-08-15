@@ -25,11 +25,6 @@ def installJSDeps() {
 
 timeout(90) {
     node ('fastlane') {
-      def apkUrl = ''
-      def ipaUrl = ''
-      def testPassed = true
-      def branch;
-
       load "$HOME/env.groovy"
 
       try {
