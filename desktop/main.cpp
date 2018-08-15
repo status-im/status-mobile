@@ -25,8 +25,11 @@
 #include "utilities.h"
 
 #ifdef BUILD_FOR_BUNDLE
+#include <QMutexLocker>
+
 QStringList consoleOutputStrings;
 bool ubuntuServerStarted = false;
+QMutex consoleOutputMutex;
 #endif
 
 const int MAIN_WINDOW_WIDTH = 1024;
@@ -210,6 +213,7 @@ QString getDataStoragePath() {
 }
 
 void writeLogsToFile() {
+  QMutexLocker locker(&consoleOutputMutex);
   QFile logFile(getDataStoragePath() + "/StatusIm.log");
   if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
     for (QString message : consoleOutputStrings) {
@@ -261,6 +265,11 @@ void runUbuntuServer() {
   qDebug() << "waiting finished";
 }
 
+void appendConsoleString(const QString &msg) {
+  QMutexLocker locker(&consoleOutputMutex);
+  consoleOutputStrings << msg;
+}
+
 void saveMessage(QtMsgType type, const QMessageLogContext &context,
                  const QString &msg) {
 
@@ -269,20 +278,20 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
 
   switch (type) {
   case QtDebugMsg:
-    consoleOutputStrings << "Debug: " << message << "\n";
+    appendConsoleString(QString("Debug: %1 \n").arg(message));
     break;
   case QtInfoMsg:
-    consoleOutputStrings << "Info: " << message << "\n";
+    appendConsoleString(QString("Info: %1 \n").arg(message));
     break;
   case QtWarningMsg:
-    consoleOutputStrings << "Warning: " << message << "\n";
+    appendConsoleString(QString("Warning: %1 \n").arg(message));
     break;
   case QtCriticalMsg:
-    consoleOutputStrings << "Critical: " << message << "\n";
+    appendConsoleString(QString("Critical: %1 \n").arg(message));
     break;
   case QtFatalMsg:
 
-    consoleOutputStrings << "Fatal: " << message << "\n";
+    appendConsoleString(QString("Fatal: %1 \n").arg(message));
     writeLogsToFile();
     abort();
   }
