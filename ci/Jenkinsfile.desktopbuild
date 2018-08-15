@@ -26,6 +26,7 @@ external_modules_dir = [
   'node_modules/react-native-keychain/desktop',
   'node_modules/react-native-securerandom/desktop',
   'modules/react-native-status/desktop',
+  'modules/react-native-desktop-notification/desktop',
 ]
 
 def installJSDeps() {
@@ -128,6 +129,13 @@ parallel(
               sh 'cp -r assets/share/assets StatusIm.app/Contents/MacOs'
               sh 'chmod +x StatusIm.app/Contents/MacOs/ubuntu-server'
               sh 'cp ../desktop/bin/StatusIm StatusIm.app/Contents/MacOs'
+              sh 'cp -f ../deployment/macos/info.plist StatusIm.app/Contents'
+              sh 'cp -rf ../desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib StatusIm.app/Contents'
+              sh """
+                install_name_tool -change \\
+                  ${workspace}/desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/libsnore-qt5.0.7.dylib @rpath/libsnore-qt5.0.7.dylib \\
+                  ${workspace}/${packageFolder}/StatusIm.app/Contents/lib/plugins/libsnore-qt5/libsnore_backend_osxnotificationcenter.so
+              """
               sh """
                 macdeployqt StatusIm.app -verbose=1 -dmg \\
                   -qmldir='${workspace}/node_modules/react-native/ReactQt/runtime/src/qml/'
@@ -197,6 +205,8 @@ parallel(
             sh "cp ./desktop/bin/StatusIm ${packageFolder}/AppDir/usr/bin"
             sh 'wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage'
             sh 'chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage'
+            sh 'wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage'
+            sh 'chmod a+x ./appimagetool-x86_64.AppImage'
 
             sh 'rm -f Application-x86_64.AppImage'
             sh 'rm -f StatusIm-x86_64.AppImage'
@@ -213,15 +223,15 @@ parallel(
             """
             dir(packageFolder) {
               sh 'ldd AppDir/usr/bin/StatusIm'
+              sh 'ls -l ../desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib'
+              sh 'cp -rf ../desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/x86_64-linux-gnu/plugins AppDir/usr/lib'
               sh 'cp -r assets/share/assets AppDir/usr/bin'
               sh 'cp -rf StatusImAppImage/* AppDir/usr/bin'
               sh 'rm -f AppDir/usr/bin/StatusIm.AppImage'
             }
-            sh """
-              ./linuxdeployqt-continuous-x86_64.AppImage \\
-              ${packageFolder}/AppDir/usr/share/applications/StatusIm.desktop \\
-              -verbose=3 -appimage -qmake=${qt_bin}/qmake
-            """
+            sh 'ls -l'
+            sh "./appimagetool-x86_64.AppImage ${packageFolder}/AppDir"
+            sh 'ls -l'
             dir(packageFolder) {
               sh 'ldd AppDir/usr/bin/StatusIm'
               sh 'rm -rf StatusIm.AppImage'

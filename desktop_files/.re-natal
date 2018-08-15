@@ -56,7 +56,8 @@
     "rn-snoopy/stream/filter",
     "rn-snoopy/stream/buffer",
     "react-native/Libraries/vendor/emitter/EventEmitter",
-    "react-native-fetch-polyfill"
+    "react-native-fetch-polyfill",
+    "react-native-desktop-notification"
   ],
   "imageDirs": [
     "resources/images",

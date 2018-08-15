@@ -66,13 +66,20 @@
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
 (views/defview profile [user]
-  [react/view styles/profile-view
-   [profile-badge user]
-   [share-contact-code]
-   [react/view {:style styles/logout-row}
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
-     [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
-    [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])
+  (letsubs [current-account [:get-current-account]]
+    (let [notifications? (get-in current-account [:desktop-notifications?])]
+      [react/view styles/profile-view
+       [profile-badge user]
+       [share-contact-code]
+       [react/view {:style styles/logout-row}
+        [react/text {:style (styles/logout-row-text colors/black)} (i18n/label :notifications)]
+        [react/switch {:on-tint-color   colors/blue
+                       :value           notifications?
+                       :on-value-change #(re-frame/dispatch [:enable-notifications (not notifications?)])}]]
+       [react/view {:style styles/logout-row}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
+         [react/text {:style (styles/logout-row-text colors/red)} (i18n/label :t/logout)]]
+        [react/view [react/text {:style (styles/logout-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])))
 
 (views/defview profile-data []
   (views/letsubs
