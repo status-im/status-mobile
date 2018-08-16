@@ -5,7 +5,7 @@ import base64
 import pytest
 import re
 import zbarlight
-from tests import info, common_password
+from tests import info, common_password, test_fairy_warning_text
 from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
@@ -192,7 +192,7 @@ class ConnectionStatusText(BaseText):
 class TestFairyWarning(BaseText):
     def __init__(self, driver):
         super(TestFairyWarning, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('session recording')
+        self.locator = self.Locator.text_selector(test_fairy_warning_text)
         self.is_shown = bool()
 
 
@@ -242,7 +242,6 @@ class CrossIcon(BaseButton):
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
-
         self.send_message_button = SendMessageButton(self.driver)
         self.home_button = HomeButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
@@ -282,8 +281,6 @@ class BaseView(object):
     def accept_agreements(self):
         iterations = int()
         from views.sign_in_view import CreateAccountButton, PasswordInput
-        if self.test_fairy_warning.is_element_displayed(10):
-            self.test_fairy_warning.is_shown = True
         while iterations <= 3 and not (CreateAccountButton(self.driver).is_element_displayed(2) or PasswordInput(
                 self.driver).is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:

@@ -186,14 +186,30 @@
   {:color "#888888"})
 
 (def add-contact
-  {:height           35
+  {:flex-direction   :row
+   :align-items      :center
+   :height           36
    :background-color :white
-   :justify-content  :center})
+   :justify-content  :space-between})
 
-(def add-contact-text
+(def add-contact-left
+  {:width       24
+   :margin-left 12})
+
+(def add-contact-center
+  {:flex-direction :row
+   :align-items    :center})
+
+(defstyle add-contact-text
   {:text-align          :center
    :text-align-vertical :center
-   :color               :#7099e6})
+   :padding-left        4
+   :font-size           15
+   :ios                 {:letter-spacing 0.2}
+   :color               colors/blue})
+
+(def add-contact-close-icon
+  {:margin-right 12})
 
 (defstyle actions-list-view
   {:ios {:border-bottom-color component.styles/color-gray3

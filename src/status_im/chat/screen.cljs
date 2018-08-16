@@ -30,13 +30,22 @@
             [status-im.ui.components.colors :as colors]))
 
 (defview add-contact-bar [contact-identity]
-  (letsubs [contact [:get-contact-by-identity contact-identity]]
-    (when (models.contact/can-add-to-contacts? contact)
-      [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
-        :accessibility-label :add-to-contacts-button}
-       [react/view style/add-contact
-        [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
+  (letsubs [{:keys [hide-contact?] :as contact} [:get-contact-by-identity contact-identity]]
+    (when (and (not hide-contact?)
+               (models.contact/can-add-to-contacts? contact))
+      [react/view style/add-contact
+       [react/view style/add-contact-left]
+       [react/touchable-highlight
+        {:on-press            #(re-frame/dispatch [:add-contact contact-identity])
+         :accessibility-label :add-to-contacts-button}
+        [react/view style/add-contact-center
+         [vector-icons/icon :icons/add {:color colors/blue}]
+         [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]
+       [react/touchable-highlight
+        {:on-press            #(re-frame/dispatch [:hide-contact contact-identity])
+         :accessibility-label :add-to-contacts-close-button}
+        [vector-icons/icon :icons/close {:color           colors/gray-icon
+                                         :container-style style/add-contact-close-icon}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   chat-name

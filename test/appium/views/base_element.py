@@ -38,6 +38,10 @@ class BaseElement(object):
         def text_part_selector(locator, text):
             return BaseElement.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
 
+        @classmethod
+        def id(locator, value):
+            return locator(MobileBy.ID, value)
+
         def __str__(self, *args, **kwargs):
             return "%s:%s" % (self.by, self.value)
 
@@ -53,19 +57,16 @@ class BaseElement(object):
         return None
 
     def find_element(self):
-        info('Looking for %s' % self.name)
         for _ in range(3):
             try:
                 return self.driver.find_element(self.locator.by, self.locator.value)
-            except NoSuchElementException as exception:
-                exception.msg = "'%s' is not found on screen, using: '%s'" % (self.name, self.locator)
-                raise exception
-            except Exception as e:
-                if 'Internal Server Error' in str(e):
+            except NoSuchElementException:
+                raise NoSuchElementException("'%s' is not found on the screen" % self.name) from None
+            except Exception as exception:
+                if 'Internal Server Error' in str(exception):
                     continue
 
     def find_elements(self):
-        info('Looking for %s' % self.name)
         return self.driver.find_elements(self.locator.by, self.locator.value)
 
     def click(self):
@@ -76,29 +77,22 @@ class BaseElement(object):
         try:
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
-        except TimeoutException as exception:
-            exception.msg = "'%s' is not found on screen, using: '%s', during '%s' seconds" % (self.name, self.locator,
-                                                                                               seconds)
-            raise exception
+        except TimeoutException:
+            raise TimeoutException("'%s' is not found on the screen" % self.name) from None
 
     def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
             return WebDriverWait(self.driver, seconds, ignored_exceptions=ignored_exceptions) \
                 .until(expected_conditions.visibility_of_element_located((self.locator.by, self.locator.value)))
-        except TimeoutException as exception:
-            exception.msg = "'%s' is not found on screen, using: '%s', during '%s' seconds" % (self.name, self.locator,
-                                                                                               seconds)
-            raise exception
+        except TimeoutException:
+            raise TimeoutException("'%s' is not found on the screen" % self.name) from None
 
     def wait_for_invisibility_of_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.invisibility_of_element_located((self.locator.by, self.locator.value)))
-        except TimeoutException as exception:
-            exception.msg = "'%s' is still present on screen, using: '%s', during '%s' seconds" % (self.name,
-                                                                                                   self.locator,
-                                                                                                   seconds)
-            raise exception
+        except TimeoutException:
+            raise TimeoutException("'%s' is not found on the screen" % self.name) from None
 
     def scroll_to_element(self):
         for _ in range(9):

@@ -70,8 +70,15 @@
       network->chain-keyword
       name))
 
-(defn sha3 [s]
-  (.sha3 dependencies/Web3.prototype (str s)))
+(defn sha3
+  ([s]
+   (.sha3 dependencies/Web3.prototype (str s)))
+  ([s opts]
+   (.sha3 dependencies/Web3.prototype (str s) (clj->js opts))))
+
+(defn hex->string [s]
+  (when s
+    (.toAscii dependencies/Web3.prototype s)))
 
 (defn hex->boolean [s]
   (= s "0x0"))
@@ -80,7 +87,9 @@
   (if b "0x0" "0x1"))
 
 (defn hex->int [s]
-  (js/parseInt s 16))
+  (if (= s hex-prefix)
+    0
+    (js/parseInt s 16)))
 
 (defn int->hex [i]
   (.toHex dependencies/Web3.prototype i))
@@ -88,8 +97,19 @@
 (defn hex->bignumber [s]
   (money/bignumber (if (= s hex-prefix) 0 s)))
 
+(defn hex->address
+  "When hex value is 66 char in length (2 for 0x, 64 for
+  the 32 bytes used by abi-spec for an address), only keep
+  the part that constitute the address and normalize it,"
+  [s]
+  (when (= 66 (count s))
+    (normalized-address (subs s 26))))
+
 (defn zero-pad-64 [s]
   (str (apply str (drop (count s) (repeat 64 "0"))) s))
+
+(defn string->hex [i]
+  (.fromAscii dependencies/Web3.prototype i))
 
 (defn format-param [param]
   (if (number? param)

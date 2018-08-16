@@ -10,8 +10,10 @@ from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
 from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads
-from views.base_view import BaseView
+from tests import test_suite_data, start_threads, marks
+from appium.webdriver.common.mobileby import MobileBy
+from selenium.common.exceptions import NoSuchElementException
+from support.github_report import GithubHtmlReport
 
 
 class AbstractTestCase:
@@ -104,17 +106,30 @@ class AbstractTestCase:
 
     @property
     def implicitly_wait(self):
-        return 8
+        return 2
 
     errors = []
 
     network_api = NetworkApi()
-
-    test_fairy_warning_is_shown = bool()
+    github_report = GithubHtmlReport(sauce_username, sauce_access_key)
 
     def verify_no_errors(self):
         if self.errors:
             pytest.fail('. '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
+
+    def is_alert_present(self, driver):
+        try:
+            return driver.find_element(MobileBy.ID, 'android:id/message')
+        except NoSuchElementException:
+            return False
+
+    def get_alert_text(self, driver):
+        return driver.find_element(MobileBy.ID, 'android:id/message').text
+
+    def add_alert_text_to_report(self, driver):
+        if self.is_alert_present(driver):
+            test_suite_data.current_test.testruns[-1].error += ", also Unexpected Alert is shown: '%s'" \
+                                                                       % self.get_alert_text(driver)
 
 
 class SingleDeviceTestCase(AbstractTestCase):
@@ -124,28 +139,22 @@ class SingleDeviceTestCase(AbstractTestCase):
                                   'capabilities': self.capabilities_local},
                         'sauce': {'executor': self.executor_sauce_lab,
                                   'capabilities': self.capabilities_sauce_lab}}
-        counter = 0
-        self.driver = None
-        while not self.driver and counter <= 3:
-            try:
-                self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
-                                               capabilities[self.environment]['capabilities'])
-                self.driver.implicitly_wait(self.implicitly_wait)
-                view = BaseView(self.driver)
-                view.accept_agreements()
-                self.test_fairy_warning_is_shown = view.test_fairy_warning.is_shown
-                test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
-                break
-            except WebDriverException:
-                counter += 1
+
+        self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
+                                       capabilities[self.environment]['capabilities'])
+        self.driver.implicitly_wait(self.implicitly_wait)
+        test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
             self.print_sauce_lab_info(self.driver)
         try:
+            self.add_alert_text_to_report(self.driver)
             self.driver.quit()
         except (WebDriverException, AttributeError):
             pass
+        finally:
+            self.github_report.save_test(test_suite_data.current_test)
 
 
 class LocalMultipleDeviceTestCase(AbstractTestCase):
@@ -158,12 +167,12 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
         for driver in range(quantity):
             self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
-            BaseView(self.drivers[driver]).accept_agreements()
             test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
             try:
+                self.add_alert_text_to_report(driver)
                 self.drivers[driver].quit()
             except WebDriverException:
                 pass
@@ -191,16 +200,18 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         for driver in range(quantity):
             self.drivers[driver].implicitly_wait(
                 custom_implicitly_wait if custom_implicitly_wait else self.implicitly_wait)
-            BaseView(self.drivers[driver]).accept_agreements()
             test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
             try:
                 self.print_sauce_lab_info(self.drivers[driver])
+                self.add_alert_text_to_report(self.drivers[driver])
                 self.drivers[driver].quit()
             except (WebDriverException, AttributeError):
                 pass
+            finally:
+                self.github_report.save_test(test_suite_data.current_test)
 
     @classmethod
     def teardown_class(cls):

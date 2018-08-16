@@ -77,7 +77,7 @@
 (views/defview browser []
   (views/letsubs [webview    (atom nil)
                   {:keys [address]} [:get-current-account]
-                  {:keys [browser-id] :as browser} [:get-current-browser]
+                  {:keys [browser-id dapp? name] :as browser} [:get-current-browser]
                   {:keys [error? loading? url-editing? show-tooltip]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]
                   network-id [:get-network-id]]
@@ -101,7 +101,9 @@
                                 :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}]]]
        [react/view components.styles/flex
         [components.webview-bridge/webview-bridge
-         {:ref                                   #(reset! webview %)
+         {:dapp?                                 dapp?
+          :dapp-name                             name
+          :ref                                   #(reset! webview %)
           :source                                {:uri url}
           :java-script-enabled                   true
           :bounces                               false

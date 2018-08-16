@@ -6,45 +6,295 @@
 #     https://docs.fastlane.tools/actions
 #
 
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+# There are a few env variables defined in the .env file in
+# this directory (fastlane/.env)
 
+
+# unlocks keychain if KEYCHAIN_PASSWORD variable is present
+# (to be used on CI machines)
+def unlock_keychain_if_needed
+    if ENV["KEYCHAIN_PASSWORD"]
+        unlock_keychain(
+            path:"login.keychain", 
+            password:ENV["KEYCHAIN_PASSWORD"],
+            set_default: true)
+    end
+end
+
+
+# uploads `file` to sauce labs (overwrites if there is anoter file from the
+# same commit)
+def upload_to_saucelabs(file)
+    username = ENV["SAUCE_USERNAME"]
+    key = ENV["SAUCE_ACCESS_KEY"]
+    unique_name = ENV["SAUCE_LABS_APK"]
+
+    url = "https://saucelabs.com/rest/v1/storage/" + username + '/' + unique_name + "?overwrite=true"
+
+    upload_result = sh(
+        "curl",
+        "-u", username + ':' + key,
+        "-X", "POST", 
+        "-H", "Content-Type: application/octet-stream",
+        url,
+        # this command has `status-react/fastlane` as cwd
+        # so we need to jump outside this folder to get a file
+        "--data-binary", "@" + "../" + file
+    )
+
+    # fail the lane if upload fails
+    UI.user_error!(
+        "failed to upload file to saucelabs: " + upload_result
+    ) unless upload_result.include? "filename"
+end
+
+
+# builds an ios app with ad-hoc configuration and put it 
+# to "status-adhoc" output folder
+def build_ios_adhoc
+    match(
+        type: "adhoc",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
+    )
+
+    workaround_realm_core_sync_issues
+
+    build_ios_app(
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        clean: true,
+        export_method: "ad-hoc",
+        output_directory: "status-adhoc"
+    )
+end
+
+
+def notify_about_new_build(source, url)
+    branch_name = ENV["BRANCH_NAME"]
+    branch_name = "develop" if branch_name.nil?
+
+    msg = "Branch: " + branch_name + ", "
+
+    if source.end_with? ".ipa"
+        msg = msg + "iOS build uploaded to diawi: " + url
+    else
+        msg = msg + "Android build uploaded to diawi: " + url
+    end
+
+    slack(
+        message: msg,
+        slack_url: ENV["SLACK_URL"]
+    )
+
+    change_id = ENV["CHANGE_ID"]
+
+    unless change_id.nil?
+
+        github_api(
+            server_url: "https://api.github.com",
+            api_token: ENV["GITHUB_TOKEN"],
+            http_method: "POST",
+            path: "/repos/status-im/status-react/issues/" + change_id + "/comments",
+            body: {
+               "body": msg
+            }
+        )
+
+    end
+
+end
+
+
+def upload_to_diawi_and_notify(source)
+    diawi(
+        token: ENV["DIAWI_TOKEN"],
+        file: source
+    )
+
+    File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
+
+    notify_about_new_build(
+        source,
+        lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI]
+    )
+end
 
 platform :ios do
-  desc "Deploy a new internal build to iTunes Connect"
+  desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
+  desc "This lane is used PRs, Releases, etc."
+  desc "It creates an .ipa that can be used by a list of devices, registeded in the App Store Connect."
+  desc "This .ipa is ready to be distibuted through diawi.com"
+  lane :adhoc do
+    unlock_keychain_if_needed
+    build_ios_adhoc
+  end
+
+  desc "`fastlane ios nightly` - makes a new nightly in TestFlight"
+  desc "This lane builds a new nightly and uploads it to TestFlight"
+  desc "It also leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
-    upload_to_testflight(
-      ipa: "status_appstore/StatusIm.ipa"
+    unlock_keychain_if_needed
+
+    match(
+        type: "appstore",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
     )
-    slack(message: "New nightly build uploaded to iTunes Connect")
+
+    workaround_realm_core_sync_issues
+
+    build_ios_app(
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        clean: true,
+        export_method: "app-store",
+        output_directory: "status_appstore"
+    )
+    upload_to_testflight(
+        ipa: "status_appstore/StatusIm.ipa"
+    )
+
+    slack(
+        message: "New nightly build uploaded to TestFlight",
+        slack_url: ENV["SLACK_URL"]
+    )
+
+    # additional .ipa is for diawi
+    # we have to re-build it because it uses different config
+    build_ios_adhoc
   end
+
+  desc "`fastlane ios release` builds a release & uploads it to TestFlight"
   lane :release do
-    upload_to_testflight(
-      ipa: "status_appstore/StatusIm.ipa"
+    match(
+        type: "appstore",
+        force_for_new_devices: true,
+        readonly: true,
+        keychain_name: "login.keychain"
     )
-    slack(message: "New release build uploaded to iTunes Connect")
+
+    workaround_realm_core_sync_issues
+
+    build_ios_app(
+        scheme: "StatusIm",
+        workspace: "ios/StatusIm.xcworkspace",
+        configuration: "Release",
+        clean: true,
+        export_method: "app-store",
+        output_directory: "status_appstore",
+        export_options: {
+            "combileBitcode": true,
+            "uploadBitcode": false,
+            "ITSAppUsesNonExemptEncryption": false
+        }
+    )
+    upload_to_testflight(
+        ipa: "status_appstore/StatusIm.ipa"
+    )
+    slack(
+        message: "New release build uploaded to TestFlight",
+        slack_url: ENV["SLACK_URL"]
+    )
   end
-  desc "Remove inactive TestFlight users"
+
+  desc "`fastlane ios clean` - remove inactive TestFlight users"
+  desc "uses custom plugin, installed via"
+  desc "`sudo get install fastlane-plugin-clean_testflight_testers`"
   lane :clean do
     clean_testflight_testers
   end
+
+  desc "`fastlane ios upload-diawi` - upload .ipa to diawi"
+  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
+  desc "expects to have an .ipa prepared: `status-adhoc/StatusIm.ipa`"
+  desc "expects to have a diawi token as DIAWI_TOKEN env variable"
+  desc "expects to have a github token as GITHUB_TOKEN env variable"
+  desc "expects to have a slack webhook URL as SLACK_URL env variable"
+  desc "will fails if file isn't there"
+  desc "---"
+  desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
+  lane :upload_diawi do
+    upload_to_diawi_and_notify(
+        "status-adhoc/StatusIm.ipa"
+    )
+  end
+
+
+  desc "This fastlane step is a workaround!"
+  desc "every now and then Realm fails on iOS on the 'Download Core` step"
+  desc "the issue is because multiple downloads use the same temp dir"
+  desc "now we are replacing the original download script with another"
+  desc "that generates a random folder for each run"
+  lane :workaround_realm_core_sync_issues do
+      FileUtils.cp_r(
+          '../ci/download-realm.js',
+          '../node_modules/realm/scripts',
+          remove_destination: true
+      )    
+  end
+
 end
 
 
 platform :android do
   desc "Deploy a new internal build to Google Play"
+  desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
   lane :nightly do
     upload_to_play_store(
       track: "internal",
-      apk: "android/app/build/outputs/apk/release/app-release.apk"
+      apk: "android/app/build/outputs/apk/release/app-release.apk",
+      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
-    slack(message: "New nightly build uploaded to Google Play")
+
+    slack(
+        message: "New nightly build uploaded to Google Play",
+        slack_url: ENV["SLACK_URL"]
+    )
   end
   lane :release do
+    desc "Deploy a new alpha (public) build to Google Play"
+    desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
     upload_to_play_store(
       track: "alpha",
-      apk: "android/app/build/outputs/apk/release/app-release.apk"
+      apk: "android/app/build/outputs/apk/release/app-release.apk",
+      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
-    slack(message: "New release build uploaded to Google Play")
+    slack(
+        message: "New release build uploaded to Google Play",
+        slack_url: ENV["SLACK_URL"]
+    )
+  end
+
+  desc "`fastlane android upload_diawi` - upload .apk to diawi"
+  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
+  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have a diawi token as DIAWI_TOKEN env variable"
+  desc "expects to have a github token as GITHUB_TOKEN env variable"
+  desc "expects to have a slack webhook URL as SLACK_URL env variable"
+  desc "will fails if file isn't there"
+  desc "---"
+  desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
+  lane :upload_diawi do
+    upload_to_diawi_and_notify(
+        "android/app/build/outputs/apk/release/app-release.apk"
+    )
+  end
+
+  desc "`fastlane android saucelabs` - upload .apk to sauce labs"
+  desc "also notifies in a GitHub comments and in Slack #jenkins channel"
+  desc "expects to have an .apk prepared: `android/app/build/outputs/apk/release/app-release.apk`"
+  desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
+  desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
+  desc "expects to have a saucelabs destination name as SAUCE_LABS_APK env variable"
+  desc "will fails if file isn't there"
+  lane :saucelabs do
+    upload_to_saucelabs(
+        "android/app/build/outputs/apk/release/app-release.apk"
+    )
   end
 end

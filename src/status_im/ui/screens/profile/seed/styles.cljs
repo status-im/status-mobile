@@ -36,12 +36,14 @@
   {:flex-direction :row})
 
 (def six-word-num
-  {:opacity        0.4
+  {:width          20
+   :text-align     :right
+   :opacity        0.4
    :font-size      15
    :letter-spacing -0.2})
 
 (def six-words-word
-  {:margin-left    16
+  {:margin-left    24
    :font-size      15
    :letter-spacing -0.2})
 

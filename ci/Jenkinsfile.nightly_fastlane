@@ -1,10 +1,17 @@
 // We need nightly builds for users who want to test apps, diawi removes old builds and limits downloads, hence the need for Artifactory.
 // To see env: echo sh(returnStdout: true, script: 'env')
+properties([
+  buildDiscarder(logRotator(
+    numToKeepStr: '30',
+    daysToKeepStr: '30',
+  ))
+])
 
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
 env.FASTLANE_DISABLE_COLORS=1
+env.REALM_DISABLE_ANALYTICS=1
 
 def installJSDeps() {
     def attempt = 1
@@ -19,10 +26,10 @@ def installJSDeps() {
 }
 
 timeout(90) {
-    node ('macos'){
+    node ('fastlane'){
       def apkUrl = ''
+      def testApkUrl = ''
       def ipaUrl = ''
-      def testPassed = true
       def version
       def build_no
 
@@ -73,6 +80,7 @@ timeout(90) {
           sh 'cd android && ./gradlew react-native-android:installArchives && ./gradlew assembleRelease'
         }
 
+<<<<<<< HEAD
         stage('Build (iOS)') {
           withCredentials([string(
             credentialsId: "slave-pass-${env.NODE_NAME}",
@@ -88,6 +96,8 @@ timeout(90) {
           }
         }
 
+=======
+>>>>>>> upstream/develop
         stage('Deploy (Android)') {
           def artifact_dir = pwd() + '/android/app/build/outputs/apk/release/'
           println (artifact_dir + 'app-release.apk')
@@ -101,19 +111,45 @@ timeout(90) {
           def buildInfo = server.upload(uploadSpec)
           apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
 
-          sh ('bundle exec fastlane android nightly')
           sh ('echo ARTIFACT Android: ' + apkUrl)
+          withCredentials([
+              string(
+                credentialsId: "SUPPLY_JSON_KEY_DATA",
+                variable: 'GOOGLE_PLAY_JSON_KEY'
+              ),
+              string(
+                credentialsId: "SLACK_URL",
+                variable: 'SLACK_URL'
+              )
+          ]) {
+              sh ('bundle exec fastlane android nightly')
+          }
         }
 
-        stage('Deploy (iOS)') {
-          withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-            sh 'sleep 10'
-            def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-            ipaUrl = 'https://i.diawi.com/' + hash
+        stage('Build & TestFlight (iOS)') {
+          withCredentials([
+              string(credentialsId: "slave-pass-${env.NODE_NAME}", variable: 'KEYCHAIN_PASSWORD'),
+              string(credentialsId: "SLACK_URL", variable: 'SLACK_URL'),
+              string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
+              string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID'),
+              string(credentialsId: 'fastlane-match-password', variable:'MATCH_PASSWORD')]) {
 
-            sh ('bundle exec fastlane ios nightly')
-            sh ('echo ARTIFACT iOS: ' + ipaUrl)
+                sh "plutil -replace CFBundleShortVersionString  -string ${version} ios/StatusIm/Info.plist"
+                sh "plutil -replace CFBundleVersion -string ${build_no} ios/StatusIm/Info.plist"
+                sh 'fastlane ios nightly'
+          }
+        }
+
+        stage('Deploy diawi (iOS)') {
+          withCredentials([
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+              sh 'fastlane ios upload_diawi'
+
+              env.WORKSPACE = pwd()
+              ipaUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
           }
         }
       } catch (e) {
@@ -136,27 +172,26 @@ timeout(90) {
       }
 
       stage('Upload apk for e2e tests') {
-        withCredentials([string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'key'), string(credentialsId: 'SAUCE_USERNAME', variable: 'username')]){
-          apk_name = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
-          sh('curl -u ' + username+ ':' + key + ' -X POST -H "Content-Type: application/octet-stream" https://saucelabs.com/rest/v1/storage/' + username + '/' + apk_name + '?overwrite=true --data-binary @android/app/build/outputs/apk/release/app-release.apk')
-        }
-        withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-          def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-          sh 'sleep 10'
-          def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-          testApkUrl = 'https://i.diawi.com/' + hash
-
-          sh ('echo ARTIFACT Android for e2e tests: ' + testApkUrl)
-        }
+          env.SAUCE_LABS_APK = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
+          withCredentials([
+              string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
+              string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+            sh 'fastlane android saucelabs'
+            sh 'fastlane android upload_diawi'
+            testApkUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
+          }
       }
 
       stage('Slack Notification') {
-        def c = (testPassed ? 'good' : 'warning' )
-        slackSend color: c, message: 'Nightly build (develop) \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl + '\n Android for e2e: ' + testApkUrl
+        slackSend color: 'good', message: 'Nightly build (develop) \nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl + '\n Android for e2e: ' + testApkUrl
       }
 
       stage('Run extended e2e tests') {
-        build job: 'end-to-end-tests/status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + apk_name)], wait: false
+        build job: 'end-to-end-tests/status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + env.SAUCE_LABS_APK)], wait: false
       }
     }
 }

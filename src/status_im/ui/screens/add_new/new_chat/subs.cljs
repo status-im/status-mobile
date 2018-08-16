@@ -1,10 +1,6 @@
 (ns status-im.ui.screens.add-new.new-chat.subs
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.screens.add-new.new-chat.db :as db]))
+  (:require [re-frame.core :as re-frame]))
 
-(re-frame/reg-sub
- :new-contact-error-message
- :<- [:get :contacts/new-identity]
- :<- [:get-current-account]
- (fn [[new-identity account]]
-   (db/validate-pub-key new-identity account)))
+(re-frame/reg-sub :new-identity-error
+                  (fn [db _]
+                    (get db :contacts/new-identity-error nil)))

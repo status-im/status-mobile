@@ -1,3 +1,5 @@
+import random
+
 from tests import marks, common_password
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -13,13 +15,9 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         username = 'test_user'
         sign_in.create_user(username=username)
-
         self.driver.close_app()
         self.driver.launch_app()
-
         sign_in.accept_agreements()
-        if not sign_in.test_fairy_warning.is_shown:
-            self.errors.append('TestFairy warning is not shown')
         if not sign_in.element_by_text(username).is_element_displayed():
             self.errors.append('Username is not shown while login')
         sign_in.sign_in()
@@ -43,11 +41,12 @@ class TestSignIn(SingleDeviceTestCase):
     @marks.testrail_id(3768)
     def test_password_in_logcat_sign_in(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
+        password = random.randint(100000, 1000000)
+        sign_in.create_user(password=password)
         profile = sign_in.profile_button.click()
         profile.logout()
         sign_in.sign_in()
-        sign_in.check_no_values_in_logcat(password=common_password)
+        sign_in.check_no_values_in_logcat(password=password)
 
 
 @marks.all

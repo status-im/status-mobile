@@ -51,7 +51,6 @@
     "react-native-config": "git+https://github.com/status-im/react-native-config.git",
     "react-native-crypto": "2.1.1",
     "react-native-dialogs": "0.0.20",
-    "react-native-fcm": "10.0.3",
     "react-native-fetch-polyfill": "1.1.2",
     "react-native-fs": "git+https://github.com/status-im/react-native-fs.git",
     "react-native-http": "github:tradle/react-native-http#834492d",

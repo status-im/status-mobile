@@ -17,7 +17,7 @@
 (re-frame/reg-cofx
  ::get-web3
  (fn [coeffects _]
-   (let [web3 (web3-provider/make-web3)
+   (let [web3 (web3-provider/make-internal-web3)
          address (get-in coeffects [:db :account/account :address])]
      (set! (.-defaultAccount (.-eth web3))
            (ethereum/normalized-address address))

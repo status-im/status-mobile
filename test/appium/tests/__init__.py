@@ -26,7 +26,7 @@ def info(text: str):
 
 
 def debug(text: str):
-        logging.debug(text)
+    logging.debug(text)
 
 
 test_suite_data = TestSuiteData()
@@ -174,3 +174,8 @@ connection_not_secure_text = "Connection is not secure! " \
                              "Do not sign transactions or send personal data on this site."
 connection_is_secure_text = "Connection is secure. Make sure you really trust this site " \
                             "before signing transactions or entering personal data."
+test_fairy_warning_text = "You are using an app installed from a nightly build. If you're connected to WiFi, " \
+                          "your interactions with the app will be saved as video and logs. " \
+                          "These recordings do not save your passwords. They are used by our development team " \
+                          "to investigate possible issues and only occur if the app is install from a nightly build. " \
+                          "Nothing is recorded if the app is installed from PlayStore or TestFlight."

@@ -41,8 +41,7 @@
     (on-error "web3, contract or account-id not available")))
 
 (defn assoc-error-message [db error-type err]
-  (assoc-in db [:wallet :errors error-type] (or (when err (str err))
-                                                :unknown-error)))
+  (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
@@ -189,7 +188,7 @@
  (fn [db [_ err]]
    (log/debug "Unable to get transactions: " err)
    (-> db
-       (assoc-error-message :transactions-update err)
+       (assoc-error-message :transactions-update :error-unable-to-get-transactions)
        (assoc-in [:wallet :transactions-loading?] false))))
 
 (handlers/register-handler-db
@@ -204,7 +203,7 @@
  (fn [db [_ err]]
    (log/debug "Unable to get balance: " err)
    (-> db
-       (assoc-error-message :balance-update err)
+       (assoc-error-message :balance-update :error-unable-to-get-balance)
        (assoc-in [:wallet :balance-loading?] false))))
 
 (defn update-token-balance-success [symbol balance {:keys [db]}]
@@ -222,7 +221,7 @@
  (fn [db [_ symbol err]]
    (log/debug "Unable to get token " symbol "balance: " err)
    (-> db
-       (assoc-error-message :balance-update err)
+       (assoc-error-message :balance-update :error-unable-to-get-token-balance)
        (assoc-in [:wallet :balance-loading?] false))))
 
 (handlers/register-handler-db
@@ -237,7 +236,7 @@
  (fn [db [_ err]]
    (log/debug "Unable to get prices: " err)
    (-> db
-       (assoc-error-message :prices-update err)
+       (assoc-error-message :prices-update :error-unable-to-get-prices)
        (assoc :prices-loading? false))))
 
 (handlers/register-handler-fx
@@ -278,11 +277,6 @@
    (if gas
      (assoc-in db [:wallet :send-transaction :gas] (money/bignumber (int (* gas 1.2))))
      db)))
-
-(handlers/register-handler-fx
- :wallet/show-error
- (fn []
-   {:show-error (i18n/label :t/wallet-error)}))
 
 (handlers/register-handler-fx
  :wallet-setup-navigate-back

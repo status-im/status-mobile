@@ -2,6 +2,7 @@ env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
 env.FASTLANE_DISABLE_COLORS=1
+env.REALM_DISABLE_ANALYTICS=1
 
 def installJSDeps() {
   def attempt = 1
@@ -17,10 +18,16 @@ def installJSDeps() {
 }
 
 timeout(90) {
+<<<<<<< HEAD
   node ('macos') {
     def apkUrl = ''
     def ipaUrl = ''
     def testPassed = true
+=======
+  node ('fastlane') {
+    def apkUrl = ''
+    def ipaUrl = ''
+>>>>>>> upstream/develop
     def branch;
 
     load "$HOME/env.groovy"
@@ -73,6 +80,7 @@ timeout(90) {
         sh 'cd android && ./gradlew react-native-android:installArchives && ./gradlew assembleRelease'
       }
       stage('Deploy (Android)') {
+<<<<<<< HEAD
         withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
           def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/release/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
           sh 'sleep 10'
@@ -115,6 +123,50 @@ timeout(90) {
         def c = (testPassed ? 'good' : 'warning' )
         slackSend(
           color: c,
+=======
+          withCredentials([
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+            sh 'fastlane android upload_diawi'
+
+            apkUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
+          }
+      }
+
+      // iOS
+      stage('Build (iOS)') {
+          withCredentials([
+              string(
+                credentialsId: "slave-pass-${env.NODE_NAME}",
+                variable: 'KEYCHAIN_PASSWORD'
+              ),
+              string(
+                credentialsId: 'fastlane-match-password',
+                variable:'MATCH_PASSWORD'
+              )]) {
+
+              sh 'fastlane ios adhoc'
+          }
+      }
+      stage('Deploy (iOS)') {
+          withCredentials([
+              string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
+              string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
+              string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
+          ]) {
+            sh 'fastlane ios upload_diawi'
+
+            env.WORKSPACE = pwd()
+            ipaUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
+          }
+      }
+
+      stage('Slack Notification') {
+        slackSend(
+          color: 'good',
+>>>>>>> upstream/develop
           message: "Branch: ${REPO}:${BRANCH_NAME}\nAndroid: ${apkUrl}\niOS: ${ipaUrl}"
         )
       }

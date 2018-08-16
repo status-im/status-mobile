@@ -42,7 +42,9 @@
       [react/view {:style styles/qr-code}
        [qr-code-viewer/qr-code {:value public-key :size 130}]]
       [react/view {:style {:align-items :center}}
-       [react/text {:style styles/qr-code-text}
+       [react/text {:style            styles/qr-code-text
+                    :selectable       true
+                    :selection-color  colors/hawkes-blue}
         public-key]
        (when tooltip-opacity
          [copied-tooltip tooltip-opacity])]

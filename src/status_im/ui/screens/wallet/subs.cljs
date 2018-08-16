@@ -68,7 +68,8 @@
                         (-> balance-total-value
                             (money/with-precision 2)
                             str
-                            (i18n/format-currency (:code currency))))
+                            (i18n/format-currency (:code currency) false)
+                            (->> (str "~"))))
                       "...")))
 
 (re-frame/reg-sub :prices-loading?
@@ -80,7 +81,7 @@
                   (fn [wallet]
                     (:balance-loading? wallet)))
 
-(re-frame/reg-sub :wallet/error-message?
+(re-frame/reg-sub :wallet/error-message
                   :<- [:wallet]
                   (fn [wallet]
                     (or (get-in wallet [:errors :balance-update])

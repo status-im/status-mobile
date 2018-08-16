@@ -44,6 +44,12 @@
    (models.contact/add-contact whisper-id cofx)))
 
 (handlers/register-handler-fx
+ :hide-contact
+ (fn [{:keys [db]} [_ whisper-id]]
+   (when (get-in db [:contacts/contacts whisper-id])
+     {:db (assoc-in db [:contacts/contacts whisper-id :hide-contact?] true)})))
+
+(handlers/register-handler-fx
  :set-contact-identity-from-qr
  [(re-frame/inject-cofx :random-id)]
  (fn [{:keys [db] :as cofx} [_ _ contact-identity]]

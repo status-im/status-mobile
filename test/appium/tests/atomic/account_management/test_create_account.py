@@ -1,6 +1,7 @@
 import pytest
+import random
 
-from tests import marks, common_password, get_current_time
+from tests import marks, common_password, get_current_time, test_fairy_warning_text
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -12,9 +13,10 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.testrail_id(758)
     @marks.smoke_1
     def test_create_account(self):
-        if not self.test_fairy_warning_is_shown:
+        sign_in = SignInView(self.driver, skip_popups=False)
+        if not sign_in.element_by_text_part(test_fairy_warning_text).is_element_displayed():
             self.errors.append('TestFairy warning is not shown')
-        sign_in = SignInView(self.driver)
+        sign_in.accept_agreements()
         if not sign_in.i_have_account_button.is_element_displayed():
             self.errors.append("'I have an account' button is not displayed")
         sign_in.create_account_button.click()
@@ -27,6 +29,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.name_input.send_keys('user_%s' % get_current_time())
 
         sign_in.next_button.click()
+        self.verify_no_errors()
 
     @marks.testrail_id(1433)
     def test_switch_users_and_add_new_account(self):
@@ -85,5 +88,6 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.testrail_id(3767)
     def test_password_in_logcat_creating_account(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        sign_in.check_no_values_in_logcat(password=common_password)
+        password = random.randint(100000, 1000000)
+        sign_in.create_user(password=password)
+        sign_in.check_no_values_in_logcat(password=password)
