@@ -40,8 +40,8 @@ RCTStatus* RCTStatusPrivate::rctStatus = nullptr;
 
 RCTStatus::RCTStatus(QObject* parent) : QObject(parent), d_ptr(new RCTStatusPrivate) {
     RCTStatusPrivate::rctStatus = this;
-    SetSignalEventCallback((void*)&RCTStatus::jailSignalEventCallback);
-    connect(this, &RCTStatus::jailSignalEvent, this, &RCTStatus::onJailSignalEvent);
+    SetSignalEventCallback((void*)&RCTStatus::statusGoEventCallback);
+    connect(this, &RCTStatus::statusGoEvent, this, &RCTStatus::onStatusGoEvent);
 }
 
 RCTStatus::~RCTStatus() {}
@@ -241,17 +241,17 @@ bool RCTStatus::JSCEnabled() {
     return false;
 }
 
-void RCTStatus::jailSignalEventCallback(const char* signal) {
-    qDebug() << "call of RCTStatus::jailSignalEventCallback ... signal: " << signal;
-    RCTStatusPrivate::rctStatus->emitSignalEvent(signal);
+void RCTStatus::statusGoEventCallback(const char* event) {
+    qDebug() << "call of RCTStatus::statusGoEventCallback ... event: " << event;
+    RCTStatusPrivate::rctStatus->emitStatusGoEvent(event);
 }
 
-void RCTStatus::emitSignalEvent(const char* signal) {
-    qDebug() << "call of RCTStatus::emitSignalEvent ... signal: " << signal;
-    Q_EMIT jailSignalEvent(signal);
+void RCTStatus::emitStatusGoEvent(QString event) {
+    qDebug() << "call of RCTStatus::emitStatusGoEvent ... event: " << event;
+    Q_EMIT statusGoEvent(event);
 }
 
-void RCTStatus::onJailSignalEvent(const char* signal) {
-    qDebug() << "call of RCTStatus::onJailSignalEvent ... signal: " << signal;
-    RCTStatusPrivate::bridge->eventDispatcher()->sendDeviceEvent("gethEvent", QVariantMap{{"jsonEvent", signal}});
+void RCTStatus::onStatusGoEvent(QString event) {
+    qDebug() << "call of RCTStatus::onStatusGoEvent ... event: " << event.toUtf8().data();
+    RCTStatusPrivate::bridge->eventDispatcher()->sendDeviceEvent("gethEvent", QVariantMap{{"jsonEvent", event.toUtf8().data()}});
 }

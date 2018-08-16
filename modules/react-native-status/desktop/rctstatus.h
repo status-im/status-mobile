@@ -56,15 +56,15 @@ public:
     Q_INVOKABLE void getDeviceUUID(double callbackId);
 
     Q_INVOKABLE static bool JSCEnabled();
-    Q_INVOKABLE static void jailSignalEventCallback(const char* signal);
+    Q_INVOKABLE static void statusGoEventCallback(const char* event);
 
-    void emitSignalEvent(const char* signal);
+    void emitStatusGoEvent(QString event);
 
 Q_SIGNALS:
-    void jailSignalEvent(const char* signal);
+    void statusGoEvent(QString event);
 
 private Q_SLOTS:
-    void onJailSignalEvent(const char* signal);
+    void onStatusGoEvent(QString event);
 
 private:
     QScopedPointer<RCTStatusPrivate> d_ptr;
