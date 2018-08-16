@@ -12,7 +12,11 @@
 (def EventEmmiter           (js/require "react-native/Libraries/vendor/emitter/EventEmitter"))
 (def fetch                  (.-default (js/require "react-native-fetch-polyfill")))
 (def i18n                   (js/require "react-native-i18n"))
+<<<<<<< HEAD
+(def react-native-firebase  (js/require "react-native-firebase"))
+=======
 (def react-native-firebase  #js {})
+>>>>>>> upstream/develop
 (def camera                 #js {:constants {:Aspect "Portrait"}})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})
