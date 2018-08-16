@@ -94,15 +94,15 @@ def buildClojureScript() {
   """
 }
 
-node() {
-  gitHubNotify("Desktop Jenkins build job started at ${env.BUILD_URL}")
+timeout(90) {
+  node() {
+    gitHubNotify("Desktop Jenkins build job started at ${env.BUILD_URL}")
+  }
   try {
     parallel(
       'MacOS build': {
-        timeout(90) {
           node('macos1') {
             load "$HOME/env.groovy"
-
             try {
               stage('Git & Deps') {
                 slackNotify('MacOS build started.')
@@ -158,10 +158,8 @@ node() {
               cleanupBuild()
             }
           }
-        }
       },
       'Linux build': {
-        timeout(90) {
           node ('linux-01') {
             def qt_bin = '/opt/qt59/bin'
 
@@ -252,9 +250,10 @@ node() {
             }
           }
         }
-      }
     )
   } catch (e) {
-     gitHubNotify("Desktop Jenkins build was failed or cancelled. More details at ${env.BUILD_URL}")
+     node() {
+        gitHubNotify("Desktop Jenkins build was failed or cancelled. More details at ${env.BUILD_URL}")
+     }
   }
 }
