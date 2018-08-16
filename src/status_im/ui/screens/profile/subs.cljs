@@ -14,7 +14,7 @@
  :get-app-version
  (fn [{:keys [web3-node-version]}]
    (let [version (if platform/desktop? build/version build/build-no)]
-     (str build/version " (" version ")\nnode " (or web3-node-version "N/A") ""))))
+     (str build/version " (" version "); node " (or web3-node-version "N/A") ""))))
 
 (reg-sub :get-device-UUID
          (fn [db]

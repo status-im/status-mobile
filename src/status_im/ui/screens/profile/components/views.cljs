@@ -65,8 +65,10 @@
   [react/text {:style styles/settings-title}
    title])
 
-(defn settings-item [{:keys [label-kw value action-fn active? destructive? hide-arrow? accessibility-label icon-content]
-                      :or {value "" active? true}}]
+(defn settings-item
+  [{:keys [item-text label-kw value action-fn active? destructive? hide-arrow?
+           accessibility-label icon-content]
+    :or   {value "" active? true}}]
   [react/touchable-highlight
    (cond-> {:on-press action-fn
             :disabled (not active?)}
@@ -77,7 +79,7 @@
      [react/text {:style           (merge styles/settings-item-text
                                           (when destructive? styles/settings-item-destructive))
                   :number-of-lines 1}
-      (i18n/label label-kw)]
+      (or item-text (i18n/label label-kw))]
      (when-not (string/blank? value)
        [react/text {:style           styles/settings-item-value
                     :number-of-lines 1

@@ -29,6 +29,7 @@
             status-im.ui.screens.wallet.collectibles.etheremon.events
             status-im.ui.screens.browser.events
             status-im.ui.screens.offline-messaging-settings.events
+            status-im.ui.screens.privacy-policy.events
             status-im.ui.screens.bootnodes-settings.events
             status-im.ui.screens.currency-settings.events
             status-im.utils.keychain.events

@@ -53,6 +53,10 @@
    :other-accounts                       "Other accounts"
    :sign-you-in                          "Signing you in…"
 
+   ;; privacy policy
+   :privacy-policy                       "Privacy Policy"
+   :agree-by-continuing                  "By continuing you agree\n to our "
+
    ;;drawer
    :switch-users                         "Switch users"
    :logout-title                         "Log out?"
@@ -134,6 +138,7 @@
    :message                              "Message"
    :notifications                        "Notifications"
    :need-help                            "Need help?"
+   :about-app                            "About"
    :help-center                          "Help Center"
    :faq                                  "Frequently asked questions"
    :submit-bug                           "Submit a bug"
@@ -155,6 +160,7 @@
    :mainnet-text                         "You’re on the Mainnet. Real ETH will be sent"
    :dev-mode                             "Development mode"
    :backup-your-recovery-phrase          "Backup your recovery phrase"
+   :version                              "Version {{version}}"
 
    ;;recovery phrase
    :your-data-belongs-to-you             "If you lose your recovery phrase you lose your data and funds"

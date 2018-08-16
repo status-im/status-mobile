@@ -50,7 +50,8 @@
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
-            [status-im.ui.screens.profile.seed.views :refer [backup-seed]]))
+            [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
+            [status-im.ui.screens.about-app.views :as about-app]))
 
 (defn get-main-component [view-id]
   (case view-id
@@ -98,6 +99,7 @@
     :recipient-qr-code recipient-qr-code
     :contact-code contact-code
     :backup-seed backup-seed
+    :about-app about-app/about-app
     [react/view [react/text (str "Unknown view: " view-id)]]))
 
 (defn get-modal-component [modal-view]
