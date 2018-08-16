@@ -30,7 +30,6 @@ timeout(90) {
       def apkUrl = ''
       def testApkUrl = ''
       def ipaUrl = ''
-      def testPassed = true
       def version
       def build_no
 
@@ -170,8 +169,7 @@ timeout(90) {
       }
 
       stage('Slack Notification') {
-        def c = (testPassed ? 'good' : 'warning' )
-        slackSend color: c, message: 'Nightly build (develop) \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl + '\n Android for e2e: ' + testApkUrl
+        slackSend color: 'good', message: 'Nightly build (develop) \nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl + '\n Android for e2e: ' + testApkUrl
       }
 
       stage('Run extended e2e tests') {

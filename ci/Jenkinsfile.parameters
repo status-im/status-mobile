@@ -21,7 +21,6 @@ timeout(90) {
   node ('fastlane') {
     def apkUrl = ''
     def ipaUrl = ''
-    def testPassed = true
     def branch;
 
     load "$HOME/env.groovy"
@@ -80,6 +79,8 @@ timeout(90) {
               string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
           ]) {
             sh 'fastlane android upload_diawi'
+
+            apkUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
           }
       }
 
@@ -112,9 +113,8 @@ timeout(90) {
       }
 
       stage('Slack Notification') {
-        def c = (testPassed ? 'good' : 'warning' )
         slackSend(
-          color: c,
+          color: 'good',
           message: "Branch: ${REPO}:${BRANCH_NAME}\nAndroid: ${apkUrl}\niOS: ${ipaUrl}"
         )
       }

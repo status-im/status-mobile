@@ -23,7 +23,6 @@ timeout(90) {
     node ('fastlane'){
       def apkUrl = ''
       def ipaUrl = ''
-      def testPassed = true
       def version
       def build_no
 
@@ -127,8 +126,7 @@ timeout(90) {
       }
 
       stage('Slack Notification') {
-        def c = (testPassed ? 'good' : 'warning' )
-        slackSend color: c, message: 'Release build \nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl
+        slackSend color: 'good', message: 'Release build \nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl
       }
 
       stage('Build (Android) for e2e tests') {
