@@ -81,7 +81,8 @@
                     :accessibility-label :signing-phrase-text}
         signing-phrase]]
       [react/i18n-text {:style styles/signing-phrase-description :key message-label}]
-      [react/view styles/password-container
+      [react/view {:style                       styles/password-container
+                   :important-for-accessibility :no-hide-descendants}
        [react/text-input
         {:auto-focus             true
          :secure-text-entry      true

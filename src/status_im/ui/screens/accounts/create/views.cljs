@@ -72,7 +72,8 @@
          [components.common/logo styles/logo]]
         ^{:key (str "step" step)}
         [react/view components.styles/flex
-         [react/view {:style styles/input-container}
+         [react/view {:style                       styles/input-container
+                      :important-for-accessibility :no-hide-descendants}
           [input step error]
           [react/text {:style styles/input-description}
            (get-in steps [step :input-description])]]

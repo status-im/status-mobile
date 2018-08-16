@@ -37,7 +37,8 @@
 
 (defview password-input [password]
   (letsubs [error [:get-in [:accounts/recover :password-error]]]
-    [react/view {:margin-top 10}
+    [react/view {:style                       {:margin-top 10}
+                 :important-for-accessibility :no-hide-descendants}
      [text-input/text-input-with-label
       {:label             (i18n/label :t/password)
        :placeholder       (i18n/label :t/enter-password)

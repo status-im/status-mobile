@@ -59,7 +59,8 @@
      [react/view styles/login-view
       [react/view styles/login-badge-container
        [account-login-badge photo-path name]
-       [react/view styles/password-container
+       [react/view {:style                       styles/password-container
+                    :important-for-accessibility :no-hide-descendants}
         [text-input/text-input-with-label
          {:label             (i18n/label :t/password)
           :placeholder       (i18n/label :t/password)
