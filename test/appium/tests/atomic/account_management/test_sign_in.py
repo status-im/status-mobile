@@ -1,3 +1,4 @@
+import pytest
 import random
 
 from tests import marks, common_password
@@ -68,4 +69,6 @@ class TestSignInOffline(MultipleDeviceTestCase):
         sign_in.accept_agreements()
         home = sign_in.sign_in()
         home.home_button.wait_for_visibility_of_element()
-        assert home.connection_status.text == 'Offline'
+        connection_text = home.connection_status.text
+        if connection_text != 'Offline':
+            pytest.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)

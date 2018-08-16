@@ -87,6 +87,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.asset_checkbox_by_name(select_asset).click()
         wallet.asset_checkbox_by_name(deselect_asset).click()
         wallet.done_button.click()
+        wallet.asset_by_name(select_asset).scroll_to_element()
         if not wallet.asset_by_name(select_asset).is_element_displayed():
             self.errors.append('%s asset is not shown in wallet' % select_asset)
         if wallet.asset_by_name(deselect_asset).is_element_displayed():

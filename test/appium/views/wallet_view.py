@@ -211,12 +211,13 @@ class WalletView(BaseView):
 
     def get_usd_total_value(self):
         import re
-        return float(re.sub('[$,]', '', self.usd_total_value.text))
+        return float(re.sub('[~,]', '', self.usd_total_value.text))
 
     def get_eth_value(self):
         return float(self.eth_asset_value.text)
 
     def get_stt_value(self):
+        self.stt_asset_value.scroll_to_element()
         return float(self.stt_asset_value.text)
 
     def verify_currency_balance(self, expected_rate: int, errors: list):

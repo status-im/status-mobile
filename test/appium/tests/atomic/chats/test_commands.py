@@ -1,4 +1,5 @@
 import pytest
+import random
 from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
@@ -357,14 +358,15 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     def test_logcat_send_transaction_in_1_1_chat(self):
         sender = transaction_users['C_USER']
         sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(passphrase=sender['passphrase'], password=sender['password'])
+        password = random.randint(100000, 1000000)
+        home = sign_in.recover_access(passphrase=sender['passphrase'], password=password)
         wallet = home.wallet_button.click()
         wallet.set_up_wallet()
         wallet.home_button.click()
         chat = home.add_contact(transaction_users['D_USER']['public_key'])
         amount = chat.get_unique_amount()
-        chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
-        chat.check_no_values_in_logcat(password=sender['password'])
+        chat.send_transaction_in_1_1_chat('ETH', amount, password)
+        chat.check_no_values_in_logcat(password=password)
 
     @marks.testrail_id(3736)
     @marks.smoke_1
@@ -466,6 +468,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         send_transaction.back_button.click()
         chat_view.commands_button.click()
         chat_view.send_command.click()
+        chat_view.asset_by_name('STT').scroll_to_element()
         chat_view.asset_by_name('STT').click()
         chat_view.send_as_keyevent(str(round(stt_value + 1)))
         chat_view.send_message_button.click()

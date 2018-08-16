@@ -1,3 +1,4 @@
+import pytest
 import random
 import string
 import emoji
@@ -499,7 +500,9 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         message_input.send_keys(message_text)
 
         message_input.delete_last_symbols(2)
-        assert message_input.text == message_text[:-2]
+        current_text = message_input.text
+        if current_text != message_text[:-2]:
+            pytest.fail("Message input text '%s' doesn't match expected '%s'" % (current_text, message_text[:-2]))
 
         message_input.cut_text()
 

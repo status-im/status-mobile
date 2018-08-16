@@ -160,7 +160,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sender = transaction_users['E_USER']
         recipient = transaction_users['F_USER']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        password = random.randint(100000, 1000000)
+        sign_in_view.recover_access(sender['passphrase'], password)
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
@@ -173,8 +174,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(sender['password'])
-        send_transaction.check_no_values_in_logcat(password=sender['password'])
+        send_transaction.sign_transaction(password)
+        send_transaction.check_no_values_in_logcat(password=password)
 
     @marks.testrail_id(3746)
     @marks.smoke_1
@@ -242,7 +243,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(1405)
     def test_send_valid_amount_after_insufficient_funds_error(self):
-        sender = transaction_users['H_USER']
+        sender = transaction_users['G_USER']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], sender['password'])
         wallet_view = sign_in_view.wallet_button.click()
@@ -260,7 +261,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(transaction_users['G_USER']['address'])
+        send_transaction.enter_recipient_address_input.set_value(transaction_users['H_USER']['address'])
         send_transaction.done_button.click()
         send_transaction.sign_transaction(sender['password'])
         self.network_api.find_transaction_by_unique_amount(sender['address'], valid_amount)
@@ -302,6 +303,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                 "'Insufficient funds' error is now shown when sending %s ETH from wallet with balance %s" % (
                     round(eth_value + 1), eth_value))
         send_transaction.select_asset_button.click()
+        send_transaction.asset_by_name('STT').scroll_to_element()
         send_transaction.asset_by_name('STT').click()
         send_transaction.amount_edit_box.set_value(round(stt_value + 1))
         if not error_text.is_element_displayed():

@@ -92,7 +92,7 @@ class TestBrowsing(SingleDeviceTestCase):
         start_new_chat.confirm()
         browsing_view = start_new_chat.get_base_web_view()
         browsing_view.wait_for_d_aap_to_load()
-        assert browsing_view.element_by_text('Google').is_element_displayed()
+        browsing_view.element_by_text('Google').find_element()
 
     @marks.testrail_id(1397)
     @marks.smoke_1
