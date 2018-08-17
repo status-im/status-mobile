@@ -1,0 +1,24 @@
+O Status é um app de código aberto e baseado em Ethereum que proporciona a possibilidade de conversar, realizar transações e acessar o mundo revolucionário dos DApps em seu dispositivo Android.
+
+<b>Importante:</b> O Status está atualmente em teste beta. Existem riscos associados com esse estágio de testes de um produto, portanto ao participar você deverá ler e confirmar que compreende e aceita esses riscos.
+
+Embora seja um trabalho em progresso, esperamos que essa versão beta demonstre o início de uma experiência intuitiva e simples no Ethereum, e que ela seja o início de um fantástico cliente da rede Ethereum.
+
+<b>O que é o Status?</b>
+É um novo tipo de ferramenta, para um novo tipo de internet. Navegue, converse e faça transações, tudo no mesmo app. 
+
+Quer conhecer um mundo no qual as pessoas têm mais controle sobre o valor que criam, organizam e contribuem como parte de uma rede maior. Para atingir esse patamar, criamos ferramentas que tornam mais fácil participar e se beneficiar de novos tipos de interações humanas e atividades econômicas.
+
+<b>Recursos da versão Beta:</b>
+
+■ Cliente Light — O Status executa uma implementação completa do Go Ethereum, com os protocolos Whisper habilitados.
+
+■ Mensagens criptografadas — criado utilizando o protocolo Whisper, permitindo conversas descentralizadas privativas e em grupo e pagamentos por meio de redes sociais.
+
+■ Navegação por DApps — Interação ininterrupta com o ecossistema emergente de DApps utilizando o navegador Web 3.0 do Status.
+
+■ Carteira Ether — uma carteira 'padrão', para permitir armazenamento em ETH, envio e recebimento de transações, um leitor de código QR e registros de transações.
+
+
+<b>Envolva-se</b>
+Como um projeto de código aberto, a melhor maneira de se envolver com o desenvolvimento é baixar e testar o Status. Nossa missão é facilitar a transição para uma internet e um sistema financeiro mais abertos, por meio do novo paradigma que o Ethereum representa. Com os objetivos de alto nível de preservar nossos direitos coletivos como seres humanos à privacidade, mitigar o risco de censura e promover comercialização economicamente viável de maneira aberta e transparente o Status está construindo uma comunidade na qual todos são bem-vindos para se juntarem e contribuírem com a causa. Adoraríamos falar com você. Junte-se a nós em: https://chat.status.im/

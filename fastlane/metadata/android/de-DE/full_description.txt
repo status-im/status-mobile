@@ -1,0 +1,24 @@
+Status ist eine Open Source, Ethereum-basierte App, die Ihnen die Möglichkeit gibt, zu chatten, Transaktionen zu tätigen und die Ihnen von Ihrem Android-Gerät aus Zugriff auf eine revolutionäre Welt an DApps bietet.
+
+<B>Wichtig:</ b> Status befindet sich derzeit in der Beta-Testphase. Es sind Risiken damit verbunden, ein Beta-Produkt zu testen; daher werden Sie dazu aufgefordert, die Informationen über die entsprechenden Risiken zu lesen und diese Risiken zu akzeptieren.
+
+Obwohl noch unfertig, hoffen wir, diese Beta-Version zeigt die Anfänge eines nutzerfreundlichen, intuitiven Erlebnisses für Ethereum und – hoffentlich – den Beginn eines fantastischen Clients für das Ethereum-Netzwerk.
+
+<B>Was ist Status?</ B>
+Es ist eine neue Art von Tool für eine neue Art von Internet. Browsen, Chatten und Transaktionen, alles inerhalb einer App. 
+
+Wir wünschen uns eine Welt, in der die Menschen mehr Kontrolle über den Wert haben, den sie als Teil eines größeren Netzwerks generieren und zu dem sie beitragen. Um das zu erreichen, erstellen wir Werkzeuge, die es leichter machen, sich an einer neuen Art menschlicher Interaktion und wirtschaftlicher Aktivität zu beteiligen und davon zu profitieren.
+
+<B>Beta-Funktionen:</ b>
+
+■ Light Client –– Bei der Aktivierung von Light Client und Whisper-Protokollen führt Status eine vollständige Umsetzung von Go Ethereum aus.
+
+■ Encrypted Messaging –– Über dem Whisper-Protokoll errichtet, ermöglicht dezentrale One-on-One, Gruppen-Chats und Social Payments.
+
+■ Browse DApps –– Intergagiert mithilfe von Status Web 3.0 Browser nahtlos mit dem aufstrebenden Ökosystem von DApps.
+
+■ Ether Wallel –– eine "Standard"-Geldbörse zur ETH-Aufbewahrung, zum Senden/Empfangen von Transaktion, mit QR-Reader und Transaktionsprotokollen.
+
+
+<B>Machen Sie mit</ b>
+Als Open-Source-Projekt sind das Downloaden und Testen von Status die beste Möglichkeit, an der Entwicklung beteiligt zu sein. Mithilfe des neuen Vertreters des Ethereum-Paradigmas wollen wir den Übergang zu einem offeneren Internet- und Finanzsystem erleichtern. Mit den hochgesteckten Zielen, unser kollektives Menschenrecht auf Privatsphäre zu bewahren, das Zensur-Risiko zu entschärfen und wirtschaftlichen Handel auf transparente, offene Art und Weise zu fördern, bildet Status eine Gemeinschaft, in der jeder willkommen ist, der beitreten und seinen Beitrag leisten möchte. Wir würden uns sehr freuen, von Ihnen zu hören. Besuchen Sie uns auf https://chat.status.im/
