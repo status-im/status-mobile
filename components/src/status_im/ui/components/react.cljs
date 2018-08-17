@@ -136,7 +136,7 @@
 (def image-picker-class js-dependencies/image-crop-picker)
 
 (defn show-access-error [o]
-  (when (= "ERROR_PICKER_UNAUTHORIZED_KEY" (object/get o "code")) ; Do not show error when user cancel selection
+  (when (= "E_PERMISSION_MISSING" (object/get o "code"))
     (utils/show-popup (i18n/label :t/error)
                       (i18n/label :t/photos-access-error))))
 
