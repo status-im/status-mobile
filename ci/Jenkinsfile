@@ -78,14 +78,8 @@ timeout(90) {
         // iOS
         stage('Build (iOS)') {
           withCredentials([
-              string(
-                credentialsId: "slave-pass-${env.NODE_NAME}",
-                variable: 'password'
-              ),
-              string(
-                credentialsId: 'fastlane-match-password',
-                variable:'KEYCHAIN_PASSWORD'
-              )]) {
+              string(credentialsId: "slave-pass-${env.NODE_NAME}", variable: 'KEYCHAIN_PASSWORD'),
+              string(credentialsId: 'fastlane-match-password', variable:'MATCH_PASSWORD')]) {
             sh 'fastlane ios adhoc'
           }
         }
