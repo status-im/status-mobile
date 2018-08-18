@@ -138,11 +138,13 @@
   {:flex            1
    :flex-direction  :row
    :justify-content :space-between
-   :align-items     :center})
+   :align-items     :center
+   :flex-wrap       :wrap
+   :margin-left     10})
 
 (def asset-label-content
-  {:flex-direction    :row
-   :margin-horizontal 10})
+  {:flex-direction :row
+   :margin-right   10})
 
 (def asset-label
   {:margin-right 10})
