@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.9.26 - Unreleased]
 ### Added
-
+- Allow user to remove custom avatar
 ### Fixed
 
 ### Changed

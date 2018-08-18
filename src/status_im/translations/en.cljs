@@ -195,6 +195,7 @@
    :image-source-title                   "Edit picture"
    :image-source-make-photo              "Capture"
    :image-source-gallery                 "Select from gallery"
+   :image-remove-current                 "Remove current photo"
 
    ;;sharing
    :sharing-copy-to-clipboard            "Copy to clipboard"

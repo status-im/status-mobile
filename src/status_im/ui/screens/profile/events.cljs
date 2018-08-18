@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.profile.navigation]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.identicon :as identicon]
             [status-im.ui.screens.profile.models :as profile.models]))
 
 (re-frame/reg-fx
@@ -24,6 +25,14 @@
  :my-profile/update-picture
  (fn [cofx [this-event base64-image]]
    (profile.models/update-picture this-event base64-image cofx)))
+
+(handlers/register-handler-fx
+ :my-profile/remove-current-photo
+ (fn [{:keys [db]}]
+   {:db       (-> db
+                  (assoc-in [:my-profile/profile :photo-path]
+                            (identicon/identicon (:current-public-key db)))
+                  (assoc :my-profile/editing? true))}))
 
 (handlers/register-handler-fx
  :my-profile/start-editing-profile
