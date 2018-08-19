@@ -140,12 +140,12 @@
           (assoc :confirmations "0"
                  :timestamp (str now)
                  :type :outbound
-                 :hash hash)
+                 :hash hash
+                 :value (:amount transaction)
+                 :token token
+                 :gas-limit (str (:gas transaction)))
           (update :gas-price str)
-          (assoc :value (:amount transaction))
-          (assoc :token token)
-          (update :gas str)
-          (dissoc :message-id :id)))))
+          (dissoc :message-id :id :gas)))))
 
 (defn handle-transaction-error [db {:keys [code message]}]
   (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
