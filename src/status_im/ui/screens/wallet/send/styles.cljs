@@ -5,21 +5,7 @@
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]))
 
 (def send-transaction-form
-  {:flex           1
-   :padding-bottom 60})
-
-(defn animated-sign-panel [bottom-value]
-  {:position           :absolute
-   :left               12
-   :right              12
-   :bottom             bottom-value})
-
-(defn sign-panel [opacity-value]
-  {:opacity            opacity-value
-   :border-radius      8
-   :background-color   colors/white
-   :padding-top        12
-   :padding-horizontal 12})
+  {:padding-bottom 60})
 
 (def spinner-container
   {:position        :absolute
@@ -30,26 +16,46 @@
    :justify-content :center})
 
 (def signing-phrase-container
-  {:border-radius    8
-   :height           36
-   :align-items      :center
-   :justify-content  :center
-   :background-color colors/gray-lighter})
+  {:flex               1
+   :border-radius      200
+   :border-width       1
+   :margin-vertical    24
+   :padding-vertical   12
+   :padding-horizontal 25
+   :align-items        :center
+   :justify-content    :center
+   :border-color       colors/gray-light})
 
 (def signing-phrase
-  {:font-size      15
-   :letter-spacing -0.2
+  {:font-size      22
+   :color          colors/black
+   :letter-spacing 10})
+
+(def transaction-amount
+  {:flex           1
+   :font-size      22
+   :letter-spacing 0.35
+   :font-weight    :bold
+   :text-align     :center
+   :line-height    28
+   :margin-bottom  24
    :color          colors/black})
 
 (def signing-phrase-description
   {:padding-top 8})
 
 (def password-container
-  {:flex             1
-   :padding-vertical 20})
+  {:flex               1
+   :width              "100%"
+   :margin-horizontal  40
+   :padding-vertical   17
+   :padding-horizontal 14
+   :border-radius      8
+   :background-color   colors/gray-lighter})
 
 (def password
-  {:padding        0
+  {:flex 1
+   :padding        0
    :font-size      15
    :letter-spacing -0.2
    :height         20})
@@ -146,9 +152,22 @@
 (def fee-buttons
   {:background-color colors/blue})
 
-(def password-error-tooltip
-  {:bottom-value 15
+(defn password-error-tooltip [sending?]
+  {:bottom-value (if sending? -145 -95)
    :color        colors/red-light})
 
 (defstyle gas-input-error-tooltip
   {:android {:bottom-value -38}})
+
+(def password-button
+  {:margin-top         12
+   :margin-bottom      30
+   :padding-horizontal 25
+   :padding-vertical   5})
+
+(def emojis-tooltip
+  {:bottom-value   -5
+   :font-size      12
+   :font-color     colors/white
+   :color          colors/blue
+   :delay          1500})

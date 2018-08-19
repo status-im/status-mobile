@@ -10,6 +10,12 @@
    (:send-transaction wallet)))
 
 (re-frame/reg-sub
+ :wallet.send/show-password-input?
+ :<- [::send-transaction]
+ (fn [send-transaction]
+   (:show-password-input? send-transaction)))
+
+(re-frame/reg-sub
  :wallet.send/symbol
  :<- [::send-transaction]
  (fn [send-transaction]
@@ -90,3 +96,10 @@
        (models.wallet/add-max-fee)
        (check-sufficient-funds balance symbol amount)
        (check-sufficient-gas balance symbol amount))))
+
+(re-frame/reg-sub
+ :wallet/signing-phrase
+ :<- [:get-current-account]
+ (fn [current-account]
+   (:signing-phrase current-account)))
+

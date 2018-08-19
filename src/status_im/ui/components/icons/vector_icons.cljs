@@ -93,6 +93,7 @@
      :icons/dots                (js/require "./resources/icons/dots.svg")
      :icons/warning             (js/require "./resources/icons/warning.svg")
      :icons/info                (js/require "./resources/icons/info.svg")
+     :icons/info-warning        (js/require "./resources/icons/info_warning.svg")
      :icons/hardwallet          (js/require "./resources/icons/hardwallet.svg")
      :icons/password            (js/require "./resources/icons/password.svg")
      :icons/nfc                 (js/require "./resources/icons/nfc.svg")}
@@ -162,6 +163,7 @@
      :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")
      :icons/settings            (components.svg/slurp-svg "./resources/icons/settings.svg")
      :icons/info                (components.svg/slurp-svg "./resources/icons/info.svg")
+     :icons/info-warning        (components.svg/slurp-svg "./resources/icons/info_warning.svg")
      :icons/hardwallet          (components.svg/slurp-svg "./resources/icons/hardwallet.svg")
      :icons/password            (components.svg/slurp-svg "./resources/icons/password.svg")
      :icons/nfc                 (components.svg/slurp-svg "./resources/icons/nfc.svg")}))

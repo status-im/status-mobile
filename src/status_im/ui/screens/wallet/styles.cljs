@@ -11,10 +11,10 @@
   {:ios {:border-bottom-width 1
          :border-bottom-color colors/white-transparent}})
 
-(defn button-container [enabled?]
+(defn button-container [disabled?]
   (merge {:flex-direction :row
           :align-items    :center}
-         (when-not enabled?
+         (when disabled?
            {:opacity 0.4})))
 
 (def wallet-modal-container

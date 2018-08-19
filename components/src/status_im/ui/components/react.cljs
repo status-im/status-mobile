@@ -70,6 +70,7 @@
 
 (def pan-responder (.-PanResponder js-dependencies/react-native))
 (def animated (.-Animated js-dependencies/react-native))
+(def easing (.-Easing js-dependencies/react-native))
 (def animated-view (reagent/adapt-react-class (.-View animated)))
 (def animated-text (reagent/adapt-react-class (.-Text animated)))
 
@@ -263,7 +264,11 @@
                                        :recipient-qr-code)
                                       "#2f3031"
 
+                                      (:password-drawer)
+                                      "rgba(0, 0, 0, 0.5)"
+
                                       styles/color-white)})
+
           bottom-background (when (#{:wallet
                                      :recent-recipients
                                      :wallet-send-assets
@@ -278,6 +283,7 @@
                                      :height           100
                                      :z-index          -1000}])
           children (conj children bottom-background)]
+
       (apply vector safe-area-view props children))))
 
 (defmethod create-main-screen-view :default [_]
@@ -289,3 +295,13 @@
       [main-screen-view styles/flex
        [keyboard-avoiding-view {:flex 1 :flex-direction :column}
         (apply vector view styles/flex components)]])))
+
+
+(views/defview main-screen-modal-view2 [current-view & components]
+  (views/letsubs []
+    (let [main-screen-view (create-main-screen-view current-view)]
+      [main-screen-view (merge styles/flex
+                               {:background-color :transparent})
+       [keyboard-avoiding-view {:flex 1 :flex-direction :column
+                                :background-color :transparent}
+        (apply vector view (assoc styles/flex :background-color :transparent) components)]])))

@@ -1,4 +1,5 @@
 (ns status-im.models.wallet
+  (:require-macros [status-im.utils.handlers-macro :as handlers-macro])
   (:require [clojure.set :as set]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
@@ -126,10 +127,19 @@
            :dispatch          [:navigate-back]}
 
     (= method constants/web3-personal-sign)
-    (assoc :dispatch [:navigate-back])
+    (as-> fx
+          (handlers-macro/merge-fx
+           cofx
+           fx
+           (navigation/navigate-back)))
 
     (= method constants/web3-send-transaction)
-    (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent])))
+    (as-> fx
+          (handlers-macro/merge-fx
+           cofx
+           (dissoc fx :dispatch)
+           (navigation/navigate-back)
+           (navigation/navigate-to-clean :wallet-transaction-sent)))))
 
 (defn discard-transaction
   [{:keys [db]}]

@@ -108,6 +108,7 @@
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
 (spec/def :navigation.screen-params/browser (spec/nilable map?))
+(spec/def :navigation.screen-params/password-drawer (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
 (spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))
@@ -132,6 +133,7 @@
 
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
+                                                                         :navigation.screen-params/password-drawer
                                                                          :navigation.screen-params/profile-qr-viewer
                                                                          :navigation.screen-params/qr-scanner
                                                                          :navigation.screen-params/group-contacts

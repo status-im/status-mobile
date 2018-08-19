@@ -8,7 +8,8 @@
    :align-items :center
    :left        0
    :right       0
-   :top         0})
+   :top         0
+   :margin-horizontal 50})
 
 (defstyle bottom-tooltip-container
   {:position    :absolute
@@ -24,7 +25,8 @@
    :left        0
    :right       0
    :bottom      bottom-value
-   :opacity     opacity-value})
+   :opacity     opacity-value
+   :z-index     8})
 
 (defn tooltip-text-container [color]
   {:padding-horizontal 16
@@ -41,9 +43,10 @@
    :background-color   colors/gray-notifications
    :border-radius      8})
 
-(defn tooltip-text [font-size]
-  {:color     styles/color-red-2
-   :font-size font-size})
+(defn tooltip-text [font-size font-color]
+  {:color     font-color
+   :font-size font-size
+   :text-align :center})
 
 (def bottom-tooltip-text
   {:color     colors/white
