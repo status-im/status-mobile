@@ -34,7 +34,8 @@
         [react/image {:style styles/chat-icon
                       :source {:uri photo-path}}])
       [react/view {:style (styles/chat-title-and-type pending?)}
-       [react/text {:style styles/chat-title}
+       [react/text {:style styles/chat-title
+                    :font  :medium}
         chat-name]
        (cond pending?
              [react/text {:style styles/add-contact-text

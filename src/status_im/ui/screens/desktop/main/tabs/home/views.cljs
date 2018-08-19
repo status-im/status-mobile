@@ -48,7 +48,8 @@
            [icons/icon :icons/public-chat])
          [react/text {:ellipsize-mode  :tail
                       :number-of-lines 1
-                      :style           (styles/chat-name (= current-chat-id chat-id))}
+                      :style           styles/chat-name
+                      :font            (if (= current-chat-id chat-id) :medium :default)}
           name]]
         [react/text {:ellipsize-mode  :tail
                      :number-of-lines 1
