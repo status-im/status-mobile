@@ -41,7 +41,7 @@ function install_wget() {
   if is_macos; then
     brew_install wget
   fi
-  // it's installed on ubuntu/debian by default
+  # it's installed on ubuntu/debian by default
 }
 
 function needs_java8_linux() {
