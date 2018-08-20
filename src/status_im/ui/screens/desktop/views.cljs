@@ -17,7 +17,11 @@
                       :accounts accounts.views/accounts
                       :recover recover.views/recover
                       :create-account create.views/create-account
-                      (:new-contact :chat :home :qr-code :chat-profile) main.views/main-views
+                      (:new-contact
+                       :advanced-settings
+                       :chat :home
+                       :qr-code
+                       :chat-profile) main.views/main-views
                       :login login.views/login
                       react/view)]
       [react/view {:style {:flex 1}}
