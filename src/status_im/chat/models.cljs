@@ -2,6 +2,7 @@
   (:require [status-im.ui.components.styles :as styles]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.transport.utils :as transport.utils]
+            [status-im.utils.platform :as platform]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.transport.message.core :as transport.message]
             [status-im.data-store.chats :as chats-store]
@@ -101,9 +102,11 @@
     (transport.utils/unsubscribe-from-chat chat-id cofx)))
 
 (defn- deactivate-chat [chat-id {:keys [db now] :as cofx}]
-  (assoc-in {:db db
-             :data-store/tx [(chats-store/deactivate-chat-tx chat-id now)]}
-            [:db :chats chat-id :is-active] false))
+  (cond-> (assoc-in {:db db
+                     :data-store/tx [(chats-store/deactivate-chat-tx chat-id now)]}
+                    [:db :chats chat-id :is-active] false)
+    platform/desktop?
+    (assoc-in [:db :current-chat-id] nil)))
 
 ;; TODO: There's a race condition here, as the removal of the filter (async)
 ;; is done at the same time as the removal of the chat, so a message

@@ -6,11 +6,11 @@
    Returns host or an empty string upon failure"
   [url]
   (->
-    url
-    (string/split #"/")
-    (get 2 "")
-    (string/split #":")
-    (get 0 "")))
+   url
+   (string/split #"/")
+   (get 2 "")
+   (string/split #":")
+   (get 0 "")))
 
 (defn re-frisk-url
   "Expects the input url to be in the form ws://host:port/figwheel-ws"
