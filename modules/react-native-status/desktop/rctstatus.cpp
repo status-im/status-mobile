@@ -117,20 +117,6 @@ void RCTStatus::startNode(QString configString) {
 }
 
 
-void RCTStatus::shouldMoveToInternalStorage(double callbackId) {
-    Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::shouldMoveToInternalStorage with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{});
-}
-
-
-void RCTStatus::moveToInternalStorage(double callbackId) {
-    Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::moveToInternalStorage with param callbackId: " << callbackId;
-    d->bridge->invokePromiseCallback(callbackId, QVariantList{ "{\"result\":\"\"}" });
-}
-
-
 void RCTStatus::stopNode() {
     qDebug() << "call of RCTStatus::stopNode";
     const char* result = StopNode();
@@ -183,18 +169,23 @@ void RCTStatus::login(QString address, QString password, double callbackId) {
 }
 
 
-void RCTStatus::approveSignRequests(QString hashes, QString password, double callbackId) {
+void RCTStatus::sendTransaction(QString txArgsJSON, QString password, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::approveSignRequests with param callbackId: " << callbackId;
-    const char* result = ApproveSignRequests(hashes.toUtf8().data(), password.toUtf8().data());
-    qDebug() << "RCTStatus::approveSignRequests CompleteTransactions result: " << result;
+    qDebug() << "call of RCTStatus::sendTransaction with param callbackId: " << callbackId;
+    const char* result = SendTransaction(txArgsJSON.toUtf8().data(), password.toUtf8().data());
+    qDebug() << "RCTStatus::sendTransaction SendTransaction result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
-void RCTStatus::discardSignRequest(QString id) {
-    qDebug() << "call of RCTStatus::discardSignRequest with id: " << id;
-    DiscardSignRequest(id.toUtf8().data());
+
+void RCTStatus::signMessage(QString rpcParams, double callbackId) {
+    Q_D(RCTStatus);
+    qDebug() << "call of RCTStatus::signMessage with param callbackId: " << callbackId;
+    const char* result = SignMessage(rpcParams.toUtf8().data());
+    qDebug() << "RCTStatus::signMessage SignMessage result: " << result;
+    d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
+
 
 void RCTStatus::setAdjustResize() {
 }
@@ -217,19 +208,19 @@ void RCTStatus::clearStorageAPIs() {
 }
 
 
-void RCTStatus::sendWeb3Request(QString payload, double callbackId) {
+void RCTStatus::callRPC(QString payload, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::sendWeb3Request with param callbackId: " << callbackId;
+    qDebug() << "call of RCTStatus::callRPC with param callbackId: " << callbackId;
     const char* result = CallRPC(payload.toUtf8().data());
-    qDebug() << "RCTStatus::sendWeb3Request CallRPC result: " << result;
+    qDebug() << "RCTStatus::callRPC CallRPC result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
-void RCTStatus::sendWeb3PrivateRequest(QString payload, double callbackId) {
+void RCTStatus::callPrivateRPC(QString payload, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::sendWeb3PrivateRequest with param callbackId: " << callbackId;
+    qDebug() << "call of RCTStatus::callPrivateRPC with param callbackId: " << callbackId;
     const char* result = CallPrivateRPC(payload.toUtf8().data());
-    qDebug() << "RCTStatus::sendWeb3PrivateRequest CallPrivateRPC result: " << result;
+    qDebug() << "RCTStatus::callPrivateRPC CallPrivateRPC result: " << result;
     d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
