@@ -75,6 +75,11 @@ class LogoutButton(BaseButton):
         super(LogoutButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('log-out-button')
 
+    def click(self):
+        self.scroll_to_element().click()
+        info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class LogoutDialog(BaseView):
     def __init__(self, driver):

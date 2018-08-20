@@ -104,7 +104,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.logout()
         sign_in_view.sign_in()
         if sign_in_view.profile_button.counter.text != '1':
-            self.errors.append('Profile button counter is not shown after relogin')
+            self.errors.append('Profile button counter is not shown after re-login')
         sign_in_view.profile_button.click()
         profile_view.backup_recovery_phrase()
         if sign_in_view.profile_button.counter.is_element_displayed():
