@@ -1,4 +1,4 @@
-(ns status-im.wallet.transactions
+(ns status-im.models.transactions
   (:require [clojure.set :as set]
             [status-im.utils.datetime :as time]
             [status-im.utils.ethereum.tokens :as tokens]

@@ -9,7 +9,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
             [status-im.constants :as const]
-            [status-im.wallet.transactions :as transactions]))
+            [status-im.models.transactions :as transactions]))
 
 (reg-sub :get-chats :chats)
 

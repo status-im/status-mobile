@@ -4,7 +4,7 @@
             [status-im.chat.models.message :as message-model]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.wallet.transactions :as wallet.transactions]))
+            [status-im.models.transactions :as wallet.transactions]))
 
 ;;;; Handlers
 

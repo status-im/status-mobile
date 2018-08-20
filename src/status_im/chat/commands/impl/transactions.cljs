@@ -20,7 +20,7 @@
             [status-im.utils.money :as money]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
-            [status-im.wallet.transactions :as wallet.transactions]
+            [status-im.models.transactions :as wallet.transactions]
             [status-im.ui.screens.navigation :as navigation]))
 
 ;; common `send/request` functionality

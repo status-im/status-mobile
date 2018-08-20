@@ -15,7 +15,7 @@
             [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.money :as money]
-            [status-im.wallet.transactions :as wallet.transactions]))
+            [status-im.models.transactions :as wallet.transactions]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)

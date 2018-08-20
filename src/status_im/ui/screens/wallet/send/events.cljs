@@ -17,7 +17,7 @@
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.constants :as constants]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.wallet.transactions :as wallet.transactions]))
+            [status-im.models.transactions :as wallet.transactions]))
 
 ;;;; FX
 

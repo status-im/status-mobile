@@ -1,7 +1,7 @@
 (ns status-im.test.wallet.transactions
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.datetime :as time]
-            [status-im.wallet.transactions :as wallet.transactions]))
+            [status-im.models.transactions :as wallet.transactions]))
 
 (deftest test-store-chat-transaction-hash
   (is (= (wallet.transactions/store-chat-transaction-hash "0x318f566edd98eb29965067d3394c555050bf9f8e20183792c7f1a6bbc1bb34db"
