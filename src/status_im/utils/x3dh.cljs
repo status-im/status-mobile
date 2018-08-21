@@ -1,8 +1,7 @@
 (ns status-im.utils.x3dh
   (:require
    [re-frame.core :as re-frame]
-   [status-im.utils.handlers :as handlers]
-   [status-im.native-module.core :as status]))
+   [status-im.utils.handlers :as handlers]))
 
 (re-frame/reg-fx
  ::create
@@ -11,7 +10,7 @@
              (if response
                (re-frame/dispatch [::created response])
                (re-frame/dispatch [::creation-failed])))]
-     (status/create-x3dh-bundle callback))))
+     #_(status/create-x3dh-bundle callback))))
 
 (handlers/register-handler-fx
  ::created
