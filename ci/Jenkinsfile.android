@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder(logRotator(
       numToKeepStr: '10',
       daysToKeepStr: '30',
-      artifactNumToKeepStr: '4',
+      artifactNumToKeepStr: '6',
     ))
   }
   
@@ -25,9 +25,10 @@ pipeline {
     stage('Prep') {
       steps {
         script {
+          print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prepDeps()
+          mobile.prep(type: params.BUILD_TYPE)
         }
       }
     }
@@ -43,25 +44,25 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { apk = mobile.compileAndroid(e2e: params.RUN_E2E) }
-      }
-    }
-    stage('Bundle') {
-      when { expression { !params.RUN_E2E } }
-      steps {
-        script { mobile.bundleAndroid() }
+        script { apk = mobile.android.compile(type: params.BUILD_TYPE) }
       }
     }
     stage('Archive') {
-      when { expression { !params.RUN_E2E } }
       steps {
         script { archiveArtifacts apk }
       }
     }
+    stage('Upload') {
+      when { expression { params.BUILD_TYPE == 'release' } }
+      steps {
+        script { mobile.android.uploadToPlayStore() }
+      }
+    }
     stage('Run e2e') {
-      when { expression { params.RUN_E2E } }
+      when { expression { params.BUILD_TYPE == 'e2e' } }
       steps { script {
-        apk = mobile.uploadSauceLabs() 
+        mobile.android.uploadToDiawi()
+        apk = mobile.android.uploadToSauceLabs() 
         build(
           job: 'end-to-end-tests/status-app-nightly', wait: false,
           parameters: [string(name: 'apk', value: "--apk=${apk}")]

@@ -134,8 +134,7 @@ platform :ios do
   end
 
   desc "`fastlane ios nightly` - makes a new nightly in TestFlight"
-  desc "This lane builds a new nightly and uploads it to TestFlight"
-  desc "It also leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
     unlock_keychain_if_needed
 

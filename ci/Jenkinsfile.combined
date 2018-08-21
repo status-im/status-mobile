@@ -14,69 +14,49 @@ pipeline {
     stage('Tag') {
       steps { script {
         common = load('ci/common.groovy')
-        /* to avoid race conditions in parallel builds */
+        /* to avoid missing build tag parallel builds */
         print "Build Number: ${common.tagBuild()}"
       } }
     }
     stage('Build') {
       parallel {
-        stage('MacOS') {
-          steps { script {
-            osx = build('status-react/combined/desktop-macos')
-          } }
-        }
-        stage('Linux') {
-          steps { script {
-            nix = build('status-react/combined/desktop-linux')
-          } }
-        }
-        stage('iOS') {
-          steps { script {
-            ios = build('status-react/combined/mobile-ios')
-          } }
-        }
-        stage('Android') {
-          steps { script {
-            dro = build('status-react/combined/mobile-android')
-          } }
-        }
-        stage('Android e2e') {
-          steps {
-            build('status-react/combined/mobile-android-e2e')
-          }
-        }
+        stage('MacOS') { steps { script {
+          osx = common.buildBranch('status-react/combined/desktop-macos')
+        } } }
+        stage('Linux') { steps { script {
+          nix = common.buildBranch('status-react/combined/desktop-linux')
+        } } }
+        stage('iOS') { steps { script {
+          ios = common.buildBranch('status-react/combined/mobile-ios')
+        } } }
+        stage('Android') { steps { script {
+          dro = common.buildBranch('status-react/combined/mobile-android')
+        } } }
+        stage('Android e2e') { steps { script {
+          e2e = common.buildBranch('status-react/combined/mobile-android', 'e2e')
+        } } }
       }
     }
     stage('Archive') {
-      steps {
+      steps { script {
         sh('rm -f pkg/*')
-        copyArtifacts(
-          projectName: 'status-react/combined/mobile-ios', target: 'pkg',
-          flatten: true, selector: specific("${ios.number}")
-        )
-        copyArtifacts(
-          projectName: 'status-react/combined/mobile-android', target: 'pkg',
-          flatten: true, selector: specific("${dro.number}")
-        )
-        copyArtifacts(
-          projectName: 'status-react/combined/desktop-macos', target: 'pkg',
-          flatten: true, selector: specific("${osx.number}")
-        )
-        copyArtifacts(
-          projectName: 'status-react/combined/desktop-linux', target: 'pkg',
-          flatten: true, selector: specific("${nix.number}")
-        )
+        common.copyArts('status-react/combined/desktop-macos', osx.number)
+        common.copyArts('status-react/combined/desktop-linux', nix.number)
+        common.copyArts('status-react/combined/mobile-android', dro.number)
+        common.copyArts('status-react/combined/mobile-android', e2e.number)
         archiveArtifacts('pkg/*')
-      }
+      } }
     }
     stage('Upload') {
-      when { expression { params.PUBLISH } }
+      when { expression { params.BUILD_TYPE == 'nightly' } }
       steps { script {
-        def pkg = "StatusIm-${GIT_COMMIT.take(6)}"
-        apkUrl = common.uploadArtifact('pkg', "${pkg}.apk")
-        ipaUrl = common.uploadArtifact('pkg', "${pkg}.ipa")
-        dmgUrl = common.uploadArtifact('pkg', "${pkg}.dmg")
-        appUrl = common.uploadArtifact('pkg', "${pkg}.AppImage")
+        def pkg = "pkg/StatusIm-${GIT_COMMIT.take(6)}"
+        e2eUrl = common.uploadArtifact("${pkg}-e2e.apk")
+        apkUrl = common.uploadArtifact("${pkg}.apk")
+        dmgUrl = common.uploadArtifact("${pkg}.dmg")
+        appUrl = common.uploadArtifact("${pkg}.AppImage")
+        /* special case for iOS Diawi link */
+        ipaUrl = ios.getEnvironment().DIAWI_URL
       } }
     }
     stage('Notify') {
@@ -86,7 +66,8 @@ pipeline {
             "Build success! "+
             "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
             "(${currentBuild.durationString})\n"+
-            (params.PUBLISH ?
+            (params.BUILD_TYPE == 'nightly' ?
+              "E2E: ${e2eUrl}\n"+
               "APK: ${apkUrl}\n"+
               "IPA: ${ipaUrl}\n"+
               "DMG: ${dmgUrl}\n"+
@@ -98,7 +79,7 @@ pipeline {
       }
     }
     stage('Publish') {
-      when { expression { params.PUBLISH } }
+      when { expression { params.BUILD_TYPE == 'nightly' } }
       steps {
         build(
           job: 'misc/status-im.github.io-update_env',
