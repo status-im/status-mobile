@@ -117,6 +117,7 @@
  :send-current-message
  message-model/send-interceptors
  (fn [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx} _]
+   (throw (js/Error. "Oops!"))
    (when-not (get-in db [:chat-ui-props current-chat-id :sending-in-progress?])
      (let [input-text   (get-in db [:chats current-chat-id :input-text])
            command      (commands/selected-chat-command

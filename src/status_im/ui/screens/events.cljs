@@ -385,7 +385,6 @@
 (handlers/register-handler-fx
  :signal-event
  (fn [_ [_ event-str]]
-   (log/debug :event-str event-str)
    (instabug/log (str "Signal event: " event-str))
    (let [{:keys [type event]} (types/json->clj event-str)
          to-dispatch (case type
