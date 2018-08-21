@@ -85,11 +85,11 @@
 
 ;; SEND TRANSACTION -> RPC TRANSACTION
 (defn prepare-send-transaction [from {:keys [amount to gas gas-price data nonce]}]
-  (cond-> {:from      (ethereum/normalized-address from)
-           :to        (ethereum/normalized-address to)
-           :value     (ethereum/int->hex amount)
-           :gas       (ethereum/int->hex gas)
-           :gas-price (ethereum/int->hex gas-price)}
+  (cond-> {:from     (ethereum/normalized-address from)
+           :to       (ethereum/normalized-address to)
+           :value    (ethereum/int->hex amount)
+           :gas      (ethereum/int->hex gas)
+           :gasPrice (ethereum/int->hex gas-price)}
     data
     (assoc :data data)
     nonce

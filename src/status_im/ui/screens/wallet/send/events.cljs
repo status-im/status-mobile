@@ -26,9 +26,9 @@
                            (security/unmask masked-password)
                            on-completed))
 
-(defn- send-tokens [symbol chain {:keys [from to value gas gas-price]} on-completed masked-password]
+(defn- send-tokens [symbol chain {:keys [from to value gas gasPrice]} on-completed masked-password]
   (let [contract (:address (tokens/symbol->token (keyword chain) symbol))]
-    (erc20/transfer contract from to value gas gas-price masked-password on-completed)))
+    (erc20/transfer contract from to value gas gasPrice masked-password on-completed)))
 
 (re-frame/reg-fx
  ::send-transaction
