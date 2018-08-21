@@ -179,5 +179,4 @@
 (def chat-title
   {:margin-bottom  4
    :font-size      14
-   :color          colors/black
-   :font-weight    "600"})
+   :color          colors/black})

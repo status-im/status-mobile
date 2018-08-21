@@ -25,7 +25,8 @@
      [react/view {:style styles/new-contact-view}
       ^{:key "newcontact"}
       [react/view {:style styles/new-contact-title}
-       [react/text {:style styles/new-contact-title-text}
+       [react/text {:style styles/new-contact-title-text
+                    :font  :medium}
         (i18n/label :new-chat)]]
       [react/text {:style styles/new-contact-subtitle} (i18n/label :contact-code)]
       [react/view {:style styles/new-contact-separator}]
@@ -61,7 +62,8 @@
              [react/text {:style styles/new-contact-subtitle} (:name c)]]]))]]
       ^{:key "publicchat"}
       [react/view {:style styles/new-contact-title}
-       [react/text {:style styles/new-contact-title-text}
+       [react/text {:style styles/new-contact-title-text
+                    :font  :medium}
         (i18n/label :new-public-group-chat)]]
       [react/text {:style styles/new-contact-subtitle} (i18n/label :public-group-topic)]
       [react/view {:style styles/new-contact-separator}]
