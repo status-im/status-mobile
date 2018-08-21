@@ -20,6 +20,7 @@
    [react/image {:source {:uri photo-path}
                  :style  styles/profile-photo}]
    [react/text {:style           styles/profile-user-name
+                :font           :medium
                 :number-of-lines 1}
     name]])
 
@@ -38,7 +39,8 @@
                   tooltip-opacity      [:get-in [:tooltips :qr-copied]]]
     [react/view
      [react/view {:style styles/qr-code-container}
-      [react/text {:style styles/qr-code-title}
+      [react/text {:style styles/qr-code-title
+                   :font  :medium}
        (string/replace (i18n/label :qr-code-public-key-hint) "\n" "")]
       [react/view {:style styles/qr-code}
        [qr-code-viewer/qr-code {:value public-key :size 130}]]
@@ -61,7 +63,9 @@
                   wnodes           [:settings/network-wnodes]]
     (let [render-fn (offline-messaging.views/render-row current-wnode-id)]
       [react/view
-       [react/text {:style styles/advanced-settings-title} (i18n/label :advanced-settings)]
+       [react/text {:style styles/advanced-settings-title
+                    :font  :medium}
+        (i18n/label :advanced-settings)]
        [react/view {:style styles/title-separator}]
        [react/text {:style styles/mailserver-title} (i18n/label :offline-messaging)]
        [react/view
@@ -89,12 +93,14 @@
        [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
                                    :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
         [react/view {:style styles/adv-settings}
-         [react/text {:style (styles/profile-row-text colors/black adv-settings-open?)} (i18n/label :t/advanced-settings)]
+         [react/text {:style (styles/profile-row-text colors/black)
+                      :font  (if adv-settings-open? :medium :default)}
+          (i18n/label :t/advanced-settings)]
          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
        [react/view {:style (styles/profile-row false)}
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
-         [react/text {:style (styles/profile-row-text colors/red false)} (i18n/label :t/logout)]]
-        [react/view [react/text {:style (styles/profile-row-text colors/gray false)} "V" build/version " (" build/commit-sha ")"]]]])))
+         [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
+        [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])))
 
 (views/defview profile-data []
   (views/letsubs

@@ -18,10 +18,12 @@
    :align-items        :center
    :background-color   (if active? colors/gray-lighter colors/white)})
 
-(defn profile-row-text [color active?]
+(defn profile-row-text [color]
   {:color       color
-   :font-weight (if active? "600" :normal)
    :font-size   16})
+
+(defn profile-row-font [selected?]
+  (if selected? :medium :default))
 
 (def adv-settings
   {:justify-content :space-between
@@ -35,8 +37,7 @@
    :height        100})
 
 (def profile-user-name
-  {:font-weight :bold
-   :font-size   18})
+  {:font-size   18})
 
 (def share-contact-code
   {:flex-direction    :row
@@ -93,7 +94,6 @@
 
 (def qr-code-title
   {:font-size     20
-   :font-weight   "600"
    :margin-bottom 32})
 
 (def qr-code
@@ -146,8 +146,7 @@
 
 (def advanced-settings-title
   {:margin        24
-   :font-size     20
-   :font-weight   "600"})
+   :font-size     20})
 
 (def title-separator
   {:height            1
