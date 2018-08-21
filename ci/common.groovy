@@ -35,7 +35,7 @@ def tagBuild() {
   }
 }
 
-def uploadArtifact(filename) {
+def uploadArtifact(path, filename) {
   def domain = 'ams3.digitaloceanspaces.com'
   def bucket = 'status-im-desktop'
   withCredentials([usernamePassword(
@@ -50,7 +50,7 @@ def uploadArtifact(filename) {
         --host-bucket='%(bucket)s.${domain}' \\
         --access_key=${DO_ACCESS_KEY} \\
         --secret_key=${DO_SECRET_KEY} \\
-        put ${filename} s3://${bucket}/
+        put ${path}/${filename} s3://${bucket}/
     """
   }
   def url = "https://${bucket}.${domain}/${filename}"
