@@ -23,7 +23,7 @@ def compile(type = 'nightly') {
     sh './gradlew react-native-android:installArchives'
     sh "./gradlew assembleRelease ${gradleOpt}"
   }
-  def pkg = "StatusIm-${GIT_COMMIT.take(6)}${(type = 'e2e' ?: '-e2e')}.apk"
+  def pkg = "StatusIm-${GIT_COMMIT.take(6)}${(type == 'e2e' ? '-e2e' : '')}.apk"
   sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
   return pkg
 }
