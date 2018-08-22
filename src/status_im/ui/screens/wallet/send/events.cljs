@@ -1,7 +1,13 @@
 (ns status-im.ui.screens.wallet.send.events
   (:require [re-frame.core :as re-frame]
+            [status-im.chat.commands.sending :as commands-sending]
+            [status-im.chat.models.message :as models.message]
+            [status-im.constants :as constants]
             [status-im.i18n :as i18n]
+            [status-im.models.transactions :as wallet.transactions]
+            [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
@@ -11,13 +17,7 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [status-im.models.wallet :as models.wallet]
-            [status-im.chat.models.message :as models.message]
-            [status-im.chat.commands.sending :as commands-sending]
-            [status-im.constants :as constants]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.models.transactions :as wallet.transactions]))
+            [status-im.utils.utils :as utils]))
 
 ;;;; FX
 
@@ -269,8 +269,3 @@
  :sync-wallet-transactions
  (fn [cofx _]
    (wallet.transactions/sync cofx)))
-
-(handlers/register-handler-fx
- :start-wallet-transactions-sync
- (fn [cofx _]
-   (wallet.transactions/start-sync cofx)))

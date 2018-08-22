@@ -1,12 +1,11 @@
 (ns ^{:doc "Contact request and update API"}
  status-im.transport.message.v1.contact
   (:require [re-frame.core :as re-frame]
+            [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.handlers :as handlers]
-            [status-im.data-store.transport :as transport-store]))
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
