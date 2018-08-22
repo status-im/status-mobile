@@ -50,11 +50,11 @@ pipeline {
     stage('Upload') {
       when { expression { params.BUILD_TYPE == 'nightly' } }
       steps { script {
-        def pkg = "pkg/StatusIm-${GIT_COMMIT.take(6)}"
-        e2eUrl = common.uploadArtifact("${pkg}-e2e.apk")
-        apkUrl = common.uploadArtifact("${pkg}.apk")
-        dmgUrl = common.uploadArtifact("${pkg}.dmg")
-        appUrl = common.uploadArtifact("${pkg}.AppImage")
+        def pkg = "StatusIm-${GIT_COMMIT.take(6)}"
+        e2eUrl = common.uploadArtifact('pkg', "${pkg}-e2e.apk")
+        apkUrl = common.uploadArtifact('pkg', "${pkg}.apk")
+        dmgUrl = common.uploadArtifact('pkg', "${pkg}.dmg")
+        appUrl = common.uploadArtifact('pkg', "${pkg}.AppImage")
         /* special case for iOS Diawi link */
         ipaUrl = ios.getEnvironment().DIAWI_URL
       } }
