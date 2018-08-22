@@ -32,7 +32,7 @@ public:
     QList<ModuleMethod*> methodsToExport() override;
     QVariantMap constantsToExport() override;
 
-    Q_INVOKABLE void startNode(QString configString);
+    Q_INVOKABLE void startNode(QString configString, QString fleet);
     Q_INVOKABLE void stopNode();
     Q_INVOKABLE void createAccount(QString password, double callbackId);
     Q_INVOKABLE void notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId);
