@@ -56,7 +56,7 @@ pipeline {
         dmgUrl = common.uploadArtifact('pkg', "${pkg}.dmg")
         appUrl = common.uploadArtifact('pkg', "${pkg}.AppImage")
         /* special case for iOS Diawi link */
-        ipaUrl = ios.getEnvironment().DIAWI_URL
+        ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
       } }
     }
     stage('Notify') {
