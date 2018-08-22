@@ -28,7 +28,7 @@ pipeline {
           print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prep(type: params.BUILD_TYPE)
+          mobile.prep(params.BUILD_TYPE)
         }
       }
     }
@@ -44,7 +44,7 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { apk = mobile.android.compile(type: params.BUILD_TYPE) }
+        script { apk = mobile.android.compile(params.BUILD_TYPE) }
       }
     }
     stage('Archive') {
