@@ -371,6 +371,10 @@
                     :name     "SPANK"
                     :address  "0x42d6622deCe394b54999Fbd73D108123806f6a18"
                     :decimals 18}
+                   {:symbol   :BRLN
+                    :name     "Berlin Coin"
+                    :address  "0x80046305aaab08f6033b56a360c184391165dc2d"
+                    :decimals 18}
                    ;; NOTE(goranjovic) : the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
