@@ -18,15 +18,16 @@
                            :style (merge styles/hash-value-text style)}]]])
 
 (defn qr-code-viewer [{:keys [style hint-style footer-style]} value hint legend]
-  {:pre [(not (nil? value))]}
-  (let [{:keys [width height]} @(re-frame/subscribe [:dimensions/window])]
-    [react/view {:style (merge styles/qr-code style)}
-     [react/text {:style (merge styles/qr-code-hint hint-style)}
-      hint]
-     (when width
-       (let [size (int (* 0.7 (min width height)))]
-         [react/view {:style               (styles/qr-code-container size)
-                      :accessibility-label :qr-code-image}
-          [qr-code {:value value
-                    :size  (- size (* 2 styles/qr-code-padding))}]]))
-     [footer footer-style legend]]))
+  (if value
+    (let [{:keys [width height]} @(re-frame/subscribe [:dimensions/window])]
+      [react/view {:style (merge styles/qr-code style)}
+       [react/text {:style (merge styles/qr-code-hint hint-style)}
+        hint]
+       (when width
+         (let [size (int (* 0.7 (min width height)))]
+           [react/view {:style               (styles/qr-code-container size)
+                        :accessibility-label :qr-code-image}
+            [qr-code {:value value
+                      :size  (- size (* 2 styles/qr-code-padding))}]]))
+       [footer footer-style legend]])
+    [react/view [react/text "no value"]]))

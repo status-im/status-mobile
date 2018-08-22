@@ -48,3 +48,4 @@
 
 (def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))})
 (def secure-random #(.resolve js/Promise (clj->js (range 0 %))))
+(def react-navigation #js {:NavigationActions #js {}})

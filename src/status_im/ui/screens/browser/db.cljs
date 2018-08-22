@@ -17,15 +17,16 @@
 (spec/def :browser/permissions-queue (spec/nilable any?))
 
 (spec/def :browser/options
-  (allowed-keys
-   :opt-un [:browser/browser-id
-            :browser/loading?
-            :browser/resolving?
-            :browser/url-editing?
-            :browser/show-tooltip
-            :browser/show-permission
-            :browser/permissions-queue
-            :browser/error?]))
+  (spec/nilable
+   (allowed-keys
+    :opt-un [:browser/browser-id
+             :browser/loading?
+             :browser/resolving?
+             :browser/url-editing?
+             :browser/show-tooltip
+             :browser/show-permission
+             :browser/permissions-queue
+             :browser/error?])))
 
 (spec/def :browser/browser
   (allowed-keys

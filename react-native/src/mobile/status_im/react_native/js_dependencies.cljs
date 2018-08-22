@@ -26,3 +26,4 @@
 (def snoopy-buffer          (js/require "rn-snoopy/stream/buffer"))
 (def background-timer       (.-default (js/require "react-native-background-timer")))
 (def testfairy              (js/require "react-native-testfairy"))
+(def react-navigation       (js/require "react-navigation"))

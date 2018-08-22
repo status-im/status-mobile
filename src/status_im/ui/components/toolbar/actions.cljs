@@ -18,7 +18,7 @@
 
 (def default-handler #(re-frame/dispatch [:navigate-back]))
 
-(def home-handler #(re-frame/dispatch [:navigate-to-clean :home]))
+(def home-handler #(re-frame/dispatch [:navigate-to :home]))
 
 (def default-back
   (back default-handler))

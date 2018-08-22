@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.collectibles.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as styles]))
 
 (def default-collectible
   {:padding-left     10
@@ -27,3 +28,8 @@
 (def details-image
   {:flex   1
    :margin 10})
+
+(def container
+  (merge
+   styles/flex
+   {:background-color colors/white}))

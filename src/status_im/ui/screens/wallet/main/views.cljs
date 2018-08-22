@@ -31,7 +31,7 @@
       :icon-opts {:color               :white
                   :accessibility-label :options-menu-button}
       :options   [{:label  (i18n/label :t/wallet-manage-assets)
-                   :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
+                   :action #(re-frame/dispatch [:navigate-to :wallet-settings-assets])}]}]]])
 
 (defn toolbar-modal [modal-history?]
   [react/view

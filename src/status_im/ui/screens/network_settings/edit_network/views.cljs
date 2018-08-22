@@ -30,7 +30,7 @@
   (views/letsubs [manage-network [:get-manage-network]
                   is-valid?      [:manage-network-valid?]]
     (let [custom? (= (get-in manage-network [:chain :value]) :custom)]
-      [react/view components.styles/flex
+      [react/view styles/container
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label :t/add-network)]

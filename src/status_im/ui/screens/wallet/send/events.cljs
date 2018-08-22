@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.send.events
+  (:require-macros [status-im.utils.handlers-macro :as handlers-macro])
   (:require [re-frame.core :as re-frame]
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.chat.models.message :as models.message]
@@ -81,12 +82,12 @@
 ;; SEND TRANSACTION (SIGN MESSAGE) CALLBACK
 (handlers/register-handler-fx
  ::transaction-completed
- (fn [{:keys [db now]} [_ {:keys [result error]}]]
+ (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
    (let [{:keys [id method whisper-identity to symbol amount-text dapp-transaction]} (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
        ;; ERROR
-       (models.wallet/handle-transaction-error db' error)
+       (models.wallet/handle-transaction-error (assoc cofx :db db') error)
        ;; RESULT
        (merge
         {:db (cond-> (assoc-in db' [:wallet :send-transaction] {})
@@ -134,20 +135,23 @@
                            [:wallet/update-estimated-gas (first params)])
                          (when-not gas-price
                            [:wallet/update-gas-price])
-                         [:navigate-to-modal (if wallet-set-up-passed?
-                                               :wallet-send-transaction-modal
-                                               :wallet-onboarding-setup-modal)]]})
+                         [:navigate-to
+                          (if wallet-set-up-passed?
+                            :wallet-send-modal-stack
+                            :wallet-send-modal-stack-with-onboarding)]]})
 
          ;;SIGN MESSAGE
          (= method constants/web3-personal-sign)
          (let [[address data] (models.wallet/normalize-sign-message-params params)]
            (if (and address data)
-             {:db       (assoc-in db' [:wallet :send-transaction] {:id               (str (or id message-id))
-                                                                   :from             address
-                                                                   :data             data
-                                                                   :dapp-transaction queued-transaction
-                                                                   :method           method})
-              :dispatch [:navigate-to-modal :wallet-sign-message-modal]}
+             (let [db'' (assoc-in db' [:wallet :send-transaction]
+                                  {:id               (str (or id message-id))
+                                   :from             address
+                                   :data             data
+                                   :dapp-transaction queued-transaction
+                                   :method           method})]
+               (navigation/navigate-to-cofx
+                :wallet-sign-message-modal nil {:db db''}))
              {:db db'})))))))
 
 (handlers/register-handler-fx
@@ -160,9 +164,9 @@
    (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
      (handlers-macro/merge-fx cofx
                               (commands-sending/send chat-id send-command params)
-                              (navigation/replace-view :wallet-transaction-sent))
+                              (navigation/navigate-to-clean :wallet-transaction-sent))
      (handlers-macro/merge-fx cofx
-                              (navigation/replace-view :wallet-transaction-sent)))))
+                              (navigation/navigate-to-clean :wallet-transaction-sent)))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
@@ -261,9 +265,11 @@
 
 (handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [{:keys [db]} [_ chat-id]]
-   {:dispatch       [:navigate-back]
-    :dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}))
+ (fn [{:keys [db] :as cofx} [_ chat-id]]
+   (handlers-macro/merge-fx
+    cofx
+    {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
+    (navigation/navigate-back))))
 
 (handlers/register-handler-fx
  :sync-wallet-transactions

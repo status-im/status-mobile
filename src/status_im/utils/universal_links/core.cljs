@@ -49,7 +49,7 @@
   (log/info "universal-links: handling view profile" profile-id)
   (if (new-chat.db/own-whisper-identity? db profile-id)
     (navigation/navigate-to-cofx :my-profile nil cofx)
-    (chat.events/show-profile profile-id true cofx)))
+    (chat.events/show-profile profile-id cofx)))
 
 (defn handle-extension [url cofx]
   (log/info "universal-links: handling url profile" url)

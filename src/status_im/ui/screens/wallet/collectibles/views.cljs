@@ -18,7 +18,7 @@
 (defview collectibles-list []
   (letsubs [{:keys [name symbol]} [:get-screen-params]
             collectibles [:screen-collectibles]]
-    [react/view {:style component.styles/flex}
+    [react/view styles/container
      [react/view {:style component.styles/flex}
       [status-bar/status-bar]
       [toolbar/toolbar {}

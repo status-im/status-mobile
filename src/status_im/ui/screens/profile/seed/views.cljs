@@ -137,7 +137,7 @@
 (defview backup-seed []
   (letsubs [current-account [:get-current-account]
             {:keys [step first-word second-word error word]} [:get :my-profile/seed]]
-    [react/keyboard-avoiding-view {:style common.styles/flex}
+    [react/keyboard-avoiding-view {:style styles/backup-seed-container}
      [status-bar/status-bar]
      [toolbar/toolbar
       nil

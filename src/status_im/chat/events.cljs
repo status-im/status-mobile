@@ -134,15 +134,19 @@
 
 (defn- navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
-  [chat-id {:keys [navigation-replace?]} {:keys [db] :as cofx}]
+  [chat-id {:keys [navigation-replace?]} cofx]
   (if navigation-replace?
-    (handlers-macro/merge-fx cofx
-                             (navigation/replace-view :chat)
-                             (preload-chat-data chat-id))
-    (handlers-macro/merge-fx cofx
-                             ;; TODO janherich - refactor `navigate-to` so it can be used with `merge-fx` macro
-                             {:db (navigation/navigate-to db :chat)}
-                             (preload-chat-data chat-id))))
+    (handlers-macro/merge-fx
+     cofx
+     (navigation/navigate-reset
+      {:index   1
+       :actions [{:routeName :home}
+                 {:routeName :chat}]})
+     (preload-chat-data chat-id))
+    (handlers-macro/merge-fx
+     cofx
+     (navigation/navigate-to-cofx :chat {})
+     (preload-chat-data chat-id))))
 
 (handlers/register-handler-fx
  :navigate-to-chat
@@ -230,12 +234,12 @@
                            :confirm-button-text (i18n/label :t/clear)
                            :on-accept           #(re-frame/dispatch [:clear-history])}}))
 
-(defn create-new-public-chat [topic {:keys [db now] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           (models/add-public-chat topic)
-                           (navigation/navigate-to-clean :home)
-                           (navigate-to-chat topic {})
-                           (public-chat/join-public-chat topic)))
+(defn create-new-public-chat [topic cofx]
+  (handlers-macro/merge-fx
+   cofx
+   (models/add-public-chat topic)
+   (navigate-to-chat topic {:navigation-replace? true})
+   (public-chat/join-public-chat topic)))
 
 (handlers/register-handler-fx
  :create-new-public-chat
@@ -259,23 +263,23 @@
                              (group-name-from-contacts selected-contacts
                                                        (:contacts/contacts db)
                                                        (:username db)))]
-     (handlers-macro/merge-fx cofx
-                              {:db (assoc db :group/selected-contacts #{})}
-                              (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
-                              (navigation/navigate-to-clean :home)
-                              (navigate-to-chat random-id {})
-                              (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
+     (handlers-macro/merge-fx
+      cofx
+      {:db (assoc db :group/selected-contacts #{})}
+      (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
+      (navigation/navigate-to-cofx :home nil)
+      (navigate-to-chat random-id {})
+      (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
 
-(defn show-profile [identity keep-navigation? {:keys [db] :as cofx}]
-  (cond->> {:db (assoc db :contacts/identity identity)}
-    keep-navigation? (navigation/navigate-to-cofx :profile nil)
-    :else            (navigation/navigate-forget :profile)))
+(defn show-profile [identity {:keys [db]}]
+  (navigation/navigate-to-cofx
+   :profile nil {:db (assoc db :contacts/identity identity)}))
 
 (handlers/register-handler-fx
  :show-profile
  [re-frame/trim-v]
- (fn [cofx [identity keep-navigation?]]
-   (show-profile identity keep-navigation? cofx)))
+ (fn [cofx [identity]]
+   (show-profile identity cofx)))
 
 (handlers/register-handler-fx
  :resend-message

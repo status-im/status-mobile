@@ -62,9 +62,9 @@
 
 (defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [status-module-initialized? status-node-started?
+  [{{:keys [status-module-initialized? status-node-started? view-id
             network-status network peers-count peers-summary device-UUID]
-     :or {network (get app-db :network)}} :db}]
+     :or   {network (get app-db :network)}} :db}]
   {:db (assoc app-db
               :contacts/contacts {}
               :network-status network-status
@@ -73,7 +73,8 @@
               :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
               :status-node-started? status-node-started?
               :network network
-              :device-UUID device-UUID)})
+              :device-UUID device-UUID
+              :view-id view-id)})
 
 (defn initialize-app
   [encryption-key cofx]
@@ -171,7 +172,7 @@
   (when (not= (:view-id db) :create-account)
     (handlers-macro/merge-fx cofx
                              {:notifications/request-notifications-permissions nil}
-                             (navigation/navigate-to-clean :home)
+                             (navigation/navigate-to-cofx :home nil)
                              (universal-links/process-stored-event)
                              (notifications/process-stored-event address))))
 

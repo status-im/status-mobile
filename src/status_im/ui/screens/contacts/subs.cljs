@@ -63,10 +63,12 @@
 
 (reg-sub :get-contact-by-identity
          :<- [:get-contacts]
-         (fn [contacts [_ identity]]
-           (or
-            (get contacts identity)
-            (utils.contacts/whisper-id->new-contact identity))))
+         :<- [:get-current-chat]
+         (fn [[all-contacts {:keys [contacts]}] [_ identity]]
+           (let [identity' (or identity (first contacts))]
+             (or
+              (get all-contacts identity')
+              (utils.contacts/whisper-id->new-contact identity')))))
 
 (reg-sub :get-dapp-by-name
          :<- [:get-dapps]

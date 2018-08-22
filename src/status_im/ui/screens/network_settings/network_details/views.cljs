@@ -9,8 +9,7 @@
    [status-im.ui.components.styles :as components.styles]
    [status-im.ui.components.common.common :as components.common]
    [status-im.ui.screens.network-settings.styles :as st]
-   [status-im.ui.screens.network-settings.views :as network-settings]
-   [status-im.ui.components.colors :as colors]))
+   [status-im.ui.screens.network-settings.views :as network-settings]))
 
 (views/defview network-details []
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]
@@ -19,7 +18,7 @@
     (let [{:keys [id name config]} selected-network
           connected?               (= id network)
           custom?                  (seq (filter #(= (:id %) id) (:custom networks)))]
-      [react/view components.styles/flex
+      [react/view st/container
        [status-bar/status-bar]
        [react/view components.styles/flex
         [toolbar/simple-toolbar (i18n/label :t/network-details)]

@@ -39,7 +39,7 @@
 (defn- advanced-cartouche [{:keys [max-fee gas gas-price]}]
   [react/view
    [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
-                                                 (re-frame/dispatch [:navigate-to-modal :wallet-transaction-fee]))}
+                                                 (re-frame/dispatch [:navigate-to :wallet-transaction-fee]))}
     (i18n/label :t/wallet-transaction-fee)
     [react/view {:style               styles/advanced-options-text-wrapper
                  :accessibility-label :transaction-fee-button}

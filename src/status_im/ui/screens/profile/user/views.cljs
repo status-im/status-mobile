@@ -83,9 +83,9 @@
       value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
 
 (defn- show-qr [contact source value]
-  #(re-frame/dispatch [:navigate-to-modal :profile-qr-viewer {:contact contact
-                                                              :source  source
-                                                              :value   value}]))
+  #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
+                                                        :source  source
+                                                        :value   value}]))
 
 (defn share-contact-code [current-account public-key]
   [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}

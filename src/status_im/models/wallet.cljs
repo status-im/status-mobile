@@ -124,8 +124,11 @@
                                webview]
            :dispatch          [:navigate-back]}
 
+    (= method constants/web3-personal-sign)
+    (assoc :dispatch [:navigate-back])
+
     (= method constants/web3-send-transaction)
-    (assoc :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}])))
+    (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent])))
 
 (defn discard-transaction
   [{:keys [db]}]
@@ -152,7 +155,7 @@
           (update :gas-price str)
           (dissoc :message-id :id :gas)))))
 
-(defn handle-transaction-error [db {:keys [code message]}]
+(defn handle-transaction-error [{:keys [db]} {:keys [code message]}]
   (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
     (case code
 
@@ -161,11 +164,13 @@
       {:db (-> db
                (assoc-in [:wallet :send-transaction :wrong-password?] true))}
 
-      (cond-> {:db (-> db
-                       navigation/navigate-back
-                       (assoc-in [:wallet :transactions-queue] nil)
-                       (assoc-in [:wallet :send-transaction] {}))
-               :wallet/show-transaction-error message}
+      (cond-> (let [cofx {:db
+                          (-> db
+                              (assoc-in [:wallet :transactions-queue] nil)
+                              (assoc-in [:wallet :send-transaction] {}))
+                          :wallet/show-transaction-error
+                          message}]
+                (navigation/navigate-back cofx))
 
         dapp-transaction
         (web3-error-callback db dapp-transaction message)))))

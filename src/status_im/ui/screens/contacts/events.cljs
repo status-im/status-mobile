@@ -12,10 +12,10 @@
             [status-im.utils.utils :as utils]))
 
 (defn add-contact-and-open-chat [whisper-id cofx]
-  (handlers-macro/merge-fx cofx
-                           (navigation/navigate-to-clean :home)
-                           (models.contact/add-contact whisper-id)
-                           (chat.events/start-chat whisper-id {})))
+  (handlers-macro/merge-fx
+   cofx
+   (models.contact/add-contact whisper-id)
+   (chat.events/start-chat whisper-id {:navigation-replace? true})))
 
 (re-frame/reg-cofx
  :get-default-contacts

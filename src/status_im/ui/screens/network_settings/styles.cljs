@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.network-settings.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as components.styles]))
 
 (def wrapper
   {:flex             1
@@ -146,3 +147,7 @@
 
 (def delete-button-text
   {:color colors/red})
+
+(def container
+  (merge components.styles/flex
+         {:background-color colors/white}))

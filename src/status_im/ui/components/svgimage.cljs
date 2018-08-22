@@ -39,7 +39,7 @@
 (defn svgimage [{:keys [style source]}]
   (let [width (reagent/atom nil)
         {:keys [uri k] :or {k 1}} source]
-    (when (http/url-sanitized? uri)
+    (when (and source uri (http/url-sanitized? uri))
       (fn []
         [react/view {:style     style
                      :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}

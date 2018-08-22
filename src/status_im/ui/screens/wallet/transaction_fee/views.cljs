@@ -19,7 +19,8 @@
 (defn return-to-transaction [modal?]
   (if modal?
     ;;TODO(andrey) artificial navigation stack for modals (should be reworked)
-    (re-frame/dispatch [:navigate-to-modal :wallet-send-transaction-modal])
+    ;; ^ probably will be fixed with react-navigation
+    (re-frame/dispatch [:navigate-to-clean :wallet-send-transaction-modal])
     (act/default-handler)))
 
 (defn- toolbar [modal? title]

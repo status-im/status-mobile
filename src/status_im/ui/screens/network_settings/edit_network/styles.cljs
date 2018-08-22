@@ -25,3 +25,8 @@
   {:flex-direction    :row
    :margin-horizontal 12
    :margin-vertical   15})
+
+(def container
+  (merge
+   styles/flex
+   {:background-color colors/white}))

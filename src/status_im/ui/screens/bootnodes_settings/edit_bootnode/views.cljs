@@ -37,7 +37,7 @@
     (let [url  (get-in manage-bootnode [:url :value])
           id   (get-in manage-bootnode [:id :value])
           name (get-in manage-bootnode [:name :value])]
-      [react/view components.styles/flex
+      [react/view styles/container
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label (if id :t/bootnode-details :t/add-bootnode))]

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.seed.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as common.styles]))
 
 (def intro-container
   {:flex              1
@@ -153,3 +154,8 @@
    :font-size  14
    :text-align :center
    :color      colors/gray})
+
+(def backup-seed-container
+  (merge
+   common.styles/flex
+   {:background-color colors/white}))

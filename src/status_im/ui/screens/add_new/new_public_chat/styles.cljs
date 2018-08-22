@@ -14,7 +14,8 @@
 
 (def group-container
   {:flex           1
-   :flex-direction :column})
+   :flex-direction :column
+   :background-color colors/white})
 
 (def chat-name-container
   {:margin-top 10})

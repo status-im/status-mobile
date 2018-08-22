@@ -30,7 +30,7 @@
             [status-im.ui.components.colors :as colors]))
 
 (defview add-contact-bar [contact-identity]
-  (letsubs [{:keys [hide-contact?] :as contact} [:get-contact-by-identity contact-identity]]
+  (letsubs [{:keys [hide-contact?] :as contact} [:get-contact-by-identity]]
     (when (and (not hide-contact?)
                (models.contact/can-add-to-contacts? contact))
       [react/view style/add-contact
@@ -64,7 +64,7 @@
         [toolbar/actions [{:icon      :icons/wallet
                            :icon-opts {:color               :black
                                        :accessibility-label :wallet-modal-button}
-                           :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}
+                           :handler   #(re-frame/dispatch [:navigate-to :wallet-modal])}
                           {:icon      :icons/options
                            :icon-opts {:color               :black
                                        :accessibility-label :chat-menu-button}
@@ -159,9 +159,10 @@
                   :on-layout (fn [e]
                                (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
       [chat-toolbar public?]
-      (when (= :chat current-view)
+      (if (= :chat current-view)
         [messages-view-animation
-         [messages-view group-chat]])
+         [messages-view group-chat]]
+        [react/view style/message-view-preview])
       [input/container {:text-empty? (string/blank? input-text)}]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])

@@ -38,7 +38,8 @@
               "react-native-fetch-polyfill"
               "react-native-testfairy"
               "text-encoding"
-              "js-sha3"]
+              "js-sha3"
+              "react-navigation"]
 
  ;; Resoures
  :resource-dirs ["resources/images"]

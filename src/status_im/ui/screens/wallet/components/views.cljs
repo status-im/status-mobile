@@ -156,22 +156,23 @@
   (views/letsubs [balance  [:balance]
                   network  [:network]]
     (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
-      [react/view
-       [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
-        (i18n/label :t/wallet-asset)
-        [react/view {:style               styles/asset-content-container
-                     :accessibility-label :choose-asset-button}
-         [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
-         [react/view styles/asset-text-content
-          [react/view styles/asset-label-content
-           [react/text {:style (merge styles/text-content styles/asset-label)}
-            name]
-           [react/text {:style styles/text-secondary-content}
-            (clojure.core/name symbol)]]
-          [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
-           (str (wallet.utils/format-amount (get balance symbol) decimals))]]]]
-       (when error
-         [tooltip/tooltip error {}])])))
+      (when name
+        [react/view
+         [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
+          (i18n/label :t/wallet-asset)
+          [react/view {:style               styles/asset-content-container
+                       :accessibility-label :choose-asset-button}
+           [list/item-image (assoc icon :style styles/asset-icon :image-style {:width 32 :height 32})]
+           [react/view styles/asset-text-content
+            [react/view styles/asset-label-content
+             [react/text {:style (merge styles/text-content styles/asset-label)}
+              name]
+             [react/text {:style styles/text-secondary-content}
+              (clojure.core/name symbol)]]
+            [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
+             (str (wallet.utils/format-amount (get balance symbol) decimals))]]]]
+         (when error
+           [tooltip/tooltip error {}])]))))
 
 (defn- recipient-address [address modal?]
   [react/text {:style               (merge styles/recipient-address (when-not address styles/recipient-no-address))

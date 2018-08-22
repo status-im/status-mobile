@@ -22,7 +22,7 @@
    (assert whisper-identity)
    ;; TODO(janherich) remove this dispatch sequence, there is absolutely no need for that :/
    {:dispatch-n [[:navigate-back]
-                 [:navigate-to-clean :home]
+                 [:navigate-to :home]
                  [:add-chat-loaded-event whisper-identity
                   [::wallet-send-chat-request (name symbol) (str (money/internal->formatted amount symbol decimals))]]
                  [:start-chat whisper-identity]]}))

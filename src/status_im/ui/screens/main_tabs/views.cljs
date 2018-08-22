@@ -64,17 +64,32 @@
    (for [{:keys [content view-id accessibility-label count-subscription]} tabs-list]
      ^{:key view-id} [tab view-id content (= view-id current-view-id) accessibility-label count-subscription])])
 
-(views/defview main-tabs []
-  (views/letsubs [view-id          [:get :view-id]
-                  tab-bar-visible? [:tab-bar-visible?]]
-    [react/view common.styles/flex
-     [status-bar.view/status-bar {:type (if (= view-id :wallet) :wallet-tab :main)}]
-     [react/view common.styles/main-container
+(views/defview main-container [view-id]
+  (views/letsubs
+    [tab-bar-visible? [:tab-bar-visible?]]
+    ;; :should-component-update is called only when props are changed,
+    ;; that's why view-id is passed as a prop here. main-tabs component will be
+    ;; rendered while next screen from stack navigator is shown, so we have
+    ;; to prevent re-rendering to avoid no clause exception in case form
+    {:should-component-update
+     (fn [_ _ [_ new-view-id]]
+       (contains? #{:home :wallet :my-profile} new-view-id))}
+    [react/view common.styles/main-container
+     (case view-id
+       :home [home/home]
+       :wallet [wallet.main/wallet]
+       :my-profile [profile.user/my-profile]
+       nil)
 
-      (case view-id
-        :home [home/home]
-        :wallet [wallet.main/wallet]
-        :my-profile [profile.user/my-profile])
+     (when tab-bar-visible?
+       [tabs view-id])]))
 
-      (when tab-bar-visible?
-        [tabs view-id])]]))
+(defn main-tabs [view-id]
+  [react/view common.styles/flex
+   [status-bar.view/status-bar
+    {:type (if (= view-id :wallet) :wallet-tab :main)}]
+   [main-container view-id]])
+
+(defn get-main-tab [view-id]
+  (fn []
+    [main-tabs view-id]))

@@ -9,6 +9,7 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.money :as money]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
             [taoensso.timbre :as log]))
@@ -212,7 +213,7 @@
    {:db       (assoc-in db [:wallet :send-transaction] {:id         id
                                                         :method     method
                                                         :from-chat? from-chat?})
-    :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
+    :dispatch [:navigate-to-clean :wallet-send-transaction-modal]}))
 
 (handlers/register-handler-db
  :wallet/update-gas-price-success
@@ -241,7 +242,8 @@
 
 (handlers/register-handler-fx
  :wallet-setup-navigate-back
- (fn [{:keys [db]}]
-   {:db (-> db
-            (assoc-in [:wallet :send-transaction] {})
-            (navigation/navigate-back))}))
+ (fn [{:keys [db] :as cofx}]
+   (handlers-macro/merge-fx
+    cofx
+    {:db (assoc-in db [:wallet :send-transaction] {})}
+    (navigation/navigate-back))))

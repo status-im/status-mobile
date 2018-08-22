@@ -71,7 +71,7 @@
    [toolbar.view/actions [{:icon      :icons/wallet
                            :icon-opts {:color               :black
                                        :accessibility-label :wallet-modal-button}
-                           :handler   #(re-frame/dispatch [:navigate-to-modal :wallet-modal])}]]])
+                           :handler   #(re-frame/dispatch [:navigate-to :wallet-modal])}]]])
 
 (defn- web-view-error [_ code desc]
   (reagent/as-element
@@ -90,8 +90,9 @@
       (re-frame/dispatch [:update-browser-on-nav-change browser url loading error?]))))
 
 (defn get-inject-js [url]
-  (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
-    (get (:inject-js browser-config) domain-name)))
+  (when url
+    (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
+      (get (:inject-js browser-config) domain-name))))
 
 (defn navigation [webview browser can-go-back? can-go-forward?]
   [react/view styles/toolbar
@@ -112,6 +113,56 @@
    [react/touchable-highlight {:on-press #(.reload @webview)}
     [icons/icon :icons/refresh]]])
 
+;; should-component-update is called only when component's props are changed,
+;; that's why it can't be used in `brwoser`, because `url` comes from subs
+(views/defview browser-component
+  [{:keys [webview error? url browser browser-id can-go-back? can-go-forward?
+           url-editing? resolving? network-id address show-permission
+           show-tooltip opt-in? loading? dapp? rpc-url name]}]
+  {:should-component-update (fn [_ _ args]
+                              (let [[_ props] args]
+                                (not (nil? (:url props)))))}
+  [react/view styles/browser
+   [status-bar/status-bar]
+   [toolbar webview error? url browser browser-id url-editing?]
+   [react/view components.styles/flex
+    [components.webview-bridge/webview-bridge
+     {:dapp?                                 dapp?
+      :dapp-name                             name
+      :ref                                   #(do
+                                                (reset! webview %)
+                                                (re-frame/dispatch [:set :webview-bridge %]))
+      :source                                (when-not resolving? {:uri url})
+      :java-script-enabled                   true
+      :bounces                               false
+      :local-storage-enabled                 true
+      :render-error                          web-view-error
+      :on-navigation-state-change            #(on-navigation-change % browser error?)
+      :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message %])
+      :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
+      :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
+                                                                                           :loading? false}])
+      :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
+                                                  (get-inject-js url)
+                                                  (if opt-in?
+                                                    (js-res/web3-opt-in-init (str network-id))
+                                                    (js-res/web3-init
+                                                     rpc-url
+                                                     (ethereum/normalized-address address)
+                                                     (str network-id))))
+      :injected-java-script                  js-res/webview-js}]
+    (when (or loading? resolving?)
+      [react/view styles/web-view-loading
+       [components/activity-indicator {:animating true}]])]
+   [navigation webview browser can-go-back? can-go-forward?]
+   [permissions.views/permissions-anim-panel browser show-permission]
+   (when show-tooltip
+     [tooltip/bottom-tooltip-info
+      (if (= show-tooltip :secure)
+        (i18n/label :t/browser-secure)
+        (i18n/label :t/browser-not-secure))
+      #(re-frame/dispatch [:update-browser-options {:show-tooltip nil}])])])
+
 (views/defview browser []
   (views/letsubs [webview    (atom nil)
                   {:keys [address settings]} [:get-current-account]
@@ -123,43 +174,21 @@
           can-go-forward? (model/can-go-forward? browser)
           url             (model/get-current-url browser)
           opt-in?         (:web3-opt-in? settings)]
-      [react/view styles/browser
-       [status-bar/status-bar]
-       [toolbar webview error? url browser browser-id url-editing?]
-       [react/view components.styles/flex
-        [components.webview-bridge/webview-bridge
-         {:dapp?                                 dapp?
-          :dapp-name                             name
-          :ref                                   #(do
-                                                    (reset! webview %)
-                                                    (re-frame/dispatch [:set :webview-bridge %]))
-          :source                                (when-not resolving? {:uri url})
-          :java-script-enabled                   true
-          :bounces                               false
-          :local-storage-enabled                 true
-          :render-error                          web-view-error
-          :on-navigation-state-change            #(on-navigation-change % browser error?)
-          :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message %])
-          :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
-          :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
-                                                                                               :loading? false}])
-          :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
-                                                      (get-inject-js url)
-                                                      (if opt-in?
-                                                        (js-res/web3-opt-in-init (str network-id))
-                                                        (js-res/web3-init
-                                                         rpc-url
-                                                         (ethereum/normalized-address address)
-                                                         (str network-id))))
-          :injected-java-script                  js-res/webview-js}]
-        (when (or loading? resolving?)
-          [react/view styles/web-view-loading
-           [components/activity-indicator {:animating true}]])]
-       [navigation webview browser can-go-back? can-go-forward?]
-       [permissions.views/permissions-anim-panel browser show-permission]
-       (when show-tooltip
-         [tooltip/bottom-tooltip-info
-          (if (= show-tooltip :secure)
-            (i18n/label :t/browser-secure)
-            (i18n/label :t/browser-not-secure))
-          #(re-frame/dispatch [:update-browser-options {:show-tooltip nil}])])])))
+      [browser-component {:webview         webview
+                          :dapp?           dapp?
+                          :error?          error?
+                          :url             url
+                          :browser         browser
+                          :browser-id      browser-id
+                          :can-go-back?    can-go-back?
+                          :can-go-forward? can-go-forward?
+                          :url-editing?    url-editing?
+                          :resolving?      resolving?
+                          :network-id      network-id
+                          :address         address
+                          :show-permission show-permission
+                          :show-tooltip    show-tooltip
+                          :opt-in?         opt-in?
+                          :loading?        loading?
+                          :rpc-url         rpc-url
+                          :name            name}])))

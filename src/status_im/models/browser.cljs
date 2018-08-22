@@ -11,7 +11,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.multihash :as multihash]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.ui.screens.navigation :as navigation]))
 
 (defn get-current-url [{:keys [history history-index]}]
   (when (and history-index history)
@@ -74,11 +75,24 @@
                                :cb       ens-multihash-callback}}
       {})))
 
-(defn update-new-browser-and-navigate [host browser cofx]
+(defn navigate-to-browser
+  [{{:keys [view-id]} :db :as cofx}]
+  (if (= view-id :dapp-description)
+    (navigation/navigate-reset
+     {:index   1
+      :actions [{:routeName :home}
+                {:routeName :browser}]}
+     cofx)
+    (navigation/navigate-to-cofx :browser nil cofx)))
+
+(defn update-new-browser-and-navigate
+  [host browser {:keys [db] :as cofx}]
   (handlers-macro/merge-fx
    cofx
-   {:dispatch [:navigate-to :browser {:browser-id (:browser-id browser)
-                                      :resolving? (ens? host)}]}
+   {:db (assoc db :browser/options
+               {:browser-id (:browser-id browser)
+                :resolving? (ens? host)})}
+   (navigate-to-browser)
    (update-browser-fx browser)
    (resolve-multihash-fx host false false)))
 

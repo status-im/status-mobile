@@ -5,7 +5,7 @@
             [status-im.utils.universal-links.core :as utils.universal-links]
             [status-im.ui.components.react :refer [view modal create-main-screen-view] :as react]
             [status-im.ui.components.styles :as common-styles]
-            [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
+            [status-im.ui.screens.main-tabs.views :as main-tabs]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
             [status-im.ui.screens.accounts.recover.views :refer [recover]]
@@ -57,105 +57,271 @@
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
-            [status-im.ui.screens.about-app.views :as about-app]))
+            [status-im.ui.screens.about-app.views :as about-app]
+            [status-im.utils.navigation :as navigation]
+            [reagent.core :as reagent]
+            [cljs-react-navigation.reagent :as nav-reagent]
+            [status-im.utils.random :as rand]
+            [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as platform]))
 
-(defn get-main-component [view-id]
-  (case view-id
-    :collectibles-list collectibles-list
-    :intro intro
-    :create-account create-account
-    (:home :wallet :my-profile) main-tabs
-    :browser browser
-    :open-dapp open-dapp
-    :dapp-description dapp-description
-    :wallet-onboarding-setup wallet.onboarding.setup/screen
-    :wallet-send-transaction send-transaction
-    :wallet-send-transaction-chat send-transaction
-    :wallet-transaction-sent transaction-sent
-    :wallet-request-transaction request-transaction
-    :wallet-send-transaction-request send-transaction-request
-    (:transactions-history :unsigned-transactions) wallet-transactions/transactions
-    :wallet-transaction-details wallet-transactions/transaction-details
-    :wallet-send-assets wallet.components/send-assets
-    :wallet-request-assets wallet.components/request-assets
-    :new add-new
-    :new-group new-group
-    :add-participants-toggle-list add-participants-toggle-list
-    :new-public-chat new-public-chat
-    :contact-toggle-list contact-toggle-list
-    :new-chat new-chat
-    :qr-scanner qr-scanner
-    :chat chat
-    :profile profile.contact/profile
-    :group-chat-profile profile.group-chat/group-chat-profile
-    :profile-photo-capture profile-photo-capture
-    :accounts accounts
-    :login login
-    :progress progress
-    :recover recover
-    :network-settings network-settings
-    :extensions-settings extensions-settings
-    :network-details network-details
-    :edit-network edit-network
-    :log-level-settings log-level-settings
-    :fleet-settings fleet-settings
-    :offline-messaging-settings offline-messaging-settings
-    :edit-mailserver edit-mailserver
-    :add-extension add-extension
-    :show-extension show-extension
-    :bootnodes-settings bootnodes-settings
-    :edit-bootnode edit-bootnode
-    :currency-settings currency-settings
-    :help-center help-center
-    :recent-recipients recent-recipients
-    :recipient-qr-code recipient-qr-code
-    :contact-code contact-code
-    :backup-seed backup-seed
-    :about-app about-app/about-app
-    [react/view [react/text (str "Unknown view: " view-id)]]))
+(defn wrap [view-id component]
+  (fn []
+    (let [main-view (create-main-screen-view view-id)]
+      [main-view common-styles/flex
+       [component]
+       [:> navigation/navigation-events
+        {:on-will-focus
+         (fn []
+           (log/debug :on-will-focus view-id)
+           (re-frame/dispatch [:set :view-id view-id]))}]])))
 
-(defn get-modal-component [modal-view]
-  (case modal-view
-    :qr-scanner qr-scanner
-    :profile-qr-viewer profile.user/qr-viewer
-    :wallet-modal wallet.main/wallet-modal
-    :wallet-transactions-filter wallet-transactions/filter-history
-    :wallet-settings-assets wallet-settings/manage-assets
-    :wallet-send-transaction-modal send-transaction-modal
-    :wallet-transaction-sent-modal transaction-sent-modal
-    :wallet-sign-message-modal sign-message-modal
-    :wallet-transaction-fee wallet.transaction-fee/transaction-fee
-    :wallet-onboarding-setup-modal wallet.onboarding.setup/modal
-    [react/view [react/text (str "Unknown modal view: " modal-view)]]))
-
-(defview main-modal []
-  (letsubs [modal-view [:get :modal]]
-    (when modal-view
+(defn wrap-modal [modal-view component]
+  (fn []
+    (if platform/android?
       [view common-styles/modal
-       [modal {:animation-type   :slide
-               :transparent      true
+       [modal {:transparent      true
+               :animation-type   :slide
                :on-request-close (fn []
                                    (cond
                                      (#{:wallet-send-transaction-modal
-                                        :wallet-sign-message-modal
-                                        :wallet-transaction-fee}
+                                        :wallet-sign-message-modal}
                                       modal-view)
                                      (dispatch [:wallet/discard-transaction-navigate-back])
 
                                      :else
                                      (dispatch [:navigate-back])))}
-        (let [component (get-modal-component modal-view)]
-          [react/main-screen-modal-view modal-view
-           [component]])]])))
+        [react/main-screen-modal-view modal-view
+         [component]]]]
+      [react/main-screen-modal-view modal-view
+       [component]])))
 
-(defview main []
-  (letsubs [view-id [:get :view-id]]
-    {:component-did-mount    utils.universal-links/initialize
-     :component-will-unmount utils.universal-links/finalize
-     :component-will-update  (fn [] (react/dismiss-keyboard!))}
-    (when view-id
-      (let [component        (get-main-component view-id)
-            main-screen-view (create-main-screen-view view-id)]
-        [main-screen-view common-styles/flex
-         [component]
-         [main-modal]]))))
+(defn stack-screens [screens-map]
+  (->> screens-map
+       (map (fn [[k v]]
+              (let [screen (cond
+                             (map? v)
+                             (let [{:keys [screens config]} v]
+                               (nav-reagent/stack-navigator
+                                (stack-screens screens)
+                                config))
+
+                             (vector? v)
+                             (let [[_ screen] v]
+                               (nav-reagent/stack-screen
+                                (wrap-modal k screen)))
+
+                             :else
+                             (nav-reagent/stack-screen (wrap k v)))]
+                [k {:screen screen}])))
+       (into {})))
+
+(defn get-main-component2 [view-id]
+  (log/debug :component2 view-id)
+  (nav-reagent/switch-navigator
+   {:intro-login-stack
+    {:screen
+     (nav-reagent/stack-navigator
+      (stack-screens
+       (cond-> {:login          login
+                :progress       progress
+                :create-account create-account
+                :recover        recover
+                :accounts       accounts}
+         (= :intro view-id)
+         (assoc :intro intro)))
+      (cond-> {:headerMode "none"}
+        (#{:intro :login} view-id)
+        (assoc :initialRouteName (name view-id))))}
+    :chat-stack
+    {:screen
+     (nav-reagent/stack-navigator
+      (stack-screens
+       {:main-stack
+        {:screens
+         {:home             (main-tabs/get-main-tab :home)
+          :chat             chat
+          :profile          profile.contact/profile
+          :new              add-new
+          :new-chat         new-chat
+          :qr-scanner       qr-scanner
+          :new-public-chat  new-public-chat
+          :open-dapp        open-dapp
+          :dapp-description dapp-description
+          :browser          browser}
+         :config
+         {:headerMode       "none"
+          :initialRouteName "home"}}
+
+        :wallet-modal
+        (wrap-modal :wallet-modal wallet.main/wallet-modal)
+
+        :wallet-send-modal-stack
+        {:screens
+         {:wallet-send-transaction-modal
+          [:modal send-transaction-modal]
+
+          :wallet-transaction-sent
+          [:modal transaction-sent-modal]
+
+          :wallet-transaction-fee
+          [:modal wallet.transaction-fee/transaction-fee]}
+         :config
+         {:headerMode       "none"
+          :initialRouteName "wallet-send-transaction-modal"}}
+
+        :wallet-send-modal-stack-with-onboarding
+        {:screens
+         {:wallet-onboarding-setup-modal
+          [:modal wallet.onboarding.setup/modal]
+
+          :wallet-send-transaction-modal
+          [:modal send-transaction-modal]
+
+          :wallet-transaction-sent
+          [:modal transaction-sent-modal]
+
+          :wallet-transaction-fee
+          [:modal wallet.transaction-fee/transaction-fee]}
+         :config
+         {:headerMode       "none"
+          :initialRouteName "wallet-onboarding-setup-modal"}}
+
+        :wallet-sign-message-modal
+        (wrap-modal :wallet-sign-message-modal sign-message-modal)})
+      {:mode             "modal"
+       :headerMode       "none"
+       :initialRouteName "main-stack"})}
+    :wallet-stack
+    {:screen
+     (nav-reagent/stack-navigator
+      {:main-stack
+       {:screen
+        (nav-reagent/stack-navigator
+         (stack-screens
+          {:wallet                       (main-tabs/get-main-tab :wallet)
+           :collectibles-list            collectibles-list
+           :wallet-onboarding-setup      wallet.onboarding.setup/screen
+           :wallet-send-transaction-chat send-transaction
+           :contact-code                 contact-code
+           :send-transaction-stack       {:screens {:wallet-send-transaction send-transaction
+                                                    :recent-recipients       recent-recipients
+                                                    :wallet-transaction-sent transaction-sent
+                                                    :recipient-qr-code       recipient-qr-code
+                                                    :wallet-send-assets      wallet.components/send-assets}
+                                          :config  {:headerMode "none"}}
+
+           :request-transaction-stack    {:screens {:wallet-request-transaction      request-transaction
+                                                    :wallet-send-transaction-request send-transaction-request
+                                                    :wallet-request-assets           wallet.components/request-assets
+                                                    :recent-recipients               recent-recipients}
+                                          :config  {:headerMode "none"}}
+           :unsigned-transactions        wallet-transactions/transactions
+           :transactions-history         wallet-transactions/transactions
+           :wallet-transaction-details   wallet-transactions/transaction-details})
+         {:headerMode       "none"
+          :initialRouteName "wallet"})}
+       :wallet-settings-assets
+       {:screen (nav-reagent/stack-screen
+                 (wrap-modal :wallet-settings-assets wallet-settings/manage-assets))}
+
+       :wallet-transaction-fee
+       {:screen (nav-reagent/stack-screen
+                 (wrap-modal :wallet-transaction-fee
+                             wallet.transaction-fee/transaction-fee))}
+
+       :wallet-transactions-filter
+       {:screen (nav-reagent/stack-screen
+                 (wrap-modal :wallet-transactions-filter
+                             wallet-transactions/filter-history))}}
+
+      {:mode             "modal"
+       :headerMode       "none"
+       :initialRouteName "main-stack"})}
+    :profile-stack
+    {:screen
+     (nav-reagent/stack-navigator
+      {:main-stack
+       {:screen
+        (nav-reagent/stack-navigator
+         (stack-screens
+          {:my-profile                 (main-tabs/get-main-tab :my-profile)
+           :profile-photo-capture      profile-photo-capture
+           :about-app                  about-app/about-app
+           :bootnodes-settings         bootnodes-settings
+           :edit-bootnode              edit-bootnode
+           :offline-messaging-settings offline-messaging-settings
+           :edit-mailserver            edit-mailserver
+           :help-center                help-center
+           :extensions-settings        extensions-settings
+           :add-extension              add-extension
+           :show-extension             show-extension
+           :network-settings           network-settings
+           :network-details            network-details
+           :edit-network               edit-network
+           :log-level-settings         log-level-settings
+           :fleet-settings             fleet-settings
+           :currency-settings          currency-settings
+           :backup-seed                backup-seed
+           :login                      login
+           :create-account             create-account
+           :recover                    recover
+           :accounts                   accounts
+           :qr-scanner                 qr-scanner})
+         {:headerMode       "none"
+          :initialRouteName "my-profile"})}
+       :profile-qr-viewer
+       {:screen (nav-reagent/stack-screen (wrap-modal :profile-qr-viewer profile.user/qr-viewer))}}
+      {:mode             "modal"
+       :headerMode       "none"
+       :initialRouteName "main-stack"})}}
+   {:initialRouteName (if (= view-id :home)
+                        "chat-stack"
+                        "intro-login-stack")}))
+
+(defn get-main-component [view-id]
+  (case view-id
+    :new-group new-group
+    :add-participants-toggle-list add-participants-toggle-list
+    :contact-toggle-list contact-toggle-list
+    :group-chat-profile profile.group-chat/group-chat-profile
+    :contact-code contact-code
+    [react/view [react/text (str "Unknown view: " view-id)]]))
+
+(defonce rand-label (rand/id))
+
+(defn main []
+  (let [view-id        (re-frame/subscribe [:get :view-id])
+        main-component (atom nil)]
+    (reagent/create-class
+     {:component-did-mount
+      (fn []
+        (log/debug :main-component-did-mount @view-id)
+        (utils.universal-links/initialize))
+      :component-will-mount
+      (fn []
+        (when (and @view-id (not @main-component))
+          (reset! main-component (get-main-component2 @view-id))))
+      :component-will-unmount
+      utils.universal-links/finalize
+      :component-will-update
+      (fn []
+        (when (and @view-id (not @main-component))
+          (reset! main-component (get-main-component2 @view-id)))
+        (react/dismiss-keyboard!))
+      :component-did-update
+      (fn []
+        (log/debug :main-component-did-update @view-id))
+      :reagent-render
+      (fn []
+        (when (and @view-id main-component)
+          [:> @main-component
+           {:ref            (fn [r]
+                              (navigation/set-navigator-ref r)
+                              (when (and
+                                     platform/android?
+                                     (not (contains? #{:intro :login} @view-id)))
+                                (navigation/navigate-to @view-id)))
+            ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
+            :persistenceKey (when js/goog.DEBUG rand-label)}]))})))

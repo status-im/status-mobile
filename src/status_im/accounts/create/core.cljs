@@ -82,7 +82,7 @@
   (handlers-macro/merge-fx cofx
                            {:db                                  (assoc db :accounts/create {:show-welcome? true})
                             :notifications/request-notifications-permissions nil
-                            :dispatch                            [:navigate-to-clean :home]}
+                            :dispatch                            [:navigate-to :home]}
                            (accounts.update/account-update {:name (:name create)})))
 
 (defn next-step [step password password-confirm {:keys [db] :as cofx}]
@@ -95,7 +95,7 @@
 
 (defn step-back [step cofx]
   (case step
-    :enter-password {:db (navigation/navigate-back (:db cofx))}
+    :enter-password (navigation/navigate-back (:db cofx))
     :confirm-password (reset-account-creation cofx)))
 
 ;;;; COFX
