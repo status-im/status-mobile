@@ -5,13 +5,13 @@
             [status-im.native-module.core :as status]
             [status-im.utils.utils :as utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.ethereum.core :as ethereum-utils]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.web3-provider :as web3-provider]
             [status-im.transport.core :as transport]
             [status-im.transport.inbox :as transport.inbox]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.protocol.models :as models]))
 
 ;;;; COFX
 (re-frame/reg-cofx
@@ -71,35 +71,15 @@
 
 (handlers/register-handler-db
  :update-sync-state
- (fn [{:keys [sync-state sync-data] :as db} [_ error sync]]
-   (let [{:keys [highestBlock currentBlock] :as state}
-         (js->clj sync :keywordize-keys true)
-         syncing?  (> (- highestBlock currentBlock) constants/blocks-per-hour)
-         new-state (cond
-                     error :offline
-                     syncing? (if (= sync-state :done)
-                                :pending
-                                :in-progress)
-                     :else (if (or (= sync-state :done)
-                                   (= sync-state :pending))
-                             :done
-                             :synced))]
-     (cond-> db
-       (when (and (not= sync-data state) (= :in-progress new-state)))
-       (assoc :sync-data state)
-       (when (not= sync-state new-state))
-       (assoc :sync-state new-state)))))
+ (fn [cofx [_ error sync]]
+   (models/update-sync-state cofx error sync)))
 
 (handlers/register-handler-fx
- :check-sync
- (fn [{{:keys [web3]} :db} _]
-   {::web3-get-syncing web3
-    :dispatch-later    [{:ms 10000 :dispatch [:check-sync]}]}))
+ :check-sync-state
+ (fn [cofx _]
+   (models/check-sync-state cofx)))
 
 (handlers/register-handler-fx
- :initialize-sync-listener
- (fn [{{:keys [sync-listening-started network account/account] :as db} :db} _]
-   (when (and (not sync-listening-started)
-              (not (ethereum-utils/network-with-upstream-rpc? (get-in account [:networks network]))))
-     {:db       (assoc db :sync-listening-started true)
-      :dispatch [:check-sync]})))
+ :start-check-sync-state
+ (fn [cofx _]
+   (models/start-check-sync-state cofx)))

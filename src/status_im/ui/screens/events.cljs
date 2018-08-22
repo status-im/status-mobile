@@ -298,7 +298,7 @@
  (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
               network network-status peers-count peers-summary view-id navigation-stack
               status-module-initialized? status-node-started? device-UUID
-              push-notifications/initial?]
+              push-notifications/initial? semaphores]
        :or   [network (get app-db :network)]} [_ address]]
    (let [console-contact (get contacts constants/console-chat-id)
          current-account (accounts address)
@@ -319,7 +319,8 @@
                     :push-notifications/initial? initial?
                     :peers-summary peers-summary
                     :peers-count peers-count
-                    :device-UUID device-UUID)
+                    :device-UUID device-UUID
+                    :semaphores semaphores)
        console-contact
        (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
 
@@ -329,7 +330,7 @@
    {:dispatch-n (cond-> [[:initialize-account-db address]
                          [:initialize-protocol address]
                          [:fetch-web3-node-version]
-                         [:initialize-sync-listener]
+                         [:start-check-sync-state]
                          [:load-contacts]
                          [:initialize-chats]
                          [:initialize-browsers]

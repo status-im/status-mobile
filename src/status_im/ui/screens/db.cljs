@@ -41,6 +41,7 @@
              :peers-count                        0
              :peers-summary                      []
              :notifications                      {}
+             :semaphores                         #{}
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
              :inbox/wnodes                       constants/default-wnodes
@@ -84,7 +85,6 @@
 
 ;;;;NODE
 
-(spec/def ::sync-listening-started (spec/nilable boolean?))
 (spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
 
@@ -169,6 +169,8 @@
 ; Shows that push notification used to start the application is processed
 (spec/def :push-notifications/initial? (spec/nilable boolean?))
 
+(spec/def ::semaphores set?)
+
 (spec/def ::db (allowed-keys
                 :opt
                 [:contacts/contacts
@@ -241,12 +243,12 @@
                  ::mailserver-status
                  ::peers-count
                  ::peers-summary
-                 ::sync-listening-started
                  ::sync-state
                  ::sync-data
                  ::network
                  ::chain
                  ::app-state
+                 ::semaphores
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id
