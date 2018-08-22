@@ -1,13 +1,17 @@
 (ns status-im.ui.screens.events
   (:require status-im.chat.events
+            [status-im.models.chat :as chat]
             status-im.network.events
             [status-im.transport.handlers :as transport.handlers]
             status-im.protocol.handlers
+            [status-im.models.protocol :as models.protocol]
+            [status-im.models.account :as models.account]
             [status-im.ui.screens.accounts.models :as accounts.models]
             status-im.ui.screens.accounts.login.events
             [status-im.ui.screens.accounts.login.models :as login]
             status-im.ui.screens.accounts.recover.events
             [status-im.ui.screens.contacts.events :as contacts]
+            [status-im.models.contacts :as models.contacts]
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
@@ -20,15 +24,18 @@
             status-im.ui.screens.profile.events
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
+            [status-im.models.wallet :as models.wallet]
             status-im.ui.screens.wallet.collectibles.events
             status-im.ui.screens.wallet.send.events
             status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
+            [status-im.models.transactions :as transactions]
             status-im.ui.screens.wallet.choose-recipient.events
             status-im.ui.screens.wallet.collectibles.cryptokitties.events
             status-im.ui.screens.wallet.collectibles.cryptostrikers.events
             status-im.ui.screens.wallet.collectibles.etheremon.events
             status-im.ui.screens.browser.events
+            [status-im.models.browser :as browser]
             status-im.ui.screens.offline-messaging-settings.events
             status-im.ui.screens.privacy-policy.events
             status-im.ui.screens.bootnodes-settings.events
@@ -97,6 +104,14 @@
    (doseq [call calls]
      (http-get call))))
 
+(re-frame/reg-fx
+ :fetch-web3-node-version
+ (fn [web3 _]
+   (.. web3 -version (getNode (fn [err resp]
+                                (when-not err
+                                  (re-frame/dispatch [:fetch-web3-node-version-callback resp])))))
+   nil))
+
 ;; Try to decrypt the database, move on if successful otherwise go back to
 ;; initial state
 (re-frame/reg-fx
@@ -149,7 +164,8 @@
 (re-frame/reg-fx
  ::get-fcm-token-fx
  (fn [_]
-   (notifications/get-fcm-token)))
+   (when platform/mobile?
+     (notifications/get-fcm-token))))
 
 (re-frame/reg-fx
  :show-error
@@ -231,20 +247,20 @@
   "Initialize db to the initial state"
   [{{:universal-links/keys [url]
      :push-notifications/keys [initial?]
-     :keys                 [status-module-initialized? status-node-started?
-                            network-status network peers-count peers-summary device-UUID]
-     :or                   {network (get app-db :network)}} :db}]
-  {:db          (assoc app-db
-                       :contacts/contacts {}
-                       :network-status network-status
-                       :peers-count (or peers-count 0)
-                       :peers-summary (or peers-summary [])
-                       :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                       :status-node-started? status-node-started?
-                       :network network
-                       :universal-links/url url
-                       :push-notifications/initial? initial?
-                       :device-UUID device-UUID)})
+     :keys [status-module-initialized? status-node-started?
+            network-status network peers-count peers-summary device-UUID]
+     :or {network (get app-db :network)}} :db}]
+  {:db (assoc app-db
+              :contacts/contacts {}
+              :network-status network-status
+              :peers-count (or peers-count 0)
+              :peers-summary (or peers-summary [])
+              :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+              :status-node-started? status-node-started?
+              :network network
+              :universal-links/url url
+              :push-notifications/initial? initial?
+              :device-UUID device-UUID)})
 
 ;; Entrypoint, fetches the key from the keychain and initialize the app
 (handlers/register-handler-fx
@@ -294,56 +310,71 @@
                               (navigation/navigate-to-clean nil)
                               (transport/stop-whisper)))))
 
-(handlers/register-handler-db
- :initialize-account-db
- (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
-              network network-status peers-count peers-summary view-id navigation-stack
-              status-module-initialized? status-node-started? device-UUID
-              push-notifications/initial? semaphores]
-       :or   [network (get app-db :network)]} [_ address]]
-   (let [console-contact (get contacts constants/console-chat-id)
-         current-account (accounts address)
-         account-network-id (get current-account :network network)
-         account-network (get-in current-account [:networks account-network-id])]
-     (cond-> (assoc app-db
-                    :current-public-key (:public-key current-account)
-                    :view-id view-id
-                    :navigation-stack navigation-stack
-                    :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                    :status-node-started? status-node-started?
-                    :accounts/create create
-                    :networks/networks networks
-                    :account/account current-account
-                    :network-status network-status
-                    :network network
-                    :chain (ethereum/network->chain-name account-network)
-                    :push-notifications/initial? initial?
-                    :peers-summary peers-summary
-                    :peers-count peers-count
-                    :device-UUID device-UUID
-                    :semaphores semaphores)
-       console-contact
-       (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
+(defn initialize-account-db [address {:keys [db web3]}]
+  (let [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
+                network network-status peers-count peers-summary view-id navigation-stack
+                status-module-initialized? status-node-started? device-UUID
+                push-notifications/initial? semaphores]
+         :or   {network (get app-db :network)}} db
+        console-contact (get contacts constants/console-chat-id)
+        current-account (accounts address)
+        account-network-id (get current-account :network network)
+        account-network (get-in current-account [:networks account-network-id])]
+    {:db (cond-> (assoc app-db
+                        :current-public-key (:public-key current-account)
+                        :view-id view-id
+                        :navigation-stack navigation-stack
+                        :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                        :status-node-started? status-node-started?
+                        :accounts/create create
+                        :networks/networks networks
+                        :account/account current-account
+                        :network-status network-status
+                        :network network
+                        :chain (ethereum/network->chain-name account-network)
+                        :push-notifications/initial? initial?
+                        :peers-summary peers-summary
+                        :peers-count peers-count
+                        :device-UUID device-UUID
+                        :semaphores semaphores
+                        :web3 web3)
+           console-contact
+           (assoc :contacts/contacts {constants/console-chat-id console-contact}))}))
 
 (handlers/register-handler-fx
  :initialize-account
- (fn [cofx [_ address events-after]]
-   {:dispatch-n (cond-> [[:initialize-account-db address]
-                         [:initialize-protocol address]
-                         [:fetch-web3-node-version]
-                         [:start-check-sync-state]
-                         [:load-contacts]
-                         [:initialize-chats]
-                         [:initialize-browsers]
-                         [:initialize-dapp-permissions]
-                         [:send-account-update-if-needed]
-                         [:process-pending-messages]
-                         [:update-wallet]
-                         [:update-transactions]
-                         (when platform/mobile? [:get-fcm-token])
-                         [:start-wallet-transactions-sync]
-                         [:update-sign-in-time]]
-                  (seq events-after) (into events-after))}))
+ [(re-frame/inject-cofx :protocol/get-web3)
+  (re-frame/inject-cofx :get-default-contacts)
+  (re-frame/inject-cofx :get-default-dapps)
+  (re-frame/inject-cofx :data-store/all-chats)
+  (re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)
+  (re-frame/inject-cofx :data-store/unviewed-messages)
+  (re-frame/inject-cofx :data-store/message-ids)
+  (re-frame/inject-cofx :data-store/get-unanswered-requests)
+  (re-frame/inject-cofx :data-store/get-local-storage-data)
+  (re-frame/inject-cofx :data-store/get-all-contacts)
+  (re-frame/inject-cofx :data-store/get-all-mailservers)
+  (re-frame/inject-cofx :data-store/transport)
+  (re-frame/inject-cofx :data-store/all-browsers)
+  (re-frame/inject-cofx :data-store/all-dapp-permissions)]
+ (fn [{:keys [web3] :as cofx} [_ address events-after]]
+   (handlers-macro/merge-fx cofx
+                            {:protocol/set-default-account [web3 address]
+                             :fetch-web3-node-version      web3
+                             ::get-fcm-token-fx            nil
+                             :dispatch-n                   (or events-after [])}
+                            (initialize-account-db address)
+                            (models.protocol/initialize-protocol address)
+                            (models.contacts/load-contacts)
+                            (chat/initialize-chats)
+                            (chat/process-pending-messages)
+                            (browser/initialize-browsers)
+                            (browser/initialize-dapp-permissions)
+                            (models.wallet/update-wallet)
+                            (transactions/run-update)
+                            (transactions/start-sync)
+                            (models.account/update-sign-in-time))))
 
 (handlers/register-handler-fx
  :initialize-geth
@@ -358,19 +389,6 @@
  (fn [{:keys [db]} [_ resp]]
    (when-let [git-commit (nth (re-find #"-([0-9a-f]{7,})/" resp) 1)]
      {:db (assoc db :web3-node-version git-commit)})))
-
-(handlers/register-handler-fx
- :fetch-web3-node-version
- (fn [{{:keys [web3] :as db} :db} _]
-   (.. web3 -version (getNode (fn [err resp]
-                                (when-not err
-                                  (re-frame/dispatch [:fetch-web3-node-version-callback resp])))))
-   nil))
-
-(handlers/register-handler-fx
- :get-fcm-token
- (fn [_ _]
-   {::get-fcm-token-fx nil}))
 
 (handlers/register-handler-fx
  :discovery/summary

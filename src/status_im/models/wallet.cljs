@@ -1,12 +1,13 @@
 (ns status-im.models.wallet
-  (:require [status-im.utils.money :as money]
-            [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
+  (:require [clojure.set :as set]
             [status-im.constants :as constants]
-            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.i18n :as i18n]
+            [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.hex :as utils.hex]
-            [status-im.transport.utils :as transport.utils]))
+            [status-im.utils.money :as money]))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -172,3 +173,39 @@
   (cond-> transaction
     (= method constants/web3-personal-sign)
     (update :data transport.utils/to-utf8)))
+
+(defn clear-error-message [db error-type]
+  (update-in db [:wallet :errors] dissoc error-type))
+
+(defn tokens-symbols [v chain]
+  (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))
+
+(defn update-wallet
+  [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
+  (let [network     (get-in db [:account/account :networks network])
+        chain       (ethereum/network->chain-keyword network)
+        mainnet?    (= :mainnet chain)
+        assets      (get-in settings [:wallet :visible-tokens chain])
+        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) chain)
+        currency-id (or (get-in settings [:wallet :currency]) :usd)
+        currency    (get constants/currencies currency-id)]
+    (when (not= network-status :offline)
+      {:get-balance        {:web3          web3
+                            :account-id    address
+                            :success-event :update-balance-success
+                            :error-event   :update-balance-fail}
+       :get-tokens-balance {:web3          web3
+                            :account-id    address
+                            :symbols       assets
+                            :chain         chain
+                            :success-event :update-token-balance-success
+                            :error-event   :update-token-balance-fail}
+       :get-prices         {:from          (if mainnet? (conj tokens "ETH") ["ETH"])
+                            :to            [(:code currency)]
+                            :success-event :update-prices-success
+                            :error-event   :update-prices-fail}
+       :db                 (-> db
+                               (clear-error-message :prices-update)
+                               (clear-error-message :balance-update)
+                               (assoc-in [:wallet :balance-loading?] true)
+                               (assoc :prices-loading? true))})))

@@ -1,21 +1,19 @@
 (ns status-im.ui.screens.browser.events
-  (:require status-im.ui.screens.browser.navigation
-            [status-im.utils.handlers :as handlers]
-            [re-frame.core :as re-frame]
-            [status-im.utils.random :as random]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.universal-links.core :as utils.universal-links]
-            [status-im.data-store.browser :as browser-store]
-            [status-im.utils.http :as http]
-            [status-im.models.browser :as model]
-            [status-im.utils.platform :as platform]
+  (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.data-store.browser :as browser-store]
+            [status-im.models.browser :as model]
             [status-im.native-module.core :as status]
-            [taoensso.timbre :as log]
+            [status-im.ui.components.list-selection :as list-selection]
+            status-im.ui.screens.browser.navigation
+            [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.http :as http]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.random :as random]
             [status-im.utils.types :as types]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.constants :as constants]))
+            [status-im.utils.universal-links.core :as utils.universal-links]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  :browse
@@ -40,20 +38,6 @@
  :send-to-bridge-fx
  (fn [[message webview]]
    (.sendToBridge webview (types/clj->json message))))
-
-(handlers/register-handler-fx
- :initialize-browsers
- [(re-frame/inject-cofx :data-store/all-browsers)]
- (fn [{:keys [db all-stored-browsers]} _]
-   (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
-     {:db (assoc db :browser/browsers browsers)})))
-
-(handlers/register-handler-fx
- :initialize-dapp-permissions
- [(re-frame/inject-cofx :data-store/all-dapp-permissions)]
- (fn [{:keys [db all-dapp-permissions]} _]
-   (let [dapp-permissions (into {} (map #(vector (:dapp %) %) all-dapp-permissions))]
-     {:db (assoc db :dapps/permissions dapp-permissions)})))
 
 (handlers/register-handler-fx
  :browse-link-from-message

@@ -1,21 +1,17 @@
 (ns status-im.ui.screens.wallet.events
-  (:require [clojure.set :as set]
-            [re-frame.core :as re-frame :refer [dispatch reg-fx]]
-            [status-im.i18n :as i18n]
-            [status-im.ui.screens.wallet.navigation]
+  (:require [re-frame.core :as re-frame]
+            [status-im.models.transactions :as wallet.transactions]
+            [status-im.models.wallet :as models]
+            [status-im.ui.screens.navigation :as navigation]
+            status-im.ui.screens.wallet.navigation
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.money :as money]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
-            [status-im.models.wallet :as models.wallet]
-            [taoensso.timbre :as log]
-            status-im.ui.screens.wallet.request.events
-            [status-im.constants :as constants]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.money :as money]
-            [status-im.models.transactions :as wallet.transactions]))
+            [taoensso.timbre :as log]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -43,12 +39,9 @@
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
-(defn clear-error-message [db error-type]
-  (update-in db [:wallet :errors] dissoc error-type))
-
 ;; FX
 
-(reg-fx
+(re-frame/reg-fx
  :get-balance
  (fn [{:keys [web3 account-id success-event error-event]}]
    (get-balance {:web3       web3
@@ -56,7 +49,7 @@
                  :on-success #(re-frame/dispatch [success-event %])
                  :on-error   #(re-frame/dispatch [error-event %])})))
 
-(reg-fx
+(re-frame/reg-fx
  :get-tokens-balance
  (fn [{:keys [web3 symbols chain account-id success-event error-event]}]
    (doseq [symbol symbols]
@@ -67,7 +60,7 @@
                            :on-success #(re-frame/dispatch [success-event symbol %])
                            :on-error   #(re-frame/dispatch [error-event symbol %])})))))
 
-(reg-fx
+(re-frame/reg-fx
  :get-transactions
  (fn [{:keys [web3 chain account-id token-addresses success-event error-event]}]
    (transactions/get-transactions chain
@@ -83,7 +76,7 @@
                                    #(re-frame/dispatch [success-event % account-id])))))
 
 ;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
-(reg-fx
+(re-frame/reg-fx
  :get-prices
  (fn [{:keys [from to success-event error-event]}]
    (prices/get-prices from
@@ -91,53 +84,21 @@
                       #(re-frame/dispatch [success-event %])
                       #(re-frame/dispatch [error-event %]))))
 
-(reg-fx
+(re-frame/reg-fx
  :update-gas-price
  (fn [{:keys [web3 success-event edit?]}]
    (ethereum/gas-price web3 #(re-frame/dispatch [success-event %2 edit?]))))
 
-(reg-fx
+(re-frame/reg-fx
  :update-estimated-gas
  (fn [{:keys [web3 obj success-event]}]
    (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
-
-(defn tokens-symbols [v chain]
-  (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))
-
-(defn update-wallet [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
-  (let [network     (get-in db [:account/account :networks network])
-        chain       (ethereum/network->chain-keyword network)
-        mainnet?    (= :mainnet chain)
-        assets      (get-in settings [:wallet :visible-tokens chain])
-        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) chain)
-        currency-id (or (get-in settings [:wallet :currency]) :usd)
-        currency    (get constants/currencies currency-id)]
-    (when (not= network-status :offline)
-      {:get-balance        {:web3          web3
-                            :account-id    address
-                            :success-event :update-balance-success
-                            :error-event   :update-balance-fail}
-       :get-tokens-balance {:web3          web3
-                            :account-id    address
-                            :symbols       assets
-                            :chain         chain
-                            :success-event :update-token-balance-success
-                            :error-event   :update-token-balance-fail}
-       :get-prices         {:from          (if mainnet? (conj tokens "ETH") ["ETH"])
-                            :to            [(:code currency)]
-                            :success-event :update-prices-success
-                            :error-event   :update-prices-fail}
-       :db                 (-> db
-                               (clear-error-message :prices-update)
-                               (clear-error-message :balance-update)
-                               (assoc-in [:wallet :balance-loading?] true)
-                               (assoc :prices-loading? true))})))
 
 ;; Handlers
 (handlers/register-handler-fx
  :update-wallet
  (fn [cofx _]
-   (update-wallet cofx)))
+   (models/update-wallet cofx)))
 
 (handlers/register-handler-fx
  :update-transactions
@@ -257,7 +218,7 @@
  :wallet/update-gas-price-success
  (fn [db [_ price edit?]]
    (if edit?
-     (:db (models.wallet/edit-value
+     (:db (models/edit-value
            :gas-price
            (money/to-fixed
             (money/wei-> :gwei price))

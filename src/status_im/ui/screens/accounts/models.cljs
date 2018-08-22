@@ -1,26 +1,24 @@
 (ns status-im.ui.screens.accounts.models
-  (:require [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]
-            [status-im.utils.types :as types]
-            [status-im.utils.identicon :as identicon]
-            [clojure.string :as str]
-            [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.accounts.statuses :as statuses]
-            [status-im.utils.signing-phrase.core :as signing-phrase]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.hex :as utils.hex]
+  (:require [clojure.string :as str]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            status-im.ui.screens.accounts.create.navigation
-            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.data-store.accounts :as accounts-store]
+            [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.ui.screens.accounts.statuses :as statuses]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.ui.screens.accounts.login.models :as login.models]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]))
+            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]
+            [status-im.utils.config :as config]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.hex :as utils.hex]
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.signing-phrase.core :as signing-phrase]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 ;;;; COFX
 
@@ -87,15 +85,6 @@
      {:db                 (assoc db :account/account new-account)
       :data-store/base-tx [{:transaction   (accounts-store/save-account-tx new-account)
                             :success-event success-event}]})))
-
-(defn send-account-update-if-needed [{:keys [db now] :as cofx}]
-  (let [{:keys [last-updated]} (:account/account db)
-        needs-update? (> (- now last-updated) time/week)]
-    (log/info "Need to send account-update: " needs-update?)
-    (when needs-update?
-      ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
-      ;; account with network update when last update was more then week ago
-      (accounts.utils/account-update nil cofx))))
 
 (defn account-set-name [{{:accounts/keys [create] :as db} :db :as cofx}]
   (handlers-macro/merge-fx cofx

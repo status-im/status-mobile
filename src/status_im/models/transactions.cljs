@@ -1,8 +1,8 @@
 (ns status-im.models.transactions
   (:require [clojure.set :as set]
             [status-im.utils.datetime :as time]
-            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.semaphores :as semaphores]
             [taoensso.timbre :as log]))
@@ -55,10 +55,10 @@
      chat-transactions
      (wallet-transactions-set db))))
 
-; Find missing chat transactions
-; and store them at [:wallet :chat-transactions]
-; to be used later by have-missing-chat-transactions? on every sync request
-(defn load-missing-chat-transactions [{:keys [db] :as cofx}]
+(defn load-missing-chat-transactions
+  "Find missing chat transactions and store them at [:wallet :chat-transactions]
+  to be used later by have-missing-chat-transactions? on every sync request"
+  [{:keys [db] :as cofx}]
   (when (nil? (get-in db [:wallet :chat-transactions]))
     {:db (assoc-in db
                    [:wallet :chat-transactions]
