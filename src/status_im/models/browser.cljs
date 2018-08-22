@@ -1,11 +1,11 @@
 (ns status-im.models.browser
-  (:require [status-im.data-store.browser :as browser-store]
+  (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.data-store.browser :as browser-store]
             [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.i18n :as i18n]
-            [status-im.constants :as constants]
             [status-im.ui.screens.browser.default-dapps :as default-dapps]
-            [status-im.utils.http :as http]
-            [re-frame.core :as re-frame]))
+            [status-im.utils.http :as http]))
 
 (defn get-current-url [{:keys [history history-index]}]
   (when (and history-index history)
@@ -108,3 +108,13 @@
                                       :messageId message-id
                                       :error     %1
                                       :result    %2}])]}))
+
+(defn initialize-browsers
+  [{:keys [db all-stored-browsers]}]
+  (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
+    {:db (assoc db :browser/browsers browsers)}))
+
+(defn  initialize-dapp-permissions
+  [{:keys [db all-dapp-permissions]}]
+  (let [dapp-permissions (into {} (map #(vector (:dapp %) %) all-dapp-permissions))]
+    {:db (assoc db :dapps/permissions dapp-permissions)}))

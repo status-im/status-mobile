@@ -1,10 +1,9 @@
 (ns status-im.models.contact
-  (:require
-   [status-im.utils.contacts :as utils.contacts]
-   [status-im.data-store.contacts :as contacts-store]
-   [status-im.transport.message.core :as transport]
-   [status-im.transport.message.v1.contact :as message.v1.contact]
-   [status-im.utils.handlers-macro :as handlers-macro]))
+  (:require [status-im.data-store.contacts :as contacts-store]
+            [status-im.transport.message.core :as transport]
+            [status-im.transport.message.v1.contact :as message.v1.contact]
+            [status-im.utils.contacts :as utils.contacts]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (defn can-add-to-contacts? [{:keys [pending? dapp?]}]
   (and (not dapp?)

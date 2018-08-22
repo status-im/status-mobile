@@ -1,30 +1,20 @@
 (ns status-im.protocol.handlers
-  (:require [cljs.core.async :as async]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.native-module.core :as status]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.datetime :as datetime]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.web3-provider :as web3-provider]
-            [status-im.transport.core :as transport]
-            [status-im.transport.inbox :as transport.inbox]
+  (:require [re-frame.core :as re-frame]
+            [status-im.models.protocol :as models]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.protocol.models :as models]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.web3-provider :as web3-provider]))
 
 ;;;; COFX
 (re-frame/reg-cofx
- ::get-web3
- (fn [coeffects _]
-   (let [web3 (web3-provider/make-internal-web3)
-         address (get-in coeffects [:db :account/account :address])]
-     (set! (.-defaultAccount (.-eth web3))
-           (ethereum/normalized-address address))
-     (assoc coeffects :web3 web3))))
+ :protocol/get-web3
+ (fn [cofx _]
+   (let [web3 (web3-provider/make-internal-web3)]
+     (assoc cofx :web3 web3))))
 
+;;; FX
 (re-frame/reg-fx
- ::web3-get-syncing
+ :protocol/web3-get-syncing
  (fn [web3]
    (when web3
      (.getSyncing
@@ -32,40 +22,11 @@
       (fn [error sync]
         (re-frame/dispatch [:update-sync-state error sync]))))))
 
-(defn- assert-correct-network
-  [{:keys [db]}]
-  ;; Assure that node was started correctly
-  (let [{:keys [web3]} db]
-    (let [network (get-in db [:account/account :network])
-          network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
-      (when (and network-id web3) ; necessary because of the unit tests
-        (.getNetwork (.-version web3)
-                     (fn [error fetched-network-id]
-                       (when (and (not error) ; error most probably means we are offline
-                                  (not= network-id fetched-network-id))
-                         (utils/show-popup
-                          "Ethereum node started incorrectly"
-                          "Ethereum node was started with incorrect configuration, application will be stopped to recover from that condition."
-                          #(re-frame/dispatch [:close-application])))))))))
-
-(defn initialize-protocol
-  [{:data-store/keys [transport mailservers] :keys [db web3] :as cofx} [current-account-id ethereum-rpc-url]]
-  (handlers-macro/merge-fx cofx
-                           {:db (assoc db
-                                       :web3 web3
-                                       :rpc-url (or ethereum-rpc-url constants/ethereum-rpc-url)
-                                       :transport/chats transport)}
-                           (assert-correct-network)
-                           (transport.inbox/initialize-offline-inbox mailservers)
-                           (transport/init-whisper current-account-id)))
-;;; INITIALIZE PROTOCOL
-(handlers/register-handler-fx
- :initialize-protocol
- [re-frame/trim-v
-  (re-frame/inject-cofx ::get-web3)
-  (re-frame/inject-cofx :data-store/get-all-mailservers)
-  (re-frame/inject-cofx :data-store/transport)]
- initialize-protocol)
+(re-frame/reg-fx
+ :protocol/set-default-account
+ (fn [[web3 address]]
+   (set! (.-defaultAccount (.-eth web3))
+         (ethereum/normalized-address address))))
 
 ;;; NODE SYNC STATE
 
