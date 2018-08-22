@@ -5,24 +5,7 @@
             [status-im.transport.inbox :as transport.inbox]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.semaphores :as semaphores]
-            [status-im.utils.utils :as utils]))
-
-(defn- assert-correct-network
-  [{:keys [db]}]
-  ;; Assure that node was started correctly
-  (let [{:keys [web3]} db]
-    (let [network (get-in db [:account/account :network])
-          network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
-      (when (and network-id web3) ; necessary because of the unit tests
-        (.getNetwork (.-version web3)
-                     (fn [error fetched-network-id]
-                       (when (and (not error) ; error most probably means we are offline
-                                  (not= network-id fetched-network-id))
-                         (utils/show-popup
-                          "Ethereum node started incorrectly"
-                          "Ethereum node was started with incorrect configuration, application will be stopped to recover from that condition."
-                          #(re-frame/dispatch [:close-application])))))))))
+            [status-im.utils.semaphores :as semaphores]))
 
 (defn update-sync-state
   [{:keys [sync-state sync-data] :as db} error sync]
@@ -60,12 +43,15 @@
                              (semaphores/lock :check-sync-state?))))
 
 (defn initialize-protocol
-  [address {:data-store/keys [transport mailservers] :keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (assoc db
-                                       :rpc-url constants/ethereum-rpc-url
-                                       :transport/chats transport)}
-                           (assert-correct-network)
-                           (start-check-sync-state)
-                           (transport.inbox/initialize-offline-inbox mailservers)
-                           (transport/init-whisper address)))
+  [address {:data-store/keys [transport mailservers] :keys [db web3] :as cofx}]
+  (let [network (get-in db [:account/account :network])
+        network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
+    (handlers-macro/merge-fx cofx
+                             {:db                              (assoc db
+                                                                      :rpc-url constants/ethereum-rpc-url
+                                                                      :transport/chats transport)
+                              :protocol/assert-correct-network {:web3 web3
+                                                                :network-id network-id}}
+                             (start-check-sync-state)
+                             (transport.inbox/initialize-offline-inbox mailservers)
+                             (transport/init-whisper address))))

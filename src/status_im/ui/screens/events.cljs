@@ -247,20 +247,20 @@
   "Initialize db to the initial state"
   [{{:universal-links/keys [url]
      :push-notifications/keys [initial?]
-     :keys                 [status-module-initialized? status-node-started?
-                            network-status network peers-count peers-summary device-UUID]
-     :or                   {network (get app-db :network)}} :db}]
-  {:db          (assoc app-db
-                       :contacts/contacts {}
-                       :network-status network-status
-                       :peers-count (or peers-count 0)
-                       :peers-summary (or peers-summary [])
-                       :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                       :status-node-started? status-node-started?
-                       :network network
-                       :universal-links/url url
-                       :push-notifications/initial? initial?
-                       :device-UUID device-UUID)})
+     :keys [status-module-initialized? status-node-started?
+            network-status network peers-count peers-summary device-UUID]
+     :or {network (get app-db :network)}} :db}]
+  {:db (assoc app-db
+              :contacts/contacts {}
+              :network-status network-status
+              :peers-count (or peers-count 0)
+              :peers-summary (or peers-summary [])
+              :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+              :status-node-started? status-node-started?
+              :network network
+              :universal-links/url url
+              :push-notifications/initial? initial?
+              :device-UUID device-UUID)})
 
 ;; Entrypoint, fetches the key from the keychain and initialize the app
 (handlers/register-handler-fx

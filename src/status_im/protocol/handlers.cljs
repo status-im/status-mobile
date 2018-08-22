@@ -3,6 +3,7 @@
             [status-im.models.protocol :as models]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.utils :as utils]
             [status-im.utils.web3-provider :as web3-provider]))
 
 ;;;; COFX
@@ -27,6 +28,20 @@
  (fn [[web3 address]]
    (set! (.-defaultAccount (.-eth web3))
          (ethereum/normalized-address address))))
+
+(re-frame/reg-fx
+ :protocol/assert-correct-network
+ (fn [{:keys [web3 network-id]}]
+   ;; ensure that node was started correctly
+   (when (and network-id web3) ; necessary because of the unit tests
+     (.getNetwork (.-version web3)
+                  (fn [error fetched-network-id]
+                    (when (and (not error) ; error most probably means we are offline
+                               (not= network-id fetched-network-id))
+                      (utils/show-popup
+                       "Ethereum node started incorrectly"
+                       "Ethereum node was started with incorrect configuration, application will be stopped to recover from that condition."
+                       #(re-frame/dispatch [:close-application]))))))))
 
 ;;; NODE SYNC STATE
 
