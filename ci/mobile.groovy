@@ -5,7 +5,7 @@ android = load 'ci/android.groovy'
 def prep(type = 'debug') {
   /* select type of build */
   switch (type) {
-    case 'debug':
+    case 'nightly':
       sh 'cp .env.nightly .env'; break
     case 'release':
       sh 'cp .env.prod .env'; break
