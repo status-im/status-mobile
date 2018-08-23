@@ -73,4 +73,15 @@
 (def ABI-hash "0x2203ab56")
 (def pubkey-hash "0xc8690233")
 
+(defn add-uncompressed-public-key-prefix [key]
+  (when key
+    (str "0x04" (subs key 2))))
+
+(defn pubkey [web3 resolver ens-name cb]
+  (ethereum/call web3
+                 (ethereum/call-params resolver
+                                       "pubkey(bytes32)"
+                                       (namehash ens-name))
+                 (fn [_ key] (cb (add-uncompressed-public-key-prefix key)))))
+
 ;; TODO ABI, pubkey
