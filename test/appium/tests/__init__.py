@@ -161,6 +161,7 @@ group_chat_users['C_USER']['public_key'] = "0x04dcdb5cac266328c41bdb0e33a266544a
                                            "3dba7e295445505ee55ea03ee99cb7d26bee05e6b486a9bdaaf6be73a0b"
 
 common_password = 'qwerty'
+unique_password = 'unique' + get_current_time()
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"

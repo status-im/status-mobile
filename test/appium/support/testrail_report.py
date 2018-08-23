@@ -82,7 +82,8 @@ class TestrailReport(BaseTestReport):
         test_cases['logcat_verifications'] = 718
         case_ids = list()
         if is_pr:
-            case_ids = [case['id'] for case in self.get_cases(test_cases['smoke_phase_1'])]
+            case_ids = [case['id'] for case in self.get_cases(test_cases['smoke_phase_1']) +
+                        self.get_cases(test_cases['logcat_verifications'])]
         else:
             for phase in test_cases:
                 for case in self.get_cases(test_cases[phase]):
