@@ -104,6 +104,7 @@ timeout(90) {
             sh "plutil -replace CFBundleShortVersionString  -string ${version} ios/StatusIm/Info.plist"
             sh "plutil -replace CFBundleVersion  -string ${build_no} ios/StatusIm/Info.plist"
             sh 'fastlane ios adhoc'
+          }
         }
 
         stage('Deploy (iOS)') {
@@ -152,6 +153,5 @@ timeout(90) {
       stage('Run extended e2e tests') {
         build job: 'end-to-end-tests/status-app-nightly', parameters: [string(name: 'apk', value: '--apk=' + env.SAUCE_LABS_APK)], wait: false
       }
-
     }
 }
