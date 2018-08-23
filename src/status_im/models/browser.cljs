@@ -53,7 +53,8 @@
                              cofx))))))
 
 (defn ens? [host]
-  (string/ends-with? host ".eth"))
+  (and (string? host)
+       (string/ends-with? host ".eth")))
 
 (defn ens-multihash-callback [hex]
   (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]

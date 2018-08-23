@@ -14,7 +14,7 @@
 #import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
-#import "SplashScreen.h"
+#import "RNSplashScreen.h"
 #import "TestFairy.h"
 #import "RCTLinkingManager.h"
 #import <Firebase.h>
@@ -100,7 +100,7 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  [SplashScreen show];
+  [RNSplashScreen show];
 
   return YES;
 }

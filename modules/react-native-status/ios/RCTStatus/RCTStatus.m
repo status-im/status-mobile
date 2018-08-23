@@ -402,4 +402,9 @@ RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
              };
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return NO;
+}
+
 @end
