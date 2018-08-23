@@ -7,6 +7,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.notifications :as notifications]
+            [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]))
 
@@ -14,8 +15,10 @@
 
 (defn stop-node! [] (status/stop-node))
 
-(defn login! [address password]
-  (status/login address password #(re-frame/dispatch [:login-handler % address])))
+(defn login! [address password save-password]
+  (status/login address
+                password
+                #(re-frame/dispatch [:login-handler % address password save-password])))
 
 (defn clear-web-data! []
   (status/clear-web-data))
@@ -34,22 +37,27 @@
 
 ;;;; Handlers
 
-(defn open-login [address photo-path name {db :db}]
+(defn navigate-to-login [address photo-path name password {db :db}]
   {:db       (update db
                      :accounts/login assoc
                      :address address
                      :photo-path photo-path
+                     :password password
                      :name name)
+   :can-save-user-password [#(re-frame/dispatch [:set-in [:accounts/login :can-save-password] %])]
    :dispatch [:navigate-to :login]})
 
-(defn wrap-with-login-account-fx [db address password]
+(defn wrap-with-login-account-fx [db address password save-password]
   {:db    db
-   :login [address password]})
+   :login [address password save-password]})
 
-(defn login-account-internal [address password {db :db}]
+(defn open-login [address photo-path name cofx]
+  {:get-user-password [address #(re-frame/dispatch [:do-login address photo-path name %])]})
+
+(defn login-account-internal [address password save-password {db :db}]
   (wrap-with-login-account-fx
    (assoc db :node/after-start nil)
-   address password))
+   address password save-password))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -77,17 +85,17 @@
      :network              network
      :config               config}))
 
-(defn- wrap-with-initialize-geth-fx [db address password]
+(defn- wrap-with-initialize-geth-fx [db address password save-password]
   (let [{:keys [network config]} (get-network-by-address db address)]
     {:initialize-geth-fx config
      :db                 (assoc db
                                 :network network
-                                :node/after-start [:login-account-internal address password])}))
+                                :node/after-start [:login-account-internal address password save-password])}))
 
-(defn start-node [address password {db :db}]
+(defn start-node [address password save-password {db :db}]
   (wrap-with-initialize-geth-fx
    (assoc db :node/after-stop nil)
-   address password))
+   address password save-password))
 
 (defn- wrap-with-stop-node-fx [db address password]
   {:db        (assoc db :node/after-stop [:start-node address password])
@@ -98,7 +106,7 @@
       (and config/bootnodes-settings-enabled?
            use-custom-bootnodes)))
 
-(defn login-account [address password {{:keys [network status-node-started?] :as db} :db}]
+(defn login-account [address password save-password {{:keys [network status-node-started?] :as db} :db}]
   (let [{use-custom-bootnodes :use-custom-bootnodes
          account-network :network} (get-network-by-address db address)
         db'     (-> db
@@ -113,17 +121,21 @@
 
                       :else
                       wrap-with-stop-node-fx)]
-    (wrap-fn db' address password)))
+    (when-not (empty? password)
+      (wrap-fn db' address password save-password))))
 
-(defn login-handler [login-result address {db :db}]
+(defn login-handler [login-result address password save-password {db :db}]
   (let [data    (types/json->clj login-result)
         error   (:error data)
         success (zero? (count error))
         db'     (assoc-in db [:accounts/login :processing] false)]
     (if success
-      {:db             db
-       :clear-web-data nil
-       :change-account [address]}
+      (merge
+       {:db             db
+        :clear-web-data nil
+        :change-account [address]}
+       (when save-password
+         {:save-user-password [address password]}))
       {:db (assoc-in db' [:accounts/login :error] error)})))
 
 (defn change-account-handler [address {{:keys [view-id] :as db} :db :as cofx}]

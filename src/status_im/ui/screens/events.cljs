@@ -5,6 +5,7 @@
             status-im.protocol.handlers
             [status-im.ui.screens.accounts.models :as accounts.models]
             status-im.ui.screens.accounts.login.events
+            [status-im.ui.screens.accounts.login.models :as login]
             status-im.ui.screens.accounts.recover.events
             [status-im.ui.screens.contacts.events :as contacts]
             status-im.ui.screens.add-new.new-chat.events
@@ -214,18 +215,17 @@
                            (re-frame/dispatch [:initialize-app encryption-key]))
    :on-accept           handle-reset-data})
 
-(defn initialize-views [{{:accounts/keys [accounts] :as db} :db}]
-  {:db                                  (if (empty? accounts)
-                                          (assoc db :view-id :intro :navigation-stack (list :intro))
-                                          (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
-                                            (-> db
-                                                (assoc :view-id :login
-                                                       :navigation-stack (list :login))
-                                                (update :accounts/login assoc
-                                                        :address address
-                                                        :photo-path photo-path
-                                                        :name name))))
-   :handle-initial-push-notification-fx db})
+(defn initialize-views [cofx]
+  (let [{{:accounts/keys [accounts] :as db} :db} cofx
+        {:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))
+        default-fx {:handle-initial-push-notification-fx db}]
+    (if (nil? address)
+      (handlers-macro/merge-fx cofx
+                               default-fx
+                               (navigation/navigate-to-clean :intro))
+      (handlers-macro/merge-fx cofx
+                               default-fx
+                               (login/open-login address photo-path name)))))
 
 (defn initialize-db
   "Initialize db to the initial state"
@@ -289,7 +289,8 @@
  (fn [{:keys [db] :as cofx} _]
    (let [{:transport/keys [chats]} db]
      (handlers-macro/merge-fx cofx
-                              {:dispatch [:initialize-keychain]}
+                              {:dispatch [:initialize-keychain]
+                               :clear-user-password [(get-in db [:account/account :address])]}
                               (navigation/navigate-to-clean nil)
                               (transport/stop-whisper)))))
 

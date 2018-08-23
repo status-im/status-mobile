@@ -71,7 +71,7 @@
     (when-not (str/blank? pubkey)
       (handlers-macro/merge-fx cofx
                                (add-account account)
-                               (login.models/login-account normalized-address password)))))
+                               (login.models/login-account normalized-address password false)))))
 
 (defn load-accounts [{:keys [db all-accounts]}]
   (let [accounts (->> all-accounts
