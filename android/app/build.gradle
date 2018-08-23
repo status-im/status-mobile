@@ -102,6 +102,7 @@ def getVersionCode = { ->
             standardOutput = stdOut
             errorOutput = System.err
         }
+        logger.quiet("executed build_no.sh, returned stdOut" + stdOut)
         return stdOut.toString().toInteger()
     }
 }
