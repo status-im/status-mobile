@@ -75,7 +75,7 @@
              :gas              (cond
                                  gas
                                  (money/bignumber gas)
-                                 value
+                                 (and value (empty? data))
                                  (money/bignumber 21000))
              :gas-price        (when gasPrice
                                  (money/bignumber gasPrice))
