@@ -127,7 +127,7 @@
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
-    (when (= content-type constants/text-content-type)
+    (when (contains? constants/desktop-content-types content-type)
       (reagent.core/create-class
        {:component-did-mount
         #(when (and message-id
