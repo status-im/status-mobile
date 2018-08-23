@@ -4,13 +4,14 @@
             [cljs.spec.alpha :as spec]
             [clojure.string :as string]))
 
-(defn validate-pub-key [whisper-identity {:keys [address public-key]}]
-  (cond
-    (string/blank? whisper-identity)
-    (i18n/label :t/use-valid-contact-code)
-    (#{(hex/normalize-hex address) (hex/normalize-hex public-key)}
-     (hex/normalize-hex whisper-identity))
-    (i18n/label :t/can-not-add-yourself)
+(defn own-whisper-identity?
+  [{{:keys [public-key]} :account/account} whisper-identity]
+  (= whisper-identity public-key))
 
+(defn validate-pub-key [db whisper-identity]
+  (cond
     (not (spec/valid? :global/public-key whisper-identity))
-    (i18n/label :t/use-valid-contact-code)))
+    (i18n/label :t/use-valid-contact-code)
+
+    (own-whisper-identity? db whisper-identity)
+    (i18n/label :t/can-not-add-yourself)))

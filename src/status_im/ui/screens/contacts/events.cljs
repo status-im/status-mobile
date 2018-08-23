@@ -55,7 +55,7 @@
  (fn [{:keys [db] :as cofx} [_ _ contact-identity]]
    (let [current-account (:account/account db)
          fx              {:db (assoc db :contacts/new-identity contact-identity)}
-         validation-result (new-chat.db/validate-pub-key contact-identity current-account)]
+         validation-result (new-chat.db/validate-pub-key db contact-identity)]
      (if (some? validation-result)
        (utils/show-popup (i18n/label :t/unable-to-read-this-code) validation-result #(re-frame/dispatch [:navigate-to-clean :home]))
        (handlers-macro/merge-fx cofx

@@ -6,7 +6,10 @@
    [status-im.chat.events :as chat.events]
    [status-im.models.account :as models.account]
    [status-im.ui.components.list-selection :as list-selection]
-   [status-im.ui.components.react  :as react]))
+   [status-im.ui.components.react  :as react]
+   [cljs.spec.alpha :as spec]
+   [status-im.ui.screens.navigation :as navigation]
+   [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]))
 
 (def public-chat-regex #".*/chat/public/(.*)$")
 (def profile-regex #".*/user/(.*)$")
@@ -37,9 +40,11 @@
   (log/info "universal-links: handling public chat " public-chat)
   (chat.events/create-new-public-chat public-chat cofx))
 
-(defn handle-view-profile [profile-id cofx]
+(defn handle-view-profile [profile-id {:keys [db] :as cofx}]
   (log/info "universal-links: handling view profile" profile-id)
-  (chat.events/show-profile profile-id true cofx))
+  (if (new-chat.db/own-whisper-identity? db profile-id)
+    (navigation/navigate-to-cofx :my-profile nil cofx)
+    (chat.events/show-profile profile-id true cofx)))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
@@ -74,7 +79,7 @@
     (match-url url public-chat-regex)
     (handle-public-chat (match-url url public-chat-regex) cofx)
 
-    (match-url url profile-regex)
+    (spec/valid? :global/public-key (match-url url profile-regex))
     (handle-view-profile (match-url url profile-regex) cofx)
 
     (match-url url browse-regex)
