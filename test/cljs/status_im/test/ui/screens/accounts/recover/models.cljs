@@ -44,19 +44,19 @@
 (deftest set-phrase
   (is (= {:db {:accounts/recover {:passphrase        "game buzz method pretty olympic fat quit display velvet unveil marine crater"
                                   :passphrase-valid? true}}}
-         (models/set-phrase "game buzz method pretty olympic fat quit display velvet unveil marine crater" {:db {}})))
+         (models/set-phrase (security/mask-data "game buzz method pretty olympic fat quit display velvet unveil marine crater") {:db {}})))
   (is (= {:db {:accounts/recover {:passphrase        "game buzz method pretty olympic fat quit display velvet unveil marine crater"
                                   :passphrase-valid? true}}}
-         (models/set-phrase "Game buzz method pretty Olympic fat quit DISPLAY velvet unveil marine crater" {:db {}})))
+         (models/set-phrase (security/mask-data "Game buzz method pretty Olympic fat quit DISPLAY velvet unveil marine crater") {:db {}})))
   (is (= {:db {:accounts/recover {:passphrase        "game buzz method pretty zeus fat quit display velvet unveil marine crater"
                                   :passphrase-valid? true}}}
-         (models/set-phrase "game buzz method pretty zeus fat quit display velvet unveil marine crater" {:db {}})))
+         (models/set-phrase (security/mask-data "game buzz method pretty zeus fat quit display velvet unveil marine crater") {:db {}})))
   (is (= {:db {:accounts/recover {:passphrase        "   game\t  buzz method pretty olympic fat quit\t   display velvet unveil marine crater  "
                                   :passphrase-valid? true}}}
-         (models/set-phrase "   game\t  buzz method pretty olympic fat quit\t   display velvet unveil marine crater  " {:db {}})))
+         (models/set-phrase (security/mask-data "   game\t  buzz method pretty olympic fat quit\t   display velvet unveil marine crater  ") {:db {}})))
   (is (= {:db {:accounts/recover {:passphrase        "game buzz method pretty 1234 fat quit display velvet unveil marine crater"
                                   :passphrase-valid? false}}}
-         (models/set-phrase "game buzz method pretty 1234 fat quit display velvet unveil marine crater" {:db {}}))))
+         (models/set-phrase (security/mask-data "game buzz method pretty 1234 fat quit display velvet unveil marine crater") {:db {}}))))
 
 (deftest validate-phrase
   (is (= {:db {:accounts/recover {:passphrase-error   nil

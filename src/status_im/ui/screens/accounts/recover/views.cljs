@@ -28,7 +28,7 @@
       :multiline           true
       :default-value       passphrase
       :auto-correct        false
-      :on-change-text      #(re-frame/dispatch [:recover/set-phrase %])
+      :on-change-text      #(re-frame/dispatch [:recover/set-phrase (security/mask-data %)])
       :on-blur             #(re-frame/dispatch [:recover/validate-phrase])
       :error               (cond error (i18n/label error)
                                  warning (i18n/label warning))}]))

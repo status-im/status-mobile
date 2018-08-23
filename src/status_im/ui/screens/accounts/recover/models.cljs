@@ -47,10 +47,11 @@
 
 ;;;; Handlers
 
-(defn set-phrase [recovery-phrase {:keys [db]}]
-  {:db (update db :accounts/recover assoc
-               :passphrase (string/lower-case recovery-phrase)
-               :passphrase-valid? (not (check-phrase-errors recovery-phrase)))})
+(defn set-phrase [masked-recovery-phrase {:keys [db]}]
+  (let [recovery-phrase (security/unmask masked-recovery-phrase)]
+    {:db (update db :accounts/recover assoc
+                 :passphrase (string/lower-case recovery-phrase)
+                 :passphrase-valid? (not (check-phrase-errors recovery-phrase)))}))
 
 (defn validate-phrase [{:keys [db]}]
   (let [recovery-phrase (get-in db [:accounts/recover :passphrase])]
