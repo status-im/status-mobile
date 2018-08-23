@@ -118,7 +118,7 @@
  (fn [{:keys [db]} _]
    (let [{:keys [send-transaction transactions-queue]} (:wallet db)
          {:keys [payload message-id] :as queued-transaction} (last transactions-queue)
-         {:keys [method params]} payload
+         {:keys [method params id]} payload
          db' (update-in db [:wallet :transactions-queue] drop-last)]
      (when (and (not (:id send-transaction)) queued-transaction)
        (cond
@@ -142,7 +142,7 @@
          (= method constants/web3-personal-sign)
          (let [[address data] (models.wallet/normalize-sign-message-params params)]
            (if (and address data)
-             {:db       (assoc-in db' [:wallet :send-transaction] {:id               (str message-id)
+             {:db       (assoc-in db' [:wallet :send-transaction] {:id               (str (or id message-id))
                                                                    :from             address
                                                                    :data             data
                                                                    :dapp-transaction queued-transaction
