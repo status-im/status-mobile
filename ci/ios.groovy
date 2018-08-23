@@ -1,5 +1,16 @@
+common = load('ci/common.groovy')
+
+def plutil(name, value) {
+  sh "plutil -replace ${name} -string ${value} ios/StatusIm/Info.plist"
+}
+
 def compile(type = 'nightly') {
   def target = (type == 'release' ? 'adhoc' : 'nightly')
+  /* configure build metadata */
+  plutil('CFBundleShortVersionString', common.version())
+  plutil('CFBundleVersion', common.tagBuild())
+  plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
+  /* build the actual app */
   withCredentials([
     string(credentialsId: 'SLACK_URL', variable: 'SLACK_URL'),
     string(credentialsId: "slave-pass-${env.NODE_NAME}", variable: 'KEYCHAIN_PASSWORD'),
@@ -7,11 +18,9 @@ def compile(type = 'nightly') {
     string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID'),
     string(credentialsId: 'fastlane-match-password', variable:'MATCH_PASSWORD')
   ]) {
-    sh "plutil -replace CFBundleShortVersionString  -string ${common.version()} ios/StatusIm/Info.plist"
-    sh "plutil -replace CFBundleVersion -string ${common.tagBuild()} ios/StatusIm/Info.plist"
     sh "fastlane ios ${target}"
   }
-  def pkg = "StatusIm-${GIT_COMMIT.take(6)}.ipa"
+  def pkg = common.pkgFilename(type, 'ipa')
   sh "cp status-adhoc/StatusIm.ipa ${pkg}"
   return pkg
 }

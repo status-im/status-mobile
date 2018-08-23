@@ -116,6 +116,15 @@ def getVersionName = { ->
     }
 }
 
+def getBuildUrl = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("buildUrl")) {
+            return project.buildUrl
+        }
+        return 'Local Build'
+    }
+}
+
 android {
     compileSdkVersion 27
 
@@ -129,6 +138,13 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86"
         }
+    }
+    /**
+     * Arbitrary project metadata
+     * https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html
+     **/
+    project.ext {
+        buildUrl = getBuildUrl()
     }
     /**
     * Fix for: (https://github.com/ReactiveX/RxJava/issues/4445)

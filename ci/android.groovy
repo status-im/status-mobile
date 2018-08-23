@@ -15,15 +15,15 @@ def uploadArtifact() {
 
 def compile(type = 'nightly') {
   common.tagBuild()
-  def gradleOpt = ''
+  def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' "
   if (type == 'release') {
-    gradleOpt = "-PreleaseVersion=${common.version()}"
+    gradleOpt += "-PreleaseVersion='${common.version()}'"
   }
   dir('android') {
     sh './gradlew react-native-android:installArchives'
     sh "./gradlew assembleRelease ${gradleOpt}"
   }
-  def pkg = "StatusIm-${GIT_COMMIT.take(6)}${(type == 'e2e' ? '-e2e' : '')}.apk"
+  def pkg = common.pkgFilename(type, 'apk')
   sh "cp android/app/build/outputs/apk/release/app-release.apk ${pkg}"
   return pkg
 }

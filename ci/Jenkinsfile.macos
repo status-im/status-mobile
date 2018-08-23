@@ -3,9 +3,9 @@ pipeline {
 
   options {
     buildDiscarder(logRotator(
-      numToKeepStr: '10',
+      numToKeepStr: '20',
       daysToKeepStr: '30',
-      artifactNumToKeepStr: '1',
+      artifactNumToKeepStr: '10',
     ))
   }
   
@@ -37,7 +37,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { dmg = desktop.bundleMacOS() }
+        script { dmg = desktop.bundleMacOS(params.BUILD_TYPE) }
       }
     }
     stage('Archive') {
