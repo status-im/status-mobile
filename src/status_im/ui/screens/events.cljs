@@ -86,7 +86,7 @@
 
 ;; run `(test/run-tests)` in the repl to run all
 ;; auto-generated generative unit tests in this namespace
-(>defn ghostwheel-example
+(>defn ^::g/outstrument ghostwheel-example
   [s cofx]
   [string? ::cofx => ::fx]
   {:dispatch [:foobar 5]})
