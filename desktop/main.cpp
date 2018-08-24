@@ -12,8 +12,8 @@
 
 #include <QCommandLineParser>
 #include <QDirIterator>
-#include <QFontDatabase>
 #include <QFile>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QProcess>
 #include <QQuickView>
@@ -26,16 +26,22 @@
 #include "rootview.h"
 #include "utilities.h"
 
+#include "exceptionglobalhandler.h"
+
 #ifdef BUILD_FOR_BUNDLE
 #include <QMutexLocker>
 
 QStringList consoleOutputStrings;
 bool ubuntuServerStarted = false;
 QMutex consoleOutputMutex;
+QProcess *g_ubuntuServerProcess = nullptr;
 #endif
 
 const int MAIN_WINDOW_WIDTH = 1024;
 const int MAIN_WINDOW_HEIGHT = 768;
+const QString CRASH_REPORT_EXECUTABLE = QStringLiteral("reportApp");
+const QString CRASH_REPORT_EXECUTABLE_RELATIVE_PATH =
+    QStringLiteral("/../reportApp");
 
 // TODO: some way to change while running
 class ReactNativeProperties : public QObject {
@@ -143,19 +149,39 @@ void writeLogsToFile();
 
 void loadFontsFromResources() {
 
-    QDirIterator it(":", QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString resourceFile = it.next();
-        if (resourceFile.endsWith(".otf", Qt::CaseInsensitive) || resourceFile.endsWith(".ttf", Qt::CaseInsensitive)) {
-            QFontDatabase::addApplicationFont(resourceFile);
-        }
+  QDirIterator it(":", QDirIterator::Subdirectories);
+  while (it.hasNext()) {
+    QString resourceFile = it.next();
+    if (resourceFile.endsWith(".otf", Qt::CaseInsensitive) ||
+        resourceFile.endsWith(".ttf", Qt::CaseInsensitive)) {
+      QFontDatabase::addApplicationFont(resourceFile);
     }
+  }
+}
+
+void exceptionPostHandledCallback() {
+#ifdef BUILD_FOR_BUNDLE
+  if (g_ubuntuServerProcess) {
+    g_ubuntuServerProcess->kill();
+  }
+#endif
 }
 
 int main(int argc, char **argv) {
 
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QGuiApplication app(argc, argv);
+
+  app.setApplicationName("StatusIm");
+
+  QString appPath = QCoreApplication::applicationDirPath();
+#ifndef BUILD_FOR_BUNDLE
+  appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
+#endif
+
+  ExceptionGlobalHandler exceptionHandler(appPath + QDir::separator() +
+                                              CRASH_REPORT_EXECUTABLE,
+                                          exceptionPostHandledCallback);
 
   Q_INIT_RESOURCE(react_resources);
 
@@ -242,35 +268,41 @@ void writeLogsToFile() {
 }
 
 void runUbuntuServer() {
-  QProcess *process = new QProcess();
-  process->setWorkingDirectory(getDataStoragePath());
-  process->setProgram(QGuiApplication::applicationDirPath() + "/ubuntu-server");
-  QObject::connect(process, &QProcess::errorOccurred,
+  g_ubuntuServerProcess = new QProcess();
+  g_ubuntuServerProcess->setWorkingDirectory(getDataStoragePath());
+  g_ubuntuServerProcess->setProgram(QGuiApplication::applicationDirPath() +
+                                    "/ubuntu-server");
+  QObject::connect(g_ubuntuServerProcess, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {
-                     qDebug() << "process name: " << process->program();
-                     qDebug() << "process error: " << process->errorString();
+                     qDebug() << "process name: "
+                              << g_ubuntuServerProcess->program();
+                     qDebug() << "process error: "
+                              << g_ubuntuServerProcess->errorString();
                    });
 
-  QObject::connect(process, &QProcess::readyReadStandardOutput, [=] {
-    qDebug() << "ubuntu-server std: "
-             << process->readAllStandardOutput().trimmed();
-  });
-  QObject::connect(process, &QProcess::readyReadStandardError, [=] {
-    QString output = process->readAllStandardError().trimmed();
-    qDebug() << "ubuntu-server err: " << output;
-    if (output.contains("Server starting")) {
-      ubuntuServerStarted = true;
-    }
-  });
+  QObject::connect(
+      g_ubuntuServerProcess, &QProcess::readyReadStandardOutput, [=] {
+        qDebug() << "ubuntu-server std: "
+                 << g_ubuntuServerProcess->readAllStandardOutput().trimmed();
+      });
+  QObject::connect(
+      g_ubuntuServerProcess, &QProcess::readyReadStandardError, [=] {
+        QString output =
+            g_ubuntuServerProcess->readAllStandardError().trimmed();
+        qDebug() << "ubuntu-server err: " << output;
+        if (output.contains("Server starting")) {
+          ubuntuServerStarted = true;
+        }
+      });
 
   QObject::connect(QGuiApplication::instance(), &QCoreApplication::aboutToQuit,
                    [=]() {
                      qDebug() << "Kill ubuntu server";
-                     process->kill();
+                     g_ubuntuServerProcess->kill();
                    });
 
   qDebug() << "starting ubuntu server...";
-  process->start();
+  g_ubuntuServerProcess->start();
   qDebug() << "wait for started...";
 
   while (!ubuntuServerStarted) {

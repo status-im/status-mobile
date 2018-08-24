@@ -20,6 +20,8 @@ foreach(external_module ${EXTERNAL_MODULES_DIR})
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../${external_module} ${CMAKE_CURRENT_BINARY_DIR}/${external_module})
 endforeach(external_module)
 
+add_subdirectory(reportApp)
+
 # APPLICATION_MAIN_CPP_PATH contains absolute path to generated template copy of main.cpp for application executable
 get_filename_component(APPLICATION_MAIN_CPP_PATH main.cpp ABSOLUTE)
 
