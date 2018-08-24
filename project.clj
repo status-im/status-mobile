@@ -10,14 +10,16 @@
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
-                 [com.cognitect/transit-cljs "0.8.248"]]
+                 [com.cognitect/transit-cljs "0.8.248"]
+                 [gnl/ghostwheel "0.2.3"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]
             [lein-cljfmt "0.5.7"]
             [rasom/lein-githooks "0.1.5"]]
   :githooks {:auto-install true
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
-  :cljfmt {:indents {letsubs [[:inner 0]]}}
+  :cljfmt {:indents {letsubs [[:inner 0]]
+                     >defn [[:inner 0]]}}
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"         ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
@@ -41,23 +43,26 @@
                         :cljsbuild    {:builds
                                        {:ios
                                         {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
-                                         :compiler     {:output-to     "target/ios/app.js"
-                                                        :main          "env.ios.main"
-                                                        :output-dir    "target/ios"
-                                                        :optimizations :none}}
+                                         :compiler     {:output-to       "target/ios/app.js"
+                                                        :main            "env.ios.main"
+                                                        :output-dir      "target/ios"
+                                                        :optimizations   :none
+                                                        :external-config {:ghostwheel {}}}}
                                         :android
                                         {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
-                                         :compiler         {:output-to     "target/android/app.js"
-                                                            :main          "env.android.main"
-                                                            :output-dir    "target/android"
-                                                            :optimizations :none}
+                                         :compiler         {:output-to       "target/android/app.js"
+                                                            :main            "env.android.main"
+                                                            :output-dir      "target/android"
+                                                            :optimizations   :none
+                                                            :external-config {:ghostwheel {}}}
                                          :warning-handlers [status-im.utils.build/warning-handler]}
                                         :desktop
                                         {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src"]
-                                         :compiler     {:output-to     "target/desktop/app.js"
-                                                        :main          "env.desktop.main"
-                                                        :output-dir    "target/desktop"
-                                                        :optimizations :none}}}}
+                                         :compiler     {:output-to       "target/desktop/app.js"
+                                                        :main            "env.desktop.main"
+                                                        :output-dir      "target/desktop"
+                                                        :optimizations   :none
+                                                        :external-config {:ghostwheel {}}}}}}
                         :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
@@ -72,20 +77,24 @@
                         :cljsbuild    {:builds
                                        [{:id           "test"
                                          :source-paths ["components/src" "src" "test/cljs"]
-                                         :compiler     {:main          status-im.test.runner
-                                                        :output-to     "target/test/test.js"
-                                                        :output-dir    "target/test"
-                                                        :optimizations :none
-                                                        :preamble      ["js/hook-require.js"]
-                                                        :target        :nodejs}}
+                                         :compiler     {:main            status-im.test.runner
+                                                        :output-to       "target/test/test.js"
+                                                        :output-dir      "target/test"
+                                                        :optimizations   :none
+                                                        :preamble        ["js/hook-require.js"]
+                                                        :target          :nodejs
+                                                        :external-config {:ghostwheel {:num-tests-ext   100
+                                                                                       :extensive-tests true}}}}
                                         {:id           "protocol"
                                          :source-paths ["components/src" "src" "test/cljs"]
-                                         :compiler     {:main             status-im.test.protocol.runner
-                                                        :output-to        "target/test/test.js"
-                                                        :output-dir       "target/test"
-                                                        :optimizations    :none
-                                                        :preamble         ["js/hook-require.js"]
-                                                        :target           :nodejs}}
+                                         :compiler     {:main            status-im.test.protocol.runner
+                                                        :output-to       "target/test/test.js"
+                                                        :output-dir      "target/test"
+                                                        :optimizations   :none
+                                                        :preamble        ["js/hook-require.js"]
+                                                        :target          :nodejs
+                                                        :external-config {:ghostwheel {:num-tests-ext   100
+                                                                                       :extensive-tests true}}}}
                                         {:id           "env-dev-utils"
                                          :source-paths ["env/dev/env/utils.cljs" "test/env/dev"]
                                          :compiler     {:main          env.test.runner

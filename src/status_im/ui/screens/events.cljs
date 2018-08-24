@@ -1,4 +1,6 @@
 (ns status-im.ui.screens.events
+  #:ghostwheel.core{:check     true
+                    :num-tests 10}
   (:require status-im.chat.events
             [status-im.models.chat :as chat]
             status-im.network.events
@@ -65,7 +67,29 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [cljs.spec.alpha :as s]
+            [ghostwheel.core :as g
+             :refer [>defn >defn- >fdef => | <- ?]]
+            [cljs.test :as test]))
+
+;;;; REVIEW: Ghostwheel example:
+
+(s/def ::public-key string?)
+(s/def ::something int?)
+(s/def ::db (s/keys :req [::public-key]))
+(s/def ::web3 (s/keys :req [::something]))
+(s/def ::cofx (s/keys :req [::db ::web3]))
+(s/def ::dispatch (s/and vector?
+                         (s/cat :event-id keyword? :event-args (s/* any?))))
+(s/def ::fx (s/keys :opt [::db ::dispatch]))
+
+;; run `(test/run-tests)` in the repl to run all
+;; auto-generated generative unit tests in this namespace
+(>defn ghostwheel-example
+  [s cofx]
+  [string? ::cofx => ::fx]
+  {:dispatch [:foobar 5]})
 
 ;;;; COFX
 
@@ -314,7 +338,7 @@
                 network network-status peers-count peers-summary view-id navigation-stack
                 status-module-initialized? status-node-started? device-UUID
                 push-notifications/initial? semaphores]
-         :or   [network (get app-db :network)]} db
+         :or   {network (get app-db :network)}} db
         console-contact (get contacts constants/console-chat-id)
         current-account (accounts address)
         account-network-id (get current-account :network network)

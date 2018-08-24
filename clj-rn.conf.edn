@@ -52,7 +52,8 @@
                           :main          "env.desktop.main"
                           :output-dir    "target/desktop"
                           :npm-deps      false
-                          :optimizations :none}
+                          :optimizations :none
+                          :external-config {:ghostwheel {}}}
            :figwheel     true}
           {:id           :ios
            :source-paths ["react-native/src" "src" "env/dev"]
@@ -60,7 +61,8 @@
                           :main          "env.ios.main"
                           :output-dir    "target/ios"
                           :npm-deps      false
-                          :optimizations :none}
+                          :optimizations :none
+                          :external-config {:ghostwheel {}}}
            :figwheel     true}
           {:id               :android
            :source-paths     ["react-native/src" "src" "env/dev"]
@@ -68,6 +70,7 @@
                               :main          "env.android.main"
                               :output-dir    "target/android"
                               :npm-deps      false
-                              :optimizations :none}
+                              :optimizations :none
+                              :external-config {:ghostwheel {}}}
            :warning-handlers [status-im.utils.build/warning-handler]
            :figwheel         true}]}
