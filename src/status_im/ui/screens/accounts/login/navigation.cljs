@@ -3,4 +3,4 @@
 
 (defmethod nav/preload-data! :login
   [db]
-  (update db :accounts/login dissoc :error :password :processing))
+  (update db :accounts/login dissoc :error :password))

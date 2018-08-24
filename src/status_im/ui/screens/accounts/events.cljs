@@ -8,12 +8,12 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
- ::get-signing-phrase
+ :get-signing-phrase
  (fn [cofx _]
    (models/get-signing-phrase cofx)))
 
 (re-frame/reg-cofx
- ::get-status
+ :get-status
  (fn [cofx _]
    (models/get-status cofx)))
 
@@ -32,9 +32,9 @@
 
 (handlers/register-handler-fx
  :account-created
- [re-frame/trim-v (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
- (fn [cofx [result password]]
-   (models/on-account-created result password cofx)))
+ [(re-frame/inject-cofx :get-signing-phrase) (re-frame/inject-cofx :get-status)]
+ (fn [cofx [_ result password]]
+   (models/on-account-created result password false cofx)))
 
 (handlers/register-handler-fx
  :send-account-update-if-needed

@@ -1,9 +1,12 @@
 (ns status-im.ui.screens.accounts.recover.models
   (:require status-im.ui.screens.accounts.recover.navigation
             [clojure.string :as string]
+            [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
+            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.accounts.models :as accounts.models]
+            [status-im.ui.screens.accounts.login.models :as login.models]
             [status-im.utils.types :as types]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
@@ -69,31 +72,19 @@
   (let [password (get-in db [:accounts/recover :password])]
     {:db (assoc-in db [:accounts/recover :password-error] (check-password-errors password))}))
 
-(defn on-account-recovered [result password {:keys [db]}]
-  (let [data       (types/json->clj result)
-        public-key (:pubkey data)
-        address    (-> data :address utils.hex/normalize-hex)
-        phrase     (signing-phrase/generate)
-        account    {:public-key            public-key
-                    :address               address
-                    :name                  (gfycat/generate-gfy public-key)
-                    :photo-path            (identicon/identicon public-key)
-                    :mnemonic              ""
-                    :signed-up?            true
-                    :signing-phrase        phrase
-                    :settings              (constants/default-account-settings)
-                    :wallet-set-up-passed? false
-                    :seed-backed-up?       true}]
-    (when-not (string/blank? public-key)
-      (-> db
-          (accounts.models/add-account account)
-          (assoc :dispatch [:login-account address password])
-          (assoc :dispatch-later [{:ms 2000 :dispatch [:account-recovered-navigate]}])))))
+(defn on-account-recovered [result password cofx]
+  (let [db         (:db cofx)
+        data       (types/json->clj result)
+        pubkey     (:pubkey data)
+        account    {:pubkey     pubkey
+                    :address    (:address data)
+                    :photo-path (identicon/identicon pubkey)
+                    :mnemonic ""}]
 
-(defn account-recovered-navigate [{:keys [db]}]
-  {:db         (assoc-in db [:accounts/recover :processing?] false)
-   :dispatch-n [[:navigate-to-clean :home]
-                [:request-notifications]]})
+    (handlers-macro/merge-fx cofx
+                             {:db (assoc-in db [:accounts/recover :processing?] false)}
+                             (accounts.models/on-account-created account password true)
+                             (login.models/open-login (:address account) (:photo-path account) (:name account)))))
 
 (defn recover-account [{:keys [db]}]
   (let [{:keys [password passphrase]} (:accounts/recover db)]

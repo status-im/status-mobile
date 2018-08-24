@@ -18,6 +18,7 @@
             status-im.ui.screens.accounts.create.navigation
             [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.data-store.accounts :as accounts-store]
+            [status-im.ui.screens.accounts.login.models :as login.models]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]))
 
@@ -44,29 +45,33 @@
 
 (defn- add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:networks/keys [networks] :as db} {:keys [address] :as account}]
-  (let [enriched-account (assoc account
+  [{:keys [address] :as account} cofx]
+  (let [db (:db cofx)
+        {:networks/keys [networks]} db
+        enriched-account (assoc account
                                 :network config/default-network
                                 :networks networks
                                 :address address)]
     {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
-(defn on-account-created [{:keys [pubkey address mnemonic]} password {:keys [signing-phrase status db]}]
+(defn on-account-created [{:keys [pubkey address mnemonic]} password seed-backed-up {:keys [signing-phrase status db] :as cofx}]
   (let [normalized-address (utils.hex/normalize-hex address)
-        account            {:public-key     pubkey
-                            :address        normalized-address
-                            :name           (gfycat/generate-gfy pubkey)
-                            :status         status
-                            :signed-up?     true
-                            :photo-path     (identicon/identicon pubkey)
-                            :signing-phrase signing-phrase
-                            :mnemonic       mnemonic
-                            :settings       (constants/default-account-settings)}]
+        account            {:public-key      pubkey
+                            :address         normalized-address
+                            :name            (gfycat/generate-gfy pubkey)
+                            :status          status
+                            :signed-up?      true
+                            :photo-path      (identicon/identicon pubkey)
+                            :signing-phrase  signing-phrase
+                            :seed-backed-up? seed-backed-up
+                            :mnemonic        mnemonic
+                            :settings        (constants/default-account-settings)}]
     (log/debug "account-created")
     (when-not (str/blank? pubkey)
-      (-> (add-account db account)
-          (assoc :dispatch [:login-account normalized-address password])))))
+      (handlers-macro/merge-fx cofx
+                               (add-account account)
+                               (login.models/login-account normalized-address password)))))
 
 (defn load-accounts [{:keys [db all-accounts]}]
   (let [accounts (->> all-accounts
