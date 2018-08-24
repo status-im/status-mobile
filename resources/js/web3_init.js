@@ -2,6 +2,10 @@ if(typeof StatusHttpProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
 
+function bridgeSend(data){
+    WebViewBridge.send(JSON.stringify(data));
+}
+
 WebViewBridge.onMessage = function (message) {
     data = JSON.parse(message);
 
@@ -24,8 +28,18 @@ WebViewBridge.onMessage = function (message) {
     else if (data.type === "web3-send-async-callback")
     {
         var id = data.messageId;
-        if (callbacks[id]) {
-            callbacks[id](data.error, data.result);
+        var callback = callbacks[id];
+        if (callback) {
+            if (callback.results)
+            {
+                callback.results.push(data.error || data.result);
+                if (callback.results.length == callback.num)
+                    callback.callback(undefined, callback.results);
+            }
+            else
+            {
+                callback.callback(data.error, data.result);
+            }
         }
     }
 };
@@ -76,10 +90,26 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
     }
     else {
         var messageId = callbackId++;
-        callbacks[messageId] = callback;
-        WebViewBridge.send(JSON.stringify({type:      'web3-send-async',
-                                           messageId: messageId,
-                                           payload:   payload}));
+
+        if (Array.isArray(payload))
+        {
+            callbacks[messageId] = {num:      payload.length,
+                                    results:  [],
+                                    callback: callback};
+            for (var i in payload) {
+                bridgeSend({type:      'web3-send-async',
+                            messageId: messageId,
+                            payload:   payload[i]});
+            }
+        }
+        else
+        {
+            callbacks[messageId] = {callback: callback};
+            bridgeSend({type:      'web3-send-async',
+                        messageId: messageId,
+                        payload:   payload});
+        }
+
     }
 };
 }

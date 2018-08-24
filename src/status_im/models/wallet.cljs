@@ -128,7 +128,10 @@
 (defn discard-transaction
   [{:keys [db]}]
   (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
-    (cond-> {:db (assoc-in db [:wallet :send-transaction] {})}
+    (cond-> {:db (update db :wallet
+                         assoc
+                         :send-transaction {}
+                         :transactions-queue nil)}
       dapp-transaction
       (web3-error-callback db dapp-transaction "discarded"))))
 
