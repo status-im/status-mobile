@@ -52,7 +52,7 @@
     "re-natal": "git+https://github.com/status-im/re-natal.git#master",
     "react": "16.3.1",
     "react-dom": "16.3.1",
-    "react-native": "git+https://github.com/status-im/react-native-desktop.git",
+    "react-native": "git+https://github.com/status-im/react-native-desktop.git#test/force-to-crash",
     "react-native-background-timer": "2.0.0",
     "react-native-camera": "0.10.0",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git",
