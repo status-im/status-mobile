@@ -24,7 +24,9 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.transport.utils :as transport.utils]))
+            [status-im.transport.utils :as transport.utils]
+            [taoensso.timbre :as log]
+            [reagent.core :as reagent]))
 
 (defn- toolbar [modal? title]
   (let [action (if modal? act/close-white act/back-white)]
@@ -129,8 +131,7 @@
       (i18n/label :t/transactions-sign-transaction)
       [vector-icons/icon :icons/forward {:color (if sign-enabled? :white :gray)}]]]))
 
-;; MAIN SEND TRANSACTION VIEW
-(defn- send-transaction-view [{:keys [modal? transaction scroll advanced? network]}]
+(defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network amount-input]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
                 sufficient-gas? in-progress? from-chat? symbol]} transaction
         {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
@@ -158,8 +159,8 @@
                                                         (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
                                      :amount        amount
                                      :amount-text   amount-text
-                                     :input-options {:on-focus       (fn [] (when (and scroll @scroll) (utils/set-timeout #(.scrollToEnd @scroll) 100)))
-                                                     :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])}} token]
+                                     :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
+                                                     :ref            (partial reset! amount-input)}} token]
         [advanced-options advanced? transaction scroll]]]
       (if show-password-input?
         [enter-password-buttons in-progress?
@@ -170,6 +171,22 @@
       (when show-password-input?
         [password-input-panel :t/signing-phrase-description in-progress?])
       (when in-progress? [react/view styles/processing-view])]]))
+
+;; MAIN SEND TRANSACTION VIEW
+(defn- send-transaction-view [{:keys [scroll] :as opts}]
+  (let [amount-input (atom nil)
+        handler      (fn [_]
+                       (when (and scroll @scroll @amount-input
+                                  (.isFocused @amount-input))
+                         (log/debug "Amount field focused, scrolling down")
+                         (.scrollToEnd @scroll)))]
+    (reagent/create-class
+     {:component-will-mount (fn [_]
+                              ;;NOTE(goranjovic): keyboardDidShow is for android and keyboardWillShow for ios
+                              (.addListener react/keyboard "keyboardDidShow" handler)
+                              (.addListener react/keyboard "keyboardWillShow" handler))
+      :reagent-render       (fn [opts] (render-send-transaction-view
+                                        (assoc opts :amount-input amount-input)))})))
 
 ;; SEND TRANSACTION FROM WALLET (CHAT)
 (defview send-transaction []
