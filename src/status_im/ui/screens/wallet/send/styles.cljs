@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.send.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]))
@@ -148,3 +149,6 @@
 (def password-error-tooltip
   {:bottom-value 15
    :color        colors/red-light})
+
+(defstyle gas-input-error-tooltip
+  {:android {:bottom-value -38}})

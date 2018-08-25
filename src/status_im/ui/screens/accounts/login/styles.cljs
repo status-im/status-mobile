@@ -37,7 +37,9 @@
    :margin-top 8})
 
 (def password-container
-  {:margin-top 24})
+  {:margin-top 24
+   :android    {:margin-top  11
+                :padding-top 13}})
 
 (def save-password-checkbox-container
   {:margin-top 0
