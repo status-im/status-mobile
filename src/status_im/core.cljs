@@ -7,7 +7,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.config :as config]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [goog.object :as object]))
+            [goog.object :as object]
+            cljs.core.specs.alpha))
 
 (when js/goog.DEBUG
   (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
