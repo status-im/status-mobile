@@ -28,105 +28,108 @@
       (testing "save password: status-go not started"
         (let [actual (models/login-account "testnet" "password" true initial-db)]
           (testing "it starts status-node if it has not started"
-            (is (= {:NetworkId 3} (:initialize-geth-fx actual))))
+            (is (= {:NetworkId 3}
+                   (:init/initialize-geth
+                    actual))))
           (testing "it logins the user after the node started"
             (is (= [:login-account-internal "testnet" "password" true] (get-in actual [:db :node/after-start]))))))
+
       (testing "status-go has started & the user is on mainnet"
         (let [db (assoc-in initial-db [:db :status-node-started?] true)
               actual (models/login-account "mainnet" "password" false db)]
           (testing "it does not start status-node if it has already started"
-            (is (not (:initialize-geth-fx actual))))
+            (is (not (:init/initialize-geth actual))))
           (testing "it logs in the user"
-            (is (= ["mainnet" "password" false] (:login actual))))))
+            (is (= ["mainnet" "password" false] (:login actual)))))))
 
-      (testing "the user has selected a different network"
-        (testing "status-go has started"
-          (let [db     (assoc-in initial-db [:db :status-node-started?] true)
-                actual (models/login-account "testnet" "password" false db)]
-            (testing "it dispatches start-node"
-              (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password" true])))
-            (testing "it stops status-node"
-              (is (contains? actual :stop-node))))))
+    (testing "the user has selected a different network"
+      (testing "status-go has started"
+        (let [db     (assoc-in initial-db [:db :status-node-started?] true)
+              actual (models/login-account "testnet" "password" false db)]
+          (testing "it dispatches start-node"
+            (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password" true])))
+          (testing "it stops status-node"
+            (is (contains? actual :stop-node))))))
+
+    (testing "status-go has not started"
+      (let [actual (models/login-account "testnet" "password" false initial-db)]
+        (testing "it starts status-node"
+          (is (= {:NetworkId 3} (:init/initialize-geth actual))))
+        (testing "it logins the user after the node started"
+          (is (= [:login-account-internal "testnet" "password" false] (get-in actual [:db :node/after-start]))))))
+
+    (testing "status-go has started & the user is on mainnet"
+      (let [db (assoc-in initial-db [:db :status-node-started?] true)
+            actual (models/login-account "mainnet" "password" false db)]
+        (testing "it does not start status-node if it has already started"
+          (is (not (:init/initialize-geth actual))))
+        (testing "it logs in the user"
+          (is (= ["mainnet" "password" false] (:login actual))))))
+
+    (testing "the user has selected a different network"
+      (testing "status-go has started"
+        (let [db     (assoc-in initial-db [:db :status-node-started?] true)
+              actual (models/login-account "testnet" "password" false db)]
+          (testing "it dispatches start-node"
+            (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password" false])))
+          (testing "it stops status-node"
+            (is (contains? actual :stop-node)))))
 
       (testing "status-go has not started"
         (let [actual (models/login-account "testnet" "password" false initial-db)]
-          (testing "it starts status-node if it has not started"
-            (is (= {:NetworkId 3} (:initialize-geth-fx actual))))
+          (testing "it starts status-node"
+            (is (= {:NetworkId 3} (:init/initialize-geth actual))))
           (testing "it logins the user after the node started"
-            (is (= [:login-account-internal "testnet" "password" false] (get-in actual [:db :node/after-start]))))))
+            (is (= [:login-account-internal "testnet" "password" false] (get-in actual [:db :node/after-start])))))))
 
-      (testing "status-go has started & the user is on mainnet"
-        (let [db (assoc-in initial-db [:db :status-node-started?] true)
-              actual (models/login-account "mainnet" "password" false db)]
-          (testing "it does not start status-node if it has already started"
-            (is (not (:initialize-geth-fx actual))))
-          (testing "it logs in the user"
-            (is (= ["mainnet" "password" false] (:login actual))))))
+    (testing "custom bootnodes"
+      (let [custom-bootnodes {"a" {:id "a"
+                                   :name "name-a"
+                                   :address "address-a"}
+                              "b" {:id "b"
+                                   :name "name-b"
+                                   :address "address-b"}}
+            bootnodes-db     (assoc-in
+                              initial-db
+                              [:db :accounts/accounts "mainnet" :bootnodes]
+                              {"mainnet_rpc" custom-bootnodes})]
 
-      (testing "the user has selected a different network"
-        (testing "status-go has started"
-          (let [db     (assoc-in initial-db [:db :status-node-started?] true)
-                actual (models/login-account "testnet" "password" false db)]
-            (testing "it dispatches start-node"
-              (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password" false])))
-            (testing "it stops status-node"
-              (is (contains? actual :stop-node)))))
-
-        (testing "status-go has not started"
-          (let [actual (models/login-account "testnet" "password" false initial-db)]
-            (testing "it starts status-node"
-              (is (= {:NetworkId 3} (:initialize-geth-fx actual))))
-            (testing "it logins the user after the node started"
-              (is (= [:login-account-internal "testnet" "password" false] (get-in actual [:db :node/after-start])))))))
-
-      (testing "custom bootnodes"
-        (let [custom-bootnodes {"a" {:id "a"
-                                     :name "name-a"
-                                     :address "address-a"}
-                                "b" {:id "b"
-                                     :name "name-b"
-                                     :address "address-b"}}
-              bootnodes-db     (assoc-in
-                                initial-db
-                                [:db :accounts/accounts "mainnet" :bootnodes]
-                                {"mainnet_rpc" custom-bootnodes})]
-
-          (testing "custom bootnodes enabled"
-            (let [bootnodes-enabled-db (assoc-in
-                                        bootnodes-db
-                                        [:db :accounts/accounts "mainnet" :settings]
-                                        {:bootnodes {"mainnet_rpc" true}})
-                  actual (models/login-account "mainnet" "password" false bootnodes-enabled-db)]
-              (testing "status-node has started"
-                (let [db (assoc-in bootnodes-enabled-db [:db :status-node-started?] true)
-                      actual (models/login-account "mainnet" "password" false db)]
-                  (testing "it dispatches start-node"
-                    (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password" false])))
-                  (testing "it stops status-node"
-                    (is (contains? actual :stop-node)))))
-              (testing "status-node has not started"
-                (let [actual (models/login-account "mainnet" "password" false bootnodes-enabled-db)]
-                  (testing "it adds bootnodes to the config"
-                    (is (= {:ClusterConfig {:Enabled   true
-                                            :BootNodes ["address-a" "address-b"]}
-                            :NetworkId 1} (:initialize-geth-fx actual))))
-                  (testing "it logins the user after the node started"
-                    (is (= [:login-account-internal "mainnet" "password" false] (get-in actual [:db :node/after-start]))))))))
-
-          (testing "custom bootnodes not enabled"
+        (testing "custom bootnodes enabled"
+          (let [bootnodes-enabled-db (assoc-in
+                                      bootnodes-db
+                                      [:db :accounts/accounts "mainnet" :settings]
+                                      {:bootnodes {"mainnet_rpc" true}})
+                actual (models/login-account "mainnet" "password" false bootnodes-enabled-db)]
             (testing "status-node has started"
-              (let [db (assoc-in bootnodes-db [:db :status-node-started?] true)
+              (let [db (assoc-in bootnodes-enabled-db [:db :status-node-started?] true)
                     actual (models/login-account "mainnet" "password" false db)]
-                (testing "it does not start status-node if it has already started"
-                  (is (not (:initialize-geth-fx actual))))
-                (testing "it logs in the user"
-                  (is (= ["mainnet" "password" false] (:login actual))))))
+                (testing "it dispatches start-node"
+                  (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password" false])))
+                (testing "it stops status-node"
+                  (is (contains? actual :stop-node)))))
             (testing "status-node has not started"
-              (let [actual (models/login-account "mainnet" "password" false bootnodes-db)]
-                (testing "it starts status-node without custom bootnodes"
-                  (is (= {:NetworkId 1} (:initialize-geth-fx actual))))
+              (let [actual (models/login-account "mainnet" "password" false bootnodes-enabled-db)]
+                (testing "it adds bootnodes to the config"
+                  (is (= {:ClusterConfig {:Enabled   true
+                                          :BootNodes ["address-a" "address-b"]}
+                          :NetworkId 1} (:init/initialize-geth actual))))
                 (testing "it logins the user after the node started"
-                  (is (= [:login-account-internal "mainnet" "password" false] (get-in actual [:db :node/after-start]))))))))))))
+                  (is (= [:login-account-internal "mainnet" "password" false] (get-in actual [:db :node/after-start]))))))))
+
+        (testing "custom bootnodes not enabled"
+          (testing "status-node has started"
+            (let [db (assoc-in bootnodes-db [:db :status-node-started?] true)
+                  actual (models/login-account "mainnet" "password" false db)]
+              (testing "it does not start status-node if it has already started"
+                (is (not (:init/initialize-geth actual))))
+              (testing "it logs in the user"
+                (is (= ["mainnet" "password" false] (:login actual))))))
+          (testing "status-node has not started"
+            (let [actual (models/login-account "mainnet" "password" false bootnodes-db)]
+              (testing "it starts status-node without custom bootnodes"
+                (is (= {:NetworkId 1} (:init/initialize-geth actual))))
+              (testing "it logins the user after the node started"
+                (is (= [:login-account-internal "mainnet" "password" false] (get-in actual [:db :node/after-start])))))))))))
 
 (deftest restart-node?
   (testing "custom bootnodes is toggled off"

@@ -6,8 +6,7 @@
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.notifications :as notifications]
-            [taoensso.timbre :as log]
+            [status-im.notifications.core :as notifications]
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]))
 
@@ -33,7 +32,7 @@
       (then (partial change-account! address))
       (catch (fn [error]
                ;; If all else fails we fallback to showing initial error
-               (re-frame/dispatch [:initialize-app "" :decryption-failed])))))
+               (re-frame/dispatch [:init/initialize-app "" :decryption-failed])))))
 
 ;;;; Handlers
 
@@ -85,15 +84,15 @@
      :network              network
      :config               config}))
 
-(defn- wrap-with-initialize-geth-fx [db address password save-password]
+(defn- wrap-with-initialize-geth [db address password save-password]
   (let [{:keys [network config]} (get-network-by-address db address)]
-    {:initialize-geth-fx config
+    {:init/initialize-geth config
      :db                 (assoc db
                                 :network network
                                 :node/after-start [:login-account-internal address password save-password])}))
 
 (defn start-node [address password save-password {db :db}]
-  (wrap-with-initialize-geth-fx
+  (wrap-with-initialize-geth
    (assoc db :node/after-stop nil)
    address password save-password))
 
@@ -112,7 +111,7 @@
         db'     (-> db
                     (assoc-in [:accounts/login :processing] true))
         wrap-fn (cond (not status-node-started?)
-                      wrap-with-initialize-geth-fx
+                      wrap-with-initialize-geth
 
                       (not (restart-node? account-network
                                           network
@@ -142,7 +141,7 @@
   {:db       (cond-> (dissoc db :accounts/login)
                (= view-id :create-account)
                (assoc-in [:accounts/create :step] :enter-name))
-   :dispatch [:initialize-account address
+   :dispatch [:init/initialize-account address
               (when (not= view-id :create-account)
                 [[:navigate-to-clean :home]
                  (universal-links/stored-url-event cofx)

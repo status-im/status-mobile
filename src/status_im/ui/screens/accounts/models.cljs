@@ -88,9 +88,9 @@
 
 (defn account-set-name [{{:accounts/keys [create] :as db} :db :as cofx}]
   (handlers-macro/merge-fx cofx
-                           {:db         (assoc db :accounts/create {:show-welcome? true})
-                            :dispatch-n [[:navigate-to-clean :home]
-                                         [:request-notifications]]}
+                           {:db                                  (assoc db :accounts/create {:show-welcome? true})
+                            :notifications/request-notifications nil
+                            :dispatch                            [:navigate-to-clean :home]}
                            (accounts.utils/account-update {:name (:name create)})))
 
 (defn account-set-input-text [input-key text {db :db}]

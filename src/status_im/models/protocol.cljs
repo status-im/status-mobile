@@ -1,6 +1,5 @@
 (ns status-im.models.protocol
-  (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+  (:require [status-im.constants :as constants]
             [status-im.transport.core :as transport]
             [status-im.transport.inbox :as transport.inbox]
             [status-im.utils.ethereum.core :as ethereum]
@@ -30,7 +29,7 @@
 (defn check-sync-state
   [{{:keys [web3] :as db} :db :as cofx}]
   (if (:account/account db)
-    {:protocol/web3-get-syncing web3
+    {:web3/get-syncing web3
      :dispatch-later    [{:ms 10000 :dispatch [:check-sync-state]}]}
     (semaphores/free :check-sync-state? cofx)))
 

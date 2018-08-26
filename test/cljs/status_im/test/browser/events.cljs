@@ -1,7 +1,7 @@
 (ns status-im.test.browser.events
   (:require [cljs.test :refer-macros [deftest is testing]]
             [day8.re-frame.test :refer-macros [run-test-sync]]
-            [status-im.ui.screens.events :as events]
+            [status-im.init.core :as init]
             status-im.ui.screens.db
             status-im.ui.screens.subs
             [re-frame.core :as re-frame]
@@ -13,7 +13,7 @@
 
 (defn test-fixtures []
 
-  (re-frame/reg-fx ::events/init-store #())
+  (re-frame/reg-fx :init/init-store #())
 
   (re-frame/reg-fx :browse #())
   (re-frame/reg-fx :data-store/tx #())
@@ -43,7 +43,7 @@
    :initialize-test
    (fn [cofx [_]]
      (handlers-macro/merge-fx cofx
-                              (events/initialize-db)
+                              (init/initialize-db)
                               (browser/initialize-browsers)
                               (browser/initialize-dapp-permissions)))))
 
@@ -54,15 +54,13 @@
    (test-fixtures)
 
    (re-frame/dispatch [:initialize-test])
-   (println :app-db @re-frame.db/app-db)
+
    (let [browsers  (re-frame/subscribe [:browsers])
          dapp1-url "cryptokitties.co"
          dapp2-url "http://test2.com"]
 
      (testing "open and remove dapps"
-       (println :browsers @browsers)
-       (is (do (println :browser @browsers)
-               (zero? (count @browsers))))
+       (is (zero? (count @browsers)))
 
        (re-frame/dispatch [:open-url-in-browser dapp1-url])
 

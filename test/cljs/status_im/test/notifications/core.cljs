@@ -1,6 +1,6 @@
-(ns status-im.test.utils.notifications
+(ns status-im.test.notifications.core
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.notifications :as notifications]))
+            [status-im.notifications.core :as notifications]))
 
 (deftest test-handle-push-notification
   (testing "user's signed in"

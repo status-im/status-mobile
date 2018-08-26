@@ -47,7 +47,7 @@
             [status-im.test.utils.keychain.core]
             [status-im.test.utils.universal-links.core]
             [status-im.test.utils.http]
-            [status-im.test.ui.screens.events]
+            [status-im.test.init.core]
             [status-im.test.ui.screens.accounts.login.models]
             [status-im.test.ui.screens.accounts.recover.models]
             [status-im.test.ui.screens.wallet.db]))
@@ -69,6 +69,7 @@
  'status-im.test.contacts.events
  'status-im.test.contacts.subs
  'status-im.test.profile.events
+ 'status-im.test.init.core
  'status-im.test.data-store.realm.core
  'status-im.test.models.mailserver
  'status-im.test.models.bootnode
@@ -107,7 +108,6 @@
  'status-im.test.utils.keychain.core
  'status-im.test.utils.universal-links.core
  'status-im.test.utils.http
- 'status-im.test.ui.screens.events
  'status-im.test.ui.screens.accounts.login.models
  'status-im.test.ui.screens.accounts.recover.models
  'status-im.test.ui.screens.wallet.db
