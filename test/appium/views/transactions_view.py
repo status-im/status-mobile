@@ -27,7 +27,7 @@ class TransactionTable(BaseElement):
     def __init__(self, driver):
         super(TransactionTable, self).__init__(driver)
         self.driver = driver
-        self.locator = self.Locator.xpath_selector("//android.support.v4.view.ViewPager")
+        self.locator = self.Locator.xpath_selector("//android.widget.ScrollView")
 
     class TransactionElement(BaseButton):
         def __init__(self, driver):

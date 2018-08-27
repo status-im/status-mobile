@@ -171,6 +171,9 @@ mailserver_address = "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."
 
+photos_access_error_text = "To grant the required photos permission, please go to your system settings " \
+                           "and make sure that Status > Photos is selected."
+
 connection_not_secure_text = "Connection is not secure! " \
                              "Do not sign transactions or send personal data on this site."
 connection_is_secure_text = "Connection is secure. Make sure you really trust this site " \

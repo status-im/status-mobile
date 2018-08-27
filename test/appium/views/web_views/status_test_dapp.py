@@ -63,11 +63,6 @@ class StatusAPIButton(BaseButton):
             super(StatusAPIButton.RequestContactCodeButton, self).__init__(driver)
             self.locator = self.Locator.text_part_selector('Request contact code')
 
-    class DoNotAllowButton(BaseButton):
-        def __init__(self, driver):
-            super(StatusAPIButton.DoNotAllowButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector("DON'T ALLOW")
-
 
 class StatusTestDAppView(BaseWebView):
 
@@ -86,4 +81,3 @@ class StatusTestDAppView(BaseWebView):
 
         self.status_api_button = StatusAPIButton(self.driver)
         self.request_contact_code_button = StatusAPIButton.RequestContactCodeButton(self.driver)
-        self.do_not_allow_button = StatusAPIButton.DoNotAllowButton(self.driver)
