@@ -54,15 +54,18 @@ pipeline {
         apkUrl = cmn.uploadArtifact(findFiles(glob: "pkg/*.${params.BUILD_TYPE}.apk")[0].path)
         dmgUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.dmg')[0].path)
         appUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.AppImage')[0].path)
-        /* special case for iOS Diawi link */
+        /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
       } }
     }
     stage('Notify') {
-      steps {
+      steps { script {
         slackSend(
           message: (
-            "Build success! "+
+            (CHANGE_ID != null ?
+              "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
+              "Build ${params.BUILD_TYPE} success! "
+            )+
             "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
             "(${currentBuild.durationString})\n"+
             (params.BUILD_TYPE == 'nightly' ?
@@ -71,12 +74,15 @@ pipeline {
               "(<${e2eUrl}|e2e>), "+
               "<${ipaUrl}|iOS>, "+
               "<${dmgUrl}|MacOS>, "+
-              "<${appUrl}|AppImage>"
-            : '')
+              "<${appUrl}|AppImage>" :
+              "Packages: "+
+              "<${dro.getBuildVariables().get('DIAWI_URL')}|Android>, "+
+              "<${ios.getBuildVariables().get('DIAWI_URL')}|iOS>"
+            )
           ),
           color: 'good'
         )
-      }
+      } }
     }
     stage('Publish') {
       when { expression { params.BUILD_TYPE == 'nightly' } }

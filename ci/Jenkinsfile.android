@@ -32,6 +32,11 @@ pipeline {
         }
       }
     }
+    stage('Lint') {
+      steps {
+        script { mobile.runLint() }
+      }
+    }
     stage('Tests') {
       steps {
         script { mobile.runTests() }
@@ -53,19 +58,25 @@ pipeline {
       }
     }
     stage('Upload') {
-      when { expression { params.BUILD_TYPE == 'release' } }
       steps {
-        script { mobile.android.uploadToPlayStore() }
+        script {
+          switch (params.BUILD_TYPE) {
+            case 'release':
+              mobile.android.uploadToPlayStore(); break;
+            case 'nightly':
+              env.DIAWI_URL = mobile.android.uploadToDiawi()
+            case 'e2e':
+              e2eApk = mobile.android.uploadToSauceLabs()
+          } 
+        }
       }
     }
     stage('Run e2e') {
       when { expression { params.BUILD_TYPE == 'e2e' } }
       steps { script {
-        mobile.android.uploadToDiawi()
-        apk = mobile.android.uploadToSauceLabs() 
         build(
           job: 'end-to-end-tests/status-app-nightly', wait: false,
-          parameters: [string(name: 'apk', value: "--apk=${apk}")]
+          parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]
         )
       } }
     }

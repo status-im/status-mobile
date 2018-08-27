@@ -36,6 +36,11 @@ pipeline {
         }
       }
     }
+    stage('Lint') {
+      steps {
+        script { mobile.runLint() }
+      }
+    }
     stage('Tests') {
       steps {
         script { mobile.runTests() }

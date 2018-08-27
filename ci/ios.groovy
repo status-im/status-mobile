@@ -18,7 +18,7 @@ def compile(type = 'nightly') {
     string(credentialsId: 'APPLE_ID', variable: 'APPLE_ID'),
     string(credentialsId: 'fastlane-match-password', variable:'MATCH_PASSWORD')
   ]) {
-    sh "fastlane ios ${target}"
+    sh "bundle exec fastlane ios ${target}"
   }
   def pkg = common.pkgFilename(type, 'ipa')
   sh "cp status-adhoc/StatusIm.ipa ${pkg}"
@@ -28,10 +28,8 @@ def compile(type = 'nightly') {
 def uploadToDiawi() {
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
-    string(credentialsId: 'GIT_HUB_TOKEN', variable: 'GITHUB_TOKEN'),
-    string(credentialsId: 'SLACK_JENKINS_WEBHOOK', variable: 'SLACK_URL')
   ]) {
-    sh 'fastlane ios upload_diawi'
+    sh 'bundle exec fastlane ios upload_diawi'
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
   return diawiUrl
