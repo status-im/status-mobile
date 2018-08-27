@@ -23,11 +23,6 @@
                 (re-frame/dispatch [:init/initialize-app encryption-key :decryption-failed]))))))
 
 (re-frame/reg-fx
- :init/initialize-geth
- (fn [config]
-   (status/start-node (types/clj->json config) config/fleet)))
-
-(re-frame/reg-fx
  :init/status-module-initialized
  (fn [_]
    (status/module-initialized!)))
@@ -82,13 +77,8 @@
   (re-frame/inject-cofx :data-store/transport)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
- (fn [cofx [_ address events-after]]
-   (init/initialize-account address events-after cofx)))
-
-(handlers/register-handler-fx
- :init/initialize-geth
- (fn [cofx _]
-   (init/initialize-geth cofx)))
+ (fn [cofx [_ address]]
+   (init/initialize-account address cofx)))
 
 (handlers/register-handler-fx
  :init/set-device-UUID

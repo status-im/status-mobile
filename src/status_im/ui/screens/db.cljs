@@ -55,8 +55,7 @@
              :tooltips                           {}
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
-             :push-notifications/stored          {}
-             :push-notifications/initial?        false})
+             :push-notifications/stored          {}})
 
 ;;;;GLOBAL
 
@@ -147,9 +146,6 @@
 
 ;;;;NODE
 
-(spec/def :node/after-start (spec/nilable vector?))
-(spec/def :node/after-stop (spec/nilable vector?))
-
 (spec/def ::message-envelopes (spec/nilable map?))
 
 ;;;;UUID
@@ -164,10 +160,7 @@
 (spec/def :dimensions/window map?)
 
 ;; PUSH NOTIFICATIONS
-
 (spec/def :push-notifications/stored (spec/nilable map?))
-; Shows that push notification used to start the application is processed
-(spec/def :push-notifications/initial? (spec/nilable boolean?))
 
 (spec/def ::semaphores set?)
 
@@ -202,15 +195,12 @@
                  :networks/manage
                  :mailservers/manage
                  :bootnodes/manage
-                 :node/after-start
-                 :node/after-stop
                  :inbox/wnodes
                  :inbox/last-received
                  :inbox/current-id
                  :inbox/fetching?
                  :universal-links/url
                  :push-notifications/stored
-                 :push-notifications/initial?
                  :browser/browsers
                  :browser/options
                  :new/open-dapp

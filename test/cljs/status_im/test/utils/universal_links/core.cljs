@@ -79,12 +79,12 @@
     (testing "it returns false"
       (is (not (links/universal-link? "https://not.status.im/blah"))))))
 
-(deftest stored-url-event
+(deftest process-stored-event
   (testing "the url is in the database"
     (testing "it returns the event"
-      (= [:handle-universal-link "some-url"]
-         (links/stored-url-event {:db {:universal-links/url "some-url"}}))))
+      (= "some-url"
+         (links/process-stored-event {:db {:universal-links/url "some-url"}}))))
   (testing "the url is not in the database"
     (testing "it returns nil"
       (= nil
-         (links/stored-url-event {:db {}})))))
+         (links/process-stored-event {:db {}})))))

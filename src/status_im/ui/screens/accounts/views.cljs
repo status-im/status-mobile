@@ -15,7 +15,7 @@
             [status-im.ui.screens.privacy-policy.views :as privacy-policy]))
 
 (defn account-view [{:keys [address photo-path name public-key]}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-login address photo-path name])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:ui/open-login address photo-path name])}
    [react/view styles/account-view
     [photos/photo photo-path {:size styles/account-image-size}]
     [react/view styles/account-badge-text-view

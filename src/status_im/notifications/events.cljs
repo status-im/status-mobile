@@ -26,7 +26,8 @@
 
 (handlers/register-handler-fx
  :notifications/handle-push-notification
- notifications/handle-push-notification)
+ (fn [cofx [_ event]]
+   (notifications/handle-push-notification event cofx)))
 
 (handlers/register-handler-db
  :notifications/update-fcm-token
