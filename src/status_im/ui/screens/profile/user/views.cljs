@@ -87,8 +87,8 @@
                                                         :source  source
                                                         :value   value}]))
 
-(defn share-contact-code [current-account public-key]
-  [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
+(defn share-contact-code [current-account contact-code]
+  [react/touchable-highlight {:on-press (show-qr current-account :contact-code contact-code)}
    [react/view styles/share-contact-code
     [react/view styles/share-contact-code-text-container
      [react/text {:style      styles/share-contact-code-text
@@ -203,6 +203,7 @@
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]
+            contact-code    [:get-contact-code]
             scroll          (reagent/atom nil)]
     (let [shown-account    (merge current-account changed-account)
           ;; We scroll on the component once rendered. setTimeout is necessary,
@@ -232,7 +233,7 @@
                                    profile-icon-options)
            :on-change-text-event :my-profile/update-name}]]
         [react/view action-button.styles/actions-list
-         [share-contact-code current-account public-key]]
+         [share-contact-code current-account contact-code]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account currency]]
         [advanced shown-account on-show-advanced]]])))

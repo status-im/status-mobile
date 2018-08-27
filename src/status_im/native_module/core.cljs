@@ -59,3 +59,17 @@
 
 (defn is24Hour []
   (native-module/is24Hour))
+
+(defn create-contact-code [callback]
+  (native-module/create-contact-code callback))
+
+(defn extract-identity-from-contact-code [contact-code callback]
+  (letfn [(wrapped-callback [response]
+            (let [parsed-response (js->clj (js/JSON.parse response) :keywordize-keys true)]
+              (if-let [err (:error parsed-response)]
+                (callback err nil)
+                (callback nil (:identity parsed-response)))))]
+    (native-module/extract-identity-from-contact-code contact-code wrapped-callback)))
+
+(defn process-contact-code [contact-code callback]
+  (native-module/process-contact-code contact-code callback))

@@ -167,6 +167,10 @@
 
 (spec/def :universal-links/url (spec/nilable string?))
 
+;;;CONTACT CODE
+
+(spec/def :contact-code/contact-code (spec/nilable string?))
+
 ;; DIMENSIONS
 (spec/def :dimensions/window map?)
 
@@ -213,6 +217,7 @@
                  :inbox/current-id
                  :inbox/fetching?
                  :universal-links/url
+                 :contact-code/contact-code
                  :push-notifications/stored
                  :browser/browsers
                  :browser/options

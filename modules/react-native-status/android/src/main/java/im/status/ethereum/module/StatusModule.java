@@ -419,7 +419,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void createX3DHBundle(final Callback callback) {
+    public void createContactCode(final Callback callback) {
         Log.d(TAG, "createBundle");
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -429,7 +429,46 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.CreateX3DHBundle();
+                String res = Statusgo.CreateContactCode();
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void processContactCode(final String bundle, final Callback callback) {
+        Log.d(TAG, "processing Bundle");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.ProcessContactCode(bundle);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void extractIdentityFromContactCode(final String bundle, final Callback callback) {
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.ExtractIdentityFromContactCode(bundle);
 
                 callback.invoke(res);
             }
