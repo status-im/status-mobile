@@ -27,31 +27,32 @@
                                    :as current-chat}]
   (views/letsubs [chat-name         [:get-current-chat-name]
                   {:keys [pending? whisper-identity photo-path]} [:get-current-chat-contact]]
-    [react/view {:style styles/toolbar-chat-view}
-     [react/view {:style {:flex-direction :row
-                          :flex 1}}
-      (if public?
-        [react/view {:style (styles/topic-image color)}
-         [react/text {:style styles/topic-text}
-          (string/capitalize (second chat-name))]]
-        [react/image {:style styles/chat-icon
-                      :source {:uri photo-path}}])
-      [react/view {:style (styles/chat-title-and-type pending?)}
-       [react/text {:style styles/chat-title
-                    :font  :medium}
-        chat-name]
-       (cond pending?
-             [react/text {:style styles/add-contact-text
-                          :on-press #(re-frame/dispatch [:add-contact whisper-identity])}
-              (i18n/label :t/add-to-contacts)]
-             public?
-             [react/text {:style styles/public-chat-text}
-              (i18n/label :t/public-chat)])]]
-     [react/view
-      (when (and (not group-chat) (not public?))
-        [react/text {:style (styles/profile-actions-text colors/black)
-                     :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
-         (i18n/label :t/view-profile)])
+    [react/view
+     [react/view {:style styles/toolbar-chat-view}
+      [react/view {:style {:flex-direction :row
+                           :flex 1}}
+       (if public?
+         [react/view {:style (styles/topic-image color)}
+          [react/text {:style styles/topic-text}
+           (string/capitalize (second chat-name))]]
+         [react/image {:style styles/chat-icon
+                       :source {:uri photo-path}}])
+       [react/view {:style (styles/chat-title-and-type pending?)}
+        [react/text {:style styles/chat-title
+                     :font  :medium}
+         chat-name]
+        (cond pending?
+              [react/text {:style styles/add-contact-text
+                           :on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+               (i18n/label :t/add-to-contacts)]
+              public?
+              [react/text {:style styles/public-chat-text}
+               (i18n/label :t/public-chat)])]]
+      [react/view
+       (when (and (not group-chat) (not public?))
+         [react/text {:style (styles/profile-actions-text colors/black)
+                      :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
+          (i18n/label :t/view-profile)])
 
       [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
@@ -59,7 +60,7 @@
       [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/delete-chat-pressed chat-id])}
        (i18n/label :t/delete-chat)]]]
-    [connectivity/error-view {:top 2}]))
+    [connectivity/error-view {:top 2}]]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
@@ -170,7 +171,7 @@
         [react/view
          (doall
           (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse messages))]
-            ^{:key (or message-id (str type value))}
+            ^{:key message-obj}
             [message content (= from current-public-key)
              (assoc message-obj :group-chat group-chat
                     :current-public-key current-public-key)]))]]])))
