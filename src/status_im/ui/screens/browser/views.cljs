@@ -21,7 +21,8 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]
-            [status-im.ui.screens.browser.permissions.views :as permissions.views]))
+            [status-im.ui.screens.browser.permissions.views :as permissions.views]
+            [status-im.utils.platform :as platform]))
 
 (def browser-config
   (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
@@ -82,7 +83,8 @@
 
 (defn on-navigation-change [event browser]
   (let [{:strs [url loading]} (js->clj event)]
-    (re-frame/dispatch [:update-browser-options {:loading? loading}])
+    (when platform/ios?
+      (re-frame/dispatch [:update-browser-options {:loading? loading}]))
     (when (not= "about:blank" url)
       (re-frame/dispatch [:update-browser-on-nav-change browser url loading]))))
 
