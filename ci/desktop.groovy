@@ -177,6 +177,7 @@ def bundleMacOS(type = 'nightly') {
     sh 'cp -r assets/share/assets StatusIm.app/Contents/MacOs'
     sh 'chmod +x StatusIm.app/Contents/MacOs/ubuntu-server'
     sh 'cp ../desktop/bin/StatusIm StatusIm.app/Contents/MacOs'
+    sh 'cp -f ../deployment/macos/Info.plist StatusIm.app/Contents'
     sh """
       macdeployqt StatusIm.app -verbose=1 -dmg \\
         -qmldir='${workspace}/node_modules/react-native/ReactQt/runtime/src/qml/'
