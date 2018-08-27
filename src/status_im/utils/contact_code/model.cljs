@@ -21,24 +21,29 @@
   (when config/encryption-enabled?
     (status/create-contact-code callback)))
 
+(defn valid-public-key? [s]
+  (boolean (re-matches #"0x04[0-9a-f]{128}" s)))
+
 (defn contact-code? [s]
-  (= (count s) 184))
+  (not (or
+        (valid-public-key? s)
+        (stateofus/is-valid-name? s))))
 
 (defn validate [contact-code callback {:keys [db] :as cofx}]
   (cond
     (stateofus/is-valid-name? contact-code)
-    (process-stateofus contact-code callback cofx))
+    (process-stateofus contact-code callback cofx)
 
-  (and config/encryption-enabled? (contact-code? contact-code))
-  (status/extract-identity-from-contact-code contact-code callback)
+    (and config/encryption-enabled? (contact-code? contact-code))
+    (status/extract-identity-from-contact-code contact-code callback)
 
-  :else
-  {:db (assoc db
-              :contacts/new-identity
-              contact-code
+    :else
+    {:db (assoc db
+                :contacts/new-identity
+                contact-code
 
-              :contacts/new-identity-error
-              (db/validate-pub-key contact-code (:account/account db)))})
+                :contacts/new-identity-error
+                (db/validate-pub-key (:account/account db) contact-code))}))
 
 (defn add [contact-code {:keys [db]}]
   (when config/encryption-enabled?
