@@ -124,7 +124,9 @@
                                    :number diff
                                    :time-intervals name})))
 (defn seconds-ago [time]
-  (t/in-seconds (t/interval time (t/now))))
+  (if (t/before? time (t/now))
+    (t/in-seconds (t/interval time (t/now)))
+    (t/in-seconds (t/interval (t/now) time))))
 
 (defn time-ago [time]
   (let [diff (seconds-ago time)]
