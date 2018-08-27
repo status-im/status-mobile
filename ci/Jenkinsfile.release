@@ -134,7 +134,7 @@ timeout(90) {
       }
 
       stage('Upload apk for e2e tests') {
-        env.SAUCE_LABS_APK = 'im.status.ethereum-e2e-' + env.CHANGE_ID + '.apk'
+        env.SAUCE_LABS_APK = 'im.status.ethereum-e2e-' + shortCommit + '.apk'
         withCredentials([
           string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
           string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
