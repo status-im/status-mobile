@@ -24,7 +24,7 @@
 (defn to-utf8 [s]
   (try
     (.toUtf8 dependencies/Web3.prototype (str s))
-    (catch :default err 
+    (catch :default err
       (println "ERR" err)
       nil)))
 

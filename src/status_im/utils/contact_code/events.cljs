@@ -1,6 +1,8 @@
-(ns status-im.utils.x3dh
+(ns status-im.utils.contact-code.events
   (:require
    [re-frame.core :as re-frame]
+   status-im.utils.contact-code.subs
+   [status-im.utils.contact-code.model :as contact-code]
    [status-im.utils.handlers :as handlers]))
 
 (re-frame/reg-fx
@@ -10,17 +12,12 @@
              (if response
                (re-frame/dispatch [::created response])
                (re-frame/dispatch [::creation-failed])))]
-     #_(status/create-x3dh-bundle callback))))
+     (contact-code/create! callback))))
 
 (handlers/register-handler-fx
  ::created
  (fn [cofx [_ bundle]]
-   (println "BUNDLE CREATED" bundle)))
-
-(handlers/register-handler-fx
- ::creation-failed
- (fn [cofx _]
-   (println "BUNDLE FAILED")))
+   (contact-code/add bundle cofx)))
 
 (defn create-fx [_]
   {::create true})

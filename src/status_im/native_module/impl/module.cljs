@@ -62,9 +62,17 @@
   (when status
     (call-module #(.startNode status config))))
 
-(defn create-x3dh-bundle [callback]
+(defn create-contact-code [callback]
   (when status
-    (call-module #(.createX3DHBundle status callback))))
+    (call-module #(.createContactCode status callback))))
+
+(defn process-contact-code [contact-code callback]
+  (when status
+    (call-module #(.processContactCode status contact-code callback))))
+
+(defn extract-identity-from-contact-code [contact-code callback]
+  (when status
+    (call-module #(.extractIdentityFromContactCode status contact-code callback))))
 
 (defonce account-creation? (atom false))
 
