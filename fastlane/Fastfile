@@ -59,8 +59,6 @@ def build_ios_adhoc
         keychain_name: "login.keychain"
     )
 
-    workaround_realm_core_sync_issues
-
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -146,8 +144,6 @@ platform :ios do
         keychain_name: "login.keychain"
     )
 
-    workaround_realm_core_sync_issues
-
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -176,8 +172,6 @@ platform :ios do
         readonly: true,
         keychain_name: "login.keychain"
     )
-
-    workaround_realm_core_sync_issues
 
     build_ios_app(
         scheme: "StatusIm",
@@ -220,19 +214,6 @@ platform :ios do
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
     upload_to_diawi("status-adhoc/StatusIm.ipa")
-  end
-
-  desc "This fastlane step is a workaround!"
-  desc "every now and then Realm fails on iOS on the 'Download Core` step"
-  desc "the issue is because multiple downloads use the same temp dir"
-  desc "now we are replacing the original download script with another"
-  desc "that generates a random folder for each run"
-  lane :workaround_realm_core_sync_issues do
-      FileUtils.cp_r(
-          '../ci/download-realm.js',
-          '../node_modules/realm/scripts',
-          remove_destination: true
-      )
   end
 
   desc "This fastlane step cleans up XCode DerivedData folder"
