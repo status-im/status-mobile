@@ -15,8 +15,10 @@
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.dimensions :as dimensions]
+            status-im.ui.screens.accounts.events
             status-im.utils.universal-links.events
             status-im.init.events
+            status-im.node.events
             status-im.signals.events
             status-im.web3.events
             status-im.notifications.events
@@ -137,7 +139,7 @@
   (let [{:transport/keys [chats]} db]
     (handlers-macro/merge-fx cofx
                              {:dispatch [:init/initialize-keychain]
-                              :clear-user-password [(get-in db [:account/account :address])]}
+                              :clear-user-password (get-in db [:account/account :address])}
                              (navigation/navigate-to-clean nil)
                              (transport/stop-whisper))))
 
