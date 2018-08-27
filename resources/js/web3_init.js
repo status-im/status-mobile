@@ -20,8 +20,9 @@ WebViewBridge.onMessage = function (message) {
         }
         else
         {
-            window.STATUS_API = data.data;
-            window.postMessage({ type: 'STATUS_API_SUCCESS', permissions: data.keys }, "*");
+            window.dispatchEvent(new CustomEvent('statusapi', { detail: { permissions: data.keys,
+                                                                          data:        data.data
+                                                                        } }));
         }
     }
 

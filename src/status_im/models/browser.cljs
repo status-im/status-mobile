@@ -78,14 +78,17 @@
           {:db (assoc-in db [:browser/options :show-permission] {:requested-permission requested-permission
                                                                  :params               params})})
         {:dispatch [:next-dapp-permission params]}))
-    (assoc (update-dapp-permissions-fx cofx {:dapp        dapp-name
-                                             :permissions (vec (set (concat (keys permissions-allowed)
-                                                                            user-permissions)))})
-           :send-to-bridge-fx [{:type constants/status-api-success
-                                :data permissions-allowed
-                                :keys (keys permissions-allowed)}
-                               (:webview-bridge db)]
-           :dispatch [:check-permissions-queue])))
+    (cond-> (update-dapp-permissions-fx cofx {:dapp        dapp-name
+                                              :permissions (vec (set (concat (keys permissions-allowed)
+                                                                             user-permissions)))})
+      (not (zero? (count permissions-allowed)))
+      (assoc :send-to-bridge-fx [{:type constants/status-api-success
+                                  :data permissions-allowed
+                                  :keys (keys permissions-allowed)}
+                                 (:webview-bridge db)])
+
+      true
+      (assoc :dispatch [:check-permissions-queue]))))
 
 (defn next-permission [{:keys [params permission permissions-data]} cofx]
   (request-permission
