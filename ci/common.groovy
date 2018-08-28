@@ -3,12 +3,14 @@ def version() {
 }
 
 def buildBranch(name = null, buildType = params.BUILD_TYPE) {
+  /* need to drop origin/ to match definitions of child jobs */
+  def branchName = env.GIT_BRANCH.replace('origin/', '')
   /* always pass the BRANCH and BUILD_TYPE params with current branch */
   return build(
     job: name,
     parameters: [
-      [name: 'BRANCH',     value: env.GIT_BRANCH, $class: 'StringParameterValue'],
-      [name: 'BUILD_TYPE', value: buildType,      $class: 'StringParameterValue'],
+      [name: 'BRANCH',     value: branchName, $class: 'StringParameterValue'],
+      [name: 'BUILD_TYPE', value: buildType,  $class: 'StringParameterValue'],
   ])
 }
 
