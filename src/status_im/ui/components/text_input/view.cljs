@@ -18,6 +18,8 @@
        :auto-focus             true
        :auto-capitalize        :none}
       (dissoc props :style :height)
+      ;; Workaround until `value` TextInput field is available on desktop:
+      ;; https://github.com/status-im/react-native-desktop/issues/320
       (when-not platform/desktop?
         {:value text}))]
     (when content content)]
