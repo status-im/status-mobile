@@ -53,7 +53,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                 webViewDebugEnabled = true;
             }
 
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, BuildConfig.LOG_LEVEL_STATUS_GO);
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),

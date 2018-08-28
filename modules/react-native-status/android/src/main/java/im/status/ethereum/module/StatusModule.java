@@ -47,17 +47,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ExecutorService executor = null;
     private boolean debug;
     private boolean devCluster;
-    private String logLevel;
     private ReactApplicationContext reactContext;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
         this.debug = debug;
         this.devCluster = devCluster;
-        this.logLevel = logLevel;
         this.reactContext = reactContext;
         reactContext.addLifecycleEventListener(this);
     }
@@ -154,48 +152,41 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private String generateConfig(final String dataDir, final int networkId, final String keystoreDir, final String fleet, final Object upstreamConfig) throws JSONException {
+        JSONObject jsonConfig = new JSONObject(
+            Statusgo.GenerateConfig(dataDir, fleet, networkId));
 
-            JSONObject jsonConfig = new JSONObject(
-                    Statusgo.GenerateConfig(dataDir, fleet, networkId));
+        jsonConfig.put("NetworkId", networkId);
+        jsonConfig.put("DataDir", dataDir);
+        jsonConfig.put("KeyStoreDir", keystoreDir);
 
-            jsonConfig.put("NetworkId", networkId);
-            jsonConfig.put("DataDir", dataDir);
-            jsonConfig.put("KeyStoreDir", keystoreDir);
+        if (upstreamConfig != null) {
+            Log.d(TAG, "UpstreamConfig is not null");
+            jsonConfig.put("UpstreamConfig", upstreamConfig);
+        }
 
-            if (upstreamConfig != null) {
-                Log.d(TAG, "UpstreamConfig is not null");
-                jsonConfig.put("UpstreamConfig", upstreamConfig);
-            }
+        final String gethLogFilePath = prepareLogsFile();
+        jsonConfig.put("LogFile", gethLogFilePath);
 
-            final String gethLogFilePath = TextUtils.isEmpty(this.logLevel) ? null : prepareLogsFile();
-            final boolean logsEnabled = (gethLogFilePath != null);
+        // Setting up whisper config
+        JSONObject whisperConfig = jsonConfig.optJSONObject("WhisperConfig");
+        if (whisperConfig == null) {
+            whisperConfig = new JSONObject();
+        }
+        whisperConfig.put("LightClient", true);
+        jsonConfig.put("WhisperConfig", whisperConfig);
 
-            jsonConfig.put("LogEnabled", logsEnabled);
-            jsonConfig.put("LogFile", gethLogFilePath);
-            jsonConfig.put("LogLevel", TextUtils.isEmpty(this.logLevel) ? "ERROR" : this.logLevel.toUpperCase());
+        // Setting up cluster config
+        JSONObject clusterConfig = jsonConfig.optJSONObject("ClusterConfig");
+        if (clusterConfig != null) {
+            Log.d(TAG, "ClusterConfig is not null");
+            clusterConfig.put("Fleet", fleet);
+            jsonConfig.put("ClusterConfig", clusterConfig);
+        } else {
+            Log.w(TAG, "ClusterConfig: Cannot find ClusterConfig: doesn't exist or not a JSON object");
+            Log.w(TAG, "ClusterConfig: Fleet will be set to defaults");
+        }
 
-
-            // Setting up whisper config
-            JSONObject whisperConfig = jsonConfig.optJSONObject("WhisperConfig");
-            if (whisperConfig == null) {
-                whisperConfig = new JSONObject();
-            }
-            whisperConfig.put("LightClient", true);
-            jsonConfig.put("WhisperConfig", whisperConfig);
-
-
-            // Setting up cluster config
-            JSONObject clusterConfig = jsonConfig.optJSONObject("ClusterConfig");
-            if (clusterConfig != null) {
-                Log.d(TAG, "ClusterConfig is not null");
-                clusterConfig.put("Fleet", fleet);
-                jsonConfig.put("ClusterConfig", clusterConfig);
-            } else {
-                Log.w(TAG, "ClusterConfig: Cannot find ClusterConfig: doesn't exist or not a JSON object");
-                Log.w(TAG, "ClusterConfig: Fleet will be set to defaults");
-            }
-
-            return jsonConfig.toString();
+        return jsonConfig.toString();
     }
 
 

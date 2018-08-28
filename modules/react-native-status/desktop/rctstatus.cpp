@@ -108,10 +108,8 @@ void RCTStatus::startNode(QString configString, QString fleet) {
     qDebug() << " RCTStatus::startNode GenerateConfig configString: " << jsonDoc.toVariant().toMap();
     QVariantMap generatedConfig = jsonDoc.toVariant().toMap();
     generatedConfig["KeyStoreDir"] = keyStoreDir;
-    generatedConfig["LogEnabled"] = true;
     generatedConfig["LogFile"] = networkDir + "/geth.log";
     generatedConfig["ClusterConfig.Fleet"] = fleet;
-    //generatedConfig["LogLevel"] = "DEBUG";
 
     const char* result = StartNode(QString(QJsonDocument::fromVariant(generatedConfig).toJson(QJsonDocument::Compact)).toUtf8().data());
     qDebug() << "RCTStatus::startNode StartNode result: " << result;
