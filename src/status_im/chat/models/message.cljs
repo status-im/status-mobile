@@ -18,7 +18,6 @@
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.ui.screens.currency-settings.subs :as currency-settings]
             [status-im.utils.datetime :as datetime]
             [clojure.string :as string]))
 

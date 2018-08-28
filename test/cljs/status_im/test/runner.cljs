@@ -50,6 +50,7 @@
             [status-im.test.init.core]
             [status-im.test.ui.screens.accounts.login.models]
             [status-im.test.ui.screens.accounts.recover.models]
+            [status-im.test.ui.screens.currency-settings.models]
             [status-im.test.ui.screens.wallet.db]))
 
 (enable-console-print!)
@@ -110,5 +111,6 @@
  'status-im.test.utils.http
  'status-im.test.ui.screens.accounts.login.models
  'status-im.test.ui.screens.accounts.recover.models
+ 'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db
  'status-im.test.browser.events)

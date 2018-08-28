@@ -21,6 +21,7 @@
             [status-im.utils.money :as money]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
+            [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
             [status-im.models.transactions :as wallet.transactions]
             [status-im.ui.screens.navigation :as navigation]))
 
@@ -228,7 +229,7 @@
 (defn- inject-network-price-info [{:keys [amount asset] :as parameters} {:keys [db]}]
   (let [{:keys [chain prices]} db
         currency               (-> db
-                                   (get-in [:account/account :settings :wallet :currency] :usd)
+                                   currency-settings.subs/get-currency
                                    name
                                    string/upper-case)]
     (assoc parameters
