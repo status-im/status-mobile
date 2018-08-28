@@ -108,7 +108,7 @@
                                   (update-in [:chats chat-id :messages] assoc message-id prepared-message)
                                   ;; this will increase last-clock-value twice when sending our own messages
                                   (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
-                               (not current-chat?)
+                               true
                                (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
               :data-store/tx [(messages-store/save-message-tx prepared-message)]}]
       (if batch?

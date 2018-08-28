@@ -22,7 +22,10 @@
        :Animated           #js {:View #js {}
                                 :Text #js {}}
        :DeviceEventEmitter #js {:addListener (fn [])}
+       :AsyncStorage       #js {:getItem (fn [a])
+                                :setItem (fn [a b])}
        :Dimensions         #js {:get  (fn [])}})
+(def async-storage         (.-AsyncStorage react-native))
 (def realm                  #js {:schemaVersion (fn [])
                                  :defaultPath   "/tmp/realm"
                                  :close         (fn [])})

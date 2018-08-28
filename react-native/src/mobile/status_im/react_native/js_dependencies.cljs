@@ -6,6 +6,8 @@
 (def keychain               (js/require "react-native-keychain"))
 (def qr-code                (js/require "react-native-qrcode"))
 (def react-native           (js/require "react-native"))
+(def async-storage          (.-AsyncStorage react-native))
+(def interaction-manager    (.-InteractionManager react-native))
 (def realm                  (js/require "realm"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def secure-random          (.-generateSecureRandom (js/require "react-native-securerandom")))

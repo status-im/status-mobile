@@ -5,6 +5,7 @@
             status-im.protocol.handlers
             [status-im.models.protocol :as models.protocol]
             [status-im.models.account :as models.account]
+            [status-im.models.chat :as models.chat]
             [status-im.ui.screens.accounts.models :as accounts.models]
             status-im.ui.screens.accounts.login.events
             [status-im.ui.screens.accounts.login.models :as login]
@@ -153,6 +154,7 @@
     (handlers-macro/merge-fx cofx
                              {:dispatch [:init/initialize-keychain]
                               :clear-user-password (get-in db [:account/account :address])}
+                             (models.chat/persist-chat-ui-props)
                              (navigation/navigate-to-clean nil)
                              (transport/stop-whisper))))
 
@@ -166,6 +168,7 @@
     (handlers-macro/merge-fx cofx
                              {::app-state-change-fx state
                               :db                   (assoc db :app-state state)}
+                             (models.chat/persist-chat-ui-props state)
                              (inbox/request-messages app-coming-from-background?))))
 
 (handlers/register-handler-fx

@@ -189,7 +189,7 @@
   {:flex-direction   :row
    :align-items      :center
    :height           36
-   :background-color :white
+   :background-color colors/white
    :justify-content  :space-between})
 
 (def add-contact-left
@@ -210,6 +210,32 @@
 
 (def add-contact-close-icon
   {:margin-right 12})
+
+(defn scroll-to-bottom-button [have-unreads? many-messages?]
+  {:width            (if have-unreads?
+                       (if many-messages? 76 58)
+                       36)
+   :height           36
+   :background-color colors/blue
+   :justify-content  :center
+   :border-radius    20
+   :position         :absolute
+   :bottom           80
+   :right            30})
+
+(def scroll-to-bottom-button-inner
+  {:align-items     :center
+   :justify-content :center
+   :flex-direction  :row})
+
+(def scroll-to-bottom-button-text
+  {:font-size    15
+   :padding-left 4
+   :color        colors/white})
+
+(defn scroll-to-bottom-button-icon [have-unreads?]
+  (when have-unreads?
+    {:padding-left 2}))
 
 (defstyle actions-list-view
   {:ios {:border-bottom-color component.styles/color-gray3

@@ -18,6 +18,7 @@
             [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.message.message :as message]
             [status-im.chat.views.toolbar-content :as toolbar-content]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-selection :as list-selection]
@@ -27,7 +28,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.utils :as utils]))
 
 (defview add-contact-bar [contact-identity]
   (letsubs [{:keys [hide-contact?] :as contact} [:get-contact-by-identity contact-identity]]
@@ -50,6 +52,27 @@
 (defn- on-options [chat-id chat-name group-chat? public?]
   (list-selection/show {:title   chat-name
                         :options (actions/actions group-chat? chat-id public?)}))
+
+(defview scroll-to-bottom-button [chat-id list-ref]
+  (letsubs [unread-count [:unviewed-messages-count chat-id]
+            offset [:get-current-chat-ui-prop :offset]]
+    (let [have-unreads? (pos? unread-count)
+          many-messages? (< 99 unread-count)]
+      (when (or have-unreads?
+                (< 100 offset))
+        [react/view (style/scroll-to-bottom-button have-unreads? many-messages?)
+         [react/touchable-highlight
+          {:on-press            (fn []
+                                  (when @list-ref
+                                    (.scrollToOffset @list-ref #js {:offset 0 :animated false})
+                                    (re-frame/dispatch [:chat-scroll-to-end])))
+           :accessibility-label :scroll-to-bottom-button}
+          [react/view style/scroll-to-bottom-button-inner
+           (when have-unreads?
+             [react/text {:style style/scroll-to-bottom-button-text}
+              (if many-messages? "100+" unread-count)])
+           [vector-icons/icon :icons/dropdown-down {:container-style (style/scroll-to-bottom-button-icon have-unreads?)
+                                                    :color           colors/white}]]]]))))
 
 (defview chat-toolbar [public?]
   (letsubs [name                                  [:get-current-chat-name]
@@ -125,30 +148,59 @@
           :else
           (i18n/label :t/empty-chat-description))]])))
 
-(defview messages-view [group-chat]
+(defview messages-list [messages group-chat list-ref]
+  (letsubs [current-public-key [:get-current-public-key]
+            offset [:get-current-chat-ui-prop :offset]]
+    {:should-component-update (constantly false)}
+    [list/flat-list {:data                      messages
+                     :style                     {:opacity 0}
+                     :ref                       #(reset! list-ref %)
+                     :key-fn                    #(or (:message-id %) (:value %))
+                     :render-fn                 (fn [message]
+                                                  [message-row {:group-chat         group-chat
+                                                                :current-public-key current-public-key
+                                                                :row                message}])
+                     :inverted                  true
+                     :on-scroll                 (fn [_]
+                                                  (when (zero? (.. @list-ref -props -style -opacity))
+                                                    (.runAfterInteractions js-dependencies/interaction-manager
+                                                                           #(.setNativeProps @list-ref #js {:opacity 1}))))
+                     :on-layout                 (fn [_]
+                                                  (utils/set-timeout
+                                                   #(.setNativeProps @list-ref #js {:opacity 1})
+                                                   1000))
+                     :on-content-size-change    (fn [_]
+                                                  (when (zero? (.. @list-ref -props -style -opacity))
+                                                    (.scrollToOffset @list-ref #js {:offset offset :animated false})))
+                     :onScrollEndDrag           (fn [e]
+                                                  (let [offset (.. e -nativeEvent -contentOffset -y)]
+                                                    (re-frame/dispatch [:set-chat-ui-props {:offset (max offset 0)}])
+                                                    (when (zero? offset)
+                                                      (re-frame/dispatch [:chat-scroll-to-end]))))
+                     :onMomentumScrollEnd       (fn [e]
+                                                  (let [offset (.. e -nativeEvent -contentOffset -y)]
+                                                    (re-frame/dispatch [:set-chat-ui-props {:offset (max offset 0)}])
+                                                    (when (zero? offset)
+                                                      (re-frame/dispatch [:chat-scroll-to-end]))))
+                     :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                     :enableEmptySections       true
+                     :keyboardShouldPersistTaps :handled}]))
+
+(defview messages-view [group-chat list-ref]
   (letsubs [messages           [:get-current-chat-messages-stream]
-            chat               [:get-current-chat]
-            current-public-key [:get-current-public-key]]
+            chat               [:get-current-chat]]
     {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
                                                                    :input-focused? false}])}
     (if (empty? messages)
       [empty-chat-container chat]
-      [list/flat-list {:data                      messages
-                       :key-fn                    #(or (:message-id %) (:value %))
-                       :render-fn                 (fn [message]
-                                                    [message-row {:group-chat         group-chat
-                                                                  :current-public-key current-public-key
-                                                                  :row                message}])
-                       :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps :handled}])))
+      [messages-list messages group-chat list-ref])))
 
 (defview chat []
-  (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
+  (letsubs [{:keys [group-chat public? input-text chat-id]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
             show-message-options? [:get-current-chat-ui-prop :show-message-options?]
-            current-view      [:get :view-id]]
+            current-view [:get :view-id]
+            list-ref (atom nil)]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
     [react/scroll-view {:scroll-enabled               false
@@ -161,10 +213,11 @@
       [chat-toolbar public?]
       (when (= :chat current-view)
         [messages-view-animation
-         [messages-view group-chat]])
+         [messages-view group-chat list-ref]])
       [input/container {:text-empty? (string/blank? input-text)}]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
       (when show-message-options?
         [message-options/view])
-      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
+      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]
+      [scroll-to-bottom-button chat-id list-ref]]]))

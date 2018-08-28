@@ -5,7 +5,8 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
 
@@ -69,7 +70,8 @@
     (handlers-macro/merge-fx cofx
                              {:db (assoc db
                                          :chats          chats
-                                         :contacts/dapps default-dapps)}
+                                         :contacts/dapps default-dapps)
+                              :load-chat-ui-props-fx db}
                              (group-chat-messages)
                              (add-default-contacts)
                              (commands/index-commands commands/register))))
@@ -94,3 +96,18 @@
                                  status))
                      db
                      updated-statuses)}))
+
+(defn persist-chat-ui-props
+  ([cofx]
+   (persist-chat-ui-props "background" cofx))
+  ([state {{:keys [chat-ui-props current-public-key]} :db}]
+   (when (#{"background" "inactive"} state)
+     (->> chat-ui-props
+          (reduce-kv
+           (fn [acc k v] (assoc acc k (dissoc v :input-ref)))
+           {})
+          clj->js
+          js/JSON.stringify
+          (.setItem js-dependencies/async-storage
+                    (str "@StatusIm:" current-public-key ":chat-ui-props")))
+     nil)))
