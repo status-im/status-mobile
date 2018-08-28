@@ -58,7 +58,6 @@
         [react/text {:style (styles/profile-actions-text colors/black)
                      :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
          (i18n/label :t/view-profile)])
-
       [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
        (i18n/label :t/clear-history)]
@@ -159,6 +158,7 @@
               (reset! chat-id* chat-id)
               (js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
       [react/view {:style styles/messages-view}
+       [connectivity/error-view]
        [react/scroll-view {:scrollEventThrottle    16
                            :headerHeight styles/messages-list-vertical-padding
                            :footerWidth styles/messages-list-vertical-padding
