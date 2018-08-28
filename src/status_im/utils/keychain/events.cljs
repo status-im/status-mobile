@@ -12,7 +12,7 @@
                                              (or error :invalid-key)]))))
 
 (re-frame/reg-fx
- :get-encryption-key
+ :keychain/get-encryption-key
  (fn [event]
    (when platform/desktop? (keychain/set-username))
    (.. (keychain/get-encryption-key)

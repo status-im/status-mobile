@@ -3,23 +3,31 @@
             status-im.network.events
             [status-im.transport.handlers :as transport.handlers]
             status-im.protocol.handlers
+            [status-im.models.protocol :as models.protocol]
+            [status-im.models.account :as models.account]
             [status-im.ui.screens.accounts.models :as accounts.models]
             status-im.ui.screens.accounts.login.events
             [status-im.ui.screens.accounts.login.models :as login]
             status-im.ui.screens.accounts.recover.events
-            [status-im.ui.screens.contacts.events :as contacts]
+            [status-im.models.contacts :as models.contacts]
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.dimensions :as dimensions]
+            status-im.ui.screens.accounts.events
             status-im.utils.universal-links.events
+            status-im.init.events
+            status-im.node.events
+            status-im.signals.events
+            status-im.web3.events
+            status-im.notifications.events
             status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
+            [status-im.models.wallet :as models.wallet]
             status-im.ui.screens.wallet.collectibles.events
             status-im.ui.screens.wallet.send.events
             status-im.ui.screens.wallet.settings.events
@@ -37,27 +45,14 @@
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
-            [status-im.constants :as constants]
-            [status-im.data-store.core :as data-store]
-            [status-im.data-store.realm.core :as realm]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.i18n :as i18n]
-            [status-im.js-dependencies :as dependencies]
-            [status-im.ui.components.react :as react]
             [status-im.transport.core :as transport]
             [status-im.transport.inbox :as inbox]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.datetime :as time]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.random :as random]
-            [status-im.utils.config :as config]
-            [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
-            [status-im.utils.instabug :as instabug]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
@@ -97,59 +92,15 @@
    (doseq [call calls]
      (http-get call))))
 
-;; Try to decrypt the database, move on if successful otherwise go back to
-;; initial state
-(re-frame/reg-fx
- ::init-store
- (fn [encryption-key]
-   (.. (data-store/init encryption-key)
-       (then #(re-frame/dispatch [:after-decryption]))
-       (catch (fn [error]
-                (log/warn "Could not decrypt database" error)
-                (re-frame/dispatch [:initialize-app encryption-key :decryption-failed]))))))
-
-(re-frame/reg-fx
- :initialize-geth-fx
- (fn [config]
-   (status/start-node (types/clj->json config) config/fleet)))
-
-(re-frame/reg-fx
- ::status-module-initialized-fx
- (fn [_]
-   (status/module-initialized!)))
-
 (re-frame/reg-fx
  :request-permissions-fx
  (fn [options]
    (permissions/request-permissions options)))
 
 (re-frame/reg-fx
- ::request-notifications-fx
- (fn [_]
-   (notifications/request-permissions)))
-
-(re-frame/reg-fx
- ::testfairy-alert
- (fn [_]
-   (when config/testfairy-enabled?
-     (utils/show-popup
-      (i18n/label :testfairy-title)
-      (i18n/label :testfairy-message)))))
-
-(re-frame/reg-fx
- ::init-device-UUID
- (fn []
-   (status/get-device-UUID #(re-frame/dispatch [:set :device-UUID %]))))
-
-(re-frame/reg-fx
- ::listen-to-window-dimensions-change
+ :ui/listen-to-window-dimensions-change
  (fn []
    (dimensions/add-event-listener)))
-
-(re-frame/reg-fx
- ::get-fcm-token-fx
- (fn [_]
-   (notifications/get-fcm-token)))
 
 (re-frame/reg-fx
  :show-error
@@ -183,259 +134,36 @@
  (fn [db [_ path v]]
    (assoc-in db path v)))
 
-(defn- reset-keychain []
-  (.. (keychain/reset)
-      (then
-       #(re-frame/dispatch [:initialize-keychain]))))
-
-(defn- handle-reset-data  []
-  (.. (realm/delete-realms)
-      (then reset-keychain)
-      (catch reset-keychain)))
-
-(defn handle-invalid-key-parameters [encryption-key]
-  {:title               (i18n/label :invalid-key-title)
-   :content             (i18n/label :invalid-key-content)
-   :confirm-button-text (i18n/label :invalid-key-confirm)
-   ;; On cancel we initialize the app with the invalid key, to allow the user
-   ;; to recover the seed phrase
-   :on-cancel           #(do
-                           (log/warn "initializing app with invalid key")
-                           (re-frame/dispatch [:initialize-app encryption-key]))
-   :on-accept           handle-reset-data})
-
-(defn handle-decryption-failed-parameters [encryption-key]
-  {:title               (i18n/label :decryption-failed-title)
-   :content             (i18n/label :decryption-failed-content)
-   :confirm-button-text (i18n/label :decryption-failed-confirm)
-   ;; On cancel we initialize the app with the same key, in case the error was
-   ;; not related/fs error
-   :on-cancel           #(do
-                           (log/warn "initializing app with same key after decryption failed")
-                           (re-frame/dispatch [:initialize-app encryption-key]))
-   :on-accept           handle-reset-data})
-
-(defn initialize-views [cofx]
-  (let [{{:accounts/keys [accounts] :as db} :db} cofx
-        {:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))
-        default-fx {:handle-initial-push-notification-fx db}]
-    (if (nil? address)
-      (handlers-macro/merge-fx cofx
-                               default-fx
-                               (navigation/navigate-to-clean :intro))
-      (handlers-macro/merge-fx cofx
-                               default-fx
-                               (login/open-login address photo-path name)))))
-
-(defn initialize-db
-  "Initialize db to the initial state"
-  [{{:universal-links/keys [url]
-     :push-notifications/keys [initial?]
-     :keys                 [status-module-initialized? status-node-started?
-                            network-status network peers-count peers-summary device-UUID]
-     :or                   {network (get app-db :network)}} :db}]
-  {:db          (assoc app-db
-                       :contacts/contacts {}
-                       :network-status network-status
-                       :peers-count (or peers-count 0)
-                       :peers-summary (or peers-summary [])
-                       :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                       :status-node-started? status-node-started?
-                       :network network
-                       :universal-links/url url
-                       :push-notifications/initial? initial?
-                       :device-UUID device-UUID)})
-
-;; Entrypoint, fetches the key from the keychain and initialize the app
-(handlers/register-handler-fx
- :initialize-keychain
- (fn [_ _]
-   {:get-encryption-key [:initialize-app]}))
-
-;; Check the key is valid, shows options if not, otherwise continues loading
-;; the database
-(handlers/register-handler-fx
- :initialize-app
- (fn [cofx [_ encryption-key error]]
-   (cond
-     (= :invalid-key error)
-     {:show-confirmation (handle-invalid-key-parameters encryption-key)}
-
-     (= :decryption-failed error)
-     {:show-confirmation (handle-decryption-failed-parameters encryption-key)}
-
-     :else
-     (handlers-macro/merge-fx cofx
-                              {::init-device-UUID                   nil
-                               ::init-store                         encryption-key
-                               ::listen-to-window-dimensions-change nil
-                               ::testfairy-alert                    nil}
-                              (initialize-db)))))
-
-;; DB has been decrypted, load accounts, initialize geth, etc
-(handlers/register-handler-fx
- :after-decryption
- [(re-frame/inject-cofx :data-store/get-all-accounts)]
- (fn [cofx _]
-   (handlers-macro/merge-fx cofx
-                            {:dispatch-n
-                             [[:listen-to-network-status]
-                              [:initialize-geth]]}
-                            (accounts.models/load-accounts)
-                            (initialize-views))))
+(defn logout
+  [{:keys [db] :as cofx}]
+  (let [{:transport/keys [chats]} db]
+    (handlers-macro/merge-fx cofx
+                             {:dispatch [:init/initialize-keychain]
+                              :clear-user-password (get-in db [:account/account :address])}
+                             (navigation/navigate-to-clean nil)
+                             (transport/stop-whisper))))
 
 (handlers/register-handler-fx
  :logout
- (fn [{:keys [db] :as cofx} _]
-   (let [{:transport/keys [chats]} db]
-     (handlers-macro/merge-fx cofx
-                              {:dispatch [:initialize-keychain]
-                               :clear-user-password [(get-in db [:account/account :address])]}
-                              (navigation/navigate-to-clean nil)
-                              (transport/stop-whisper)))))
+ (fn [cofx _]
+   (logout cofx)))
 
-(handlers/register-handler-db
- :initialize-account-db
- (fn [{:keys [accounts/accounts accounts/create contacts/contacts networks/networks
-              network network-status peers-count peers-summary view-id navigation-stack
-              status-module-initialized? status-node-started? device-UUID
-              push-notifications/initial? semaphores]
-       :or   [network (get app-db :network)]} [_ address]]
-   (let [console-contact (get contacts constants/console-chat-id)
-         current-account (accounts address)
-         account-network-id (get current-account :network network)
-         account-network (get-in current-account [:networks account-network-id])]
-     (cond-> (assoc app-db
-                    :current-public-key (:public-key current-account)
-                    :view-id view-id
-                    :navigation-stack navigation-stack
-                    :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                    :status-node-started? status-node-started?
-                    :accounts/create create
-                    :networks/networks networks
-                    :account/account current-account
-                    :network-status network-status
-                    :network network
-                    :chain (ethereum/network->chain-name account-network)
-                    :push-notifications/initial? initial?
-                    :peers-summary peers-summary
-                    :peers-count peers-count
-                    :device-UUID device-UUID
-                    :semaphores semaphores)
-       console-contact
-       (assoc :contacts/contacts {constants/console-chat-id console-contact})))))
-
-(handlers/register-handler-fx
- :initialize-account
- (fn [cofx [_ address events-after]]
-   {:dispatch-n (cond-> [[:initialize-account-db address]
-                         [:initialize-protocol address]
-                         [:fetch-web3-node-version]
-                         [:start-check-sync-state]
-                         [:load-contacts]
-                         [:initialize-chats]
-                         [:initialize-browsers]
-                         [:initialize-dapp-permissions]
-                         [:send-account-update-if-needed]
-                         [:process-pending-messages]
-                         [:update-wallet]
-                         [:update-transactions]
-                         (when platform/mobile? [:get-fcm-token])
-                         [:start-wallet-transactions-sync]
-                         [:update-sign-in-time]]
-                  (seq events-after) (into events-after))}))
-
-(handlers/register-handler-fx
- :initialize-geth
- (fn [{db :db} _]
-   (when-not (:status-node-started? db)
-     (let [default-networks (:networks/networks db)
-           default-network  (:network db)]
-       {:initialize-geth-fx (get-in default-networks [default-network :config])}))))
-
-(handlers/register-handler-fx
- :fetch-web3-node-version-callback
- (fn [{:keys [db]} [_ resp]]
-   (when-let [git-commit (nth (re-find #"-([0-9a-f]{7,})/" resp) 1)]
-     {:db (assoc db :web3-node-version git-commit)})))
-
-(handlers/register-handler-fx
- :fetch-web3-node-version
- (fn [{{:keys [web3] :as db} :db} _]
-   (.. web3 -version (getNode (fn [err resp]
-                                (when-not err
-                                  (re-frame/dispatch [:fetch-web3-node-version-callback resp])))))
-   nil))
-
-(handlers/register-handler-fx
- :get-fcm-token
- (fn [_ _]
-   {::get-fcm-token-fx nil}))
-
-(handlers/register-handler-fx
- :discovery/summary
- (fn [{:keys [db] :as cofx} [_ peers-summary]]
-   (let [previous-summary (:peers-summary db)
-         peers-count      (count peers-summary)]
-     (handlers-macro/merge-fx cofx
-                              {:db (assoc db
-                                          :peers-summary peers-summary
-                                          :peers-count peers-count)}
-                              (transport.handlers/resend-contact-messages previous-summary)
-                              (inbox/peers-summary-change-fx previous-summary)))))
-
-(handlers/register-handler-fx
- :signal-event
- (fn [_ [_ event-str]]
-   (log/debug :event-str event-str)
-   (instabug/log (str "Signal event: " event-str))
-   (let [{:keys [type event]} (types/json->clj event-str)
-         to-dispatch (case type
-                       "node.started"        [:status-node-started]
-                       "node.stopped"        [:status-node-stopped]
-                       "module.initialized"  [:status-module-initialized]
-                       "envelope.sent"       [:signals/envelope-status (:hash event) :sent]
-                       "envelope.expired"    [:signals/envelope-status (:hash event) :not-sent]
-                       "discovery.summary"   [:discovery/summary event]
-                       (log/debug "Event " type " not handled"))]
-     (when to-dispatch
-       {:dispatch to-dispatch}))))
-
-(handlers/register-handler-fx
- :status-module-initialized
- (fn [{:keys [db]} _]
-   {:db                            (assoc db :status-module-initialized? true)
-    ::status-module-initialized-fx nil}))
-
-(handlers/register-handler-fx
- :status-node-started
- (fn [{{:node/keys [after-start] :as db} :db} _]
-   (merge {:db (assoc db :status-node-started? true)}
-          (when after-start {:dispatch-n [after-start]}))))
-
-(handlers/register-handler-fx
- :status-node-stopped
- (fn [{{:node/keys [after-stop]} :db} _]
-   (when after-stop {:dispatch-n [after-stop]})))
+(defn app-state-change [state {:keys [db] :as cofx}]
+  (let [app-coming-from-background? (= state "active")]
+    (handlers-macro/merge-fx cofx
+                             {::app-state-change-fx state
+                              :db                   (assoc db :app-state state)}
+                             (inbox/request-messages app-coming-from-background?))))
 
 (handlers/register-handler-fx
  :app-state-change
- (fn [{:keys [db] :as cofx} [_ state]]
-   (let [app-coming-from-background? (= state "active")]
-     (handlers-macro/merge-fx cofx
-                              {::app-state-change-fx state
-                               :db                   (assoc db :app-state state)}
-                              (inbox/request-messages app-coming-from-background?)))))
+ (fn [cofx [_ state]]
+   (app-state-change state cofx)))
 
 (handlers/register-handler-fx
  :request-permissions
  (fn [_ [_ options]]
    {:request-permissions-fx options}))
-
-(handlers/register-handler-fx
- :request-notifications
- (fn [_ _]
-   {::request-notifications-fx {}}))
 
 (handlers/register-handler-db
  :set-swipe-position

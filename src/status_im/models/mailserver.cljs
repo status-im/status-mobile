@@ -1,10 +1,9 @@
 (ns status-im.models.mailserver
-  (:require
-   [clojure.string :as string]
-   [status-im.utils.handlers-macro :as handlers-macro]
-   [status-im.utils.ethereum.core :as ethereum]
-   [status-im.models.network :as models.network]
-   [status-im.data-store.mailservers :as data-store.mailservers]))
+  (:require [clojure.string :as string]
+            [status-im.data-store.mailservers :as data-store.mailservers]
+            [status-im.models.network :as models.network]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (def enode-address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 (def enode-url-regex #"enode://[a-zA-Z0-9]+:(.+)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")

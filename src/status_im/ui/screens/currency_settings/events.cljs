@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.currency-settings.events
-  (:require [status-im.ui.screens.accounts.models :as accounts.models]
+  (:require [status-im.models.wallet :as wallet]
+            [status-im.ui.screens.accounts.models :as accounts.models]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.wallet.events :as wallet.events]))
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (handlers/register-handler-fx
  :wallet.settings/set-currency
@@ -11,4 +11,4 @@
          new-settings (assoc-in settings [:wallet :currency] currency)]
      (handlers-macro/merge-fx cofx
                               (accounts.models/update-settings new-settings)
-                              (wallet.events/update-wallet)))))
+                              (wallet/update-wallet)))))

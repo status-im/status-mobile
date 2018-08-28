@@ -1,8 +1,10 @@
-(ns status-im.protocol.models
+(ns status-im.models.protocol
   (:require [status-im.constants :as constants]
-            [status-im.utils.semaphores :as semaphores]
+            [status-im.transport.core :as transport]
+            [status-im.transport.inbox :as transport.inbox]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.semaphores :as semaphores]))
 
 (defn update-sync-state
   [{:keys [sync-state sync-data] :as db} error sync]
@@ -27,7 +29,7 @@
 (defn check-sync-state
   [{{:keys [web3] :as db} :db :as cofx}]
   (if (:account/account db)
-    {::web3-get-syncing web3
+    {:web3/get-syncing web3
      :dispatch-later    [{:ms 10000 :dispatch [:check-sync-state]}]}
     (semaphores/free :check-sync-state? cofx)))
 
@@ -38,3 +40,17 @@
     (handlers-macro/merge-fx cofx
                              {:dispatch [:check-sync-state]}
                              (semaphores/lock :check-sync-state?))))
+
+(defn initialize-protocol
+  [address {:data-store/keys [transport mailservers] :keys [db web3] :as cofx}]
+  (let [network (get-in db [:account/account :network])
+        network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
+    (handlers-macro/merge-fx cofx
+                             {:db                              (assoc db
+                                                                      :rpc-url constants/ethereum-rpc-url
+                                                                      :transport/chats transport)
+                              :protocol/assert-correct-network {:web3 web3
+                                                                :network-id network-id}}
+                             (start-check-sync-state)
+                             (transport.inbox/initialize-offline-inbox mailservers)
+                             (transport/init-whisper address))))

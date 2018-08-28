@@ -7,9 +7,13 @@
    [status-im.models.account :as models.account]
    [status-im.ui.components.list-selection :as list-selection]
    [status-im.ui.components.react  :as react]
+   [status-im.utils.handlers-macro :as handlers-macro]
    [cljs.spec.alpha :as spec]
    [status-im.ui.screens.navigation :as navigation]
    [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]))
+
+;; TODO(yenda) investigate why `handle-universal-link` event is
+;; dispatched 7 times for the same link
 
 (def public-chat-regex #".*/chat/public/(.*)$")
 (def profile-regex #".*/user/(.*)$")
@@ -49,28 +53,12 @@
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
 
-(defn stored-url-event
-  "Return an event description for processing a url if in the database"
-  [{:keys [db]}]
-  (when-let [url (:universal-links/url db)]
-    [:handle-universal-link url]))
-
 (defn dispatch-url
   "Dispatch url so we can get access to re-frame/db"
   [url]
   (if-not (nil? url)
     (re-frame/dispatch [:handle-universal-link url])
     (log/debug "universal-links: no url")))
-
-(defn store-url-for-later
-  "Store the url in the db to be processed on login"
-  [url {:keys [db]}]
-  (assoc-in {:db db} [:db :universal-links/url] url))
-
-(defn clear-url
-  "Remove a url from the db"
-  [{:keys [db]}]
-  (update {:db db} :db dissoc :universal-links/url))
 
 (defn route-url
   "Match a url against a list of routes and handle accordingly"
@@ -87,15 +75,28 @@
 
     :else (handle-not-found url)))
 
+(defn store-url-for-later
+  "Store the url in the db to be processed on login"
+  [url {:keys [db]}]
+  (log/info :store-url-for-later)
+  {:db (assoc db :universal-links/url url)})
+
 (defn handle-url
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
   [url cofx]
-  (if (models.account/logged-in? cofx)
-    (do
-      (clear-url cofx)
-      (route-url url cofx))
-    (store-url-for-later url cofx)))
+  (when config/universal-links-enabled?
+    (if (models.account/logged-in? cofx)
+      (route-url url cofx)
+      (store-url-for-later url cofx))))
+
+(defn process-stored-event
+  "Return an event description for processing a url if in the database"
+  [{:keys [db] :as cofx}]
+  (when-let [url (:universal-links/url db)]
+    (handlers-macro/merge-fx cofx
+                             {:db (dissoc db :universal-links/url)}
+                             (handle-url url))))
 
 (defn unwrap-js-url [e]
   (-> e

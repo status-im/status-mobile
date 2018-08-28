@@ -12,7 +12,7 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.money :as money]
-            [status-im.utils.notifications :as notifications]
+            [status-im.notifications.core :as notifications]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.protocol :as protocol]
@@ -142,10 +142,10 @@
           current-chat-id (get-in cofx [:db :current-chat-id])]
       (when-not (and (= :chat view-id)
                      (= current-chat-id chat-id))
-        {:display-notification-fx {:title (i18n/label :notifications-new-message-title)
-                                   :body  (i18n/label :notifications-new-message-body)
-                                   :to    chat-id
-                                   :from  from}}))))
+        {:notifications/display-notification {:title (i18n/label :notifications-new-message-title)
+                                              :body  (i18n/label :notifications-new-message-body)
+                                              :to    chat-id
+                                              :from  from}}))))
 
 (defn- add-received-message
   [batch?

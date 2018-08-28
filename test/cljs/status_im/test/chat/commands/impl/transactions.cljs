@@ -43,7 +43,7 @@
 
 (def personal-request-command (transactions/PersonalRequestCommand.))
 
-(deftest personal-send-command-test
+(deftest personal-request-command-test
   (testing "That correct parameters are defined"
     (is (= (into #{} (map :id) (protocol/parameters personal-request-command))
            #{:asset :amount})))
@@ -72,4 +72,3 @@
               :message-id "0xAA"
               :response   "send"
               :status     "open"})))))
-

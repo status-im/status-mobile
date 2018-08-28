@@ -83,8 +83,7 @@
 
     (handlers-macro/merge-fx cofx
                              {:db (assoc-in db [:accounts/recover :processing?] false)}
-                             (accounts.models/on-account-created account password true)
-                             (login.models/open-login (:address account) (:photo-path account) (:name account)))))
+                             (accounts.models/on-account-created account password true))))
 
 (defn recover-account [{:keys [db]}]
   (let [{:keys [password passphrase]} (:accounts/recover db)]

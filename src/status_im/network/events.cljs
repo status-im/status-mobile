@@ -7,7 +7,7 @@
             [status-im.transport.inbox :as inbox]))
 
 (re-frame/reg-fx
- ::listen-to-network-status
+ :network/listen-to-network-status
  (fn [[connection-listener net-info-listener]]
    (net-info/is-connected? connection-listener)
    (net-info/net-info net-info-listener)
@@ -20,22 +20,14 @@
    (status/connection-change data)))
 
 (handlers/register-handler-fx
- :listen-to-network-status
- (fn []
-   {::listen-to-network-status [#(re-frame/dispatch [::update-connection-status %])
-                                #(re-frame/dispatch [::update-network-status %])]}))
-
-(handlers/register-handler-fx
- ::update-connection-status
- [re-frame/trim-v]
- (fn [{db :db :as cofx} [is-connected?]]
+ :network/update-connection-status
+ (fn [{db :db :as cofx} [_ is-connected?]]
    (handlers-macro/merge-fx
     cofx
     {:db (assoc db :network-status (if is-connected? :online :offline))}
     (inbox/request-messages))))
 
 (handlers/register-handler-fx
- ::update-network-status
- [re-frame/trim-v]
- (fn [_ [data]]
+ :network/update-network-status
+ (fn [_ [_ data]]
    {::notify-status-go data}))

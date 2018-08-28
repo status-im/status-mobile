@@ -16,7 +16,6 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.data-store.core :as data-store]
             [status-im.models.mailserver :as models.mailserver]
-            [status-im.ui.screens.accounts.events :as accounts]
             [status-im.data-store.transport :as transport-store]))
 
 ;; How does offline inboxing work ?
