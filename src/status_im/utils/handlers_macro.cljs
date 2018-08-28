@@ -1,5 +1,6 @@
 (ns status-im.utils.handlers-macro
-  (:require-macros status-im.utils.handlers-macro)
+  (:require-macros status-im.utils.handlers-macro
+                   [taoensso.timbre :as log])
   (:require [clojure.set :as set]))
 
 (defn update-db [cofx fx]
@@ -10,7 +11,7 @@
 (def ^:private mergable-keys
   #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
     :shh/add-new-sym-keys :shh/get-new-sym-keys :shh/post
-    :confirm-messages-processed})
+    :confirm-messages-processed :utils/dispatch-later})
 
 (defn safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
@@ -23,7 +24,8 @@
                (merge-with into
                            (select-keys fx mergable-keys)
                            (select-keys new-fx mergable-keys)))
-        {:merging-fx-with-common-keys common-keys}))))
+        (do (log/error "Merging fx with common-keys: " common-keys)
+            {:merging-fx-with-common-keys common-keys})))))
 
 (defn merge-effects
   ([{:keys [db] :as cofx} handler args]

@@ -1,9 +1,7 @@
 (ns status-im.models.bootnode
-  (:require
-   [clojure.string :as string]
-   [status-im.ui.screens.accounts.utils :as accounts.utils]
-   [status-im.utils.handlers-macro :as handlers-macro]
-   [status-im.utils.ethereum.core :as ethereum]))
+  (:require [clojure.string :as string]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (def address-regex #"enode://[a-zA-Z0-9]+:?(.*)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 
