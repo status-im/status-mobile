@@ -77,5 +77,6 @@
   (if password
     (handlers-macro/merge-fx cofx
                              {:db (assoc-in db [:accounts/login :password] password)}
+                             (navigation/navigate-to-cofx :progress nil)
                              (user-login))
     (navigation/navigate-to-cofx :login nil cofx)))

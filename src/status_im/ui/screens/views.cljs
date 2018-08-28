@@ -11,6 +11,8 @@
             [status-im.ui.screens.accounts.recover.views :refer [recover]]
             [status-im.ui.screens.accounts.views :refer [accounts]]
 
+            [status-im.ui.screens.progress.views :refer [progress]]
+
             [status-im.chat.screen :refer [chat]]
             [status-im.ui.screens.add-new.views :refer [add-new]]
             [status-im.ui.screens.add-new.new-chat.views :refer [new-chat]]
@@ -87,6 +89,7 @@
     :profile-photo-capture profile-photo-capture
     :accounts accounts
     :login login
+    :progress progress
     :recover recover
     :network-settings network-settings
     :extensions-settings extensions-settings
