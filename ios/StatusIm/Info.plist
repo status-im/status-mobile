@@ -60,15 +60,17 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>We need to access your camera</string>
+	<string>Camera access is required to be able to scan QR codes.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need to access your contacts</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Need microphone access for Instabug and Audio Messages</string>
+	<string>Microphone access is required for Instabug and Audio Messages</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need to access your photo storage to give you an ability to select photos</string>
+	<string>Photos access it required to give you ability to choose custom profile pictures.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>RobotoMono-Medium.ttf</string>
