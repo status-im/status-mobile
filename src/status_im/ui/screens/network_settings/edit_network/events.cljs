@@ -6,8 +6,11 @@
 (handlers/register-handler-fx
  :save-new-network
  [(re-frame/inject-cofx :random-id)]
- (fn [cofx _]
-   (models.network/save cofx)))
+ (fn [cofx]
+   (models.network/save cofx
+                        {:data       (get-in cofx [:db :network/manage])
+                         :on-success (fn []
+                                       {:dispatch [:navigate-back]})})))
 
 (handlers/register-handler-fx
  :network-set-input
@@ -16,5 +19,5 @@
 
 (handlers/register-handler-fx
  :edit-network
- (fn [cofx _]
+ (fn [cofx]
    (models.network/edit cofx)))

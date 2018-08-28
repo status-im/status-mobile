@@ -31,7 +31,7 @@
     (is (model/valid-rpc-url? "https://valid.something.else:65323"))))
 
 (deftest new-network-test
-  (let [actual (model/new-network {:random-id "random-id"}
+  (let [actual (model/new-network "random-id"
                                   "network-name"
                                   "upstream-url"
                                   :mainnet
@@ -45,7 +45,7 @@
            actual))))
 
 (deftest new-network-id-test
-  (let [actual (model/new-network {:random-id "random-id"}
+  (let [actual (model/new-network "random-id"
                                   "network-name"
                                   "upstream-url"
                                   :mainnet

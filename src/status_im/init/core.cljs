@@ -7,6 +7,7 @@
             [status-im.models.browser :as browser]
             [status-im.models.chat :as chat]
             [status-im.models.contacts :as models.contacts]
+            [status-im.models.dev-server :as models.dev-server]
             [status-im.models.protocol :as models.protocol]
             [status-im.models.transactions :as transactions]
             [status-im.models.wallet :as models.wallet]
@@ -167,6 +168,7 @@
                            (initialize-account-db address)
                            (models.protocol/initialize-protocol address)
                            (models.contacts/load-contacts)
+                           (models.dev-server/start-if-needed)
                            (chat/initialize-chats)
                            (chat/process-pending-messages)
                            (browser/initialize-browsers)
