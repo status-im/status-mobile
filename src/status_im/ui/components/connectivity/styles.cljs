@@ -7,13 +7,17 @@
   (cond->
    {:opacity          opacity
     :background-color colors/gray-notifications
-    :height           35}
+    :height           35
+    :position         :absolute}
+    platform/desktop?
+    (assoc
+     :left             0
+     :right            0)
     (not platform/desktop?)
     (assoc
      :ios              {:z-index 0}
      :width            window-width
-     :top              (+ (+ 56 top) (if pending? 35 0))
-     :position         :absolute)))
+     :top              (+ (+ 56 top) (if pending? 35 0)))))
 
 (def text
   {:text-align :center
