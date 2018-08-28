@@ -22,9 +22,7 @@
 
 (defn add-filter!
   [web3 {:keys [topics to] :as options} callback]
-  (let [options  (if config/offline-inbox-enabled?
-                   (assoc options :allowP2P true)
-                   options)]
+  (let [options  (assoc options :allowP2P true)]
     (log/debug :add-filter options)
     (add-shh-filter! web3 options callback)))
 

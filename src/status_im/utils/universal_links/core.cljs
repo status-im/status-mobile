@@ -85,10 +85,9 @@
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
   [url cofx]
-  (when config/universal-links-enabled?
-    (if (models.account/logged-in? cofx)
-      (route-url url cofx)
-      (store-url-for-later url cofx))))
+  (if (models.account/logged-in? cofx)
+    (route-url url cofx)
+    (store-url-for-later url cofx)))
 
 (defn process-stored-event
   "Return an event description for processing a url if in the database"
@@ -110,18 +109,16 @@
   "Add an event listener for handling background->foreground transition
   and handles incoming url if the app has been started by clicking on a link"
   []
-  (when config/universal-links-enabled?
-    (log/debug "universal-links: initializing")
-    (.. react/linking
-        (getInitialURL)
-        (then dispatch-url))
-    (.. react/linking
-        (addEventListener "url" url-event-listener))))
+  (log/debug "universal-links: initializing")
+  (.. react/linking
+      (getInitialURL)
+      (then dispatch-url))
+  (.. react/linking
+      (addEventListener "url" url-event-listener)))
 
 (defn finalize
   "Remove event listener for url"
   []
-  (when config/universal-links-enabled?
-    (log/debug "universal-links: finalizing")
-    (.. react/linking
-        (removeEventListener "url" url-event-listener))))
+  (log/debug "universal-links: finalizing")
+  (.. react/linking
+      (removeEventListener "url" url-event-listener)))

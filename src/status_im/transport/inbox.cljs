@@ -185,25 +185,23 @@
         {:keys [address] :as wnode} (models.mailserver/fetch-current cofx)
         peers-summary               (:peers-summary db)
         connected?                  (registered-peer? peers-summary address)]
-    (when config/offline-inbox-enabled?
-      (if connected?
-        (handlers-macro/merge-fx cofx
-                                 (update-mailserver-status :connected)
-                                 (generate-mailserver-symkey wnode))
-        (handlers-macro/merge-fx cofx
-                                 {::add-peer {:wnode address}
-                                  :utils/dispatch-later [{:ms connection-timeout
-                                                          :dispatch [:inbox/check-connection]}]}
-                                 (update-mailserver-status :connecting)
-                                 (generate-mailserver-symkey wnode))))))
+    (if connected?
+      (handlers-macro/merge-fx cofx
+                               (update-mailserver-status :connected)
+                               (generate-mailserver-symkey wnode))
+      (handlers-macro/merge-fx cofx
+                               {::add-peer {:wnode address}
+                                :utils/dispatch-later [{:ms connection-timeout
+                                                        :dispatch [:inbox/check-connection]}]}
+                               (update-mailserver-status :connecting)
+                               (generate-mailserver-symkey wnode)))))
 
 (defn peers-summary-change-fx
   "There is only 2 summary changes that require offline inboxing action:
   - mailserver disconnected: we try to reconnect
   - mailserver connected: we mark the mailserver as trusted peer"
   [previous-summary {:keys [db] :as cofx}]
-  (when (and (:account/account db)
-             config/offline-inbox-enabled?)
+  (when (:account/account db)
     (let [{:keys [peers-summary peers-count]} db
           wnode                               (:address (models.mailserver/fetch-current cofx))
           mailserver-was-registered?          (registered-peer? previous-summary

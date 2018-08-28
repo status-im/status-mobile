@@ -48,9 +48,8 @@
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/offline-messaging-settings)]
-      (when config/add-custom-mailservers-enabled?
-        [toolbar/actions
-         [(toolbar.actions/add false (partial navigate-to-add-mailserver nil))]])]
+      [toolbar/actions
+       [(toolbar.actions/add false (partial navigate-to-add-mailserver nil))]]]
      [react/view styles/wrapper
       [list/flat-list {:data               (vals wnodes)
                        :default-separator? false

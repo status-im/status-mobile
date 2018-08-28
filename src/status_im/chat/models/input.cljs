@@ -118,9 +118,7 @@
                                  chat/cooldowns
                                  chat/spam-messages-frequency
                                  current-chat-id] :as db} :db :as cofx}]
-  (when (and
-         config/spam-button-detection-enabled?
-         (chat-model/public-chat? current-chat-id cofx))
+  (when (chat-model/public-chat? current-chat-id cofx)
     (let [spamming-fast? (< (- (datetime/timestamp) last-outgoing-message-sent-at)
                             (+ const/spam-interval-ms (* 1000 cooldowns)))
           spamming-frequently? (= const/spam-message-frequency-threshold spam-messages-frequency)]

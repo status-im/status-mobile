@@ -36,8 +36,7 @@
             :chat/cooldowns               0
             :chat/spam-messages-frequency 0
             :chat/cooldown-enabled?       false}]
-    (with-redefs [datetime/timestamp (constantly 1527675198542)
-                  config/spam-button-detection-enabled? true]
+    (with-redefs [datetime/timestamp (constantly 1527675198542)]
       (testing "no spamming detected"
         (let [expected {:db (assoc db :chat/last-outgoing-message-sent-at 1527675198542)}
               actual (input/process-cooldown {:db db})]
