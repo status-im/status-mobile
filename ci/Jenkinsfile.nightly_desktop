@@ -152,17 +152,25 @@ parallel(
 
           stage('Create MacOS Bundle') {
             dir(packageFolder) {
-              sh 'curl -L -O "https://github.com/status-im/StatusAppFiles/raw/master/StatusIm.app.zip"'
+              sh 'curl -L -O "https://github.com/gnl/StatusAppFiles/raw/master/StatusIm.app.zip"'
               sh 'unzip StatusIm.app.zip'
-              sh 'cp -r assets/share/assets StatusIm.app/Contents/MacOs'
-              sh 'chmod +x StatusIm.app/Contents/MacOs/ubuntu-server'
-              sh 'cp ../desktop/bin/StatusIm StatusIm.app/Contents/MacOs'
+              sh 'cp -r assets/share/assets StatusIm.app/Contents/Resources'
+              sh 'ln -sf ../Resources/assets ../Resources/ubuntu-server ../Resources/node_modules ' +
+                      'StatusIm.app/Contents/MacOS'
+              sh 'chmod +x StatusIm.app/Contents/Resources/ubuntu-server'
+              sh 'cp ../desktop/bin/StatusIm StatusIm.app/Contents/MacOS'
+              sh 'cp ../desktop/reportApp/reportApp StatusIm.app/Contents/MacOS'
+              sh 'cp -f ../deployment/macos/qt-reportApp.conf StatusIm.app/Contents/Resources'
+              sh 'ln -sf ../Resources/qt-reportApp.conf StatusIm.app/Contents/MacOS/qt.conf'
+              sh 'install_name_tool -add_rpath "@executable_path/../Frameworks" ' +
+                      '-delete_rpath "/Users/administrator/qt/5.9.1/clang_64/lib" ' +
+                      'StatusIm.app/Contents/MacOS/reportApp'
               sh 'cp -f ../deployment/macos/Info.plist StatusIm.app/Contents'
               sh """
                 macdeployqt StatusIm.app -verbose=1 -dmg \\
                   -qmldir='${workspace}/node_modules/react-native/ReactQt/runtime/src/qml/'
               """
-              sh 'rm -fr StatusAppFiles'
+              sh 'rm -f StatusIm.app.zip'
               dmg_file = "StatusIm-${commit}.dmg"
               sh "mv StatusIm.dmg ${dmg_file}"
             }
