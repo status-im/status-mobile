@@ -62,7 +62,7 @@ pipeline {
       steps { script {
         slackSend(
           message: (
-            (CHANGE_ID != null ?
+            (env.CHANGE_ID != null ?
               "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
               "Build ${params.BUILD_TYPE} success! "
             )+
