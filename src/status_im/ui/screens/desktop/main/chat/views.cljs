@@ -158,7 +158,6 @@
               (reset! chat-id* chat-id)
               (js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
       [react/view {:style styles/messages-view}
-       [connectivity/error-view]
        [react/scroll-view {:scrollEventThrottle    16
                            :headerHeight styles/messages-list-vertical-padding
                            :footerWidth styles/messages-list-vertical-padding
