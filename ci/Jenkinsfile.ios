@@ -1,19 +1,11 @@
 pipeline {
   agent { label 'fastlane' }
 
-  parameters {
-    booleanParam(
-      name: 'RUN_E2E',
-      defaultValue: false,
-      description: 'If true triggers end-to-end tests.'
-    )
-  }
-
   options {
     buildDiscarder(logRotator(
       numToKeepStr: '20',
-      daysToKeepStr: '30',
-      artifactNumToKeepStr: '10',
+      daysToKeepStr: '14',
+      artifactNumToKeepStr: '20',
     ))
   }
   
