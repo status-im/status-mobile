@@ -120,6 +120,8 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/> 
 	<key>ITSEncryptionExportComplianceCode</key>
-	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string> 
+	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Please allow Status to use your phone camera</string>
 </dict>
 </plist>

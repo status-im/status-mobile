@@ -7,7 +7,7 @@
 (def default-camera (.-default js-dependecies/camera))
 
 (defn constants [t]
-  (-> js-dependecies/camera
+  (-> default-camera
       (object/get "constants")
       (object/get t)
       (js->clj)

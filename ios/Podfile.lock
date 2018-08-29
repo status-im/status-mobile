@@ -10,10 +10,10 @@ PODS:
   - FirebaseAnalytics (5.0.0):
     - FirebaseCore (~> 5.0)
     - FirebaseInstanceID (~> 3.0)
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - nanopb (~> 0.3)
   - FirebaseCore (5.0.1):
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
   - FirebaseInstanceID (3.0.0):
     - FirebaseCore (~> 5.0)
   - FirebaseMessaging (3.0.0):
@@ -24,7 +24,7 @@ PODS:
   - GoogleToolboxForMac/Defines (2.1.4)
   - GoogleToolboxForMac/Logger (2.1.4):
     - GoogleToolboxForMac/Defines (= 2.1.4)
-  - GoogleToolboxForMac/NSData+zlib (2.1.4):
+  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
     - GoogleToolboxForMac/Defines (= 2.1.4)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
@@ -35,6 +35,14 @@ PODS:
   - React (0.55.4):
     - React/Core (= 0.55.4)
   - react-native-background-timer (2.0.0):
+    - React
+  - react-native-camera (1.2.0):
+    - React
+    - react-native-camera/RCT (= 1.2.0)
+    - react-native-camera/RN (= 1.2.0)
+  - react-native-camera/RCT (1.2.0):
+    - React
+  - react-native-camera/RN (1.2.0):
     - React
   - React/Core (0.55.4):
     - yoga (= 0.55.4.React)
@@ -47,6 +55,7 @@ DEPENDENCIES:
   - Firebase/Messaging
   - React (from `../node_modules/react-native`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
+  - react-native-camera (from `../node_modules/react-native-camera`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -63,9 +72,11 @@ EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
   react-native-background-timer:
-    :path: ../node_modules/react-native-background-timer
+    :path: "../node_modules/react-native-background-timer"
+  react-native-camera:
+    :path: "../node_modules/react-native-camera"
   RNKeychain:
-    :path: ../node_modules/react-native-keychain
+    :path: "../node_modules/react-native-keychain"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -80,9 +91,10 @@ SPEC CHECKSUMS:
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
   React: aa2040dbb6f317b95314968021bd2888816e03d5
   react-native-background-timer: 63dcbf37dbcf294b5c6c071afcdc661fa06a7594
+  react-native-camera: 68ad5143d2d0636236d46c7de8d2a6455ca52a36
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: e5ecd57d8448253eb06b209c4e1c5230a2634a1d
+PODFILE CHECKSUM: 7b1cffafffc7716605022454f02fe45929cc85c3
 
 COCOAPODS: 1.4.0

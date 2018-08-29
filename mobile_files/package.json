@@ -34,7 +34,7 @@
     "react-dom": "16.2.0",
     "react-native": "github:status-im/react-native#status-0.55.4",
     "react-native-background-timer": "2.0.0",
-    "react-native-camera": "0.10.0",
+    "react-native-camera": "1.2.0",
     "react-native-config": "0.9.0",
     "react-native-crypto": "2.1.1",
     "react-native-dialogs": "0.0.20",

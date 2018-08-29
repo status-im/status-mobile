@@ -14,6 +14,7 @@ target 'StatusIm' do
   pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
   pod 'react-native-background-timer', :path => '../node_modules/react-native-background-timer'
   pod 'RNKeychain', :path => '../node_modules/react-native-keychain'
+  pod 'react-native-camera', path: '../node_modules/react-native-camera'
 
   target 'StatusImTests' do
     inherit! :search_paths

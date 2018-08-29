@@ -57,8 +57,7 @@
                   :pointer-events :none}
       [react/with-activity-indicator
        {}
-       [camera/camera {:style         styles/preview
-                       :aspect        :fill
+       [camera/camera {:aspect        :fill
                        :captureAudio  false
                        :torchMode     (camera/set-torch camera-flashlight)
                        :onBarCodeRead #(when-not @read-once?
