@@ -20,7 +20,8 @@
 
 (re-frame/reg-fx
  :web3/fetch-node-version
- web3/fetch-node-version)
+ (fn [[web3 cb]]
+   (web3/fetch-node-version web3 cb)))
 
 ;;;; Events
 (handlers/register-handler-fx

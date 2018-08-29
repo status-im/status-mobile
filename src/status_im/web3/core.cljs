@@ -39,15 +39,15 @@
         (ethereum/normalized-address address)))
 
 (defn fetch-node-version
-  [web3]
+  [web3 cb]
   (.. web3
       -version
       (getNode
        (fn [err resp]
          (when-not err
-           (re-frame/dispatch [:web3/fetch-node-version-callback resp]))))))
+           (cb resp))))))
 
 (defn fetch-node-version-callback
   [resp {:keys [db]}]
-  (when-let [git-commit (nth (re-find #"-([0-9a-f]{7,})/" resp) 1)]
-    {:db (assoc db :web3-node-version git-commit)}))
+  (when-let [node-version (second (re-find #"StatusIM/v(.*)/.*/.*" resp))]
+    {:db (assoc db :web3-node-version node-version)}))

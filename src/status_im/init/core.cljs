@@ -160,7 +160,9 @@
 (defn initialize-account [address {:keys [web3] :as cofx}]
   (handlers-macro/merge-fx cofx
                            {:web3/set-default-account    [web3 address]
-                            :web3/fetch-node-version     web3
+                            :web3/fetch-node-version     [web3
+                                                          #(re-frame/dispatch
+                                                            [:web3/fetch-node-version-callback %])]
                             :notifications/get-fcm-token nil}
                            (initialize-account-db address)
                            (models.protocol/initialize-protocol address)
