@@ -76,7 +76,7 @@ class LogoutButton(BaseButton):
 
     def click(self):
         self.scroll_to_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
