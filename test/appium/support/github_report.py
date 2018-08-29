@@ -66,7 +66,7 @@ class GithubHtmlReport(BaseTestReport):
                 html += "%s" % ''.join(test_steps_html[-2:])
                 html += "</blockquote>"
                 html += "</p>"
-            html += "<code>%s</code>" % last_testrun.error
+            html += "<code>%s</code>" % last_testrun.error[:255]
             html += "<br/><br/>"
         if last_testrun.jobs:
             html += self.build_device_sessions_html(last_testrun.jobs, last_testrun)
@@ -77,10 +77,12 @@ class GithubHtmlReport(BaseTestReport):
         html = "<ins>Device sessions</ins>"
         html += "<p><ul>"
         for job_id, i in jobs.items():
+            html += "<p>"
             html += "Device %d:" % i
-            html += "<p><ul>"
+            html += "<ul>"
             html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id)
             if test_run.error:
                 html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
+            html += "</ul></p>"
         html += "</ul></p>"
         return html
