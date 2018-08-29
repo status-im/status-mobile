@@ -7,8 +7,8 @@
 (defn show-profile-desktop [identity {:keys [db] :as cofx}]
   (handlers-macro/merge-fx
    cofx
-   {:db (assoc db :contacts/identity identity)}
-   (navigation/navigate-to-cofx :chat-profile nil)))
+   {:db (assoc db :contacts/identity identity)
+    :dispatch [:navigate-to-modal :profile-info]}))
 
 (handlers/register-handler-fx
  :show-profile-desktop

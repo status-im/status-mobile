@@ -29,7 +29,6 @@
                       :new-contact  add-new.views/new-contact
                       :qr-code      profile.views/qr-code
                       :advanced-settings profile.views/advanced-settings
-                      :chat-profile chat.views/chat-profile
                       status-view)]
       [react/view {:style {:flex 1}}
        [component]])))
