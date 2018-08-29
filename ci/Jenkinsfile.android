@@ -67,19 +67,10 @@ pipeline {
             case 'nightly':
               env.DIAWI_URL = mobile.android.uploadToDiawi()
             case 'e2e':
-              e2eApk = mobile.android.uploadToSauceLabs()
+              env.SAUCE_URL = mobile.android.uploadToSauceLabs()
           } 
         }
       }
-    }
-    stage('Run e2e') {
-      when { expression { cmn.getBuildType() == 'e2e' } }
-      steps { script {
-        build(
-          job: 'end-to-end-tests/status-app-nightly', wait: false,
-          parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]
-        )
-      } }
     }
   }
 }

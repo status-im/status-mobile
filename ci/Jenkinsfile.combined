@@ -64,37 +64,28 @@ pipeline {
     stage('Notify') {
       steps { script {
         def message = (
-            (env.CHANGE_ID != null ?
-              "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
-              "Build ${cmn.getBuildType()} success! "
-            )+
-            "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
-            "(${currentBuild.durationString})\n"+
-            (cmn.getBuildType() == 'nightly' || cmn.getBuildType() == 'pr' ?
-              "Packages: "+
-              "<${apkUrl}|Android>, "+
-              "(<${e2eUrl}|e2e>), "+
-              "<${ipaUrl}|iOS>, "+
-              "<${dmgUrl}|MacOS>, "+
-              "<${appUrl}|AppImage>" :
-              "Packages: "+
-              "<${dro.getBuildVariables().get('DIAWI_URL')}|Android>, "+
-              "<${ios.getBuildVariables().get('DIAWI_URL')}|iOS>"
-            )
+          (env.CHANGE_ID != null ?
+            "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
+            "Build ${cmn.getBuildType()} success! "
+          )+
+          "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
+          "(${currentBuild.durationString})\n"+
+          "Packages: "+
+          "<${apkUrl}|Android>, "+
+          "(<${e2eUrl}|e2e>), "+
+          "<${ipaUrl}|iOS>, "+
+          "<${dmgUrl}|MacOS>, "+
+          "<${appUrl}|AppImage>"
         )
         slackSend(
           message: message,
           color: 'good'
         )
         if (env.CHANGE_ID != null) {
-            cmn.githubNotify(
-                apkUrl, 
-                e2eUrl,
-                ipaUrl,
-                dmgUrl,
-                appUrl,
-                env.CHANGE_ID
-            )
+          cmn.githubNotify(
+            apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl,
+            env.CHANGE_ID
+          )
         }
       } }
     }
@@ -111,6 +102,16 @@ pipeline {
           ]
         )
       }
+    }
+    stage('Run e2e') {
+      when { expression { cmn.getBuildType() == 'nightly' } }
+      steps { script {
+        e2eApk = e2e.getBuildVariables().get('SAUCE_URL')
+          build(
+            job: 'end-to-end-tests/status-app-nightly', wait: false,
+            parameters: [string(name: 'apk', value: "--apk=${e2eApk}")]
+          )
+      } }
     }
   }
 }
