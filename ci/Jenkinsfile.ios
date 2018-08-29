@@ -49,7 +49,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { mobile.leinBuild() }
+        script { mobile.leinBuild('ios') }
       }
     }
     stage('Compile') {

@@ -29,8 +29,8 @@ def runTests() {
   sh 'lein test-cljs'
 }
 
-def leinBuild() {
-  sh 'lein prod-build'
+def leinBuild(platform) {
+  sh "lein prod-build-${platform}"
 }
 
 return this

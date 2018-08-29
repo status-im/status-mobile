@@ -45,7 +45,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { mobile.leinBuild() }
+        script { mobile.leinBuild('android') }
       }
     }
     stage('Compile') {
