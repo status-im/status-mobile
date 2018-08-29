@@ -14,7 +14,8 @@
     "node_modules/react-native-webview-bridge/desktop",
     "node_modules/react-native-keychain/desktop",
     "node_modules/react-native-securerandom/desktop",
-    "modules/react-native-status/desktop"
+    "modules/react-native-status/desktop",
+    "node_modules/google-breakpad"
   ],
   "desktopFonts": [
     "../../../../../resources/fonts/SF-Pro-Text-Regular.otf",
@@ -37,6 +38,7 @@
     "dns.js": "1.0.1",
     "emojilib": "2.2.9",
     "events": "1.1.1",
+    "google-breakpad": "git+https://github.com/status-im/google-breakpad.git",
     "homoglyph-finder": "1.1.1",
     "identicon.js": "github:status-im/identicon.js",
     "instabug-reactnative": "2.12.0",

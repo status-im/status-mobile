@@ -11,6 +11,7 @@ external_modules_dir = [
   'node_modules/react-native-keychain/desktop',
   'node_modules/react-native-securerandom/desktop',
   'modules/react-native-status/desktop',
+  'node_modules/google-breakpad',
 ]
 
 external_fonts = [
@@ -116,6 +117,7 @@ def bundleLinux(type = 'nightly') {
   sh "cp -r ./deployment/linux/usr  ${packageFolder}/AppDir"
   sh "cp ./deployment/linux/.env  ${packageFolder}/AppDir"
   sh "cp ./desktop/bin/StatusIm ${packageFolder}/AppDir/usr/bin"
+  sh "cp ./desktop/reportApp/reportApp ${packageFolder}/AppDir/usr/bin"
   sh 'wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage'
   sh 'chmod a+x ./linuxdeployqt-continuous-x86_64.AppImage'
 
@@ -123,6 +125,12 @@ def bundleLinux(type = 'nightly') {
   sh 'rm -f StatusIm-x86_64.AppImage'
 
   sh "ldd ${packageFolder}/AppDir/usr/bin/StatusIm"
+  sh """
+    ./linuxdeployqt-continuous-x86_64.AppImage  \\
+    ${packageFolder}/AppDir/usr/bin/reportApp \\
+    -verbose=3 -always-overwrite -no-strip -no-translations -qmake=${qtBin}/qmake \\
+    -qmldir='${workspace}/desktop/reportApp'
+  """
   sh """
     ./linuxdeployqt-continuous-x86_64.AppImage \\
       ${packageFolder}/AppDir/usr/share/applications/StatusIm.desktop \\
@@ -177,6 +185,9 @@ def bundleMacOS(type = 'nightly') {
     sh 'cp -r assets/share/assets StatusIm.app/Contents/MacOs'
     sh 'chmod +x StatusIm.app/Contents/MacOs/ubuntu-server'
     sh 'cp ../desktop/bin/StatusIm StatusIm.app/Contents/MacOs'
+    sh 'cp ../desktop/reportApp/reportApp StatusIm.app/Contents/MacOs'
+    sh 'cp -f ../deployment/macos/qt.conf StatusIm.app/Contents/MacOs'
+    sh 'install_name_tool -add_rpath "@executable_path/../Frameworks" StatusIm.app/Contents/MacOs/reportApp'
     sh 'cp -f ../deployment/macos/Info.plist StatusIm.app/Contents'
     sh """
       macdeployqt StatusIm.app -verbose=1 -dmg \\
