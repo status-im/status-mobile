@@ -3,6 +3,7 @@
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.config :as config]
             [status-im.chat.core :as chat]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.core :as message]
