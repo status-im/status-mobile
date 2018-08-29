@@ -21,15 +21,10 @@
   (when (> (- now-in-s timestamp) ttl)
     {:db (assoc db :inbox/last-received now)}))
 
-(defn inspect [a]
-  (println a)
-  a)
 (defn receive-message [cofx now-in-s chat-id js-message]
   (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
-                           inspect
                            transport.utils/to-utf8
-                           inspect
                            transit/deserialize)]
     (when (and sig status-message)
       (try
@@ -37,7 +32,9 @@
          (assoc cofx :js-obj js-message)
          (message/receive status-message (or chat-id sig) sig timestamp)
          (update-last-received-from-inbox now-in-s timestamp ttl))
-        (catch :default e nil))))) ; ignore unknown message types
+        (catch :default e
+          {:confirm-messages-processed [{:web3   (get-in cofx [:db :web3])
+                                         :js-obj js-obj}]}))))) ; Mark message as processed, we don't want to process it again
 
 (defn- js-array->seq [array]
   (for [i (range (.-length array))]
