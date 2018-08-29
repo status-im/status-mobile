@@ -320,8 +320,7 @@ function use_android_sdk() {
 
 function install_android_ndk() {
   if grep -Fq "ndk.dir" $_localPropertiesPath; then
-    dependency_setup \
-      "pushd android && ./gradlew react-native-android:installArchives && popd"
+    cecho "@green[[Android NDK already declared.]]"
   else
     local _ndkParentDir=~/Android/Sdk
     mkdir -p $_ndkParentDir
@@ -334,4 +333,7 @@ function install_android_ndk() {
       echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
       cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"
   fi
+
+  dependency_setup \
+    "pushd android && ./gradlew react-native-android:installArchives && popd"
 }
