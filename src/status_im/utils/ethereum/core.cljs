@@ -33,6 +33,10 @@
       address
       (str hex-prefix address))))
 
+(defn naked-address [s]
+  (when s
+    (string/replace s hex-prefix "")))
+
 (defn address? [s]
   (when s
     (.isAddress dependencies/Web3.prototype s)))

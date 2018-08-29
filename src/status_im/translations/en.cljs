@@ -642,6 +642,8 @@
 
    :view-cryptostrikers                  "View in CryptoStrikers"
 
+   :view-superrare                       "View in SuperRare"
+
    ;; network settings
    :new-network                          "New network"
    :add-network                          "Add network"

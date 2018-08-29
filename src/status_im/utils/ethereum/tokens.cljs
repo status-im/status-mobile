@@ -406,7 +406,11 @@
                    {:symbol  :STRK
                     :nft?    true
                     :name    "CryptoStrikers"
-                    :address "0xdcaad9fd9a74144d226dbf94ce6162ca9f09ed7e"}])
+                    :address "0xdcaad9fd9a74144d226dbf94ce6162ca9f09ed7e"}
+                   {:symbol  :SUPR
+                    :nft?    true
+                    :name    "SuperRare"
+                    :address "0x41a322b28d0ff354040e2cbc676f0320d8c8850d"}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"

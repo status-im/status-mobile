@@ -16,6 +16,7 @@
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
+            status-im.ui.screens.wallet.collectibles.superrare.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.components.text :as text]
             [status-im.ui.screens.wallet.transactions.views :as transactions.views]

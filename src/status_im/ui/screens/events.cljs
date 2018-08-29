@@ -36,6 +36,7 @@
             status-im.ui.screens.wallet.collectibles.cryptokitties.events
             status-im.ui.screens.wallet.collectibles.cryptostrikers.events
             status-im.ui.screens.wallet.collectibles.etheremon.events
+            status-im.ui.screens.wallet.collectibles.superrare.events
             status-im.ui.screens.browser.events
             status-im.ui.screens.offline-messaging-settings.events
             status-im.ui.screens.privacy-policy.events
@@ -91,6 +92,18 @@
  (fn [calls]
    (doseq [call calls]
      (http-get call))))
+
+(defn- http-post [{:keys [url data response-validator success-event-creator failure-event-creator timeout-ms opts]}]
+  (let [on-success #(re-frame/dispatch (success-event-creator %))
+        on-error   #(re-frame/dispatch (failure-event-creator %))
+        all-opts   (assoc opts
+                          :valid-response? response-validator
+                          :timeout-ms      timeout-ms)]
+    (http/post url data on-success on-error all-opts)))
+
+(re-frame/reg-fx
+ :http-post
+ http-post)
 
 (re-frame/reg-fx
  :request-permissions-fx

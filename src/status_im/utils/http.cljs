@@ -15,7 +15,7 @@
    (post url data on-success nil))
   ([url data on-success on-error]
    (post url data on-success on-error nil))
-  ([url data on-success on-error {:keys [timeout-ms headers]}]
+  ([url data on-success on-error {:keys [valid-response? timeout-ms headers]}]
    (-> (rn-dependencies/fetch
         url
         (clj->js (merge {:method  "POST"
@@ -24,7 +24,23 @@
                         (when headers
                           {:headers headers}))))
        (.then (fn [response]
-                (on-success response)))
+                (->
+                 (.text response)
+                 (.then (fn [response-body]
+                          (let [ok?  (.-ok response)
+                                ok?' (if valid-response?
+                                       (and ok? (valid-response? response))
+                                       ok?)]
+                            [response-body ok?']))))))
+       (.then (fn [[response ok?]]
+                (cond
+                  (and on-success ok?)
+                  (on-success response)
+
+                  (and on-error (not ok?))
+                  (on-error response)
+
+                  :else false)))
        (.catch (or on-error
                    (fn [error]
                      (utils/show-popup "Error" (str error))))))))
