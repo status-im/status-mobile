@@ -125,21 +125,23 @@ def pkgFilename(type, ext) {
 
 def githubNotify(apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl, changeId) {
   withCredentials([string(credentialsId: 'GIT_HUB_TOKEN', variable: 'githubToken')]) {
-    def message =
-            "#### :white_check_mark: CI BUILD SUCCESSFUL\\n" +
-            "Jenkins job: [${currentBuild.displayName}](${currentBuild.absoluteUrl})\\n"+
-              "##### Mobile\\n" +
-              "* [Android](${apkUrl}), ([e2e](${e2eUrl}))\\n" +
-              "* [iOS](${ipaUrl})\\n" +
-              "##### Desktop\\n" +
-              "* [MacOS](${dmgUrl})\\n" +
-              "* [AppImage](${appUrl})"
-    def script = "curl "+ 
-                   "-u status-im:${githubToken} " + 
-                   "-H 'Content-Type: application/json' " + 
-                   "--data '{\"body\": \"${message}\"}' " +
-                   "https://api.github.com/repos/status-im/status-react/issues/${changeId}/comments"
-    println("running script:\n****\n" + script + "\n****");
+    def message = (
+      "#### :white_check_mark: CI BUILD SUCCESSFUL\\n" +
+      "Jenkins job: [${currentBuild.displayName}](${currentBuild.absoluteUrl})\\n"+
+      "##### Mobile\\n" +
+      "* [Android](${apkUrl}), ([e2e](${e2eUrl}))\\n" +
+      "* [iOS](${ipaUrl})\\n" +
+      "##### Desktop\\n" +
+      "* [MacOS](${dmgUrl})\\n" +
+      "* [AppImage](${appUrl})"
+    )
+    def script = (
+      "curl "+ 
+      "-u status-im:${githubToken} " + 
+      "-H 'Content-Type: application/json' " + 
+      "--data '{\"body\": \"${message}\"}' " +
+      "https://api.github.com/repos/status-im/status-react/issues/${changeId}/comments"
+    )
     def ghOutput = sh(returnStdout: true, script: script) 
     println("Result of github comment curl: " + ghOutput);
   }

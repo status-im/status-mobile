@@ -11,6 +11,8 @@ def prep(type = 'nightly') {
       sh 'cp .env.prod .env'; break
     case 'e2e':
       sh 'cp .env.e2e .env'; break
+    default:
+      sh 'cp .env.jenkins .env'; break
   }
   common.installJSDeps('mobile')
   /* install Maven dependencies */
