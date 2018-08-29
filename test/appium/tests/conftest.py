@@ -145,7 +145,7 @@ def pytest_runtest_makereport(item, call):
         current_test = test_suite_data.current_test
         if report.failed:
             error = report.longreprtext
-            exception = re.findall('E.*:', error)
+            exception = re.findall('E.*Message:|E.*Error:|E.*Failed:', error)
             if exception:
                 error = error.replace(re.findall('E.*Message:|E.*Error:|E.*Failed:', report.longreprtext)[0], '')
             current_test.testruns[-1].error = error

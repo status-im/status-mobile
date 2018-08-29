@@ -193,7 +193,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
         adi_button.click()
         send_transaction.amount_edit_box.click()
-        amount = '0.0%s' % str(random.randint(100000, 999999)).strip('0')
+        amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
         send_transaction.amount_edit_box.set_value(amount)
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
@@ -201,7 +201,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
         send_transaction.sign_transaction(sender['password'])
-        self.network_api.find_transaction_by_unique_amount(sender['address'], amount, token=True, decimals=7)
+        self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
     @marks.testrail_id(3747)
     @marks.smoke_1
@@ -216,7 +216,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
         adi_button.click()
         send_transaction.amount_edit_box.click()
-        amount = '0.0%s' % str(random.randint(1000000, 9999999)).strip('0')
+        amount = '0.0%s' % str(random.randint(100000, 999999)) + '1'
         send_transaction.amount_edit_box.set_value(amount)
         error_text = 'Amount is too precise. Max number of decimals is 7.'
         if not send_transaction.element_by_text(error_text).is_element_displayed():

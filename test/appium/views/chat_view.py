@@ -36,11 +36,21 @@ class SendCommand(BaseButton):
         super(SendCommand, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('send-button')
 
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('request-button')
+
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
 
 
 class AssetCommand(BaseButton):

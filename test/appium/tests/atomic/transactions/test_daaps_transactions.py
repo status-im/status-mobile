@@ -1,5 +1,4 @@
 import pytest
-import random
 
 from tests import transaction_users, marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase

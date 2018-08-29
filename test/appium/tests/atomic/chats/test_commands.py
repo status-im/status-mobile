@@ -328,7 +328,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2 = home_2.get_chat_with_user(sender['username']).click()
         self.network_api.wait_for_confirmation_of_transaction(recipient['address'], amount)
         if not chat_2.chat_element_by_text(amount).contains_text('Confirmed', 60):
-            chat_2.driver.fail('Transaction state is not updated on the recipient side')
+            chat_2.driver.fail('Status "Confirmed" is not shown under transaction for the recipient')
 
 
 @marks.chat
@@ -410,7 +410,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.send_transaction_in_1_1_chat('ETH', amount, sender['password'])
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         if not chat.chat_element_by_text(amount).contains_text('Confirmed', wait_time=90):
-            pytest.fail('Transaction state is not updated on the sender side')
+            pytest.fail('Status "Confirmed" is not shown under transaction for the sender')
 
     @marks.testrail_id(3790)
     def test_insufficient_funds_1_1_chat_0_balance(self):

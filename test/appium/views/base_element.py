@@ -81,6 +81,14 @@ class BaseElement(object):
             raise TimeoutException(
                 "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
 
+    def wait_for_elements(self, seconds=10):
+        try:
+            return WebDriverWait(self.driver, seconds) \
+                .until(expected_conditions.presence_of_all_elements_located((self.locator.by, self.locator.value)))
+        except TimeoutException:
+            raise TimeoutException(
+                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+
     def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
             return WebDriverWait(self.driver, seconds, ignored_exceptions=ignored_exceptions) \

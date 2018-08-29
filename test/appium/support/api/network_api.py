@@ -70,7 +70,7 @@ class NetworkApi:
         start_time = time.time()
         while round(time.time() - start_time, ndigits=2) < 900:  # should be < idleTimeout capability
             transaction = self.find_transaction_by_unique_amount(address, amount)
-            if int(transaction['confirmations']) > 1:
+            if int(transaction['confirmations']) >= 12:
                 return
             time.sleep(10)
             pytest.fail('Transaction with amount %s was not confirmed, address is %s' % (amount, address))

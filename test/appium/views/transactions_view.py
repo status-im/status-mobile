@@ -101,7 +101,7 @@ class TransactionTable(BaseElement):
     def get_transactions_number(self):
         element = self.TransactionElement(self.driver)
         element.locator = element.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="transaction-item"]')
-        return len(element.find_elements())
+        return len(element.wait_for_elements())
 
 
 class FiltersButton(BaseButton):
