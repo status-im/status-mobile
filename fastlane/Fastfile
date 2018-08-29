@@ -70,40 +70,6 @@ def build_ios_adhoc
 end
 
 
-def notify_about_new_build(source, url)
-    branch_name = ENV["BRANCH_NAME"]
-    branch_name = "develop" if branch_name.nil?
-
-    msg = "Branch: " + branch_name + ", "
-
-    if source.end_with? ".ipa"
-        msg = msg + "iOS build uploaded to diawi: " + url
-    else
-        msg = msg + "Android build uploaded to diawi: " + url
-    end
-
-    slack(
-        message: msg,
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
-
-    change_id = ENV["CHANGE_ID"]
-
-    unless change_id.nil?
-        github_api(
-            server_url: "https://api.github.com",
-            api_token: ENV["GITHUB_TOKEN"],
-            http_method: "POST",
-            path: "/repos/status-im/status-react/issues/" + change_id + "/comments",
-            body: {
-               "body": msg
-            }
-        )
-    end
-
-end
-
 def upload_to_diawi(source)
     diawi(
         token: ENV["DIAWI_TOKEN"],
@@ -113,14 +79,6 @@ def upload_to_diawi(source)
     File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
 end
 
-def upload_to_diawi_and_notify(source)
-    upload_to_diawi(source)
-
-    notify_about_new_build(
-        source,
-        lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI]
-    )
-end
 
 platform :ios do
   desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
@@ -132,36 +90,16 @@ platform :ios do
     build_ios_adhoc
   end
 
-  desc "`fastlane ios nightly` - makes a new nightly in TestFlight"
+  desc "`fastlane ios pr` - makes a new pr build"
+  desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  lane :pr do
+    adhoc
+  end
+
+  desc "`fastlane ios nightly` - makes a new nightly"
   desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
-    unlock_keychain_if_needed
-
-    match(
-        type: "appstore",
-        force_for_new_devices: true,
-        readonly: true,
-        keychain_name: "login.keychain"
-    )
-
-    build_ios_app(
-        scheme: "StatusIm",
-        workspace: "ios/StatusIm.xcworkspace",
-        configuration: "Release",
-        clean: true,
-        export_method: "app-store",
-        output_directory: "status_appstore"
-    )
-
-    slack(
-        message: "New nightly build uploaded to TestFlight",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
-
-    # additional .ipa is for diawi
-    # we have to re-build it because it uses different config
-    build_ios_adhoc
+    adhoc
   end
 
   desc "`fastlane ios release` builds a release & uploads it to TestFlight"

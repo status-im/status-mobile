@@ -32,7 +32,8 @@ pipeline {
           print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prep(params.BUILD_TYPE)
+          cmn    = load 'ci/common.groovy'
+          mobile.prep(cmn.getBuildType())
         }
       }
     }
@@ -53,7 +54,7 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { api = mobile.ios.compile(params.BUILD_TYPE) }
+        script { api = mobile.ios.compile(cmn.getBuildType()) }
       }
     }
     stage('Archive') {

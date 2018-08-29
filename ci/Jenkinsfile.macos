@@ -21,6 +21,7 @@ pipeline {
         script {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
+          cmn     = load 'ci/common.groovy'
           desktop.prepDeps()
         }
       }
@@ -37,7 +38,7 @@ pipeline {
     }
     stage('Bundle') {
       steps {
-        script { dmg = desktop.bundleMacOS(params.BUILD_TYPE) }
+        script { dmg = desktop.bundleMacOS(cmn.getBuildType()) }
       }
     }
     stage('Archive') {

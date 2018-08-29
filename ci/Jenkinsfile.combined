@@ -1,13 +1,6 @@
 pipeline {
   agent { label 'master' }
 
-  parameters {
-    string(
-      name: 'BUILD_TYPE',
-      description: 'Values: nightly / e2e / release'
-    )
-  }
-
   options {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(
@@ -16,11 +9,15 @@ pipeline {
       artifactNumToKeepStr: '10',
     ))
   }
-  
+
+
   stages {
-    stage('Tag') {
+    stage('Prep') {
       steps { script {
+        println "Current JOB: ${env.JOB_NAME}"
+        /* load common lib */
         cmn = load('ci/common.groovy')
+
         /* to avoid missing build tag parallel builds */
         print "Build Number: ${cmn.tagBuild(true)}"
       } }
@@ -28,16 +25,16 @@ pipeline {
     stage('Build') {
       parallel {
         stage('MacOS') { steps { script {
-          osx = cmn.buildBranch('status-react/combined/desktop-macos')
+          osx = cmn.buildBranch('status-react/combined/desktop-macos', cmn.getBuildType())
         } } }
         stage('Linux') { steps { script {
-          nix = cmn.buildBranch('status-react/combined/desktop-linux')
+          nix = cmn.buildBranch('status-react/combined/desktop-linux', cmn.getBuildType())
         } } }
         stage('iOS') { steps { script {
-          ios = cmn.buildBranch('status-react/combined/mobile-ios')
+          ios = cmn.buildBranch('status-react/combined/mobile-ios', cmn.getBuildType())
         } } }
         stage('Android') { steps { script {
-          dro = cmn.buildBranch('status-react/combined/mobile-android')
+          dro = cmn.buildBranch('status-react/combined/mobile-android', cmn.getBuildType())
         } } }
         stage('Android e2e') { steps { script {
           e2e = cmn.buildBranch('status-react/combined/mobile-android', 'e2e')
@@ -55,10 +52,9 @@ pipeline {
       } }
     }
     stage('Upload') {
-      when { expression { params.BUILD_TYPE == 'nightly' } }
       steps { script {
         e2eUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.e2e.apk')[0].path)
-        apkUrl = cmn.uploadArtifact(findFiles(glob: "pkg/*.${params.BUILD_TYPE}.apk")[0].path)
+        apkUrl = cmn.uploadArtifact(findFiles(glob: "pkg/*.${cmn.getBuildType()}.apk")[0].path)
         dmgUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.dmg')[0].path)
         appUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.AppImage')[0].path)
         /* special case for iOS Diawi links */
@@ -67,15 +63,14 @@ pipeline {
     }
     stage('Notify') {
       steps { script {
-        slackSend(
-          message: (
+        def message = (
             (env.CHANGE_ID != null ?
               "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
-              "Build ${params.BUILD_TYPE} success! "
+              "Build ${cmn.getBuildType()} success! "
             )+
             "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
             "(${currentBuild.durationString})\n"+
-            (params.BUILD_TYPE == 'nightly' ?
+            (cmn.getBuildType() == 'nightly' || cmn.getBuildType() == 'pr' ?
               "Packages: "+
               "<${apkUrl}|Android>, "+
               "(<${e2eUrl}|e2e>), "+
@@ -86,13 +81,25 @@ pipeline {
               "<${dro.getBuildVariables().get('DIAWI_URL')}|Android>, "+
               "<${ios.getBuildVariables().get('DIAWI_URL')}|iOS>"
             )
-          ),
+        )
+        slackSend(
+          message: message,
           color: 'good'
         )
+        if (env.CHANGE_ID != null) {
+            cmn.githubNotify(
+                apkUrl, 
+                e2eUrl,
+                ipaUrl,
+                dmgUrl,
+                appUrl,
+                env.CHANGE_ID
+            )
+        }
       } }
     }
     stage('Publish') {
-      when { expression { params.BUILD_TYPE == 'nightly' } }
+      when { expression { cmn.getBuildType() == 'nightly' } }
       steps {
         build(
           job: 'misc/status-im.github.io-update_env',

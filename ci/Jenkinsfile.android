@@ -28,7 +28,8 @@ pipeline {
           print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prep(params.BUILD_TYPE)
+          cmn    = load 'ci/common.groovy'
+          mobile.prep(cmn.getBuildType())
         }
       }
     }
@@ -49,7 +50,7 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { apk = mobile.android.compile(params.BUILD_TYPE) }
+        script { apk = mobile.android.compile(cmn.getBuildType()) }
       }
     }
     stage('Archive') {
@@ -60,7 +61,7 @@ pipeline {
     stage('Upload') {
       steps {
         script {
-          switch (params.BUILD_TYPE) {
+          switch (cmn.getBuildType()) {
             case 'release':
               mobile.android.uploadToPlayStore(); break;
             case 'nightly':
@@ -72,7 +73,7 @@ pipeline {
       }
     }
     stage('Run e2e') {
-      when { expression { params.BUILD_TYPE == 'e2e' } }
+      when { expression { cmn.getBuildType() == 'e2e' } }
       steps { script {
         build(
           job: 'end-to-end-tests/status-app-nightly', wait: false,
