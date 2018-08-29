@@ -7,29 +7,30 @@ def getBuildType() {
   if (jobName.startsWith('status-react/pull requests')) {
       return 'pr'
   }
-
   if (jobName.startsWith('status-react/nightly')) {
       return 'nightly'
   }
-
   if (jobName.startsWith('status-react/release')) {
       return 'release'
   }
-
   return params.BUILD_TYPE
 }
   
-
 def buildBranch(name = null, buildType) {
   /* need to drop origin/ to match definitions of child jobs */
   def branchName = env.GIT_BRANCH.replace('origin/', '')
   /* always pass the BRANCH and BUILD_TYPE params with current branch */
-  return build(
+  def b = build(
     job: name,
+    /* this allows us to analize the job even after failure */
+    propagate: false,
     parameters: [
       [name: 'BRANCH',     value: branchName, $class: 'StringParameterValue'],
       [name: 'BUILD_TYPE', value: buildType,  $class: 'StringParameterValue'],
   ])
+  /* BlueOcean seems to not show child-build links */
+  print "URL: ${b.getAbsoluteUrl()}"
+  return b
 }
 
 def copyArts(projectName, buildNo) {
