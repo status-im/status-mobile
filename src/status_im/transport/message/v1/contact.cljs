@@ -2,6 +2,7 @@
  status-im.transport.message.v1.contact
   (:require [re-frame.core :as re-frame]
             [status-im.data-store.transport :as transport-store]
+            [status-im.utils.config :as config]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
@@ -18,12 +19,19 @@
                                             :chat-id    chat-id
                                             :topic      topic
                                             :message    this}]))]
-      (handlers-macro/merge-fx cofx
-                               {:shh/get-new-sym-keys [{:web3       (:web3 db)
-                                                        :on-success on-success}]}
-                               (protocol/init-chat {:chat-id chat-id
-                                                    :topic   topic
-                                                    :resend? "contact-request"})))))
+
+      (if config/encryption-enabled?
+        (handlers-macro/merge-fx cofx
+                                 (protocol/send-direct-message chat-id nil this)
+                                 (protocol/init-chat {:chat-id chat-id
+                                                      :topic   topic
+                                                      :resend? "contact-request"}))
+        (handlers-macro/merge-fx cofx
+                                 {:shh/get-new-sym-keys [{:web3       (:web3 db)
+                                                          :on-success on-success}]}
+                                 (protocol/init-chat {:chat-id chat-id
+                                                      :topic   topic
+                                                      :resend? "contact-request"}))))))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage
@@ -31,15 +39,24 @@
     (let [success-event [:transport/set-contact-message-envelope-hash chat-id]
           chat         (get-in db [:transport/chats chat-id])
           updated-chat (assoc chat :resend? "contact-request-confirmation")]
-      (handlers-macro/merge-fx cofx
-                               {:db            (assoc-in db
-                                                         [:transport/chats chat-id :resend?]
-                                                         "contact-request-confirmation")
-                                :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
-                                                                                    :chat    updated-chat})]}
-                               (protocol/send-with-pubkey {:chat-id chat-id
-                                                           :payload this
-                                                           :success-event success-event})))))
+      (if config/encryption-enabled?
+        (handlers-macro/merge-fx cofx
+                                 {:db            (assoc-in db
+                                                           [:transport/chats chat-id :resend?]
+                                                           "contact-request-confirmation")
+                                  :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
+                                                                                      :chat    updated-chat})]}
+                                 (protocol/send-direct-message chat-id success-event this))
+
+        (handlers-macro/merge-fx cofx
+                                 {:db            (assoc-in db
+                                                           [:transport/chats chat-id :resend?]
+                                                           "contact-request-confirmation")
+                                  :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
+                                                                                      :chat    updated-chat})]}
+                                 (protocol/send-with-pubkey {:chat-id chat-id
+                                                             :payload this
+                                                             :success-event success-event}))))))
 
 (defrecord ContactUpdate [name profile-image address fcm-token]
   message/StatusMessage
@@ -59,14 +76,24 @@
                tx            [(transport-store/save-transport-tx {:chat-id chat-id
                                                                   :chat    updated-chat})]
                success-event [:transport/set-contact-message-envelope-hash chat-id]]
-           (handlers-macro/merge-fx temp-cofx
-                                    {:db            (assoc-in db
-                                                              [:transport/chats chat-id :resend?]
-                                                              "contact-update")
-                                     :data-store/tx tx}
-                                    (protocol/send-with-pubkey {:chat-id       chat-id
-                                                                :payload       this
-                                                                :success-event success-event}))))
+
+           (if config/encryption-enabled?
+             (handlers-macro/merge-fx temp-cofx
+                                      {:db            (assoc-in db
+                                                                [:transport/chats chat-id :resend?]
+                                                                "contact-update")
+                                       :data-store/tx tx}
+                                      (protocol/send-direct-message chat-id
+                                                                    success-event
+                                                                    this))
+             (handlers-macro/merge-fx temp-cofx
+                                      {:db            (assoc-in db
+                                                                [:transport/chats chat-id :resend?]
+                                                                "contact-update")
+                                       :data-store/tx tx}
+                                      (protocol/send-with-pubkey {:chat-id       chat-id
+                                                                  :payload       this
+                                                                  :success-event success-event})))))
        recipients))))
 
 (defn remove-chat-filter

@@ -63,6 +63,16 @@
                                 :src     current-public-key
                                 :chat    chat-id
                                 :payload payload}]}))
+(defn send-direct-messages
+  [dsts success-event payload {:keys [db] :as cofx}]
+  (let [{:keys [current-public-key web3]} db]
+    {:shh/send-direct-message
+     (mapv #(hash-map
+             :web3 web3
+             :success-event success-event
+             :src     current-public-key
+             :dst     %
+             :payload payload) dsts)}))
 
 (defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
@@ -84,14 +94,21 @@
 (defn multi-send-by-pubkey
   "Sends payload to multiple participants selected by `:public-keys` key. "
   [{:keys [payload public-keys success-event]} {:keys [db] :as cofx}]
-  (let [{:keys [current-public-key web3]} db
-        recipients                        (prepare-recipients public-keys db)]
-    {:shh/multi-post {:web3          web3
-                      :success-event success-event
-                      :recipients    recipients
-                      :message       (merge {:sig     current-public-key
-                                             :payload payload}
-                                            whisper-opts)}}))
+
+  (if config/encryption-enabled?
+    (send-direct-messages
+     public-keys
+     success-event
+     payload
+     cofx)
+    (let [{:keys [current-public-key web3]} db
+          recipients                        (prepare-recipients public-keys db)]
+      {:shh/multi-post {:web3          web3
+                        :success-event success-event
+                        :recipients    recipients
+                        :message       (merge {:sig     current-public-key
+                                               :payload payload}
+                                              whisper-opts)}})))
 
 ;; TODO currently not used
 (defrecord Ack [message-ids]
@@ -107,7 +124,6 @@
 (defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
   (send [this chat-id cofx]
-    (println "CHAT_ID" chat-id this)
     (let [params     {:chat-id       chat-id
                       :payload       this
                       :success-event [:transport/set-message-envelope-hash
@@ -142,8 +158,14 @@
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage
   (send [this chat-id cofx]
-    (send {:chat-id chat-id
-           :payload this}
-          cofx))
+    (if config/encryption-enabled?
+      (send-direct-message
+       chat-id
+       nil
+       this
+       cofx)
+      (send {:chat-id chat-id
+             :payload this}
+            cofx)))
   (receive [this chat-id signature _ cofx]
     (chat/receive-seen chat-id signature this cofx)))
