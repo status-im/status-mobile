@@ -1,6 +1,7 @@
 import pytest
 
-from tests import marks, group_chat_users, basic_user, bootnode_address, mailserver_address, camera_access_error_text
+from tests import marks, group_chat_users, basic_user, bootnode_address, mailserver_address, camera_access_error_text, \
+    photos_access_error_text
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -143,7 +144,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.advanced_button.click()
         profile_view.find_text_part('CUSTOM_ROPSTEN')
 
-    @marks.logcat
     @marks.testrail_id(3774)
     def test_logcat_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
@@ -217,7 +217,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.edit_picture_button.click()
         profile.select_from_gallery_button.click()
         profile.deny_button.click()
-        profile.element_by_text(camera_access_error_text, element_type='text').wait_for_visibility_of_element(3)
+        profile.element_by_text(photos_access_error_text, element_type='text').wait_for_visibility_of_element(3)
         profile.ok_button.click()
         profile.edit_picture_button.click()
         profile.select_from_gallery_button.click()

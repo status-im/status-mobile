@@ -1,12 +1,14 @@
+import time
 import json
 import hmac
 import os
 from hashlib import md5
+from sauceclient import SauceException
+
 from support.test_data import SingleTestData
 
 
 class BaseTestReport:
-
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self, sauce_username, sauce_access_key):
@@ -67,10 +69,23 @@ class BaseTestReport:
                 passed.append(test)
         return passed
 
+    def get_sauce_token(self, job_id):
+        return hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
+                        bytes(job_id, 'latin-1'), md5).hexdigest()
+
     def get_sauce_job_url(self, job_id):
-        token = hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
-                         bytes(job_id, 'latin-1'), md5).hexdigest()
-        return "https://saucelabs.com/jobs/%s?auth=%s" % (job_id, token)
+        token = self.get_sauce_token(job_id)
+        return 'https://saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
+
+    def get_sauce_final_screenshot_url(self, job_id):
+        token = self.get_sauce_token(job_id)
+        from tests.conftest import sauce
+        for _ in range(10):
+            try:
+                scr_number = sauce.jobs.get_job_assets(job_id)['screenshots'][-1]
+                return 'https://assets.saucelabs.com/jobs/%s/%s?auth=%s' % (job_id, scr_number, token)
+            except SauceException:
+                time.sleep(3)
 
     @staticmethod
     def is_test_successful(test):

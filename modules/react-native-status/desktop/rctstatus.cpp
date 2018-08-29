@@ -71,7 +71,7 @@ void RCTStatus::getDeviceUUID(double callbackId) {
 }
 
 
-void RCTStatus::startNode(QString configString) {
+void RCTStatus::startNode(QString configString, QString fleet) {
     Q_D(RCTStatus);
     qDebug() << "call of RCTStatus::startNode with param configString:" << configString;
 
@@ -97,7 +97,7 @@ void RCTStatus::startNode(QString configString) {
     qDebug()<<"RCTStatus::startNode networkDir: "<<networkDir;
 
 
-    char *configChars = GenerateConfig(networkDir.toUtf8().data(), networkId);
+    char *configChars = GenerateConfig(networkDir.toUtf8().data(), fleet.toUtf8().data(), networkId);
     qDebug() << "RCTStatus::startNode GenerateConfig result: " << configChars;
 
     jsonDoc = QJsonDocument::fromJson(QString(configChars).toUtf8(), &jsonError);
@@ -110,6 +110,7 @@ void RCTStatus::startNode(QString configString) {
     generatedConfig["KeyStoreDir"] = keyStoreDir;
     generatedConfig["LogEnabled"] = true;
     generatedConfig["LogFile"] = networkDir + "/geth.log";
+    generatedConfig["ClusterConfig.Fleet"] = fleet;
     //generatedConfig["LogLevel"] = "DEBUG";
 
     const char* result = StartNode(QString(QJsonDocument::fromVariant(generatedConfig).toJson(QJsonDocument::Compact)).toUtf8().data());

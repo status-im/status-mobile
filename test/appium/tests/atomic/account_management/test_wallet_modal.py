@@ -74,6 +74,7 @@ class TestWalletModal(SingleDeviceTestCase):
         start_new_chat.open_button.click()
         wallet_modal = start_new_chat.wallet_modal_button.click()
         transaction_history = wallet_modal.transaction_history_button.click()
+        transaction_history.transactions_table.wait_for_visibility_of_element()
         if transaction_history.transactions_table.get_transactions_number() < 1:
             pytest.fail('Transactions history is not shown')
 

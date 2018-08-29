@@ -1,14 +1,14 @@
 (ns status-im.chat.models
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.clocks :as utils.clocks]
+  (:require [status-im.data-store.chats :as chats-store]
+            [status-im.data-store.messages :as messages-store]
             [status-im.transport.message.core :as transport.message]
-            [status-im.data-store.chats :as chats-store]
             [status-im.transport.message.v1.group-chat :as transport.group-chat]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.ui.components.styles :as styles]
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.data-store.messages :as messages-store]))
+            [status-im.utils.platform :as platform]))
 
 (defn multi-user-chat? [chat-id cofx]
   (get-in cofx [:db :chats chat-id :group-chat]))

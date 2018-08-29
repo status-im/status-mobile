@@ -1,7 +1,7 @@
 import pytest
 import random
 
-from tests import transaction_users, marks
+from tests import transaction_users, marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -65,32 +65,30 @@ class TestTransactionDApp(SingleDeviceTestCase):
     def test_logcat_send_transaction_from_daap(self):
         sender = transaction_users['B_USER']
         sign_in_view = SignInView(self.driver)
-        password = random.randint(100000, 1000000)
-        sign_in_view.recover_access(sender['passphrase'], password)
+        sign_in_view.recover_access(sender['passphrase'], unique_password)
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.sign_transaction(password)
-        send_transaction_view.check_no_values_in_logcat(password=password)
+        send_transaction_view.sign_transaction(unique_password)
+        send_transaction_view.check_no_values_in_logcat(password=unique_password)
 
     @marks.logcat
     @marks.testrail_id(3775)
     def test_logcat_sign_message_from_daap(self):
         sign_in_view = SignInView(self.driver)
-        password = random.randint(100000, 1000000)
-        sign_in_view.create_user(password=password)
+        sign_in_view.create_user(password=unique_password)
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.sign_message_button.click()
         send_transaction_view.sign_transaction_button.click_until_presence_of_element(
             send_transaction_view.enter_password_input)
-        send_transaction_view.enter_password_input.send_keys(password)
+        send_transaction_view.enter_password_input.send_keys(unique_password)
         send_transaction_view.sign_transaction_button.click()
-        send_transaction_view.check_no_values_in_logcat(password=password)
+        send_transaction_view.check_no_values_in_logcat(password=unique_password)
 
     @marks.testrail_id(1380)
     @marks.smoke_1

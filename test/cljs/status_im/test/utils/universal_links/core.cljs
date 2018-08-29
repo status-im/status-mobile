@@ -29,10 +29,14 @@
                                          {:db db}))))))
       (testing "a user profile link"
         (testing "it loads the profile"
-          (let [actual (links/handle-url "status-im://user/profile-id"
+          (let [actual (links/handle-url "status-im://user/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073"
                                          {:db db})]
-            (is (= "profile-id" (get-in actual [:db :contacts/identity])))
+            (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity])))
             (is (= :profile (get-in actual [:db :view-id]))))))
+      (testing "if does nothing because the link is invalid"
+        (is (= (links/handle-url "status-im://user/CONTACTCODE"
+                                 {:db db})
+               nil)))
       (testing "a not found url"
         (testing "it does nothing"
           (is (nil? (links/handle-url "status-im://not-existing"
@@ -75,12 +79,12 @@
     (testing "it returns false"
       (is (not (links/universal-link? "https://not.status.im/blah"))))))
 
-(deftest stored-url-event
+(deftest process-stored-event
   (testing "the url is in the database"
     (testing "it returns the event"
-      (= [:handle-universal-link "some-url"]
-         (links/stored-url-event {:db {:universal-links/url "some-url"}}))))
+      (= "some-url"
+         (links/process-stored-event {:db {:universal-links/url "some-url"}}))))
   (testing "the url is not in the database"
     (testing "it returns nil"
       (= nil
-         (links/stored-url-event {:db {}})))))
+         (links/process-stored-event {:db {}})))))

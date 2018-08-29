@@ -1,16 +1,19 @@
 (ns status-im.test.browser.events
   (:require [cljs.test :refer-macros [deftest is testing]]
             [day8.re-frame.test :refer-macros [run-test-sync]]
-            [status-im.ui.screens.events :as events]
+            [status-im.init.core :as init]
             status-im.ui.screens.db
             status-im.ui.screens.subs
             [re-frame.core :as re-frame]
             [status-im.models.browser :as model]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.models.browser :as browser]))
 
 (defn test-fixtures []
 
-  (re-frame/reg-fx ::events/init-store #())
+  (re-frame/reg-fx :init/init-store #())
 
   (re-frame/reg-fx :browse #())
   (re-frame/reg-fx :data-store/tx #())
@@ -32,7 +35,17 @@
    (fn [[permission {:keys [dapp-name permissions-data index] :as params}]]
      (if (and (= dapp-name "test.com") (#{0 1} index))
        (re-frame/dispatch [:next-dapp-permission params permission permissions-data])
-       (re-frame/dispatch [:next-dapp-permission params])))))
+       (re-frame/dispatch [:next-dapp-permission params]))))
+
+  (handlers/register-handler-fx
+   [(re-frame/inject-cofx :data-store/all-browsers)
+    (re-frame/inject-cofx :data-store/all-dapp-permissions)]
+   :initialize-test
+   (fn [cofx [_]]
+     (handlers-macro/merge-fx cofx
+                              (init/initialize-db)
+                              (browser/initialize-browsers)
+                              (browser/initialize-dapp-permissions)))))
 
 (deftest browser-events
 
@@ -40,15 +53,13 @@
 
    (test-fixtures)
 
-   (re-frame/dispatch [:initialize-db])
-   (re-frame/dispatch [:initialize-browsers])
+   (re-frame/dispatch [:initialize-test])
 
    (let [browsers  (re-frame/subscribe [:browsers])
          dapp1-url "cryptokitties.co"
          dapp2-url "http://test2.com"]
 
      (testing "open and remove dapps"
-
        (is (zero? (count @browsers)))
 
        (re-frame/dispatch [:open-url-in-browser dapp1-url])
@@ -119,8 +130,6 @@
 
          (is (= 1 (:history-index @browser)))
          (is (= [dapp2-url dapp2-url3] (:history @browser))))))
-
-   (re-frame/dispatch [:initialize-dapp-permissions])
 
    (let [dapps-permissions (re-frame/subscribe [:get :dapps/permissions])
          dapp-name         "test.com"

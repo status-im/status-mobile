@@ -10,13 +10,12 @@
 (re-frame/reg-fx
  :resolve-whisper-identity
  (fn [{:keys [web3 registry ens-name cb]}]
-   (println registry ens-name)
    (stateofus/text web3 registry ens-name cb)))
 
 (handlers/register-handler-fx
  :new-chat/set-new-identity
  (fn [{{:keys [web3 network network-status] :as db} :db} [_ new-identity]]
-   (let [new-identity-error (db/validate-pub-key new-identity (:account/account db))]
+   (let [new-identity-error (db/validate-pub-key db new-identity)]
      (if (stateofus/is-valid-name? new-identity)
        (let [network (get-in db [:account/account :networks network])
              chain   (ethereum/network->chain-keyword network)]

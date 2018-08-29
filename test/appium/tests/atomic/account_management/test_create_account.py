@@ -1,7 +1,5 @@
 import pytest
-import random
-
-from tests import marks, common_password, get_current_time, test_fairy_warning_text
+from tests import marks, common_password, get_current_time, test_fairy_warning_text, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -86,8 +84,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(3767)
+    @marks.logcat
     def test_password_in_logcat_creating_account(self):
         sign_in = SignInView(self.driver)
-        password = random.randint(100000, 1000000)
-        sign_in.create_user(password=password)
-        sign_in.check_no_values_in_logcat(password=password)
+        sign_in.create_user(password=unique_password)
+        sign_in.check_no_values_in_logcat(password=unique_password)

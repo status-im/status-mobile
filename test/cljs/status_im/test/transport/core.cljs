@@ -1,17 +1,18 @@
 (ns status-im.test.transport.core
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.protocol.handlers :as protocol.handlers]
+            [status-im.models.protocol :as protocol]
             [status-im.transport.core :as transport]))
 
 (deftest init-whisper
   (let [cofx {:db {:network "mainnet_rpc"
                    :account/account
                    {:networks {"mainnet_rpc" {:config {:NetworkId 1}}}
-                    :public-key "1"}}}]
+                    :public-key "1"}
+                   :semaphores #{}}}]
     (testing "it adds the discover filter"
-      (is (= (:shh/add-discovery-filter (protocol.handlers/initialize-protocol cofx [])))))
+      (is (= (:shh/add-discovery-filter (protocol/initialize-protocol "user-address" cofx)))))
     (testing "it restores the sym-keys"
-      (is (= (:shh/restore-sym-keys (protocol.handlers/initialize-protocol cofx [])))))
+      (is (= (:shh/restore-sym-keys (protocol/initialize-protocol  "user-address" cofx)))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :chain "mainnet"
@@ -44,5 +45,5 @@
                                     ms-3])]
         (is (= expected-wnodes
                (get-in
-                (protocol.handlers/initialize-protocol cofx-with-ms [])
+                (protocol/initialize-protocol "user-address" cofx-with-ms)
                 [:db :inbox/wnodes])))))))

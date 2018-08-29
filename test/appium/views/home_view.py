@@ -1,4 +1,3 @@
-from tests import info
 import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from views.base_element import BaseButton, BaseText, BaseElement
@@ -45,7 +44,7 @@ class ChatElement(BaseButton):
         return self.navigate()
 
     def find_element(self):
-        info('Looking for %s' % self.name)
+        self.driver.info('Looking for %s' % self.name)
         for i in range(2):
             try:
                 return super(ChatElement, self).find_element()
@@ -53,7 +52,7 @@ class ChatElement(BaseButton):
                 if i == 0:
                     HomeView(self.driver).reconnect()
                 else:
-                    e.msg = 'Unable to find chat with user %s' % self.username
+                    e.msg = 'Device %s: Unable to find chat with user %s' % (self.driver.number, self.username)
                     raise e
 
     @property
@@ -108,11 +107,11 @@ class HomeView(BaseView):
         self.chat_url_text = ChatUrlText(self.driver)
 
     def wait_for_syncing_complete(self):
-        info('Waiting for syncing complete:')
+        self.driver.info('Waiting for syncing complete:')
         while True:
             try:
                 sync = self.find_text_part('Syncing', 10)
-                info(sync.text)
+                self.driver.info(sync.text)
             except TimeoutException:
                 break
 

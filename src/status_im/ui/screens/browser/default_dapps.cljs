@@ -66,7 +66,11 @@
            {:name        "Emoon"
             :dapp-url    "https://www.emoon.io/"
             :photo-path  "contacts://emoon"
-            :description "A decentralized marketplace for buying & selling crypto assets"}]}
+            :description "A decentralized marketplace for buying & selling crypto assets"}
+           {:name        "SuperRare"
+            :dapp-url    "https://superrare.co/market"
+            :photo-path  "contacts://superrare"
+            :description "Buy, sell and collect unique digital creations by artists around the world"}]}
    {:title "Fun & Games"
     :data [{:name        "CryptoKitties"
             :dapp-url    "https://www.cryptokitties.co"
@@ -126,7 +130,7 @@
             :dapp-url    "https://status-im.github.io/dapp/"
             :description "Request test assets and test basic web3 functionality."
             :developer?   true}]}
-   {:title "Other: Media"
+   {:title "Media"
     :data [{:name        "LivePeer"
             :dapp-url    "https://media.livepeer.org/"
             :photo-path  "contacts://livepeer"

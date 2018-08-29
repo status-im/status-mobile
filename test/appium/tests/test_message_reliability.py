@@ -10,7 +10,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from tests import info, marks
+from tests import marks
 from tests.base_test_case import MessageReliabilityTestCase
 from views.base_element import BaseButton
 from views.sign_in_view import SignInView
@@ -61,7 +61,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
                     user_b_message_time[duration_time] = user_b_receive_time
                     user_b_received_messages += 1
                 except TimeoutException:
-                    info("Message with text '%s' was not received by user_b" % message_1)
+                    device_2_chat.driver.info("Message with text '%s' was not received by user_b" % message_1)
                 message_2 = ''.join(random.sample(string.ascii_lowercase, k=10))
                 device_2_chat.chat_message_input.send_keys(message_2)
                 device_2_chat.send_message_button.click()
@@ -74,7 +74,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
                     user_a_message_time[duration_time] = user_a_receive_time
                     user_a_received_messages += 1
                 except TimeoutException:
-                    info("Message with text '%s' was not received by user_a" % message_2)
+                    device_1_chat.driver.info("Message with text '%s' was not received by user_a" % message_2)
         finally:
             self.one_to_one_chat_data['user_a'] = {'sent_messages': user_a_sent_messages,
                                                    'message_time': user_a_message_time}
@@ -132,8 +132,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
         self.public_chat_data['message_time'] = dict()
 
         self.create_drivers(1, max_duration=10800, custom_implicitly_wait=2, offline_mode=True)
-        driver = self.drivers[0]
-        sign_in_view = SignInView(driver)
+        sign_in_view = SignInView(self.drivers[0])
         home_view = sign_in_view.create_user()
         chat_name = chat_name if chat_name else home_view.get_public_chat_name()
         home_view.join_public_chat(chat_name)
@@ -142,12 +141,12 @@ class TestMessageReliability(MessageReliabilityTestCase):
         iterations = int(messages_number / 10 if messages_number > 10 else messages_number)
         for _ in range(iterations):
             home_view.get_back_to_home_view()
-            driver.set_network_connection(1)  # airplane mode
+            home_view.driver.set_network_connection(1)  # airplane mode
 
             sent_messages_texts = self.network_api.start_chat_bot(chat_name=chat_name, messages_number=10)
             self.public_chat_data['sent_messages'] += 10
 
-            driver.set_network_connection(2)  # turning on WiFi connection
+            home_view.driver.set_network_connection(2)  # turning on WiFi connection
 
             home_view.get_chat_with_user('#' + chat_name).click()
             chat_view = home_view.get_chat_view()
@@ -170,8 +169,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
         user_b_message_time = dict()
         try:
             self.create_drivers(2, max_duration=10800, custom_implicitly_wait=2, offline_mode=True)
-            device_1, device_2 = self.drivers[0], self.drivers[1]
-            sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+            sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
             sign_in_1.create_user(username='user_a')
             sign_in_2.create_user(username='user_b')
             device_1_home, device_2_home = sign_in_1.get_home_view(), sign_in_2.get_home_view()
@@ -188,7 +186,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
             iterations = int((messages_number / 10 if messages_number > 10 else messages_number) / 2)
             start_time = time.time()
             for i in range(iterations):
-                device_2.set_network_connection(1)  # airplane mode
+                device_2_home.driver.set_network_connection(1)  # airplane mode
 
                 messages_1 = list()
                 for _ in range(10):
@@ -199,7 +197,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
                     messages_1.append(messages_1)
                     user_a_sent_messages += 1
 
-                device_2.set_network_connection(2)  # turning on WiFi connection
+                device_2_home.driver.set_network_connection(2)  # turning on WiFi connection
 
                 for message in messages_1:
                     try:
@@ -210,7 +208,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
                         user_b_message_time[duration_time] = user_b_receive_time
                         user_b_received_messages += 1
                     except TimeoutException:
-                        info("Message with text '%s' was not received by user_b" % message)
+                        device_2_home.driver.info("Message with text '%s' was not received by user_b" % message)
 
                 messages_2 = list()
                 for _ in range(10):
@@ -229,7 +227,7 @@ class TestMessageReliability(MessageReliabilityTestCase):
                             user_a_message_time[duration_time] = user_a_receive_time
                             user_a_received_messages += 1
                         except TimeoutException:
-                            info("Message with text '%s' was not received by user_a" % message)
+                            device_1_home.driver.info("Message with text '%s' was not received by user_a" % message)
         finally:
             self.one_to_one_chat_data['user_a'] = {'sent_messages': user_a_sent_messages,
                                                    'message_time': user_a_message_time}
@@ -238,27 +236,26 @@ class TestMessageReliability(MessageReliabilityTestCase):
 
     def test_message_reliability_push_notifications(self, message_wait_time):
         self.create_drivers(2, max_duration=10800, custom_implicitly_wait=2)
-        device_1, device_2 = self.drivers[0], self.drivers[1]
-        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         sign_in_1.create_user(username='user_a')
         sign_in_2.create_user(username='user_b')
         device_1_home, device_2_home = sign_in_1.get_home_view(), sign_in_2.get_home_view()
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
 
-        device_2.close_app()
+        device_2_home.driver.close_app()
 
         device_1_home.add_contact(device_2_public_key)
         device_1_chat = device_1_home.get_chat_view()
         device_1_chat.chat_message_input.send_keys('hello')
         device_1_chat.send_message_button.click()
 
-        device_2.open_notifications()
+        device_2_home.driver.open_notifications()
         try:
-            WebDriverWait(device_2, message_wait_time) \
+            WebDriverWait(device_2_home.driver, message_wait_time) \
                 .until(
                 expected_conditions.presence_of_element_located((MobileBy.XPATH, '//*[contains(@text, "Status")]')))
-            element = BaseButton(device_2)
+            element = BaseButton(device_2_home.driver)
             element.locator = element.Locator.xpath_selector("//*[contains(@text,'Status')]")
             element.click()
         except TimeoutException as exception:

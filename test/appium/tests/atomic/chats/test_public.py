@@ -61,13 +61,14 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.element_by_text(message_3).is_element_present()
         for message in message_1, message_2:
             if chat_1.element_starts_with_text(message).is_element_present():
-                pytest.fail("Message '%s' is shown, but public chat history has been cleared" % message)
+                chat_1.driver.fail("Message '%s' is shown, but public chat history has been cleared" % message)
         home_1 = chat_1.get_back_to_home_view()
         home_1.relogin()
         home_1.element_by_text('#' + chat_name).click()
         for message in message_1, message_2:
             if chat_1.element_starts_with_text(message).is_element_present():
-                pytest.fail("Message '%s' is shown after re-login, but public chat history has been cleared" % message)
+                chat_1.driver.fail(
+                    "Message '%s' is shown after re-login, but public chat history has been cleared" % message)
 
     @marks.testrail_id(3729)
     def test_unread_messages_counter_public_chat(self):

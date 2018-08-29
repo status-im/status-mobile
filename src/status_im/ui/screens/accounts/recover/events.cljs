@@ -14,16 +14,37 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
+ :recover/set-phrase
+ (fn [cofx [_ recovery-phrase]]
+   (models/set-phrase recovery-phrase cofx)))
+
+(handlers/register-handler-fx
+ :recover/validate-phrase
+ (fn [cofx _]
+   (models/validate-phrase cofx)))
+
+(handlers/register-handler-fx
+ :recover/set-password
+ (fn [cofx [_ masked-password]]
+   (models/set-password masked-password cofx)))
+
+(handlers/register-handler-fx
+ :recover/validate-password
+ (fn [cofx _]
+   (models/validate-password cofx)))
+
+(handlers/register-handler-fx
  :account-recovered
+ [(re-frame/inject-cofx :get-signing-phrase) (re-frame/inject-cofx :get-status)]
  (fn [cofx [_ result password]]
    (models/on-account-recovered result password cofx)))
 
 (handlers/register-handler-fx
- :account-recovered-navigate
- (fn [cofx]
-   (models/account-recovered-navigate cofx)))
+ :recover-account
+ (fn [cofx _]
+   (models/recover-account cofx)))
 
 (handlers/register-handler-fx
- :recover-account
- (fn [cofx [_ masked-passphrase password]]
-   (models/recover-account masked-passphrase password cofx)))
+ :recover-account-with-checks
+ (fn [cofx _]
+   (models/recover-account-with-checks cofx)))

@@ -19,12 +19,6 @@ def get_current_time():
     return datetime.now().strftime('%-m%-d%-H%-M%-S')
 
 
-def info(text: str):
-    if "Base" not in text:
-        logging.info(text)
-        test_suite_data.current_test.testruns[-1].steps.append(text)
-
-
 def debug(text: str):
     logging.debug(text)
 
@@ -161,6 +155,7 @@ group_chat_users['C_USER']['public_key'] = "0x04dcdb5cac266328c41bdb0e33a266544a
                                            "3dba7e295445505ee55ea03ee99cb7d26bee05e6b486a9bdaaf6be73a0b"
 
 common_password = 'qwerty'
+unique_password = 'unique' + get_current_time()
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
@@ -169,6 +164,9 @@ mailserver_address = "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499
 
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."
+
+photos_access_error_text = "To grant the required photos permission, please go to your system settings " \
+                           "and make sure that Status > Photos is selected."
 
 connection_not_secure_text = "Connection is not secure! " \
                              "Do not sign transactions or send personal data on this site."

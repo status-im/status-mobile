@@ -174,7 +174,7 @@
     :transaction-moved-title :photos-access-error :hash
     :removed-from-chat :done :remove-from-contacts :delete-chat :new-group-chat
     :edit-chats :wallet :wallet-exchange :wallet-request :sign-in
-    :datetime-yesterday :create-new-account :sign-in-to-status :dapp-profile
+    :datetime-yesterday :create-new-account :sign-in-to-status :save-password :save-password-unavailable :dapp-profile
     :sign-later-text :datetime-ago :no-hashtags-discovered-body :contacts
     :search-chat :got-it :delete-group-confirmation :public-chats
     :not-applicable :move-to-internal-failure-message :active-online

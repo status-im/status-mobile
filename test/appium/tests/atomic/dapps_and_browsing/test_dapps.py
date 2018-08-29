@@ -29,10 +29,10 @@ class TestDApps(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.status_api_button.click()
         status_test_dapp.request_contact_code_button.click()
-        status_test_dapp.do_not_allow_button.click()
+        status_test_dapp.deny_button.click()
         if status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is returned but access was not allowed')
         status_test_dapp.request_contact_code_button.click()
-        status_test_dapp.ok_button.click()
+        status_test_dapp.allow_button.click()
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is not returned')

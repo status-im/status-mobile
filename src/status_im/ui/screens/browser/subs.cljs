@@ -1,7 +1,10 @@
 (ns status-im.ui.screens.browser.subs
   (:require [re-frame.core :as re-frame]))
 
-(re-frame/reg-sub :browsers :browser/browsers)
+(re-frame/reg-sub
+ :browsers
+ (fn [db _]
+   (:browser/browsers db)))
 
 (re-frame/reg-sub
  :get-current-browser

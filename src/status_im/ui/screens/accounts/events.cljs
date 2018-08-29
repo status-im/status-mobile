@@ -1,19 +1,19 @@
 (ns status-im.ui.screens.accounts.events
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]
             status-im.ui.screens.accounts.create.navigation
+            [status-im.ui.screens.accounts.models :as models]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
-            [status-im.ui.screens.accounts.models :as models]))
+            [status-im.utils.handlers :as handlers]))
 
 ;;;; COFX
 
 (re-frame/reg-cofx
- ::get-signing-phrase
+ :get-signing-phrase
  (fn [cofx _]
    (models/get-signing-phrase cofx)))
 
 (re-frame/reg-cofx
- ::get-status
+ :get-status
  (fn [cofx _]
    (models/get-status cofx)))
 
@@ -32,14 +32,9 @@
 
 (handlers/register-handler-fx
  :account-created
- [re-frame/trim-v (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
- (fn [cofx [result password]]
-   (models/on-account-created result password cofx)))
-
-(handlers/register-handler-fx
- :send-account-update-if-needed
- (fn [cofx _]
-   (models/send-account-update-if-needed cofx)))
+ [(re-frame/inject-cofx :get-signing-phrase) (re-frame/inject-cofx :get-status)]
+ (fn [cofx [_ result password]]
+   (models/on-account-created result password false cofx)))
 
 (handlers/register-handler-fx
  :account-set-name
@@ -50,11 +45,6 @@
  :account-set-input-text
  (fn [cofx [_ input-key text]]
    (models/account-set-input-text input-key text cofx)))
-
-(handlers/register-handler-fx
- :update-sign-in-time
- (fn [{db :db now :now :as cofx} _]
-   (accounts.utils/account-update {:last-sign-in now} cofx)))
 
 (handlers/register-handler-fx
  :update-mainnet-warning-shown

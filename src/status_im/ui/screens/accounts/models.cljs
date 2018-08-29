@@ -1,25 +1,24 @@
 (ns status-im.ui.screens.accounts.models
-  (:require [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]
-            [status-im.utils.types :as types]
-            [status-im.utils.identicon :as identicon]
-            [clojure.string :as str]
-            [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.accounts.statuses :as statuses]
-            [status-im.utils.signing-phrase.core :as signing-phrase]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.hex :as utils.hex]
+  (:require [clojure.string :as str]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            status-im.ui.screens.accounts.create.navigation
-            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.data-store.accounts :as accounts-store]
+            [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.ui.screens.accounts.login.models :as login.models]
+            [status-im.ui.screens.accounts.statuses :as statuses]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]))
+            [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]
+            [status-im.utils.config :as config]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.hex :as utils.hex]
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.signing-phrase.core :as signing-phrase]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 ;;;; COFX
 
@@ -44,36 +43,36 @@
 
 (defn- add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:networks/keys [networks] :as db} {:keys [address] :as account}]
-  (let [enriched-account (assoc account
+  [{:keys [address] :as account} cofx]
+  (let [db (:db cofx)
+        {:networks/keys [networks]} db
+        enriched-account (assoc account
                                 :network config/default-network
                                 :networks networks
                                 :address address)]
     {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
-(defn on-account-created [{:keys [pubkey address mnemonic]} password {:keys [signing-phrase status db]}]
+(defn on-account-created [{:keys [pubkey address mnemonic]} password seed-backed-up {:keys [signing-phrase status db] :as cofx}]
   (let [normalized-address (utils.hex/normalize-hex address)
-        account            {:public-key     pubkey
-                            :address        normalized-address
-                            :name           (gfycat/generate-gfy pubkey)
-                            :status         status
-                            :signed-up?     true
-                            :photo-path     (identicon/identicon pubkey)
-                            :signing-phrase signing-phrase
-                            :mnemonic       mnemonic
-                            :settings       (constants/default-account-settings)}]
+        account            {:public-key      pubkey
+                            :address         normalized-address
+                            :name            (gfycat/generate-gfy pubkey)
+                            :status          status
+                            :signed-up?      true
+                            :photo-path      (identicon/identicon pubkey)
+                            :signing-phrase  signing-phrase
+                            :seed-backed-up? seed-backed-up
+                            :mnemonic        mnemonic
+                            :settings        (constants/default-account-settings)}]
     (log/debug "account-created")
     (when-not (str/blank? pubkey)
-      (-> (add-account db account)
-          (assoc :dispatch [:login-account normalized-address password])))))
-
-(defn load-accounts [{:keys [db all-accounts]}]
-  (let [accounts (->> all-accounts
-                      (map (fn [{:keys [address] :as account}]
-                             [address account]))
-                      (into {}))]
-    {:db (assoc db :accounts/accounts accounts)}))
+      (handlers-macro/merge-fx cofx
+                               {:db (assoc db :accounts/login {:address normalized-address
+                                                               :password password
+                                                               :processing true})}
+                               (add-account account)
+                               (login.models/user-login)))))
 
 (defn update-settings
   ([settings cofx] (update-settings settings nil cofx))
@@ -83,20 +82,11 @@
       :data-store/base-tx [{:transaction   (accounts-store/save-account-tx new-account)
                             :success-event success-event}]})))
 
-(defn send-account-update-if-needed [{:keys [db now] :as cofx}]
-  (let [{:keys [last-updated]} (:account/account db)
-        needs-update? (> (- now last-updated) time/week)]
-    (log/info "Need to send account-update: " needs-update?)
-    (when needs-update?
-      ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
-      ;; account with network update when last update was more then week ago
-      (accounts.utils/account-update nil cofx))))
-
 (defn account-set-name [{{:accounts/keys [create] :as db} :db :as cofx}]
   (handlers-macro/merge-fx cofx
-                           {:db         (assoc db :accounts/create {:show-welcome? true})
-                            :dispatch-n [[:navigate-to-clean :home]
-                                         [:request-notifications]]}
+                           {:db                                  (assoc db :accounts/create {:show-welcome? true})
+                            :notifications/request-notifications nil
+                            :dispatch                            [:navigate-to-clean :home]}
                            (accounts.utils/account-update {:name (:name create)})))
 
 (defn account-set-input-text [input-key text {db :db}]

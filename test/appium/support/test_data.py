@@ -13,7 +13,7 @@ class SingleTestData(object):
             self.error = error
 
     def create_new_testrun(self):
-        self.testruns.append(SingleTestData.TestRunData(list(), list(), None))
+        self.testruns.append(SingleTestData.TestRunData(list(), dict(), None))
 
 
 class TestSuiteData(object):

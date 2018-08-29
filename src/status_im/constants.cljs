@@ -14,6 +14,9 @@
 (def content-type-placeholder "placeholder")
 (def content-type-emoji "emoji")
 
+(def desktop-content-types
+  #{text-content-type content-type-emoji})
+
 (def command-send "send")
 (def command-request "request")
 (def command-send-status-update-interval-ms 60000)

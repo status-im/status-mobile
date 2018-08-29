@@ -59,8 +59,6 @@ def build_ios_adhoc
         keychain_name: "login.keychain"
     )
 
-    workaround_realm_core_sync_issues
-
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -93,7 +91,6 @@ def notify_about_new_build(source, url)
     change_id = ENV["CHANGE_ID"]
 
     unless change_id.nil?
-
         github_api(
             server_url: "https://api.github.com",
             api_token: ENV["GITHUB_TOKEN"],
@@ -103,19 +100,21 @@ def notify_about_new_build(source, url)
                "body": msg
             }
         )
-
     end
 
 end
 
-
-def upload_to_diawi_and_notify(source)
+def upload_to_diawi(source)
     diawi(
         token: ENV["DIAWI_TOKEN"],
         file: source
     )
 
     File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
+end
+
+def upload_to_diawi_and_notify(source)
+    upload_to_diawi(source)
 
     notify_about_new_build(
         source,
@@ -134,8 +133,7 @@ platform :ios do
   end
 
   desc "`fastlane ios nightly` - makes a new nightly in TestFlight"
-  desc "This lane builds a new nightly and uploads it to TestFlight"
-  desc "It also leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
     unlock_keychain_if_needed
 
@@ -145,8 +143,6 @@ platform :ios do
         readonly: true,
         keychain_name: "login.keychain"
     )
-
-    workaround_realm_core_sync_issues
 
     build_ios_app(
         scheme: "StatusIm",
@@ -176,8 +172,6 @@ platform :ios do
         readonly: true,
         keychain_name: "login.keychain"
     )
-
-    workaround_realm_core_sync_issues
 
     build_ios_app(
         scheme: "StatusIm",
@@ -219,22 +213,7 @@ platform :ios do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi_and_notify(
-        "status-adhoc/StatusIm.ipa"
-    )
-  end
-
-  desc "This fastlane step is a workaround!"
-  desc "every now and then Realm fails on iOS on the 'Download Core` step"
-  desc "the issue is because multiple downloads use the same temp dir"
-  desc "now we are replacing the original download script with another"
-  desc "that generates a random folder for each run"
-  lane :workaround_realm_core_sync_issues do
-      FileUtils.cp_r(
-          '../ci/download-realm.js',
-          '../node_modules/realm/scripts',
-          remove_destination: true
-      )
+    upload_to_diawi("status-adhoc/StatusIm.ipa")
   end
 
   desc "This fastlane step cleans up XCode DerivedData folder"
@@ -285,9 +264,7 @@ platform :android do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi_and_notify(
-        "android/app/build/outputs/apk/release/app-release.apk"
-    )
+    upload_to_diawi("android/app/build/outputs/apk/release/app-release.apk")
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"

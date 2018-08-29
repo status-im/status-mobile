@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from tests import transaction_users, transaction_users_wallet, marks, common_password
+from tests import transaction_users, transaction_users_wallet, marks, common_password, unique_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -160,8 +160,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sender = transaction_users['E_USER']
         recipient = transaction_users['F_USER']
         sign_in_view = SignInView(self.driver)
-        password = random.randint(100000, 1000000)
-        sign_in_view.recover_access(sender['passphrase'], password)
+        sign_in_view.recover_access(sender['passphrase'], unique_password)
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
@@ -174,8 +173,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(password)
-        send_transaction.check_no_values_in_logcat(password=password)
+        send_transaction.sign_transaction(unique_password)
+        send_transaction.check_no_values_in_logcat(password=unique_password)
 
     @marks.testrail_id(3746)
     @marks.smoke_1

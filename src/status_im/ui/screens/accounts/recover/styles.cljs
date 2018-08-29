@@ -5,6 +5,12 @@
   {:flex             1
    :background-color colors/white})
 
+(def inputs-container
+  {:margin 16})
+
+(def password-input
+  {:margin-top 10})
+
 (def bottom-button-container
   {:flex-direction    :row
    :margin-horizontal 12

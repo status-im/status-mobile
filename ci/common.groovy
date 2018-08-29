@@ -1,3 +1,28 @@
+def version() {
+  return readFile("${env.WORKSPACE}/VERSION").trim()
+}
+
+def buildBranch(name = null, buildType = params.BUILD_TYPE) {
+  /* need to drop origin/ to match definitions of child jobs */
+  def branchName = env.GIT_BRANCH.replace('origin/', '')
+  /* always pass the BRANCH and BUILD_TYPE params with current branch */
+  return build(
+    job: name,
+    parameters: [
+      [name: 'BRANCH',     value: branchName, $class: 'StringParameterValue'],
+      [name: 'BUILD_TYPE', value: buildType,  $class: 'StringParameterValue'],
+  ])
+}
+
+def copyArts(projectName, buildNo) {
+  copyArtifacts(
+    projectName: projectName,
+    target: 'pkg',
+    flatten: true,
+    selector: specific("${buildNo}")
+  )
+}
+
 def installJSDeps(platform) {
   def attempt = 1
   def maxAttempts = 10
@@ -21,7 +46,8 @@ def doGitRebase() {
   }
 }
 
-def tagBuild() {
+def tagBuild(increment = false) {
+  def opts = (increment ? '--increment' : '')
   withCredentials([[
     $class: 'UsernamePasswordMultiBinding',
     credentialsId: 'status-im-auto',
@@ -30,14 +56,23 @@ def tagBuild() {
   ]]) {
     return sh(
       returnStdout: true,
-      script: './scripts/build_no.sh --increment'
+      script: "./scripts/build_no.sh ${opts}"
     ).trim()
   }
 }
 
-def uploadArtifact(path, filename) {
+def getDirPath(path) {
+  return path.tokenize('/')[0..-2].join('/')
+}
+
+def getFilename(path) {
+  return path.tokenize('/')[-1]
+}
+
+def uploadArtifact(path) {
+  /* defaults for upload */
   def domain = 'ams3.digitaloceanspaces.com'
-  def bucket = 'status-im-desktop'
+  def bucket = 'status-im'
   withCredentials([usernamePassword(
     credentialsId: 'digital-ocean-access-keys',
     usernameVariable: 'DO_ACCESS_KEY',
@@ -50,11 +85,23 @@ def uploadArtifact(path, filename) {
         --host-bucket='%(bucket)s.${domain}' \\
         --access_key=${DO_ACCESS_KEY} \\
         --secret_key=${DO_SECRET_KEY} \\
-        put ${path}/${filename} s3://${bucket}/
+        put ${path} s3://${bucket}/
     """
   }
-  def url = "https://${bucket}.${domain}/${filename}"
-  return url
+  return "https://${bucket}.${domain}/${getFilename(path)}"
+}
+
+def timestamp() {
+  def now = new Date(currentBuild.timeInMillis)
+  return now.format('yyMMdd.HHmmss', TimeZone.getTimeZone('UTC'))
+}
+
+def gitCommit() {
+  return GIT_COMMIT.take(6)
+}
+
+def pkgFilename(type, ext) {
+  return "StatusIm.${timestamp()}.${gitCommit()}.${type}.${ext}"
 }
 
 return this

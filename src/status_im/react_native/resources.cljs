@@ -39,6 +39,7 @@
    :cryptopurr         (js/require "./resources/images/contacts/cryptopurr.png")
    :ethlend            (js/require "./resources/images/contacts/ethlend.png")
    :smartz             (js/require "./resources/images/contacts/smartz.png")
+   :superrare          (js/require "./resources/images/contacts/superrare.png")
 
    :ddex               (js/require "./resources/images/contacts/ddex.png")
    :emoon              (js/require "./resources/images/contacts/emoon.png")

@@ -41,6 +41,7 @@
              :peers-count                        0
              :peers-summary                      []
              :notifications                      {}
+             :semaphores                         #{}
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
              :inbox/wnodes                       constants/default-wnodes
@@ -54,8 +55,7 @@
              :tooltips                           {}
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
-             :push-notifications/stored          {}
-             :push-notifications/initial?        false})
+             :push-notifications/stored          {}})
 
 ;;;;GLOBAL
 
@@ -84,7 +84,6 @@
 
 ;;;;NODE
 
-(spec/def ::sync-listening-started (spec/nilable boolean?))
 (spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
 
@@ -147,9 +146,6 @@
 
 ;;;;NODE
 
-(spec/def :node/after-start (spec/nilable vector?))
-(spec/def :node/after-stop (spec/nilable vector?))
-
 (spec/def ::message-envelopes (spec/nilable map?))
 
 ;;;;UUID
@@ -164,10 +160,9 @@
 (spec/def :dimensions/window map?)
 
 ;; PUSH NOTIFICATIONS
-
 (spec/def :push-notifications/stored (spec/nilable map?))
-; Shows that push notification used to start the application is processed
-(spec/def :push-notifications/initial? (spec/nilable boolean?))
+
+(spec/def ::semaphores set?)
 
 (spec/def ::db (allowed-keys
                 :opt
@@ -200,15 +195,12 @@
                  :networks/manage
                  :mailservers/manage
                  :bootnodes/manage
-                 :node/after-start
-                 :node/after-stop
                  :inbox/wnodes
                  :inbox/last-received
                  :inbox/current-id
                  :inbox/fetching?
                  :universal-links/url
                  :push-notifications/stored
-                 :push-notifications/initial?
                  :browser/browsers
                  :browser/options
                  :new/open-dapp
@@ -241,12 +233,12 @@
                  ::mailserver-status
                  ::peers-count
                  ::peers-summary
-                 ::sync-listening-started
                  ::sync-state
                  ::sync-data
                  ::network
                  ::chain
                  ::app-state
+                 ::semaphores
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id

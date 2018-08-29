@@ -12,7 +12,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from tests import info
 
 
 class BaseElement(object):
@@ -61,7 +60,8 @@ class BaseElement(object):
             try:
                 return self.driver.find_element(self.locator.by, self.locator.value)
             except NoSuchElementException:
-                raise NoSuchElementException("'%s' is not found on the screen" % self.name) from None
+                raise NoSuchElementException(
+                    "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
             except Exception as exception:
                 if 'Internal Server Error' in str(exception):
                     continue
@@ -71,47 +71,50 @@ class BaseElement(object):
 
     def click(self):
         self.find_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
 
     def wait_for_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
         except TimeoutException:
-            raise TimeoutException("'%s' is not found on the screen" % self.name) from None
+            raise TimeoutException(
+                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
 
     def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
             return WebDriverWait(self.driver, seconds, ignored_exceptions=ignored_exceptions) \
                 .until(expected_conditions.visibility_of_element_located((self.locator.by, self.locator.value)))
         except TimeoutException:
-            raise TimeoutException("'%s' is not found on the screen" % self.name) from None
+            raise TimeoutException(
+                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
 
     def wait_for_invisibility_of_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.invisibility_of_element_located((self.locator.by, self.locator.value)))
         except TimeoutException:
-            raise TimeoutException("'%s' is not found on the screen" % self.name) from None
+            raise TimeoutException("Device %s: '%s' is still visible on the screen after %s seconds" % (
+                self.driver.number, self.name, seconds)) from None
 
     def scroll_to_element(self):
         for _ in range(9):
             try:
                 return self.find_element()
             except NoSuchElementException:
-                info('Scrolling down to %s' % self.name)
+                self.driver.info('Scrolling down to %s' % self.name)
                 self.driver.swipe(500, 1000, 500, 500)
 
     def is_element_present(self, sec=5):
         try:
-            info('Wait for %s' % self.name)
+            self.driver.info('Wait for %s' % self.name)
             return self.wait_for_element(sec)
         except TimeoutException:
             return False
 
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
-            info('Wait for %s' % self.name)
+            self.driver.info('Wait for %s' % self.name)
             return self.wait_for_visibility_of_element(sec, ignored_exceptions=ignored_exceptions)
         except TimeoutException:
             return False
@@ -149,7 +152,7 @@ class BaseElement(object):
 
     def long_press_element(self):
         element = self.find_element()
-        info('Long press %s' % self.name)
+        self.driver.info('Long press %s' % self.name)
         action = TouchAction(self.driver)
         action.long_press(element).release().perform()
 
@@ -173,25 +176,25 @@ class BaseEditBox(BaseElement):
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
-        info("Type '%s' to %s" % (value, self.name))
+        self.driver.info("Type '%s' to %s" % (value, self.name))
 
     def set_value(self, value):
         self.find_element().set_value(value)
-        info("Type '%s' to %s" % (value, self.name))
+        self.driver.info("Type '%s' to %s" % (value, self.name))
 
     def clear(self):
         self.find_element().clear()
-        info('Clear text in %s' % self.name)
+        self.driver.info('Clear text in %s' % self.name)
 
     def delete_last_symbols(self, number_of_symbols_to_delete: int):
-        info('Delete last %s symbols from %s' % (number_of_symbols_to_delete, self.name))
+        self.driver.info('Delete last %s symbols from %s' % (number_of_symbols_to_delete, self.name))
         self.click()
         for _ in range(number_of_symbols_to_delete):
             time.sleep(1)
             self.driver.press_keycode(67)
 
     def paste_text_from_clipboard(self):
-        info('Paste text from clipboard into %s' % self.name)
+        self.driver.info('Paste text from clipboard into %s' % self.name)
         self.long_press_element()
         time.sleep(2)
         action = TouchAction(self.driver)
@@ -200,7 +203,7 @@ class BaseEditBox(BaseElement):
         action.press(x=x + 100, y=y - 50).release().perform()
 
     def cut_text(self):
-        info('Cut text in %s' % self.name)
+        self.driver.info('Cut text in %s' % self.name)
         location = self.find_element().location
         x, y = location['x'], location['y']
         action = TouchAction(self.driver)
@@ -217,7 +220,7 @@ class BaseText(BaseElement):
     @property
     def text(self):
         text = self.find_element().text
-        info('%s is %s' % (self.name, text))
+        self.driver.info('%s is %s' % (self.name, text))
         return text
 
 
@@ -228,16 +231,16 @@ class BaseButton(BaseElement):
 
     def click(self):
         self.find_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
     def click_until_presence_of_element(self, desired_element, attempts=3):
         counter = 0
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
-                info('Tap on %s' % self.name)
+                self.driver.info('Tap on %s' % self.name)
                 self.find_element().click()
-                info('Wait for %s' % desired_element.name)
+                self.driver.info('Wait for %s' % desired_element.name)
                 desired_element.wait_for_element(5)
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):

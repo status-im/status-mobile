@@ -11,9 +11,9 @@ pipeline {
 
   options {
     buildDiscarder(logRotator(
-      numToKeepStr: '10',
+      numToKeepStr: '20',
       daysToKeepStr: '30',
-      artifactNumToKeepStr: '1',
+      artifactNumToKeepStr: '10',
     ))
   }
   
@@ -29,10 +29,16 @@ pipeline {
     stage('Prep') {
       steps {
         script {
+          print "Running ${params.BUILD_TYPE} build!"
           /* Necessary to load methods */
           mobile = load 'ci/mobile.groovy'
-          mobile.prepDeps()
+          mobile.prep(params.BUILD_TYPE)
         }
+      }
+    }
+    stage('Lint') {
+      steps {
+        script { mobile.runLint() }
       }
     }
     stage('Tests') {
@@ -47,7 +53,7 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { api = mobile.compileiOS() }
+        script { api = mobile.ios.compile(params.BUILD_TYPE) }
       }
     }
     stage('Archive') {
@@ -56,9 +62,8 @@ pipeline {
       }
     }
     stage('Upload') {
-      when { expression { params.RUN_E2E } }
       steps {
-        script { env.DIAWI_URL = uploadiOS() }
+        script { env.DIAWI_URL = mobile.ios.uploadToDiawi() }
       }
     }
   }

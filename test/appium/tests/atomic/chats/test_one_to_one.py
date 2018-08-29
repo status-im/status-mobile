@@ -35,22 +35,21 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.smoke_1
     def test_offline_messaging_1_1_chat(self):
         self.create_drivers(2, offline_mode=True)
-        device_1, device_2 = self.drivers[0], self.drivers[1]
-        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_2 = 'user_2'
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user(username=username_2)
         public_key_1 = home_1.get_public_key()
         home_1.home_button.click()
 
-        device_1.set_network_connection(1)  # airplane mode on primary device
+        home_1.driver.set_network_connection(1)  # airplane mode on primary device
 
         chat_2 = home_2.add_contact(public_key_1)
         message_1 = 'test message'
         chat_2.chat_message_input.send_keys(message_1)
         chat_2.send_message_button.click()
-        device_2.set_network_connection(1)  # airplane mode on secondary device
+        chat_2.driver.set_network_connection(1)  # airplane mode on secondary device
 
-        device_1.set_network_connection(2)  # turning on WiFi connection on primary device
+        home_1.driver.set_network_connection(2)  # turning on WiFi connection on primary device
 
         home_1.connection_status.wait_for_invisibility_of_element(20)
         chat_element = home_1.get_chat_with_user(username_2)
@@ -58,15 +57,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 
-        device_2.set_network_connection(2)  # turning on WiFi connection on secondary device
-        device_1.set_network_connection(1)  # airplane mode on primary device
+        chat_2.driver.set_network_connection(2)  # turning on WiFi connection on secondary device
+        home_1.driver.set_network_connection(1)  # airplane mode on primary device
 
         chat_2.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(60)
         message_2 = 'one more message'
         chat_2.chat_message_input.send_keys(message_2)
         chat_2.send_message_button.click()
 
-        device_1.set_network_connection(2)  # turning on WiFi connection on primary device
+        home_1.driver.set_network_connection(2)  # turning on WiFi connection on primary device
 
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
@@ -75,14 +74,13 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.testrail_id(3701)
     def test_resend_message_offline(self):
         self.create_drivers(2, offline_mode=True)
-        device_1, device_2 = self.drivers[0], self.drivers[1]
-        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
         home_1, home_2 = sign_in_1.create_user(username_1), sign_in_2.create_user()
         public_key_2 = home_2.get_public_key()
         home_2.home_button.click()
 
-        device_1.set_network_connection(1)  # airplane mode on primary device
+        home_1.driver.set_network_connection(1)  # airplane mode on primary device
 
         chat_1 = home_1.add_contact(public_key_2)
         message = 'test message'
@@ -92,7 +90,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not 5 < progress_time < 30:
             self.errors.append('Progress indicator is shown during %s seconds' % progress_time)
 
-        device_1.set_network_connection(2)  # turning on WiFi connection
+        home_1.driver.set_network_connection(2)  # turning on WiFi connection
         chat_1.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(30)
         chat_1.element_by_text('Not sent. Tap for options').click()
         if not chat_1.element_by_text('Delete message').is_element_displayed():
@@ -114,12 +112,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.smoke_1
     def test_messaging_in_different_networks(self):
         self.create_drivers(2)
-        device_1, device_2 = self.drivers[0], self.drivers[1]
-        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
-        sign_in_1.create_user(username_1)
-        sign_in_2.create_user()
-        home_1, home_2 = sign_in_1.get_home_view(), sign_in_2.get_home_view()
+        home_1, home_2 = sign_in_1.create_user(username_1), sign_in_2.create_user()
         public_key_2 = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         profile_2.switch_network('Mainnet with upstream RPC')
@@ -266,8 +261,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.smoke_1
     def test_offline_status(self):
         self.create_drivers(1, offline_mode=True)
-        driver = self.drivers[0]
-        sign_in = SignInView(driver)
+        sign_in = SignInView(self.drivers[0])
         home_view = sign_in.create_user()
 
         # Dismiss "Welcome to Status" placeholder.
@@ -275,7 +269,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.home_button.click()
 
-        driver.set_network_connection(1)  # airplane mode
+        sign_in.driver.set_network_connection(1)  # airplane mode
 
         if home_view.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in home screen')
@@ -405,8 +399,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.testrail_id(2781)
     def test_timestamp_in_chats(self):
         self.create_drivers(2)
-        device_1, device_2 = self.drivers[0], self.drivers[1]
-        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1 = 'user_%s' % get_current_time()
         device_1_home, device_2_home = sign_in_1.create_user(username=username_1), sign_in_2.create_user()
         device_2_public_key = device_2_home.get_public_key()
@@ -417,7 +410,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         message = 'test text'
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
-        sent_time = datetime.strptime(device_1.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
+        sent_time = datetime.strptime(device_1_chat.driver.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
         if not device_1_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in 1-1 chat for the sender')
         if device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
@@ -437,7 +430,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_chat.chat_message_input.send_keys(message)
         device_2_chat.send_message_button.click()
-        sent_time = datetime.strptime(device_2.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
+        sent_time = datetime.strptime(device_2_chat.driver.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
         if not device_2_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in public chat for the sender')
         if device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():

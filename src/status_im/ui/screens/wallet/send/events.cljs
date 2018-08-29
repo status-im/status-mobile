@@ -1,7 +1,13 @@
 (ns status-im.ui.screens.wallet.send.events
   (:require [re-frame.core :as re-frame]
+            [status-im.chat.commands.sending :as commands-sending]
+            [status-im.chat.models.message :as models.message]
+            [status-im.constants :as constants]
             [status-im.i18n :as i18n]
+            [status-im.models.transactions :as wallet.transactions]
+            [status-im.models.wallet :as models.wallet]
             [status-im.native-module.core :as status]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
@@ -11,13 +17,7 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [status-im.models.wallet :as models.wallet]
-            [status-im.chat.models.message :as models.message]
-            [status-im.chat.commands.sending :as commands-sending]
-            [status-im.constants :as constants]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.models.transactions :as wallet.transactions]))
+            [status-im.utils.utils :as utils]))
 
 ;;;; FX
 
@@ -118,21 +118,21 @@
  (fn [{:keys [db]} _]
    (let [{:keys [send-transaction transactions-queue]} (:wallet db)
          {:keys [payload message-id] :as queued-transaction} (last transactions-queue)
-         {:keys [method params]} payload
+         {:keys [method params id]} payload
          db' (update-in db [:wallet :transactions-queue] drop-last)]
      (when (and (not (:id send-transaction)) queued-transaction)
        (cond
 
          ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
-         (let [{:keys [gas gasPrice] :as transaction} (models.wallet/prepare-dapp-transaction
-                                                       queued-transaction (:contacts/contacts db))
+         (let [{:keys [gas gas-price] :as transaction} (models.wallet/prepare-dapp-transaction
+                                                        queued-transaction (:contacts/contacts db))
                {:keys [wallet-set-up-passed?]} (:account/account db)]
            {:db         (assoc-in db' [:wallet :send-transaction] transaction)
             :dispatch-n [[:update-wallet]
                          (when-not gas
                            [:wallet/update-estimated-gas (first params)])
-                         (when-not gasPrice
+                         (when-not gas-price
                            [:wallet/update-gas-price])
                          [:navigate-to-modal (if wallet-set-up-passed?
                                                :wallet-send-transaction-modal
@@ -142,7 +142,7 @@
          (= method constants/web3-personal-sign)
          (let [[address data] (models.wallet/normalize-sign-message-params params)]
            (if (and address data)
-             {:db       (assoc-in db' [:wallet :send-transaction] {:id               (str message-id)
+             {:db       (assoc-in db' [:wallet :send-transaction] {:id               (str (or id message-id))
                                                                    :from             address
                                                                    :data             data
                                                                    :dapp-transaction queued-transaction
@@ -269,12 +269,3 @@
  :sync-wallet-transactions
  (fn [cofx _]
    (wallet.transactions/sync cofx)))
-
-(handlers/register-handler-fx
- :start-wallet-transactions-sync
- (fn [cofx _]
-   (when-not (get-in cofx [:db :wallet :transactions-sync-started?])
-     (handlers-macro/merge-fx cofx
-                              (wallet.transactions/load-missing-chat-transactions)
-                              (wallet.transactions/sync)
-                              (wallet.transactions/set-sync-started)))))

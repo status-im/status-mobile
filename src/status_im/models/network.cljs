@@ -1,8 +1,8 @@
 (ns status-im.models.network
   (:require [clojure.string :as string]
+            [status-im.ui.screens.accounts.utils :as accounts.utils]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.ui.screens.accounts.utils :as accounts.utils]))
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")

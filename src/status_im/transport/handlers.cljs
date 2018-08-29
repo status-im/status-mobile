@@ -220,25 +220,23 @@
      :data-store/tx [(transport-store/save-transport-tx {:chat-id chat-id
                                                          :chat    updated-chat})]}))
 
-(handlers/register-handler-fx
- :signals/envelope-status
- [re-frame/trim-v]
- (fn [{:keys [db] :as cofx} [envelope-hash status]]
-   (let [{:keys [chat-id message-type message-id]}
-         (get-in db [:transport/message-envelopes envelope-hash])]
-     (case message-type
-       :contact-message
-       (when (= :sent status)
-         (handlers-macro/merge-fx cofx
-                                  (remove-hash envelope-hash)
-                                  (update-resend-contact-message chat-id)))
+(defn update-envelope-status
+  [envelope-hash status {:keys [db] :as cofx}]
+  (let [{:keys [chat-id message-type message-id]}
+        (get-in db [:transport/message-envelopes envelope-hash])]
+    (case message-type
+      :contact-message
+      (when (= :sent status)
+        (handlers-macro/merge-fx cofx
+                                 (remove-hash envelope-hash)
+                                 (update-resend-contact-message chat-id)))
 
-       (when-let [message (get-in db [:chats chat-id :messages message-id])]
-         (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
-           (handlers-macro/merge-fx cofx
-                                    (remove-hash envelope-hash)
-                                    (models.message/update-message-status message status)
-                                    (models.message/send-push-notification fcm-token status))))))))
+      (when-let [message (get-in db [:chats chat-id :messages message-id])]
+        (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])]
+          (handlers-macro/merge-fx cofx
+                                   (remove-hash envelope-hash)
+                                   (models.message/update-message-status message status)
+                                   (models.message/send-push-notification fcm-token status)))))))
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:account/account db)

@@ -1,3 +1,4 @@
+import logging
 import pytest
 import sys
 import re
@@ -10,7 +11,7 @@ from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
 from selenium.common.exceptions import WebDriverException
-from tests import test_suite_data, start_threads, marks
+from tests import test_suite_data, start_threads
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException
 from support.github_report import GithubHtmlReport
@@ -132,6 +133,22 @@ class AbstractTestCase:
                                                                        % self.get_alert_text(driver)
 
 
+class Driver(webdriver.Remote):
+
+    @property
+    def number(self):
+        return test_suite_data.current_test.testruns[-1].jobs[self.session_id]
+
+    def info(self, text: str):
+        if "Base" not in text:
+            text = 'Device %s: %s' % (self.number, text)
+            logging.info(text)
+            test_suite_data.current_test.testruns[-1].steps.append(text)
+
+    def fail(self, text: str):
+        pytest.fail('Device %s: %s' % (self.number, text))
+
+
 class SingleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
@@ -140,10 +157,10 @@ class SingleDeviceTestCase(AbstractTestCase):
                         'sauce': {'executor': self.executor_sauce_lab,
                                   'capabilities': self.capabilities_sauce_lab}}
 
-        self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
-                                       capabilities[self.environment]['capabilities'])
+        self.driver = Driver(capabilities[self.environment]['executor'],
+                             capabilities[self.environment]['capabilities'])
+        test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
-        test_suite_data.current_test.testruns[-1].jobs.append(self.driver.session_id)
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
@@ -165,9 +182,9 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
     def create_drivers(self, quantity):
         capabilities = self.add_local_devices_to_capabilities()
         for driver in range(quantity):
-            self.drivers[driver] = webdriver.Remote(self.executor_local, capabilities[driver])
+            self.drivers[driver] = Driver(self.executor_local, capabilities[driver])
+            test_suite_data.current_test.testruns[-1].jobs[self.drivers[driver].session_id] = driver + 1
             self.drivers[driver].implicitly_wait(self.implicitly_wait)
-            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:
@@ -193,14 +210,14 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         if offline_mode:
             capabilities['platformVersion'] = '6.0'
         self.drivers = self.loop.run_until_complete(start_threads(quantity,
-                                                                  webdriver.Remote,
+                                                                  Driver,
                                                                   self.drivers,
                                                                   self.executor_sauce_lab,
                                                                   self.update_capabilities_sauce_lab(capabilities)))
         for driver in range(quantity):
+            test_suite_data.current_test.testruns[-1].jobs[self.drivers[driver].session_id] = driver + 1
             self.drivers[driver].implicitly_wait(
                 custom_implicitly_wait if custom_implicitly_wait else self.implicitly_wait)
-            test_suite_data.current_test.testruns[-1].jobs.append(self.drivers[driver].session_id)
 
     def teardown_method(self, method):
         for driver in self.drivers:

@@ -1,4 +1,3 @@
-
 (ns status-im.ui.screens.desktop.main.chat.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
@@ -18,7 +17,9 @@
             [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
-            [status-im.i18n :as i18n]))
+            [status-im.utils.contacts :as utils.contacts]
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.desktop.main.chat.events :as chat.events]))
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
@@ -47,7 +48,7 @@
      [react/view
       (when (and (not group-chat) (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
-                     :on-press #(re-frame/dispatch [:navigate-to :chat-profile])}
+                     :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
          (i18n/label :t/view-profile)])
 
       [react/text {:style (styles/profile-actions-text colors/red)
@@ -74,10 +75,11 @@
 
 (views/defview member-photo [from]
   (letsubs [photo-path [:get-photo-path from]]
-    [react/image {:source {:uri (if (string/blank? photo-path)
-                                  (identicon/identicon from)
-                                  photo-path)}
-                  :style  styles/photo-style}]))
+    [react/touchable-highlight  {:on-press #(re-frame/dispatch [:show-profile-desktop from])}
+     [react/image {:source {:uri (if (string/blank? photo-path)
+                                   (identicon/identicon from)
+                                   photo-path)}
+                   :style  styles/photo-style}]]))
 
 (views/defview my-photo [from]
   (views/letsubs [account [:get-current-account]]
@@ -125,7 +127,7 @@
   (if (= type :datemark)
     ^{:key (str "datemark" message-id)}
     [message.datemark/chat-datemark value]
-    (when (= content-type constants/text-content-type)
+    (when (contains? constants/desktop-content-types content-type)
       (reagent.core/create-class
        {:component-did-mount
         #(when (and message-id
@@ -213,31 +215,35 @@
      [chat-text-input]]))
 
 (views/defview chat-profile []
-  (views/letsubs [{:keys [pending? whisper-identity public-key] :as contact} [:get-current-chat-contact]]
-    [react/view {:style styles/chat-profile-body}
-     [profile.views/profile-badge contact]
+  (letsubs [identity        [:get-current-contact-identity]
+            maybe-contact   [:get-current-contact]]
+
+    (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))
+          {:keys [pending? whisper-identity public-key]} contact]
+      [react/view {:style styles/chat-profile-body}
+       [profile.views/profile-badge contact]
                   ;; for private chat, public key will be chat-id
-     [react/view
-      (if pending?
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+       [react/view
+        (if (or (nil? pending?) pending?)
+          [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+           [react/view {:style styles/chat-profile-row}
+            [react/view {:style styles/chat-profile-icon-container
+                         :accessibility-label :add-contact-link}
+             [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
+            [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
+          [react/view {:style styles/chat-profile-row}
+           [react/view {:style styles/chat-profile-icon-container
+                        :accessibility-label :add-contact-link}
+            [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
+           [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat public-key])}
          [react/view {:style styles/chat-profile-row}
           [react/view {:style styles/chat-profile-icon-container
-                       :accessibility-label :add-contact-link}
-           [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/blue)}]]
-          [react/text {:style (styles/contact-card-text colors/blue)} (i18n/label :t/add-to-contacts)]]]
-        [react/view {:style styles/chat-profile-row}
-         [react/view {:style styles/chat-profile-icon-container
-                      :accessibility-label :add-contact-link}
-          [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
-         [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat public-key])}
-       [react/view {:style styles/chat-profile-row}
-        [react/view {:style styles/chat-profile-icon-container
-                     :accessibility-label :send-message-link}
-         [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
-        [react/text {:style (styles/contact-card-text colors/blue)}
-         (i18n/label :t/send-message)]]]
-      [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
-      [react/text {:style           {:font-size 14}
-                   :selectable      true
-                   :selection-color colors/hawkes-blue} public-key]]]))
+                       :accessibility-label :send-message-link}
+           [vector-icons/icon :icons/chats {:style (styles/chat-profile-icon colors/blue)}]]
+          [react/text {:style (styles/contact-card-text colors/blue)}
+           (i18n/label :t/send-message)]]]
+        [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
+        [react/text {:style           {:font-size 14}
+                     :selectable      true
+                     :selection-color colors/hawkes-blue} whisper-identity]]])))

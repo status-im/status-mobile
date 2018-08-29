@@ -149,4 +149,5 @@ class SignInView(BaseView):
         try:
             self.account_button.find_elements()[position].click()
         except IndexError:
-            raise NoSuchElementException('Unable to find account by position %s' % position) from None
+            raise NoSuchElementException(
+                'Device %s: Unable to find account by position %s' % (self.driver.number, position)) from None

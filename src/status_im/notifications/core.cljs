@@ -1,4 +1,4 @@
-(ns status-im.utils.notifications
+(ns status-im.notifications.core
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -13,47 +13,32 @@
 
 (when-not platform/desktop?
 
-  (handlers/register-handler-db
-   :update-fcm-token
-   (fn [db [_ fcm-token]]
-     (assoc-in db [:notifications :fcm-token] fcm-token)))
-
-  (handlers/register-handler-fx
-   :request-notifications-granted
-   (fn [_ _]
-     (re-frame/dispatch [:show-mainnet-is-default-alert])))
-
-  (handlers/register-handler-fx
-   :request-notifications-denied
-   (fn [_ _]
-     (re-frame/dispatch [:show-mainnet-is-default-alert])))
-
   (def firebase (object/get rn/react-native-firebase "default"))
 
   ;; NOTE: Only need to explicitly request permissions on iOS.
   (defn request-permissions []
     (if platform/desktop?
-      (re-frame/dispatch [:request-notifications-granted {}])
+      (re-frame/dispatch [:notifications/request-notifications-granted {}])
       (-> (.requestPermission (.messaging firebase))
           (.then
            (fn [_]
              (log/debug "notifications-granted")
-             (re-frame/dispatch [:request-notifications-granted {}]))
+             (re-frame/dispatch [:notifications/request-notifications-granted {}]))
            (fn [_]
              (log/debug "notifications-denied")
-             (re-frame/dispatch [:request-notifications-denied {}]))))))
+             (re-frame/dispatch [:notifications/request-notifications-denied {}]))))))
 
   (defn get-fcm-token []
     (-> (.getToken (.messaging firebase))
         (.then (fn [x]
                  (log/debug "get-fcm-token: " x)
-                 (re-frame/dispatch [:update-fcm-token x])))))
+                 (re-frame/dispatch [:notifications/update-fcm-token x])))))
 
   (defn on-refresh-fcm-token []
     (.onTokenRefresh (.messaging firebase)
                      (fn [x]
                        (log/debug "on-refresh-fcm-token: " x)
-                       (re-frame/dispatch [:update-fcm-token x]))))
+                       (re-frame/dispatch [:notifications/update-fcm-token x]))))
 
   ;; TODO(oskarth): Only called in background on iOS right now.
   ;; NOTE(oskarth): Hardcoded data keys :sum and :msg in status-go right now.
@@ -94,31 +79,17 @@
                                                  first)]
       (when address
         {:db       (assoc-in db [:push-notifications/stored to] from)
-         :dispatch [:open-login address photo-path name]})))
+         :dispatch [:ui/open-login address photo-path name]})))
 
-  (defn process-initial-push-notification [{:keys [initial?]} {:keys [db]}]
-    (when initial?
-      {:db (assoc db :push-notifications/initial? true)}))
-
-  (defn process-push-notification [{:keys [from to] :as event} {:keys [db] :as cofx}]
+  (defn handle-push-notification [{:keys [from to] :as event} {:keys [db] :as cofx}]
     (let [current-public-key (get-in cofx [:db :current-public-key])]
       (if current-public-key
+        ;; TODO(yenda) why do we ignore the notification if
+        ;; it is not for the current account ?
         (when (= to current-public-key)
           {:db       (update db :push-notifications/stored dissoc to)
            :dispatch [:navigate-to-chat from]})
         (store-event event cofx))))
-
-  (defn handle-push-notification [cofx [_ event]]
-    (handlers-macro/merge-fx cofx
-                             (process-initial-push-notification event)
-                             (process-push-notification event)))
-
-  (defn stored-event [address cofx]
-    (let [to (get-in cofx [:db :accounts/accounts address :public-key])
-          from (get-in cofx [:db :push-notifications/stored to])]
-      (when from
-        [:handle-push-notification {:from from
-                                    :to   to}])))
 
   (defn parse-notification-payload [s]
     (try
@@ -126,16 +97,24 @@
       (catch :default _
         #js {})))
 
-  (defn handle-notification-event [event {:keys [initial?]}]
+  (defn handle-notification-event [event]
     (let [msg (object/get (.. event -notification -data) "msg")
           data (parse-notification-payload msg)
           from (object/get data "from")
           to (object/get data "to")]
       (log/debug "on notification" (pr-str msg))
       (when (and from to)
-        (re-frame/dispatch [:handle-push-notification {:from     from
-                                                       :to       to
-                                                       :initial? initial?}]))))
+        (re-frame/dispatch [:notification/handle-push-notification {:from from
+                                                                    :to   to}]))))
+
+  (defn handle-initial-push-notification
+    []
+    (.. firebase
+        notifications
+        getInitialNotification
+        (then (fn [event]
+                (when event
+                  (handle-notification-event event))))))
 
   (defn on-notification-opened []
     (.. firebase
@@ -164,24 +143,18 @@
         (then #(log/debug "Display Notification" title body))
         (then #(log/debug "Display Notification error" title body))))
 
-  (re-frame/reg-fx :display-notification-fx display-notification)
-
-  (handlers/register-handler-fx :handle-push-notification handle-push-notification)
-
-  (re-frame/reg-fx
-   :handle-initial-push-notification-fx
-   (fn [{:keys [push-notifications/initial?]}]
-     (when-not initial?
-       (.. firebase
-           notifications
-           getInitialNotification
-           (then (fn [event]
-                   (when event
-                     (handle-notification-event event {:initial? true}))))))))
-
   (defn init []
     (on-refresh-fcm-token)
     (on-notification)
     (on-notification-opened)
     (when platform/android?
       (create-notification-channel))))
+
+(defn process-stored-event [address cofx]
+  (when-not platform/desktop?
+    (let [to (get-in cofx [:db :accounts/accounts address :public-key])
+          from (get-in cofx [:db :push-notifications/stored to])]
+      (when from
+        (handle-push-notification {:from from
+                                   :to   to}
+                                  cofx)))))

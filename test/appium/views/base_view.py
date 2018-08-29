@@ -5,7 +5,7 @@ import base64
 import pytest
 import re
 import zbarlight
-from tests import info, common_password, test_fairy_warning_text
+from tests import common_password, test_fairy_warning_text
 from eth_keys import datatypes
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PIL import Image
@@ -22,7 +22,7 @@ class BackButton(BaseButton):
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):
             self.find_element().click()
-            info('Tap on %s' % self.name)
+            self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -35,7 +35,7 @@ class AllowButton(BaseButton):
         try:
             for _ in range(3):
                 self.find_element().click()
-                info('Tap on %s' % self.name)
+                self.driver.info('Tap on %s' % self.name)
         except NoSuchElementException:
             pass
 
@@ -114,7 +114,7 @@ class WalletButton(TabButton):
         return WalletView(self.driver)
 
     def click(self):
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
         from views.wallet_view import SetUpButton, SendTransactionButton
         for _ in range(3):
             self.find_element().click()
@@ -179,7 +179,7 @@ class SendMessageButton(BaseButton):
 
     def click(self):
         self.find_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
 
 
 class ConnectionStatusText(BaseText):
@@ -299,7 +299,7 @@ class BaseView(object):
         raise TimeoutError('Logcat is empty')
 
     def confirm(self):
-        info("Tap 'Confirm' on native keyboard")
+        self.driver.info("Tap 'Confirm' on native keyboard")
         self.driver.press_keycode(66)
 
     def confirm_until_presence_of_element(self, desired_element, attempts=3):
@@ -307,26 +307,26 @@ class BaseView(object):
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.confirm()
-                info('Wait for %s' % desired_element.name)
+                self.driver.info('Wait for %s' % desired_element.name)
                 desired_element.wait_for_element(5)
                 return
             except TimeoutException:
                 counter += 1
 
     def click_system_back_button(self):
-        info('Click system back button')
+        self.driver.info('Click system back button')
         self.driver.press_keycode(4)
 
     def cut_text(self):
-        info('Cut text')
+        self.driver.info('Cut text')
         self.driver.press_keycode(277)
 
     def copy_text(self):
-        info('Copy text')
+        self.driver.info('Copy text')
         self.driver.press_keycode(278)
 
     def paste_text(self):
-        info('Paste text')
+        self.driver.info('Paste text')
         self.driver.press_keycode(279)
 
     def send_as_keyevent(self, string):
@@ -339,7 +339,7 @@ class BaseView(object):
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
         time.sleep(3)
-        info("Enter '%s' using native keyboard" % string)
+        self.driver.info("Enter '%s' using native keyboard" % string)
         for i in string:
             if type(keys[i]) is list:
                 keycode, metastate = keys[i][0], keys[i][1]
@@ -348,49 +348,49 @@ class BaseView(object):
             self.driver.press_keycode(keycode=keycode, metastate=metastate)
 
     def find_full_text(self, text, wait_time=60):
-        info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.text_selector(text)
         return element.wait_for_element(wait_time)
 
     def find_text_part(self, text, wait_time=60):
-        info("Looking for a text part: '%s'" % text)
+        self.driver.info("Looking for a text part: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.text_part_selector(text)
         return element.wait_for_element(wait_time)
 
     def element_by_text(self, text, element_type='button'):
-        info("Looking for an element by text: '%s'" % text)
+        self.driver.info("Looking for an element by text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.text_selector(text)
         return element
 
     def element_by_text_part(self, text, element_type='button'):
-        info("Looking for an element by text part: '%s'" % text)
+        self.driver.info("Looking for an element by text part: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.text_part_selector(text)
         return element
 
     def element_starts_with_text(self, text, element_type='base'):
-        info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for full text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):
-        info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
 
     def element_by_accessibility_id(self, accessibility_id, element_type='button'):
-        info("Looking for an element by accessibility id: '%s'" % accessibility_id)
+        self.driver.info("Looking for an element by accessibility id: '%s'" % accessibility_id)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.accessibility_id(accessibility_id)
         return element
 
     def element_by_xpath(self, xpath, element_type='button'):
-        info("Looking for an element by xpath: '%s'" % xpath)
+        self.driver.info("Looking for an element by xpath: '%s'" % xpath)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector(xpath)
         return element
@@ -492,7 +492,7 @@ class BaseView(object):
                         connect_status.wait_for_invisibility_of_element()
                     except TimeoutException as e:
                         if i == 2:
-                            e.msg = "Can't reconnect to mail server after 3 attempts"
+                            e.msg = "Device %s: Can't reconnect to mail server after 3 attempts" % self.driver.number
                             raise e
 
     def check_no_values_in_logcat(self, **kwargs):

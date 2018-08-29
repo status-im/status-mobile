@@ -1,7 +1,6 @@
 import pytest
-import random
 
-from tests import marks, common_password
+from tests import marks, common_password, unique_password
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -42,12 +41,11 @@ class TestSignIn(SingleDeviceTestCase):
     @marks.testrail_id(3768)
     def test_password_in_logcat_sign_in(self):
         sign_in = SignInView(self.driver)
-        password = random.randint(100000, 1000000)
-        sign_in.create_user(password=password)
+        sign_in.create_user(password=unique_password)
         profile = sign_in.profile_button.click()
         profile.logout()
         sign_in.sign_in()
-        sign_in.check_no_values_in_logcat(password=password)
+        sign_in.check_no_values_in_logcat(password=unique_password)
 
 
 @marks.all
@@ -58,14 +56,13 @@ class TestSignInOffline(MultipleDeviceTestCase):
     @marks.testrail_id(1432)
     def test_offline_login(self):
         self.create_drivers(1, offline_mode=True)
-        driver = self.drivers[0]
-        sign_in = SignInView(driver)
+        sign_in = SignInView(self.drivers[0])
         sign_in.create_user()
 
-        driver.close_app()
-        driver.set_network_connection(1)  # airplane mode
+        sign_in.driver.close_app()
+        sign_in.driver.set_network_connection(1)  # airplane mode
 
-        driver.launch_app()
+        sign_in.driver.launch_app()
         sign_in.accept_agreements()
         home = sign_in.sign_in()
         home.home_button.wait_for_visibility_of_element()
