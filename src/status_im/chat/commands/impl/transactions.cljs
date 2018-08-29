@@ -167,11 +167,13 @@
       (let [sanitised-str (string/replace amount #"," ".")
             portions      (string/split sanitised-str ".")
             decimals      (count (get portions 1))
-            amount        (js/parseFloat sanitised-str)]
+            amount-string (str amount)
+            amount        (js/Number sanitised-str)]
         (cond
 
           (or (js/isNaN amount)
-              (> (count portions) 2))
+              (> (count portions) 2)
+              (re-matches #".+(\.|,)$" amount-string))
           {:title       "Amount"
            :description "Amount is not valid number"}
 

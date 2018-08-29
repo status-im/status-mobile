@@ -57,6 +57,21 @@
     (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "a"} cofx)
            {:title       "Amount"
             :description "Amount is not valid number"}))
+    (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "0,1Aaa"} cofx)
+           {:title       "Amount"
+            :description "Amount is not valid number"}))
+    (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "1-45"} cofx)
+           {:title       "Amount"
+            :description "Amount is not valid number"}))
+    (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "1$#@8"} cofx)
+           {:title       "Amount"
+            :description "Amount is not valid number"}))
+    (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "20,"} cofx)
+           {:title       "Amount"
+            :description "Amount is not valid number"}))
+    (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "20."} cofx)
+           {:title       "Amount"
+            :description "Amount is not valid number"}))
     (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "0.54354353454353453453454353453445345545"} cofx)
            {:title       "Amount"
             :description "Max number of decimals is 18"}))
