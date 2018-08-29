@@ -19,7 +19,7 @@ def prep(type = 'nightly') {
   sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
   /* generate ios/StatusIm.xcworkspace */
   dir('ios') {
-    sh 'pod install'
+    sh 'pod install --silent --repo-update'
   }
 }
 
