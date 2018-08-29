@@ -47,6 +47,12 @@
              public?
              [react/text {:style styles/public-chat-text}
               (i18n/label :t/public-chat)])]]
+     #_[react/view
+        [react/popup-menu
+         [react/popup-menu-trigger {:text "Popup"}]
+         [react/popup-menu-options
+          [react/popup-menu-option {:text "First"}]
+          [react/popup-menu-option {:text "Second"}]]]]
      [react/view
       (when (and (not group-chat) (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
@@ -153,7 +159,6 @@
               (reset! chat-id* chat-id)
               (js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
       [react/view {:style styles/messages-view}
-       [connectivity/error-view]
        [react/scroll-view {:scrollEventThrottle    16
                            :headerHeight styles/messages-list-vertical-padding
                            :footerWidth styles/messages-list-vertical-padding
@@ -173,7 +178,8 @@
             ^{:key message-obj}
             [message content (= from current-public-key)
              (assoc message-obj :group-chat group-chat
-                    :current-public-key current-public-key)]))]]])))
+                    :current-public-key current-public-key)]))]]
+       [connectivity/error-view]])))
 
 (views/defview chat-text-input []
   (views/letsubs [inp-ref (atom nil)]
