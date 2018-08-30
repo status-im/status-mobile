@@ -115,7 +115,7 @@ def uploadArtifact(path) {
 
 def timestamp() {
   def now = new Date(currentBuild.timeInMillis)
-  return now.format('yyMMdd.HHmmss', TimeZone.getTimeZone('UTC'))
+  return now.format('yyMMdd-HHmmss', TimeZone.getTimeZone('UTC'))
 }
 
 def gitCommit() {
@@ -123,7 +123,7 @@ def gitCommit() {
 }
 
 def pkgFilename(type, ext) {
-  return "StatusIm.${timestamp()}.${gitCommit()}.${type}.${ext}"
+  return "StatusIm-${timestamp()}-${gitCommit()}-${type}.${ext}"
 }
 
 

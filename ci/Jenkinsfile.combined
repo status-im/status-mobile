@@ -53,8 +53,8 @@ pipeline {
     }
     stage('Upload') {
       steps { script {
-        e2eUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.e2e.apk')[0].path)
-        apkUrl = cmn.uploadArtifact(findFiles(glob: "pkg/*.${cmn.getBuildType()}.apk")[0].path)
+        e2eUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*e2e.apk')[0].path)
+        apkUrl = cmn.uploadArtifact(findFiles(glob: "pkg/*${cmn.getBuildType()}.apk")[0].path)
         dmgUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.dmg')[0].path)
         appUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.AppImage')[0].path)
         /* special case for iOS Diawi links */
