@@ -29,7 +29,10 @@ def buildBranch(name = null, buildType) {
       [name: 'BUILD_TYPE', value: buildType,  $class: 'StringParameterValue'],
   ])
   /* BlueOcean seems to not show child-build links */
-  print "URL: ${b.getAbsoluteUrl()}"
+  print "Build: ${b.getAbsoluteUrl()} (${b.result})"
+  if (b.result != 'SUCCESS') {
+    error("Build Failed")
+  }
   return b
 }
 

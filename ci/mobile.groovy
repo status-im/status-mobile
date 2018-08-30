@@ -2,12 +2,18 @@ common = load 'ci/common.groovy'
 ios = load 'ci/ios.groovy'
 android = load 'ci/android.groovy'
 
-def podLockExists() {
-  def lockFile = (
-    env.HOME+
-    '/.cocoapods/repos/master/.git/refs/remotes/origin/master.lock'
-  )
-  return fileExists(lockFile)
+def wait(lockFile) {
+  /* Crude wait for a lock file to disappear */
+  def maxAttempts = 20
+  def success = false
+  for (i = 0; i <= maxAttempts; i++) {
+    rval = fileExists(lockFile)
+    if (!rval) {
+      return
+    }
+    sleep 10
+  }
+  error("Failed to acquire lock: ${lockFile}")
 }
 
 def podUpdate() {
@@ -17,19 +23,14 @@ def podUpdate() {
    * We could set CP_REPOS_DIR, but the would result in
    * multiple ~3GB directories all over the place and would be slow.
    **/
-  def maxAttempts = 10
-  def success = false
-  for (i = 0; i <= maxAttempts; i++) {
-    if (!podLockExists()) {
-      success = true
-      break
-    }
-    sleep 10
+  def lockFile = "${env.HOME}/.cocoapods.lock"
+  try {
+    wait(lockFile)
+    sh "touch ${lockFile}"
+    sh 'pod update --silent'
+  } finally {
+    sh "rm ${lockFile}"
   }
-  if (!success) {
-    error('Another pod proc. is preventing us from updating!')
-  }
-  sh 'pod update --silent'
 }
 
 def prep(type = 'nightly') {
