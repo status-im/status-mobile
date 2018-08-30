@@ -38,7 +38,12 @@ def uploadToPlayStore() {
 }
 
 def uploadToSauceLabs() {
-  env.SAUCE_LABS_APK = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
+  def changeId = common.getParentRunEnv('CHANGE_ID')
+  if (changeId != null) {
+    env.SAUCE_LABS_APK = "${changeId}.apk"
+  } else {
+    env.SAUCE_LABS_APK = "im.status.ethereum-e2e-${GIT_COMMIT.take(6)}.apk"
+  }
   withCredentials([
     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
