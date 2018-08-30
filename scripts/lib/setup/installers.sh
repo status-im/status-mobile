@@ -333,7 +333,4 @@ function install_android_ndk() {
       echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
       cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"
   fi
-
-  dependency_setup \
-    "pushd android && ./gradlew react-native-android:installArchives && popd"
 }

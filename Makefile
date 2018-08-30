@@ -3,6 +3,8 @@
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
+OS := $(shell uname)
+
 # This is a code for automatic help generator.
 # It supports ANSI colors and categories.
 # To add new item into help output, simply add comments
@@ -27,7 +29,7 @@ HELP_FUN = \
 # Main targets
 
 clean: ##@prepare Remove all output folders
-	git clean -qdxf -f modules/react-native-status/ node_modules/ target/ desktop/modules/ desktop/node_modules/
+	git clean -qdxf -f android/ modules/react-native-status/ node_modules/ target/ desktop/modules/ desktop/node_modules/
 
 setup: ##@prepare Install all the requirements for status-react
 	./scripts/setup
@@ -38,10 +40,12 @@ prepare: ##@prepare Install dependencies and prepare workspace
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
-	cd ios && pod install && cd ..
+ifeq ($(OS),Darwin)
+	cd ios && pod install
+endif
 
 prepare-android: prepare ##@prepare Install Android specific dependencies
-	cd android; ./gradlew react-native-android:installArchives
+	cd android && ./gradlew react-native-android:installArchives
 
 #----------------
 # Release builds
