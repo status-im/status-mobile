@@ -9,7 +9,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>im.status.statusim</string>
 	<key>CFBundleExecutable</key>
-	<string>StatusIm</string>
+	<string>Status</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>NSPrincipalClass</key>

@@ -179,26 +179,27 @@ def compileMacOS() {
 def bundleMacOS(type = 'nightly') {
   def pkg = common.pkgFilename(type, 'dmg')
   dir(packageFolder) {
-    sh 'curl -L -O "https://github.com/gnl/StatusAppFiles/raw/master/StatusIm.app.zip"'
-    sh 'unzip StatusIm.app.zip'
-    sh 'cp -r assets/share/assets StatusIm.app/Contents/Resources'
+    sh 'curl -L -O "https://github.com/status-im/StatusAppFiles/raw/PR5702/Status.app.zip"'
+    sh 'unzip Status.app.zip'
+    sh 'cp -r assets/share/assets Status.app/Contents/Resources'
     sh 'ln -sf ../Resources/assets ../Resources/ubuntu-server ../Resources/node_modules ' +
-            'StatusIm.app/Contents/MacOS'
-    sh 'chmod +x StatusIm.app/Contents/Resources/ubuntu-server'
-    sh 'cp ../desktop/bin/StatusIm StatusIm.app/Contents/MacOS'
-    sh 'cp ../desktop/reportApp/reportApp StatusIm.app/Contents/MacOS'
-    sh 'cp -f ../deployment/macos/qt-reportApp.conf StatusIm.app/Contents/Resources'
-    sh 'ln -sf ../Resources/qt-reportApp.conf StatusIm.app/Contents/MacOS/qt.conf'
+            'Status.app/Contents/MacOS'
+    sh 'chmod +x Status.app/Contents/Resources/ubuntu-server'
+    sh 'cp ../desktop/bin/StatusIm Status.app/Contents/MacOS/Status'
+    sh 'cp ../desktop/reportApp/reportApp Status.app/Contents/MacOS'
+    sh 'cp -f ../deployment/macos/qt-reportApp.conf Status.app/Contents/Resources'
+    sh 'ln -sf ../Resources/qt-reportApp.conf Status.app/Contents/MacOS/qt.conf'
     sh 'install_name_tool -add_rpath "@executable_path/../Frameworks" ' +
             '-delete_rpath "/Users/administrator/qt/5.9.1/clang_64/lib" ' +
-            'StatusIm.app/Contents/MacOS/reportApp'
-    sh 'cp -f ../deployment/macos/Info.plist StatusIm.app/Contents'
+            'Status.app/Contents/MacOS/reportApp'
+    sh 'cp -f ../deployment/macos/Info.plist Status.app/Contents'
+    sh 'cp -f ../deployment/macos/status-icon.icns Status.app/Contents/Resources'
     sh """
-      macdeployqt StatusIm.app -verbose=1 -dmg \\
+      macdeployqt Status.app -verbose=1 \\
         -qmldir='${workspace}/node_modules/react-native/ReactQt/runtime/src/qml/'
     """
-    sh 'rm -f StatusIm.app.zip'
-    sh "mv StatusIm.dmg ${pkg}"
+    sh 'rm -f Status.app.zip'
+    sh "../node_modules/appdmg/bin/appdmg.js ../deployment/macos/status-dmg.json ${pkg}"
   }
   return "${packageFolder}/${pkg}".drop(2)
 }

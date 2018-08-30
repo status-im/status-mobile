@@ -85,5 +85,8 @@
   },
   "devDependencies": {
     "patch-package": "^5.1.1"
+  },
+  "optionalDependencies": {
+    "appdmg": "^0.5.2"
   }
 }
