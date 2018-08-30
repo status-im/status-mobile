@@ -2,5 +2,5 @@
   (:require [status-im.ui.screens.navigation :as navigation]))
 
 (defmethod navigation/preload-data! :browser
-  [db [_ _ browser-id]]
-  (assoc db :browser/options {:browser-id browser-id}))
+  [db [_ _ options]]
+  (assoc db :browser/options options))

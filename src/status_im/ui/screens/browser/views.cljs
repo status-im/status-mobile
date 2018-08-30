@@ -46,6 +46,7 @@
                                                  (re-frame/dispatch [:update-browser-on-nav-change
                                                                      browser
                                                                      (http/normalize-and-decode-url @url-text)
+                                                                     false
                                                                      false]))
                            :placeholder       (i18n/label :t/enter-url)
                            :auto-capitalize   :none
@@ -81,12 +82,12 @@
     [react/text {:style styles/web-view-error-text}
      (str desc)]]))
 
-(defn on-navigation-change [event browser]
+(defn on-navigation-change [event browser error?]
   (let [{:strs [url loading]} (js->clj event)]
     (when platform/ios?
       (re-frame/dispatch [:update-browser-options {:loading? loading}]))
     (when (not= "about:blank" url)
-      (re-frame/dispatch [:update-browser-on-nav-change browser url loading]))))
+      (re-frame/dispatch [:update-browser-on-nav-change browser url loading error?]))))
 
 (defn get-inject-js [url]
   (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
@@ -115,7 +116,7 @@
   (views/letsubs [webview    (atom nil)
                   {:keys [address]} [:get-current-account]
                   {:keys [browser-id dapp? name] :as browser} [:get-current-browser]
-                  {:keys [error? loading? url-editing? show-tooltip show-permission]} [:get :browser/options]
+                  {:keys [error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]
                   network-id [:get-network-id]]
     (let [can-go-back?    (model/can-go-back? browser)
@@ -131,12 +132,12 @@
           :ref                                   #(do
                                                     (reset! webview %)
                                                     (re-frame/dispatch [:set :webview-bridge %]))
-          :source                                {:uri url}
+          :source                                (when-not resolving? {:uri url})
           :java-script-enabled                   true
           :bounces                               false
           :local-storage-enabled                 true
           :render-error                          web-view-error
-          :on-navigation-state-change            #(on-navigation-change % browser)
+          :on-navigation-state-change            #(on-navigation-change % browser error?)
           :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message %])
           :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
           :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
@@ -148,7 +149,7 @@
                                                        (ethereum/normalized-address address)
                                                        (str network-id)))
           :injected-java-script                  js-res/webview-js}]
-        (when loading?
+        (when (or loading? resolving?)
           [react/view styles/web-view-loading
            [components/activity-indicator {:animating true}]])]
        [navigation webview browser can-go-back? can-go-forward?]

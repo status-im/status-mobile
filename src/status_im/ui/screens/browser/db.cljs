@@ -10,6 +10,7 @@
 (spec/def :browser/history (spec/nilable vector?))
 (spec/def :browser/history-index (spec/nilable int?))
 (spec/def :browser/loading? (spec/nilable boolean?))
+(spec/def :browser/resolving? (spec/nilable boolean?))
 (spec/def :browser/url-editing? (spec/nilable boolean?))
 (spec/def :browser/show-tooltip (spec/nilable keyword?))
 (spec/def :browser/show-permission (spec/nilable map?))
@@ -19,6 +20,7 @@
   (allowed-keys
    :opt-un [:browser/browser-id
             :browser/loading?
+            :browser/resolving?
             :browser/url-editing?
             :browser/show-tooltip
             :browser/show-permission

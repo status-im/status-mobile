@@ -5,7 +5,13 @@
             [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.browser.default-dapps :as default-dapps]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [clojure.string :as string]
+            [status-im.utils.ethereum.resolver :as resolver]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.ens :as ens]
+            [status-im.utils.multihash :as multihash]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (defn get-current-url [{:keys [history history-index]}]
   (when (and history-index history)
@@ -24,13 +30,13 @@
       (assoc browser :dapp? true :name (:name dapp))
       (assoc browser :dapp? false :name (i18n/label :t/browser)))))
 
-(defn update-browser-fx [{:keys [db now]} browser]
+(defn update-browser-fx [browser {:keys [db now]}]
   (let [updated-browser (check-if-dapp-in-list (assoc browser :timestamp now))]
     {:db            (update-in db [:browser/browsers (:browser-id updated-browser)]
                                merge updated-browser)
      :data-store/tx [(browser-store/save-browser-tx updated-browser)]}))
 
-(defn update-browser-history-fx [cofx browser url loading?]
+(defn update-browser-history-fx [browser url loading? cofx]
   (when-not loading?
     (let [history-index (:history-index browser)
           history       (:history browser)
@@ -43,12 +49,41 @@
               new-index   (if slash?
                             history-index
                             (dec (count new-history)))]
-          (update-browser-fx cofx
-                             (assoc browser :history new-history :history-index new-index)))))))
+          (update-browser-fx (assoc browser :history new-history :history-index new-index)
+                             cofx))))))
 
-(defn update-browser-and-navigate [cofx browser]
-  (merge (update-browser-fx cofx browser)
-         {:dispatch [:navigate-to :browser (:browser-id browser)]}))
+(defn ens? [host]
+  (string/ends-with? host ".eth"))
+
+(defn ens-multihash-callback [hex]
+  (let [hash (when hex (multihash/base58 (multihash/create :sha2-256 (subs hex 2))))]
+    (if (and hash (not= hash resolver/default-hash))
+      (re-frame/dispatch [:ens-multihash-resolved hash])
+      (re-frame/dispatch [:update-browser-options {:resolving? false}]))))
+
+(defn resolve-multihash-fx [host loading error? {{:keys [web3 network] :as db} :db}]
+  (let [network (get-in db [:account/account :networks network])
+        chain   (ethereum/network->chain-keyword network)]
+    (if (and (not loading) (not error?) (ens? host))
+      {:db                    (assoc-in db [:browser/options :resolving?] true)
+       :resolve-ens-multihash {:web3     web3
+                               :registry (get ens/ens-registries
+                                              chain)
+                               :ens-name host
+                               :cb       ens-multihash-callback}}
+      {})))
+
+(defn update-new-browser-and-navigate [host browser cofx]
+  (handlers-macro/merge-fx
+   cofx
+   {:dispatch [:navigate-to :browser {:browser-id (:browser-id browser)
+                                      :resolving? (ens? host)}]}
+   (update-browser-fx browser)
+   (resolve-multihash-fx host false false)))
+
+(defn update-browser-and-navigate [browser cofx]
+  (merge (update-browser-fx browser cofx)
+         {:dispatch [:navigate-to :browser {:browser-id (:browser-id browser)}]}))
 
 (def permissions {constants/dapp-permission-contact-code {:title       (i18n/label :t/wants-to-access-profile)
                                                           :description (i18n/label :t/your-contact-code)
