@@ -30,6 +30,7 @@
             [status-im.models.wallet :as models.wallet]
             status-im.ui.screens.wallet.collectibles.events
             status-im.ui.screens.wallet.send.events
+            status-im.ui.screens.wallet.request.events
             status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
