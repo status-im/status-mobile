@@ -22,10 +22,9 @@ external_fonts = [
 
 def cleanupBuild() {
   sh """
-    rm -rf \\
-      node_modules ${packageFolder} \\
-      desktop/modules desktop/node_modules
+    rm -rf ${packageFolder}
   """
+  sh 'make clean'
 }
 
 def cleanupAndDeps() {

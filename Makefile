@@ -26,13 +26,16 @@ HELP_FUN = \
 
 # Main targets
 
+clean: ##@prepare Remove all output folders
+	git clean -qdxf modules/react-native-status/ target/ desktop/modules desktop/node_modules
+	npm prune
+
 setup: ##@prepare Install all the requirements for status-react
 	./scripts/setup
 
 prepare: ##@prepare Install dependencies and prepare workspace
 	scripts/prepare-for-platform.sh mobile
 	npm install
-
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
@@ -64,8 +67,7 @@ prod-build-ios:
 	lein prod-build-ios
 
 full-prod-build: ##@build build prod for both Android and iOS
-	./scripts/bundle-status-go.sh ios
-	./scripts/bundle-status-go.sh android
+	./scripts/bundle-status-go.sh ios android
 	$(MAKE) prod-build
 	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
 	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null

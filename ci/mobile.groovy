@@ -34,6 +34,8 @@ def podUpdate() {
 }
 
 def prep(type = 'nightly') {
+  /* ensure that we start from a known state */
+  sh 'make clean'
   /* select type of build */
   switch (type) {
     case 'nightly':
