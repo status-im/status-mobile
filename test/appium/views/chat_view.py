@@ -388,8 +388,3 @@ class ChatView(BaseView):
         today_height = today_text_element.size['height']
         if message_location < today_location + today_height:
             errors.append("Message '%s' is not under 'Today' text" % text)
-
-    def asset_by_name(self, asset_name):
-        element = BaseButton(self.driver)
-        element.locator = element.Locator.text_selector(asset_name)
-        return element

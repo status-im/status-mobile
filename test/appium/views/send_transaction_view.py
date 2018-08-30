@@ -89,12 +89,6 @@ class SelectAssetButton(BaseButton):
         self.locator = self.Locator.accessibility_id('choose-asset-button')
 
 
-class AssetButton(BaseButton):
-    def __init__(self, driver, asset_name):
-        super(AssetButton, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector(asset_name)
-
-
 class ErrorDialog(BaseView):
     def __init__(self, driver):
         super(ErrorDialog, self).__init__(driver)
@@ -180,6 +174,3 @@ class SendTransactionView(BaseView):
         self.sign_transaction_button.click_until_presence_of_element(self.progress_bar)
         self.progress_bar.wait_for_invisibility_of_element(60)
         self.got_it_button.click()
-
-    def asset_by_name(self, asset_name):
-        return AssetButton(self.driver, asset_name)

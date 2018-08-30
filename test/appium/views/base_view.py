@@ -239,6 +239,21 @@ class CrossIcon(BaseButton):
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
 
+class AssetButton(BaseButton):
+    def __init__(self, driver, asset_name):
+        super(AssetButton, self).__init__(driver)
+        self.asset_name = asset_name
+        self.locator = self.Locator.text_part_selector(self.asset_name)
+
+    @property
+    def name(self):
+        return self.asset_name + self.__class__.__name__
+
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -500,3 +515,6 @@ class BaseView(object):
         for key, value in kwargs.items():
             if re.findall('\W%s$|\W%s\W' % (value, value), logcat):
                 pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)
+
+    def asset_by_name(self, asset_name):
+        return AssetButton(self.driver, asset_name)
