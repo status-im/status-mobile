@@ -3,7 +3,7 @@
             status-im.ui.screens.accounts.create.navigation
             [status-im.ui.screens.accounts.models :as models]
             [status-im.ui.screens.accounts.utils :as accounts.utils]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.models :as models]))
 
