@@ -65,7 +65,7 @@ pipeline {
             case 'release':
               mobile.android.uploadToPlayStore(); break;
             case 'nightly':
-              env.DIAWI_URL = mobile.android.uploadToDiawi()
+              env.DIAWI_URL = mobile.android.uploadToDiawi(); break;
             case 'e2e':
               env.SAUCE_URL = mobile.android.uploadToSauceLabs()
           } 
