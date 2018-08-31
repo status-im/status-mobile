@@ -98,7 +98,11 @@
           (i18n/label :t/advanced-settings)]
          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
        [react/view {:style (styles/profile-row false)}
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:logout])}
+        [react/touchable-highlight {:on-press (fn []
+                                                (utils/show-confirmation
+                                                 (i18n/label :logout-are-you-sure)
+                                                 nil
+                                                 #(re-frame/dispatch [:logout])))}
          [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])))
 
