@@ -27,8 +27,7 @@ HELP_FUN = \
 # Main targets
 
 clean: ##@prepare Remove all output folders
-	git clean -qdxf modules/react-native-status/ target/ desktop/modules desktop/node_modules
-	npm prune
+	git clean -qdxf -f modules/react-native-status/ node_modules/ target/ desktop/modules/ desktop/node_modules/
 
 setup: ##@prepare Install all the requirements for status-react
 	./scripts/setup
