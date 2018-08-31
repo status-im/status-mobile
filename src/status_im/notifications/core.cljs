@@ -13,20 +13,22 @@
 
 (when-not platform/desktop?
 
-  (def firebase (object/get rn/react-native-firebase "default"))
+  (def firebase (object/get rn/react-native-firebase "default")))
 
-  ;; NOTE: Only need to explicitly request permissions on iOS.
-  (defn request-permissions []
-    (if platform/desktop?
-      (re-frame/dispatch [:notifications/request-notifications-granted {}])
-      (-> (.requestPermission (.messaging firebase))
-          (.then
-           (fn [_]
-             (log/debug "notifications-granted")
-             (re-frame/dispatch [:notifications/request-notifications-granted {}]))
-           (fn [_]
-             (log/debug "notifications-denied")
-             (re-frame/dispatch [:notifications/request-notifications-denied {}]))))))
+;; NOTE: Only need to explicitly request permissions on iOS.
+(defn request-permissions []
+  (if platform/desktop?
+    (re-frame/dispatch [:notifications/request-notifications-granted {}])
+    (-> (.requestPermission (.messaging firebase))
+        (.then
+         (fn [_]
+           (log/debug "notifications-granted")
+           (re-frame/dispatch [:notifications/request-notifications-granted {}]))
+         (fn [_]
+           (log/debug "notifications-denied")
+           (re-frame/dispatch [:notifications/request-notifications-denied {}]))))))
+
+(when-not platform/desktop?
 
   (defn get-fcm-token []
     (-> (.getToken (.messaging firebase))
@@ -158,3 +160,4 @@
         (handle-push-notification {:from from
                                    :to   to}
                                   cofx)))))
+
