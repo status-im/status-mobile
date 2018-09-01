@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'macos' }
+  agent { label 'linux' }
 
   options {
     buildDiscarder(logRotator(
@@ -15,6 +15,7 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     FASTLANE_DISABLE_COLORS = 1
     REALM_DISABLE_ANALYTICS = 1
+    BUNDLE_PATH = "${HOME}/.bundle"
     ANDROID_HOME = '/usr/local/share/android-sdk'
     ANDROID_SDK_ROOT = '/usr/local/share/android-sdk'
     ANDROID_NDK = '/Users/jenkins/android-ndk-r10e'
