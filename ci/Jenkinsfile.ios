@@ -15,6 +15,7 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     FASTLANE_DISABLE_COLORS=1
     REALM_DISABLE_ANALYTICS=1
+    BUNDLE_PATH = "${HOME}/.bundle"
   }
   
   stages {
