@@ -48,6 +48,9 @@ def prep(type = 'nightly') {
       sh 'cp .env.jenkins .env'; break
   }
   common.installJSDeps('mobile')
+  print env.BUNDLE_PATH
+  /* install ruby dependencies */
+  sh 'bundle install --quiet'
   /* install Maven dependencies */
   sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
   /* generate ios/StatusIm.xcworkspace */
