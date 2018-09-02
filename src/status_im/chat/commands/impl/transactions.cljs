@@ -23,7 +23,8 @@
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
             [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
             [status-im.models.transactions :as wallet.transactions]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            status-im.chat.commands.impl.transactions.subs))
 
 ;; common `send/request` functionality
 
@@ -51,7 +52,10 @@
        [react/image {:source (-> asset :icon :source)
                      :style  transactions-styles/asset-icon}]
        [react/text {:style transactions-styles/asset-symbol} name]]
-      [react/text {:style transactions-styles/nft-asset-amount} (money/to-fixed amount)]]]))
+      [react/text {:style {:font-size     16
+                           :color         colors/gray
+                           :padding-right 14}}
+       (money/to-fixed amount)]]]))
 
 (def assets-separator [react/view transactions-styles/asset-separator])
 
@@ -116,13 +120,24 @@
                         :border-radius   2
                         :border-width    1
                         :border-color    colors/gray}
-            [svgimage/svgimage {:style    transactions-styles/nft-token-icon
-                                :source   {:uri image_url}}]
+            [svgimage/svgimage {:style  {:width        100
+                                         :height       100
+                                         :margin-left  20
+                                         :margin-right 20}
+                                :source {:uri image_url}}]
             [react/text {} name]]])
         collectible-tokens)])))
 
 (defn choose-nft-token-suggestion [selected-event-creator]
   [choose-nft-token selected-event-creator])
+
+(defview nft-token [{:keys [name image_url] :as token}]
+  [react/view {:flex-direction :column
+               :align-items    :center}
+   [svgimage/svgimage {:style  {:width  100
+                                :height 100}
+                       :source {:uri image_url}}]
+   [react/text {} name]])
 
 ;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences

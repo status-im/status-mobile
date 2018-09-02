@@ -12,6 +12,8 @@
 (def components
   {'view           react/view
    'text           react/text
+   'nft-token      transactions/nft-token
+   'send-status    transactions/send-status
    'asset-selector transactions/choose-nft-asset-suggestion
    'token-selector transactions/choose-nft-token-suggestion})
 
@@ -21,11 +23,9 @@
   (reduce (fn [capacities hook]
             (assoc-in capacities [:hooks (host/id hook)] hook))
           {:components    components
-           :queries       #{:get-in}
+           :queries       #{:get-in :get-collectible-token}
            :events        #{:set-in}
-           :permissions   {:read  {:include-paths #{[:network]
-                                                    [:current-chat-id]
-                                                    [:chats #".*"]}}
+           :permissions   {:read  {:include-paths #{[:chats #".*"]}}
                            :write {:include-paths #{}}}}
           app-hooks))
 
