@@ -151,9 +151,14 @@
 (defview messages-list [messages group-chat list-ref]
   (letsubs [current-public-key [:get-current-public-key]
             offset [:get-current-chat-ui-prop :offset]]
-    {:should-component-update (constantly false)}
+    {:should-component-update (constantly false)
+     :component-did-mount     (fn []
+                                (if platform/android?
+                                  (js/setTimeout
+                                   #(.scrollToOffset @list-ref #js {:offset offset :animated false})
+                                   0)))}
     [list/flat-list {:data                      messages
-                     :style                     {:opacity 0}
+                     :style                     {:opacity (if platform/android? 1 0)}
                      :ref                       #(reset! list-ref %)
                      :key-fn                    #(or (:message-id %) (:value %))
                      :render-fn                 (fn [message]
@@ -161,17 +166,12 @@
                                                                 :current-public-key current-public-key
                                                                 :row                message}])
                      :inverted                  true
-                     :on-scroll                 (fn [_]
-                                                  (when (zero? (.. @list-ref -props -style -opacity))
-                                                    (.runAfterInteractions js-dependencies/interaction-manager
-                                                                           #(.setNativeProps @list-ref #js {:opacity 1}))))
-                     :on-layout                 (fn [_]
-                                                  (utils/set-timeout
-                                                   #(.setNativeProps @list-ref #js {:opacity 1})
-                                                   1000))
                      :on-content-size-change    (fn [_]
-                                                  (when (zero? (.. @list-ref -props -style -opacity))
-                                                    (.scrollToOffset @list-ref #js {:offset offset :animated false})))
+                                                  (when platform/ios?
+                                                    (.scrollToOffset @list-ref #js {:offset offset :animated false})
+                                                    (js/setTimeout
+                                                     #(.setNativeProps @list-ref #js {:opacity 1})
+                                                     100)))
                      :onScrollEndDrag           (fn [e]
                                                   (let [offset (.. e -nativeEvent -contentOffset -y)]
                                                     (re-frame/dispatch [:set-chat-ui-props {:offset (max offset 0)}])
