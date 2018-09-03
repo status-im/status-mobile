@@ -10,6 +10,7 @@
             [status-im.ui.screens.accounts.login.models :as login]
             status-im.ui.screens.accounts.recover.events
             [status-im.models.contacts :as models.contacts]
+            status-im.ui.screens.add-new.events
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events

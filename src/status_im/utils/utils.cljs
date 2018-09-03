@@ -18,6 +18,11 @@
            (when on-dismiss
              (clj->js {:cancelable false})))))
 
+(re-frame/reg-fx
+ :utils/show-popup
+ (fn [[title content on-dismiss]]
+   (show-popup title content on-dismiss)))
+
 (defn show-confirmation
   ([title content on-accept]
    (show-confirmation title content nil on-accept))

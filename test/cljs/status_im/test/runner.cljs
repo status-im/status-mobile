@@ -48,6 +48,7 @@
             [status-im.test.utils.universal-links.core]
             [status-im.test.utils.http]
             [status-im.test.init.core]
+            [status-im.test.ui.screens.add-new.models]
             [status-im.test.ui.screens.accounts.login.models]
             [status-im.test.ui.screens.accounts.recover.models]
             [status-im.test.ui.screens.currency-settings.models]
@@ -109,6 +110,7 @@
  'status-im.test.utils.keychain.core
  'status-im.test.utils.universal-links.core
  'status-im.test.utils.http
+ 'status-im.test.ui.screens.add-new.models
  'status-im.test.ui.screens.accounts.login.models
  'status-im.test.ui.screens.accounts.recover.models
  'status-im.test.ui.screens.currency-settings.models

@@ -376,6 +376,7 @@
    :address-explication                  "Your public key is used to generate your address on Ethereum and is a series of numbers and letters. You can find it easily in your profile"
    :unable-to-read-this-code             "Unable to read this code"
    :use-valid-contact-code               "Please enter or scan a valid contact code or username"
+   :use-valid-qr-code                    "This QR code doesn't contain a valid universal link, contact code or username: {{data}}"
    :enter-valid-public-key               "Please enter a valid public key or scan a QR code"
    :contact-already-added                "The contact has already been added"
    :can-not-add-yourself                 "You can't add yourself"
