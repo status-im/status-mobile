@@ -78,7 +78,7 @@
     (match-url url browse-regex)
     (handle-browse url cofx)
 
-    (match-url url extension-regex)
+    (and config/extensions-enabled? (match-url url extension-regex))
     (handle-extension url cofx)
 
     :else (handle-not-found url)))
