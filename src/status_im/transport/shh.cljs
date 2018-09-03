@@ -162,13 +162,14 @@
 
 (re-frame/reg-fx
  :shh/generate-sym-key-from-password
- (fn [{:keys [web3 password on-success]}]
-   (generate-sym-key-from-password {:web3       web3
-                                    :password   password
-                                    :on-success (fn [sym-key-id]
-                                                  (get-sym-key {:web3       web3
-                                                                :sym-key-id sym-key-id
-                                                                :on-success (fn [sym-key]
-                                                                              (on-success sym-key sym-key-id))
-                                                                :on-error log-error}))
-                                    :on-error   log-error})))
+ (fn [args]
+   (doseq [{:keys [web3 password on-success]} args]
+     (generate-sym-key-from-password {:web3       web3
+                                      :password   password
+                                      :on-success (fn [sym-key-id]
+                                                    (get-sym-key {:web3       web3
+                                                                  :sym-key-id sym-key-id
+                                                                  :on-success (fn [sym-key]
+                                                                                (on-success sym-key sym-key-id))
+                                                                  :on-error log-error}))
+                                      :on-error   log-error}))))

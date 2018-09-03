@@ -20,9 +20,9 @@
                                                               :sym-key    sym-key
                                                               :sym-key-id sym-key-id}]))]
       (handlers-macro/merge-fx cofx
-                               {:shh/generate-sym-key-from-password {:web3       (:web3 db)
-                                                                     :password   chat-id
-                                                                     :on-success on-success}}
+                               {:shh/generate-sym-key-from-password [{:web3       (:web3 db)
+                                                                      :password   chat-id
+                                                                      :on-success on-success}]}
                                (protocol/init-chat {:chat-id chat-id})))))
 
 (handlers/register-handler-fx

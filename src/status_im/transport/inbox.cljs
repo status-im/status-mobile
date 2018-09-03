@@ -167,11 +167,11 @@
 (defn generate-mailserver-symkey [wnode {:keys [db] :as cofx}]
   (when-not (:sym-key-id wnode)
     {:shh/generate-sym-key-from-password
-     {:password   (:password wnode)
-      :web3       (:web3 db)
-      :on-success (fn [_ sym-key-id]
-                    (re-frame/dispatch [:inbox/get-sym-key-success wnode sym-key-id]))
-      :on-error   #(log/error "offline inbox: get-sym-key error" %)}}))
+     [{:password   (:password wnode)
+       :web3       (:web3 db)
+       :on-success (fn [_ sym-key-id]
+                     (re-frame/dispatch [:inbox/get-sym-key-success wnode sym-key-id]))
+       :on-error   #(log/error "offline inbox: get-sym-key error" %)}]}))
 
 (defn connect-to-mailserver
   "Add mailserver as a peer using ::add-peer cofx and generate sym-key when

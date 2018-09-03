@@ -60,13 +60,15 @@
       (is (= "wnode-password"
              (-> (inbox/connect-to-mailserver {:db db})
                  :shh/generate-sym-key-from-password
+                 first
                  :password))))
     (let [wnode-with-sym-key-db (assoc-in db
                                           [:inbox/wnodes :mainnet "wnodeid" :sym-key-id]
                                           "somesymkeyid")]
       (testing "it does not generate a sym key if already present"
         (is (not (-> (inbox/connect-to-mailserver {:db wnode-with-sym-key-db})
-                     :shh/generate-sym-key-from-password)))))))
+                     :shh/generate-sym-key-from-password
+                     first)))))))
 
 (deftest request-messages
   (let [db {:network "mainnet"
