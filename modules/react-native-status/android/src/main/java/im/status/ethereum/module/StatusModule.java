@@ -159,7 +159,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     Statusgo.GenerateConfig(dataDir, fleet, networkId));
 
             jsonConfig.put("NetworkId", networkId);
-            jsonConfig.put("DataDir", dataDir);
             jsonConfig.put("KeyStoreDir", keystoreDir);
 
             if (upstreamConfig != null) {
