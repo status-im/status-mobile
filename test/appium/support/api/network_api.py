@@ -2,6 +2,7 @@ import logging
 import pytest
 import requests
 import time
+from json import JSONDecodeError
 
 
 class NetworkApi:
@@ -15,7 +16,7 @@ class NetworkApi:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
-    def get_token_transaction(self, address: str) -> dict:
+    def get_token_transactions(self, address: str) -> dict:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
@@ -53,10 +54,13 @@ class NetworkApi:
             else:
                 counter += 10
                 time.sleep(10)
-                if token:
-                    transactions = self.get_token_transaction(address=address)
-                else:
-                    transactions = self.get_transactions(address=address)
+                try:
+                    if token:
+                        transactions = self.get_token_transactions(address)
+                    else:
+                        transactions = self.get_transactions(address)
+                except JSONDecodeError:
+                    continue
                 logging.info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
                              (amount, address))
                 for transaction in transactions:
