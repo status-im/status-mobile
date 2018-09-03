@@ -151,14 +151,13 @@ class Driver(webdriver.Remote):
 
 class SingleDeviceTestCase(AbstractTestCase):
 
-    def setup_method(self, method):
-        capabilities = {'local': {'executor': self.executor_local,
-                                  'capabilities': self.capabilities_local},
-                        'sauce': {'executor': self.executor_sauce_lab,
-                                  'capabilities': self.capabilities_sauce_lab}}
+    def setup_method(self, method, max_duration=1800):
 
-        self.driver = Driver(capabilities[self.environment]['executor'],
-                             capabilities[self.environment]['capabilities'])
+        (executor, capabilities) = (self.executor_sauce_lab, self.capabilities_sauce_lab) if \
+            self.environment == 'sauce' else (self.executor_local, self.capabilities_local)
+        capabilities['maxDuration'] = max_duration
+        self.driver = Driver(executor, capabilities)
+
         test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
 

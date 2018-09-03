@@ -22,6 +22,7 @@ testrail_report = TestrailReport(sauce_username, sauce_access_key)
 
 
 def pytest_addoption(parser):
+
     parser.addoption("--build",
                      action="store",
                      default=datetime.now().strftime('%Y-%m-%d-%H-%M'),
@@ -52,6 +53,7 @@ def pytest_addoption(parser):
                      help='string; ropsten or rinkeby')
 
     # message reliability
+
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
@@ -76,6 +78,17 @@ def pytest_addoption(parser):
                      action='store',
                      default=None,
                      help='Public key of user for 1-1 chat')
+
+    # chat bot
+
+    parser.addoption('--public_keys',
+                     action='store',
+                     default=None,
+                     help='List of public keys for one-to-one chats')
+    parser.addoption('--running_time',
+                     action='store',
+                     default=None,
+                     help='Running time in seconds')
 
 
 def get_rerun_count():
