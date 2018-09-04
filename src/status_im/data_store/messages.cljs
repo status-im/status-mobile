@@ -55,21 +55,25 @@
                                                                   (aget msg "message-id"))))))
                                      @chat-id->message-id))))
 
+(defn- get-unviewed-messages
+  [public-key]
+  (into {}
+        (map (fn [[chat-id user-statuses]]
+               [chat-id (into #{} (map :message-id) user-statuses)]))
+        (group-by :chat-id
+                  (-> @core/account-realm
+                      (core/get-by-fields
+                       :user-status
+                       :and {:whisper-identity public-key
+                             :status           "received"})
+                      (core/all-clj :user-status)))))
+
 (re-frame/reg-cofx
- :data-store/unviewed-messages
- (fn [{:keys [db] :as cofx} _]
+ :data-store/get-unviewed-messages
+ (fn [cofx _]
    (assoc cofx
-          :stored-unviewed-messages
-          (into {}
-                (map (fn [[chat-id user-statuses]]
-                       [chat-id (into #{} (map :message-id) user-statuses)]))
-                (group-by :chat-id
-                          (-> @core/account-realm
-                              (core/get-by-fields
-                               :user-status
-                               :and {:whisper-identity (:current-public-key db)
-                                     :status           "received"})
-                              (core/all-clj :user-status)))))))
+          :get-stored-unviewed-messages
+          get-unviewed-messages)))
 
 (defn- prepare-content [content]
   (if (string? content)

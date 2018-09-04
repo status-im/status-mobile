@@ -68,7 +68,7 @@
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/get-user-statuses)
-  (re-frame/inject-cofx :data-store/unviewed-messages)
+  (re-frame/inject-cofx :data-store/get-unviewed-messages)
   (re-frame/inject-cofx :data-store/message-ids)
   (re-frame/inject-cofx :data-store/get-unanswered-requests)
   (re-frame/inject-cofx :data-store/get-local-storage-data)

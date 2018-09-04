@@ -46,12 +46,13 @@
                                 stored-unanswered-requests
                                 get-stored-messages
                                 get-stored-user-statuses
-                                stored-unviewed-messages
+                                get-stored-unviewed-messages
                                 stored-message-ids] :as cofx}]
   (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
                                             (assoc-in acc [chat-id message-id] request))
                                           {}
                                           stored-unanswered-requests)
+        stored-unviewed-messages (get-stored-unviewed-messages (:current-public-key db))
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (let [chat-messages (index-messages (get-stored-messages chat-id))
                               message-ids   (keys chat-messages)
