@@ -43,16 +43,11 @@
 (defn initialize-chats [{:keys [db
                                 default-dapps
                                 all-stored-chats
-                                stored-unanswered-requests
                                 get-stored-messages
                                 get-stored-user-statuses
                                 get-stored-unviewed-messages
                                 stored-message-ids] :as cofx}]
-  (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
-                                            (assoc-in acc [chat-id message-id] request))
-                                          {}
-                                          stored-unanswered-requests)
-        stored-unviewed-messages (get-stored-unviewed-messages (:current-public-key db))
+  (let [stored-unviewed-messages (get-stored-unviewed-messages (:current-public-key db))
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (let [chat-messages (index-messages (get-stored-messages chat-id))
                               message-ids   (keys chat-messages)
@@ -60,7 +55,6 @@
                           (assoc acc chat-id
                                  (assoc chat
                                         :unviewed-messages unviewed-ids
-                                        :requests (get chat->message-id->request chat-id)
                                         :messages chat-messages
                                         :message-statuses (get-stored-user-statuses chat-id message-ids)
                                         :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)

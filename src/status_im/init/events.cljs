@@ -70,7 +70,6 @@
   (re-frame/inject-cofx :data-store/get-user-statuses)
   (re-frame/inject-cofx :data-store/get-unviewed-messages)
   (re-frame/inject-cofx :data-store/message-ids)
-  (re-frame/inject-cofx :data-store/get-unanswered-requests)
   (re-frame/inject-cofx :data-store/get-local-storage-data)
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-mailservers)

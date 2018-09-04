@@ -10,8 +10,7 @@
             status-im.data-store.browser
             status-im.data-store.accounts
             status-im.data-store.local-storage
-            status-im.data-store.mailservers
-            status-im.data-store.requests))
+            status-im.data-store.mailservers))
 
 (defn init [encryption-key]
   (if @data-source/base-realm

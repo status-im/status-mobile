@@ -76,14 +76,4 @@
            {:title       "Amount"
             :description "Max number of decimals is 18"}))
     (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "0.01"} cofx)
-           nil)))
-  (testing "On receive adds pending request when `/request` command is received"
-    (let [fx (protocol/on-receive personal-request-command
-                                  {:chat-id    "recipient"
-                                   :message-id "0xAA"}
-                                  cofx)]
-      (is (= (get-in fx [:db :chats "recipient" :requests "0xAA"])
-             {:chat-id    "recipient"
-              :message-id "0xAA"
-              :response   "send"
-              :status     "open"})))))
+           nil))))

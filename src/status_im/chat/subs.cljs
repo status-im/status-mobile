@@ -305,12 +305,6 @@
    (and show-suggestions-box? (not selected-command))))
 
 (reg-sub
- :is-request-answered?
- :<- [:get-current-chat]
- (fn [{:keys [requests]} [_ message-id]]
-   (not= "open" (get-in requests [message-id :status]))))
-
-(reg-sub
  :unviewed-messages-count
  (fn [[_ chat-id]]
    (subscribe [:get-chat chat-id]))

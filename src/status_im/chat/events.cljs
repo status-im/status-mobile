@@ -1,6 +1,5 @@
 (ns status-im.chat.events
   (:require status-im.chat.events.input
-            status-im.chat.events.requests
             status-im.chat.events.send-message
             status-im.chat.events.receive-message
             [clojure.string :as string]
