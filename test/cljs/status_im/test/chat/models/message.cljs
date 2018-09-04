@@ -169,3 +169,20 @@
              (get-in fx2 [:db :chats "chat-id" :messages])))
       (is (= {}
              (get-in fx2 [:db :chats "chat-id" :message-groups]))))))
+
+(deftest set-fiat-amount
+  (let [message {:content-type "text/plain"}
+        command-message {:content-type "command"
+                         :content      {:params {:amount "2"
+                                                 :asset  "ETH"}}}
+        cofx {:db {:prices          {:ETH {:EUR {:from     "ETH"
+                                                 :to       "EUR"
+                                                 :price    300
+                                                 :last-day 299}}}
+                   :account/account {:settings {:wallet {:currency :eur}}}}}]
+    (testing "Not a command message"
+      (is (= message (message/set-fiat-amount message cofx))))
+    (testing "Command message"
+      (is (= (-> command-message
+                 (assoc-in [:content :params :fiat-amount] "600")
+                 (assoc-in [:content :params :currency] "EUR")) (message/set-fiat-amount command-message cofx))))))
