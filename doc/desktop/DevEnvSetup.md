@@ -16,14 +16,14 @@ Caveats:
 # To setup re-natal dev builds of status-react for Desktop:
 1. git clone https://github.com/status-im/status-react.git
 2. cd status-react
-3. git checkout desktop
+3. scripts/prepare-for-platform.sh desktop
 4. npm install
-5. lein deps
+5. ln -sf './node_modules/re-natal/index.js' './re-natal'
 6. ./re-natal use-figwheel
 7. ./re-natal enable-source-maps
 8. In separate terminal tab: `npm start` (note: it starts react-native packager )
 9. In separate terminal tab: node ./ubuntu-server.js
-10. In separate terminal tab: lein figwheel-repl desktop (note: wait until sources compiled)
+10. In separate terminal tab: lein figwheel-repl desktop (note: wait until sources are compiled)
 11. In separate terminal tab: react-native run-desktop
 
 # Editor setup
