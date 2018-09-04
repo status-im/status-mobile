@@ -151,14 +151,9 @@
 (defview messages-list [messages group-chat list-ref]
   (letsubs [current-public-key [:get-current-public-key]
             offset [:get-current-chat-ui-prop :offset]]
-    {:should-component-update (constantly false)
-     :component-did-mount     (fn []
-                                (if platform/android?
-                                  (js/setTimeout
-                                   #(.scrollToOffset @list-ref #js {:offset offset :animated false})
-                                   0)))}
+    {:should-component-update (constantly false)}
     [list/flat-list {:data                      messages
-                     :style                     {:opacity (if platform/android? 1 0)}
+                     :style                     {:opacity 0}
                      :ref                       #(reset! list-ref %)
                      :key-fn                    #(or (:message-id %) (:value %))
                      :render-fn                 (fn [message]
@@ -167,7 +162,7 @@
                                                                 :row                message}])
                      :inverted                  true
                      :on-content-size-change    (fn [_]
-                                                  (when platform/ios?
+                                                  (when @list-ref
                                                     (.scrollToOffset @list-ref #js {:offset offset :animated false})
                                                     (js/setTimeout
                                                      #(.setNativeProps @list-ref #js {:opacity 1})
