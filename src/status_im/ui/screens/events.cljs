@@ -38,6 +38,7 @@
             status-im.ui.screens.browser.events
             status-im.ui.screens.offline-messaging-settings.events
             status-im.ui.screens.log-level-settings.events
+            status-im.ui.screens.fleet-settings.events
             status-im.ui.screens.privacy-policy.events
             status-im.ui.screens.bootnodes-settings.events
             status-im.ui.screens.currency-settings.events

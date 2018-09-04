@@ -5,10 +5,10 @@
 
 (re-frame/reg-fx
  :node/start
- (fn [config]
-   (status/start-node config config/fleet)))
+ (fn [[config fleet]]
+   (status/start-node config fleet)))
 
 (re-frame/reg-fx
  :node/stop
- (fn [config]
+ (fn []
    (status/stop-node)))

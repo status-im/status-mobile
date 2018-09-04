@@ -60,7 +60,7 @@
 
 (views/defview advanced-settings []
   (views/letsubs [current-wnode-id [:settings/current-wnode]
-                  wnodes           [:settings/network-wnodes]]
+                  wnodes           [:settings/fleet-wnodes]]
     (let [render-fn (offline-messaging.views/render-row current-wnode-id)]
       [react/view
        [react/text {:style styles/advanced-settings-title

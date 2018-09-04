@@ -42,7 +42,7 @@
 
 (views/defview offline-messaging-settings []
   (views/letsubs [current-wnode-id [:settings/current-wnode]
-                  wnodes           [:settings/network-wnodes]]
+                  wnodes           [:settings/fleet-wnodes]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/toolbar {}
@@ -53,5 +53,5 @@
      [react/view styles/wrapper
       [list/flat-list {:data               (vals wnodes)
                        :default-separator? false
-                       :key-fn             :id
+                       :key-fn             :name
                        :render-fn          (render-row current-wnode-id)}]]]))
