@@ -26,11 +26,6 @@
    :right    0
    :bottom   0})
 
-(def preview
-  {:flex            1
-   :justify-content :flex-end
-   :align-items     :center})
-
 (def corner-dimensions
   {:position :absolute
    :width    40

@@ -127,6 +127,7 @@ def getBuildUrl = { ->
 
 android {
     compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "im.status.ethereum"
@@ -217,6 +218,10 @@ configurations.all {
 }
 
 dependencies {
+    compile (project(':react-native-camera')) {
+        exclude group: "com.google.android.gms"
+        compile 'com.android.support:exifinterface:27.+'
+    }
     implementation project(':react-native-firebase')
     implementation project(':react-native-background-timer')
     implementation project(':react-native-svg')
@@ -234,7 +239,6 @@ dependencies {
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-android')
     implementation project(':react-native-i18n')
-    implementation project(':react-native-camera')
     implementation project(':react-native-status')
     implementation project(':react-native-fs')
     implementation project(':react-native-image-crop-picker')
