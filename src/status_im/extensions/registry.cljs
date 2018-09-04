@@ -17,6 +17,9 @@
    'asset-selector transactions/choose-nft-asset-suggestion
    'token-selector transactions/choose-nft-token-suggestion})
 
+(def functions
+  {'transfer-nft-token transactions/transfer-nft-token})
+
 (def app-hooks #{commands/command-hook})
 
 (def capacities
@@ -25,6 +28,7 @@
           {:components    components
            :queries       #{:get-in :get-collectible-token}
            :events        #{:set-in}
+           :functions     functions
            :permissions   {:read  {:include-paths #{[:chats #".*"]}}
                            :write {:include-paths #{}}}}
           app-hooks))
