@@ -5,7 +5,7 @@ Note: add qmake to PATH via
 `export PATH=<QT_PATH>/clang_64/bin:$PATH`
 
 Caveats:
-  - if npm hangs at some step, check the version. If it's 5.6.0, try downgrading to 5.5.1 via `npm install -g npm@5.5.1`
+  - if npm hangs at some step, check the version. If it's 5.6.0 or higher, try downgrading to 5.5.1 via `npm install -g npm@5.5.1`
 
 # To install react-native-cli with desktop commands support:
 1. git clone https://github.com/status-im/react-native-desktop.git
