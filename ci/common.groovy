@@ -134,11 +134,14 @@ def githubNotify(apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl, changeId) {
       "Jenkins job: [${currentBuild.displayName}](${currentBuild.absoluteUrl})\\n"+
       "##### Mobile\\n" +
       "* [Android](${apkUrl}), ([e2e](${e2eUrl}))\\n" +
-      "* [iOS](${ipaUrl})\\n" +
-      "##### Desktop\\n" +
-      "* [MacOS](${dmgUrl})\\n" +
-      "* [AppImage](${appUrl})"
-    )
+      "* [iOS](${ipaUrl})\\n")
+
+    if (dmgUrl != null && appUrl != null) {
+      message = message +
+        "##### Desktop\\n" +
+        "* [MacOS](${dmgUrl})\\n" +
+        "* [AppImage](${appUrl})"
+    }
     def script = (
       "curl "+ 
       "-u status-im:${githubToken} " + 

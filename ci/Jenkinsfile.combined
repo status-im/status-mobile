@@ -24,10 +24,14 @@ pipeline {
     }
     stage('Build') {
       parallel {
-        stage('MacOS') { steps { script {
+        stage('MacOS') {
+        when { expression { cmn.getBuildType() != 'release' } }
+        steps { script {
           osx = cmn.buildBranch('status-react/combined/desktop-macos', cmn.getBuildType())
         } } }
-        stage('Linux') { steps { script {
+        stage('Linux') {
+        when { expression { cmn.getBuildType() != 'release' } }
+        steps { script {
           nix = cmn.buildBranch('status-react/combined/desktop-linux', cmn.getBuildType())
         } } }
         stage('iOS') { steps { script {
@@ -44,8 +48,11 @@ pipeline {
     stage('Archive') {
       steps { script {
         sh('rm -f pkg/*')
-        cmn.copyArts('status-react/combined/desktop-macos', osx.number)
-        cmn.copyArts('status-react/combined/desktop-linux', nix.number)
+
+        if (cmn.getBuildType() != 'release') {
+          cmn.copyArts('status-react/combined/desktop-macos', osx.number)
+          cmn.copyArts('status-react/combined/desktop-linux', nix.number)
+        }
         cmn.copyArts('status-react/combined/mobile-android', dro.number)
         cmn.copyArts('status-react/combined/mobile-android', e2e.number)
         archiveArtifacts('pkg/*')
@@ -55,14 +62,22 @@ pipeline {
       steps { script {
         e2eUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*e2e.apk')[0].path)
         apkUrl = cmn.uploadArtifact(findFiles(glob: "pkg/*${cmn.getBuildType()}.apk")[0].path)
-        dmgUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.dmg')[0].path)
-        appUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.AppImage')[0].path)
+
+        if (cmn.getBuildType() != 'release') {
+          dmgUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.dmg')[0].path)
+          appUrl = cmn.uploadArtifact(findFiles(glob: 'pkg/*.AppImage')[0].path)
+        } else {
+          dmgUrl = null
+          appUrl = null
+        }
         /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
       } }
     }
     stage('Notify') {
       steps { script {
+        def dmgLink = "<${dmgUrl}|MacOS>"
+        def appLink = "<${appUrl}|AppImage>"
         def message = (
           (env.CHANGE_ID != null ?
             "Build PR #${BRANCH_NAME}(${CHANGE_BRANCH}) success! " :
@@ -70,13 +85,17 @@ pipeline {
           )+
           "<${currentBuild.absoluteUrl}|${currentBuild.displayName}> "+
           "(${currentBuild.durationString})\n"+
-          "Packages: "+
-          "<${apkUrl}|Android>, "+
-          "(<${e2eUrl}|e2e>), "+
-          "<${ipaUrl}|iOS>, "+
-          "<${dmgUrl}|MacOS>, "+
-          "<${appUrl}|AppImage>"
+          "Packages: <${apkUrl}|Android>, (<${e2eUrl}|e2e>), <${ipaUrl}|iOS>"
         )
+
+        if (dmgUrl != null) {
+          message = message + ", <${dmgUrl}|MacOS>"
+        }
+
+        if (appUrl != null) {
+          message = message + ", <${appUrl}|AppImage>"
+        }
+
         slackSend(
           message: message,
           color: 'good'
