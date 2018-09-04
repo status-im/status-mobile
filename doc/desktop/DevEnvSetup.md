@@ -5,7 +5,7 @@ Note: add qmake to PATH via
 `export PATH=<QT_PATH>/clang_64/bin:$PATH`
 
 Caveats:
-  - if npm hangs at some step, check the version. If it's 5.6.0, try downgrading to 5.5.1 via `npm install -g npm@5.5.1`
+  - if npm hangs at some step, check the version. If it's 5.6.0 or higher, try downgrading to 5.5.1 via `npm install -g npm@5.5.1`
 
 # To install react-native-cli with desktop commands support:
 1. git clone https://github.com/status-im/react-native-desktop.git
@@ -16,14 +16,14 @@ Caveats:
 # To setup re-natal dev builds of status-react for Desktop:
 1. git clone https://github.com/status-im/status-react.git
 2. cd status-react
-3. git checkout desktop
+3. scripts/prepare-for-platform.sh desktop
 4. npm install
-5. lein deps
+5. ln -sf './node_modules/re-natal/index.js' './re-natal'
 6. ./re-natal use-figwheel
 7. ./re-natal enable-source-maps
 8. In separate terminal tab: `npm start` (note: it starts react-native packager )
 9. In separate terminal tab: node ./ubuntu-server.js
-10. In separate terminal tab: lein figwheel-repl desktop (note: wait until sources compiled)
+10. In separate terminal tab: lein figwheel-repl desktop (note: wait until sources are compiled)
 11. In separate terminal tab: react-native run-desktop
 
 # Editor setup
