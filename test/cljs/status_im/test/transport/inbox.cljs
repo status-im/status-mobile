@@ -1,18 +1,16 @@
 (ns status-im.test.transport.inbox
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.transport.inbox :as inbox]
-            [status-im.constants :as constants]))
+            [status-im.transport.inbox :as inbox]))
 
 (defn cofx-fixtures [sym-key registered-peer?]
   {:db {:mailserver-status :connected
-        :network "mainnet_rpc"
         :peers-summary (if registered-peer?
                          [{:id "wnode-id"}]
                          [])
-        :account/account {:networks constants/default-networks}
+        :account/account {:settings {:fleet :eth.beta}}
         :inbox/current-id "mailserver-a"
-        :inbox/wnodes {:mainnet {"mailserver-a" {:sym-key-id sym-key
-                                                 :address "enode://wnode-id@ip"}}}}})
+        :inbox/wnodes {:eth.beta {"mailserver-a" {:sym-key-id sym-key
+                                                  :address "enode://wnode-id@ip"}}}}})
 
 (defn peers-summary-change-fx-result [sym-key registered-peer? registered-peer-before?]
   (inbox/peers-summary-change-fx (if registered-peer-before?
@@ -45,14 +43,13 @@
            #{}))))
 
 (deftest connect-to-mailserver
-  (let [db {:network "mainnet"
-            :inbox/current-id "wnodeid"
+  (let [db {:inbox/current-id "wnodeid"
             :inbox/wnodes
-            {:mainnet {"wnodeid" {:address  "wnode-address"
-                                  :password "wnode-password"}}}
+            {:eth.beta {"wnodeid" {:address  "wnode-address"
+                                   :password "wnode-password"}}}
             :account/account
-            {:settings {:wnode {:mainnet "wnodeid"}}
-             :networks {"mainnet" {:config {:NetworkId 1}}}}}]
+            {:settings {:fleet :eth.beta
+                        :wnode {:eth.beta "wnodeid"}}}}]
     (testing "it adds the peer"
       (is (= {:wnode "wnode-address"}
              (::inbox/add-peer (inbox/connect-to-mailserver {:db db})))))
@@ -63,7 +60,7 @@
                  first
                  :password))))
     (let [wnode-with-sym-key-db (assoc-in db
-                                          [:inbox/wnodes :mainnet "wnodeid" :sym-key-id]
+                                          [:inbox/wnodes :eth.beta "wnodeid" :sym-key-id]
                                           "somesymkeyid")]
       (testing "it does not generate a sym key if already present"
         (is (not (-> (inbox/connect-to-mailserver {:db wnode-with-sym-key-db})
@@ -71,15 +68,12 @@
                      first)))))))
 
 (deftest request-messages
-  (let [db {:network "mainnet"
-            :mailserver-status :connected
+  (let [db {:mailserver-status :connected
             :inbox/current-id "wnodeid"
-            :inbox/wnodes
-            {:mainnet {"wnodeid" {:address    "wnode-address"
-                                  :sym-key-id "something"
-                                  :password   "wnode-password"}}}
-            :account/account
-            {:networks {"mainnet" {:config {:NetworkId 1}}}}
+            :inbox/wnodes {:eth.beta {"wnodeid" {:address    "wnode-address"
+                                                 :sym-key-id "something"
+                                                 :password   "wnode-password"}}}
+            :account/account {:settings {:fleet :eth.beta}}
             :transport/chats
             {:dont-fetch-history {:topic "dont-fetch-history"}
              :fetch-history      {:topic "fetch-history"
@@ -166,15 +160,13 @@
              (into #{} (inbox/request-inbox-messages-params mailserver 0 90000 ["a" "b"])))))))
 
 (deftest initialize-offline-inbox
-  (let [db {:network "mainnet"
-            :mailserver-status :connected
+  (let [db {:mailserver-status :connected
+            :account/account {:settings {:fleet :eth.beta}}
             :inbox/current-id "wnodeid"
             :inbox/wnodes
-            {:mainnet {"wnodeid" {:address    "wnode-address"
-                                  :sym-key-id "something"
-                                  :password   "wnode-password"}}}
-            :account/account
-            {:networks {"mainnet" {:config {:NetworkId 1}}}}}]
+            {:eth.beta {"wnodeid" {:address    "wnode-address"
+                                   :sym-key-id "something"
+                                   :password   "wnode-password"}}}}]
     (testing "last-request is not set"
       (testing "it sets it to now in seconds"
         (is (= 10

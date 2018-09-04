@@ -4,6 +4,7 @@
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.dimensions :as dimensions]
+            [status-im.models.fleet :as fleet]
             pluto.registry
             status-im.transport.db
             status-im.ui.screens.accounts.db
@@ -45,7 +46,7 @@
              :semaphores                         #{}
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
-             :inbox/wnodes                       constants/default-wnodes
+             :inbox/wnodes                       fleet/default-wnodes
              :my-profile/editing?                false
              :transport/chats                    {}
              :transport/message-envelopes        {}
@@ -144,7 +145,7 @@
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
 (spec/def :inbox/fetching? (spec/nilable boolean?))
-(spec/def :inbox/current-id (spec/nilable string?))
+(spec/def :inbox/current-id (spec/nilable keyword?))
 
 (spec/def ::collectible (spec/nilable map?))
 (spec/def ::collectibles (spec/nilable map?))

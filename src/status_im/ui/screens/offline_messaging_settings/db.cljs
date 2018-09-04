@@ -8,7 +8,7 @@
 
 (spec/def :wnode/address (spec/and string? models.mailserver/valid-enode-address?))
 (spec/def :wnode/name ::not-blank-string)
-(spec/def :wnode/id ::not-blank-string)
+(spec/def :wnode/id keyword?)
 (spec/def :wnode/user-defined boolean?)
 (spec/def :wnode/password ::not-blank-string)
 (spec/def :wnode/sym-key-id string?)

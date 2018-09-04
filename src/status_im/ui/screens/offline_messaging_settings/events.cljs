@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.offline-messaging-settings.events
   (:require [re-frame.core :as re-frame]
+            [status-im.models.fleet :as fleet]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.accounts.models :as accounts.models]
@@ -9,22 +10,20 @@
 
 (handlers/register-handler-fx
  ::save-wnode
- (fn [{:keys [db now] :as cofx} [_ chain wnode]]
+ (fn [{:keys [db now] :as cofx} [_ current-fleet wnode]]
    (let [settings (get-in db [:account/account :settings])]
      (handlers-macro/merge-fx cofx
                               (accounts.models/update-settings
-                               (assoc-in settings [:wnode chain] wnode)
+                               (assoc-in settings [:wnode current-fleet] wnode)
                                [:logout])))))
 
 (handlers/register-handler-fx
  :connect-wnode
  (fn [{:keys [db]} [_ wnode]]
-   (let [network (get (:networks (:account/account db)) (:network db))
-         chain   (ethereum/network->chain-keyword network)]
+   (let [current-fleet (fleet/current-fleet db)]
      {:show-confirmation {:title               (i18n/label :t/close-app-title)
                           :content             (i18n/label :t/connect-wnode-content
-                                                           {:name (get-in db [:inbox/wnodes chain wnode :name])})
+                                                           {:name (get-in db [:inbox/wnodes  current-fleet wnode :name])})
                           :confirm-button-text (i18n/label :t/close-app-button)
-                          :on-accept           #(re-frame/dispatch [::save-wnode chain wnode])
+                          :on-accept           #(re-frame/dispatch [::save-wnode current-fleet wnode])
                           :on-cancel           nil}})))
-

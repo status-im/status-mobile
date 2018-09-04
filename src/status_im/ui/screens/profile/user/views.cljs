@@ -166,6 +166,11 @@
       {:label-kw            :t/log-level
        :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
        :accessibility-label :log-level-settings-button}]
+     [profile.components/settings-item-separator]
+     [profile.components/settings-item
+      {:label-kw            :t/fleet
+       :action-fn           #(re-frame/dispatch [:navigate-to :fleet-settings])
+       :accessibility-label :fleet-settings-button}]
      (when config/bootnodes-settings-enabled?
        [profile.components/settings-item-separator])
      (when config/bootnodes-settings-enabled?
