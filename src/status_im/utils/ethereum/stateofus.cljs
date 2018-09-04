@@ -1,18 +1,11 @@
 (ns status-im.utils.ethereum.stateofus
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]))
 
 (defn is-valid-name? [ens-name]
-  (string/ends-with? ens-name ".stateofus.eth"))
-
-(defn addr [web3 registry ens-name cb]
-  {:pre [(is-valid-name? ens-name)]}
-  (ens/resolver web3
-                registry
-                ens-name
-                #(ens/addr web3 % ens-name cb)))
+  (and ens-name
+       (string/ends-with? ens-name ".stateofus.eth")))
 
 (defn pubkey
   [web3 registry ens-name cb]

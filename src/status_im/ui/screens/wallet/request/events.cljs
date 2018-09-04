@@ -28,11 +28,6 @@
                  [:start-chat whisper-identity]]}))
 
 (handlers/register-handler-fx
- :wallet.request/set-recipient
- (fn [{:keys [db]} [_ s]]
-   {:db (assoc-in db [:wallet :request-transaction :to] s)}))
-
-(handlers/register-handler-fx
  :wallet.request/set-and-validate-amount
  (fn [{:keys [db]} [_ amount symbol decimals]]
    (let [{:keys [value error]} (wallet-db/parse-amount amount decimals)]

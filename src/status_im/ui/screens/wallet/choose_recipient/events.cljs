@@ -4,7 +4,9 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.utils.ethereum.ens :as ens]
+            [re-frame.core :as re-frame]))
 
 (handlers/register-handler-db
  :wallet/toggle-flashlight
@@ -56,6 +58,27 @@
 (defn use-default-eth-gas [fx]
   (assoc-in fx [:db :wallet :send-transaction :gas]
             ethereum/default-transaction-gas))
+
+(re-frame/reg-fx
+ :resolve-address
+ (fn [{:keys [web3 registry ens-name cb]}]
+   (ens/get-addr web3 registry ens-name cb)))
+
+(handlers/register-handler-fx
+ :wallet.send/set-recipient
+ (fn [{:keys [db]} [_ recipient]]
+   (let [{:keys [web3 network]} db
+         network-info (get-in db [:account/account :networks network])
+         chain (ethereum/network->chain-keyword network-info)]
+     (if (ens/is-valid-eth-name? recipient)
+       {:resolve-address {:web3     web3
+                          :registry (get ens/ens-registries chain)
+                          :ens-name recipient
+                          :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
+       (if (ethereum/address? recipient)
+         {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
+          :dispatch [:navigate-back]}
+         {:show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
 
 (handlers/register-handler-fx
  :wallet/fill-request-from-url

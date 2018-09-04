@@ -89,4 +89,15 @@
                                        (namehash ens-name))
                  (fn [_ key] (cb (add-uncompressed-public-key-prefix key)))))
 
+(defn is-valid-eth-name? [ens-name]
+  (and ens-name
+       (string/ends-with? ens-name ".eth")))
+
+(defn get-addr [web3 registry ens-name cb]
+  {:pre [(is-valid-eth-name? ens-name)]}
+  (resolver web3
+            registry
+            ens-name
+            #(addr web3 % ens-name cb)))
+
 ;; TODO ABI, pubkey

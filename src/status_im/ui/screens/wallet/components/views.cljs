@@ -234,7 +234,7 @@
                       :accessibility-label :recipient-address-input}]]
         [bottom-buttons/bottom-button
          [button/button {:disabled?    (string/blank? @content)
-                         :on-press     #(re-frame/dispatch [:wallet/fill-request-from-url @content :code])
+                         :on-press     #(re-frame/dispatch [:wallet.send/set-recipient @content])
                          :fit-to-text? false}
           (i18n/label :t/done)]]]])))
 
