@@ -49,7 +49,7 @@
               (i18n/label :t/public-chat)])]]
      #_[react/view
         [react/popup-menu
-         [react/popup-menu-trigger {:text "Popup"}]
+         [react/popup-menu-trigger {:text "Popup test"}]
          [react/popup-menu-options
           [react/popup-menu-option {:text "First"}]
           [react/popup-menu-option {:text "Second"}]]]]
