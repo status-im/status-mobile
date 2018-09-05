@@ -59,7 +59,7 @@
 
 (defn- action-handler
   ([handler]
-   (handler nil nil))
+   (action-handler handler nil nil))
   ([handler data cofx]
    (when handler
      (handler data cofx))))
