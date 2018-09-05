@@ -36,6 +36,11 @@
         (is (= "invalid" (get-in actual [:gas :value]))))
       (testing "it sets max-fee to 0"
         (is (= "0" (:max-fee actual))))))
+  (testing "gas price in wei should be round"
+    (let [actual (-> {}
+                     (model/build-edit :gas "21000")
+                     (model/build-edit :gas-price "0.0000000023"))]
+      (is (get-in actual [:gas-price :invalid?]))))
   (testing "an valid edit"
     (let [actual (-> {}
                      (model/build-edit :gas "21000")
