@@ -116,7 +116,6 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     NSArray *bootnodes = [configJSON valueForKeyPath:@"ClusterConfig.BootNodes"];
     NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
     NSString *devCluster = [ReactNativeConfig envFor:@"ETHEREUM_DEV_CLUSTER"];
-    NSString *logLevel = [[ReactNativeConfig envFor:@"LOG_LEVEL_STATUS_GO"] uppercaseString];
     char *configChars = GenerateConfig((char *)[networkDir UTF8String], (char *)[fleet UTF8String], networkId);
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
@@ -124,9 +123,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     NSURL *networkDirUrl = [NSURL fileURLWithPath:networkDir];
     NSURL *logUrl = [networkDirUrl URLByAppendingPathComponent:@"geth.log"];
     [resultingConfigJson setValue:newKeystoreUrl.path forKey:@"KeyStoreDir"];
-    [resultingConfigJson setValue:[NSNumber numberWithBool:[logLevel length] != 0] forKey:@"LogEnabled"];
-    [resultingConfigJson setValue:([logLevel length] == 0 ? [NSNull null] : logUrl.path) forKey:@"LogFile"];
-    [resultingConfigJson setValue:([logLevel length] == 0 ? [NSString stringWithUTF8String: "ERROR"] : logLevel) forKey:@"LogLevel"];
+    [resultingConfigJson setValue:logUrl.path forKey:@"LogFile"];
 
     [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKeyPath:@"WhisperConfig.LightClient"];
 
