@@ -56,8 +56,7 @@ class TestCreateAccount(SingleDeviceTestCase):
                 self.errors.append("'%s' text is not shown" % text)
         home.profile_button.click()
         home.home_button.click()
-        text = ('There are no recent Chats or DApps here yet. '
-                'Tap the “Plus” button to see the list of Dapps or discover people to chat with.')
+        text = 'Your Home screen will house your recent chats and DApp history. Tap the plus (+) button to get started.'
         if not home.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' text is not shown" % text)
         self.verify_no_errors()

@@ -19,9 +19,10 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not wallet.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' is not displayed" % text)
         wallet.set_up_button.click()
-        text = ('This is your personal transaction phrase that you’ll use everytime you make a transaction. '
-                'Make sure to write it down on a piece of paper, store it somewhere, '
-                'and only confirm transactions when you see these three words.')
+        text = ("To increase security, we'll show you this phrase each time you initiate a transaction. "
+                "When you see then you'll know it's safe to proceed. \n\n"
+                "Memorize or store these words in a secure location. Only confirm transactions if you see them first.")
+
         if not wallet.element_by_text(text).is_element_displayed():
             self.errors.append("'%s' text is not displayed" % text)
         phrase_length = len(wallet.sign_in_phrase.list)

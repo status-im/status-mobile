@@ -144,6 +144,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.advanced_button.click()
         profile_view.find_text_part('CUSTOM_ROPSTEN')
 
+    @marks.logcat
     @marks.testrail_id(3774)
     def test_logcat_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
