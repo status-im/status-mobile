@@ -114,7 +114,7 @@ def bundleLinux(type = 'nightly') {
     sh 'mkdir AppDir'
   }
   sh "cp -r ./deployment/linux/usr  ${packageFolder}/AppDir"
-  sh "cp ./deployment/linux/.env  ${packageFolder}/AppDir"
+  sh "cp ./deployment/env  ${packageFolder}/AppDir/usr/bin"
   sh "cp ./desktop/bin/StatusIm ${packageFolder}/AppDir/usr/bin"
   sh "cp ./desktop/reportApp/reportApp ${packageFolder}/AppDir/usr/bin"
   sh 'wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage'
@@ -187,6 +187,8 @@ def bundleMacOS(type = 'nightly') {
     sh 'chmod +x Status.app/Contents/Resources/ubuntu-server'
     sh 'cp ../desktop/bin/StatusIm Status.app/Contents/MacOS/Status'
     sh 'cp ../desktop/reportApp/reportApp Status.app/Contents/MacOS'
+    sh "cp ../deployment/env  Status.app/Contents/Resources"
+    sh 'ln -sf ../Resources/env Status.app/Contents/MacOS/env'
     sh 'cp -f ../deployment/macos/qt-reportApp.conf Status.app/Contents/Resources'
     sh 'ln -sf ../Resources/qt-reportApp.conf Status.app/Contents/MacOS/qt.conf'
     sh 'install_name_tool -add_rpath "@executable_path/../Frameworks" ' +
