@@ -108,6 +108,11 @@
    (accounts/switch-dev-mode dev-mode? cofx)))
 
 (handlers/register-handler-fx
+ :accounts.ui/web3-opt-in-mode-switched
+ (fn [cofx [_ opt-in]]
+   (accounts/switch-web3-opt-in-mode opt-in cofx)))
+
+(handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
  (fn [cofx [_ modal?]]
    (accounts/confirm-wallet-set-up modal? cofx)))

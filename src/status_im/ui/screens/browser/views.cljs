@@ -114,14 +114,15 @@
 
 (views/defview browser []
   (views/letsubs [webview    (atom nil)
-                  {:keys [address]} [:get-current-account]
+                  {:keys [address settings]} [:get-current-account]
                   {:keys [browser-id dapp? name] :as browser} [:get-current-browser]
                   {:keys [error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]
                   network-id [:get-network-id]]
     (let [can-go-back?    (model/can-go-back? browser)
           can-go-forward? (model/can-go-forward? browser)
-          url             (model/get-current-url browser)]
+          url             (model/get-current-url browser)
+          opt-in?         (:web3-opt-in? settings)]
       [react/view styles/browser
        [status-bar/status-bar]
        [toolbar webview error? url browser browser-id url-editing?]
@@ -142,12 +143,14 @@
           :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
           :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
                                                                                                :loading? false}])
-          :injected-on-start-loading-java-script (str js-res/web3
+          :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
                                                       (get-inject-js url)
-                                                      (js-res/web3-init
-                                                       rpc-url
-                                                       (ethereum/normalized-address address)
-                                                       (str network-id)))
+                                                      (if opt-in?
+                                                        (js-res/web3-opt-in-init (str network-id))
+                                                        (js-res/web3-init
+                                                         rpc-url
+                                                         (ethereum/normalized-address address)
+                                                         (str network-id))))
           :injected-java-script                  js-res/webview-js}]
         (when (or loading? resolving?)
           [react/view styles/web-view-loading

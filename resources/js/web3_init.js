@@ -6,6 +6,17 @@ function bridgeSend(data){
     WebViewBridge.send(JSON.stringify(data));
 }
 
+window.addEventListener('message', function (event) {
+    if (!event.data || !event.data.type) { return; }
+    if (event.data.type === 'STATUS_API_REQUEST') {
+        bridgeSend({
+            type: 'status-api-request',
+            permissions: event.data.permissions,
+            host: window.location.hostname
+        });
+    }
+});
+
 WebViewBridge.onMessage = function (message) {
     data = JSON.parse(message);
 
@@ -14,16 +25,9 @@ WebViewBridge.onMessage = function (message) {
 
     else if (data.type === "status-api-success")
     {
-        if (data.keys == 'WEB3')
-        {
-            window.dispatchEvent(new CustomEvent('ethereumprovider', { detail: { ethereum: new StatusHttpProvider("")} }));
-        }
-        else
-        {
-            window.dispatchEvent(new CustomEvent('statusapi', { detail: { permissions: data.keys,
-                                                                          data:        data.data
-                                                                        } }));
-        }
+        window.dispatchEvent(new CustomEvent('statusapi', { detail: { permissions: data.keys,
+                                                                      data:        data.data
+                                                                    } }));
     }
 
     else if (data.type === "web3-send-async-callback")
@@ -113,6 +117,10 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
 
     }
 };
+
+StatusHttpProvider.prototype.enable = function () {
+    return new Promise(function (resolve, reject) { setTimeout(resolve, 1000);});
+};
 }
 
 var protocol = window.location.protocol
@@ -120,7 +128,8 @@ if (typeof web3 === "undefined") {
     //why do we need this condition?
     if (protocol == "https:" || protocol == "http:") {
         console.log("StatusHttpProvider");
-        web3 = new Web3(new StatusHttpProvider());
-        web3.eth.defaultAccount = currentAccountAddress; // currentAccountAddress - injected from status-react
+        ethereum = new StatusHttpProvider();
+        web3 = new Web3(ethereum);
+        web3.eth.defaultAccount = currentAccountAddress;
     }
 }

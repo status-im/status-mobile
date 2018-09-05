@@ -136,48 +136,52 @@
                                           :hide-arrow?         true
                                           :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
-(defview advanced-settings [{:keys [network networks dev-mode?]} on-show]
-  (letsubs [{:keys [sharing-usage-data?]} [:get-current-account]]
-    {:component-did-mount on-show}
-    [react/view
-     (when (and config/extensions-enabled? dev-mode?)
-       [profile.components/settings-item
-        {:label-kw            :t/extensions
-         :action-fn           #(re-frame/dispatch [:navigate-to :extensions-settings])
-         :accessibility-label :extensions-button}])
-     (when dev-mode?
-       [profile.components/settings-item
-        {:label-kw            :t/network
-         :value               (get-in networks [network :name])
-         :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
-         :accessibility-label :network-button}])
-     [profile.components/settings-item-separator]
+(defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show]
+  {:component-did-mount on-show}
+  [react/view
+   (when (and config/extensions-enabled? dev-mode?)
      [profile.components/settings-item
-      {:label-kw            :t/offline-messaging
-       :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
-       :accessibility-label :offline-messages-settings-button}]
-     [profile.components/settings-item-separator]
+      {:label-kw            :t/extensions
+       :action-fn           #(re-frame/dispatch [:navigate-to :extensions-settings])
+       :accessibility-label :extensions-button}])
+   (when dev-mode?
      [profile.components/settings-item
-      {:label-kw            :t/log-level
-       :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
-       :accessibility-label :log-level-settings-button}]
-     [profile.components/settings-item-separator]
+      {:label-kw            :t/network
+       :value               (get-in networks [network :name])
+       :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
+       :accessibility-label :network-button}])
+   [profile.components/settings-item-separator]
+   [profile.components/settings-item
+    {:label-kw            :t/offline-messaging
+     :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+     :accessibility-label :offline-messages-settings-button}]
+   [profile.components/settings-item-separator]
+   [profile.components/settings-item
+    {:label-kw            :t/log-level
+     :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
+     :accessibility-label :log-level-settings-button}]
+   [profile.components/settings-item-separator]
+   [profile.components/settings-item
+    {:label-kw            :t/fleet
+     :action-fn           #(re-frame/dispatch [:navigate-to :fleet-settings])
+     :accessibility-label :fleet-settings-button}]
+   (when config/bootnodes-settings-enabled?
+     [profile.components/settings-item-separator])
+   (when config/bootnodes-settings-enabled?
      [profile.components/settings-item
-      {:label-kw            :t/fleet
-       :action-fn           #(re-frame/dispatch [:navigate-to :fleet-settings])
-       :accessibility-label :fleet-settings-button}]
-     (when config/bootnodes-settings-enabled?
-       [profile.components/settings-item-separator])
-     (when config/bootnodes-settings-enabled?
-       [profile.components/settings-item
-        {:label-kw            :t/bootnodes
-         :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
-         :accessibility-label :bootnodes-settings-button}])
-     [profile.components/settings-item-separator]
+      {:label-kw            :t/bootnodes
+       :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+       :accessibility-label :bootnodes-settings-button}])
+   (when dev-mode?
      [profile.components/settings-switch-item
-      {:label-kw  :t/dev-mode
-       :value     dev-mode?
-       :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]]))
+      {:label-kw  :t/web3-opt-in
+       :value     (:web3-opt-in? settings)
+       :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}])
+   [profile.components/settings-item-separator]
+   [profile.components/settings-switch-item
+    {:label-kw  :t/dev-mode
+     :value     dev-mode?
+     :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]])
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:get :my-profile/advanced?]]

@@ -176,9 +176,9 @@
 
 (def ^:const send-transaction-failed-parse-response 1)
 (def ^:const send-transaction-failed-parse-params   2)
-(def ^:const send-transaction-no-account-selected  3)
-(def ^:const send-transaction-invalid-tx-sender    4)
-(def ^:const send-transaction-err-decrypt          5)
+(def ^:const send-transaction-no-account-selected   3)
+(def ^:const send-transaction-invalid-tx-sender     4)
+(def ^:const send-transaction-err-decrypt           5)
 
 (def ^:const web3-send-transaction "eth_sendTransaction")
 (def ^:const web3-personal-sign "personal_sign")
@@ -193,6 +193,8 @@
 (def ^:const dapp-permission-web3 "WEB3")
 (def ^:const status-api-success "status-api-success")
 (def ^:const status-api-request "status-api-request")
+(def ^:const web3-permission-request-denied "web3-permission-request-denied")
 (def ^:const history-state-changed "history-state-changed")
 (def ^:const web3-send-async "web3-send-async")
+(def ^:const web3-send-async-read-only "web3-send-async-read-only")
 (def ^:const web3-send-async-callback "web3-send-async-callback")

@@ -683,5 +683,6 @@
     "gwei": "Gwei",
     "cost-fee": "Cost/Fee",
     "currency-display-name-usd": "United States Dollar",
-    "currency-display-name-uah": "Ukraine Hryvnia"
+    "currency-display-name-uah": "Ukraine Hryvnia",
+    "web3-opt-in": "Opt-in web3 provider access"
 }

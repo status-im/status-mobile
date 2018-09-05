@@ -14,7 +14,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as utils.universal-links]
             [taoensso.timbre :as log]
-            [status-im.utils.ethereum.resolver :as resolver]))
+            [status-im.utils.ethereum.resolver :as resolver]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (re-frame/reg-fx
  :browse
@@ -127,7 +128,9 @@
          {:keys [browser-id]} options
          browser (get browsers browser-id)
          data    (types/json->clj message)
-         {{:keys [url]} :navState :keys [type host permissions payload messageId]} data]
+         {{:keys [url]} :navState :keys [type host permissions payload messageId]} data
+         {:keys [dapp? name]} browser
+         dapp-name (if dapp? name host)]
      (cond
 
        (and (= type constants/history-state-changed) platform/ios? (not= "about:blank" url))
@@ -136,12 +139,13 @@
        (= type constants/web3-send-async)
        (model/web3-send-async payload messageId cofx)
 
+       (= type constants/web3-send-async-read-only)
+       (model/web3-send-async-read-only dapp-name payload messageId cofx)
+
        (= type constants/status-api-request)
-       (let [{:keys [dapp? name]} browser
-             dapp-name (if dapp? name host)]
-         {:db       (update-in db [:browser/options :permissions-queue] conj {:dapp-name   dapp-name
-                                                                              :permissions permissions})
-          :dispatch [:check-permissions-queue]})))))
+       {:db       (update-in db [:browser/options :permissions-queue] conj {:dapp-name   dapp-name
+                                                                            :permissions permissions})
+        :dispatch [:check-permissions-queue]}))))
 
 (handlers/register-handler-fx
  :check-permissions-queue
@@ -158,7 +162,9 @@
             :index                 0
             :user-permissions      (get-in db [:dapps/permissions dapp-name :permissions])
             :requested-permissions permissions
-            :permissions-data      {constants/dapp-permission-contact-code (:public-key account)}})))))))
+            :permissions-data      {constants/dapp-permission-contact-code (:public-key account)
+                                    constants/dapp-permission-web3         (ethereum/normalized-address
+                                                                            (:address account))}})))))))
 
 (handlers/register-handler-fx
  :next-dapp-permission

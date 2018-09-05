@@ -123,6 +123,10 @@
                                   :keys (keys permissions-allowed)}
                                  (:webview-bridge db)])
 
+      (and (zero? (count permissions-allowed)) (= constants/dapp-permission-web3 (first requested-permissions)))
+      (assoc :send-to-bridge-fx [{:type constants/web3-permission-request-denied}
+                                 (:webview-bridge db)])
+
       true
       (assoc :dispatch [:check-permissions-queue]))))
 
@@ -147,6 +151,17 @@
                                       :messageId message-id
                                       :error     %1
                                       :result    %2}])]}))
+
+(defn web3-send-async-read-only [dapp-name {:keys [method] :as payload} message-id {:keys [db] :as cofx}]
+  (let [{:dapps/keys [permissions]} db]
+    (if (and (#{"eth_accounts" "eth_coinbase" "eth_sendTransaction" "eth_sign"
+                "eth_signTypedData" "personal_sign" "personal_ecRecover"} method)
+             (not (some #{"WEB3"} (get-in permissions [dapp-name :permissions]))))
+      {:dispatch [:send-to-bridge
+                  {:type      constants/web3-send-async-callback
+                   :messageId message-id
+                   :error     "Denied"}]}
+      (web3-send-async payload message-id cofx))))
 
 (defn initialize-browsers
   [{:keys [db all-stored-browsers]}]

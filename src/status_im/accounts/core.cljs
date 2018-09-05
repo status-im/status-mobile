@@ -43,3 +43,9 @@
          (if dev-mode?
            {:dev-server/start nil}
            {:dev-server/stop nil})))
+
+(defn switch-web3-opt-in-mode [opt-in {:keys [db] :as cofx}]
+  (let [settings (get-in db [:account/account :settings])]
+    (accounts.update/update-settings
+     (assoc settings :web3-opt-in? opt-in)
+     cofx)))
