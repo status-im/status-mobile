@@ -155,6 +155,7 @@
         {:keys [public?] :as chat} (get-in db [:chats chat-id])
         add-message-fn             (if batch? add-batch-message add-single-message)
         message                    (-> raw-message
+                                       (commands-receiving/enhance-receive-parameters cofx)
                                        (ensure-clock-value chat)
                                        ;; TODO (cammellos): Refactor so it's not computed twice
                                        (add-outgoing-status cofx)

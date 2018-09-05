@@ -23,3 +23,16 @@
   (let [id->command (:id->command db)]
     (when-let [{:keys [type]} (lookup-command-by-ref message id->command)]
       (protocol/on-receive type message cofx))))
+
+(defn enhance-receive-parameters
+  "Enhances parameters for the received command message.
+  If the message is not of the command type, or command doesn't implement the
+  `EnhancedParameters` protocol, returns unaltered message, otherwise updates
+  its parameters."
+  [message {:keys [db] :as cofx}]
+  (let [id->command    (:id->command db)
+        {:keys [type content]} (lookup-command-by-ref message id->command)]
+    (if-let [new-params (and (satisfies? protocol/EnhancedParameters type)
+                             (protocol/enhance-receive-parameters type (:params content) cofx))]
+      (assoc-in message [:content :params] new-params)
+      message)))

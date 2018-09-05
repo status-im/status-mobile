@@ -306,8 +306,9 @@
                           :success-event :wallet/update-gas-price-success
                           :edit?         false}}))
   protocol/EnhancedParameters
-  (enhance-parameters [_ parameters cofx]
-    (inject-network-price-info parameters cofx)))
+  (enhance-send-parameters [_ parameters cofx]
+    (inject-network-price-info parameters cofx))
+  (enhance-receive-parameters [_ _ _]))
 
 ;; `/request` command
 
@@ -452,5 +453,6 @@
   (preview [_ command-message]
     (request-preview command-message))
   protocol/EnhancedParameters
-  (enhance-parameters [_ parameters cofx]
-    (inject-network-price-info parameters cofx)))
+  (enhance-send-parameters [_ parameters cofx]
+    (inject-network-price-info parameters cofx))
+  (enhance-receive-parameters [_ _ _]))

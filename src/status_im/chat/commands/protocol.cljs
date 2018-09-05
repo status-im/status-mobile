@@ -54,11 +54,17 @@
 (defprotocol EnhancedParameters
   "Protocol for command messages which wish to modify/inject additional data into parameters,
   other then those collected from the chat input.
-  Good example would be the `/send` and `/receive` commands - we would like to indicate
+  Good example would be the `/send` and `/request` commands - we would like to indicate
   network selected in sender's device, but we of course don't want to force user to type
   it in when it could be effortlessly looked up from context.
   Another usage would be for example command where one of the input parameters will be
   hashed after validation and we would want to avoid the original unhashed parameter
-  to be ever saved on the sender device, nor to be sent over the wire."
-  (enhance-parameters [this parameters cofx]
+  to be ever saved on the sender device, nor to be sent over the wire.
+  For maximal flexibility, parameters can be enhanced both on the sending side and receiving
+  side, as sometimes thing needs to be added/enhanced in parameters map which are depending
+  on the receiver context - as for example calculated fiat price values for the `/request`
+  command"
+  (enhance-send-parameters [this parameters cofx]
+    "Function which takes original parameters + cofx map and returns new map of parameters")
+  (enhance-receive-parameters [this parameters cofx]
     "Function which takes original parameters + cofx map and returns new map of parameters"))

@@ -31,15 +31,15 @@
 (defn- create-command-message
   "Create message map from chat-id, command & input parameters"
   [chat-id type parameter-map cofx]
-  (let [command-path               (commands/command-id type)
+  (let [command-path                   (commands/command-id type)
         ;; TODO(janherich) this is just for backward compatibility, can be removed later
-        {:keys [content content-type]} (new->old command-path parameter-map)]
+        {:keys [content content-type]} (new->old command-path parameter-map)
+        new-parameter-map              (and (satisfies? protocol/EnhancedParameters type)
+                                            (protocol/enhance-send-parameters type parameter-map cofx))]
     {:chat-id      chat-id
      :content-type content-type
      :content      (merge {:command-path command-path
-                           :params       (if (satisfies? protocol/EnhancedParameters type)
-                                           (protocol/enhance-parameters type parameter-map cofx)
-                                           parameter-map)}
+                           :params       (or new-parameter-map parameter-map)}
                           content)}))
 
 (defn validate-and-send
