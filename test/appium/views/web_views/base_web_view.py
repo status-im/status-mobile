@@ -1,7 +1,7 @@
 import time
 import pytest
 
-from views.base_element import BaseElement, BaseEditBox, BaseButton
+from views.base_element import BaseElement, BaseEditBox, BaseButton, BaseText
 from views.base_view import BaseView
 
 
@@ -63,6 +63,13 @@ class URLEditBoxLockIcon(BaseEditBox):
             "//*[@content-desc='wallet-modal-button']/../preceding-sibling::*[1]//*[@content-desc='icon']")
 
 
+class PolicySummary(BaseElement):
+
+    def __init__(self, driver):
+        super(PolicySummary, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('Policy summary')
+
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -72,6 +79,7 @@ class BaseWebView(BaseView):
         self.progress_bar_icon = ProgressBarIcon(self.driver)
 
         self.url_edit_box_lock_icon = URLEditBoxLockIcon(self.driver)
+        self.policy_summary = PolicySummary(self.driver)
         self.back_to_home_button = BackToHomeButton(self.driver)
         self.browser_previous_page_button = BrowserPreviousPageButton(self.driver)
         self.browser_next_page_button = BrowserNextPageButton(self.driver)

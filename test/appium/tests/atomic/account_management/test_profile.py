@@ -233,6 +233,19 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.select_from_gallery_button.click()
         profile.deny_button.wait_for_visibility_of_element(2)
 
+    @marks.testrail_id(5299)
+    @marks.critical
+    def test_user_can_switch_network(self):
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.create_user()
+        network_name = 'Mainnet with upstream RPC'
+        profile = home_view.profile_button.click()
+        signin_view = profile.switch_network(network_name)
+        home_view = signin_view.sign_in()
+        profile = home_view.profile_button.click()
+        if not profile.current_active_network == network_name.upper():
+            self.driver.fail('Oops! Wrong network selected!')
+
 
 @marks.all
 @marks.account

@@ -374,6 +374,23 @@ class MailServerConnectButton(BaseButton):
         self.locator = self.Locator.accessibility_id('mailserver-connect-button')
 
 
+class ActiveNetworkName(BaseText):
+
+    def __init__(self, driver):
+        super(ActiveNetworkName, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('WITH UPSTREAM RPC')
+
+
+class AboutButton(BaseButton):
+    def __init__(self, driver):
+        super(AboutButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('about-button')
+
+    def navigate(self):
+        from views.about_view import AboutView
+        return AboutView(self.driver)
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
@@ -386,8 +403,10 @@ class ProfileView(BaseView):
         self.user_status_input = OptionsButton.UserStatusInput(self.driver)
         self.public_key_text = PublicKeyText(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
+        self.about_button = AboutButton(self.driver)
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
+        self.active_network_name = ActiveNetworkName(self.driver)
         self.plus_button = PlusButton(self.driver)
         self.ropsten_chain_button = RopstenChainButton(self.driver)
         self.custom_network_url = CustomNetworkURL(self.driver)
@@ -513,3 +532,9 @@ class ProfileView(BaseView):
 
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)
+
+    @property
+    def current_active_network(self):
+        self.advanced_button.click()
+        self.active_network_name.scroll_to_element()
+        return self.active_network_name.text

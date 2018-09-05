@@ -80,6 +80,16 @@ class OtherAccountsButton(BaseButton):
         self.locator = self.Locator.text_selector('OTHER ACCOUNTS')
 
 
+class PrivacyPolicyLink(BaseButton):
+    def __init__(self, driver):
+        super(PrivacyPolicyLink, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('Privacy Policy')
+
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
+
 class SignInView(BaseView):
 
     def __init__(self, driver, skip_popups=True):
@@ -100,6 +110,7 @@ class SignInView(BaseView):
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.name_input = NameInput(self.driver)
         self.other_accounts_button = OtherAccountsButton(self.driver)
+        self.privacy_policy_link = PrivacyPolicyLink(self.driver)
 
     def create_user(self, username: str = '', password=common_password):
         self.create_account_button.click()
