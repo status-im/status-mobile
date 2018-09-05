@@ -1,5 +1,18 @@
 pipeline {
-  agent { label 'linux-new' }
+  agent { 
+    /* privileged mode is necessary for fuse */
+    docker {
+      label 'linux-new'
+      image 'statusteam/linux-desktop-ubuntu:16.04'
+      args (
+        "--privileged "+ 
+        "-v /dev/fuse:/dev/fuse "+
+        "-v /var/tmp/lein:/var/tmp/lein:rw "+
+        "-v /var/tmp/npm:/var/tmp/npm:rw "+
+        "-v /opt/StatusImAppImage.zip:/opt/StatusImAppImage.zip:ro"
+      )
+    }
+  }
 
   options {
     buildDiscarder(logRotator(
@@ -9,10 +22,16 @@ pipeline {
     ))
   }
   
+  /**
+   * WARNING: Jenkins ignores PATH changes in Docker
+   * https://issues.jenkins-ci.org/browse/JENKINS-49076
+   **/
   environment {
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
+    NPM_CONFIG_CACHE = '/var/tmp/npm'
+    LEIN_HOME = '/var/tmp/lein'
   }
   
   stages {
@@ -22,6 +41,7 @@ pipeline {
           /* Necessary to load methods */
           desktop = load 'ci/desktop.groovy'
           cmn     = load 'ci/common.groovy'
+          sh 'env'
           desktop.prepDeps()
         }
       }

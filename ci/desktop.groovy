@@ -86,8 +86,6 @@ def prepDeps() {
 }
 
 def compileLinux() {
-  /* add path for QT installation binaries */
-  env.PATH = "${qtBin}:${env.PATH}"
   dir('desktop') {
     sh 'rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile'
     sh """
