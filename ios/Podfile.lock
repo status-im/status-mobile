@@ -58,13 +58,13 @@ PODS:
     - React/Core (= 0.56.0)
   - react-native-background-timer (2.1.0-alpha.6):
     - React
-  - react-native-camera (1.2.0):
+  - react-native-camera (1.1.5):
     - React
-    - react-native-camera/RCT (= 1.2.0)
-    - react-native-camera/RN (= 1.2.0)
-  - react-native-camera/RCT (1.2.0):
+    - react-native-camera/RCT (= 1.1.5)
+    - react-native-camera/RN (= 1.1.5)
+  - react-native-camera/RCT (1.1.5):
     - React
-  - react-native-camera/RN (1.2.0):
+  - react-native-camera/RN (1.1.5):
     - React
   - React/Core (0.56.0):
     - yoga (= 0.56.0.React)
