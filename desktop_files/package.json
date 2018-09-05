@@ -42,6 +42,7 @@
     "homoglyph-finder": "1.1.1",
     "identicon.js": "github:status-im/identicon.js",
     "instabug-reactnative": "2.12.0",
+    "js-sha3": "^0.8.0",
     "level-filesystem": "1.2.0",
     "metro": "^0.30.2",
     "nfc-react-native": "github:status-im/nfc-react-native",
@@ -80,6 +81,7 @@
     "realm": "git+https://github.com/status-im/realm-js.git",
     "rn-snoopy": "github:status-im/rn-snoopy",
     "string_decoder": "0.10.31",
+    "text-encoding": "^0.6.4",
     "url": "0.10.3",
     "web3": "github:status-im/web3.js#feature/shhext"
   },

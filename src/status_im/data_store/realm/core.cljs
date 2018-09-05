@@ -11,28 +11,33 @@
             [status-im.utils.ethereum.core :as utils.ethereum]
             [cognitect.transit :as transit]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.utils.utils :as utils]))
+            [status-im.js-dependencies :as js-dependencies]))
 
 (defn to-buffer [key]
-  (when key
-    (let [length (.-length key)
-          arr    (js/Uint8Array. length)]
-      (dotimes [i length]
-        (aset arr i (aget key i)))
-      (.-buffer arr))))
+  (when-not (nil? key)
+    (when key
+      (let [length (.-length key)
+            arr    (js/Int8Array. length)]
+        (dotimes [i length]
+          (aset arr i (aget key i)))
+        arr))))
 
 (defn encrypted-realm-version
   "Returns -1 if the file does not exists, the schema version if it successfully
-  decrypts it, error otherwise."
+  decrypts it, throws error otherwise."
   [file-name encryption-key]
-  (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key)))
+  (log/info "encrypted-realm-version\nfile: " file-name " buf " (str encryption-key) (nil? encryption-key))
+  (if encryption-key
+    (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
+    (.schemaVersion rn-dependencies/realm file-name)))
 
 (defn open-realm
   [options file-name encryption-key]
   (log/debug "Opening realm at " file-name "...")
   (let [options-js (clj->js (assoc options :path file-name))]
     (log/debug "Using encryption key...")
-    (set! (.-encryptionKey options-js) (to-buffer encryption-key))
+    (when encryption-key
+      (set! (.-encryptionKey options-js) (to-buffer encryption-key)))
     (when (exists? js/window)
       (rn-dependencies/realm. options-js))))
 
@@ -55,10 +60,10 @@
     utils.platform/android? (str
                              (.-DocumentDirectoryPath rn-dependencies/fs)
                              "/../no_backup/realm/")
-    utils.platform/ios?     (str
-                             (.-LibraryDirectoryPath rn-dependencies/fs)
-                             "/realm/")
-    :else                   (.-defaultPath rn-dependencies/realm)))
+    utils.platform/ios? (str
+                         (.-LibraryDirectoryPath rn-dependencies/fs)
+                         "/realm/")
+    :else (.-defaultPath rn-dependencies/realm)))
 
 (def old-realm-dir
   (string/replace old-base-realm-path #"default\.realm$" ""))
@@ -105,15 +110,34 @@
 (defn- migrate-schemas
   "Apply migrations in sequence and open database with the last schema"
   [file-name schemas encryption-key current-version]
+  (log/info "migrate schemas")
   (doseq [schema schemas
           :when (> (:schemaVersion schema) current-version)
           :let [migrated-realm (open-realm schema file-name encryption-key)]]
     (close migrated-realm))
   (open-realm (last schemas) file-name encryption-key))
 
+(defn keccak512-array [key]
+  (.array (.-keccak512 js-dependencies/js-sha3) key))
+
+(defn merge-Uint8Arrays [arr1 arr2]
+  (let [arr1-length (.-length arr1)
+        arr2-length (.-length arr2)
+        arr         (js/Uint8Array. (+ arr1-length arr2-length))]
+    (.set arr arr1)
+    (.set arr arr2 arr1-length)
+    arr))
+
+(defn db-encryption-key [password encryption-key]
+  (let [password-array (.encode
+                        (new (.-TextEncoder js-dependencies/text-encoding))
+                        password)]
+    (keccak512-array (merge-Uint8Arrays encryption-key password-array))))
+
 (defn migrate-realm
   "Migrate realm if is a compatible version or reset the database"
   [file-name schemas encryption-key]
+  (log/info "migrate-realm")
   (migrate-schemas file-name schemas encryption-key (encrypted-realm-version
                                                      file-name
                                                      encryption-key)))
@@ -125,8 +149,8 @@
 (defn- index-entity-schemas [all-schemas]
   (into {} (map (juxt :name identity)) (-> all-schemas last :schema)))
 
-(def base-realm (atom nil))
-(def account-realm (atom nil))
+(defonce base-realm (atom nil))
+(defonce account-realm (atom nil))
 
 (def entity->schemas (merge (index-entity-schemas base/schemas)
                             (index-entity-schemas account/schemas)))
@@ -144,10 +168,66 @@
   (reset! base-realm (open-migrated-realm base-realm-path base/schemas encryption-key))
   (log/debug "Created @base-realm"))
 
-(defn change-account [address encryption-key]
-  (let [path (str accounts-realm-dir (utils.ethereum/sha3 address))]
+(defn re-encrypt-realm
+  [file-name old-key new-key on-success on-error]
+  (let [old-file-name (str file-name "old")]
+    (.. (fs/move-file file-name old-file-name)
+        (then #(fs/unlink (str file-name ".lock")))
+        (then #(fs/unlink (str file-name ".management")))
+        (then #(fs/unlink (str file-name ".note")))
+        (catch (fn [e]
+                 (let [message (str "can't move old database " (str e) " " file-name)]
+                   (log/debug message)
+                   (on-error {:error message}))))
+        (then (fn []
+                (let [old-account-db (open-migrated-realm old-file-name
+                                                          account/schemas
+                                                          old-key)]
+                  (log/info "copy old database")
+                  (log/info "with key: " (str new-key))
+                  (.writeCopyTo old-account-db file-name (to-buffer new-key))
+                  (log/info "old database copied")
+                  (close old-account-db)
+                  (log/info "old database closed")
+                  (on-success)
+                  (fs/unlink old-file-name)
+                  (log/info "old database removed"))))
+        (catch (fn [e]
+                 (try (fs/move-file old-file-name file-name)
+                      (catch :default _))
+                 (let [message (str "something went wrong " (str e) " " file-name)]
+                   (log/info message)
+                   (on-error {:error message})))))))
+
+(defn check-db-encryption
+  [file-name old-key new-key]
+  (js/Promise.
+   (fn [on-success on-error]
+     (try
+       (do
+         (log/info "try to encrypt with password")
+         (encrypted-realm-version file-name new-key)
+         (log/info "try to encrypt with password success")
+         (on-success))
+       (catch :default _
+         (do
+           (log/info "try to encrypt with old key")
+           (encrypted-realm-version file-name old-key)
+           (log/info "try to encrypt with old key success")
+           (re-encrypt-realm file-name old-key new-key on-success on-error)))))))
+
+(defn change-account [address password encryption-key]
+  (let [path           (str accounts-realm-dir (utils.ethereum/sha3 address))
+        account-db-key (db-encryption-key password encryption-key)]
     (close-account-realm)
-    (reset! account-realm (open-migrated-realm path account/schemas encryption-key))))
+    (..
+     (check-db-encryption path encryption-key account-db-key)
+     (then
+      (fn []
+        (log/info "change-account done" (nil? @account-realm))
+        (reset! account-realm
+                (open-migrated-realm path account/schemas account-db-key))
+        (log/info "account-realm " (nil? @account-realm)))))))
 
 (declare realm-obj->clj)
 
@@ -235,10 +315,10 @@
 (defmulti to-query (fn [_ operator _ _] operator))
 
 (defmethod to-query :eq [schema-name _ field value]
-  (let [field-type    (field-type schema-name field)
-        query         (str (name field) "=" (if (= "string" (name field-type))
-                                              (str "\"" value "\"")
-                                              value))]
+  (let [field-type (field-type schema-name field)
+        query      (str (name field) "=" (if (= "string" (name field-type))
+                                           (str "\"" value "\"")
+                                           value))]
     query))
 
 (defn get-by-field

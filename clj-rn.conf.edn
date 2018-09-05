@@ -36,7 +36,9 @@
               "react-native/Libraries/vendor/emitter/EventEmitter"
               "react-native-background-timer"
               "react-native-fetch-polyfill"
-              "react-native-testfairy"]
+              "react-native-testfairy"
+              "text-encoding"
+              "js-sha3"]
 
  ;; Resoures
  :resource-dirs ["resources/images"]

@@ -24,9 +24,9 @@
               (log/error "Could not move realms" error)))
      (then #(data-source/open-base-realm encryption-key)))))
 
-(defn change-account [address encryption-key]
+(defn change-account [address password encryption-key]
   (log/debug "changing account to: " address)
-  (data-source/change-account address encryption-key))
+  (data-source/change-account address password encryption-key))
 
 (defn- perform-transactions [raw-transactions realm]
   (let [success-events (keep :success-event raw-transactions)

@@ -24,6 +24,7 @@
     "homoglyph-finder": "1.1.1",
     "identicon.js": "https://github.com/status-im/identicon.js.git",
     "instabug-reactnative": "2.12.0",
+    "js-sha3": "^0.8.0",
     "level-filesystem": "1.2.0",
     "process": "0.11.10",
     "prop-types": "15.6.0",
@@ -60,6 +61,7 @@
     "realm": "2.15.3",
     "rn-snoopy": "https://github.com/status-im/rn-snoopy.git",
     "string_decoder": "0.10.31",
+    "text-encoding": "^0.6.4",
     "url": "0.10.3",
     "web3": "https://github.com/status-im/web3.js.git#feature/shhext"
   }
