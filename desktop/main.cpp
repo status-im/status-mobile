@@ -167,6 +167,19 @@ void exceptionPostHandledCallback() {
 #endif
 }
 
+QString getDataStoragePath() {
+  QString dataStoragePath;
+#ifdef BUILD_FOR_BUNDLE
+  dataStoragePath =
+      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  QDir dir(dataStoragePath);
+  if (!dir.exists()) {
+    dir.mkpath(".");
+  }
+#endif
+  return dataStoragePath;
+}
+
 int main(int argc, char **argv) {
 
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -179,9 +192,9 @@ int main(int argc, char **argv) {
   appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
 #endif
 
-  ExceptionGlobalHandler exceptionHandler(appPath + QDir::separator() +
-                                              CRASH_REPORT_EXECUTABLE,
-                                          exceptionPostHandledCallback);
+  ExceptionGlobalHandler exceptionHandler(
+      appPath + QDir::separator() + CRASH_REPORT_EXECUTABLE,
+      exceptionPostHandledCallback, getDataStoragePath());
 
   Q_INIT_RESOURCE(react_resources);
 
@@ -242,16 +255,6 @@ int main(int argc, char **argv) {
 }
 
 #ifdef BUILD_FOR_BUNDLE
-
-QString getDataStoragePath() {
-  QString dataStoragePath =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  QDir dir(dataStoragePath);
-  if (!dir.exists()) {
-    dir.mkpath(".");
-  }
-  return dataStoragePath;
-}
 
 void writeLogsToFile() {
   QMutexLocker locker(&consoleOutputMutex);

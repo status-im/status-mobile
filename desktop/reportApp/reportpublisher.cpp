@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QProcess>
 #include <QUrl>
@@ -22,9 +23,10 @@ const QString REPORT_SUBMIT_URL =
     QStringLiteral("https://goo.gl/forms/0705ZN0EMW3xLDpI2");
 
 ReportPublisher::ReportPublisher(QString minidumpFilePath,
-                                 QString crashedExecutablePath, QObject *parent)
+                                 QString crashedExecutablePath,
+                                 QString logsPath, QObject *parent)
     : QObject(parent), m_minidumpFilePath(minidumpFilePath),
-      m_crashedExecutablePath(crashedExecutablePath) {}
+      m_logsPath(logsPath), m_crashedExecutablePath(crashedExecutablePath) {}
 
 void ReportPublisher::submit() {
   QDesktopServices::openUrl(QUrl(REPORT_SUBMIT_URL));
@@ -73,7 +75,21 @@ bool ReportPublisher::prepareReportFiles(QString reportDirPath) {
                      reportDirPath + QDir::separator() + "crash.dmp") &&
          QFile::copy(m_crashedExecutablePath,
                      reportDirPath + QDir::separator() +
-                         crashedExecutableFileInfo.fileName());
+                         crashedExecutableFileInfo.fileName()) &&
+         prepareLogFiles(reportDirPath);
+}
+
+bool ReportPublisher::prepareLogFiles(QString reportDirPath) {
+  if (reportDirPath.isEmpty())
+    return true;
+
+  QDirIterator filesIterator(m_logsPath, QStringList() << "*.log", QDir::Files);
+  while (filesIterator.hasNext()) {
+    QFileInfo logFile(filesIterator.next());
+    QFile::copy(logFile.absoluteFilePath(),
+                reportDirPath + QDir::separator() + logFile.fileName());
+  }
+  return true;
 }
 
 QString ReportPublisher::resolveDataStoragePath() {

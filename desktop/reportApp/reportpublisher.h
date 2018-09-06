@@ -15,25 +15,26 @@
 #include <QString>
 
 class ReportPublisher : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    ReportPublisher(QString minidumpFilePath, QString crashedExecutablePath, QObject* parent = 0);
+  ReportPublisher(QString minidumpFilePath, QString crashedExecutablePath,
+                  QString logsPath, QObject *parent = 0);
 
-    Q_INVOKABLE void submit();
-    Q_INVOKABLE void restartAndQuit();
-    Q_INVOKABLE void quit();
-    Q_INVOKABLE void showDirectory();
-    Q_INVOKABLE QString resolveDataStoragePath();
+  Q_INVOKABLE void submit();
+  Q_INVOKABLE void restartAndQuit();
+  Q_INVOKABLE void quit();
+  Q_INVOKABLE void showDirectory();
+  Q_INVOKABLE QString resolveDataStoragePath();
 
 private:
+  bool prepareReportFiles(QString reportDirPath);
+  bool prepareLogFiles(QString reportDirPath);
 
-    bool prepareReportFiles(QString reportDirPath);
-
-    QString m_minidumpFilePath;
-    QString m_crashedExecutablePath;
-    bool m_logFilesPrepared = false;
+  QString m_minidumpFilePath;
+  QString m_crashedExecutablePath;
+  QString m_logsPath;
+  bool m_logFilesPrepared = false;
 };
-
 
 #endif // REPORTPUBLISHER

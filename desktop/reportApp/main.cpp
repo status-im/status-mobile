@@ -17,7 +17,11 @@
 
 const int MAIN_WINDOW_WIDTH = 1024;
 const int MAIN_WINDOW_HEIGHT = 768;
-const int INPUT_ARGUMENTS_COUNT = 5;
+const int INPUT_ARGUMENTS_COUNT = 6;
+
+const int MINIDUMP_FILE_PATH_ARG_INDEX = 1;
+const int CRASHED_EXECUTABLE_PATH_ARG_INDEX = 2;
+const int LOGS_PATH_INDEX = 5;
 
 int main(int argc, char **argv) {
 
@@ -30,7 +34,9 @@ int main(int argc, char **argv) {
 
   app.setApplicationName("Crash Report");
 
-  ReportPublisher reportPublisher(argv[1], argv[2]);
+  ReportPublisher reportPublisher(argv[MINIDUMP_FILE_PATH_ARG_INDEX],
+                                  argv[CRASHED_EXECUTABLE_PATH_ARG_INDEX],
+                                  argv[LOGS_PATH_INDEX]);
 
   QQuickView view;
   view.rootContext()->setContextProperty("reportPublisher", &reportPublisher);
