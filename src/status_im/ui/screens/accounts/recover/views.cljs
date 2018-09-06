@@ -28,8 +28,8 @@
       :multiline           true
       :default-value       passphrase
       :auto-correct        false
-      :on-change-text      #(re-frame/dispatch [:recover/set-phrase (security/mask-data %)])
-      :on-blur             #(re-frame/dispatch [:recover/validate-phrase])
+      :on-change-text      #(re-frame/dispatch [:accounts.recover.ui/passphrase-input-changed (security/mask-data %)])
+      :on-blur             #(re-frame/dispatch [:accounts.recover.ui/passphrase-input-blured])
       :error               (cond error (i18n/label error)
                                  warning (i18n/label warning))}]))
 
@@ -41,8 +41,8 @@
      :placeholder       (i18n/label :t/enter-password)
      :default-value     password
      :auto-focus        false
-     :on-change-text    #(re-frame/dispatch [:recover/set-password (security/mask-data %)])
-     :on-blur           #(re-frame/dispatch [:recover/validate-password])
+     :on-change-text    #(re-frame/dispatch [:accounts.recover.ui/password-input-changed (security/mask-data %)])
+     :on-blur           #(re-frame/dispatch [:accounts.recover.ui/password-input-blured])
      :secure-text-entry true
      :error             (when error (i18n/label error))}]])
 
@@ -71,4 +71,4 @@
             :label     (i18n/label :t/sign-in)
             :disabled? (or processing? (not valid-form?))
             :on-press  (utils.core/wrap-call-once!
-                        #(re-frame/dispatch [:recover-account-with-checks]))}]])])))
+                        #(re-frame/dispatch [:accounts.recover.ui/sign-in-button-pressed]))}]])])))

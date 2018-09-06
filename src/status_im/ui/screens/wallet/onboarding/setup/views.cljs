@@ -25,7 +25,7 @@
   (utils/show-question
    (i18n/label :t/wallet-set-up-confirm-title)
    (i18n/label :t/wallet-set-up-confirm-description)
-   #(re-frame/dispatch [:wallet-set-up-passed modal?])))
+   #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed modal?])))
 
 (views/defview onboarding-panel [modal?]
   (views/letsubs [{:keys [signing-phrase]} [:get-current-account]]

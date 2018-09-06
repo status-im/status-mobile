@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.offline-messaging-settings.db
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require
-   [status-im.models.mailserver :as models.mailserver]
+   [status-im.mailserver.core :as mailserver]
    [cljs.spec.alpha :as spec]))
 
 (spec/def ::not-blank-string (spec/and string? seq))
 
-(spec/def :wnode/address (spec/and string? models.mailserver/valid-enode-address?))
+(spec/def :wnode/address (spec/and string? mailserver/valid-enode-address?))
 (spec/def :wnode/name ::not-blank-string)
 (spec/def :wnode/id keyword?)
 (spec/def :wnode/user-defined boolean?)

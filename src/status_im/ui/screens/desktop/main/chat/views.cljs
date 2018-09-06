@@ -52,18 +52,10 @@
          (i18n/label :t/view-profile)])
 
       [react/text {:style (styles/profile-actions-text colors/red)
-                   :on-press (fn []
-                               (utils/show-confirmation (i18n/label :clear-history-confirmation)
-                                                        ""
-                                                        (i18n/label :clear-history-action)
-                                                        #(re-frame/dispatch [:clear-history])))}
+                   :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
        (i18n/label :t/clear-history)]
       [react/text {:style (styles/profile-actions-text colors/red)
-                   :on-press (fn []
-                               (utils/show-confirmation (i18n/label :delete-chat-confirmation)
-                                                        ""
-                                                        (i18n/label :delete-chat-action)
-                                                        #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))}
+                   :on-press #(re-frame/dispatch [:chat.ui/delete-chat-pressed chat-id])}
        (i18n/label :t/delete-chat)]]]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]

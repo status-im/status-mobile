@@ -20,7 +20,7 @@
 
     [react/view styles/barcode-scanner-container
      [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
-     [camera/camera {:onBarCodeRead #(re-frame/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
+     [camera/camera {:onBarCodeRead #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data %)])
                      :ref           #(reset! camera-initialized? true)
                      :captureAudio  false
                      :style         styles/barcode-scanner}]

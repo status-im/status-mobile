@@ -1,10 +1,7 @@
 (ns status-im.ui.screens.events
-  (:require status-im.chat.events
+  (:require status-im.events
+            status-im.chat.events
             status-im.dev-server.events
-            status-im.network.events
-            status-im.protocol.handlers
-            status-im.ui.screens.accounts.login.events
-            status-im.ui.screens.accounts.recover.events
             [status-im.models.contacts :as models.contacts]
             status-im.ui.screens.add-new.events
             status-im.ui.screens.add-new.new-chat.events
@@ -12,17 +9,10 @@
             status-im.ui.screens.group.events
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.dimensions :as dimensions]
-            status-im.ui.screens.accounts.events
             status-im.utils.universal-links.events
-            status-im.init.events
-            status-im.node.events
-            status-im.signals.events
             status-im.web3.events
-            status-im.notifications.events
             status-im.ui.screens.add-new.new-chat.navigation
-            status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
-            status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.extensions.events
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.collectibles.events
@@ -36,12 +26,6 @@
             status-im.ui.screens.wallet.collectibles.etheremon.events
             status-im.ui.screens.wallet.collectibles.superrare.events
             status-im.ui.screens.browser.events
-            status-im.ui.screens.offline-messaging-settings.events
-            status-im.ui.screens.log-level-settings.events
-            status-im.ui.screens.fleet-settings.events
-            status-im.ui.screens.privacy-policy.events
-            status-im.ui.screens.bootnodes-settings.events
-            status-im.ui.screens.currency-settings.events
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
@@ -55,25 +39,6 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]))
-
-;;;; COFX
-
-(re-frame/reg-cofx
- :now
- (fn [coeffects _]
-   (assoc coeffects :now (time/timestamp))))
-
-(re-frame/reg-cofx
- :random-id
- (fn [coeffects _]
-   (assoc coeffects :random-id (random/id))))
-
-(re-frame/reg-cofx
- :random-id-seq
- (fn [coeffects _]
-   (assoc coeffects :random-id-seq (repeatedly random/id))))
-
-;;;; FX
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -115,17 +80,17 @@
    (dimensions/add-event-listener)))
 
 (re-frame/reg-fx
- :show-error
+ :ui/show-error
  (fn [content]
    (utils/show-popup "Error" content)))
 
 (re-frame/reg-fx
- :show-confirmation
+ :ui/show-confirmation
  (fn [{:keys [title content confirm-button-text on-accept on-cancel]}]
    (utils/show-confirmation title content confirm-button-text on-accept on-cancel)))
 
 (re-frame/reg-fx
- :close-application
+ :ui/close-application
  (fn [_]
    (status/close-application)))
 
@@ -133,8 +98,6 @@
  ::app-state-change-fx
  (fn [state]
    (status/app-state-change state)))
-
-;;;; Handlers
 
 (handlers/register-handler-db
  :set
@@ -145,21 +108,6 @@
  :set-in
  (fn [db [_ path v]]
    (assoc-in db path v)))
-
-(defn logout
-  [{:keys [db] :as cofx}]
-  (let [{:transport/keys [chats]} db]
-    (handlers-macro/merge-fx cofx
-                             {:dispatch            [:init/initialize-keychain]
-                              :clear-user-password (get-in db [:account/account :address])
-                              :dev-server/stop     nil}
-                             (navigation/navigate-to-clean nil)
-                             (transport/stop-whisper))))
-
-(handlers/register-handler-fx
- :logout
- (fn [cofx _]
-   (logout cofx)))
 
 (defn app-state-change [state {:keys [db] :as cofx}]
   (let [app-coming-from-background? (= state "active")]
@@ -180,8 +128,7 @@
 
 (handlers/register-handler-db
  :set-swipe-position
- [re-frame/trim-v]
- (fn [db [item-id value]]
+ (fn [db [_ item-id value]]
    (assoc-in db [:chat-animations item-id :delete-swiped] value)))
 
 (handlers/register-handler-db

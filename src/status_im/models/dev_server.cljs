@@ -1,5 +1,5 @@
 (ns status-im.models.dev-server
-  (:require [status-im.models.network :as models.network]
+  (:require [status-im.network.core :as network]
             [clojure.string :as string]))
 
 (defn start-if-needed
@@ -26,7 +26,7 @@
   (let [data (->> data
                   (map (fn [[k v]] [k {:value v}]))
                   (into {}))]
-    (models.network/save
+    (network/save
      cofx
      {:data       data
       :on-success (fn [network _]
@@ -37,7 +37,7 @@
 
 (defmethod process-request! [:POST "network" "connect"]
   [{:keys [cofx data]}]
-  (models.network/connect
+  (network/connect
    cofx
    {:network    (:id data)
     :on-success (fn [network _]
@@ -48,7 +48,7 @@
 
 (defmethod process-request! [:DELETE "network" nil]
   [{:keys [cofx data]}]
-  (models.network/delete
+  (network/delete
    cofx
    {:network    (:id data)
     :on-success (fn [network _]

@@ -6,7 +6,7 @@
 
 (defn privacy-policy-button []
   [react/touchable-highlight
-   {:on-press #(re-frame/dispatch [:open-privacy-policy-link])}
+   {:on-press #(re-frame/dispatch [:privacy-policy/privacy-policy-button-pressed])}
    [react/view styles/privacy-policy-button-container
     [react/text {:style styles/privacy-policy-button-text-gray}
      (i18n/label :t/agree-by-continuing)

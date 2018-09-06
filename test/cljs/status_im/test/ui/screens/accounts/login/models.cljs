@@ -1,7 +1,7 @@
-(ns status-im.test.ui.screens.accounts.login.models
+(ns status-im.test.ui.screens.accounts.models
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.config :as config]
-            [status-im.ui.screens.accounts.login.models :as models]))
+            [status-im.accounts.core :as models]))
 
 #_(deftest login-account
     (let [mainnet-account {:network "mainnet_rpc"

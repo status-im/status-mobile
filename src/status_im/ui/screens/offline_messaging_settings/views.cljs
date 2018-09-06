@@ -20,19 +20,13 @@
     (if platform/desktop? {:style (styles/wnode-icon connected?)}
         (styles/wnode-icon connected?))]])
 
-(defn connect-to-mailserver [id]
-  (re-frame/dispatch [:connect-wnode id]))
-
-(defn navigate-to-add-mailserver [wnode-id]
-  (re-frame/dispatch [:edit-mailserver wnode-id]))
-
 (defn render-row [current-wnode-id]
   (fn [{:keys [name id user-defined]}]
     (let [connected? (= id current-wnode-id)]
       [react/touchable-highlight
        {:on-press            #(if user-defined
-                                (navigate-to-add-mailserver id)
-                                (connect-to-mailserver id))
+                                (re-frame/dispatch [:mailserver.ui/user-defined-mailserver-selected id])
+                                (re-frame/dispatch [:mailserver.ui/default-mailserver-selected id]))
         :accessibility-label :mailserver-item}
        [react/view styles/wnode-item
         [wnode-icon connected?]
@@ -49,7 +43,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/offline-messaging-settings)]
       [toolbar/actions
-       [(toolbar.actions/add false (partial navigate-to-add-mailserver nil))]]]
+       [(toolbar.actions/add false #(re-frame/dispatch [:mailserver.ui/add-pressed]))]]]
      [react/view styles/wrapper
       [list/flat-list {:data               (vals wnodes)
                        :default-separator? false

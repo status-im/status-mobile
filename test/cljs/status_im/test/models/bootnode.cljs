@@ -1,6 +1,6 @@
 (ns status-im.test.models.bootnode
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.models.bootnode :as model]))
+            [status-im.bootnodes.core :as model]))
 
 (def bootnode-id "1da276e34126e93babf24ec88aac1a7602b4cbb2e11b0961d0ab5e989ca9c261aa7f7c1c85f15550a5f1e5a5ca2305b53b9280cf5894d5ecf7d257b173136d40")
 (def host "167.99.209.61:30504")

@@ -6,7 +6,5 @@
 
 (handlers/register-handler-db
  :extensions/toggle-activation
- [re-frame/trim-v]
- (fn [db [id m]]
+ (fn [db [_ id m]]
    nil))
-

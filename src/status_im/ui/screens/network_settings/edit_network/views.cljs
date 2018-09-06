@@ -21,7 +21,7 @@
                :custom (i18n/label :t/custom))]
     [list/list-item-with-checkbox
      {:checked?        (= (get-in manage-network [:chain :value]) type)
-      :on-value-change #(re-frame/dispatch [:network-set-input :chain type])
+      :on-value-change #(re-frame/dispatch [:network.ui/input-changed :chain type])
       :plain-checkbox? true}
      [list/item
       nil [list/item-primary-only name]]]))
@@ -41,14 +41,14 @@
             :placeholder    (i18n/label :t/specify-name)
             :container      styles/input-container
             :default-value  (get-in manage-network [:name :value])
-            :on-change-text #(re-frame/dispatch [:network-set-input :name %])
+            :on-change-text #(re-frame/dispatch [:network.ui/input-changed :name %])
             :auto-focus     true}]
           [text-input/text-input-with-label
            {:label          (i18n/label :t/rpc-url)
             :placeholder    (i18n/label :t/specify-rpc-url)
             :container      styles/input-container
             :default-value  (get-in manage-network [:url :value])
-            :on-change-text #(re-frame/dispatch [:network-set-input :url (string/lower-case %)])}]
+            :on-change-text #(re-frame/dispatch [:network.ui/input-changed :url (string/lower-case %)])}]
           [react/i18n-text {:key :network-chain}]
           [react/view styles/network-type
            [list/flat-list {:data      [:mainnet :testnet :rinkeby :custom]
@@ -60,11 +60,11 @@
              {:label          (i18n/label :t/network-id)
               :container      styles/input-container
               :placeholder    (i18n/label :t/specify-network-id)
-              :on-change-text #(re-frame/dispatch [:network-set-input :network-id %])}])]]
+              :on-change-text #(re-frame/dispatch [:network.ui/input-changed :network-id %])}])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
          [components.common/bottom-button
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:save-new-network])}]]]])))
+           :on-press  #(re-frame/dispatch [:network.ui/save-network-pressed])}]]]])))

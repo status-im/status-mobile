@@ -98,11 +98,6 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
-(defn- handle-logout []
-  (utils/show-confirmation (i18n/label :t/logout-title)
-                           (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
-
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
@@ -139,7 +134,7 @@
                                           :accessibility-label :log-out-button
                                           :destructive?        true
                                           :hide-arrow?         true
-                                          :action-fn           #(handle-logout)}]]]]))
+                                          :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
 (defview advanced-settings [{:keys [network networks dev-mode?]} on-show]
   (letsubs [{:keys [sharing-usage-data?]} [:get-current-account]]
@@ -182,7 +177,7 @@
      [profile.components/settings-switch-item
       {:label-kw  :t/dev-mode
        :value     dev-mode?
-       :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]]))
+       :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]]))
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:get :my-profile/advanced?]]

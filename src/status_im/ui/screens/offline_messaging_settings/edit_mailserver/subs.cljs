@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.offline-messaging-settings.edit-mailserver.subs
   (:require
    [re-frame.core :refer [reg-sub]]
-   [status-im.models.mailserver :as models.mailserver]))
+   [status-im.mailserver.core :as mailserver]))
 
 (reg-sub
  :get-manage-mailserver
@@ -12,8 +12,8 @@
 (reg-sub
  :get-connected-mailserver
  (fn [db]
-   (models.mailserver/connected? (get-in db [:mailservers/manage :id :value])
-                                 {:db db})))
+   (mailserver/connected? (get-in db [:mailservers/manage :id :value])
+                          {:db db})))
 
 (reg-sub
  :manage-mailserver-valid?

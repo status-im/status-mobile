@@ -1,5 +1,6 @@
 (ns status-im.utils.random
-  (:require [status-im.js-dependencies :as dependencies]
+  (:require [re-frame.core :as re-frame]
+            [status-im.js-dependencies :as dependencies]
             [status-im.utils.datetime :as datetime]))
 
 (def chance (dependencies/Chance.))
@@ -17,3 +18,13 @@
 (defn seeded-rand-nth
   [gen coll]
   (nth coll (seeded-rand-int gen (count coll))))
+
+(re-frame/reg-cofx
+ :random-id
+ (fn [coeffects _]
+   (assoc coeffects :random-id (id))))
+
+(re-frame/reg-cofx
+ :random-id-seq
+ (fn [coeffects _]
+   (assoc coeffects :random-id-seq (repeatedly id))))

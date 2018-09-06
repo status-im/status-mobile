@@ -4,10 +4,10 @@
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.dimensions :as dimensions]
-            [status-im.models.fleet :as fleet]
+            [status-im.fleet.core :as fleet]
             pluto.registry
             status-im.transport.db
-            status-im.ui.screens.accounts.db
+            status-im.accounts.db
             status-im.ui.screens.contacts.db
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db

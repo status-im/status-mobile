@@ -15,15 +15,15 @@
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []
   (if platform/desktop?
-    (re-frame/dispatch [:notifications/request-notifications-granted {}])
+    (re-frame/dispatch [:notifications.callback/request-notifications-permissions-granted {}])
     (-> (.requestPermission (.messaging firebase))
         (.then
          (fn [_]
            (log/debug "notifications-granted")
-           (re-frame/dispatch [:notifications/request-notifications-granted {}]))
+           (re-frame/dispatch [:notifications.callback/request-notifications-permissions-granted {}]))
          (fn [_]
            (log/debug "notifications-denied")
-           (re-frame/dispatch [:notifications/request-notifications-denied {}]))))))
+           (re-frame/dispatch [:notifications.callback/request-notifications-permissions-denied {}]))))))
 
 (when-not platform/desktop?
 
@@ -31,7 +31,7 @@
     (-> (.getToken (.messaging firebase))
         (.then (fn [x]
                  (log/debug "get-fcm-token: " x)
-                 (re-frame/dispatch [:notifications/update-fcm-token x])))))
+                 (re-frame/dispatch [:notifications.callback/get-fcm-token-success x])))))
 
   (defn on-refresh-fcm-token []
     (.onTokenRefresh (.messaging firebase)
@@ -78,7 +78,7 @@
                                                  first)]
       (when address
         {:db       (assoc-in db [:push-notifications/stored to] from)
-         :dispatch [:ui/open-login address photo-path name]})))
+         :dispatch [:notifications.callback/notification-stored address photo-path name]})))
 
   (defn handle-push-notification [{:keys [from to] :as event} {:keys [db] :as cofx}]
     (let [current-public-key (get-in cofx [:db :current-public-key])]
@@ -103,8 +103,8 @@
           to (object/get data "to")]
       (log/debug "on notification" (pr-str msg))
       (when (and from to)
-        (re-frame/dispatch [:notification/handle-push-notification {:from from
-                                                                    :to   to}]))))
+        (re-frame/dispatch [:notifications/notification-event-received {:from from
+                                                                        :to   to}]))))
 
   (defn handle-initial-push-notification
     []
@@ -156,3 +156,21 @@
                                    :to   to}
                                   cofx)))))
 
+(re-frame/reg-fx
+ :notifications/display-notification
+ display-notification)
+
+(re-frame/reg-fx
+ :notifications/handle-initial-push-notification
+ handle-initial-push-notification)
+
+(re-frame/reg-fx
+ :notifications/get-fcm-token
+ (fn [_]
+   (when platform/mobile?
+     (get-fcm-token))))
+
+(re-frame/reg-fx
+ :notifications/request-notifications-permissions
+ (fn [_]
+   (request-permissions)))

@@ -154,8 +154,8 @@
 
 (handlers/register-handler-fx
  :group/add-new-sym-key
- [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [{:keys [db] :as cofx} [{:keys [sym-key-id sym-key chat-id signature timestamp message]}]]
+ [(re-frame/inject-cofx :random-id)]
+ (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id signature timestamp message]}]]
    (let [{:keys [web3 current-public-key]} db
          topic                            (transport.utils/get-topic chat-id)
          fx {:db             (assoc-in db
@@ -194,9 +194,8 @@
 
 (handlers/register-handler-fx
  :transport/set-message-envelope-hash
- [re-frame/trim-v]
  ;; message-type is used for tracking
- (fn [{:keys [db]} [chat-id message-id message-type envelope-hash]]
+ (fn [{:keys [db]} [_ chat-id message-id message-type envelope-hash]]
    {:db (assoc-in db [:transport/message-envelopes envelope-hash]
                   {:chat-id      chat-id
                    :message-id   message-id
@@ -204,8 +203,7 @@
 
 (handlers/register-handler-fx
  :transport/set-contact-message-envelope-hash
- [re-frame/trim-v]
- (fn [{:keys [db]} [chat-id envelope-hash]]
+ (fn [{:keys [db]} [_ chat-id envelope-hash]]
    {:db (assoc-in db [:transport/message-envelopes envelope-hash]
                   {:chat-id      chat-id
                    :message-type :contact-message})}))

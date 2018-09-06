@@ -1,9 +1,10 @@
 (ns status-im.signals.core
-  (:require [status-im.init.core :as init]
+  (:require [status-im.accounts.db :as accounts.db]
+            [status-im.accounts.login.core :as accounts.login]
+            [status-im.init.core :as init]
+            [status-im.node.core :as node]
             [status-im.transport.handlers :as transport.handlers]
             [status-im.transport.inbox :as inbox]
-            [status-im.ui.screens.accounts.login.models :as login]
-            [status-im.node.models :as node]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
@@ -11,15 +12,15 @@
 (defn status-node-started
   [{db :db :as cofx}]
   (let [fx {:db (assoc db :status-node-started? true)}]
-    (if (:password (login/credentials cofx))
+    (if (:password (accounts.db/credentials cofx))
       (handlers-macro/merge-fx cofx
                                fx
-                               (login/login))
+                               (accounts.login/login))
       fx)))
 
 (defn status-node-stopped
   [cofx]
-  (let [{:keys [address]} (login/credentials cofx)]
+  (let [{:keys [address]} (accounts.db/credentials cofx)]
     (node/start address cofx)))
 
 (defn status-module-initialized [{:keys [db]}]

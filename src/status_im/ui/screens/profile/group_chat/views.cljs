@@ -43,17 +43,11 @@
        :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close
-     :action              #(utils/show-confirmation (i18n/label :t/clear-history-title)
-                                                    (i18n/label :t/clear-history-confirmation-content)
-                                                    (i18n/label :t/clear-history-action)
-                                                    (fn [] (re-frame/dispatch [:clear-history])))
+     :action              #(re-frame/dispatch [:chat.ui/clear-history-pressed])
      :accessibility-label :clear-history-button}
     {:label               (i18n/label :t/delete-chat)
      :icon                :icons/arrow-left
-     :action              #(utils/show-confirmation (i18n/label :t/leave-group-title)
-                                                    (i18n/label :t/leave-group-confirmation)
-                                                    (i18n/label :t/leave-group-action)
-                                                    (fn [] (re-frame/dispatch [:remove-chat-and-navigate-home chat-id])))
+     :action              #(re-frame/dispatch [:group-chat.ui/leave-group-pressed chat-id])
      :accessibility-label :delete-chat-button}]))
 
 (defn contact-actions [contact]

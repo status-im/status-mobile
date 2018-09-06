@@ -18,7 +18,7 @@
        [profile.components/settings-item
         {:label-kw            :t/privacy-policy
          :accessibility-label :privacy-policy
-         :action-fn           #(re-frame/dispatch [:open-privacy-policy-link])}]
+         :action-fn           #(re-frame/dispatch [:privacy-policy/privacy-policy-button-pressed])}]
        (when status-im.utils.platform/ios?
          [profile.components/settings-item-separator])
        [profile.components/settings-item

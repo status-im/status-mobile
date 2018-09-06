@@ -3,14 +3,12 @@
             [status-im.test.chat.events]
             [status-im.test.contacts.events]
             [status-im.test.contacts.subs]
-            [status-im.test.accounts.events]
             [status-im.test.data-store.realm.core]
             [status-im.test.browser.events]
             [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
-            [status-im.test.profile.events]
-            [status-im.test.models.mailserver]
+            [status-im.test.mailserver.core]
             [status-im.test.models.bootnode]
             [status-im.test.models.account]
             [status-im.test.models.contact]
@@ -49,8 +47,8 @@
             [status-im.test.utils.http]
             [status-im.test.init.core]
             [status-im.test.ui.screens.add-new.models]
-            [status-im.test.ui.screens.accounts.login.models]
-            [status-im.test.ui.screens.accounts.recover.models]
+
+            [status-im.test.accounts.recover.core]
             [status-im.test.ui.screens.currency-settings.models]
             [status-im.test.ui.screens.wallet.db]))
 
@@ -67,13 +65,11 @@
  'status-im.test.chat.events
  'status-im.test.chat.subs
  'status-im.test.chat.models
- 'status-im.test.accounts.events
  'status-im.test.contacts.events
  'status-im.test.contacts.subs
- 'status-im.test.profile.events
  'status-im.test.init.core
  'status-im.test.data-store.realm.core
- 'status-im.test.models.mailserver
+ 'status-im.test.mailserver.core
  'status-im.test.models.bootnode
  'status-im.test.models.account
  'status-im.test.models.contact
@@ -111,8 +107,7 @@
  'status-im.test.utils.universal-links.core
  'status-im.test.utils.http
  'status-im.test.ui.screens.add-new.models
- 'status-im.test.ui.screens.accounts.login.models
- 'status-im.test.ui.screens.accounts.recover.models
+ 'status-im.test.accounts.recover.core
  'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db
  'status-im.test.browser.events)

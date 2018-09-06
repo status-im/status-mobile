@@ -157,7 +157,7 @@
 ;;;; Effects
 
 (re-frame/reg-fx
- :save-user-password
+ :keychain/save-user-password
  (fn [[address password]]
    (save-user-password
     address
@@ -170,12 +170,12 @@
              "but you will have to login again next time you launch it."))))))
 
 (re-frame/reg-fx
- :get-user-password
+ :keychain/get-user-password
  (fn [[address callback]]
    (get-user-password address callback)))
 
 (re-frame/reg-fx
- :clear-user-password
+ :keychain/clear-user-password
  (fn [address]
    (clear-user-password
     address
@@ -183,11 +183,6 @@
        (log/error (str "Error while clearing saved password."))))))
 
 (re-frame/reg-fx
- :can-save-user-password?
+ :keychain/can-save-user-password?
  (fn [_]
-   (can-save-user-password? #(re-frame/dispatch [:callback/can-save-user-password? %]))))
-
-(handlers/register-handler-fx
- :callback/can-save-user-password?
- (fn [{:keys [db]} [_ can-save-user-password?]]
-   {:db (assoc-in db [:accounts/login :can-save-password?] can-save-user-password?)}))
+   (can-save-user-password? #(re-frame/dispatch [:keychain.callback/can-save-user-password?-success %]))))

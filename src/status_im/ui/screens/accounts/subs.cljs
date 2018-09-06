@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.accounts.subs
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
-            [status-im.ui.screens.accounts.db :as db]
+            [status-im.accounts.db :as db]
             [status-im.utils.ethereum.core :as ethereum]
             [cljs.spec.alpha :as spec]))
 

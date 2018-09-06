@@ -1,11 +1,11 @@
 (ns ^{:doc "API to init and stop whisper messaging"}
  status-im.transport.core
-  (:require [re-frame.core :as re-frame]
+  (:require status-im.transport.filters
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.handlers :as transport.handlers]
             [status-im.transport.inbox :as inbox]
-            status-im.transport.filters
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]

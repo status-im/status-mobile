@@ -1,6 +1,6 @@
 (ns status-im.test.models.network
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.models.network :as model]))
+            [status-im.network.core :as model]))
 
 (deftest valid-rpc-url-test
   (testing "nil?"

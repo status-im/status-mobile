@@ -104,8 +104,8 @@
        ;; We need to check if address is defined so that we wouldn't trigger this behavior when invalid QR is scanned
        ;; (e.g. whisper-id)
        (and address (= origin :qr) (not new-gas) symbol-changed?) (use-default-eth-gas)
-       (not address) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))
-       (and address (not valid-network?)) (assoc :show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
+       (not address) (assoc :ui/show-error (i18n/label :t/wallet-invalid-address {:data data}))
+       (and address (not valid-network?)) (assoc :ui/show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
 
 (handlers/register-handler-fx
  :wallet/fill-request-from-contact

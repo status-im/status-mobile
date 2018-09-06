@@ -17,7 +17,7 @@
             [re-frame.core :as re-frame]
             [cljs.spec.alpha :as spec]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.accounts.db :as db]))
+            [status-im.accounts.db :as db]))
 
 (defn login-toolbar [can-navigate-back?]
   [toolbar/toolbar
@@ -28,7 +28,7 @@
 
 (defn login-account [password-text-input]
   (.blur password-text-input)
-  (re-frame/dispatch [:ui/login]))
+  (re-frame/dispatch [:accounts.login.ui/password-input-submitted]))
 
 (defn- error-key [error]
   ;; TODO Improve selection logic when status-go provide an error code

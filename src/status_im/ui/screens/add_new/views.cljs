@@ -58,7 +58,7 @@
      :accessibility-label :scan-qr-code-button
      :icon                :icons/qr
      :icon-opts           {:color colors/blue}
-     :on-press            #(re-frame/dispatch [:scan-qr-code
+     :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                {:toolbar-title (i18n/label :t/scan-qr)}
                                                :handle-qr-code])}]])
 

@@ -52,7 +52,7 @@
 (when-not @listener-initialized
   (reset! listener-initialized true)
   (.addListener r/device-event-emitter "gethEvent"
-                #(re-frame/dispatch [:signal-event (.-jsonEvent %)])))
+                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))
 
 (defn stop-node []
   (when status

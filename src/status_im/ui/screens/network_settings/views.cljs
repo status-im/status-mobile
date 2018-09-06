@@ -32,9 +32,6 @@
 (defn navigate-to-network [network]
   (re-frame/dispatch [:navigate-to :network-details {:networks/selected-network network}]))
 
-(defn navigate-to-add-network []
-  (re-frame/dispatch [:edit-network]))
-
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]
     (let [connected? (= id current-network)]
@@ -58,7 +55,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/network-settings)]
       [toolbar/actions
-       [(toolbar.actions/add false navigate-to-add-network)]]]
+       [(toolbar.actions/add false #(re-frame/dispatch [:network.ui/add-network-pressed]))]]]
      [react/view styles/wrapper
       [list/section-list {:sections           [{:title (i18n/label :t/main-networks)
                                                 :key :mainnet

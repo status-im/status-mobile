@@ -1,6 +1,6 @@
 (ns status-im.test.transport.core
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.models.protocol :as protocol]
+            [status-im.protocol.core :as protocol]
             [status-im.transport.core :as transport]))
 
 (deftest init-whisper

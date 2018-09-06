@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.navigation]
-            [status-im.ui.screens.accounts.utils :as accounts.utils]
+            [status-im.accounts.update.core :as accounts.update]
             [status-im.chat.events :as chat-events]
             [status-im.chat.commands.core :as commands]
             [status-im.utils.handlers-macro :as handlers-macro]
@@ -67,7 +67,7 @@
                               {:photo-path photo-path}))]
     (handlers-macro/merge-fx cofx
                              (clear-profile)
-                             (accounts.utils/account-update cleaned-edit))))
+                             (accounts.update/account-update cleaned-edit))))
 
 (defn start-editing-group-chat-profile [{:keys [db]}]
   {:db (assoc db :group-chat-profile/editing? true)})
@@ -89,7 +89,7 @@
 (defn finish [{:keys [db] :as cofx}]
   (handlers-macro/merge-fx cofx
                            {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                           (accounts.utils/clean-seed-phrase)))
+                           (accounts.update/clean-seed-phrase)))
 
 (defn copy-to-clipboard! [value]
   (react/copy-to-clipboard value))

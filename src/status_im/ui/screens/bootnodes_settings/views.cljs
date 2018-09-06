@@ -14,7 +14,7 @@
             [status-im.ui.screens.bootnodes-settings.styles :as styles]))
 
 (defn navigate-to-add-bootnode [id]
-  (re-frame/dispatch [:edit-bootnode id]))
+  (re-frame/dispatch [:bootnodes.ui/add-bootnode-pressed id]))
 
 (defn render-row [{:keys [name id]}]
   [react/touchable-highlight
@@ -39,7 +39,7 @@
       [profile.components/settings-switch-item
        {:label-kw  :t/bootnodes-enabled
         :value     bootnodes-enabled
-        :action-fn #(re-frame/dispatch [:toggle-custom-bootnodes %])}]]
+        :action-fn #(re-frame/dispatch [:bootnodes.ui/custom-bootnodes-switch-toggled %])}]]
      [react/view styles/wrapper
       [list/flat-list {:data               (vals bootnodes)
                        :default-separator? false

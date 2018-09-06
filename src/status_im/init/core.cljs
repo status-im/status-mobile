@@ -1,69 +1,66 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
+            [status-im.accounts.login.core :as accounts.login]
+            [status-im.accounts.update.core :as accounts.update]
             [status-im.constants :as constants]
+            [status-im.data-store.core :as data-store]
             [status-im.data-store.realm.core :as realm]
             [status-im.i18n :as i18n]
-            [status-im.models.account :as models.account]
             [status-im.models.browser :as browser]
             [status-im.models.chat :as chat]
             [status-im.models.contacts :as models.contacts]
             [status-im.models.dev-server :as models.dev-server]
-            [status-im.models.protocol :as models.protocol]
+            [status-im.protocol.core :as protocol]
             [status-im.models.transactions :as transactions]
             [status-im.models.wallet :as models.wallet]
-            [status-im.node.models :as node]
+            [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
-            [status-im.ui.screens.accounts.login.models :as login]
             [status-im.ui.screens.contacts.events :as contacts]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.config :as config]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
+(defn init-store!
+  "Try to decrypt the database, move on if successful otherwise go back to
+  initial state"
+  [encryption-key]
+  (.. (data-store/init encryption-key)
+      (then #(re-frame/dispatch [:init.callback/init-store-success]))
+      (catch (fn [error]
+               (log/warn "Could not decrypt database" error)
+               (re-frame/dispatch [:init.callback/init-store-error encryption-key])))))
+
+(defn testfairy-alert! []
+  (when config/testfairy-enabled?
+    (utils/show-popup
+     (i18n/label :testfairy-title)
+     (i18n/label :testfairy-message))))
+
 ;; TODO (yenda) move keychain functions to dedicated namespace
-(defn- reset-keychain []
+(defn reset-keychain! []
   (.. (keychain/reset)
       (then
-       #(re-frame/dispatch [:init/initialize-keychain]))))
+       #(re-frame/dispatch [:init.callback/keychain-reset]))))
 
-(defn- handle-reset-data  []
+(defn reset-data!  []
   (.. (realm/delete-realms)
-      (then reset-keychain)
-      (catch reset-keychain)))
+      (then reset-keychain!)
+      (catch reset-keychain!)))
 
-(defn handle-invalid-key-parameters [encryption-key]
-  {:title               (i18n/label :invalid-key-title)
-   :content             (i18n/label :invalid-key-content)
-   :confirm-button-text (i18n/label :invalid-key-confirm)
-   ;; On cancel we initialize the app with the invalid key, to allow the user
-   ;; to recover the seed phrase
-   :on-cancel           #(do
-                           (log/warn "initializing app with invalid key")
-                           (re-frame/dispatch [:init/initialize-app encryption-key]))
-   :on-accept           handle-reset-data})
+(defn initialize-keychain
+  "Entrypoint, fetches the key from the keychain and initialize the app"
+  [cofx]
+  {:keychain/get-encryption-key [:init.callback/get-encryption-key-success]})
 
-(defn handle-decryption-failed-parameters [encryption-key]
-  {:title               (i18n/label :decryption-failed-title)
-   :content             (i18n/label :decryption-failed-content)
-   :confirm-button-text (i18n/label :decryption-failed-confirm)
-   ;; On cancel we initialize the app with the same key, in case the error was
-   ;; not related/fs error
-   :on-cancel           #(do
-                           (log/warn "initializing app with same key after decryption failed")
-                           (re-frame/dispatch [:init/initialize-app encryption-key]))
-   :on-accept           handle-reset-data})
-
-(defn initialize-keychain [cofx]
-  {:keychain/get-encryption-key [:init/initialize-app]})
-
-(defn set-device-uuid [device-uuid {:keys [db]}]
-  {:db (assoc db :device-UUID device-uuid)})
-
-(defn initialize-db
+(defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [status-module-initialized? status-node-started?
             network-status network peers-count peers-summary device-UUID]
@@ -78,22 +75,43 @@
               :network network
               :device-UUID device-UUID)})
 
-(defn initialize-app [encryption-key error cofx]
-  (cond
-    (= :invalid-key error)
-    {:show-confirmation (handle-invalid-key-parameters encryption-key)}
+(defn initialize-app
+  [encryption-key cofx]
+  (handlers-macro/merge-fx cofx
+                           {:init/get-device-UUID                           nil
+                            :init/init-store                                encryption-key
+                            :ui/listen-to-window-dimensions-change          nil
+                            :init/testfairy-alert                           nil
+                            :notifications/handle-initial-push-notification nil
+                            :network/listen-to-network-status               nil
+                            :network/listen-to-connection-status            nil}
+                           (initialize-app-db)
+                           (node/start)))
 
-    (= :decryption-failed error)
-    {:show-confirmation (handle-decryption-failed-parameters encryption-key)}
+(defn set-device-uuid [device-uuid {:keys [db]}]
+  {:db (assoc db :device-UUID device-uuid)})
 
-    :else
-    (handlers-macro/merge-fx cofx
-                             {:init/init-device-UUID                          nil
-                              :init/init-store                                encryption-key
-                              :ui/listen-to-window-dimensions-change          nil
-                              :init/testfairy-alert                           nil
-                              :notifications/handle-initial-push-notification nil}
-                             (initialize-db))))
+(defn handle-change-account-error
+  [cofx]
+  {:ui/show-confirmation
+   {:title               (i18n/label :invalid-key-title)
+    :content             (i18n/label :invalid-key-content)
+    :confirm-button-text (i18n/label :invalid-key-confirm)
+    ;; On cancel we initialize the app with the invalid key, to allow the user
+    ;; to recover the seed phrase
+    :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
+    :on-accept           #(re-frame/dispatch [:init.ui/data-reset-accepted])}})
+
+(defn handle-init-store-error
+  [encryption-key cofx]
+  {:ui/show-confirmation
+   {:title               (i18n/label :decryption-failed-title)
+    :content             (i18n/label :decryption-failed-content)
+    :confirm-button-text (i18n/label :decryption-failed-confirm)
+    ;; On cancel we initialize the app with the same key, in case the error was
+    ;; not related/fs error
+    :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled encryption-key])
+    :on-accept           #(re-frame/dispatch [:init.ui/data-reset-accepted])}})
 
 (defn load-accounts [{:keys [db all-accounts]}]
   (let [accounts (->> all-accounts
@@ -107,14 +125,12 @@
     (if (empty? accounts)
       (navigation/navigate-to-clean :intro cofx)
       (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
-        (login/open-login address photo-path name cofx)))))
+        (accounts.login/open-login address photo-path name cofx)))))
 
-(defn after-decryption [cofx]
+(defn load-accounts-and-initialize-views
+  "DB has been decrypted, load accounts and initialize-view"
+  [cofx]
   (handlers-macro/merge-fx cofx
-                           {:network/listen-to-network-status
-                            [#(re-frame/dispatch [:network/update-connection-status %])
-                             #(re-frame/dispatch [:network/update-network-status %])]}
-                           (node/start)
                            (load-accounts)
                            (initialize-views)))
 
@@ -166,7 +182,7 @@
                                                             [:web3/fetch-node-version-callback %])]
                             :notifications/get-fcm-token nil}
                            (initialize-account-db address)
-                           (models.protocol/initialize-protocol address)
+                           (protocol/initialize-protocol address)
                            (models.contacts/load-contacts)
                            (models.dev-server/start-if-needed)
                            (chat/initialize-chats)
@@ -176,5 +192,26 @@
                            (models.wallet/update-wallet)
                            (transactions/run-update)
                            (transactions/start-sync)
-                           (models.account/update-sign-in-time)
+                           (accounts.update/update-sign-in-time)
                            (login-only-events address)))
+
+(re-frame/reg-fx
+ :init/init-store
+ init-store!)
+
+(re-frame/reg-fx
+ :init/status-module-initialized
+ status/module-initialized!)
+
+(re-frame/reg-fx
+ :init/testfairy-alert
+ testfairy-alert!)
+
+(re-frame/reg-fx
+ :init/get-device-UUID
+ (fn []
+   (status/get-device-UUID #(re-frame/dispatch [:init.callback/get-device-UUID-success %]))))
+
+(re-frame/reg-fx
+ :init/reset-data
+ reset-data!)

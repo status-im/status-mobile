@@ -212,10 +212,10 @@
  :remove-chat-and-navigate-home?
  [re-frame/trim-v]
  (fn [_ [chat-id group?]]
-   {:show-confirmation {:title               (i18n/label :t/delete-confirmation)
-                        :content             (i18n/label :t/delete-chat-confirmation)
-                        :confirm-button-text (i18n/label :t/delete)
-                        :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
+   {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
+                           :content             (i18n/label :t/delete-chat-confirmation)
+                           :confirm-button-text (i18n/label :t/delete)
+                           :on-accept           #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
 
 (handlers/register-handler-fx
  :clear-history
@@ -225,10 +225,10 @@
 (handlers/register-handler-fx
  :clear-history?
  (fn [_ _]
-   {:show-confirmation {:title               (i18n/label :t/clear-history-confirmation)
-                        :content             (i18n/label :t/clear-history-confirmation-content)
-                        :confirm-button-text (i18n/label :t/clear)
-                        :on-accept           #(re-frame/dispatch [:clear-history])}}))
+   {:ui/show-confirmation {:title               (i18n/label :t/clear-history-confirmation)
+                           :content             (i18n/label :t/clear-history-confirmation-content)
+                           :confirm-button-text (i18n/label :t/clear)
+                           :on-accept           #(re-frame/dispatch [:clear-history])}}))
 
 (defn create-new-public-chat [topic {:keys [db now] :as cofx}]
   (handlers-macro/merge-fx cofx

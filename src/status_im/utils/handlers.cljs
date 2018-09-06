@@ -4,7 +4,7 @@
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.utils.instabug :as instabug]
-            [status-im.models.account :as models.account]
+            [status-im.accounts.db :as accounts.db]
             [cljs.core.async :as async]
             [taoensso.timbre :as log]))
 
@@ -43,7 +43,7 @@
    :id     :logged-in
    :before (fn logged-in-before
              [context]
-             (when (models.account/logged-in? (:coeffects context))
+             (when (accounts.db/logged-in? (:coeffects context))
                context))))
 
 (defn- check-spec-msg-path-problem [problem]

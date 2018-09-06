@@ -19,7 +19,7 @@
         (styles/fleet-icon current?))]])
 
 (defn change-fleet [fleet]
-  (re-frame/dispatch [:change-fleet fleet]))
+  (re-frame/dispatch [:fleet.ui/fleet-selected fleet]))
 
 (defn render-row [current-fleet]
   (fn [fleet]

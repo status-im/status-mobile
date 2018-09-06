@@ -15,9 +15,9 @@
             [status-im.data-store.accounts :as accounts-store]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.data-store.core :as data-store]
-            [status-im.models.mailserver :as models.mailserver]
+            [status-im.mailserver.core :as mailserver]
             [status-im.data-store.transport :as transport-store]
-            [status-im.models.fleet :as fleet]))
+            [status-im.fleet.core :as fleet]))
 
 ;; How does offline inboxing work ?
 ;;
@@ -182,7 +182,7 @@
    mailserver-status is changed to error if it is not connected by then"
   [{:keys [db] :as cofx}]
   (let [web3                        (:web3 db)
-        {:keys [address] :as wnode} (models.mailserver/fetch-current cofx)
+        {:keys [address] :as wnode} (mailserver/fetch-current cofx)
         peers-summary               (:peers-summary db)
         connected?                  (registered-peer? peers-summary address)]
     (if connected?
@@ -203,7 +203,7 @@
   [previous-summary {:keys [db] :as cofx}]
   (when (:account/account db)
     (let [{:keys [peers-summary peers-count]} db
-          wnode                               (:address (models.mailserver/fetch-current cofx))
+          wnode                               (:address (mailserver/fetch-current cofx))
           mailserver-was-registered?          (registered-peer? previous-summary
                                                                 wnode)
           mailserver-is-registered?           (registered-peer? peers-summary
@@ -247,7 +247,7 @@
 
 (defn request-messages
   ([{:keys [db now] :as cofx}]
-   (let [wnode                   (models.mailserver/fetch-current cofx)
+   (let [wnode                   (mailserver/fetch-current cofx)
          web3                    (:web3 db)
          now-in-s                (quot now 1000)
          last-request            (max
@@ -274,7 +274,7 @@
      (request-messages cofx))))
 
 (defn request-chat-history [chat-id {:keys [db now] :as cofx}]
-  (let [wnode             (models.mailserver/fetch-current cofx)
+  (let [wnode             (mailserver/fetch-current cofx)
         web3              (:web3 db)
         topic             (get-in db [:transport/chats chat-id :topic])
         now-in-s          (quot now 1000)]
@@ -313,10 +313,10 @@
  :inbox/check-connection
  (fn [{:keys [db] :as cofx} _]
    (when (= :connecting (:mailserver-status db))
-     (if (models.mailserver/preferred-mailserver-id cofx)
+     (if (mailserver/preferred-mailserver-id cofx)
        (update-mailserver-status :error cofx)
        (handlers-macro/merge-fx cofx
-                                (models.mailserver/set-current-mailserver)
+                                (mailserver/set-current-mailserver)
                                 (connect-to-mailserver))))))
 
 (defn update-last-request [last-request {:keys [db]}]
@@ -357,9 +357,9 @@
 
 (defn initialize-offline-inbox [custom-mailservers cofx]
   (handlers-macro/merge-fx cofx
-                           (models.mailserver/add-custom-mailservers custom-mailservers)
-                           (models.mailserver/set-initial-last-request)
-                           (models.mailserver/set-current-mailserver)))
+                           (mailserver/add-custom-mailservers custom-mailservers)
+                           (mailserver/set-initial-last-request)
+                           (mailserver/set-current-mailserver)))
 
 (handlers/register-handler-fx
  :inbox/check-fetching

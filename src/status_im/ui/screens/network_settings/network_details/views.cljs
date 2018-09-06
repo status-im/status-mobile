@@ -28,7 +28,7 @@
           {:name       name
            :connected? connected?}]
          (when-not connected?
-           [react/touchable-highlight {:on-press #(rf/dispatch [:connect-network id])}
+           [react/touchable-highlight {:on-press #(rf/dispatch [:network.ui/connect-network-pressed id])}
             [react/view st/connect-button-container
              [react/view {:style               st/connect-button
                           :accessibility-label :network-connect-button}
@@ -47,4 +47,4 @@
             [components.common/button {:label        (i18n/label :t/delete)
                                        :button-style st/delete-button
                                        :label-style  st/delete-button-text
-                                       :on-press     #(rf/dispatch [:delete-network id])}]]])]])))
+                                       :on-press     #(rf/dispatch [:network.ui/delete-network-pressed id])}]]])]])))

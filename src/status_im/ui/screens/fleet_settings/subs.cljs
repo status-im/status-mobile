@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.fleet-settings.subs
   (:require [re-frame.core :as re-frame]
             [status-im.utils.config :as config]
-            [status-im.models.fleet :as fleet]))
+            [status-im.fleet.core :as fleet]))
 
 (re-frame/reg-sub
  :settings/current-fleet

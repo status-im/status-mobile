@@ -14,41 +14,36 @@
 
 (handlers/register-handler-fx
  :extension/install
- [re-frame/trim-v]
- (fn [cofx [extension-data]]
+ (fn [cofx [_ extension-data]]
    (let [extension-key (get-in extension-data ['meta :name])]
      (handlers-macro/merge-fx cofx
-                              {:show-confirmation {:title     (i18n/label :t/success)
-                                                   :content   (i18n/label :t/extension-installed)
-                                                   :on-accept #(re-frame/dispatch [:navigate-to-clean :home])
-                                                   :on-cancel nil}}
+                              {:ui/show-confirmation {:title     (i18n/label :t/success)
+                                                      :content   (i18n/label :t/extension-installed)
+                                                      :on-accept #(re-frame/dispatch [:navigate-to-clean :home])
+                                                      :on-cancel nil}}
                               (registry/add extension-data)
                               (registry/activate extension-key)))))
 
 (handlers/register-handler-db
  :extension/edit-address
- [re-frame/trim-v]
- (fn [db [address]]
+ (fn [db [_ address]]
    (assoc db :extension-url address)))
 
 (handlers/register-handler-db
  :extension/stage
- [re-frame/trim-v]
- (fn [db [extension-data]]
+ (fn [db [_ extension-data]]
    (-> db
        (assoc :staged-extension extension-data)
        (navigation/navigate-to :show-extension))))
 
 (handlers/register-handler-fx
  :extension/show
- [re-frame/trim-v]
- (fn [cofx [uri]]
+ (fn [cofx [_ uri]]
    {:extension/load [uri :extension/stage]}))
 
 (handlers/register-handler-fx
  :extension/toggle-activation
- [re-frame/trim-v]
- (fn [cofx [id state]]
+ (fn [cofx [_ id state]]
    (when-let [toggle-fn (get {true  registry/activate
                               false registry/deactivate}
                              state)]

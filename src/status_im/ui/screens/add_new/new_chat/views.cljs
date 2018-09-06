@@ -33,7 +33,7 @@
                           :style               add-new.styles/input
                           :accessibility-label :enter-contact-code-input
                           :return-key-type     :go}]]
-      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:scan-qr-code
+      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                                             {:toolbar-title (i18n/label :t/new-contact)}
                                                                             :set-contact-identity-from-qr])
                                   :style               add-new.styles/button-container

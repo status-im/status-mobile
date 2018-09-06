@@ -31,7 +31,7 @@
     (.getSyncing
      (.-eth web3)
      (fn [error sync]
-       (re-frame/dispatch [:update-sync-state error sync])))))
+       (re-frame/dispatch [:web3.callback/get-syncing-success error sync])))))
 
 (defn set-default-account
   [web3 address]

@@ -27,7 +27,6 @@
  (fn [coeffects _]
    (assoc coeffects :default-dapps default-dapps/all)))
 
-;;;; Handlers
 (handlers/register-handler-fx
  :add-contact
  [(re-frame/inject-cofx :random-id)]

@@ -19,7 +19,7 @@
         (styles/log-level-icon current?))]])
 
 (defn change-log-level [log-level]
-  (re-frame/dispatch [:change-log-level log-level]))
+  (re-frame/dispatch [:log-level.ui/log-level-selected log-level]))
 
 (defn render-row [current-log-level]
   (fn [{:keys [name value] :as log-level}]
