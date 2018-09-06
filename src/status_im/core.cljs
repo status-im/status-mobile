@@ -11,7 +11,7 @@
             cljs.core.specs.alpha))
 
 (when js/goog.DEBUG
-  (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
+  (.ignoreWarnings (.-YellowBox js-dependencies/react-native) #js ["re-frame: overwriting"]))
 
 (defn init [app-root]
   (log/set-level! config/log-level)
