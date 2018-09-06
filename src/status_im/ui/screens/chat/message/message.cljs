@@ -326,13 +326,14 @@
            display-username?
            from
            outgoing
+           modal?
            username] :as message} content]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
     (when display-photo?
       [react/view style/message-author
        (when last-in-group?
-         [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile from])}
+         [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:show-profile from]))}
           [react/view
            [photos/member-photo from]]])])
     [react/view (style/group-message-view outgoing)
@@ -343,7 +344,7 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn chat-message [{:keys [outgoing group-chat current-public-key content-type content] :as message}]
+(defn chat-message [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
@@ -355,4 +356,5 @@
        [message-content message-body (merge message
                                             {:current-public-key current-public-key
                                              :group-chat         group-chat
+                                             :modal?             modal?
                                              :incoming-group     incoming-group})])]]])

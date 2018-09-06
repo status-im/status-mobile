@@ -111,16 +111,17 @@
                            :confirm-button-text (i18n/label :t/clear)
                            :on-accept           #(re-frame/dispatch [:clear-history])}}))
 
-(defn create-new-public-chat [topic cofx]
+(defn create-new-public-chat [topic modal? cofx]
   (handlers-macro/merge-fx cofx
                            (models/add-public-chat topic)
-                           (models/navigate-to-chat topic {:navigation-replace? true})
+                           (models/navigate-to-chat topic {:modal?              modal?
+                                                           :navigation-replace? true})
                            (public-chat/join-public-chat topic)))
 
 (handlers/register-handler-fx
  :create-new-public-chat
- (fn [cofx [_ topic]]
-   (create-new-public-chat topic cofx)))
+ (fn [cofx [_ topic modal?]]
+   (create-new-public-chat topic modal? cofx)))
 
 (defn- group-name-from-contacts [selected-contacts all-contacts username]
   (->> selected-contacts

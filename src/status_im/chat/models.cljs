@@ -171,13 +171,23 @@
 
 (defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
-  [chat-id {:keys [navigation-replace?]} cofx]
-  (if navigation-replace?
+  [chat-id {:keys [modal? navigation-replace?]} cofx]
+  (cond
+
+    modal?
+    (handlers-macro/merge-fx
+     cofx
+     (navigation/navigate-to-cofx :chat-modal {})
+     (preload-chat-data chat-id))
+
+    navigation-replace?
     (handlers-macro/merge-fx cofx
                              (navigation/navigate-reset {:index   1
                                                          :actions [{:routeName :home}
                                                                    {:routeName :chat}]})
                              (preload-chat-data chat-id))
+
+    :else
     (handlers-macro/merge-fx cofx
                              (navigation/navigate-to-cofx :chat {})
                              (preload-chat-data chat-id))))

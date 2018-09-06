@@ -22,7 +22,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]))
 
 (defview add-contact-bar [contact-identity]
   (letsubs [{:keys [hide-contact?] :as contact} [:get-contact-by-identity]]
@@ -46,22 +47,26 @@
   (list-selection/show {:title   chat-name
                         :options (actions/actions group-chat? chat-id public?)}))
 
-(defview chat-toolbar [public?]
+(defview chat-toolbar [public? modal?]
   (letsubs [name                                  [:get-current-chat-name]
             {:keys [group-chat chat-id contacts]} [:get-current-chat]]
     [react/view
-     [status-bar/status-bar]
+     [status-bar/status-bar (when modal? {:type :modal-white})]
      [toolbar/platform-agnostic-toolbar {}
-      (toolbar/nav-back-count {:home? true})
+      (if modal?
+        [toolbar/nav-button
+         (toolbar.actions/close toolbar.actions/default-handler)]
+        (toolbar/nav-back-count {:home? true}))
       [toolbar-content/toolbar-content-view]
-      [toolbar/actions [{:icon      :icons/wallet
-                         :icon-opts {:color               :black
-                                     :accessibility-label :wallet-modal-button}
-                         :handler   #(re-frame/dispatch [:navigate-to :wallet-modal])}
-                        {:icon      :icons/options
-                         :icon-opts {:color               :black
-                                     :accessibility-label :chat-menu-button}
-                         :handler   #(on-options chat-id name group-chat public?)}]]]
+      (when-not modal?
+        [toolbar/actions [{:icon      :icons/wallet
+                           :icon-opts {:color               :black
+                                       :accessibility-label :wallet-modal-button}
+                           :handler   #(re-frame/dispatch [:navigate-to :wallet-modal])}
+                          {:icon      :icons/options
+                           :icon-opts {:color               :black
+                                       :accessibility-label :chat-menu-button}
+                           :handler   #(on-options chat-id name group-chat public?)}]])]
      (when-not (or public? group-chat) [add-contact-bar (first contacts)])]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
@@ -71,9 +76,10 @@
   [message-datemark/chat-datemark value])
 
 (defmethod message-row :default
-  [{:keys [group-chat current-public-key row]}]
+  [{:keys [group-chat current-public-key modal? row]}]
   [message/chat-message (assoc row
                                :group-chat group-chat
+                               :modal? modal?
                                :current-public-key current-public-key)])
 
 (defview messages-view-animation [message-view]
@@ -112,7 +118,7 @@
            [react/text {:style style/empty-chat-text-name} (:name contact)]]
           (i18n/label :t/empty-chat-description))]])))
 
-(defview messages-view [group-chat]
+(defview messages-view [group-chat modal?]
   (letsubs [messages           [:get-current-chat-messages-stream]
             chat               [:get-current-chat]
             current-public-key [:get-current-public-key]]
@@ -124,6 +130,7 @@
                        :key-fn                    #(or (:message-id %) (:value %))
                        :render-fn                 (fn [message]
                                                     [message-row {:group-chat         group-chat
+                                                                  :modal?             modal?
                                                                   :current-public-key current-public-key
                                                                   :row                message}])
                        :inverted                  true
@@ -131,8 +138,8 @@
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps :handled}])))
 
-(defview chat []
-  (letsubs [{:keys [group-chat public? input-text]} [:get-current-chat]
+(defview chat-root [modal?]
+  (letsubs [{:keys [group-chat public?]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
             show-message-options? [:get-current-chat-ui-prop :show-message-options?]
             current-view      [:get :view-id]]
@@ -145,14 +152,20 @@
      [react/view {:style     style/chat-view
                   :on-layout (fn [e]
                                (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-      [chat-toolbar public?]
-      (if (= :chat current-view)
+      [chat-toolbar public? modal?]
+      (if (or (= :chat current-view) modal?)
         [messages-view-animation
-         [messages-view group-chat]]
+         [messages-view group-chat modal?]]
         [react/view style/message-view-preview])
-      [input/container {:text-empty? (string/blank? input-text)}]
+      [input/container modal?]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
       (when show-message-options?
         [message-options/view])
       [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
+
+(defview chat []
+  [chat-root false])
+
+(defview chat-modal []
+  [chat-root true])

@@ -19,11 +19,12 @@
    :ios     {:margin-top 4}
    :android {:font-size 13}})
 
-(def toolbar
+(def navbar
   {:background-color   :white
    :height             48
    :flex-direction     :row
    :align-items        :center
+   :justify-content    :space-between
    :padding-horizontal 32})
 
 (def disabled-button

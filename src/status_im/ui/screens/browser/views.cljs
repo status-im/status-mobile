@@ -77,8 +77,8 @@
     (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
       (get (:inject-js browser-config) domain-name))))
 
-(defn navigation [webview browser can-go-back? can-go-forward?]
-  [react/view styles/toolbar
+(defn navigation [url webview can-go-back? can-go-forward?]
+  [react/view styles/navbar
    [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/previous-page-button-pressed])
                                :disabled            (not can-go-back?)
                                :style               (when-not can-go-back? styles/disabled-button)
@@ -87,12 +87,13 @@
      [icons/icon :icons/arrow-left]]]
    [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/next-page-button-pressed])
                                :disabled            (not can-go-forward?)
-                               :style               (merge styles/forward-button
-                                                           (when-not can-go-forward? styles/disabled-button))
+                               :style               (when-not can-go-forward? styles/disabled-button)
                                :accessibility-label :next-page-button}
     [react/view
      [icons/icon :icons/arrow-right]]]
-   [react/view {:flex 1}]
+   [react/touchable-highlight
+    {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])}
+    [icons/icon :icons/chats]]
    [react/touchable-highlight {:on-press #(.reload @webview)}
     [icons/icon :icons/refresh]]])
 
@@ -139,7 +140,7 @@
     (when (or loading? resolving?)
       [react/view styles/web-view-loading
        [react/activity-indicator {:animating true}]])]
-   [navigation webview browser can-go-back? can-go-forward?]
+   [navigation url webview can-go-back? can-go-forward?]
    [permissions.views/permissions-anim-panel browser show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info

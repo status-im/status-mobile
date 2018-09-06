@@ -301,6 +301,19 @@
     (utils.universal-links/handle-url link cofx)
     {:browser/show-browser-selection link}))
 
+(defn filter-letters-numbers-and-replace-dot-on-dash [value]
+  (let [cc (.charCodeAt value 0)]
+    (cond (or (and (> cc 96) (< cc 123))
+              (and (> cc 64) (< cc 91))
+              (and (> cc 47) (< cc 58)))
+          value
+          (= cc 46)
+          "-")))
+
+(defn open-chat-from-browser [host cofx]
+  (let [topic (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash host)))]
+    {:dispatch [:create-new-public-chat topic true]}))
+
 (re-frame/reg-fx
  :browser/resolve-ens-multihash
  (fn [{:keys [web3 registry ens-name cb]}]

@@ -706,3 +706,8 @@
  :browser.ui/dapp-url-submitted
  (fn [cofx [_ dapp-url]]
    (browser/open-url dapp-url cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/open-modal-chat-button-pressed
+ (fn [cofx [_ host]]
+   (browser/open-chat-from-browser host cofx)))

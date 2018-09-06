@@ -43,7 +43,7 @@
 
 (defn handle-public-chat [public-chat cofx]
   (log/info "universal-links: handling public chat " public-chat)
-  (chat.events/create-new-public-chat public-chat cofx))
+  (chat.events/create-new-public-chat public-chat false cofx))
 
 (defn handle-view-profile [profile-id {:keys [db] :as cofx}]
   (log/info "universal-links: handling view profile" profile-id)

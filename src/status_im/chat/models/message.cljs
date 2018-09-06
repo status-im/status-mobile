@@ -125,7 +125,7 @@
    {:keys [from message-id chat-id content content-type clock-value js-obj] :as raw-message}
    {:keys [db now] :as cofx}]
   (let [{:keys [web3 current-chat-id view-id]} db
-        current-chat?              (and (= :chat view-id) (= current-chat-id chat-id))
+        current-chat?              (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
         {:keys [public?] :as chat} (get-in db [:chats chat-id])
         add-message-fn             (if batch? add-batch-message add-single-message)
         message                    (-> raw-message
