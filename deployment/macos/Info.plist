@@ -2,19 +2,42 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDisplayName</key>
+	<string>Status</string>
+	<key>CFBundleExecutable</key>
+	<string>Status</string>
 	<key>CFBundleIconFile</key>
 	<string>status-icon</string>
-	<key>NSHighResolutionCapable</key>
-	<string>True</string>
 	<key>CFBundleIdentifier</key>
 	<string>im.status.statusim</string>
-	<key>CFBundleExecutable</key>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
 	<string>Status</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1</string>
+	<key>CFBundleVersion</key>
+	<string>0.1</string>
+
+	<key>LSMinimumSystemVersion</key>
+	<string>10.9.0</string>
+	<key>NSHighResolutionCapable</key>
+	<string>True</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>status-im</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>im.status.ethereum.applink-desktop</string>
+		</dict>
+	</array>
 </dict>
 </plist>
