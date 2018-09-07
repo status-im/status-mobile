@@ -47,17 +47,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ExecutorService executor = null;
     private boolean debug;
     private boolean devCluster;
-    private String logLevel;
     private ReactApplicationContext reactContext;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
         this.debug = debug;
         this.devCluster = devCluster;
-        this.logLevel = logLevel;
         this.reactContext = reactContext;
         reactContext.addLifecycleEventListener(this);
     }
@@ -153,63 +151,59 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return null;
     }
 
-    private String generateConfig(final String dataDir, final int networkId, final String keystoreDir, final String fleet, final Object upstreamConfig) throws JSONException {
+    private String generateConfig(final JSONObject defaultConfig, final String root, final String keystoreDir, final String fleet) throws JSONException {
+        // retrieve parameters from app config, that will be applied onto the Go-side config later on
+        final String dataDir = root + defaultConfig.get("DataDir");
+        final int networkId = defaultConfig.getInt("NetworkId");
+        final Object upstreamConfig = defaultConfig.opt("UpstreamConfig");
+        final Boolean logEnabled = defaultConfig.getBoolean("LogEnabled");
+        final String logLevel = defaultConfig.optString("LogLevel", "ERROR");
 
-            JSONObject jsonConfig = new JSONObject(
-                    Statusgo.GenerateConfig(dataDir, fleet, networkId));
+        // retrieve config from Go side, in order to use as the basis of the config
+        JSONObject jsonConfig = new JSONObject(
+            Statusgo.GenerateConfig(dataDir, fleet, networkId));
 
-            jsonConfig.put("NetworkId", networkId);
-            jsonConfig.put("DataDir", dataDir);
-            jsonConfig.put("KeyStoreDir", keystoreDir);
+        jsonConfig.put("NetworkId", networkId);
+        jsonConfig.put("DataDir", dataDir);
+        jsonConfig.put("KeyStoreDir", keystoreDir);
 
-            if (upstreamConfig != null) {
-                Log.d(TAG, "UpstreamConfig is not null");
-                jsonConfig.put("UpstreamConfig", upstreamConfig);
-            }
+        if (upstreamConfig != null) {
+            Log.d(TAG, "UpstreamConfig is not null");
+            jsonConfig.put("UpstreamConfig", upstreamConfig);
+        }
 
-            final String gethLogFilePath = TextUtils.isEmpty(this.logLevel) ? null : prepareLogsFile();
-            final boolean logsEnabled = (gethLogFilePath != null);
+        final String gethLogFilePath = logEnabled ? prepareLogsFile() : null;
+        jsonConfig.put("LogEnabled", logEnabled);
+        jsonConfig.put("LogFile", gethLogFilePath);
+        jsonConfig.put("LogLevel", TextUtils.isEmpty(logLevel) ? "ERROR" : logLevel);
 
-            jsonConfig.put("LogEnabled", logsEnabled);
-            jsonConfig.put("LogFile", gethLogFilePath);
-            jsonConfig.put("LogLevel", TextUtils.isEmpty(this.logLevel) ? "ERROR" : this.logLevel.toUpperCase());
+        // Setting up whisper config
+        JSONObject whisperConfig = jsonConfig.optJSONObject("WhisperConfig");
+        if (whisperConfig == null) {
+            whisperConfig = new JSONObject();
+        }
+        whisperConfig.put("LightClient", true);
+        jsonConfig.put("WhisperConfig", whisperConfig);
 
+        // Setting up cluster config
+        JSONObject clusterConfig = jsonConfig.optJSONObject("ClusterConfig");
+        if (clusterConfig != null) {
+            Log.d(TAG, "ClusterConfig is not null");
+            clusterConfig.put("Fleet", fleet);
+            jsonConfig.put("ClusterConfig", clusterConfig);
+        } else {
+            Log.w(TAG, "ClusterConfig: Cannot find ClusterConfig: doesn't exist or not a JSON object");
+            Log.w(TAG, "ClusterConfig: Fleet will be set to defaults");
+        }
 
-            // Setting up whisper config
-            JSONObject whisperConfig = jsonConfig.optJSONObject("WhisperConfig");
-            if (whisperConfig == null) {
-                whisperConfig = new JSONObject();
-            }
-            whisperConfig.put("LightClient", true);
-            jsonConfig.put("WhisperConfig", whisperConfig);
-
-
-            // Setting up cluster config
-            JSONObject clusterConfig = jsonConfig.optJSONObject("ClusterConfig");
-            if (clusterConfig != null) {
-                Log.d(TAG, "ClusterConfig is not null");
-                clusterConfig.put("Fleet", fleet);
-                jsonConfig.put("ClusterConfig", clusterConfig);
-            } else {
-                Log.w(TAG, "ClusterConfig: Cannot find ClusterConfig: doesn't exist or not a JSON object");
-                Log.w(TAG, "ClusterConfig: Fleet will be set to defaults");
-            }
-
-            return jsonConfig.toString();
+        return jsonConfig.toString();
     }
-
 
     private String generateConfigFromDefaultConfig(final String root, final String keystoreDir, final String fleet, final String defaultConfig) {
         try {
             JSONObject customConfig = new JSONObject(defaultConfig);
 
-            // parameters from config
-            final String dataDir = root + customConfig.get("DataDir");
-            final int networkId = customConfig.getInt("NetworkId");
-            final Object upstreamConfig = customConfig.opt("UpstreamConfig");
-
-            return generateConfig(dataDir, networkId, keystoreDir, fleet, upstreamConfig);
-
+            return generateConfig(customConfig, root, keystoreDir, fleet);
         } catch (JSONException e) {
             Log.d(TAG, "Something went wrong " + e.getMessage());
             Log.d(TAG, "Default configuration will be used: ropsten, beta fleet");

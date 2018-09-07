@@ -1,6 +1,9 @@
 (ns status-im.node.models
   (:require [status-im.utils.config :as config]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [clojure.string :as str]
+            [taoensso.timbre :as log]
+            [status-im.models.fleet :as fleet]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -12,6 +15,14 @@
                                     :BootNodes bootnodes})
       config)))
 
+(defn- add-log-level [config log-level]
+  (if (empty? log-level)
+    (assoc config
+           :LogEnabled false)
+    (assoc config
+           :LogLevel log-level
+           :LogEnabled true)))
+
 (defn get-account-network [db address]
   (get-in db [:accounts/accounts address :network]))
 
@@ -21,12 +32,21 @@
                 settings
                 bootnodes
                 networks]} (get accounts address)
-        use-custom-bootnodes (get-in settings [:bootnodes network])]
+        use-custom-bootnodes (get-in settings [:bootnodes network])
+        log-level (or (:log-level settings)
+                      config/log-level-status-go)]
     (cond-> (get-in networks [network :config])
       (and
        config/bootnodes-settings-enabled?
        use-custom-bootnodes)
-      (add-custom-bootnodes network bootnodes))))
+      (add-custom-bootnodes network bootnodes)
+
+      :always
+      (add-log-level log-level))))
+
+(defn get-node-config [db network]
+  (-> (get-in (:networks/networks db) [network :config])
+      (add-log-level config/log-level-status-go)))
 
 (defn start
   ([cofx]
@@ -37,11 +57,12 @@
                        (:network db))
          node-config (if address
                        (get-account-node-config db address)
-                       (get-in (:networks/networks db) [network :config]))
-         node-config-json (types/clj->json node-config)]
-     {:db              (assoc db
-                              :network network)
-      :node/start node-config-json})))
+                       (get-node-config db network))
+         node-config-json (types/clj->json node-config)
+         fleet (name (fleet/current-fleet db address))]
+     (log/info "Node config: " node-config-json)
+     {:db         (assoc db :network network)
+      :node/start [node-config-json fleet]})))
 
 (defn restart
   []

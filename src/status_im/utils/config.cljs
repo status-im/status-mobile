@@ -33,6 +33,9 @@
   (-> (get-config :LOG_LEVEL "error")
       string/lower-case
       keyword))
+(def log-level-status-go
+  (-> (get-config :LOG_LEVEL_STATUS_GO "")
+      string/upper-case))
 (def fleet (get-config :FLEET "eth.beta"))
 (def default-network (get-config :DEFAULT_NETWORK))
 ;; the default value should be a string for `enabled?` to work correctly.

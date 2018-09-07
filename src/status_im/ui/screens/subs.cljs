@@ -13,6 +13,8 @@
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.transactions.subs
             status-im.ui.screens.network-settings.subs
+            status-im.ui.screens.log-level-settings.subs
+            status-im.ui.screens.fleet-settings.subs
             status-im.ui.screens.offline-messaging-settings.subs
             status-im.ui.screens.bootnodes-settings.subs
             status-im.ui.screens.currency-settings.subs

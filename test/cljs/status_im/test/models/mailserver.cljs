@@ -63,14 +63,11 @@
              (model/set-input :url "broken" {}))))))
 
 (deftest edit-mailserver
-  (let [db {:network "mainnet_rpc"
-            :account/account {:networks {"mainnet_rpc"
-                                         {:config {:NetworkId 1}}}}
-            :inbox/wnodes
-            {:mainnet {"a" {:id      "a"
-                            :address valid-enode-address
-                            :password password
-                            :name    "name"}}}}
+  (let [db {:inbox/wnodes
+            {:eth.beta {"a" {:id      "a"
+                             :address valid-enode-address
+                             :password password
+                             :name    "name"}}}}
         cofx {:db db}]
     (testing "when no id is given"
       (let [actual (model/edit nil cofx)]
@@ -122,45 +119,36 @@
 
 (deftest fetch-mailserver
   (testing "it fetches the mailserver from the db"
-    (let [cofx {:db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/wnodes {:mainnet {"a" {:id      "a"
-                                                   :name    "old-name"
-                                                   :address "enode://old-id:old-password@url:port"}}}}}]
+    (let [cofx {:db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
+                                                    :name    "old-name"
+                                                    :address "enode://old-id:old-password@url:port"}}}}}]
       (is (model/fetch "a" cofx)))))
 
 (deftest fetch-current-mailserver
   (testing "it fetches the mailserver from the db with corresponding id"
-    (let [cofx {:db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/current-id "a"
-                     :inbox/wnodes {:mainnet {"a" {:id      "a"
-                                                   :name    "old-name"
-                                                   :address "enode://old-id:old-password@url:port"}}}}}]
+    (let [cofx {:db {:inbox/current-id "a"
+                     :inbox/wnodes {:eth.beta {"a" {:id      "a"
+                                                    :name    "old-name"
+                                                    :address "enode://old-id:old-password@url:port"}}}}}]
       (is (model/fetch-current cofx)))))
 
 (deftest set-current-mailserver
   (with-redefs [rand-nth (comp last sort)]
-    (let [cofx {:db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/wnodes {:mainnet {"a" {}
-                                              "b" {}
-                                              "c" {}
-                                              "d" {}}}}}]
+    (let [cofx {:db {:inbox/wnodes {:eth.beta {"a" {}
+                                               "b" {}
+                                               "c" {}
+                                               "d" {}}}}}]
       (testing "the user has already a preference"
         (let [cofx (assoc-in cofx
                              [:db :account/account :settings]
-                             {:wnode {:mainnet "a"}})]
+                             {:wnode {:eth.beta "a"}})]
           (testing "the mailserver exists"
             (testing "it sets the preferred mailserver"
               (is (= "a" (-> (model/set-current-mailserver cofx)
                              :db
                              :inbox/current-id)))))
           (testing "the mailserver does not exists"
-            (let [cofx (update-in cofx [:db :inbox/wnodes :mainnet] dissoc "a")]
+            (let [cofx (update-in cofx [:db :inbox/wnodes :eth.beta] dissoc "a")]
               (testing "sets a random mailserver"
                 (is (= "d" (-> (model/set-current-mailserver cofx)
                                :db
@@ -195,13 +183,10 @@
 (deftest delete-mailserver
   (testing "the user is not connected to the mailserver"
     (let [cofx {:random-id "random-id"
-                :db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/wnodes {:mainnet {"a" {:id           "a"
-                                                   :name         "old-name"
-                                                   :user-defined true
-                                                   :address      "enode://old-id:old-password@url:port"}}}}}
+                :db {:inbox/wnodes {:eth.beta {"a" {:id           "a"
+                                                    :name         "old-name"
+                                                    :user-defined true
+                                                    :address      "enode://old-id:old-password@url:port"}}}}}
           actual (model/delete "a" cofx)]
       (testing "it removes the mailserver from the list"
         (is (not (model/fetch "a" actual))))
@@ -209,24 +194,17 @@
         (is (= 1 (count (:data-store/tx actual)))))))
   (testing "the mailserver is not user-defined"
     (let [cofx {:random-id "random-id"
-                :db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/wnodes {:mainnet {"a" {:id      "a"
-                                                   :name    "old-name"
-                                                   :address "enode://old-id:old-password@url:port"}}}}}
+                :db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
+                                                    :name    "old-name"
+                                                    :address "enode://old-id:old-password@url:port"}}}}}
           actual (model/delete "a" cofx)]
       (testing "it does not delete the mailserver"
         (is (nil? actual)))))
   (testing "the user is connected to the mailserver"
     (let [cofx {:random-id "random-id"
-                :db {:network "mainnet_rpc"
-                     :account/account {:settings {:wnode {:mainnet "a"}}
-                                       :networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :inbox/wnodes {:mainnet {"a" {:id      "a"
-                                                   :name    "old-name"
-                                                   :address "enode://old-id:old-password@url:port"}}}}}
+                :db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
+                                                    :name    "old-name"
+                                                    :address "enode://old-id:old-password@url:port"}}}}}
           actual (model/delete "a" cofx)]
       (testing "it does not remove the mailserver from the list"
         (is (nil? actual))))))
@@ -234,21 +212,18 @@
 (deftest upsert-mailserver
   (testing "new mailserver"
     (let [cofx {:random-id "random-id"
-                :db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :mailservers/manage {:name {:value "test-name"}
+                :db {:mailservers/manage {:name {:value "test-name"}
                                           :url  {:value "enode://test-id:test-password@url:port"}}
 
                      :inbox/wnodes {}}}
           actual (model/upsert cofx)]
 
       (testing "it adds the enode to inbox/wnodes"
-        (is (= {:mainnet {"randomid" {:password "test-password"
-                                      :address "enode://test-id@url:port"
-                                      :name "test-name"
-                                      :id "randomid"
-                                      :user-defined true}}}
+        (is (= {:eth.beta {"randomid" {:password "test-password"
+                                       :address "enode://test-id@url:port"
+                                       :name "test-name"
+                                       :id "randomid"
+                                       :user-defined true}}}
                (get-in actual [:db :inbox/wnodes]))))
       (testing "it navigates back"
         (is (= [:navigate-back]
@@ -257,26 +232,23 @@
         (is (= 1 (count (:data-store/tx actual)))))))
   (testing "existing mailserver"
     (let [cofx {:random-id "random-id"
-                :db {:network "mainnet_rpc"
-                     :account/account {:networks {"mainnet_rpc"
-                                                  {:config {:NetworkId 1}}}}
-                     :mailservers/manage {:id   {:value "a"}
+                :db {:mailservers/manage {:id   {:value "a"}
                                           :name {:value "new-name"}
                                           :url  {:value "enode://new-id:new-password@url:port"}}
 
-                     :inbox/wnodes {:mainnet {"a" {:id      "a"
-                                                   :name    "old-name"
-                                                   :address "enode://old-id:old-password@url:port"}}}}}
+                     :inbox/wnodes {:eth.beta {"a" {:id      "a"
+                                                    :name    "old-name"
+                                                    :address "enode://old-id:old-password@url:port"}}}}}
           actual (model/upsert cofx)]
       (testing "it navigates back"
         (is (= [:navigate-back]
                (:dispatch actual))))
       (testing "it updates the enode to inbox/wnodes"
-        (is (= {:mainnet {"a" {:password "new-password"
-                               :address "enode://new-id@url:port"
-                               :name "new-name"
-                               :id "a"
-                               :user-defined true}}}
+        (is (= {:eth.beta {"a" {:password "new-password"
+                                :address "enode://new-id@url:port"
+                                :name "new-name"
+                                :id "a"
+                                :user-defined true}}}
                (get-in actual [:db :inbox/wnodes]))))
       (testing "it stores it in the db"
         (is (= 1 (count (:data-store/tx actual)))))

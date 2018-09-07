@@ -1,9 +1,9 @@
 (ns status-im.models.mailserver
   (:require [clojure.string :as string]
             [status-im.data-store.mailservers :as data-store.mailservers]
-            [status-im.models.network :as models.network]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.models.fleet :as fleet]))
 
 (def enode-address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 (def enode-url-regex #"enode://[a-zA-Z0-9]+:(.+)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
@@ -53,14 +53,13 @@
   (= (:inbox/current-id db) id))
 
 (defn fetch [id {:keys [db] :as cofx}]
-  (get-in db [:inbox/wnodes (models.network/get-chain cofx) id]))
+  (get-in db [:inbox/wnodes (fleet/current-fleet db) id]))
 
 (defn fetch-current [{:keys [db] :as cofx}]
   (fetch (:inbox/current-id db) cofx))
 
 (defn preferred-mailserver-id [{:keys [db] :as cofx}]
-  (let [chain (models.network/get-chain cofx)]
-    (get-in db [:account/account :settings :wnode chain])))
+  (get-in db [:account/account :settings :wnode (fleet/current-fleet db)]))
 
 (defn- round-robin
   "Find the choice and pick the next one, default to first if not found"
@@ -81,10 +80,10 @@
   "Use the preferred mailserver if set & exists, otherwise picks one randomly
   if current-id is not set, else round-robin"
   [{:keys [db] :as cofx}]
-  (let [chain      (models.network/get-chain cofx)
-        current-id (:inbox/current-id db)
-        preference (preferred-mailserver-id cofx)
-        choices    (-> db :inbox/wnodes chain keys)]
+  (let [current-fleet (fleet/current-fleet db)
+        current-id    (:inbox/current-id db)
+        preference    (preferred-mailserver-id cofx)
+        choices       (-> db :inbox/wnodes current-fleet keys)]
     (if (and preference
              (fetch preference cofx))
       preference
@@ -98,7 +97,7 @@
   (when-not (or
              (default? id cofx)
              (connected? id cofx))
-    {:db            (update-in db [:inbox/wnodes (models.network/get-chain cofx)] dissoc id)
+    {:db            (update-in db [:inbox/wnodes (fleet/current-fleet db)] dissoc id)
      :data-store/tx [(data-store.mailservers/delete-tx id)]}))
 
 (defn set-current-mailserver [{:keys [db] :as cofx}]
@@ -108,10 +107,10 @@
   {:db (update-in db [:account/account :last-request] (fnil identity (quot now 1000)))})
 
 (defn add-custom-mailservers [mailservers {:keys [db]}]
-  {:db (reduce (fn [db {:keys [id chain] :as mailserver}]
-                 (assoc-in db [:inbox/wnodes (keyword chain) id]
+  {:db (reduce (fn [db {:keys [id fleet] :as mailserver}]
+                 (assoc-in db [:inbox/wnodes fleet id]
                            (-> mailserver
-                               (dissoc :chain)
+                               (dissoc :fleet)
                                (assoc :user-defined true))))
                db
                mailservers)})
@@ -131,8 +130,7 @@
 
 (defn upsert [{{:mailservers/keys [manage] :account/keys [account] :as db} :db :as cofx}]
   (let [{:keys [name url id]} manage
-        network               (get (:networks (:account/account db)) (:network db))
-        chain                 (ethereum/network->chain-keyword network)
+        current-fleet         (fleet/current-fleet db)
         mailserver            (build
                                (or (:value id)
                                    (string/replace (:random-id cofx) "-" ""))
@@ -141,12 +139,12 @@
         current               (connected? (:id mailserver) cofx)]
     {:db (-> db
              (dissoc :mailservers/manage)
-             (assoc-in [:inbox/wnodes chain (:id mailserver)] mailserver))
+             (assoc-in [:inbox/wnodes current-fleet (:id mailserver)] mailserver))
      :data-store/tx [{:transaction
                       (data-store.mailservers/save-tx (assoc
                                                        mailserver
-                                                       :chain
-                                                       chain))
+                                                       :fleet
+                                                       current-fleet))
                       ;; we naively logout if the user is connected to the edited mailserver
                       :success-event (when current [:logout])}]
      :dispatch [:navigate-back]}))

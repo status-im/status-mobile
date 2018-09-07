@@ -16,7 +16,8 @@
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.data-store.core :as data-store]
             [status-im.models.mailserver :as models.mailserver]
-            [status-im.data-store.transport :as transport-store]))
+            [status-im.data-store.transport :as transport-store]
+            [status-im.models.fleet :as fleet]))
 
 ;; How does offline inboxing work ?
 ;;
@@ -76,9 +77,8 @@
        (success-fn result)))))
 
 (defn add-sym-key-id-to-wnode [{:keys [id]} sym-key-id {:keys [db]}]
-  (let [network  (get (:networks (:account/account db)) (:network db))
-        chain    (ethereum/network->chain-keyword network)]
-    {:db (assoc-in db [:inbox/wnodes chain id :sym-key-id] sym-key-id)}))
+  (let [current-fleet (fleet/current-fleet db)]
+    {:db (assoc-in db [:inbox/wnodes current-fleet id :sym-key-id] sym-key-id)}))
 
 (defn registered-peer? [peers enode]
   (let [peer-ids (into #{} (map :id) peers)
