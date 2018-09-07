@@ -242,6 +242,7 @@
 (def ^:const web3-send-transaction "eth_sendTransaction")
 (def ^:const web3-personal-sign "personal_sign")
 (def ^:const web3-get-logs "eth_getLogs")
+(def ^:const admin-remove-peer "admin_removePeer")
 
 (def ^:const event-transfer-hash
   (ethereum/sha3 "Transfer(address,address,uint256)"))
