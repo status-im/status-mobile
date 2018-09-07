@@ -98,10 +98,6 @@
              :PFSEnabled            (or config/pfs-encryption-enabled?
                                         config/group-chats-enabled?))
 
-      :always (assoc :InstallationID installation-id)
-      (or config/encryption-enabled?
-          config/group-chats-enabled?)
-      (assoc :PFSEnabled true)
       (and
        config/bootnodes-settings-enabled?
        use-custom-bootnodes)
