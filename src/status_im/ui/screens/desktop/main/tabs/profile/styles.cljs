@@ -4,6 +4,11 @@
 (def profile-view
   {:align-items :center})
 
+(def profile-edit
+  {:margin-top         24
+   :padding-horizontal 24
+   :align-items        :flex-end})
+
 (def profile-badge
   {:margin-top    34
    :align-items   :center
