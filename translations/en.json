@@ -460,6 +460,7 @@
     "invalid-number": "Invalid number",
     "type-a-message": "Type a message...",
     "recover-password-too-short": "Password is too short",
+    "recover-password-invalid": "This account already exists but passwords do not match",
     "rinkeby-network": "Rinkeby test network",
     "faq": "Frequently asked questions",
     "currency-display-name-sar": "Saudi Arabia Riyal",

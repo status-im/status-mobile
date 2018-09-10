@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.9.28 - Unreleased]
 ### Added
 ### Fixed
+Fix app freeze on recover with wrong password
 ### Changed
 
 ## [0.9.27]

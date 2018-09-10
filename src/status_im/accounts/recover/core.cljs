@@ -58,18 +58,20 @@
   (let [password (get-in db [:accounts/recover :password])]
     {:db (assoc-in db [:accounts/recover :password-error] (check-password-errors password))}))
 
-(defn on-account-recovered [result password cofx]
-  (let [db         (:db cofx)
-        data       (types/json->clj result)
-        pubkey     (:pubkey data)
-        account    {:pubkey     pubkey
-                    :address    (:address data)
-                    :photo-path (identicon/identicon pubkey)
-                    :mnemonic ""}]
+(defn validate-recover-result [{:keys [error pubkey address]} password {:keys [db] :as cofx}]
+  (if (empty? error)
+    (let [account {:pubkey     pubkey
+                   :address    address
+                   :photo-path (identicon/identicon pubkey)
+                   :mnemonic   ""}]
+      (accounts.create/on-account-created account password true cofx))
+    {:db (assoc-in db [:accounts/recover :password-error] :recover-password-invalid)}))
 
+(defn on-account-recovered [result password {:keys [db] :as cofx}]
+  (let [data (types/json->clj result)]
     (handlers-macro/merge-fx cofx
                              {:db (assoc-in db [:accounts/recover :processing?] false)}
-                             (accounts.create/on-account-created account password true))))
+                             (validate-recover-result data password))))
 
 (defn recover-account [{:keys [db]}]
   (let [{:keys [password passphrase]} (:accounts/recover db)]
