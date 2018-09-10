@@ -243,19 +243,19 @@
              :gas (ethereum/estimate-gas symbol)
              :from-chat? true)))
 
-(defn- inject-network-price-info [{:keys [amount asset] :as parameters} {:keys [db]}]
-  (let [{:keys [chain prices]} db
-        currency               (-> db
-                                   currency-settings.subs/get-currency
-                                   name
-                                   string/upper-case)]
+(defn- inject-network-info [parameters {:keys [db]}]
+  (assoc parameters :network (:chain db)))
+
+(defn- inject-price-info [{:keys [amount asset] :as parameters} {:keys [db]}]
+  (let [currency (-> db
+                     currency-settings.subs/get-currency
+                     name
+                     string/upper-case)]
     (assoc parameters
-           :network     chain
-           ;; TODO(janherich) - shouldn't this be rather computed on the receiver side ?
-           :fiat-amount (money/fiat-amount-value amount
+           :fiat-amount (money/fiat-amount-value (string/replace amount #"," ".")
                                                  (keyword asset)
                                                  (keyword currency)
-                                                 prices)
+                                                 (:prices db))
            :currency    currency)))
 
 (defn- params-unchanged? [send-message request-message]
@@ -316,8 +316,10 @@
                           :edit?         false}}))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]
-    (inject-network-price-info parameters cofx))
-  (enhance-receive-parameters [_ _ _]))
+    (-> (inject-network-info parameters cofx)
+        (inject-price-info cofx)))
+  (enhance-receive-parameters [_ parameters cofx]
+    (inject-price-info parameters cofx)))
 
 ;; `/request` command
 
@@ -445,5 +447,7 @@
     (request-preview command-message))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]
-    (inject-network-price-info parameters cofx))
-  (enhance-receive-parameters [_ _ _]))
+    (-> (inject-network-info parameters cofx)
+        (inject-price-info cofx)))
+  (enhance-receive-parameters [_ parameters cofx]
+    (inject-price-info parameters cofx)))

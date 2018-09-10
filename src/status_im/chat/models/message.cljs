@@ -97,28 +97,11 @@
 (defn add-outgoing-status [{:keys [from] :as message} {:keys [db]}]
   (assoc message :outgoing (= from (:current-public-key db))))
 
-(defn set-fiat-amount [{:keys [content-type content] :as message} cofx]
-  (if (= constants/content-type-command content-type)
-    (let [account-currency (-> cofx
-                               (get-in [:db :account/account :settings :wallet :currency] :usd)
-                               name
-                               string/upper-case)
-          {:keys [amount asset]} (:params content)
-          prices (get-in cofx [:db :prices])]
-      (-> message
-          (assoc-in [:content :params :fiat-amount] (money/fiat-amount-value amount
-                                                                             (keyword asset)
-                                                                             (keyword account-currency)
-                                                                             prices))
-          (assoc-in [:content :params :currency] account-currency)))
-    message))
-
 (defn- add-message
   [batch? {:keys [chat-id message-id clock-value content] :as message} current-chat? {:keys [db] :as cofx}]
   (let [prepared-message (-> message
                              (prepare-message chat-id current-chat?)
-                             (add-outgoing-status cofx)
-                             (set-fiat-amount cofx))]
+                             (add-outgoing-status cofx))]
     (let [fx {:db            (cond->
                               (-> db
                                   (update-in [:chats chat-id :messages] assoc message-id prepared-message)
