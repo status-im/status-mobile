@@ -1,12 +1,13 @@
 (ns status-im.models.browser
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.data-store.browser :as browser-store]
             [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.i18n :as i18n]
+            [status-im.js-dependencies :as dependencies]
             [status-im.ui.screens.browser.default-dapps :as default-dapps]
             [status-im.utils.http :as http]
-            [clojure.string :as string]
             [status-im.utils.ethereum.resolver :as resolver]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]
@@ -31,8 +32,14 @@
       (assoc browser :dapp? true :name (:name dapp))
       (assoc browser :dapp? false :name (i18n/label :t/browser)))))
 
+(defn check-if-phishing-url [{:keys [history history-index] :as browser}]
+  (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
+    (assoc browser :unsafe? (dependencies/phishing-detect history-host))))
+
 (defn update-browser-fx [browser {:keys [db now]}]
-  (let [updated-browser (check-if-dapp-in-list (assoc browser :timestamp now))]
+  (let [updated-browser (-> (assoc browser :timestamp now)
+                            (check-if-dapp-in-list)
+                            (check-if-phishing-url))]
     {:db            (update-in db [:browser/browsers (:browser-id updated-browser)]
                                merge updated-browser)
      :data-store/tx [(browser-store/save-browser-tx updated-browser)]}))

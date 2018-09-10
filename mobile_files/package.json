@@ -20,6 +20,7 @@
     "create-react-class": "15.6.2",
     "dns.js": "1.0.1",
     "emojilib": "2.2.9",
+    "eth-phishing-detect": "1.1.13",
     "events": "1.1.1",
     "homoglyph-finder": "1.1.1",
     "identicon.js": "https://github.com/status-im/identicon.js.git",

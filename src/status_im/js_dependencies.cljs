@@ -2,6 +2,7 @@
 
 (def Chance              (js/require "chance"))
 (def emojis              (js/require "emojilib"))
+(def phishing-detect     (js/require "eth-phishing-detect"))
 (def homoglyph-finder    (js/require "homoglyph-finder"))
 (def identicon-js        (js/require "identicon.js"))
 (def Web3                (js/require "web3"))

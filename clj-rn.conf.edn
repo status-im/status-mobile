@@ -26,6 +26,7 @@
               "instabug-reactnative"
               "react-native-http-bridge"
               "emojilib"
+              "eth-phishing-detect"
               "react-native-config"
               "react-native-svg"
               "react-native-keychain"

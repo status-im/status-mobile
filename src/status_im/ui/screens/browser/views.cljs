@@ -1,27 +1,28 @@
 (ns status-im.ui.screens.browser.views
   (:require-macros [status-im.utils.slurp :refer [slurp]]
                    [status-im.utils.views :as views])
-  (:require [cljs.reader :as reader]
+  (:require [clojure.string :as string]
+            [cljs.reader :as reader]
+            [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles]
+            [status-im.ui.components.react :as components]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.components.webview-bridge :as components.webview-bridge]
-            [status-im.utils.js-resources :as js-res]
-            [status-im.ui.components.react :as components]
-            [reagent.core :as reagent]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.screens.browser.permissions.views :as permissions.views]
+            [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
+            [status-im.ui.screens.browser.styles :as styles]
+            [status-im.utils.js-resources :as js-res]
+            [status-im.utils.ethereum.core :as ethereum]
             [status-im.models.browser :as model]
             [status-im.utils.http :as http]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.colors :as colors]
-            [clojure.string :as string]
-            [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.utils.platform :as platform]))
 
 (def browser-config
@@ -116,9 +117,9 @@
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `brwoser`, because `url` comes from subs
 (views/defview browser-component
-  [{:keys [webview error? url browser browser-id can-go-back? can-go-forward?
-           url-editing? resolving? network-id address show-permission
-           show-tooltip opt-in? loading? dapp? rpc-url name]}]
+  [{:keys [webview error? url browser browser-id unsafe? can-go-back?
+           can-go-forward? url-editing? resolving? network-id address
+           show-permission show-tooltip opt-in? loading? dapp? rpc-url name]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -126,31 +127,34 @@
    [status-bar/status-bar]
    [toolbar webview error? url browser browser-id url-editing?]
    [react/view components.styles/flex
-    [components.webview-bridge/webview-bridge
-     {:dapp?                                 dapp?
-      :dapp-name                             name
-      :ref                                   #(do
-                                                (reset! webview %)
-                                                (re-frame/dispatch [:set :webview-bridge %]))
-      :source                                (when-not resolving? {:uri url})
-      :java-script-enabled                   true
-      :bounces                               false
-      :local-storage-enabled                 true
-      :render-error                          web-view-error
-      :on-navigation-state-change            #(on-navigation-change % browser error?)
-      :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message %])
-      :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
-      :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
-                                                                                           :loading? false}])
-      :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
-                                                  (get-inject-js url)
-                                                  (if opt-in?
-                                                    (js-res/web3-opt-in-init (str network-id))
-                                                    (js-res/web3-init
-                                                     rpc-url
-                                                     (ethereum/normalized-address address)
-                                                     (str network-id))))
-      :injected-java-script                  js-res/webview-js}]
+    (if unsafe?
+      [site-blocked.views/view {:can-go-back? can-go-back?
+                                :site         browser-id}]
+      [components.webview-bridge/webview-bridge
+       {:dapp?                                 dapp?
+        :dapp-name                             name
+        :ref                                   #(do
+                                                  (reset! webview %)
+                                                  (re-frame/dispatch [:set :webview-bridge %]))
+        :source                                (when-not resolving? {:uri url})
+        :java-script-enabled                   true
+        :bounces                               false
+        :local-storage-enabled                 true
+        :render-error                          web-view-error
+        :on-navigation-state-change            #(on-navigation-change % browser error?)
+        :on-bridge-message                     #(re-frame/dispatch [:on-bridge-message %])
+        :on-load                               #(re-frame/dispatch [:update-browser-options {:error? false}])
+        :on-error                              #(re-frame/dispatch [:update-browser-options {:error?   true
+                                                                                             :loading? false}])
+        :injected-on-start-loading-java-script (str (not opt-in?) js-res/web3
+                                                    (get-inject-js url)
+                                                    (if opt-in?
+                                                      (js-res/web3-opt-in-init (str network-id))
+                                                      (js-res/web3-init
+                                                       rpc-url
+                                                       (ethereum/normalized-address address)
+                                                       (str network-id))))
+        :injected-java-script                  js-res/webview-js}])
     (when (or loading? resolving?)
       [react/view styles/web-view-loading
        [components/activity-indicator {:animating true}]])]
@@ -166,7 +170,7 @@
 (views/defview browser []
   (views/letsubs [webview    (atom nil)
                   {:keys [address settings]} [:get-current-account]
-                  {:keys [browser-id dapp? name] :as browser} [:get-current-browser]
+                  {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]
                   network-id [:get-network-id]]
@@ -180,6 +184,7 @@
                           :url             url
                           :browser         browser
                           :browser-id      browser-id
+                          :unsafe?         unsafe?
                           :can-go-back?    can-go-back?
                           :can-go-forward? can-go-forward?
                           :url-editing?    url-editing?

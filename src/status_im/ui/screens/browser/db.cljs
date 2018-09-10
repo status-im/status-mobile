@@ -35,7 +35,8 @@
    :opt-un [:browser/name
             :browser/dapp?
             :browser/history
-            :browser/history-index]))
+            :browser/history-index
+            :browser/unsafe?]))
 
 (spec/def :browser/browsers (spec/nilable (spec/map-of :global/not-empty-string :browser/browser)))
 
