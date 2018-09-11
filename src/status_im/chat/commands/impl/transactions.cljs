@@ -139,6 +139,11 @@
                        :source {:uri image_url}}]
    [react/text {} name]])
 
+(defn transfer-nft-token [{{{:keys [symbol token]} :params} :content} {:keys [db]}]
+  (let [nft-symbol (keyword symbol)
+        token-id   (js/parseInt token)]
+    (println "Transferring nft token " token-id " of kind " nft-symbol)))
+
 ;;TODO(goranjovic): currently we only allow tokens which are enabled in Manage assets here
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
 ;; if we were to update all balances.

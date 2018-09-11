@@ -139,19 +139,23 @@
                      :description   :string
                      :short-preview :view
                      :preview       :view
+                     :on-send?      :function
+                     :on-receive?   :function
                      :parameters    [{:id           :keyword
                                       :type         {:one-of #{:text :phone :password :number}}
                                       :placeholder  :string
                                       :suggestions? :component}]})
-    (hook-in [_ id {:keys [description scope parameters preview short-preview]} cofx]
+    (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive]} cofx]
       (let [new-command (reify protocol/Command
                           (id [_] (name id))
                           (scope [_] scope)
                           (description [_] description)
                           (parameters [_] parameters)
                           (validate [_ _ _])
-                          (on-send [_ _ _])
-                          (on-receive [_ _ _])
+                          (on-send [_ parameters cofx]
+                            (and on-send (on-send parameters cofx)))
+                          (on-receive [_ parameters cofx]
+                            (and on-receive (on-receive parameters cofx)))
                           (short-preview [_ props] (short-preview props))
                           (preview [_ props] (preview props)))]
         (load-commands [new-command] cofx)))
