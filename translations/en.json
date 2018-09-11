@@ -20,9 +20,9 @@
     "wallet-advanced": "Advanced",
     "currency-display-name-sos": "Somalia Shilling",
     "members-active": {
+        "zero": "",
         "one": "1 member",
-        "other": "{{count}} members",
-        "zero": "no members"
+        "other": "{{count}} members"
     },
     "chat-name": "Chat name",
     "currency-display-name-zar": "South Africa Rand",
@@ -54,6 +54,7 @@
     "mailserver-details": "Mailserver details",
     "new-public-group-chat": "Join public chat",
     "datetime-hour": {
+        "zero": "",
         "one": "hour",
         "other": "hours"
     },
@@ -376,6 +377,7 @@
     "wallet-transaction-total-fee": "Total Fee",
     "extension": "Extension",
     "datetime-day": {
+        "zero": "",
         "one": "day",
         "other": "days"
     },
@@ -393,6 +395,7 @@
     "scan-qr": "Scan QR code",
     "currency-display-name-lak": "Laos Kip",
     "contact-s": {
+        "zero": "",
         "one": "contact",
         "other": "contacts"
     },
@@ -559,9 +562,9 @@
     "transactions": "Transactions",
     "transactions-unsigned": "Unsigned",
     "members": {
+        "zero": "",
         "one": "1 member",
-        "other": "{{count}} members",
-        "zero": "no members"
+        "other": "{{count}} members"
     },
     "delete-mailserver-title": "Delete mailserver",
     "intro-message1": "Welcome to Status!\nTap this message to set your password and get started.",
@@ -574,6 +577,7 @@
     "your-contact-code": "Granting access authorizes this DApp to retrieve your contact code",
     "new-contact": "New contact",
     "datetime-second": {
+        "zero": "",
         "one": "second",
         "other": "seconds"
     },
@@ -607,6 +611,7 @@
     "enter-12-words": "Enter the 12 words of your recovery phrase, separated by single spaces",
     "contact-already-added": "The contact has already been added",
     "datetime-minute": {
+        "zero": "",
         "one": "minute",
         "other": "minutes"
     },
@@ -655,7 +660,7 @@
     "delete-confirmation": "Delete?",
     "no": "No",
     "transactions-filter-select-all": "Select all",
-    "get-status-at": "Get Status at http://status.im",
+    "get-status-at": "Get Status at http:\/\/status.im",
     "your-data-belongs-to-you-description": "Status can’t help you recover your account if you lose your recovery phrase. You are in charge of the security of your data, and backing up your recovery phrase is the best safeguard.",
     "transactions-filter-title": "Filter history",
     "view-profile": "View profile",
@@ -681,7 +686,7 @@
     "delete-chat-confirmation": "Are you sure you want to delete this chat?",
     "data": "Data",
     "gwei": "Gwei",
-    "cost-fee": "Cost/Fee",
+    "cost-fee": "Cost\/Fee",
     "currency-display-name-usd": "United States Dollar",
     "currency-display-name-uah": "Ukraine Hryvnia"
 }
