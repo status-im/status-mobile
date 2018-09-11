@@ -37,7 +37,7 @@
     (.onTokenRefresh (.messaging firebase)
                      (fn [x]
                        (log/debug "on-refresh-fcm-token: " x)
-                       (re-frame/dispatch [:notifications/update-fcm-token x]))))
+                       (re-frame/dispatch [:notifications.callback/get-fcm-token-success x]))))
 
   ;; TODO(oskarth): Only called in background on iOS right now.
   ;; NOTE(oskarth): Hardcoded data keys :sum and :msg in status-go right now.
