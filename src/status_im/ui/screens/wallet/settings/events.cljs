@@ -12,3 +12,8 @@
  :configure-token-balance-and-visibility
  (fn [cofx [_ symbol balance]]
    (models/configure-token-balance-and-visibility symbol balance accounts.update/update-settings cofx)))
+
+(handlers/register-handler-fx
+ :wallet.ui/pull-to-refresh
+ (fn [cofx _]
+   (models/wallet-autoconfig-tokens cofx)))

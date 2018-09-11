@@ -24,15 +24,17 @@
                            (wallet.events/update-token-balance-success symbol balance)))
 
 (defn wallet-autoconfig-tokens [{:keys [db]}]
-  (let [{:keys [account/account web3]} db
+  (let [{:keys [account/account web3 network-status]} db
         network   (get (:networks account) (:network account))
         chain     (ethereum/network->chain-keyword network)
         contracts (->> (tokens/tokens-for chain)
                        (remove :hidden?))]
-    (doseq [{:keys [address symbol]} contracts]
-      ;;TODO(goranjovic): move `get-token-balance` function to wallet models
-      (wallet.events/get-token-balance {:web3       web3
-                                        :contract   address
-                                        :account-id (:address account)
-                                        :on-success #(when (> % 0)
-                                                       (re-frame/dispatch [:configure-token-balance-and-visibility symbol %]))}))))
+    (when-not (= network-status :offline)
+      (doseq [{:keys [address symbol]} contracts]
+        ;;TODO(goranjovic): move `get-token-balance` function to wallet models
+        (wallet.events/get-token-balance {:web3       web3
+                                          :contract   address
+                                          :account-id (:address account)
+                                          :on-error   #(re-frame/dispatch [:update-token-balance-fail symbol %])
+                                          :on-success #(when (> % 0)
+                                                         (re-frame/dispatch [:configure-token-balance-and-visibility symbol %]))})))))

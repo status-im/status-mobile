@@ -176,7 +176,7 @@
         [transactions.views/history-list true]]
        [react/scroll-view {:refresh-control
                            (reagent/as-element
-                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
+                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
                                                     :tint-color :white
                                                     :refreshing false}])}
         (if error-message
