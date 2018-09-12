@@ -29,6 +29,7 @@
   (views/letsubs [network                                           [:get-current-account-network]
                   {:keys [to to-name whisper-identity]}             [:wallet.send/transaction]
                   {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
+                  network-status [:network-status]
                   scroll (atom nil)]
     (let [{:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [wallet.components/simple-screen {:avoid-keyboard? true}
@@ -46,6 +47,7 @@
                                       :type      :request
                                       :symbol    symbol}]
           [components/amount-selector {:error         amount-error
+                                       :disabled?     (= :offline network-status)
                                        :amount        amount
                                        :amount-text   amount-text
                                        :input-options {:on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))

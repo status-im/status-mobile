@@ -288,7 +288,8 @@
                         (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
                         amount-text)}
      (if disabled?
-       {:editable false}
+       {:editable    false
+        :placeholder ""}
        {:keyboard-type       :numeric
         :placeholder         (i18n/label :t/amount-placeholder)
         :style               components.styles/flex

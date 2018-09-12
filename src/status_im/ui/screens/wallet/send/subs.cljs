@@ -70,7 +70,7 @@
 (defn check-sufficient-gas [transaction balance symbol amount]
   (assoc transaction :sufficient-gas?
          (or (nil? amount)
-             (let [available-ether   (get balance :ETH)
+             (let [available-ether   (get balance :ETH (money/bignumber 0))
                    available-for-gas (if (= :ETH symbol)
                                        (.minus available-ether (money/bignumber amount))
                                        available-ether)]
