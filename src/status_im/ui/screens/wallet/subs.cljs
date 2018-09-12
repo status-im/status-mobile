@@ -65,11 +65,12 @@
                                                      (or currency-code
                                                          (-> currency :code keyword))
                                                      token->decimals)]
-                        (-> balance-total-value
-                            (money/with-precision 2)
-                            str
-                            (i18n/format-currency (:code currency) false)
-                            (->> (str "~"))))
+                        (if (pos? balance-total-value)
+                          (-> balance-total-value
+                              (money/with-precision 2)
+                              str
+                              (i18n/format-currency (:code currency) false))
+                          "0"))
                       "...")))
 
 (re-frame/reg-sub :prices-loading?

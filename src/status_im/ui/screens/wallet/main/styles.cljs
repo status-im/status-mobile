@@ -58,6 +58,9 @@
 (def total-value
   {:color colors/white-transparent})
 
+(def total-balance-tilde
+  {:color colors/white-transparent})
+
 (defstyle total-balance-currency
   {:font-size   37
    :margin-left 9
