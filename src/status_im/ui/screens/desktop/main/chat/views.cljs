@@ -51,10 +51,10 @@
                      :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
          (i18n/label :t/view-profile)])
 
-      [react/text {:style (styles/profile-actions-text colors/red)
+      [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
        (i18n/label :t/clear-history)]
-      [react/text {:style (styles/profile-actions-text colors/red)
+      [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/delete-chat-pressed chat-id])}
        (i18n/label :t/delete-chat)]]]))
 
