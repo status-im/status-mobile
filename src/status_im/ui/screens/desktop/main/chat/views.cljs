@@ -228,7 +228,9 @@
                         :accessibility-label :add-contact-link}
             [vector-icons/icon :icons/add {:style (styles/chat-profile-icon colors/gray)}]]
            [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat public-key])}
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch
+                      [:open-chat-with-contact {:whisper-identity whisper-identity}])}
          [react/view {:style styles/chat-profile-row}
           [react/view {:style styles/chat-profile-icon-container
                        :accessibility-label :send-message-link}
