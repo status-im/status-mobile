@@ -332,6 +332,8 @@
     "your-wallets": "Your wallets",
     "phone-international": "International 2",
     "error-unable-to-get-token-balance": "Unable to get token balance",
+    "error-cant-send-transaction-offline": "Can't send transaction in offline mode",
+    "error-cant-sign-message-offline": "Can't sign message in offline mode",
     "enter-word": "Enter word",
     "sync-in-progress": "Syncing...",
     "enter-password": "Enter password",
