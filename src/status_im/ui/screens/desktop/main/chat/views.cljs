@@ -1,58 +1,58 @@
 (ns status-im.ui.screens.desktop.main.chat.views
-(:require-macros [status-im.utils.views :as views])
-(:require [re-frame.core :as re-frame]
-          [status-im.ui.components.icons.vector-icons :as icons]
-          [clojure.string :as string]
-          [status-im.chat.styles.message.message :as message.style]
-          [status-im.chat.views.message.message :as message]
-          [status-im.utils.gfycat.core :as gfycat.core]
-          [taoensso.timbre :as log]
-          [status-im.utils.gfycat.core :as gfycat]
-          [status-im.constants :as constants]
-          [status-im.utils.identicon :as identicon]
-          [status-im.utils.datetime :as time]
-          [status-im.utils.utils :as utils]
-          [status-im.ui.components.react :as react]
-          [status-im.ui.components.connectivity.view :as connectivity]
-          [status-im.ui.components.colors :as colors]
-          [status-im.chat.views.message.datemark :as message.datemark]
-          [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
-          [status-im.ui.components.icons.vector-icons :as vector-icons]
-          [status-im.ui.screens.desktop.main.chat.styles :as styles]
-          [status-im.utils.contacts :as utils.contacts]
-          [status-im.i18n :as i18n]
-          [status-im.ui.screens.desktop.main.chat.events :as chat.events]))
+  (:require-macros [status-im.utils.views :as views])
+  (:require [re-frame.core :as re-frame]
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [clojure.string :as string]
+            [status-im.chat.styles.message.message :as message.style]
+            [status-im.chat.views.message.message :as message]
+            [status-im.utils.gfycat.core :as gfycat.core]
+            [taoensso.timbre :as log]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.constants :as constants]
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.datetime :as time]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.connectivity.view :as connectivity]
+            [status-im.ui.components.colors :as colors]
+            [status-im.chat.views.message.datemark :as message.datemark]
+            [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.screens.desktop.main.chat.styles :as styles]
+            [status-im.utils.contacts :as utils.contacts]
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.desktop.main.chat.events :as chat.events]))
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
-                                 :as current-chat}]
-(views/letsubs [chat-name         [:get-current-chat-name]
-                {:keys [pending? whisper-identity photo-path]} [:get-current-chat-contact]]
-  [react/view {:style styles/toolbar-chat-view}
-   [react/view {:style {:flex-direction :row
-                        :flex 1}}
-    (if public?
-      [react/view {:style (styles/topic-image color)}
-       [react/text {:style styles/topic-text}
-        (string/capitalize (second chat-name))]]
-      [react/image {:style styles/chat-icon
-                    :source {:uri photo-path}}])
-    [react/view {:style (styles/chat-title-and-type pending?)}
-     [react/text {:style styles/chat-title
-                  :font  :medium}
-      chat-name]
-     (cond pending?
-           [react/text {:style styles/add-contact-text
-                        :on-press #(re-frame/dispatch [:add-contact whisper-identity])}
-            (i18n/label :t/add-to-contacts)]
-           public?
-           [react/text {:style styles/public-chat-text}
-            (i18n/label :t/public-chat)])]]
-   #_[react/view
-      [react/popup-menu
-       [react/popup-menu-trigger {:text "Popup test"}]
-       [react/popup-menu-options
-        [react/popup-menu-option {:text "First"}]
-        [react/popup-menu-option {:text "Second"}]]]]
+                                   :as current-chat}]
+  (views/letsubs [chat-name         [:get-current-chat-name]
+                  {:keys [pending? whisper-identity photo-path]} [:get-current-chat-contact]]
+    [react/view {:style styles/toolbar-chat-view}
+     [react/view {:style {:flex-direction :row
+                          :flex 1}}
+      (if public?
+        [react/view {:style (styles/topic-image color)}
+         [react/text {:style styles/topic-text}
+          (string/capitalize (second chat-name))]]
+        [react/image {:style styles/chat-icon
+                      :source {:uri photo-path}}])
+      [react/view {:style (styles/chat-title-and-type pending?)}
+       [react/text {:style styles/chat-title
+                    :font  :medium}
+        chat-name]
+       (cond pending?
+             [react/text {:style styles/add-contact-text
+                          :on-press #(re-frame/dispatch [:add-contact whisper-identity])}
+              (i18n/label :t/add-to-contacts)]
+             public?
+             [react/text {:style styles/public-chat-text}
+              (i18n/label :t/public-chat)])]]
+     #_[react/view
+        [react/popup-menu
+         [react/popup-menu-trigger {:text "Popup test"}]
+         [react/popup-menu-options
+          [react/popup-menu-option {:text "First"}]
+          [react/popup-menu-option {:text "Second"}]]]]
      [react/view
       (when (and (not group-chat) (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
