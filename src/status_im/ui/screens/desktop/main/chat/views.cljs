@@ -143,8 +143,7 @@
                   scroll-timer (atom nil)
                   scroll-height (atom nil)]
     (let [_ (when (or (not @chat-id*) (not= @chat-id* chat-id))
-              (reset! chat-id* chat-id)
-              (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
+              (reset! chat-id* chat-id))
           messages (re-frame/subscribe [:get-current-chat-messages-stream])
           current-public-key (re-frame/subscribe [:get-current-public-key])]
       [react/view {:style styles/messages-view}
@@ -152,6 +151,7 @@
                            :headerHeight styles/messages-list-vertical-padding
                            :footerWidth styles/messages-list-vertical-padding
                            :enableArrayScrollingOptimization true
+                           :inverted true
                            :on-scroll              (fn [e]
                                                      (let [ne (.-nativeEvent e)
                                                            y (.-y (.-contentOffset ne))]
@@ -159,11 +159,10 @@
                                                          (when @scroll-timer (js/clearTimeout @scroll-timer))
                                                          (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
                                                        (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
-                           :on-content-size-change #(.scrollToEnd @scroll-ref)
                            :ref                    #(reset! scroll-ref %)}
         [react/view
          (doall
-          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse @messages))]
+          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector @messages)]
             ^{:key (or message-id (str type value))}
             [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
 
