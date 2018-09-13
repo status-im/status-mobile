@@ -325,7 +325,13 @@ function install_android_ndk() {
     local _ndkParentDir=~/Android/Sdk
     mkdir -p $_ndkParentDir
     cecho "@cyan[[Downloading Android NDK.]]"
-    wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
+
+    PLATFORM="linux"
+    if [ "$(uname)" == "Darwin" ]; then # we run osx
+        PLATFORM="darwin"
+    fi
+
+    wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-$PLATFORM-x86_64.zip && \
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
       unzip -q -o android-ndk.zip -d "$_ndkParentDir" && \
       rm -f android-ndk.zip && \
