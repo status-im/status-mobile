@@ -1,5 +1,6 @@
 (ns status-im.utils.config
   (:require [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.utils.platform :as platform]
             [clojure.string :as string]))
 
 (def config (js->clj (.-default rn-dependencies/config) :keywordize-keys true))
@@ -17,7 +18,7 @@
 ;; TESTFAIRY_ENABLED - indefinite
 
 ;; CONFIG FLAGS
-(def testfairy-enabled? (enabled? (get-config :TESTFAIRY_ENABLED)))
+(def testfairy-enabled? (when-not platform/desktop? (enabled? (get-config :TESTFAIRY_ENABLED))))
 
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))

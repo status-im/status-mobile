@@ -32,6 +32,8 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
+    QT_PATH = '/opt/qt59'
+    STATUSIM_APPIMAGE = '/opt/StatusImAppImage.zip'
   }
   
   stages {
@@ -53,7 +55,7 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { desktop.compileLinux() }
+        script { desktop.compile() }
       }
     }
     stage('Bundle') {

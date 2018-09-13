@@ -39,7 +39,6 @@ install_cocoapods
 ####
 echo && setup_header "Installing dependencies..."
 
-dependency_setup make prepare-android
-dependency_setup make prepare-ios
+dependency_setup make prepare-mobile
 
 setup_complete
