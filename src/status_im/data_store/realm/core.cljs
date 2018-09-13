@@ -26,7 +26,6 @@
   "Returns -1 if the file does not exists, the schema version if it successfully
   decrypts it, throws error otherwise."
   [file-name encryption-key]
-  (log/info "encrypted-realm-version\nfile: " file-name " buf " (str encryption-key) (nil? encryption-key))
   (if encryption-key
     (.schemaVersion rn-dependencies/realm file-name (to-buffer encryption-key))
     (.schemaVersion rn-dependencies/realm file-name)))
@@ -184,7 +183,6 @@
                                                           account/schemas
                                                           old-key)]
                   (log/info "copy old database")
-                  (log/info "with key: " (str new-key))
                   (.writeCopyTo old-account-db file-name (to-buffer new-key))
                   (log/info "old database copied")
                   (close old-account-db)
