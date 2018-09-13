@@ -1,0 +1,1 @@
+Status é um SO de código aberto para dispositivos móveis, criado para a plataforma Ethereum
