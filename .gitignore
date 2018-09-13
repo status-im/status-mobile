@@ -40,6 +40,11 @@ local.properties
 node_modules/
 npm-debug.log
 .nvmrc
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # BUCK
 buck-out/
@@ -88,6 +93,7 @@ status-dev-cli
 #ios
 ios/Pods
 ios/StatusIm.xcworkspace
+ios/prebuild.log
 .ruby-version
 
 #python

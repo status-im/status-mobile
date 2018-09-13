@@ -36,7 +36,7 @@ setup: ##@prepare Install all the requirements for status-react
 
 prepare: ##@prepare Install dependencies and prepare workspace
 	scripts/prepare-for-platform.sh mobile
-	npm install
+	yarn install
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack

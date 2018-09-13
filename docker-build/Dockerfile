@@ -68,7 +68,7 @@ RUN mkdir -p $LEIN_INSTALL \
   && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
 
 # Install React-Native
-RUN npm install -g react-native-cli
+RUN yarn global add react-native-cli
 
 # Add files needed for installing dependencies
 # Use directory /build for that purpose
@@ -80,7 +80,7 @@ ADD ./project.clj ./
 
 ADD ./package.json package-lock.json ./
 
-RUN npm install
+RUN yarn install
 
 ADD . ./
 

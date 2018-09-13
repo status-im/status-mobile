@@ -152,11 +152,11 @@ function install_homebrew_if_needed() {
 
     ruby -e "$(curl -fsSL \
       https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-    brew update
   else
     already_installed "Homebrew"
   fi
+
+  brew update
 }
 
 function install_android_sdk() {
@@ -183,17 +183,17 @@ function install_maven() {
 function install_react_native_cli() {
   cd "$(repo_path)"
 
-  local npm_command="npm"
+  local yarn_command="yarn"
 
   if is_linux && ! nvm_installed; then
     # aptitude version of node requires sudo for global install
-    npm_command="sudo npm"
+    yarn_command="sudo yarn"
   fi
 
-  if npm list -g | grep -q react-native-cli; then
+  if yarn global list | grep react-native-cli; then
     already_installed "react-native-cli"
   else
-    $npm_command install -g react-native-cli
+    $yarn_command global add react-native-cli
   fi
 }
 
@@ -219,10 +219,25 @@ function install_node_via_nvm() {
   fi
 }
 
+function install_yarn() {
+  if ! program_exists "yarn"; then
+    if is_macos; then
+      brew_install yarn
+    elif is_linux; then
+      linux_update
+      linux_install yarn
+    fi
+  else
+    cecho \
+      "+ Yarn already installed ($(yarn -v) via package manager)... skipping."
+  fi
+}
+
 function install_node_via_package_manager() {
   if ! program_exists "node"; then
     if is_macos; then
-      brew_install node
+      brew_install node@8
+      brew_link node@8
     elif is_linux; then
       curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
       linux_update
@@ -308,7 +323,10 @@ function use_android_sdk() {
       echo "sdk.dir=$ANDROID_SDK_ROOT" | tee -a $_localPropertiesPath
     fi
   else
-    local _docUrl="https://docs.status.im/docs/build_status.html"
+    local _docUrl="https://docs.status.im/docs/build_status_linux.html"
+    if is_macos; then
+      _docUrl="https://docs.status.im/docs/build_status_osx.html"
+    fi
     cecho "@yellow[[ANDROID_SDK_ROOT environment variable not defined, please install the Android SDK.]]"
     cecho "@yellow[[(see $_docUrl).]]"
 
