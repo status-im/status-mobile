@@ -4,6 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
             [status-im.chat.styles.message.message :as message.style]
+            [status-im.chat.views.message.message :as message]
             [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfycat]
@@ -12,6 +13,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.colors :as colors]
             [status-im.chat.views.message.datemark :as message.datemark]
             [status-im.ui.screens.desktop.main.tabs.profile.views :as profile.views]
@@ -45,12 +47,17 @@
              public?
              [react/text {:style styles/public-chat-text}
               (i18n/label :t/public-chat)])]]
+     #_[react/view
+        [react/popup-menu
+         [react/popup-menu-trigger {:text "Popup test"}]
+         [react/popup-menu-options
+          [react/popup-menu-option {:text "First"}]
+          [react/popup-menu-option {:text "Second"}]]]]
      [react/view
       (when (and (not group-chat) (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
                      :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
          (i18n/label :t/view-profile)])
-
       [react/text {:style (styles/profile-actions-text colors/black)
                    :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
        (i18n/label :t/clear-history)]
@@ -133,25 +140,29 @@
         :reagent-render
         (fn []
           ^{:key (str "message" message-id)}
-          (if (and group-chat (not outgoing))
-            [message-with-name-and-avatar text message]
-            [text-only-message text message]))}))))
+          [react/view
+           (if (and group-chat (not outgoing))
+             [message-with-name-and-avatar text message]
+             [text-only-message text message])
+           [react/view {:style (message.style/delivery-status outgoing)}
+            [message/message-delivery-status message]]])}))))
 
 (views/defview messages-view [{:keys [chat-id group-chat]}]
-  (views/letsubs [chat-id* (atom nil)
-                  scroll-ref (atom nil)
-                  scroll-timer (atom nil)
-                  scroll-height (atom nil)]
-    (let [_ (when (or (not @chat-id*) (not= @chat-id* chat-id))
+  (views/letsubs [messages [:get-current-chat-messages-stream]
+                  current-public-key [:get-current-public-key]]
+    (let [chat-id* (atom nil)
+          scroll-ref (atom nil)
+          scroll-timer (atom nil)
+          scroll-height (atom nil)
+          _ (when (or (not @chat-id*) (not= @chat-id* chat-id))
               (reset! chat-id* chat-id)
-              (js/setTimeout #(when scroll-ref (.scrollToEnd @scroll-ref)) 400))
-          messages (re-frame/subscribe [:get-current-chat-messages-stream])
-          current-public-key (re-frame/subscribe [:get-current-public-key])]
+              #_(js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
       [react/view {:style styles/messages-view}
        [react/scroll-view {:scrollEventThrottle    16
                            :headerHeight styles/messages-list-vertical-padding
                            :footerWidth styles/messages-list-vertical-padding
                            :enableArrayScrollingOptimization true
+                           :inverted true
                            :on-scroll              (fn [e]
                                                      (let [ne (.-nativeEvent e)
                                                            y (.-y (.-contentOffset ne))]
@@ -159,13 +170,15 @@
                                                          (when @scroll-timer (js/clearTimeout @scroll-timer))
                                                          (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
                                                        (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
-                           :on-content-size-change #(.scrollToEnd @scroll-ref)
                            :ref                    #(reset! scroll-ref %)}
         [react/view
          (doall
-          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse @messages))]
-            ^{:key (or message-id (str type value))}
-            [message content (= from @current-public-key) (assoc message-obj :group-chat group-chat)]))]]])))
+          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector messages)]
+            ^{:key message-obj}
+            [message content (= from current-public-key)
+             (assoc message-obj :group-chat group-chat
+                    :current-public-key current-public-key)]))]]
+       [connectivity/error-view]])))
 
 (views/defview chat-text-input []
   (views/letsubs [inp-ref (atom nil)]

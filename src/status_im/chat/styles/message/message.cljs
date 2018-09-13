@@ -3,6 +3,7 @@
   (:require [status-im.ui.components.styles :as styles]
             [status-im.chat.styles.photos :as photos]
             [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as platform]
             [status-im.constants :as constants]))
 
 (defstyle style-message-text
@@ -95,9 +96,9 @@
 (defn delivery-status [outgoing]
   (if outgoing
     {:align-self    :flex-end
-     :padding-right 8}
+     :padding-right (if platform/desktop? 24 8)}
     {:align-self    :flex-start
-     :padding-left  8}))
+     :padding-left  (if platform/desktop? 24 8)}))
 
 (def message-author
   {:width      photos/default-size

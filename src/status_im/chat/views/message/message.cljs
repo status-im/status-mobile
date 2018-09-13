@@ -281,9 +281,12 @@
                                                                           :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
-     (i18n/message-status-label :not-sent)]
-    [react/view style/not-sent-icon
-     [vector-icons/icon :icons/warning {:color colors/red}]]]])
+     (i18n/message-status-label (if platform/desktop?
+                                  :not-sent-without-tap
+                                  :not-sent))]
+    (when-not platform/desktop?
+      [react/view style/not-sent-icon
+       [vector-icons/icon :icons/warning {:color colors/red}]])]])
 
 (defview command-status [{{:keys [network]} :params}]
   (letsubs [current-network [:network-name]]
