@@ -7,6 +7,7 @@
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
             [status-im.native-module.core :as status]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.browser.default-dapps :as default-dapps]
             [status-im.ui.screens.navigation :as navigation]
@@ -258,6 +259,12 @@
                       cofx)
       (web3-send-async payload message-id cofx))))
 
+(defn handle-scanned-qr-code
+  [data message cofx]
+  (handlers-macro/merge-fx cofx
+                           (send-to-bridge (assoc message :result data))
+                           (navigation/navigate-back)))
+
 (defn process-bridge-message
   [message {:keys [db] :as cofx}]
   (let [{:browser/keys [options browsers]} db
@@ -278,6 +285,13 @@
 
       (= type constants/web3-send-async-read-only)
       (web3-send-async-read-only dapp-name payload messageId cofx)
+
+      (= type constants/scan-qr-code)
+      (qr-scanner/scan-qr-code {:modal? false}
+                               (merge {:handler :browser.bridge.callback/qr-code-scanned}
+                                      {:type constants/scan-qr-code-callback
+                                       :data data})
+                               cofx)
 
       (= type constants/status-api-request)
       (browser.permissions/process-permissions dapp-name permissions cofx))))
