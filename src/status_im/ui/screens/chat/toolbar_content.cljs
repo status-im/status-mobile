@@ -56,7 +56,7 @@
                     :font  :toolbar-subtitle}
         (if public?
           (i18n/label :t/public-group-status)
-          (let [cnt (inc (count contacts))]
+          (let [cnt (count contacts)]
             (if (zero? cnt)
               (i18n/label :members-active-none)
               (i18n/label-pluralize cnt :t/members-active))))]])))

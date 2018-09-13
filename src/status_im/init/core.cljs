@@ -23,7 +23,6 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
-            [status-im.utils.contact-code.events :as events.contact-code]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]

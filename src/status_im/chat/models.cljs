@@ -105,9 +105,9 @@
 (fx/defn remove-transport
   [{:keys [db] :as cofx} chat-id]
   ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
-  (if (group-chat? cofx chat-id)
-    (transport.message/send (transport.group-chat/GroupLeave.) chat-id cofx)
-    (transport.utils/unsubscribe-from-chat cofx chat-id)))
+  (if (group-chat? chat-id cofx)
+    #_(transport.message/send (transport.group-chat/GroupLeave.) chat-id cofx)
+    (transport.utils/unsubscribe-from-chat cofx chat-id cofx)))
 
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]

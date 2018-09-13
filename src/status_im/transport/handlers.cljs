@@ -105,55 +105,6 @@
  (fn [cofx [_ chat-id]]
    (transport.utils/unsubscribe-from-chat chat-id cofx)))
 
-(handlers/register-handler-fx
- :group/send-new-sym-key
- ;; this is the event that is called when we want to send a message that required first
- ;; some async operations
- (fn [{:keys [db] :as cofx} [_ {:keys [chat-id message sym-key sym-key-id]}]]
-   (let [{:keys [web3]} db]
-     (fx/merge cofx
-               {:db             (update-in db [:transport/chats chat-id]
-                                           assoc
-                                           :sym-key-id sym-key-id
-                                           :sym-key    sym-key)
-                :shh/add-filter {:web3       web3
-                                 :sym-key-id sym-key-id
-                                 :topic      (transport.utils/get-topic chat-id)
-                                 :chat-id    chat-id}
-                :data-store/tx  [(transport-store/save-transport-tx
-                                  {:chat-id chat-id
-                                   :chat    (-> (get-in db [:transport/chats chat-id])
-                                                (assoc :sym-key-id sym-key-id)
-                                                ;;TODO (yenda) remove once go implements persistence
-                                                (assoc :sym-key sym-key))})]}
-               #(message/send (v1.group-chat/NewGroupKey. chat-id sym-key message) chat-id %)))))
-
-(handlers/register-handler-fx
- :group/add-new-sym-key
- [(re-frame/inject-cofx :random-id)]
- (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id signature timestamp message]}]]
-   (let [{:keys [web3 current-public-key]} db
-         topic                            (transport.utils/get-topic chat-id)
-         fx {:db             (assoc-in db
-                                       [:transport/chats chat-id :sym-key-id]
-                                       sym-key-id)
-             :dispatch       [:inbox/request-chat-history chat-id]
-             :shh/add-filter {:web3       web3
-                              :sym-key-id sym-key-id
-                              :topic      topic
-                              :chat-id    chat-id}
-             :data-store/tx  [(transport-store/save-transport-tx
-                               {:chat-id chat-id
-                                :chat    (-> (get-in db [:transport/chats chat-id])
-                                             (assoc :sym-key-id sym-key-id)
-                                             ;;TODO (yenda) remove once go implements persistence
-                                             (assoc :sym-key sym-key))})]}]
-     ;; if new sym-key is wrapping some message, call receive on it as well, if not just update the transport layer
-     (fx/merge cofx
-               fx
-               #(when message
-                  (message/receive message chat-id signature timestamp %))))))
-
 (re-frame/reg-fx
  ;; TODO(janherich): this should be called after `:data-store/tx` actually
  :confirm-messages-processed

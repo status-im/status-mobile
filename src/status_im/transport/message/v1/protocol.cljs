@@ -59,16 +59,18 @@
                                 :src     current-public-key
                                 :chat    chat-id
                                 :payload payload}]}))
-(defn send-direct-messages
-  [dsts success-event payload {:keys [db] :as cofx}]
-  (let [{:keys [current-public-key web3]} db]
-    {:shh/send-direct-message
-     (mapv #(hash-map
-             :web3 web3
-             :success-event success-event
-             :src     current-public-key
-             :dst     %
-             :payload payload) dsts)}))
+(defn send-group-message
+  "Sends the payload using to dst"
+  [chat-id success-event payload {:keys [db] :as cofx}]
+  (let [{:keys [current-public-key web3]} db
+        recipients (disj
+                    (get-in db [:chats chat-id :contacts])
+                    :current-public-key)]
+    {:shh/send-group-message {:web3 web3
+                              :success-event success-event
+                              :src     current-public-key
+                              :dsts    recipients
+                              :payload payload}}))
 
 (fx/defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
@@ -87,24 +89,6 @@
          (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id]))
        public-keys))
 
-(fx/defn multi-send-by-pubkey
-  "Sends payload to multiple participants selected by `:public-keys` key. "
-  [{:keys [payload public-keys success-event]} {:keys [db] :as cofx}]
-
-  (if config/encryption-enabled?
-    (send-direct-messages
-     cofx
-     public-keys
-     success-event
-     payload)
-    (let [{:keys [current-public-key web3]} db
-          recipients                        (prepare-recipients public-keys db)]
-      {:shh/multi-post {:web3          web3
-                        :success-event success-event
-                        :recipients    recipients
-                        :message       (merge {:sig     current-public-key
-                                               :payload payload}
-                                              whisper-opts)}})))
 ;; TODO currently not used
 (defrecord Ack [message-ids]
   message/StatusMessage
@@ -116,9 +100,9 @@
   (send [this cofx chat-id])
   (receive [this chat-id sig timestamp cofx]))
 
-(defrecord Message [content content-type message-type clock-value timestamp]
+(defrecord Message [content content-type message-type clock-value timestamp chat-id]
   message/StatusMessage
-  (send [this chat-id cofx]
+  (send [this _ cofx]
     (let [params     {:chat-id       chat-id
                       :payload       this
                       :success-event [:transport/set-message-envelope-hash
@@ -136,6 +120,12 @@
 
           :user-message
           (send-direct-message
+           chat-id
+           (:success-event params)
+           this
+           cofx)
+          :group-user-message
+          (send-group-message
            chat-id
            (:success-event params)
            this

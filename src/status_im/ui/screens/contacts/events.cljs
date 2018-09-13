@@ -4,7 +4,6 @@
             [status-im.i18n :as i18n]
             [status-im.models.contact :as models.contact]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.ui.screens.browser.default-dapps :as default-dapps]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]

@@ -2,7 +2,6 @@
  status-im.transport.message.v1.contact
   (:require [re-frame.core :as re-frame]
             [status-im.data-store.transport :as transport-store]
-            [status-im.utils.config :as config]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
@@ -19,7 +18,6 @@
                                             :chat-id    chat-id
                                             :topic      topic
                                             :message    this}]))]
-
       (if config/encryption-enabled?
         (fx/merge cofx
                                  (protocol/send-direct-message chat-id nil this)
