@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -14,13 +15,20 @@
      [status-bar/status-bar]
      [toolbar/simple-toolbar title]]))
 
+(defn on-barcode-read [identifier data]
+  (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data data)]))
+
 (defview qr-scanner []
   (letsubs [{identifier :current-qr-context} [:get-screen-params]
-            camera-initialized? (reagent/atom false)]
-
+            camera-initialized? (reagent/atom false)
+            barcode-read? (reagent/atom false)]
     [react/view styles/barcode-scanner-container
-     [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
-     [camera/camera {:onBarCodeRead #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data %)])
+     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) (not @camera-initialized?)]
+     [camera/camera {:onBarCodeRead #(if (:multiple? identifier)
+                                       (on-barcode-read identifier %)
+                                       (when-not @barcode-read?
+                                         (do (reset! barcode-read? true)
+                                             (on-barcode-read identifier %))))
                      :ref           #(reset! camera-initialized? true)
                      :captureAudio  false
                      :style         styles/barcode-scanner}]
