@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.browser :as browser-store]
+            [status-im.i18n :as i18n]
             [status-im.models.browser :as model]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
@@ -122,6 +123,12 @@
      (nav-update-browser cofx browser (inc history-index)))))
 
 (handlers/register-handler-fx
+ :send-qr-code-callback
+ (fn [cofx [_ _ data message]]
+   {:send-to-bridge-fx [(assoc message :result data) (get-in cofx [:db :webview-bridge])]
+    :dispatch          [:navigate-back]}))
+
+(handlers/register-handler-fx
  :on-bridge-message
  (fn [{:keys [db] :as cofx} [_ message]]
    (let [{:browser/keys [options browsers]} db
@@ -135,6 +142,13 @@
 
        (and (= type constants/history-state-changed) platform/ios? (not= "about:blank" url))
        (model/update-browser-history-fx browser url false cofx)
+
+       (= type constants/scan-qr-code)
+       {:dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                   {:toolbar-title (i18n/label :t/scan-qr-code)}
+                   :send-qr-code-callback
+                   {:type constants/scan-qr-code-callback
+                    :data data}]}
 
        (= type constants/web3-send-async)
        (model/web3-send-async payload messageId cofx)

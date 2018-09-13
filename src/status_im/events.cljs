@@ -388,8 +388,8 @@
 
 (handlers/register-handler-fx
  :qr-scanner.ui/scan-qr-code-pressed
- (fn [cofx [_ identifier handler]]
-   (qr-scanner/scan-qr-code identifier handler cofx)))
+ (fn [cofx [_ identifier handler & [opts]]]
+   (qr-scanner/scan-qr-code identifier (merge {:handler handler} opts) cofx)))
 
 (handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-success

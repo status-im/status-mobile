@@ -20,10 +20,6 @@
        "var networkId = \"" network-id "\";"
        (slurp "resources/js/web3_init.js")))
 
-(defn web3-opt-in-init [network-id]
-  (str "var networkId = \"" network-id "\";"
-       (slurp "resources/js/web3_opt_in.js")))
-
 (defn local-storage-data [data]
   (str "var localStorageData = " (or data "{}") ";"))
 

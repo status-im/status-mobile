@@ -4,10 +4,10 @@
             [status-im.utils.utils :as utils]))
 
 (defn scan-qr-code
-  [identifier handler {:keys [db]}]
-  {:db                     (assoc-in db [:qr-codes identifier] handler)
+  [identifier m {:keys [db]}]
+  {:db                     (assoc db :qr-codes m)
    :request-permissions-fx {:permissions [:camera]
-                            :on-allowed  #(re-frame/dispatch [:navigate-to :qr-scanner {:current-qr-context identifier}])
+                            :on-allowed  #(re-frame/dispatch [:navigate-to-modal :qr-scanner {:current-qr-context identifier}])
                             :on-denied   (fn []
                                            (utils/set-timeout
                                             #(utils/show-popup (i18n/label :t/error)
@@ -19,5 +19,5 @@
   (merge {:db (-> db
                   (update :qr-codes dissoc context)
                   (dissoc :current-qr-context))}
-         (when-let [handler (get-in db [:qr-codes context])]
-           {:dispatch [handler context data]})))
+         (when-let [m (:qr-codes db)]
+           {:dispatch [(:handler m) context data (dissoc m :handler)]})))
