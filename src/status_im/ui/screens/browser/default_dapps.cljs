@@ -60,7 +60,7 @@
             :photo-path  "contacts://name-bazaar"
             :description "ENS name marketplace"}
            {:name        "The Bounties Network"
-            :dapp-url    "https://berlin.bounties.network/"
+            :dapp-url    "https://bounties.network/"
             :photo-path  "contacts://bounties-network"
             :description "Bounties on any task, paid in any token"}
            {:name        "Emoon"
