@@ -23,9 +23,7 @@
 (defn to-utf8 [s]
   (try
     (.toUtf8 dependencies/Web3.prototype (str s))
-    (catch :default err
-      (println "ERR" err)
-      nil)))
+    (catch :default err nil)))
 
 (defn sha3 [s]
   (.sha3 dependencies/Web3.prototype s))

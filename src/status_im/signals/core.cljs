@@ -45,6 +45,5 @@
       "module.initialized" (status-module-initialized cofx)
       "envelope.sent"      (transport.handlers/update-envelope-status (:hash event) :sent cofx)
       "envelope.expired"   (transport.handlers/update-envelope-status (:hash event) :sent cofx)
-      "messages.decrypt.failed" {:dispatch [:signals/message-decrypt-failed (:sender event)]}
       "discovery.summary"  (summary event cofx)
       (log/debug "Event " type " not handled"))))

@@ -33,7 +33,7 @@
                               (models.message/receive
                                (models.message/system-message current-chat-id message-id now
                                                               (str "You've added " (apply str (interpose ", " added-participants-names)))))
-                              (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
+                              (transport/send (group-chat/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
 
 (handlers/register-handler-fx
  :remove-group-chat-participants
@@ -48,7 +48,7 @@
                               (models.message/receive
                                (models.message/system-message current-chat-id message-id now
                                                               (str "You've removed " (apply str (interpose ", " removed-participants-names)))))
-                              (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
+                              (transport/send (group-chat/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
 
 (handlers/register-handler-fx
  :set-group-chat-name

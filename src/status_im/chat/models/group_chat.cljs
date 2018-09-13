@@ -30,7 +30,15 @@
       (seq removed-participants)
       (str admin-name " " (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names))))))
 
-(defn handle-group-admin-update [{:keys [chat-name participants]} chat-id signature {:keys [now db random-id] :as cofx}]
+(defn handle-group-chat-create [{:keys [chat-name participants chat-id]} signature {:keys [now db random-id] :as cofx}]
+  (models.chat/add-group-chat
+   chat-id
+   chat-name
+   signature
+   participants
+   cofx))
+
+(defn handle-group-admin-update [{:keys [chat-name participants chat-id]} chat-id signature {:keys [now db random-id] :as cofx}]
   (let [me (:current-public-key db)]
     ;; we have to check if we already have a chat, or it's a new one
     (if-let [{:keys [group-admin contacts] :as chat} (get-in db [:chats chat-id])]
@@ -73,5 +81,4 @@
                                (models.message/receive
                                 (models.message/system-message chat-id random-id now
                                                                (str participant-leaving-name " " (i18n/label :t/left))))
-                               (group/participants-removed chat-id #{signature})
-                               (transport.group-chat/send-new-group-key nil chat-id)))))
+                               (group/participants-removed chat-id #{signature})))))

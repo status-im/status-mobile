@@ -156,11 +156,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         // retrieve parameters from app config, that will be applied onto the Go-side config later on
         final String absDataDirPath = pathCombine(absRootDirPath, jsonConfig.getString("DataDir"));
         final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
+        final Boolean pfsEnabled = defaultConfig.getBoolean("PFSEnabled");
+        final String noBackupDataDir = root + "/no_backup/ethereum";
+
         final String gethLogFilePath = logEnabled ? prepareLogsFile() : null;
 
         jsonConfig.put("DataDir", absDataDirPath);
         jsonConfig.put("KeyStoreDir", absKeystoreDirPath);
         jsonConfig.put("LogFile", gethLogFilePath);
+        jsonConfig.put("PFSEnabled", pfsEnabled);
+        jsonConfig.put("NoBackupDataDir", noBackupDataDir);
 
         return jsonConfig.toString();
     }

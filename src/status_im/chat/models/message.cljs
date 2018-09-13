@@ -230,7 +230,7 @@
     (and group-chat (not public?))
     (assoc :message-type :group-user-message)))
 
-(def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp])
+(def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp :chat-id])
 
 (defn- upsert-and-send [{:keys [chat-id] :as message} {:keys [now] :as cofx}]
   (let [send-record     (protocol/map->Message (select-keys message transport-keys))

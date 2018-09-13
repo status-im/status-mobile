@@ -97,6 +97,10 @@
              :PFSEnabled            (or config/pfs-encryption-enabled?
                                         config/group-chats-enabled?))
 
+      :always (assoc :InstallationID installation-id)
+      (or config/encryption-enabled?
+          config/group-chats-enabled?)
+      (assoc :PFSEnabled true)
       (and
        config/bootnodes-settings-enabled?
        use-custom-bootnodes)
@@ -115,7 +119,7 @@
 (defn start
   ([cofx]
    (start nil cofx))
-  ([address {:keys [db]}]
+  ([address {:keys [db] :as cofx}]
    (let [network     (if address
                        (get-account-network db address)
                        (:network db))
