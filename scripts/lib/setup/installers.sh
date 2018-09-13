@@ -2,6 +2,14 @@
 
 _localPropertiesPath=./android/local.properties
 
+function downloadUrl() {
+  if program_exists "aria2c"; then
+    aria2c --max-connection-per-server=16 --split=16 --dir="$1" -o "$2" "$3"
+  else
+    wget --show-progress --output-document="$1/$2" "$3"
+  fi
+}
+
 function install_node() {
   if nvm_installed; then
     install_node_via_nvm
@@ -331,10 +339,10 @@ function install_android_ndk() {
         PLATFORM="darwin"
     fi
 
-    wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-$PLATFORM-x86_64.zip && \
+    downloadUrl . android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-$PLATFORM-x86_64.zip && \
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
-      unzip -q -o android-ndk.zip -d "$_ndkParentDir" && \
-      rm -f android-ndk.zip && \
+      unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \
+      rm -f ./android-ndk.zip && \
       _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | head -n 1)" && \
       echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
       cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"

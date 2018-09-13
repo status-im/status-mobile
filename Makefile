@@ -29,23 +29,29 @@ HELP_FUN = \
 # Main targets
 
 clean: ##@prepare Remove all output folders
-	git clean -qdxf -f android/ modules/react-native-status/ node_modules/ target/ desktop/modules/ desktop/node_modules/
+	git clean -qdxf -f android/ modules/react-native-status/ node_modules/ target/ desktop/ StatusImPackage/
 
 setup: ##@prepare Install all the requirements for status-react
 	./scripts/setup
 
-prepare: ##@prepare Install dependencies and prepare workspace
+prepare-desktop: ##@prepare Install desktop platform dependencies and prepare workspace
+	scripts/prepare-for-platform.sh desktop
+	npm install
+
+_prepare-mobile: ##@prepare Install mobile platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh mobile
 	npm install
 
-prepare-ios: prepare ##@prepare Install iOS specific dependencies
+prepare-ios: _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
 	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
 ifeq ($(OS),Darwin)
 	cd ios && pod install
 endif
 
-prepare-android: prepare ##@prepare Install Android specific dependencies
+prepare-android: _prepare-mobile ##@prepare Install and prepare Android-specific dependencies
 	cd android && ./gradlew react-native-android:installArchives
+
+prepare-mobile: prepare-android prepare-ios ##@prepare Install and prepare mobile platform specific dependencies
 
 #----------------
 # Release builds
@@ -57,6 +63,9 @@ release-android: prod-build-android ##@build build release for Android
 
 release-ios: prod-build-ios ##@build build release for iOS release
 	@echo "Build in XCode, see https://wiki.status.im/TBD for instructions"
+
+release-desktop: prod-build-desktop ##@build build release for desktop release
+	scripts/build-desktop.sh
 
 prod-build:
 	lein prod-build
@@ -74,6 +83,10 @@ full-prod-build: ##@build build prod for both Android and iOS
 	$(MAKE) prod-build
 	rm -r ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/ 2> /dev/null || true
 	rm ./modules/react-native-status/android/libs/status-im/status-go/local/status-go-local.aar 2> /dev/null
+
+prod-build-desktop:
+	git clean -qdxf -f ./index.desktop.js desktop/
+	lein prod-build-desktop
 
 #--------------
 # REPL

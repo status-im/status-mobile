@@ -16,11 +16,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
 message(STATUS "EXTERNAL_MODULES_DIR: ${EXTERNAL_MODULES_DIR}")
 
 string(REGEX MATCH "BUILD_FOR_BUNDLE" BUILD_FOR_BUNDLE "${CMAKE_CXX_FLAGS}")
-if(${BUILD_FOR_BUNDLE} MATCHES "BUILD_FOR_BUNDLE")
-  set(ENVFILE "/env")
-else()
-  set(ENVFILE "/../../.env")
-endif()
+set(ENVFILE "/../../.env")
 
 foreach(external_module ${EXTERNAL_MODULES_DIR})
   message(STATUS "external_module: ${external_module}")

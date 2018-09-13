@@ -1,5 +1,6 @@
 (ns status-im.node.core
   (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
@@ -108,8 +109,9 @@
 (defn get-node-config [db network]
   (-> (get-in (:networks/networks db) [network :config])
       (get-base-node-config)
-      (assoc :PFSEnabled false)
-      (assoc :NoDiscovery true)
+      (assoc :NetworkId (get-in constants/default-network [:config :NetworkId])
+             :PFSEnabled false
+             :NoDiscovery true)
       (add-log-level config/log-level-status-go)))
 
 (defn start

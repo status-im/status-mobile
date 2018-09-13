@@ -13,6 +13,8 @@ pipeline {
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
+    QT_PATH = '/Users/administrator/qt/5.9.1'
+    PATH = "${env.QT_PATH}/clang_64/bin:${env.PATH}"
   }
   
   stages {
@@ -33,7 +35,7 @@ pipeline {
     }
     stage('Compile') {
       steps {
-        script { desktop.compileMacOS() }
+        script { desktop.compile() }
       }
     }
     stage('Bundle') {
