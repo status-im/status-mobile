@@ -156,12 +156,13 @@
           scroll-height (atom nil)
           _ (when (or (not @chat-id*) (not= @chat-id* chat-id))
               (reset! chat-id* chat-id)
-              (js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
+              #_(js/setTimeout #(when @scroll-ref (.scrollToEnd @scroll-ref)) 400))]
       [react/view {:style styles/messages-view}
        [react/scroll-view {:scrollEventThrottle    16
                            :headerHeight styles/messages-list-vertical-padding
                            :footerWidth styles/messages-list-vertical-padding
                            :enableArrayScrollingOptimization true
+                           :inverted true
                            :on-scroll              (fn [e]
                                                      (let [ne (.-nativeEvent e)
                                                            y (.-y (.-contentOffset ne))]
@@ -173,7 +174,7 @@
                            :ref                    #(reset! scroll-ref %)}
         [react/view
          (doall
-          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector (reverse messages))]
+          (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector messages)]
             ^{:key message-obj}
             [message content (= from current-public-key)
              (assoc message-obj :group-chat group-chat
