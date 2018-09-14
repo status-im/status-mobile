@@ -84,10 +84,11 @@
       (is (instance? protocol/MessagesSeen
                      (extract-seen (message/receive cofx message))))
       (is (= #{"1"} (:message-ids (extract-seen (message/receive cofx message))))))
-    (testing "it does not send any when the chat is public"
+    (testing "it does not send any when the chat is a group-chat"
       (is (nil? (extract-seen
-                 (message/receive (assoc-in cofx [:db :chats "chat-id" :public?] true)
-                                  message)))))
+                 (message/receive
+                  message
+                  (assoc-in cofx [:db :chats "chat-id" :group-chat] true))))))
     (testing "it does not send any when we are in a different chat"
       (is (nil? (extract-seen
                  (message/receive (assoc-in cofx [:db :current-chat-id] :different)

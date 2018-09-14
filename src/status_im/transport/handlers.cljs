@@ -123,11 +123,17 @@
 (handlers/register-handler-fx
  :transport/set-message-envelope-hash
  ;; message-type is used for tracking
- (fn [{:keys [db]} [_ chat-id message-id message-type envelope-hash]]
-   {:db (assoc-in db [:transport/message-envelopes envelope-hash]
-                  {:chat-id      chat-id
-                   :message-id   message-id
-                   :message-type message-type})}))
+ (fn [{:keys [db]} [_ chat-id message-id message-type envelope-hash-js]]
+   ;; TODO (cammellos): For group messages it returns multiple hashes, for now
+   ;; we naively assume that if one is sent the batch is ok
+   (let [envelope-hash (js->clj envelope-hash-js)
+         hash (if (vector? envelope-hash)
+                (last envelope-hash)
+                envelope-hash)]
+     {:db (assoc-in db [:transport/message-envelopes hash]
+                    {:chat-id      chat-id
+                     :message-id   message-id
+                     :message-type message-type})})))
 
 (handlers/register-handler-fx
  :transport/set-contact-message-envelope-hash

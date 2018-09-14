@@ -124,9 +124,9 @@
    batch?
    {:keys [from message-id chat-id content content-type clock-value js-obj] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
-        current-chat?              (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
-        {:keys [public?] :as chat} (get-in db [:chats chat-id])
-        message                    (-> raw-message
+        current-chat?                 (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
+        {:keys [group-chat] :as chat} (get-in db [:chats chat-id])
+        message                       (-> raw-message
                                        (commands-receiving/enhance-receive-parameters cofx)
                                        (ensure-clock-value chat)
                                        ;; TODO (cammellos): Refactor so it's not computed twice
@@ -145,7 +145,7 @@
                                                        :else :received))
               (commands-receiving/receive message)
               (display-notification chat-id)
-              (send-message-seen chat-id message-id (and (not public?)
+              (send-message-seen chat-id message-id (and (not group-chat)
                                                          current-chat?
                                                          (not (= constants/system from))
                                                          (not (:outgoing message)))))))

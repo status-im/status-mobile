@@ -37,10 +37,10 @@
 
 (defn actions [admin? chat-id]
   (concat
-   (when admin?
-     [{:label  (i18n/label :add-members)
-       :icon   :icons/add
-       :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
+   #_(when admin?
+       [{:label  (i18n/label :add-members)
+         :icon   :icons/add
+         :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close
      :action              #(re-frame/dispatch [:chat.ui/clear-history-pressed])
@@ -53,8 +53,8 @@
 (defn contact-actions [contact]
   [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])
     :label  (i18n/label :t/view-profile)}
-   {:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
-    :label  (i18n/label :t/remove-from-chat)}])
+   #_{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
+      :label  (i18n/label :t/remove-from-chat)}])
 
 (defn render-contact [{:keys [name whisper-identity] :as contact} admin? group-admin-identity current-user-identity]
   [react/view

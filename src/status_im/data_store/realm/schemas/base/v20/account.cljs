@@ -3,10 +3,10 @@
             [cognitect.transit :as transit]
             [clojure.set :as set]
             [status-im.utils.random :as random]
-            [status-im.data-store.realm.schemas.base.v8.account :as v8]))
+            [status-im.data-store.realm.schemas.base.v9.account :as v9]))
 
 (def schema
-  (assoc-in v8/schema
+  (assoc-in v9/schema
             [:properties :installation-id]
             {:type :string}))
 
