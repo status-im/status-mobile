@@ -62,7 +62,9 @@
         (if public?
           (i18n/label :t/public-group-status)
           (let [cnt (inc (count contacts))]
-            (i18n/label-pluralize cnt :t/members-active)))]])))
+            (if (zero? cnt)
+              (i18n/label :members-active-none)
+              (i18n/label-pluralize cnt :t/members-active))))]])))
 
 (defview toolbar-content-view []
   (letsubs [{:keys [group-chat color online contacts

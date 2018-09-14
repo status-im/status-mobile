@@ -21,9 +21,9 @@
     "currency-display-name-sos": "Somalia Shilling",
     "members-active": {
         "one": "1 member",
-        "other": "{{count}} members",
-        "zero": "no members"
+        "other": "{{count}} members"
     },
+    "members-active-none": "no members",
     "chat-name": "Chat name",
     "currency-display-name-zar": "South Africa Rand",
     "phew-here-is-your-passphrase": "Phew, that was hard. Here is your passphrase, *write this down and keep it safe!* You will need it to recover your account.",
@@ -561,9 +561,9 @@
     "transactions-unsigned": "Unsigned",
     "members": {
         "one": "1 member",
-        "other": "{{count}} members",
-        "zero": "no members"
+        "other": "{{count}} members"
     },
+    "members-none": "no members",
     "delete-mailserver-title": "Delete mailserver",
     "intro-message1": "Welcome to Status!\nTap this message to set your password and get started.",
     "public-chat-user-count": "{{count}} people",
