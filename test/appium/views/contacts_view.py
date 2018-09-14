@@ -25,6 +25,12 @@ class PublicKeyEditBox(BaseEditBox):
         super(PublicKeyEditBox, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('enter-contact-code-input')
 
+    def set_value(self, value):
+        for _ in range(2):
+            if self.text != value:
+                self.driver.info("Type '%s' to %s" % (value, self.name))
+                self.find_element().set_value(value)
+
 
 class ScanContactCodeButton(BaseEditBox):
     def __init__(self, driver):

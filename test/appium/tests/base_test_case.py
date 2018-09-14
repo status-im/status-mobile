@@ -107,7 +107,7 @@ class AbstractTestCase:
 
     @property
     def implicitly_wait(self):
-        return 2
+        return 5
 
     errors = []
 
