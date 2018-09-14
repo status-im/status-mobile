@@ -115,7 +115,7 @@
 (defn start
   ([cofx]
    (start nil cofx))
-  ([address {:keys [db] :as cofx}]
+  ([address {:keys [db]}]
    (let [network     (if address
                        (get-account-network db address)
                        (:network db))

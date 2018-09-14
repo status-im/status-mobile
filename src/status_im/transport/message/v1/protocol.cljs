@@ -70,7 +70,7 @@
   (let [{:keys [current-public-key web3]} db
         recipients (disj
                     (get-in db [:chats chat-id :contacts])
-                    :current-public-key)]
+                    (:current-public-key db))]
     {:shh/send-group-message {:web3 web3
                               :success-event success-event
                               :src     current-public-key
@@ -114,28 +114,33 @@
                                       chat-id
                                       (transport.utils/message-id this)
                                       message-type]}]
-      (if config/encryption-enabled?
-        (case (:message-type this)
-          :public-group-user-message
-          (send-public-message
-           chat-id
-           (:success-event params)
-           this
-           cofx)
+      (case message-type
 
-          :user-message
-          (send-direct-message
-           chat-id
-           (:success-event params)
-           this
-           cofx)
-          :group-user-message
+        :group-user-message
+        (when config/group-chats-enabled?
           (send-group-message
            chat-id
            (:success-event params)
            this
            cofx))
-        (send-with-pubkey params cofx))))
+
+        :public-group-user-message
+        (if config/encryption-enabled?
+          (send-public-message
+           chat-id
+           (:success-event params)
+           this
+           cofx)
+          (send params cofx))
+
+        :user-message
+        (if config/encryption-enabled?
+          (send-direct-message
+           chat-id
+           (:success-event params)
+           this
+           cofx)
+          (send-with-pubkey params cofx)))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)

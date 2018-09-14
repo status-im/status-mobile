@@ -14,8 +14,7 @@
  (fn [{:keys [db] :as cofx} [_ chat-id]]
    (handlers-macro/merge-fx cofx
                             {:db (assoc db
-                                        :new-chat-name (get-in db [:chats chat-id :name])
-                                        :group/group-type :chat-group)}
+                                        :new-chat-name (get-in db [:chats chat-id :name]))}
                             (navigation/navigate-to-cofx :group-chat-profile nil))))
 
 (handlers/register-handler-fx

@@ -16,7 +16,7 @@ fi
 set -euf
 
 # Ensure we start with a clean state, so as to e.g., not reuse old native status-go bindings 
-make clean
+#make clean
 
 for platform in "$@"; do
     case $platform in

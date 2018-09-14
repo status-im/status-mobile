@@ -14,6 +14,27 @@
             [taoensso.timbre :as log]
             [status-im.transport.message.v1.protocol :as protocol]))
 
+(defn validate-chat-id
+  "Check the signing user has permission to write to that chat and return
+  a valid chat-id"
+  [chat-id signature cofx]
+  (cond
+
+   ;; one-to-one
+    (= chat-id signature)
+    chat-id
+
+   ;; public chat
+    (get-in cofx [:db :chats chat-id :public?])
+    chat-id
+
+   ;; group chat
+    (get-in cofx [:db :chats chat-id :contacts signature])
+    chat-id
+
+    :else
+    signature))
+
 (defn update-last-received-from-inbox
   "Distinguishes messages that are expired from those that are not
    Expired messages are coming from offline inboxing"
@@ -28,10 +49,14 @@
                            transit/deserialize)]
     (when (and sig status-message)
       (try
-        (handlers-macro/merge-fx
-         (assoc cofx :js-obj js-message)
-         (message/receive status-message (or chat-id sig) sig timestamp)
-         (update-last-received-from-inbox now-in-s timestamp ttl))
+        (let [valid-chat-id (validate-chat-id (or chat-id
+                                                  (:chat-id status-message))
+                                              sig
+                                              cofx)]
+          (handlers-macro/merge-fx
+           (assoc cofx :js-obj js-message)
+           (message/receive status-message valid-chat-id sig timestamp)
+           (update-last-received-from-inbox now-in-s timestamp ttl)))
         (catch :default e nil))))) ; ignore unknown message types
 
 (defn- js-array->seq [array]
@@ -137,11 +162,17 @@
 (handlers/register-handler-fx
  :transport/set-message-envelope-hash
  ;; message-type is used for tracking
- (fn [{:keys [db]} [_ chat-id message-id message-type envelope-hash]]
-   {:db (assoc-in db [:transport/message-envelopes envelope-hash]
-                  {:chat-id      chat-id
-                   :message-id   message-id
-                   :message-type message-type})}))
+ (fn [{:keys [db]} [_ chat-id message-id message-type envelope-hash-js]]
+   ;; TODO (cammellos): For group messages it returns multiple hashes, for now
+   ;; we naively assume that if one is sent the batch is ok
+   (let [envelope-hash (js->clj envelope-hash-js)
+         hash (if (vector? envelope-hash)
+                (last envelope-hash)
+                envelope-hash)]
+     {:db (assoc-in db [:transport/message-envelopes hash]
+                    {:chat-id      chat-id
+                     :message-id   message-id
+                     :message-type message-type})})))
 
 (handlers/register-handler-fx
  :transport/set-contact-message-envelope-hash
