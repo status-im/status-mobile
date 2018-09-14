@@ -32,7 +32,7 @@
     "querystring-es3": "0.2.1",
     "react": "16.4.1",
     "react-dom": "16.2.0",
-    "react-native": "github:status-im/react-native#status-0.56-1",
+    "react-native": "github:status-im/react-native#workaround-fling-android-P",
     "react-native-background-timer": "2.1.0-alpha.6",
     "react-native-camera": "https://github.com/status-im/react-native-camera#1.1.5-1",
     "react-native-config": "https://github.com/status-im/react-native-config#0.11.2-1",
