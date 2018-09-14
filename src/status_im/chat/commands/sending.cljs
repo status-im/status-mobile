@@ -2,6 +2,7 @@
   (:require [status-im.constants :as constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.core :as commands]
+            [status-im.chat.commands.input :as commands-input]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.message :as message-model]
@@ -46,7 +47,7 @@
   "Validates and sends command in current chat"
   [input-text {:keys [type params] :as command} {:keys [db now random-id] :as cofx}]
   (let [chat-id       (:current-chat-id db)
-        parameter-map (commands/parse-parameters params input-text)]
+        parameter-map (commands-input/parse-parameters params input-text)]
     (if-let [validation-error (protocol/validate type parameter-map cofx)]
       ;; errors during validation
       {:db (chat-model/set-chat-ui-props db {:validation-messages  validation-error

@@ -5,7 +5,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.chat.views.photos :as photos]
+            [status-im.ui.screens.chat.photos :as photos]
             [status-im.react-native.resources :as resources]))
 
 (defn default-chat-icon [name styles]

@@ -1,14 +1,17 @@
 (ns status-im.chat.models
   (:require [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
+            [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.transport.message.core :as transport.message]
+            [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.message.v1.group-chat :as transport.group-chat]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.styles :as styles]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (defn multi-user-chat? [chat-id cofx]
   (get-in cofx [:db :chats chat-id :group-chat]))
@@ -76,7 +79,9 @@
                 :group-admin admin
                 :contacts    participants} cofx))
 
-(defn clear-history [chat-id {:keys [db] :as cofx}]
+(defn clear-history
+  "Clears history of the particular chat"
+  [chat-id {:keys [db] :as cofx}]
   (let [{:keys [messages
                 deleted-at-clock-value]} (get-in db [:chats chat-id])
         last-message-clock-value (or (->> messages
@@ -102,11 +107,10 @@
     (transport.utils/unsubscribe-from-chat chat-id cofx)))
 
 (defn- deactivate-chat [chat-id {:keys [db now] :as cofx}]
-  (cond-> (assoc-in {:db db
-                     :data-store/tx [(chats-store/deactivate-chat-tx chat-id now)]}
-                    [:db :chats chat-id :is-active] false)
-    platform/desktop?
-    (assoc-in [:db :current-chat-id] nil)))
+  {:db (-> db
+           (assoc-in [:chats chat-id :is-active] false)
+           (assoc-in [:current-chat-id] nil))
+   :data-store/tx [(chats-store/deactivate-chat-tx chat-id now)]})
 
 ;; TODO: There's a race condition here, as the removal of the filter (async)
 ;; is done at the same time as the removal of the chat, so a message
@@ -114,7 +118,9 @@
 ;; (remove chat only after the filter has been removed, probably the safest,
 ;; flag the chat to ignore new messages, change receive method for public/group chats)
 ;; For now to keep the code simplier and avoid significant changes, best to leave as it is.
-(defn remove-chat [chat-id {:keys [db now] :as cofx}]
+(defn remove-chat
+  "Removes chat completely from app, producing all necessary effects for that"
+  [chat-id {:keys [db now] :as cofx}]
   (letfn [(remove-transport-fx [chat-id cofx]
             (when (multi-user-chat? chat-id cofx)
               (remove-transport chat-id cofx)))]
@@ -124,7 +130,64 @@
      (deactivate-chat chat-id)
      (clear-history chat-id))))
 
-(defn bot-only-chat? [db chat-id]
-  (let [{:keys [group-chat contacts]} (get-in db [:chats chat-id])]
-    (and (not group-chat)
-         (get-in db [:contacts/contacts (first contacts) :dapp?]))))
+(defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
+  (when (not (get-in db [:chats chat-id :public?]))
+    (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
+
+;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
+(defn mark-messages-seen
+  "Marks all unviewed loaded messages as seen in particular chat"
+  [chat-id {:keys [db] :as cofx}]
+  (when-let [all-unviewed-ids (seq (get-in db [:chats chat-id :unviewed-messages]))]
+    (let [me                  (:current-public-key db)
+          updated-statuses    (keep (fn [message-id]
+                                      (some-> db
+                                              (get-in [:chats chat-id :message-statuses
+                                                       message-id me])
+                                              (assoc :status :seen)))
+                                    all-unviewed-ids)
+          loaded-unviewed-ids (map :message-id updated-statuses)]
+      (when (seq loaded-unviewed-ids)
+        (handlers-macro/merge-fx
+         cofx
+         {:db            (-> (reduce (fn [acc {:keys [message-id status]}]
+                                       (assoc-in acc [:chats chat-id :message-statuses
+                                                      message-id me :status]
+                                                 status))
+                                     db
+                                     updated-statuses)
+                             (update-in [:chats chat-id :unviewed-messages]
+                                        #(apply disj % loaded-unviewed-ids)))
+          :data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]}
+         (send-messages-seen chat-id loaded-unviewed-ids))))))
+
+(defn- preload-chat-data
+  "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
+  [chat-id {:keys [db] :as cofx}]
+  (handlers-macro/merge-fx cofx
+                           {:db (-> (assoc db :current-chat-id chat-id)
+                                    (set-chat-ui-props {:validation-messages nil}))}
+                           (mark-messages-seen chat-id)))
+
+(defn navigate-to-chat
+  "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
+  [chat-id {:keys [navigation-replace?]} cofx]
+  (if navigation-replace?
+    (handlers-macro/merge-fx cofx
+                             (navigation/navigate-reset {:index   1
+                                                         :actions [{:routeName :home}
+                                                                   {:routeName :chat}]})
+                             (preload-chat-data chat-id))
+    (handlers-macro/merge-fx cofx
+                             (navigation/navigate-to-cofx :chat {})
+                             (preload-chat-data chat-id))))
+
+(defn start-chat
+  "Start a chat, making sure it exists"
+  [chat-id opts {:keys [db] :as cofx}]
+  ;; don't allow to open chat with yourself
+  (when (not= (:current-public-key db) chat-id)
+    (handlers-macro/merge-fx cofx
+                             (upsert-chat {:chat-id chat-id
+                                           :is-active true})
+                             (navigate-to-chat chat-id opts))))

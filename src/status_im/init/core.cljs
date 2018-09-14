@@ -1,5 +1,6 @@
 (ns status-im.init.core
   (:require [re-frame.core :as re-frame]
+            [status-im.chat.models.loading :as chat-loading]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.constants :as constants]
@@ -7,7 +8,6 @@
             [status-im.data-store.realm.core :as realm]
             [status-im.i18n :as i18n]
             [status-im.models.browser :as browser]
-            [status-im.models.chat :as chat]
             [status-im.models.contacts :as models.contacts]
             [status-im.models.dev-server :as models.dev-server]
             [status-im.protocol.core :as protocol]
@@ -143,7 +143,6 @@
                 network network-status peers-count peers-summary view-id navigation-stack
                 status-module-initialized? status-node-started? device-UUID semaphores]
          :or   {network (get app-db :network)}} db
-        console-contact (get contacts constants/console-chat-id)
         current-account (get accounts address)
         account-network-id (get current-account :network network)
         account-network (get-in current-account [:networks account-network-id])]
@@ -166,9 +165,7 @@
                         :semaphores semaphores
                         :web3 web3)
            (= view-id :create-account)
-           (assoc-in [:accounts/create :step] :enter-name)
-           console-contact
-           (assoc :contacts/contacts {constants/console-chat-id console-contact}))}))
+           (assoc-in [:accounts/create :step] :enter-name))}))
 
 (defn initialize-wallet [cofx]
   (when-not platform/desktop?
@@ -196,8 +193,8 @@
                            (protocol/initialize-protocol address)
                            (models.contacts/load-contacts)
                            (models.dev-server/start-if-needed)
-                           (chat/initialize-chats)
-                           (chat/process-pending-messages)
+                           (chat-loading/initialize-chats)
+                           (chat-loading/initialize-pending-messages)
                            (browser/initialize-browsers)
                            (browser/initialize-dapp-permissions)
                            (initialize-wallet)

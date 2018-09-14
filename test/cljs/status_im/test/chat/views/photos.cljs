@@ -1,7 +1,7 @@
 (ns status-im.test.chat.views.photos
   (:require [cljs.test :refer [deftest testing is]]
             [status-im.react-native.resources :as resources]
-            [status-im.chat.views.photos :as photos]))
+            [status-im.ui.screens.chat.photos :as photos]))
 
 (deftest photos-test
   (testing "a normal string"

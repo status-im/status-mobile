@@ -2,14 +2,12 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.chat.models.message :as models.message]
-            [status-im.chat.models :as models.chat]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.transport.message.core :as transport]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.data-store.chats :as chats-store]
-            [status-im.data-store.messages :as messages-store]))
+            [status-im.data-store.chats :as chats-store]))
 
 (handlers/register-handler-fx
  :show-group-chat-profile

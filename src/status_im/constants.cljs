@@ -27,8 +27,6 @@
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)
 
-(def console-chat-id "console")
-
 (def inbox-password "status-offline-inbox")
 
 (def default-network config/default-network)

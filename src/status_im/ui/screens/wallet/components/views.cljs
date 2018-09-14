@@ -6,7 +6,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-buttons.view :as bottom-buttons]
             [status-im.ui.components.button.view :as button]
-            [status-im.chat.views.photos :as photos]
+            [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list.styles :as list.styles]
             [status-im.ui.components.list-selection :as list-selection]

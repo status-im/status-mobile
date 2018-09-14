@@ -13,7 +13,7 @@
 
             [status-im.ui.screens.progress.views :refer [progress]]
 
-            [status-im.chat.screen :refer [chat]]
+            [status-im.ui.screens.chat.views :refer [chat]]
             [status-im.ui.screens.add-new.views :refer [add-new]]
             [status-im.ui.screens.add-new.new-chat.views :refer [new-chat]]
             [status-im.ui.screens.add-new.new-public-chat.view :refer [new-public-chat]]

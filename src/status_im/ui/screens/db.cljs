@@ -272,7 +272,6 @@
                  :chat/message-data
                  :chat/message-status
                  :chat/selected-participants
-                 :chat/chat-loaded-callbacks
                  :chat/public-group-topic
                  :chat/public-group-topic-error
                  :chat/messages

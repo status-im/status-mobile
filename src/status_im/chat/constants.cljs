@@ -7,8 +7,6 @@
 (def input-height 56)
 (def input-spacing-top 16)
 
-(def console-chat-id "console")
-
 (def spam-message-frequency-threshold 4)
 (def spam-interval-ms 1000)
 (def default-cooldown-period-ms 10000)

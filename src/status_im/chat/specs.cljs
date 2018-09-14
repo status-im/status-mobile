@@ -11,7 +11,6 @@
 (s/def :chat/chat-list-ui-props (s/nilable map?))
 (s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout 
 (s/def :chat/selected-participants (s/nilable set?))
-(s/def :chat/chat-loaded-callbacks (s/nilable map?))
 (s/def :chat/public-group-topic (s/nilable string?))
 (s/def :chat/public-group-topic-error (s/nilable string?))
 (s/def :chat/messages (s/nilable map?))                           ; messages indexed by message-id

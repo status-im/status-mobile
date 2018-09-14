@@ -4,8 +4,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.navigation]
             [status-im.accounts.update.core :as accounts.update]
-            [status-im.chat.events :as chat-events]
-            [status-im.chat.commands.core :as commands]
+            [status-im.chat.models :as chat-models]
+            [status-im.chat.commands.input :as commands-input]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]))
@@ -24,8 +24,8 @@
 (defn send-transaction [chat-id {:keys [db] :as cofx}]
   (let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
     (handlers-macro/merge-fx cofx
-                             (chat-events/start-chat chat-id {:navigation-replace? true})
-                             (commands/select-chat-input-command send-command nil))))
+                             (chat-models/start-chat chat-id {:navigation-replace? true})
+                             (commands-input/select-chat-input-command send-command nil))))
 
 (defn- valid-name? [name]
   (spec/valid? :profile/name name))

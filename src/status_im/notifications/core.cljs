@@ -3,7 +3,9 @@
             [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn]
             [taoensso.timbre :as log]
-            [status-im.utils.platform :as platform]))
+            [status-im.chat.models :as chat-model]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 ;; Work in progress namespace responsible for push notifications and interacting
 ;; with Firebase Cloud Messaging.
@@ -86,8 +88,9 @@
         ;; TODO(yenda) why do we ignore the notification if
         ;; it is not for the current account ?
         (when (= to current-public-key)
-          {:db       (update db :push-notifications/stored dissoc to)
-           :dispatch [:navigate-to-chat from]})
+          (handlers-macro/merge-fx cofx
+                                   {:db (update db :push-notifications/stored dissoc to)}
+                                   (chat-model/navigate-to-chat from nil)))
         (store-event event cofx))))
 
   (defn parse-notification-payload [s]

@@ -13,7 +13,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as components]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.chat.views.photos :as photos]
+            [status-im.ui.screens.chat.photos :as photos]
             [re-frame.core :as re-frame]
             [cljs.spec.alpha :as spec]
             [status-im.utils.platform :as platform]

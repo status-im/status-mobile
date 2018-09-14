@@ -1,6 +1,6 @@
 (ns status-im.test.chat.views.message
   (:require [cljs.test :refer [deftest is]]
-            [status-im.chat.views.message.message :as message]))
+            [status-im.ui.screens.chat.message.message :as message]))
 
 (deftest parse-url
   (is (= (lazy-seq [{:text "" :url? false}

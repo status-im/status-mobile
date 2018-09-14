@@ -2,14 +2,12 @@
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [status-im.chat.constants :as chat.constants]
-            [status-im.constants :as constants]
             [status-im.utils.homoglyph :as homoglyph]))
 
 (defn correct-name? [username]
   (when-let [username (some-> username (string/trim))]
     (every? false?
             [(string/blank? username)
-             (homoglyph/matches username constants/console-chat-id)
              (string/includes? username chat.constants/command-char)])))
 
 (defn base64-encoded-image-path? [photo-path]

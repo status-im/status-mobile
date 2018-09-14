@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.home.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -44,20 +43,18 @@
           inner-item-view (if (:chat-id home-item)
                             inner-item/home-list-chat-item-inner-view
                             inner-item/home-list-browser-item-inner-view)
-          is-deletable? (not= (:chat-id home-item) constants/console-chat-id)
-          offset-x (animation/create-value (if (and is-deletable? swiped?) styles/delete-button-width 0))
+          offset-x (animation/create-value (if swiped? styles/delete-button-width 0))
           swipe-pan-responder (responder/swipe-pan-responder offset-x styles/delete-button-width home-item-id swiped?)
-          swipe-pan-handler (if is-deletable? (responder/pan-handlers swipe-pan-responder) {})]
+          swipe-pan-handler (responder/pan-handlers swipe-pan-responder)]
       [react/view (assoc swipe-pan-handler :accessibility-label :chat-item)
        [react/animated-view {:style {:flex 1 :right offset-x}}
         [inner-item-view home-item]
-        (when is-deletable?
-          [react/touchable-highlight {:style    styles/delete-icon-highlight
-                                      :on-press #(do
-                                                   (re-frame/dispatch [:set-swipe-position home-item-id false])
-                                                   (re-frame/dispatch [delete-action home-item-id]))}
-           [react/view {:style styles/delete-icon-container}
-            [vector-icons/icon :icons/delete {:color colors/red}]]])]])))
+        [react/touchable-highlight {:style    styles/delete-icon-highlight
+                                    :on-press #(do
+                                                 (re-frame/dispatch [:set-swipe-position home-item-id false])
+                                                 (re-frame/dispatch [delete-action home-item-id]))}
+         [react/view {:style styles/delete-icon-container}
+          [vector-icons/icon :icons/delete {:color colors/red}]]]]])))
 
 ;;do not remove view-id and will-update or will-unmount handlers, this is how it works
 (views/defview welcome [view-id]

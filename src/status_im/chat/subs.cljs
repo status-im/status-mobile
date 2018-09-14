@@ -4,11 +4,11 @@
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.commands.core :as commands]
+            [status-im.chat.commands.input :as commands-input]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
-            [status-im.constants :as const]
             [status-im.models.transactions :as transactions]))
 
 (reg-sub :get-chats :chats)
@@ -76,12 +76,8 @@
      platform/ios? kb-height
      :default 0)))
 
-(defn- active-chat? [[_ chat]]
-  (and (:is-active chat)
-       (not= const/console-chat-id (:chat-id chat))))
-
 (defn active-chats [chats]
-  (into {} (filter active-chat? chats)))
+  (into {} (filter (comp :is-active second) chats)))
 
 (reg-sub
  :get-active-chats
@@ -257,7 +253,7 @@
  :<- [:get-current-chat-ui-prop :selection]
  :<- [:get-commands-for-chat]
  (fn [[{:keys [input-text]} selection commands]]
-   (commands/selected-chat-command input-text selection commands)))
+   (commands-input/selected-chat-command input-text selection commands)))
 
 (reg-sub
  :chat-input-placeholder

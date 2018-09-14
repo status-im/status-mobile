@@ -1,6 +1,5 @@
 (ns status-im.test.chat.subs
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.constants :as const]
             [status-im.chat.subs :as s]))
 
 (deftest chat-name
@@ -113,12 +112,10 @@
 (deftest active-chats-test
   (let [active-chat-1 {:is-active true :chat-id 1}
         active-chat-2 {:is-active true :chat-id 2}
-        console       {:is-active true :chat-id const/console-chat-id}
         chats         {1 active-chat-1
                        2 active-chat-2
-                       3 {:is-active false :chat-id 3}
-                       const/console-chat-id console}]
-    (testing "it returns only chats with is-active, without console"
+                       3 {:is-active false :chat-id 3}}]
+    (testing "it returns only chats with is-active"
       (is (= {1 active-chat-1
               2 active-chat-2}
              (s/active-chats chats))))))

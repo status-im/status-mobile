@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.chat.views.photos :as photos]
+            [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.accounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.status-bar.view :as status-bar]

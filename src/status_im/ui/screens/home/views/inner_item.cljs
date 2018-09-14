@@ -90,12 +90,11 @@
                                                  timestamp]}]
   (letsubs [last-message [:get-last-message chat-id]
             chat-name    [:get-chat-name chat-id]]
-    (let [hide-dapp?          (= chat-id const/console-chat-id)
-          truncated-chat-name (utils/truncate-str chat-name 30)]
+    (let [truncated-chat-name (utils/truncate-str chat-name 30)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
        [react/view styles/chat-container
         [react/view styles/chat-icon-container
-         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online hide-dapp?]]
+         [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online false]]
         [react/view styles/chat-info-container
          [react/view styles/item-upper-container
           [chat-list-item-name truncated-chat-name group-chat public? public-key]
