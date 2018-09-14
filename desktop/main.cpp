@@ -325,23 +325,27 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
 
   QByteArray localMsg = msg.toLocal8Bit();
   QString message = localMsg + "\n";
+  QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
+  QString typeStr;
 
   switch (type) {
   case QtDebugMsg:
-    appendConsoleString(QString("Debug: %1 \n").arg(message));
+    typeStr = "D";
     break;
   case QtInfoMsg:
-    appendConsoleString(QString("Info: %1 \n").arg(message));
+    typeStr = "I";
     break;
   case QtWarningMsg:
-    appendConsoleString(QString("Warning: %1 \n").arg(message));
+    typeStr = "W";
     break;
   case QtCriticalMsg:
-    appendConsoleString(QString("Critical: %1 \n").arg(message));
+    typeStr = "C";
     break;
   case QtFatalMsg:
-
-    appendConsoleString(QString("Fatal: %1 \n").arg(message));
+    typeStr = "F";
+  }
+  appendConsoleString(QString("%1 - %2 - %3").arg(timestamp, typeStr, message));
+  if (type == QtFatalMsg) {
     writeLogsToFile();
     abort();
   }

@@ -46,6 +46,7 @@ check_sync() {
       read response;
       if [ "$response" = "reset" ]; then
           git fetch $REMOTE
+          git checkout $BRANCH
           git reset --hard $REMOTE/$BRANCH
       else
           fatal "the local branch $BRANCH is behind $REMOTE/$BRANCH."
