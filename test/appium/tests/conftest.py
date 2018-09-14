@@ -87,7 +87,7 @@ def pytest_addoption(parser):
                      help='List of public keys for one-to-one chats')
     parser.addoption('--running_time',
                      action='store',
-                     default=None,
+                     default=600,
                      help='Running time in seconds')
 
 

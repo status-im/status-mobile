@@ -243,7 +243,7 @@ class AssetButton(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetButton, self).__init__(driver)
         self.asset_name = asset_name
-        self.locator = self.Locator.text_part_selector(self.asset_name)
+        self.locator = self.Locator.text_selector(self.asset_name)
 
     @property
     def name(self):
