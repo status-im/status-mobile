@@ -60,7 +60,7 @@
                                                         :main          "env.desktop.main"
                                                         :output-dir    "target/desktop"
                                                         :optimizations :none}}}}
-                        :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
+                        :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
                         {:dependencies [[figwheel-sidecar "0.5.16-SNAPSHOT"]

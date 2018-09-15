@@ -46,7 +46,7 @@
  :figwheel-options {:nrepl-port 7888
                     :nrepl-middleware ["cider.nrepl/cider-middleware"
                                        "refactor-nrepl.middleware/wrap-refactor"
-                                       "cemerick.piggieback/wrap-cljs-repl"]}
+                                       "cider.piggieback/wrap-cljs-repl"]}
 
  :builds [{:id           :desktop
            :source-paths ["react-native/src/desktop" "src" "env/dev"]
