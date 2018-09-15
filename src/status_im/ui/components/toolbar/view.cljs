@@ -81,10 +81,12 @@
   ([title-style title]
    (content-title title-style title nil nil))
   ([title-style title subtitle-style subtitle]
+   (content-title title-style title subtitle-style subtitle nil))
+  ([title-style title subtitle-style subtitle additional-text-props]
    [react/view {:style styles/toolbar-title-container}
-    [react/text {:style (merge styles/toolbar-title-text title-style)
-                 :font  :toolbar-title}
-     title]
+    [react/text (merge {:style (merge styles/toolbar-title-text title-style)
+                        :font :toolbar-title :numberOfLines 1 :ellipsizeMode :tail}
+                       additional-text-props) title]
     (when subtitle
       [react/text {:style subtitle-style}
        subtitle])]))
