@@ -1,9 +1,4 @@
-import org.sikuli.script.SikulixForJython
-from sikuli import *
 import pytest
-import requests
-import re
-from urllib import urlretrieve
 from subprocess import check_output
 
 from tests.report import save_test_result, TEST_REPORT_DIR
@@ -23,15 +18,7 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    if config.getoption('nightly'):
-        raw_data = requests.request('GET', 'https://status-im.github.io/nightly/').text
-        if config.getoption('os') == 'linux':
-            app_url = re.findall('href="(.*AppImage)', raw_data)[0]
-            urlretrieve(app_url, 'nightly.AppImage')
-        else:
-            dmg_url = re.findall('href="(.*dmg)', raw_data)[0]
-            urlretrieve(dmg_url, 'nightly.dmg')
-
+    pass
 
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item, call):
@@ -46,7 +33,8 @@ def pytest_runtest_makereport(item, call):
 
 def after_all():
     if pytest.config.getoption('os') == 'linux':
-        check_output(['rm', '-rf', 'nightly.AppImage'])
+        pass
+        # check_output(['rm', '-rf', 'nightly.AppImage'])
     else:
         check_output(['rm', '-rf', 'nightly.dmg'])
 

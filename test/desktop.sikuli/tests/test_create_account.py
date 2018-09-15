@@ -1,9 +1,11 @@
-from tests.base_test_case import BaseTestCase
+import pytest
 from views.sign_in_view import SignInView
+from tests.base_test_case import BaseTestCase
 
 
 class TestCreateAccount(BaseTestCase):
 
+    @pytest.mark.desktop
     def test_create_account(self):
         sign_in = SignInView()
         sign_in.create_account_button.click()
