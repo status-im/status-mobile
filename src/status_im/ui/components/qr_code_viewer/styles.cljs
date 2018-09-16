@@ -3,21 +3,21 @@
   (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
 (def qr-code-hint
-  {:color          colors/gray
-   :padding-top    24
-   :padding-bottom 22
-   :text-align     :center})
+  {:color           colors/gray
+   :margin-vertical 12
+   :text-align      :center})
 
-(def qr-code-padding
-  15)
+(def qr-code-max-width 208)
+(def qr-code-padding 16)
 
 (defn qr-code-container [width]
-  {:background-color colors/white
-   :width            width
-   :align-items      :center
-   :justify-content  :center
-   :padding          qr-code-padding
-   :border-radius    8})
+  {:align-self       :center
+   :width            (+ width qr-code-padding qr-code-padding)
+   :background-color colors/white
+   :border-color     colors/gray-light
+   :border-width     1
+   :border-radius    8
+   :padding          qr-code-padding})
 
 (defstyle name-container
   {:flex           0.6
@@ -41,40 +41,35 @@
 (def account-toolbar
   {:background-color colors/white})
 
-(def toolbar-contents
-  {:flex-grow       1
-   :flex-direction  :row
-   :height          55
-   :align-items     :center
-   :justify-content :center})
-
 (def qr-code
-  {:flex-grow        1
-   :align-items      :center
-   :justify-content  :center})
+  {:flex-grow       1
+   :justify-content :center})
 
 (def footer
   {:flex-direction   :row
-   :justify-content  :center
-   :padding-top      17})
+   :justify-content  :center})
 
 (def wallet-info
   {:flex-grow      1
-   :align-items    :center
-   :padding-bottom 20})
+   :align-items    :center})
 
 (def hash-value-type
   {:color          colors/black
    :padding-bottom 5})
 
 (def hash-value-text
-  {:color             colors/black
-   :align-self        :stretch
-   :margin-horizontal 60
-   :text-align        :center
-   :font-size         15
-   :letter-spacing    -0.2
-   :line-height       20})
+  {:color              colors/black
+   :align-self         :stretch
+   :border-color       colors/gray-light
+   :border-width       1
+   :margin-horizontal  16
+   :padding-horizontal 8
+   :padding-vertical   6
+   :border-radius      8
+   :text-align         :center
+   :font-size          15
+   :letter-spacing     -0.2
+   :line-height        20})
 
 (def done-button-text
   {:color colors/white})

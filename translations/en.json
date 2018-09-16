@@ -375,7 +375,7 @@
     "delete-contact": "Delete contact",
     "currency-display-name-try": "Turkish Lira",
     "connecting-requires-login": "Connecting to another network requires login",
-    "send-transaction-request": "Send a transaction request",
+    "send-transaction-request": "Send a Transaction Request",
     "share-contact-code": "Share my contact code",
     "use-valid-contact-code": "Please enter or scan a valid contact code or username",
     "use-valid-contact-code-desktop": "Please enter a valid contact code or username",
@@ -428,7 +428,7 @@
     "currency-display-name-lrd": "Liberia Dollar",
     "leave": "Leave",
     "offline-messaging-settings": "Mailserver settings",
-    "qr-code-public-key-hint": "Share this code to \nstart chatting",
+    "qr-code-public-key-hint": "Share this code to start chatting",
     "submit-bug": "Submit a bug",
     "share": "Share",
     "recent-recipients": "Contacts",
@@ -734,5 +734,11 @@
     "create-pin-description": "You'll need your card + this PIN to log in and to confirm transactions",
     "repeat-pin": "Repeate your PIN",
     "pin-mismatch": "PIN does not match",
-    "view-my-wallet": "View my wallet"
+    "view-my-wallet": "View my wallet",
+    "share-my-profile": "Share my profile",
+    "share-chat": "Share chat",
+    "share-link": "Share link",
+    "share-profile-link": "Share profile link",
+    "share-public-chat-text": "Check out this public chat on the Status app: {{link}}",
+    "share-dapp-text": "Check out this DApp I'm using on Status: {{link}}"
 }

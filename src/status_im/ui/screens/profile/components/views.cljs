@@ -16,6 +16,7 @@
   [react/view
    [react/text-input
     (merge {:style               styles/profile-name-input-text
+            :font                :medium
             :placeholder         ""
             :default-value       name
             :auto-focus          true
@@ -35,6 +36,7 @@
                                       :edit?   false}]
    [react/view styles/profile-header-name-container
     [react/text {:style           styles/profile-name-text
+                 :font            :medium
                  :number-of-lines 1}
      name]]])
 

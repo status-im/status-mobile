@@ -18,7 +18,6 @@
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
             status-im.ui.screens.wallet.collectibles.superrare.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
-            [status-im.ui.components.text :as text]
             [status-im.ui.screens.wallet.transactions.views :as transactions.views]
             [status-im.ui.components.colors :as colors]))
 
@@ -190,7 +189,10 @@
           [backup-seed-phrase])
         (if modal?
           [react/view styles/address-section
-           [text/selectable-text {:value address-hex :style styles/wallet-address}]]
+           [react/text {:style               styles/wallet-address
+                        :accessibility-label :address-text
+                        :selectable          true}
+            address-hex]]
           [list/action-list actions
            {:container-style styles/action-section}])
         [asset-section assets currency address-hex modal?]

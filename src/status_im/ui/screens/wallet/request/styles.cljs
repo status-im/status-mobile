@@ -5,15 +5,15 @@
   {:color colors/white-lighter-transparent})
 
 (def footer
-  {:color colors/white})
+  {:color colors/white
+   :border-color colors/white-light-transparent})
 
 (def bottom-buttons
   {:background-color colors/blue})
 
 (def request-wrapper
   {:flex              1
-   :flex-direction    :column
-   :margin-horizontal 16})
+   :flex-direction    :column})
 
 ;; Request panel
 
@@ -21,5 +21,8 @@
   {:padding-bottom 60})
 
 (def send-request
-  {:background-color colors/black-transparent
-   :margin-bottom    12})
+  {:background-color  colors/black-transparent
+   :margin-top        12
+   :margin-bottom     16
+   :margin-horizontal 16
+   :height            42})

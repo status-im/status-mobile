@@ -4,6 +4,7 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.styles :as action-button.styles]
+            [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -65,38 +66,34 @@
                               :action #(re-frame/dispatch [:my-profile/remove-current-photo])}))
 
 (defn qr-viewer-toolbar [label value]
-  [toolbar/toolbar {}
+  [toolbar/toolbar {:style styles/qr-toolbar}
    [toolbar/default-done {:icon-opts           {:color colors/black}
                           :accessibility-label :done-button}]
-   [toolbar/content-title label]
-   [toolbar/actions [{:icon      :icons/share
-                      :icon-opts {:color               :black
-                                  :accessibility-label :share-code-button}
-                      :handler   #(list-selection/open-share {:message value})}]]])
+   [toolbar/content-title label]])
+
+(defn qr-code-share-button [value]
+  [button/button-with-icon {:on-press            #(list-selection/open-share {:message value})
+                            :label               (i18n/label :t/share-link)
+                            :icon                :icons/share
+                            :accessibility-label :share-my-contact-code-button
+                            :style               styles/share-link-button}])
 
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
-     [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
-      value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
+     [qr-code-viewer/qr-code-viewer
+      {:style         styles/qr-code
+       :footer-button qr-code-share-button
+       :value         value
+       :hint          (i18n/label :t/qr-code-public-key-hint)
+       :legend        (str value)}]]))
 
 (defn- show-qr [contact source value]
   #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
                                                         :source  source
                                                         :value   value}]))
-
-(defn share-contact-code [current-account public-key]
-  [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
-   [react/view styles/share-contact-code
-    [react/view styles/share-contact-code-text-container
-     [react/text {:style      styles/share-contact-code-text
-                  :uppercase? true}
-      (i18n/label :t/share-contact-code)]]
-    [react/view {:style               styles/share-contact-icon-container
-                 :accessibility-label :share-my-contact-code-button}
-     [vector-icons/icon :icons/qr {:color colors/blue}]]]])
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
@@ -231,8 +228,15 @@
                                    (profile-icon-options-ext)
                                    profile-icon-options)
            :on-change-text-event :my-profile/update-name}]]
-        [react/view action-button.styles/actions-list
-         [share-contact-code current-account public-key]]
+        [react/view (merge action-button.styles/actions-list
+                           styles/share-contact-code-container)
+         [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
+                                                                             {:contact current-account
+                                                                              :source  :public-key
+                                                                              :value   public-key}])
+                                   :style styles/share-contact-code-button
+                                   :accessibility-label :share-my-profile-button}
+          (i18n/label :t/share-my-profile)]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account currency]]
         [advanced shown-account on-show-advanced]]])))

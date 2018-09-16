@@ -6,6 +6,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
@@ -16,6 +17,7 @@
             [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
+            [status-im.ui.screens.wallet.actions :as wallet.actions]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.http :as http]
             [status-im.utils.js-resources :as js-res])
@@ -48,6 +50,10 @@
         [react/touchable-highlight {:style {:flex 1} :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
          [react/text {:style styles/url-text} (http/url-host url)]])]]))
 
+(defn- on-options [name browser-id]
+  (list-selection/show {:title   name
+                        :options (wallet.actions/actions browser-id)}))
+
 (defn toolbar [error? url browser browser-id url-editing?]
   [toolbar.view/toolbar {}
    [toolbar.view/nav-button-with-count
@@ -56,10 +62,10 @@
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
    [toolbar-content url browser url-editing?]
-   [toolbar.view/actions [{:icon      :icons/wallet
+   [toolbar.view/actions [{:icon      :icons/options
                            :icon-opts {:color               :black
-                                       :accessibility-label :wallet-modal-button}
-                           :handler   #(re-frame/dispatch [:navigate-to :wallet-modal])}]]])
+                                       :accessibility-label :chat-menu-button}
+                           :handler   #(on-options name browser-id)}]]])
 
 (defn- web-view-error [_ code desc]
   (reagent/as-element

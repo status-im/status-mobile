@@ -4,40 +4,28 @@
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.components.styles :as components.styles]))
 
-(def share-contact-code
-  {:margin-horizontal 16
-   :flex-direction    :row
-   :justify-content   :space-between
-   :align-items       :center
-   :height            42
-   :border-radius     components.styles/border-radius
-   :background-color  (colors/alpha colors/blue 0.1)})
-
-(def share-contact-code-text-container
-  {:padding-left    16
-   :padding-bottom  1
-   :flex            0.9
-   :flex-direction  :row
+(def share-contact-code-container
+  {:flex-direction  :row
    :justify-content :center
    :align-items     :center})
 
-(def share-contact-code-text
-  {:color     colors/blue
-   :font-size 15})
+(def share-contact-code-button
+  {:height 42})
 
-(def share-contact-icon-container
-  {:border-radius   50
-   :flex            0.1
-   :padding-right   5
-   :align-items     :center
-   :justify-content :center})
+(def qr-toolbar
+  {:border-bottom-color colors/gray-light
+   :border-bottom-width 1})
 
 (def qr-code
-  {:background-color colors/gray-lighter})
+  {:background-color colors/white})
 
 (def qr-code-viewer
   {:flex-grow      1
    :flex-direction :column})
+
+(def share-link-button
+  {:margin-top    12
+   :margin-bottom 16})
 
 (defstyle my-profile-info-container
   {:background-color colors/white})
@@ -49,9 +37,6 @@
 
 (defstyle my-profile-settings-logout
   {:min-width       "50%"})
-
-(defstyle my-profile-settings-logout-version
-  {:padding-horizontal 16})
 
 (def advanced-button
   {:margin-top    16

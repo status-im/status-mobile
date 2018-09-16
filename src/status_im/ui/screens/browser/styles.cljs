@@ -33,6 +33,9 @@
 (def forward-button
   {:margin-left 72})
 
+(def share-button
+  {:margin-right 72})
+
 (def background
   {:flex             1
    :background-color colors/gray-lighter

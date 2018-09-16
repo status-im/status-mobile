@@ -1,5 +1,7 @@
 (ns status-im.utils.universal-links.core
   (:require [cljs.spec.alpha :as spec]
+            [goog.string :as gstring]
+            [goog.string.format]
             [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
             [status-im.chat.models :as chat]
@@ -18,6 +20,18 @@
 (def profile-regex #".*/user/(.*)$")
 (def browse-regex #".*/browse/(.*)$")
 (def extension-regex #".*/extension/(.*)$")
+
+;; domains should be without the trailing slash
+(def domains {:external "https://get.status.im"
+              :internal "status-im:/"})
+
+(def links {:public-chat "%s/chat/public/%s"
+            :browse      "%s/browse/%s"})
+
+(defn generate-link [link-type domain-type param]
+  (gstring/format (get links link-type)
+                  (get domains domain-type)
+                  param))
 
 (defn match-url [url regex]
   (some->> url

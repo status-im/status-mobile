@@ -1,6 +1,7 @@
 (ns status-im.ui.components.button.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
 (def border-color styles/color-white-transparent-3)
@@ -71,3 +72,31 @@
    {:background-color styles/color-blue4-transparent}))
 
 (def secondary-button-text {:color styles/color-blue4})
+
+(def button-with-icon-container
+  {:flex-direction    :row
+   :justify-content   :space-between
+   :align-items       :center
+   :height            42
+   :margin-horizontal 16
+   :border-radius     styles/border-radius
+   :background-color  (colors/alpha colors/blue 0.1)})
+
+(def button-with-icon-text-container
+  {:padding-left    16
+   :padding-bottom  1
+   :flex            0.9
+   :flex-direction  :row
+   :justify-content :center
+   :align-items     :center})
+
+(def button-with-icon-text
+  {:color     colors/blue
+   :font-size 15})
+
+(def button-with-icon-image-container
+  {:border-radius   50
+   :flex            0.1
+   :padding-right   5
+   :align-items     :center
+   :justify-content :center})

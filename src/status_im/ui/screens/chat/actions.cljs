@@ -1,6 +1,8 @@
 (ns status-im.ui.screens.chat.actions
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.utils.universal-links.core :as universal-links]))
 
 (def view-my-wallet
   {:label  (i18n/label :t/view-my-wallet)
@@ -13,6 +15,12 @@
 (defn group-info [chat-id]
   {:label  (i18n/label :t/group-info)
    :action #(re-frame/dispatch [:show-group-chat-profile chat-id])})
+
+(defn- share-chat [chat-id]
+  (let [link    (universal-links/generate-link :public-chat :external chat-id)
+        message (i18n/label :t/share-public-chat-text {:link link})]
+    {:label  (i18n/label :t/share-chat)
+     :action #(list-selection/open-share {:message message})}))
 
 (defn- clear-history []
   {:label  (i18n/label :t/clear-history)
@@ -36,6 +44,7 @@
 
 (defn- public-chat-actions [chat-id]
   [view-my-wallet
+   (share-chat chat-id)
    (clear-history)
    (delete-chat chat-id true)])
 
