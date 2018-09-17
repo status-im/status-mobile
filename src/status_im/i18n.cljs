@@ -13,7 +13,7 @@
 
 ;; translations
 (def translations-by-locale
-  (->> (i18n/translations [:en :ko :ru :pl])
+  (->> (i18n/translations [:en :ko :ru :pl :es_419])
        (map (fn [[k t]] [k (types/json->clj t)]))
        (into {})))
 
