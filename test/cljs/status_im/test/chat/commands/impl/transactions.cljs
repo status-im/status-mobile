@@ -1,5 +1,6 @@
 (ns status-im.test.chat.commands.impl.transactions
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.i18n :as i18n]
             [status-im.chat.commands.impl.transactions :as transactions]
             [status-im.chat.commands.protocol :as protocol]))
 
@@ -21,17 +22,17 @@
            #{:asset :amount})))
   (testing "Parameters validation"
     (is (= (protocol/validate personal-send-command {:asset "TST"} cofx)
-           {:title       "Invalid Asset"
-            :description "Unknown token - TST"}))
+           {:title       (i18n/label :t/send-request-invalid-asset)
+            :description (i18n/label :t/send-request-unknown-token {:asset "TST"})}))
     (is (= (protocol/validate personal-send-command {:asset "SNT"} cofx)
-           {:title       "Amount"
-            :description "Amount must be specified"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-must-be-specified)}))
     (is (= (protocol/validate personal-send-command {:asset "SNT" :amount "a"} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-send-command {:asset "ETH" :amount "0.54354353454353453453454353453445345545"} cofx)
-           {:title       "Amount"
-            :description "Max number of decimals is 18"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-max-decimals {:asset-decimals 18})}))
     (is (= (protocol/validate personal-send-command {:asset "ETH" :amount "0.01"} cofx)
            nil)))
   (testing "Yielding control prefills wallet"
@@ -49,31 +50,31 @@
            #{:asset :amount})))
   (testing "Parameters validation"
     (is (= (protocol/validate personal-request-command {:asset "TST"} cofx)
-           {:title       "Invalid Asset"
-            :description "Unknown token - TST"}))
+           {:title       (i18n/label :t/send-request-invalid-asset)
+            :description (i18n/label :t/send-request-unknown-token {:asset "TST"})}))
     (is (= (protocol/validate personal-request-command {:asset "SNT"} cofx)
-           {:title       "Amount"
-            :description "Amount must be specified"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-must-be-specified)}))
     (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "a"} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "0,1Aaa"} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "1-45"} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "1$#@8"} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "20,"} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-request-command {:asset "SNT" :amount "20."} cofx)
-           {:title       "Amount"
-            :description "Amount is not valid number"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-invalid-number)}))
     (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "0.54354353454353453453454353453445345545"} cofx)
-           {:title       "Amount"
-            :description "Max number of decimals is 18"}))
+           {:title       (i18n/label :t/send-request-amount)
+            :description (i18n/label :t/send-request-amount-max-decimals {:asset-decimals 18})}))
     (is (= (protocol/validate personal-request-command {:asset "ETH" :amount "0.01"} cofx)
            nil))))
