@@ -225,7 +225,8 @@
          (i18n/label :t/message)
          [components/amount-input
           {:disabled?     true
-           :input-options {:multiline true}
+           :input-options {:multiline true
+                           :height    100}
            :amount-text   data}
           nil]]]]
       [enter-password-buttons false
