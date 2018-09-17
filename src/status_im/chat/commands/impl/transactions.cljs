@@ -93,14 +93,14 @@
 (def personal-send-request-params
   [{:id          :asset
     :type        :text
-    :placeholder "Currency"
+    :placeholder (i18n/label :t/send-request-currency)
     ;; Suggestion components should be structured in such way that they will just take
     ;; one argument, event-creator fn used to construct event to fire whenever something
-    ;; is selected. 
+    ;; is selected.
     :suggestions choose-asset-suggestion}
    {:id          :amount
     :type        :number
-    :placeholder "Amount"}])
+    :placeholder (i18n/label :t/send-request-amount)}])
 
 (defview choose-nft-token [selected-event-creator]
   (letsubs [{:keys [input-params]} [:selected-chat-command]
@@ -156,12 +156,12 @@
     (cond
 
       (not asset-decimals)
-      {:title       "Invalid Asset"
-       :description (str "Unknown token - " asset)}
+      {:title       (i18n/label :t/send-request-invalid-asset)
+       :description (i18n/label :t/send-request-unknown-token {:asset asset})}
 
       (not amount)
-      {:title       "Amount"
-       :description "Amount must be specified"}
+      {:title       (i18n/label :t/send-request-amount)
+       :description (i18n/label :t/send-request-amount-must-be-specified)}
 
       :else
       (let [sanitised-str (string/replace amount #"," ".")
@@ -174,12 +174,13 @@
           (or (js/isNaN amount)
               (> (count portions) 2)
               (re-matches #".+(\.|,)$" amount-string))
-          {:title       "Amount"
-           :description "Amount is not valid number"}
+          {:title       (i18n/label :t/send-request-amount)
+           :description (i18n/label :t/send-request-amount-invalid-number)}
 
           (and decimals (> decimals asset-decimals))
-          {:title       "Amount"
-           :description (str "Max number of decimals is " asset-decimals)})))))
+          {:title       (i18n/label :t/send-request-amount)
+           :description (i18n/label :t/send-request-amount-max-decimals
+                                    {:asset-decimals asset-decimals})})))))
 
 ;; `/send` command
 
@@ -268,7 +269,7 @@
   protocol/Command
   (id [_] "send")
   (scope [_] #{:personal-chats})
-  (description [_] "Send a payment")
+  (description [_] (i18n/label :t/send-command-payment))
   (parameters [_] personal-send-request-params)
   (validate [_ parameters cofx]
     ;; Only superficial/formatting validation, "real validation" will be performed
@@ -435,7 +436,7 @@
   protocol/Command
   (id [_] "request")
   (scope [_] #{:personal-chats})
-  (description [_] "Send a payment")
+  (description [_] (i18n/label :t/request-command-payment))
   (parameters [_] personal-send-request-params)
   (validate [_ parameters cofx]
     (personal-send-request-validation parameters cofx))
