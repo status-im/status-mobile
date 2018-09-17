@@ -1,7 +1,8 @@
 import pytest
 
-from tests import transaction_users, marks, unique_password
+from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
+from tests.users import transaction_senders
 from views.sign_in_view import SignInView
 
 
@@ -10,10 +11,10 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.testrail_id(769)
     @marks.smoke_1
     def test_send_transaction_from_daap(self):
-        sender = transaction_users['B_USER']
+        sender = transaction_senders['K']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
-        address = transaction_users['B_USER']['address']
+        sign_in_view.recover_access(sender['passphrase'])
+        address = sender['address']
         initial_balance = self.network_api.get_balance(address)
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
@@ -22,7 +23,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         wallet_view = send_transaction_view.get_wallet_view()
         wallet_view.done_button.click()
         wallet_view.yes_button.click()
-        send_transaction_view.sign_transaction(sender['password'])
+        send_transaction_view.sign_transaction()
         self.network_api.verify_balance_is_updated(initial_balance, address)
 
     @marks.testrail_id(3716)
@@ -44,16 +45,16 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.testrail_id(3696)
     @marks.smoke_1
     def test_deploy_contract_from_daap(self):
-        sender = transaction_users['E_USER']
+        sender = transaction_senders['L']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.deploy_contract_button.click()
-        send_transaction_view.sign_transaction(sender['password'])
+        send_transaction_view.sign_transaction()
         for text in 'Contract deployed at: ', 'Call contract get function', \
                     'Call contract set function', 'Call function 2 times in a row':
             if not status_test_dapp.element_by_text(text).is_element_displayed(120):
@@ -62,7 +63,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.logcat
     @marks.testrail_id(3772)
     def test_logcat_send_transaction_from_daap(self):
-        sender = transaction_users['B_USER']
+        sender = transaction_senders['M']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], unique_password)
         wallet_view = sign_in_view.wallet_button.click()

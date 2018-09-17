@@ -14,8 +14,9 @@ class TestChatBot(SingleDeviceTestCase):
     def setup_method(self, method, max_duration=10800):
         super(TestChatBot, self).setup_method(method, max_duration=10800)
 
-    public_keys = pytest.config.getoption('public_keys').split()
-    repeats = 24 / len(public_keys)
+    if pytest.config.getoption('public_keys'):
+        public_keys = pytest.config.getoption('public_keys').split()
+        repeats = 24 / len(public_keys)
 
     @pytest.mark.chatbot
     @pytest.mark.parametrize('key', numpy.repeat(public_keys, repeats))

@@ -2,8 +2,9 @@ import random
 
 import pytest
 
-from tests import transaction_users, transaction_users_wallet, marks, common_password, unique_password
+from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
+from tests.users import transaction_senders, basic_user, wallet_users, transaction_recipients
 from views.sign_in_view import SignInView
 
 
@@ -13,10 +14,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(766)
     @marks.smoke_1
     def test_send_eth_from_wallet_to_contact(self):
-        recipient = transaction_users['F_USER']
-        sender = transaction_users['E_USER']
+        recipient = basic_user
+        sender = transaction_senders['N']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         home_view.add_contact(recipient['public_key'])
         home_view.get_back_to_home_view()
@@ -32,16 +33,16 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recent_recipient = send_transaction.element_by_text(recipient['username'])
         send_transaction.recent_recipients_button.click_until_presence_of_element(recent_recipient)
         recent_recipient.click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
     @marks.testrail_id(767)
     @marks.smoke_1
     def test_send_eth_from_wallet_to_address(self):
-        recipient = transaction_users['E_USER']
-        sender = transaction_users['F_USER']
+        recipient = basic_user
+        sender = transaction_senders['P']
         sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        home_view = sign_in_view.recover_access(sender['passphrase'])
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         send_transaction = wallet_view.send_transaction_button.click()
@@ -53,16 +54,16 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
     @marks.testrail_id(1430)
     @marks.smoke_1
     def test_send_stt_from_wallet(self):
-        sender = transaction_users_wallet['A_USER']
-        recipient = transaction_users_wallet['B_USER']
+        recipient = basic_user
+        sender = transaction_senders['Q']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         home_view.add_contact(recipient['public_key'])
         home_view.get_back_to_home_view()
@@ -80,15 +81,15 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
 
     @marks.testrail_id(2164)
     def test_transaction_wrong_password_wallet(self):
-        recipient = transaction_users['E_USER']
-        sender = transaction_users['F_USER']
+        recipient = basic_user
+        sender = wallet_users['A']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
@@ -109,7 +110,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(1452)
     def test_transaction_appears_in_history(self):
-        recipient = transaction_users['B_USER']
+        recipient = basic_user
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         home_view = sign_in_view.get_home_view()
@@ -129,17 +130,17 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(common_password)
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], transaction_amount)
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=transaction_amount)
 
     @marks.testrail_id(2163)
     def test_send_eth_from_wallet_incorrect_address(self):
-        recipient = transaction_users['E_USER']
-        sender = transaction_users['F_USER']
+        recipient = basic_user
+        sender = wallet_users['B']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
@@ -157,8 +158,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.logcat
     @marks.testrail_id(3770)
     def test_logcat_send_transaction_from_wallet(self):
-        sender = transaction_users['E_USER']
-        recipient = transaction_users['F_USER']
+        sender = transaction_senders['R']
+        recipient = basic_user
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'], unique_password)
         home_view = sign_in_view.get_home_view()
@@ -179,10 +180,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(3746)
     @marks.smoke_1
     def test_send_token_with_7_decimals(self):
-        sender = transaction_users_wallet['A_USER']
-        recipient = transaction_users_wallet['B_USER']
+        sender = transaction_senders['S']
+        recipient = basic_user
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         home_view.add_contact(recipient['public_key'])
         home_view.get_back_to_home_view()
@@ -200,15 +201,15 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
     @marks.testrail_id(3747)
     @marks.smoke_1
     def test_token_with_more_than_allowed_decimals(self):
-        sender = transaction_users_wallet['A_USER']
+        sender = wallet_users['C']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         send_transaction = wallet_view.send_transaction_button.click()
@@ -234,9 +235,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(1405)
     def test_send_valid_amount_after_insufficient_funds_error(self):
-        sender = transaction_users['G_USER']
+        sender = transaction_senders['T']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         bigger_amount = wallet_view.get_eth_value() + 1
@@ -252,9 +253,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(transaction_users['H_USER']['address'])
+        send_transaction.enter_recipient_address_input.set_value(basic_user['address'])
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], valid_amount)
 
     @marks.testrail_id(3764)
@@ -277,9 +278,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(3792)
     def test_insufficient_funds_wallet_positive_balance(self):
-        sender = transaction_users_wallet['A_USER']
+        sender = wallet_users['A']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         eth_value = wallet_view.get_eth_value()
@@ -305,9 +306,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(3728)
     def test_modify_transaction_fee_values(self):
-        sender = transaction_users['H_USER']
+        sender = transaction_senders['U']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], sender['password'])
+        sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         send_transaction = wallet_view.send_transaction_button.click()
@@ -317,7 +318,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
-        recipient_address = transaction_users['G_USER']['address']
+        recipient_address = basic_user['address']
         send_transaction.enter_recipient_address_input.set_value(recipient_address)
         send_transaction.done_button.click()
         send_transaction.advanced_button.click()
@@ -329,7 +330,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.total_fee_input.click()
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click_until_presence_of_element(send_transaction.enter_password_input)
-        send_transaction.enter_password_input.send_keys(sender['password'])
+        send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_transaction_button.click()
         send_transaction.element_by_text('intrinsic gas too low').wait_for_visibility_of_element()
         send_transaction.ok_button.click()
@@ -352,7 +353,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.gas_price_input.set_value(gas_price)
         send_transaction.total_fee_input.click()
         send_transaction.done_button.click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
 
@@ -362,12 +363,12 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(3761)
     @marks.smoke_1
     def test_transaction_message_sending_from_wallet(self):
-        recipient = transaction_users['D_USER']
-        sender = transaction_users['C_USER']
+        recipient = transaction_recipients['E']
+        sender = transaction_senders['V']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.recover_access(passphrase=sender['passphrase'], password=sender['password'])
-        home_2 = device_2.recover_access(passphrase=recipient['passphrase'], password=recipient['password'])
+        home_1 = device_1.recover_access(passphrase=sender['passphrase'])
+        home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
 
         chat_1 = home_1.add_contact(recipient['public_key'])
         chat_1.get_back_to_home_view()
@@ -382,7 +383,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         send_transaction.chose_recipient_button.click()
         send_transaction.recent_recipients_button.click()
         send_transaction.element_by_text_part(recipient['username']).click()
-        send_transaction.sign_transaction(sender['password'])
+        send_transaction.sign_transaction()
 
         wallet_1.home_button.click()
         home_1.get_chat_with_user(recipient['username']).click()

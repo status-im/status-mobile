@@ -4,7 +4,8 @@ import string
 import emoji
 from datetime import datetime
 from selenium.common.exceptions import TimeoutException
-from tests import marks, get_current_time, group_chat_users
+from tests import marks, get_current_time
+from tests.users import transaction_senders
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -236,7 +237,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if home_view.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in home screen')
 
-        chat = home_view.add_contact(group_chat_users['C_USER']['public_key'])
+        chat = home_view.add_contact(transaction_senders['C']['public_key'])
         if chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()
@@ -431,7 +432,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Message text was not copied in a public chat')
 
         chat.get_back_to_home_view()
-        home.add_contact(group_chat_users['A_USER']['public_key'])
+        home.add_contact(transaction_senders['M']['public_key'])
         message_input.send_keys(message_text)
         chat.send_message_button.click()
 
@@ -448,7 +449,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     def test_delete_cut_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        chat = home.add_contact(group_chat_users['B_USER']['public_key'])
+        chat = home.add_contact(transaction_senders['N']['public_key'])
 
         message_text = 'test'
         message_input = chat.chat_message_input
@@ -483,7 +484,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Message with emoji was not sent in public chat')
 
         chat.get_back_to_home_view()
-        home.add_contact(group_chat_users['C_USER']['public_key'])
+        home.add_contact(transaction_senders['O']['public_key'])
         chat.chat_message_input.send_keys(emoji.emojize(emoji_name))
         chat.send_message_button.click()
 

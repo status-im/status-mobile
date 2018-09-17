@@ -1,4 +1,3 @@
-import time
 import requests
 import pytest
 import re
@@ -9,8 +8,10 @@ from datetime import datetime
 from os import environ
 from io import BytesIO
 from sauceclient import SauceClient
+from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport
+from tests.users import transaction_senders
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
@@ -22,7 +23,6 @@ testrail_report = TestrailReport(sauce_username, sauce_access_key)
 
 
 def pytest_addoption(parser):
-
     parser.addoption("--build",
                      action="store",
                      default=datetime.now().strftime('%Y-%m-%d-%H-%M'),
@@ -189,6 +189,13 @@ def pytest_runtest_protocol(item, nextitem):
                 break  # rerun
         else:
             return True  # no need to rerun
+
+
+@pytest.fixture(scope="session", autouse=True)
+def faucet_for_senders():
+    network_api = NetworkApi()
+    for user in transaction_senders.values():
+        network_api.faucet(address=user['address'])
 
 
 @pytest.fixture
