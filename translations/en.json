@@ -20,10 +20,10 @@
     "wallet-advanced": "Advanced",
     "currency-display-name-sos": "Somalia Shilling",
     "members-active": {
+        "zero": "",
         "one": "1 member",
         "other": "{{count}} members"
     },
-    "members-active-none": "no members",
     "chat-name": "Chat name",
     "currency-display-name-zar": "South Africa Rand",
     "phew-here-is-your-passphrase": "Phew, that was hard. Here is your passphrase, *write this down and keep it safe!* You will need it to recover your account.",
@@ -54,6 +54,7 @@
     "mailserver-details": "Mailserver details",
     "new-public-group-chat": "Join public chat",
     "datetime-hour": {
+        "zero": "",
         "one": "hour",
         "other": "hours"
     },
@@ -376,6 +377,7 @@
     "wallet-transaction-total-fee": "Total Fee",
     "extension": "Extension",
     "datetime-day": {
+        "zero": "",
         "one": "day",
         "other": "days"
     },
@@ -393,6 +395,7 @@
     "scan-qr": "Scan QR code",
     "currency-display-name-lak": "Laos Kip",
     "contact-s": {
+        "zero": "",
         "one": "contact",
         "other": "contacts"
     },
@@ -460,7 +463,6 @@
     "invalid-number": "Invalid number",
     "type-a-message": "Type a message...",
     "recover-password-too-short": "Password is too short",
-    "recover-password-invalid": "This account already exists but passwords do not match",
     "rinkeby-network": "Rinkeby test network",
     "faq": "Frequently asked questions",
     "currency-display-name-sar": "Saudi Arabia Riyal",
@@ -560,10 +562,10 @@
     "transactions": "Transactions",
     "transactions-unsigned": "Unsigned",
     "members": {
+        "zero": "",
         "one": "1 member",
         "other": "{{count}} members"
     },
-    "members-none": "no members",
     "delete-mailserver-title": "Delete mailserver",
     "intro-message1": "Welcome to Status!\nTap this message to set your password and get started.",
     "public-chat-user-count": "{{count}} people",
@@ -575,6 +577,7 @@
     "your-contact-code": "Granting access authorizes this DApp to retrieve your contact code",
     "new-contact": "New contact",
     "datetime-second": {
+        "zero": "",
         "one": "second",
         "other": "seconds"
     },
@@ -608,6 +611,7 @@
     "enter-12-words": "Enter the 12 words of your recovery phrase, separated by single spaces",
     "contact-already-added": "The contact has already been added",
     "datetime-minute": {
+        "zero": "",
         "one": "minute",
         "other": "minutes"
     },
@@ -685,5 +689,14 @@
     "cost-fee": "Cost/Fee",
     "currency-display-name-usd": "United States Dollar",
     "currency-display-name-uah": "Ukraine Hryvnia",
-    "web3-opt-in": "Opt-in web3 provider access"
+    "web3-opt-in": "Opt-in web3 provider access",
+    "recover-password-invalid": "This account already exists but passwords do not match",
+    "members-active-none": "no members",
+    "members-none": "no members",
+    "default-dapps-exchanges": "Exchanges",
+    "default-dapps-marketplaces": "Marketplaces",
+    "default-dapps-fun-games": "Fun & Games",
+    "default-dapps-social-networks": "Social Networks",
+    "default-dapps-social-utilities": "Utilities",
+    "default-dapps-media": "Media"
 }
