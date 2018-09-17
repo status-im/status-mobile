@@ -307,7 +307,7 @@
     "chat": "Chat",
     "start-conversation": "Start conversation",
     "you-are-all-set-description": "Now if you lose your phone you can restore your account and wallet using the recovery phrase.",
-    "topic-format": "Topic names use only lowercase letters (a to z) & dashes (-)",
+    "topic-format": "Topic name can use only lowercase letters, numbers and dash (-)",
     "specify-name": "Specify a name",
     "add-new-network": "Add new network",
     "save": "Save",
