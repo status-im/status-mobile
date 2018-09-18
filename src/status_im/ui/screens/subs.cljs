@@ -21,7 +21,8 @@
             status-im.ui.screens.browser.subs
             status-im.ui.screens.add-new.new-chat.subs
             status-im.ui.screens.add-new.new-public-chat.subs
-            status-im.ui.screens.profile.subs))
+            status-im.ui.screens.profile.subs
+            status-im.ui.screens.hardwallet.connect.subs))
 
 (reg-sub :get
          (fn [db [_ k]]

@@ -11,6 +11,7 @@
             [status-im.bootnodes.core :as bootnodes]
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
+            [status-im.hardwallet.core :as hardwallet]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.log-level.core :as log-level]
@@ -140,6 +141,11 @@
   (re-frame/inject-cofx :accounts.create/get-status)]
  (fn [cofx [_ result password]]
    (accounts.create/on-account-created result password false cofx)))
+
+(handlers/register-handler-fx
+ :accounts.create.ui/create-new-account-button-pressed
+ (fn [cofx _]
+   (accounts.create/navigate-to-authentication-method cofx)))
 
 ;; accounts recover module
 
@@ -486,3 +492,25 @@
  :notifications.callback/request-notifications-permissions-denied
  (fn [cofx _]
    (accounts/show-mainnet-is-default-alert cofx)))
+
+;; hardwallet module
+
+(handlers/register-handler-fx
+ :hardwallet.callback/check-nfc-support-success
+ (fn [cofx [_ supported?]]
+   (hardwallet/set-nfc-support supported? cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.callback/check-nfc-enabled-success
+ (fn [cofx [_ enabled?]]
+   (hardwallet/set-nfc-enabled enabled? cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/status-hardwallet-option-pressed
+ (fn [cofx _]
+   (hardwallet/navigate-to-connect-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/go-to-settings-button-pressed
+ (fn [_ _]
+   {:hardwallet/open-nfc-settings nil}))

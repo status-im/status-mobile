@@ -7,6 +7,7 @@
             [status-im.constants :as constants]
             [status-im.data-store.accounts :as accounts-store]
             [status-im.i18n :as i18n]
+            [status-im.hardwallet.core :as hardwallet]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
@@ -97,6 +98,11 @@
   (case step
     :enter-password (navigation/navigate-back cofx)
     :confirm-password (reset-account-creation cofx)))
+
+(defn navigate-to-authentication-method [{:keys [db] :as cofx}]
+  (if (hardwallet/hardwallet-supported? db)
+    (navigation/navigate-to-cofx :hardwallet/authentication-method nil cofx)
+    (navigation/navigate-to-cofx :create-account nil cofx)))
 
 ;;;; COFX
 

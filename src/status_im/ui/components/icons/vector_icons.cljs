@@ -92,7 +92,10 @@
      :icons/check               (js/require "./resources/icons/check.svg")
      :icons/dots                (js/require "./resources/icons/dots.svg")
      :icons/warning             (js/require "./resources/icons/warning.svg")
-     :icons/info                (js/require "./resources/icons/info.svg")}
+     :icons/info                (js/require "./resources/icons/info.svg")
+     :icons/hardwallet          (js/require "./resources/icons/hardwallet.svg")
+     :icons/password            (js/require "./resources/icons/password.svg")
+     :icons/nfc                 (js/require "./resources/icons/nfc.svg")}
     {:icons/discover            (components.svg/slurp-svg "./resources/icons/bottom/discover_gray.svg")
      :icons/contacts            (components.svg/slurp-svg "./resources/icons/bottom/contacts_gray.svg")
      :icons/home                (components.svg/slurp-svg "./resources/icons/bottom/home_gray.svg")
@@ -157,8 +160,11 @@
      :icons/check               (components.svg/slurp-svg "./resources/icons/check.svg")
      :icons/dots                (components.svg/slurp-svg "./resources/icons/dots.svg")
      :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")
+     :icons/settings            (components.svg/slurp-svg "./resources/icons/settings.svg")
      :icons/info                (components.svg/slurp-svg "./resources/icons/info.svg")
-     :icons/settings            (components.svg/slurp-svg "./resources/icons/settings.svg")}))
+     :icons/hardwallet          (components.svg/slurp-svg "./resources/icons/hardwallet.svg")
+     :icons/password            (components.svg/slurp-svg "./resources/icons/password.svg")
+     :icons/nfc                 (components.svg/slurp-svg "./resources/icons/nfc.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

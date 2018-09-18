@@ -18,6 +18,7 @@
 (def gray-border "#ececf0")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
 (def blue-transparent "rgba(67, 96, 223, 0.2)")
+(def blue-transparent-10 "rgba(67, 96, 223, 0.1)")
 (def blue-transparent-40 "rgba(67, 96, 223, 0.4)")
 (def blue-darker "#c4cced")
 (def blue-dark "#3147ac") ;; Used as secondary wallet color (icon background)

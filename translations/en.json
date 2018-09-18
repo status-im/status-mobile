@@ -704,5 +704,13 @@
     "send-request-amount-invalid-number": "Amount is not a valid number",
     "send-request-amount-max-decimals": "Max number of decimals is {{asset-decimals}}",
     "send-command-payment": "Send a payment",
-    "request-command-payment": "Request a payment"
+    "request-command-payment": "Request a payment",
+    "choose-authentication-method": "Choose an authentication method to protect your account",
+    "status-hardwallet-capitalized": "Status Hardwallet",
+    "status-hardwallet": "Status hardwallet",
+    "secure-your-assets": "secure your assets",
+    "link-card": "Link the card and use it to confirm your identity on the platform.",
+    "hold-card": "hold card to the back of your phone",
+    "turn-nfc-on": "turn nfc on",
+    "go-to-settings": "Go to Settings"
 }

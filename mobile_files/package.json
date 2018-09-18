@@ -49,6 +49,7 @@
     "react-native-invertible-scroll-view": "1.1.0",
     "react-native-keychain": "3.0.0",
     "react-native-level-fs": "3.0.1",
+    "react-native-nfc-manager": "^0.5.5",
     "react-native-os": "https://github.com/status-im/react-native-os.git#1.1.0-1",
     "react-native-qrcode": "0.2.7",
     "react-native-randombytes": "3.5.0",

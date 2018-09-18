@@ -20,6 +20,7 @@
 (def instabug               (js/require "instabug-reactnative"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-firebase  (js/require "react-native-firebase"))
+(def nfc-manager            (js/require "react-native-nfc-manager"))
 (def snoopy                 (js/require "rn-snoopy"))
 (def snoopy-filter          (js/require "rn-snoopy/stream/filter"))
 (def snoopy-bars            (js/require "rn-snoopy/stream/bars"))

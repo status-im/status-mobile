@@ -42,7 +42,7 @@
                         :render-fn (fn [account] [account-view account])
                         :separator [react/view {:height 12}]}]]
       [react/view
-       [components.common/button {:on-press #(re-frame/dispatch [:navigate-to :create-account])
+       [components.common/button {:on-press #(re-frame/dispatch [:accounts.create.ui/create-new-account-button-pressed])
                                   :label    (i18n/label :t/create-new-account)}]
        [react/view styles/bottom-button-container
         [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])

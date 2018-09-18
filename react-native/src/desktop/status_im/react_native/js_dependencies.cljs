@@ -13,6 +13,7 @@
 (def fetch                  (.-default (js/require "react-native-fetch-polyfill")))
 (def i18n                   (js/require "react-native-i18n"))
 (def react-native-firebase  #js {})
+(def nfc-manager            #js {})
 (def camera                 #js {:default #js {:constants {:Aspect "Portrait"}}})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})

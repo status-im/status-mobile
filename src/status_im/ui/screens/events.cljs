@@ -38,7 +38,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.hardwallet.core :as hardwallet]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -114,7 +115,8 @@
     (handlers-macro/merge-fx cofx
                              {::app-state-change-fx state
                               :db                   (assoc db :app-state state)}
-                             (inbox/request-messages app-coming-from-background?))))
+                             (inbox/request-messages app-coming-from-background?)
+                             (hardwallet/return-back-from-nfc-settings app-coming-from-background?))))
 
 (handlers/register-handler-fx
  :app-state-change

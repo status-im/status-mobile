@@ -4,6 +4,7 @@ import android.support.multidex.MultiDexApplication;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactApplication;
+import community.revteltech.nfc.NfcManagerPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
@@ -57,6 +58,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
+                    new NfcManagerPackage(),
                     new RNFirebasePackage(),
                     new RNFirebaseMessagingPackage(),
                     new RNFirebaseNotificationsPackage(),

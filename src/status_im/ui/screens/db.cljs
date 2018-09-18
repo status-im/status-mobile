@@ -58,7 +58,9 @@
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
              :push-notifications/stored          {}
-             :registry                           {}})
+             :registry                           {}
+             :hardwallet                         {:nfc-supported? false
+                                                  :nfc-enabled?   false}})
 
 ;;;;GLOBAL
 
@@ -173,6 +175,8 @@
 
 (spec/def ::semaphores set?)
 
+(spec/def ::hardwallet map?)
+
 (spec/def ::db (allowed-keys
                 :opt
                 [:contacts/contacts
@@ -248,6 +252,7 @@
                  ::chain
                  ::app-state
                  ::semaphores
+                 ::hardwallet
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id

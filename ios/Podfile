@@ -21,6 +21,8 @@ target 'StatusIm' do
   pod 'RNKeychain', :path => '../node_modules/react-native-keychain'
   pod 'react-native-camera', path: '../node_modules/react-native-camera'
 
+  pod 'react-native-nfc-manager', :path => '../node_modules/react-native-nfc-manager'
+
   target 'StatusImTests' do
     inherit! :search_paths
     # Pods for testing
