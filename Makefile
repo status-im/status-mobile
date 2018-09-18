@@ -3,6 +3,8 @@
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
+GO_VERSION = 0.15.0
+
 OS := $(shell uname)
 
 # This is a code for automatic help generator.
@@ -54,6 +56,7 @@ ifeq ($(OS),Darwin)
 endif
 
 prepare-android: _prepare-mobile ##@prepare Install and prepare Android-specific dependencies
+	wget -q "https://github.com/status-im/status-go/releases/download/v0.15.0/status-go-$(GO_VERSION).aar" -P android/app/libs/
 	cd android && ./gradlew react-native-android:installArchives
 
 prepare-mobile: prepare-android prepare-ios ##@prepare Install and prepare mobile platform specific dependencies

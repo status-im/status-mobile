@@ -6,8 +6,8 @@ def compile(type = 'nightly') {
   if (type == 'release') {
     gradleOpt += "-PreleaseVersion='${common.version()}'"
   }
+  sh 'make prepare-android'
   dir('android') {
-    sh './gradlew react-native-android:installArchives'
     sh "./gradlew assembleRelease ${gradleOpt}"
   }
   def pkg = common.pkgFilename(type, 'apk')

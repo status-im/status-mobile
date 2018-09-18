@@ -54,6 +54,7 @@ pipeline {
           cmn.copyArts('status-react/combined/desktop-macos', osx.number)
           cmn.copyArts('status-react/combined/desktop-linux', nix.number)
         }
+        cmn.copyArts('status-react/combined/mobile-ios', ios.number)
         cmn.copyArts('status-react/combined/mobile-android', dro.number)
         cmn.copyArts('status-react/combined/mobile-android', e2e.number)
         cmn.copyArts('status-react/combined/mobile-ios', ios.number)
