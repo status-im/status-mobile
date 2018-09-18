@@ -5,9 +5,9 @@
 (deftest test-account-update
   (is (= (accounts.update/account-update {} nil)
          {:db                      {:account/account {}},
-          :data-store/save-account {:after-update-event nil}})))
+          :data-store/save-account {}})))
 
 (deftest test-clean-seed-phrase
   (is (= (accounts.update/clean-seed-phrase nil)
          {:db                      {:account/account {:seed-backed-up? true, :mnemonic nil}},
-          :data-store/save-account {:seed-backed-up? true, :mnemonic nil, :after-update-event nil}})))
+          :data-store/save-account {:seed-backed-up? true, :mnemonic nil}})))

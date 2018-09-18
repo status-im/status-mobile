@@ -50,10 +50,6 @@
 
 (defn save-account-tx
   "Returns tx function for saving account"
-  [{:keys [after-update-event] :as account}]
+  [account]
   (fn [realm]
-    (let [account-to-save (-> (serialize-account account)
-                              (dissoc :after-update-event))]
-      (core/create realm :account account-to-save true)
-      (when after-update-event
-        (re-frame/dispatch after-update-event)))))
+    (core/create realm :account (serialize-account account) true)))

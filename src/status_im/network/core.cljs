@@ -72,16 +72,22 @@
    (save cofx nil))
   ([{{:network/keys [manage]
       :account/keys [account] :as db} :db :as cofx}
-    {:keys [data on-success on-failure]}]
-   (let [data            (or data manage)]
+    {:keys [data success-event on-success on-failure]}]
+   (let [data (or data manage)]
      (if (valid-manage? data)
        (let [{:keys [name url chain network-id]} data
-             network      (new-network (:random-id cofx) (:value name) (:value url) (:value chain) (:value network-id))
+             network      (new-network (:random-id cofx)
+                                       (:value name)
+                                       (:value url)
+                                       (:value chain)
+                                       (:value network-id))
              new-networks (merge {(:id network) network} (:networks account))]
          (handlers-macro/merge-fx cofx
                                   {:db (dissoc db :networks/manage)}
                                   (action-handler on-success (:id network))
-                                  (accounts.update/account-update {:networks new-networks})))
+                                  (accounts.update/account-update
+                                   {:networks new-networks}
+                                   success-event)))
        (action-handler on-failure)))))
 
 ;; No edit functionality actually implemented
@@ -95,10 +101,12 @@
       (if (ethereum/network-with-upstream-rpc? current-network)
         (handlers-macro/merge-fx cofx
                                  (action-handler on-success network)
-                                 (accounts.update/account-update {:network      network
-                                                                  :last-updated now}
-                                                                 [:accounts.update.callback/save-settings-success]))
-        (handlers-macro/merge-fx {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
+                                 (accounts.update/account-update
+                                  {:network      network
+                                   :last-updated now}
+                                  [:accounts.update.callback/save-settings-success]))
+        (handlers-macro/merge-fx cofx
+                                 {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
                                                          :content             (i18n/label :t/close-app-content)
                                                          :confirm-button-text (i18n/label :t/close-app-button)
                                                          :on-accept           #(re-frame/dispatch [:network.ui/save-non-rpc-network-pressed network])
@@ -106,13 +114,15 @@
                                  (action-handler on-success network))))
     (action-handler on-failure)))
 
-(defn delete [{{:account/keys [account]} :db} {:keys [network on-success on-failure]}]
+(defn delete [{{:account/keys [account]} :db :as cofx} {:keys [network on-success on-failure]}]
   (let [current-network? (= (:network account) network)]
     (if (or current-network?
             (not (get-in account [:networks network])))
-      (handlers-macro/merge-fx {:ui/show-error (i18n/label :t/delete-network-error)}
+      (handlers-macro/merge-fx cofx
+                               {:ui/show-error (i18n/label :t/delete-network-error)}
                                (action-handler on-failure network))
-      (handlers-macro/merge-fx {:ui/show-confirmation {:title               (i18n/label :t/delete-network-title)
+      (handlers-macro/merge-fx cofx
+                               {:ui/show-confirmation {:title               (i18n/label :t/delete-network-title)
                                                        :content             (i18n/label :t/delete-network-confirmation)
                                                        :confirm-button-text (i18n/label :t/delete)
                                                        :on-accept           #(re-frame/dispatch [:network.ui/remove-network-confirmed network])
@@ -122,24 +132,25 @@
 (defn save-non-rpc-network
   [network {:keys [db now] :as cofx}]
   (handlers-macro/merge-fx cofx
-                           (accounts.update/account-update {:network      network
-                                                            :last-updated now}
-                                                           [:network.callback/non-rpc-network-saved])))
+                           (accounts.update/account-update
+                            {:network      network
+                             :last-updated now}
+                            [:network.callback/non-rpc-network-saved])))
 
 (defn remove-network
   [network {:keys [db now] :as cofx}]
   (let [networks (dissoc (get-in db [:account/account :networks]) network)]
     (handlers-macro/merge-fx cofx
-                             {:dispatch [:navigate-back]}
-                             (accounts.update-update {:networks     networks
-                                                      :last-updated now}))))
+                             (accounts.update/account-update
+                              {:networks     networks
+                               :last-updated now}
+                              [:navigate-back]))))
 
 (defn save-network
   [cofx]
   (save cofx
-        {:data       (get-in cofx [:db :network/manage])
-         :on-success (fn []
-                       {:dispatch [:navigate-back]})}))
+        {:data          (get-in cofx [:db :networks/manage])
+         :success-event [:navigate-back]}))
 
 (defn handle-connection-status-change
   [is-connected? {:keys [db] :as cofx}]

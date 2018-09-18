@@ -72,4 +72,4 @@
                       (utils/show-popup
                        "Ethereum node started incorrectly"
                        "Ethereum node was started with incorrect configuration, application will be stopped to recover from that condition."
-                       #(re-frame/dispatch [:close-application]))))))))
+                       #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))))))

@@ -6,18 +6,16 @@
 
 (defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update.
-  Optionally, one can specify event to be dispatched after fields are persisted."
+  Optionally, one can specify a success-event to be dispatched after fields are persisted."
   ([new-account-fields cofx]
    (account-update new-account-fields nil cofx))
-  ([new-account-fields after-update-event {:keys [db] :as cofx}]
+  ([new-account-fields success-event {:keys [db] :as cofx}]
    (let [current-account (:account/account db)
          new-account     (merge current-account new-account-fields)
          fcm-token       (get-in db [:notifications :fcm-token])
          fx              {:db                 (assoc db :account/account new-account)
-                          :data-store/base-tx [(accounts-store/save-account-tx
-                                                (assoc new-account
-                                                       :after-update-event
-                                                       after-update-event))]}
+                          :data-store/base-tx [{:transaction (accounts-store/save-account-tx new-account)
+                                                :success-event success-event}]}
          {:keys [name photo-path address]} new-account]
      (if (or (:name new-account-fields) (:photo-path new-account-fields))
        (handlers-macro/merge-fx

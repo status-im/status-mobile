@@ -6,7 +6,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers-macro :as handlers-macro]))
 
-(def address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
+(def address-regex #"enode://[a-zA-Z0-9]+:?(.*)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 
 (defn valid-address? [address]
   (re-matches address-regex address))
@@ -51,7 +51,8 @@
 (defn delete [id {{:account/keys [account] :as db} :db :as cofx}]
   (let [network     (:network db)
         new-account (update-in account [:bootnodes network] dissoc id)]
-    (handlers-macro/merge-fx {:db (assoc db :account/account new-account)}
+    (handlers-macro/merge-fx cofx
+                             {:db (assoc db :account/account new-account)}
                              (accounts.update/account-update
                               (select-keys new-account [:bootnodes])
                               (when (custom-bootnodes-in-use? cofx)
