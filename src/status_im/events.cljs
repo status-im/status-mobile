@@ -352,7 +352,7 @@
    (bootnodes/edit bootnode-id cofx)))
 
 (handlers/register-handler-fx
- :bootnodes/qr-code-scanned
+ :bootnodes.callback/qr-code-scanned
  (fn [cofx [_ _ url]]
    (bootnodes/set-bootnodes-from-qr url cofx)))
 
@@ -362,7 +362,7 @@
    (bootnodes/set-input input-key value cofx)))
 
 (handlers/register-handler-fx
- :bootnodes.callback/save-new-bootnode
+ :bootnodes.ui/save-pressed
  [(re-frame/inject-cofx :random-id)]
  (fn [cofx _]
    (bootnodes/upsert cofx)))

@@ -49,7 +49,7 @@
             :style           styles/input
             :container       styles/input-container
             :default-value   name
-            :on-change-text  #(re-frame/dispatch [:bootnode.ui/input-changed :name %])
+            :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
             :auto-focus      true}]
           [text-input/text-input-with-label
            {:label           (i18n/label :t/bootnode-address)
@@ -67,4 +67,4 @@
           {:forward?  true
            :label     (i18n/label :t/save)
            :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:bootnodes.ui/new-button-pressed])}]]]])))
+           :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}]]]])))

@@ -6,7 +6,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers-macro :as handlers-macro]))
 
-(def address-regex #"enode://[a-zA-Z0-9]+:?(.*)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
+(def address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 
 (defn valid-address? [address]
   (re-matches address-regex address))
