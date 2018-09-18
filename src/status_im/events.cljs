@@ -9,6 +9,7 @@
             [status-im.accounts.recover.core :as accounts.recover]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.bootnodes.core :as bootnodes]
+            [status-im.browser.core :as browser]
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
@@ -389,7 +390,7 @@
 (handlers/register-handler-fx
  :browser.bridge.callback/scan-qr-code
  (fn [cofx [_ _ data message]]
-   (browser/scan-qr-code data message)))
+   (browser/scan-qr-code data message cofx)))
 
 ;; qr-scanner module
 

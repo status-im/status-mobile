@@ -3,6 +3,7 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.utils.core :as utils]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.status-bar.view :as status-bar]
@@ -15,13 +16,18 @@
      [status-bar/status-bar]
      [toolbar/simple-toolbar title]]))
 
+(defn dispatch-success [identifier data]
+  (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data data)]))
+
 (defview qr-scanner []
   (letsubs [{identifier :current-qr-context} [:get-screen-params]
-            camera-initialized? (reagent/atom false)]
-
+            camera-initialized? (reagent/atom false)
+            on-barcode-read     #(dispatch-success identifier %)]
     [react/view styles/barcode-scanner-container
      [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) (not @camera-initialized?)]
-     [camera/camera {:onBarCodeRead #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data %)])
+     [camera/camera {:onBarCodeRead (if (:multiple? identifier)
+                                      on-barcode-read
+                                      (utils/wrap-call-once! on-barcode-read))
                      :ref           #(reset! camera-initialized? true)
                      :captureAudio  false
                      :style         styles/barcode-scanner}]

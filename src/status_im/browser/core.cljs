@@ -4,6 +4,6 @@
             [status-im.utils.utils :as utils]))
 
 (defn scan-qr-code
-  [data message]
+  [data message cofx]
   {:send-to-bridge-fx [(assoc message :result data) (get-in cofx [:db :webview-bridge])]
    :dispatch          [:navigate-back]})
