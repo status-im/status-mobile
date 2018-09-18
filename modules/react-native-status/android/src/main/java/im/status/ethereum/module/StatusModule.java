@@ -157,7 +157,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         final String absDataDirPath = pathCombine(absRootDirPath, jsonConfig.getString("DataDir"));
         final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
         final Boolean pfsEnabled = jsonConfig.getBoolean("PFSEnabled");
-        final String noBackupDataDir = absRootDirPath + "/no_backup/ethereum";
+        final String backupDisabledDataDir = absRootDirPath + "/no_backup/ethereum";
 
         final String gethLogFilePath = logEnabled ? prepareLogsFile() : null;
 
@@ -165,7 +165,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         jsonConfig.put("KeyStoreDir", absKeystoreDirPath);
         jsonConfig.put("LogFile", gethLogFilePath);
         jsonConfig.put("PFSEnabled", pfsEnabled);
-        jsonConfig.put("NoBackupDataDir", noBackupDataDir);
+        jsonConfig.put("BackupDisabledDataDir", backupDisabledDataDir);
 
         return jsonConfig.toString();
     }

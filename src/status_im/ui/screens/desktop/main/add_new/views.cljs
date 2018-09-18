@@ -13,6 +13,19 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]))
 
+(def group-chat-section
+  ^{:key "groupchat"}
+  [react/view {:style styles/new-contact-title}
+   [react/text {:style styles/new-contact-title-text
+                :font  :medium}
+    (i18n/label :new-group-chat)]
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-contact-toggle-list])}
+    [react/view
+     {:style (styles/add-contact-button nil)}
+     [react/text
+      {:style (styles/add-contact-button-text nil)}
+      (i18n/label :start-chat)]]]])
+
 (views/defview new-contact []
   (views/letsubs [new-contact-identity [:get :contacts/new-identity]
                   contacts             [:all-added-people-contacts]
@@ -60,6 +73,7 @@
              [react/image {:style  styles/suggested-contact-image
                            :source {:uri (:photo-path c)}}]
              [react/text {:style styles/new-contact-subtitle} (:name c)]]]))]]
+      group-chat-section
       ^{:key "publicchat"}
       [react/view {:style styles/new-contact-title}
        [react/text {:style styles/new-contact-title-text
