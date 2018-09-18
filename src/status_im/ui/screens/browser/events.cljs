@@ -124,12 +124,6 @@
      (nav-update-browser cofx browser (inc history-index)))))
 
 (handlers/register-handler-fx
- :browser.bridge.callback/scan-qr-code
- (fn [cofx [_ _ data message]]
-   {:send-to-bridge-fx [(assoc message :result data) (get-in cofx [:db :webview-bridge])]
-    :dispatch          [:navigate-back]}))
-
-(handlers/register-handler-fx
  :on-bridge-message
  (fn [{:keys [db] :as cofx} [_ message]]
    (let [{:browser/keys [options browsers]} db

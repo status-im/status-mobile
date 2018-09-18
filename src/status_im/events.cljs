@@ -384,6 +384,13 @@
  (fn [cofx [_ log-level]]
    (log-level/show-change-log-level-confirmation log-level cofx)))
 
+;; Browser bridge module
+
+(handlers/register-handler-fx
+ :browser.bridge.callback/scan-qr-code
+ (fn [cofx [_ _ data message]]
+   (browser/scan-qr-code data message)))
+
 ;; qr-scanner module
 
 (handlers/register-handler-fx
