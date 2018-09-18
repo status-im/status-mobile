@@ -48,7 +48,7 @@
 
 (defn- build [id mailserver-name address]
   (assoc (address->mailserver address)
-         :id (keyword (string/replace id "-" ""))
+         :id id
          :name mailserver-name))
 
 (defn connected? [id {:keys [db]}]
@@ -136,7 +136,7 @@
         current-fleet         (fleet/current-fleet db)
         mailserver            (build
                                (or (:value id)
-                                   (string/replace (:random-id cofx) "-" ""))
+                                   (keyword (string/replace (:random-id cofx) "-" "")))
                                (:value name)
                                (:value url))
         current               (connected? (:id mailserver) cofx)]

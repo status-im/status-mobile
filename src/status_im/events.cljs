@@ -265,6 +265,11 @@
    (mailserver/set-url-from-qr url cofx)))
 
 (handlers/register-handler-fx
+ :mailserver.ui/connect-pressed
+ (fn [cofx [_  mailserver-id]]
+   (mailserver/show-connection-confirmation mailserver-id cofx)))
+
+(handlers/register-handler-fx
  :mailserver.ui/connect-confirmed
  (fn [cofx [_ current-fleet mailserver-id]]
    (mailserver/save-settings current-fleet mailserver-id cofx)))

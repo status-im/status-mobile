@@ -232,7 +232,7 @@
         (is (= 1 (count (:data-store/tx actual)))))))
   (testing "existing mailserver"
     (let [cofx {:random-id "random-id"
-                :db {:mailservers/manage {:id   {:value  "a"}
+                :db {:mailservers/manage {:id   {:value  :a}
                                           :name {:value "new-name"}
                                           :url  {:value "enode://new-id:new-password@url:port"}}
 
