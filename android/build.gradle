@@ -22,7 +22,7 @@ allprojects {
         maven { url "$rootDir/../node_modules/react-native/android" }
         maven { url "$rootDir/../modules/react-native-status/android/libs" }
         // for geth
-        flatDir { dirs 'libs', 'android/libs' }
+        flatDir { dirs 'libs' }
         maven { url "https://jitpack.io" }
         google()
     }
