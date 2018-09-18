@@ -159,6 +159,11 @@
           :new              add-new
           :new-chat         new-chat
           :qr-scanner       qr-scanner
+          :new-group new-group
+          :add-participants-toggle-list add-participants-toggle-list
+          :contact-toggle-list contact-toggle-list
+          :group-chat-profile profile.group-chat/group-chat-profile
+
           :new-public-chat  new-public-chat
           :open-dapp        open-dapp
           :dapp-description dapp-description
