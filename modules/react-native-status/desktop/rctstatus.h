@@ -65,8 +65,6 @@ private Q_SLOTS:
     void onStatusGoEvent(QString event);
 
 private:
-    QString statusGoResultError(const char *result);
-
     QScopedPointer<RCTStatusPrivate> d_ptr;
 };
 
