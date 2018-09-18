@@ -4,10 +4,11 @@
             [status-im.utils.utils :as utils]))
 
 (defn scan-qr-code
-  [identifier m {:keys [db]}]
+  [{:keys [modal?] :as identifier} m {:keys [db]}]
   {:db                     (assoc db :qr-codes m)
    :request-permissions-fx {:permissions [:camera]
-                            :on-allowed  #(re-frame/dispatch [:navigate-to-modal :qr-scanner {:current-qr-context identifier}])
+                            :on-allowed  #(re-frame/dispatch [(if modal? :navigate-to :navigate-to-modal)
+                                                              :qr-scanner {:current-qr-context identifier}])
                             :on-denied   (fn []
                                            (utils/set-timeout
                                             #(utils/show-popup (i18n/label :t/error)
