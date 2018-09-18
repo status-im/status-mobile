@@ -1,5 +1,10 @@
 apply plugin: 'com.android.library'
 
+def getStatusGoVersion = { ->
+    version = new File('../STATUS_GO_VERSION').text
+    return version.replaceAll("\\s","")
+}
+
 android {
     compileSdkVersion 26
 
@@ -16,7 +21,9 @@ dependencies {
     implementation 'com.instabug.library:instabug:3+'
     implementation 'status-im:function:0.0.1'
 
-    String statusGoVersion = 'v0.16.0-1-gf3880f8f'
+    // WARNING: If you change this, make sure the GitHub release of the .aar exists.
+    // WARNING: status-go is downloaded in Makefile and has a hardcoded version too.
+    String statusGoVersion = getStatusGoVersion()
     final String statusGoGroup = 'status-im', statusGoName = 'status-go'
 
     // Check if the local status-go jar exists, and compile against that if it does

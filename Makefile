@@ -3,6 +3,14 @@
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
+GITHUB_URL = https://github.com/status-im/status-go/releases/download
+RCTSTATUS_DIR = modules/react-native-status/ios/RCTStatus
+ANDROID_LIBS_DIR = android/app/libs
+STATUS_GO_VER = $(shell cat STATUS_GO_VERSION)
+
+STATUS_GO_IOS_ARCH = $(RCTSTATUS_DIR)/status-go-ios-$(STATUS_GO_VER).zip
+STATUS_GO_DRO_ARCH = $(ANDROID_LIBS_DIR)/status-go-$(STATUS_GO_VER).aar
+
 OS := $(shell uname)
 
 # This is a code for automatic help generator.
@@ -47,13 +55,19 @@ _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare wor
 	scripts/prepare-for-platform.sh mobile
 	npm install
 
-prepare-ios: _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
-	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
+$(STATUS_GO_IOS_ARCH):
+	cd $(RCTSTATUS_DIR) && curl -OL "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-ios-$(STATUS_GO_VER).zip"
+
+$(STATUS_GO_DRO_ARCH):
+	cd $(ANDROID_LIBS_DIR) && curl -OL "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-$(STATUS_GO_VER).aar"
+
+prepare-ios: $(STATUS_GO_IOS_ARCH) _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
+	cd $(RCTSTATUS_DIR) && unzip -q -o status-go-ios-$(STATUS_GO_VER).zip
 ifeq ($(OS),Darwin)
 	cd ios && pod install
 endif
 
-prepare-android: _prepare-mobile ##@prepare Install and prepare Android-specific dependencies
+prepare-android: $(STATUS_GO_DRO_ARCH) _prepare-mobile ##@prepare Install and prepare Android-specific dependencies
 	cd android && ./gradlew react-native-android:installArchives
 
 prepare-mobile: prepare-android prepare-ios ##@prepare Install and prepare mobile platform specific dependencies
