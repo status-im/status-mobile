@@ -68,6 +68,6 @@
   account A messages without this."
   [{:keys [db]}]
   (let [{:transport/keys [chats discovery-filter]} db
-        chat-filters                               (mapv :filter (vals chats))
+        chat-filters                               (keep :filter (vals chats))
         all-filters                                (conj chat-filters discovery-filter)]
     {:shh/remove-filters all-filters}))

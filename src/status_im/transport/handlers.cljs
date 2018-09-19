@@ -21,7 +21,8 @@
   (cond
 
    ;; one-to-one
-    (= chat-id signature)
+    (or (nil? chat-id)
+        (= chat-id signature))
     chat-id
 
    ;; public chat
@@ -30,10 +31,7 @@
 
    ;; group chat
     (get-in cofx [:db :chats chat-id :contacts signature])
-    chat-id
-
-    :else
-    signature))
+    chat-id))
 
 (defn update-last-received-from-inbox
   "Distinguishes messages that are expired from those that are not
@@ -49,10 +47,10 @@
                            transit/deserialize)]
     (when (and sig status-message)
       (try
-        (let [valid-chat-id (validate-chat-id (or chat-id
-                                                  (:chat-id status-message))
-                                              sig
-                                              cofx)]
+        (if-let [valid-chat-id (validate-chat-id (or chat-id
+                                                     (:chat-id status-message))
+                                                 sig
+                                                 cofx)]
           (handlers-macro/merge-fx
            (assoc cofx :js-obj js-message)
            (message/receive status-message valid-chat-id sig timestamp)

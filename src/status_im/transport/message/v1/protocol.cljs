@@ -127,7 +127,7 @@
            cofx))
 
         :public-group-user-message
-        (if config/encryption-enabled?
+        (if config/pfs-encryption-enabled?
           (send-public-message
            chat-id
            (:success-event params)
@@ -136,7 +136,7 @@
           (send params cofx))
 
         :user-message
-        (if config/encryption-enabled?
+        (if config/pfs-encryption-enabled?
           (send-direct-message
            chat-id
            (:success-event params)
@@ -155,7 +155,7 @@
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage
   (send [this chat-id cofx]
-    (if config/encryption-enabled?
+    (if config/pfs-encryption-enabled?
       (send-direct-message
        chat-id
        nil

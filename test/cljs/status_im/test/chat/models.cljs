@@ -214,6 +214,7 @@
 (def test-db
   {:current-public-key "me"
    :chats {"status" {:public? true
+                     :group-chat true
                      :unviewed-messages #{"6" "5" "4" "3" "2" "1"}
                      :message-statuses {"6" {"me" {:message-id "6"
                                                    :chat-id "status"

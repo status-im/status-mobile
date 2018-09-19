@@ -131,7 +131,7 @@
      (clear-history chat-id))))
 
 (defn- send-messages-seen [chat-id message-ids {:keys [db] :as cofx}]
-  (when (not (get-in db [:chats chat-id :public?]))
+  (when (not (get-in db [:chats chat-id :group-chat]))
     (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
 ;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
