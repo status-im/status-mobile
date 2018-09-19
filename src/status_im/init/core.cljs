@@ -168,6 +168,13 @@
            console-contact
            (assoc :contacts/contacts {constants/console-chat-id console-contact}))}))
 
+(defn initialize-wallet [cofx]
+  (when-not platform/desktop?
+    (handlers-macro/merge-fx cofx
+                             (models.wallet/update-wallet)
+                             (transactions/run-update)
+                             (transactions/start-sync))))
+
 (defn login-only-events [address {:keys [db] :as cofx}]
   (when (not= (:view-id db) :create-account)
     (handlers-macro/merge-fx cofx
@@ -191,9 +198,7 @@
                            (chat/process-pending-messages)
                            (browser/initialize-browsers)
                            (browser/initialize-dapp-permissions)
-                           (models.wallet/update-wallet)
-                           (transactions/run-update)
-                           (transactions/start-sync)
+                           (initialize-wallet)
                            (accounts.update/update-sign-in-time)
                            (login-only-events address)))
 
