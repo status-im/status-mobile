@@ -321,6 +321,7 @@
                               (navigation/set-navigator-ref r)
                               (when (and
                                      platform/android?
+                                     (not js/goog.DEBUG)
                                      (not (contains? #{:intro :login} @view-id)))
                                 (navigation/navigate-to @view-id)))
             ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
