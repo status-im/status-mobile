@@ -70,7 +70,7 @@
 (defn on-account-recovered [result password {:keys [db] :as cofx}]
   (let [data (types/json->clj result)]
     (handlers-macro/merge-fx cofx
-                             {:db (assoc-in db [:accounts/recover :processing?] false)}
+                             {:db (dissoc db :accounts/recover)}
                              (validate-recover-result data password))))
 
 (defn recover-account [{:keys [db]}]
@@ -79,13 +79,15 @@
      :accounts.recover/recover-account [(security/mask-data passphrase) password]}))
 
 (defn recover-account-with-checks [{:keys [db] :as cofx}]
-  (let [{:keys [passphrase]} (:accounts/recover db)]
-    (if (mnemonic/status-generated-phrase? passphrase)
-      (recover-account cofx)
-      {:ui/show-confirmation {:title               (i18n/label :recovery-typo-dialog-title)
-                              :content             (i18n/label :recovery-typo-dialog-description)
-                              :confirm-button-text (i18n/label :recovery-confirm-phrase)
-                              :on-accept           #(re-frame/dispatch [:accounts.recover.ui/recover-account-confirmed])}})))
+  (let [{:keys [passphrase processing?]} (:accounts/recover db)]
+    (when-not processing?
+      (if (mnemonic/status-generated-phrase? passphrase)
+        (recover-account cofx)
+        {:ui/show-confirmation
+         {:title               (i18n/label :recovery-typo-dialog-title)
+          :content             (i18n/label :recovery-typo-dialog-description)
+          :confirm-button-text (i18n/label :recovery-confirm-phrase)
+          :on-accept           #(re-frame/dispatch [:accounts.recover.ui/recover-account-confirmed])}}))))
 
 (re-frame/reg-fx
  :accounts.recover/recover-account

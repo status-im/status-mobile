@@ -47,9 +47,10 @@
      :error             (when error (i18n/label error))}]])
 
 (defview recover []
-  (letsubs [{:keys [passphrase password processing passphrase-valid? password-valid?
-                    password-error passphrase-error passphrase-warning processing?]} [:get-recover-account]]
-    (let [valid-form? (and password-valid? passphrase-valid?)]
+  (letsubs [recovered-account [:get-recover-account]]
+    (let [{:keys [passphrase password processing passphrase-valid? password-valid?
+                  password-error passphrase-error passphrase-warning processing?]} recovered-account
+          valid-form? (and password-valid? passphrase-valid?)]
       [react/keyboard-avoiding-view {:style styles/screen-container}
        [status-bar/status-bar]
        [toolbar/toolbar nil toolbar/default-nav-back
@@ -69,6 +70,5 @@
           [components.common/bottom-button
            {:forward?  true
             :label     (i18n/label :t/sign-in)
-            :disabled? (or processing? (not valid-form?))
-            :on-press  (utils.core/wrap-call-once!
-                        #(re-frame/dispatch [:accounts.recover.ui/sign-in-button-pressed]))}]])])))
+            :disabled? (or (not recovered-account) processing? (not valid-form?))
+            :on-press  #(re-frame/dispatch [:accounts.recover.ui/sign-in-button-pressed])}]])])))
