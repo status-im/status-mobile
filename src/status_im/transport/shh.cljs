@@ -60,6 +60,7 @@
 
 (defn handle-response [success-event error-event]
   (fn [err resp]
+    (log/debug "Handling response" err resp)
     (if-not err
       (if success-event
         (re-frame/dispatch (conj success-event resp))
@@ -92,11 +93,13 @@
                            :payload (-> payload
                                         transit/serialize
                                         transport.utils/from-utf8)})]
+     (log/debug "Sending shh group message")
      (.. web3
          -shh
          (sendGroupMessage
           message
-          (handle-response success-event error-event))))))
+          (handle-response success-event error-event)))
+     (log/debug "Sent shh group message"))))
 
 (re-frame/reg-fx
  :shh/send-public-message
