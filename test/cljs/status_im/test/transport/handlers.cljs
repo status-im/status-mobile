@@ -2,7 +2,9 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.transport.handlers :as handlers]))
 
-(def messages #js [{:sig       "0x04325367620ae20dd878dbb39f69f02c567d789dd21af8a88623dc5b529827c2812571c380a2cd8236a2851b8843d6486481166c39debf60a5d30b9099c66213e4"
+(def sig "0x04325367620ae20dd878dbb39f69f02c567d789dd21af8a88623dc5b529827c2812571c380a2cd8236a2851b8843d6486481166c39debf60a5d30b9099c66213e4")
+
+(def messages #js [{:sig       sig
                     :ttl       10
                     :timestamp 1527692015
                     :topic     "0x9c22ff5f"
@@ -17,6 +19,6 @@
   (testing "messages is undefined"
     (is (nil? (handlers/receive-whisper-messages {:db {}} [nil nil js/undefined nil]))))
   (testing "happy path"
-    (let [actual (handlers/receive-whisper-messages {:db {}} [nil nil messages "1"])]
+    (let [actual (handlers/receive-whisper-messages {:db {}} [nil nil messages sig])]
       (testing "it add an fx for the message"
         (is (:chat-received-message/add-fx actual))))))

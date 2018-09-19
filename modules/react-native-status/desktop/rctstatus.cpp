@@ -113,7 +113,7 @@ void RCTStatus::startNode(QString configString) {
 void RCTStatus::stopNode() {
     qDebug() << "call of RCTStatus::stopNode";
     const char* result = StopNode();
-    qDebug() << "RCTStatus::stopNode StopNode result: " << result;
+    qDebug() << "RCTStatus::stopNode StopNode result: " << statusGoResultError(result);
 }
 
 
@@ -256,4 +256,16 @@ void RCTStatus::emitStatusGoEvent(QString event) {
 void RCTStatus::onStatusGoEvent(QString event) {
     qDebug() << "call of RCTStatus::onStatusGoEvent ... event: " << event.toUtf8().data();
     RCTStatusPrivate::bridge->eventDispatcher()->sendDeviceEvent("gethEvent", QVariantMap{{"jsonEvent", event.toUtf8().data()}});
+}
+
+QString RCTStatus::statusGoResultError(const char* result)
+{
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(QString(result).toUtf8(), &jsonError);
+    if (jsonError.error != QJsonParseError::NoError){
+        qDebug() << jsonError.errorString();
+        return QString("");
+    }
+
+    return QString("Error: %1").arg(jsonDoc.toVariant().toMap().value("error").toString());
 }
