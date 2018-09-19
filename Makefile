@@ -3,6 +3,7 @@
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
+GITHUB_URL = https://github.com/status-im/status-go/releases/download
 GO_VERSION = 0.15.0
 
 OS := $(shell uname)
@@ -50,13 +51,15 @@ _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare wor
 	npm install
 
 prepare-ios: _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
-	mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
+	cd modules/react-native-status/ios/RCTStatus/ && \
+		curl -sOL "$(GITHUB_URL)/v$(GO_VERSION)/status-go-ios-$(GO_VERSION).zip" && \
+		unzip -q status-go-ios-$(GO_VERSION).zip
 ifeq ($(OS),Darwin)
 	cd ios && pod install
 endif
 
 prepare-android: _prepare-mobile ##@prepare Install and prepare Android-specific dependencies
-	wget -q "https://github.com/status-im/status-go/releases/download/v0.15.0/status-go-$(GO_VERSION).aar" -P android/app/libs/
+	wget -q "$(GITHUB_URL)/v0.15.0/status-go-$(GO_VERSION).aar" -P android/app/libs/
 	cd android && ./gradlew react-native-android:installArchives
 
 prepare-mobile: prepare-android prepare-ios ##@prepare Install and prepare mobile platform specific dependencies

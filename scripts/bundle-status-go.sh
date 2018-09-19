@@ -40,8 +40,8 @@ for platform in "$@"; do
         # > (cd status-go && find . -iname "Statusgo.framework")
         # ./build/bin/statusgo-ios-9.3-framework/Statusgo.framework
         #
-        # Normally this is installed by Maven via Artifactory in this step
-        # mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
+        # You can get this by running:
+        # make prepare-{ios,android}
         #
         # Locally you can see it here:
         # > (cd status-react && find . -iname "Statusgo.framework")
