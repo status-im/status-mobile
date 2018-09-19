@@ -2,6 +2,7 @@
  status-im.transport.message.v1.protocol
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
+            [taoensso.timbre :as log]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.config :as config]
             [status-im.chat.core :as chat]
@@ -113,6 +114,7 @@
 
         :group-user-message
         (when config/group-chats-enabled?
+          (log/debug "Sending group message")
           (send-group-message
            chat-id
            (:success-event params)
