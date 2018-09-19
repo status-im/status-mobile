@@ -109,18 +109,27 @@ pipeline {
       } }
     }
     stage('Publish') {
-      when { expression { cmn.getBuildType() == 'nightly' } }
-      steps {
-        build(
-          job: 'misc/status-im.github.io-update_env',
-          parameters: [
-            [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
-            [name: 'IOS_URL', value: ipaUrl, $class: 'StringParameterValue'],
-            [name: 'DMG_URL', value: dmgUrl, $class: 'StringParameterValue'],
-            [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue']
-          ]
-        )
-      }
+      steps { script {
+        switch (cmn.getBuildType()) {
+          case 'nightly':
+            build(
+              job: 'misc/status-im.github.io-update_env',
+              parameters: [
+                [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
+                [name: 'IOS_URL', value: ipaUrl, $class: 'StringParameterValue'],
+                [name: 'DMG_URL', value: dmgUrl, $class: 'StringParameterValue'],
+                [name: 'NIX_URL', value: appUrl, $class: 'StringParameterValue']
+              ]
+            ); break
+          case 'release':
+            build(
+              job: 'misc/cn.status.im',
+              parameters: [
+                [name: 'APK_URL', value: apkUrl, $class: 'StringParameterValue'],
+              ]
+            ); break
+        }
+      } }
     }
     stage('Run e2e') {
       when { expression { cmn.getBuildType() == 'nightly' } }
