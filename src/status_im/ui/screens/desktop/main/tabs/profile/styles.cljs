@@ -31,6 +31,11 @@
    :align-items     :center
    :flex            1})
 
+(def profile-edit
+  {:margin-top         24
+   :padding-horizontal 24
+   :align-items        :flex-end})
+
 (def profile-photo
   {:border-radius 100
    :width         100
@@ -38,6 +43,13 @@
 
 (def profile-user-name
   {:font-size   18})
+
+(def profile-editing-user-name
+  (merge profile-user-name
+         {:height           20
+          :width            80
+          :background-color colors/gray-lighter
+          :align-items      :flex-end}))
 
 (def share-contact-code
   {:flex-direction    :row

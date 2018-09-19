@@ -15,14 +15,22 @@
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
             [status-im.ui.screens.profile.user.views :as profile]))
 
-(defn profile-badge [{:keys [name photo-path]}]
+(defn profile-badge [{:keys [name photo-path]} editing?]
   [react/view styles/profile-badge
    [react/image {:source {:uri photo-path}
                  :style  styles/profile-photo}]
-   [react/text {:style           styles/profile-user-name
-                :font           :medium
-                :number-of-lines 1}
-    name]])
+   (if editing?
+     [react/text-input {:default-value name
+                        :placeholder   ""
+                        :auto-focus    true
+                        :font          :medium
+                        :style         styles/profile-editing-user-name
+                        :on-change     #(re-frame/dispatch [:my-profile/update-name
+                                                            (.-text (.-nativeEvent %))])}]
+     [react/text {:style           styles/profile-user-name
+                  :font           :medium
+                  :number-of-lines 1}
+      name])])
 
 (views/defview copied-tooltip [opacity]
   (views/letsubs []
@@ -85,22 +93,30 @@
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
 (views/defview profile [user]
-  (views/letsubs [current-view-id [:get :view-id]]
+  (views/letsubs [current-view-id [:get :view-id]
+                  editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open? (= current-view-id :advanced-settings)]
-      [react/view styles/profile-view
-       [profile-badge user]
-       [share-contact-code]
-       [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
-                                   :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
-        [react/view {:style styles/adv-settings}
-         [react/text {:style (styles/profile-row-text colors/black)
-                      :font  (if adv-settings-open? :medium :default)}
-          (i18n/label :t/advanced-settings)]
-         [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
-       [react/view {:style (styles/profile-row false)}
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
-         [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-        [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]])))
+      [react/view
+       [react/view {:style styles/profile-edit}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch (if editing?
+                                                                    [:my-profile/save-profile]
+                                                                    [:my-profile/start-editing-profile]))}
+         [react/text {:style {:color colors/blue}}
+          (i18n/label (if editing? :t/done :t/edit))]]]
+       [react/view styles/profile-view
+        [profile-badge user editing?]
+        [share-contact-code]
+        [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
+                                    :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
+         [react/view {:style styles/adv-settings}
+          [react/text {:style (styles/profile-row-text colors/black)
+                       :font  (if adv-settings-open? :medium :default)}
+           (i18n/label :t/advanced-settings)]
+          [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
+        [react/view {:style (styles/profile-row false)}
+         [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
+          [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
+         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]]])))
 
 (views/defview profile-data []
   (views/letsubs
