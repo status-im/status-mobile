@@ -95,7 +95,7 @@
 
 (defn step-back [step cofx]
   (case step
-    :enter-password (navigation/navigate-back (:db cofx))
+    :enter-password (navigation/navigate-back cofx)
     :confirm-password (reset-account-creation cofx)))
 
 ;;;; COFX
