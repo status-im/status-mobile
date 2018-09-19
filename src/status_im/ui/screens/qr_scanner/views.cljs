@@ -21,23 +21,23 @@
 
 (defview qr-scanner []
   (letsubs [{identifier :current-qr-context} [:get-screen-params]
-            camera-initialized? (reagent/atom false)
-            on-barcode-read     #(dispatch-success identifier %)]
-    [react/view styles/barcode-scanner-container
-     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) (not @camera-initialized?)]
-     [camera/camera {:onBarCodeRead (if (:multiple? identifier)
-                                      on-barcode-read
-                                      (utils/wrap-call-once! on-barcode-read))
-                     :ref           #(reset! camera-initialized? true)
-                     :captureAudio  false
-                     :style         styles/barcode-scanner}]
-     [react/view styles/rectangle-container
-      [react/view styles/rectangle
-       [react/image {:source {:uri :corner_left_top}
-                     :style  styles/corner-left-top}]
-       [react/image {:source {:uri :corner_right_top}
-                     :style  styles/corner-right-top}]
-       [react/image {:source {:uri :corner_right_bottom}
-                     :style  styles/corner-right-bottom}]
-       [react/image {:source {:uri :corner_left_bottom}
-                     :style  styles/corner-left-bottom}]]]]))
+            camera-initialized? (reagent/atom false)]
+    (let [on-barcode-read #(dispatch-success identifier %)]
+      [react/view styles/barcode-scanner-container
+       [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) (not @camera-initialized?)]
+       [camera/camera {:onBarCodeRead (if (:multiple? identifier)
+                                        on-barcode-read
+                                        (utils/wrap-call-once! on-barcode-read))
+                       :ref           #(reset! camera-initialized? true)
+                       :captureAudio  false
+                       :style         styles/barcode-scanner}]
+       [react/view styles/rectangle-container
+        [react/view styles/rectangle
+         [react/image {:source {:uri :corner_left_top}
+                       :style  styles/corner-left-top}]
+         [react/image {:source {:uri :corner_right_top}
+                       :style  styles/corner-right-top}]
+         [react/image {:source {:uri :corner_right_bottom}
+                       :style  styles/corner-right-bottom}]
+         [react/image {:source {:uri :corner_left_bottom}
+                       :style  styles/corner-left-bottom}]]]])))
