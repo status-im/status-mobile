@@ -54,11 +54,12 @@
 
 (handlers/register-handler-fx
  :open-contact-toggle-list
- (fn [{:keys [db]} _]
-   {:db (-> (assoc db
-                   :group/selected-contacts #{}
-                   :new-chat-name "")
-            (navigation/navigate-to :contact-toggle-list))}))
+ (fn [{:keys [db] :as cofx} _]
+   (handlers-macro/merge-fx cofx
+                            {:db (assoc db
+                                        :group/selected-contacts #{}
+                                        :new-chat-name "")}
+                            (navigation/navigate-to-cofx :contact-toggle-list nil))))
 
 (handlers/register-handler-fx
  :open-chat-with-contact

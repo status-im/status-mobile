@@ -31,10 +31,10 @@
 
 (handlers/register-handler-fx
  :extension/stage
- (fn [{:keys [db]} [_ extension-data]]
-   {:db (-> db
-            (assoc :staged-extension extension-data)
-            (navigation/navigate-to :show-extension))}))
+ (fn [{:keys [db] :as cofx} [_ extension-data]]
+   (handlers-macro/merge-fx cofx
+                            {:db (assoc db :staged-extension extension-data)}
+                            (navigation/navigate-to-cofx :show-extension nil))))
 
 (handlers/register-handler-fx
  :extension/show

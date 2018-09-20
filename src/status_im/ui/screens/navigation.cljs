@@ -68,14 +68,6 @@
                            (:routeName (get actions index)))
    ::navigate-reset config})
 
-(defn navigate-to
-  "DEPRECATED, use navigate-to-cofx above.
-  Navigates to particular view"
-  ([db go-to-view-id]
-   (navigate-to db go-to-view-id nil))
-  ([db go-to-view-id screen-params]
-   (:db (navigate-to-cofx go-to-view-id screen-params {:db db}))))
-
 (def unload-data-interceptor
   (re-frame/->interceptor
    :id unload-data-interceptor

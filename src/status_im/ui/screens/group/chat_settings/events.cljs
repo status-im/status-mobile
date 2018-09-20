@@ -11,11 +11,12 @@
 
 (handlers/register-handler-fx
  :show-group-chat-profile
- (fn [{:keys [db]} [_ chat-id]]
-   {:db (-> db
-            (assoc :new-chat-name (get-in db [:chats chat-id :name])
-                   :group/group-type :chat-group)
-            (navigation/navigate-to :group-chat-profile))}))
+ (fn [{:keys [db] :as cofx} [_ chat-id]]
+   (handlers-macro/merge-fx cofx
+                            {:db (assoc db
+                                        :new-chat-name (get-in db [:chats chat-id :name])
+                                        :group/group-type :chat-group)}
+                            (navigation/navigate-to-cofx :group-chat-profile nil))))
 
 (handlers/register-handler-fx
  :add-new-group-chat-participants
