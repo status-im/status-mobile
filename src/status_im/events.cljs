@@ -1,6 +1,5 @@
 (ns status-im.events
-  (:require status-im.ui.screens.accounts.recover.navigation
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.accounts.core :as accounts]
             [status-im.accounts.create.core :as accounts.create]
             [status-im.accounts.login.core :as accounts.login]
@@ -147,6 +146,11 @@
    (accounts.create/navigate-to-authentication-method cofx)))
 
 ;; accounts recover module
+
+(handlers/register-handler-fx
+ :accounts.recover.ui/recover-account-button-pressed
+ (fn [cofx _]
+   (accounts.recover/navigate-to-recover-account-screen cofx)))
 
 (handlers/register-handler-fx
  :accounts.recover.ui/passphrase-input-changed

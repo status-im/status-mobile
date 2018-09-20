@@ -23,7 +23,7 @@
                                :on-press     #(re-frame/dispatch [:accounts.create.ui/create-new-account-button-pressed])
                                :label        (i18n/label :t/create-account)}]
     [react/view styles/bottom-button-container
-     [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
+     [components.common/button {:on-press    #(re-frame/dispatch [:accounts.recover.ui/recover-account-button-pressed])
                                 :label       (i18n/label :t/already-have-account)
                                 :background? false}]]
     [privacy-policy/privacy-policy-button]]])

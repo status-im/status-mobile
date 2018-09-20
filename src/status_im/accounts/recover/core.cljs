@@ -5,6 +5,7 @@
             [status-im.accounts.db :as db]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.mnemonic :as mnemonic]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.identicon :as identicon]
@@ -88,6 +89,11 @@
           :content             (i18n/label :recovery-typo-dialog-description)
           :confirm-button-text (i18n/label :recovery-confirm-phrase)
           :on-accept           #(re-frame/dispatch [:accounts.recover.ui/recover-account-confirmed])}}))))
+
+(defn navigate-to-recover-account-screen [{:keys [db] :as cofx}]
+  (handlers-macro/merge-fx cofx
+                           {:db (dissoc db :accounts/recover)}
+                           (navigation/navigate-to-cofx :recover nil)))
 
 (re-frame/reg-fx
  :accounts.recover/recover-account
