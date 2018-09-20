@@ -53,7 +53,7 @@
 
 (handlers/register-handler-fx
  ::discovery-filter-added
- (fn [{:keys [db]} [filter]]
+ (fn [{:keys [db]} [_ filter]]
    {:db (assoc db :transport/discovery-filter filter)}))
 
 (re-frame/reg-fx
