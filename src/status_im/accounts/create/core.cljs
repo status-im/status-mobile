@@ -99,10 +99,18 @@
     :enter-password (navigation/navigate-back cofx)
     :confirm-password (reset-account-creation cofx)))
 
+(defn navigate-to-create-account-screen [{:keys [db] :as cofx}]
+  (handlers-macro/merge-fx cofx
+                           {:db (update db :accounts/create
+                                        #(-> %
+                                             (assoc :step :enter-password)
+                                             (dissoc :password :password-confirm :name :error)))}
+                           (navigation/navigate-to-cofx :create-account nil)))
+
 (defn navigate-to-authentication-method [{:keys [db] :as cofx}]
   (if (hardwallet/hardwallet-supported? db)
     (navigation/navigate-to-cofx :hardwallet/authentication-method nil cofx)
-    (navigation/navigate-to-cofx :create-account nil cofx)))
+    (navigate-to-create-account-screen cofx)))
 
 ;;;; COFX
 

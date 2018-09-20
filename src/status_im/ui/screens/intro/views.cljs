@@ -20,7 +20,7 @@
                       :key   :intro-text-description}]]
    [react/view styles/buttons-container
     [components.common/button {:button-style {:flex-direction :row}
-                               :on-press     #(re-frame/dispatch [:navigate-to :create-account])
+                               :on-press     #(re-frame/dispatch [:accounts.create.ui/create-new-account-button-pressed])
                                :label        (i18n/label :t/create-account)}]
     [react/view styles/bottom-button-container
      [components.common/button {:on-press    #(re-frame/dispatch [:navigate-to :recover])
