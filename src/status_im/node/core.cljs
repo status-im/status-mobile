@@ -4,6 +4,7 @@
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.types :as types]
+            [status-im.utils.platform :as utils.platform]
             [taoensso.timbre :as log]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
@@ -65,6 +66,7 @@
         current-fleet-key (fleet/current-fleet db address)
         current-fleet (get fleet/fleets current-fleet-key)
         {:keys [network
+                installation-id
                 settings
                 bootnodes
                 networks]} (get accounts address)
@@ -85,11 +87,15 @@
                              :StaticNodes        (pick-nodes 2 (vals (:whisper current-fleet)))})
 
       :always
-      (assoc :WhisperConfig {:Enabled true
-                             :LightClient true
-                             :MinimumPoW 0.001
-                             :EnableNTPSync true}
-             :RequireTopics (get-topics network))
+      (assoc :WhisperConfig         {:Enabled true
+                                     :LightClient true
+                                     :MinimumPoW 0.001
+                                     :EnableNTPSync true}
+             :RequireTopics         (get-topics network)
+             :BackupDisabledDataDir (utils.platform/no-backup-directory)
+             :InstallationID        installation-id
+             :PFSEnabled            (or config/pfs-encryption-enabled?
+                                        config/group-chats-enabled?))
 
       (and
        config/bootnodes-settings-enabled?
@@ -102,6 +108,7 @@
 (defn get-node-config [db network]
   (-> (get-in (:networks/networks db) [network :config])
       (get-base-node-config)
+      (assoc :PFSEnabled false)
       (assoc :NoDiscovery true)
       (add-log-level config/log-level-status-go)))
 

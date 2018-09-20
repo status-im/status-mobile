@@ -26,3 +26,9 @@
     android? android/platform-specific
     ios? ios/platform-specific
     :else (desktop/platform-specific (if platform (.-isMacOs platform) true))))
+
+(defn no-backup-directory []
+  (cond
+    android? (str (.-DocumentDirectoryPath rn-dependencies/fs)
+                  "/../no_backup")
+    ios?          (.-LibraryDirectoryPath rn-dependencies/fs)))

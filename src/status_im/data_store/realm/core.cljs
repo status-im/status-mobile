@@ -55,14 +55,9 @@
   (.-defaultPath rn-dependencies/realm))
 
 (def realm-dir
-  (cond
-    utils.platform/android? (str
-                             (.-DocumentDirectoryPath rn-dependencies/fs)
-                             "/../no_backup/realm/")
-    utils.platform/ios? (str
-                         (.-LibraryDirectoryPath rn-dependencies/fs)
-                         "/realm/")
-    :else (.-defaultPath rn-dependencies/realm)))
+  (if-let [path (utils.platform/no-backup-directory)]
+    (str path "/realm/")
+    (.-defaultPath rn-dependencies/realm)))
 
 (def old-realm-dir
   (string/replace old-base-realm-path #"default\.realm$" ""))
