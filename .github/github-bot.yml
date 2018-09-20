@@ -13,3 +13,8 @@ automated-tests:
 
 github-team:
   slug: 'clojure'
+
+prchecklist:
+  title: Pull Request Checklist
+  checklist:
+    - 'Have you updated the documentation, if impacted (e.g. [docs.status.im](https://docs.status.im/docs/build_status.html))?'
