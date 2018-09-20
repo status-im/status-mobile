@@ -1,19 +1,22 @@
 (ns status-im.ui.screens.add-new.new-public-chat.view
-  (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
+  (:require [cljs.spec.alpha :as spec]
+            [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.add-new.styles :as add-new.styles]
-            [status-im.ui.screens.add-new.new-public-chat.styles :as styles]
-            [status-im.ui.screens.add-new.new-public-chat.db :as v]
-            [status-im.ui.components.text-input.view :as text-input.view]
-            status-im.utils.db
             [status-im.ui.components.styles :as common.styles]
-            [cljs.spec.alpha :as spec]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [status-im.ui.components.text-input.view :as text-input.view]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.screens.add-new.new-public-chat.db :as v]
+            [status-im.ui.screens.add-new.new-public-chat.styles :as styles]
+            [status-im.ui.screens.add-new.styles :as add-new.styles]
+            status-im.utils.db
+            [status-im.utils.types :as types])
+  (:require-macros
+   [status-im.utils.slurp :refer [slurp]]
+   [status-im.utils.views :as views]))
 
 (defn- chat-name-input [topic error]
   [react/view
@@ -54,7 +57,7 @@
      [list/item-icon {:icon      :icons/forward
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats ["status" "status 中文" "status 日本語" "status 한국어" "status по-русски" "status español" "status فارسی" "cryptocurrency" "cryptostrikers" "dapps" "ethereum" "openbounty"])
+(def default-public-chats (types/json->clj (slurp "resources/default_public_chats.json")))
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
