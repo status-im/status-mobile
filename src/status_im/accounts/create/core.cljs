@@ -11,6 +11,7 @@
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
+            [status-im.utils.random :as random]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.hex :as utils.hex]
@@ -48,9 +49,13 @@
     {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
-(defn on-account-created [{:keys [pubkey address mnemonic]} password seed-backed-up {:keys [signing-phrase status db] :as cofx}]
+(defn on-account-created [{:keys [pubkey address mnemonic]} password seed-backed-up {:keys [random-guid-generator
+                                                                                            signing-phrase
+                                                                                            status
+                                                                                            db] :as cofx}]
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key      pubkey
+                            :installation-id (random-guid-generator)
                             :address         normalized-address
                             :name            (gfycat/generate-gfy pubkey)
                             :status          status
