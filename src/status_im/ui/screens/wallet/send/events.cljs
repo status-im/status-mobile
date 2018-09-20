@@ -158,7 +158,7 @@
  :send-transaction-message
  (concat models.message/send-interceptors
          navigation/navigation-interceptors)
- (fn [{:keys [db] :as cofx} [chat-id params]]
+ (fn [{:keys [db] :as cofx} [_ chat-id params]]
    ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
    ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
    (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]

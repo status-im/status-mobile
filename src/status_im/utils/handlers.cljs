@@ -102,11 +102,6 @@
    (when js/goog.DEBUG check-spec)
    (re-frame/inject-cofx :now)])
 
-(defn register-handler-db
-  ([name handler] (register-handler-db name nil handler))
-  ([name interceptors handler]
-   (reg-event-db name [default-interceptors interceptors] handler)))
-
 (defn register-handler-fx
   ([name handler] (register-handler-fx name nil handler))
   ([name interceptors handler]

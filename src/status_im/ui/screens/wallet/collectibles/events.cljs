@@ -49,24 +49,20 @@
 
 (handlers/register-handler-fx
  :load-collectible-success
- [re-frame/trim-v]
- (fn [{db :db} [symbol collectibles]]
+ (fn [{db :db} [_ symbol collectibles]]
    {:db (update-in db [:collectibles symbol] merge collectibles)}))
 
 (handlers/register-handler-fx
  :load-collectibles-failure
- [re-frame/trim-v]
- (fn [{db :db} [reason]]
+ (fn [{db :db} [_ reason]]
    {:db (update-in db [:collectibles symbol :errors] merge reason)}))
 
 (handlers/register-handler-fx
  :load-collectible-failure
- [re-frame/trim-v]
  (fn [{db :db} [_]]
    {:db db}))
 
 (handlers/register-handler-fx
  :open-collectible-in-browser
- [re-frame/trim-v]
- (fn [_ [data]]
+ (fn [_ [_ data]]
    {:dispatch [:open-url-in-browser data]}))

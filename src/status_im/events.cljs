@@ -461,7 +461,7 @@
 
 ;; web3 module
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :web3.callback/get-syncing-success
  (fn [cofx [_ error sync]]
    (protocol/update-sync-state cofx error sync)))
@@ -478,10 +478,10 @@
  (fn [cofx _]
    (accounts.login/user-login cofx)))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :notifications.callback/get-fcm-token-success
- (fn [db [_ fcm-token]]
-   (assoc-in db [:notifications :fcm-token] fcm-token)))
+ (fn [{:keys [db]} [_ fcm-token]]
+   {:db (assoc-in db [:notifications :fcm-token] fcm-token)}))
 
 (handlers/register-handler-fx
  :notifications.callback/request-notifications-permissions-granted

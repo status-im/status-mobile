@@ -155,8 +155,7 @@
 
 (handlers/register-handler-fx
  :load-commands
- [re-frame/trim-v]
- (fn [cofx [commands]]
+ (fn [cofx [_ commands]]
    (load-commands commands cofx)))
 
 (defn chat-commands

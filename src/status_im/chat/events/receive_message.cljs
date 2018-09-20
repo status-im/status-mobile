@@ -29,6 +29,5 @@
 (handlers/register-handler-fx
  :chat-received-message/add
  message-model/receive-interceptors
- (fn [cofx [messages]]
+ (fn [cofx [_ messages]]
    (message-model/receive-many (filter-messages messages cofx) cofx)))
-

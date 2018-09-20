@@ -26,8 +26,8 @@
 
 (handlers/register-handler-fx
  :process-http-request
- [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [cofx [url type data]]
+ [(re-frame/inject-cofx :random-id)]
+ (fn [cofx [_ url type data]]
    (try
      (models.dev-server/process-request! {:cofx cofx
                                           :url  (rest (string/split url "/"))

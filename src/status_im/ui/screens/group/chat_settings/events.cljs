@@ -11,8 +11,7 @@
 
 (handlers/register-handler-fx
  :show-group-chat-profile
- [re-frame/trim-v]
- (fn [{:keys [db]} [chat-id]]
+ (fn [{:keys [db]} [_ chat-id]]
    {:db (-> db
             (assoc :new-chat-name (get-in db [:chats chat-id :name])
                    :group/group-type :chat-group)
@@ -37,8 +36,8 @@
 
 (handlers/register-handler-fx
  :remove-group-chat-participants
- [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [{{:keys [current-chat-id] :as db} :db now :now message-id :random-id :as cofx} [removed-participants]]
+ [(re-frame/inject-cofx :random-id)]
+ (fn [{{:keys [current-chat-id] :as db} :db now :now message-id :random-id :as cofx} [_ removed-participants]]
    (let [participants               (remove removed-participants (get-in db [:chats current-chat-id :contacts]))
          contacts                   (:contacts/contacts db)
          removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]

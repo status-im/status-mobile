@@ -52,13 +52,13 @@
                                 fx
                                 (add-contact-and-open-chat contact-identity))))))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :open-contact-toggle-list
- (fn [db _]
-   (-> (assoc db
-              :group/selected-contacts #{}
-              :new-chat-name "")
-       (navigation/navigate-to :contact-toggle-list))))
+ (fn [{:keys [db]} _]
+   {:db (-> (assoc db
+                   :group/selected-contacts #{}
+                   :new-chat-name "")
+            (navigation/navigate-to :contact-toggle-list))}))
 
 (handlers/register-handler-fx
  :open-chat-with-contact

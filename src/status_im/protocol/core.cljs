@@ -9,7 +9,7 @@
             [status-im.utils.utils :as utils]))
 
 (defn update-sync-state
-  [{:keys [sync-state sync-data] :as db} error sync]
+  [{{:keys [sync-state sync-data] :as db} :db} error sync]
   (let [{:keys [highestBlock currentBlock] :as state}
         (js->clj sync :keywordize-keys true)
         syncing?  (> (- highestBlock currentBlock) constants/blocks-per-hour)
@@ -22,11 +22,11 @@
                                   (= sync-state :pending))
                             :done
                             :synced))]
-    (cond-> db
-      (and (not= sync-data state) (= :in-progress new-state))
-      (assoc :sync-data state)
-      (not= sync-state new-state)
-      (assoc :sync-state new-state))))
+    {:db (cond-> db
+           (and (not= sync-data state) (= :in-progress new-state))
+           (assoc :sync-data state)
+           (not= sync-state new-state)
+           (assoc :sync-state new-state))}))
 
 (defn check-sync-state
   [{{:keys [web3] :as db} :db :as cofx}]

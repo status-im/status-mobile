@@ -58,6 +58,8 @@ These guidelines make db.cljs namespaces the place to go when making changes to 
 # Events
 
 - all events must be defined in the single `status-im.events` namespace which can be considered as an index of everything going on in the app
+- events must always be declared with `register-handler-fx`, no `register-handler-db`
+- events must never use the `trim-v` interceptor
 - events must only contain a function call defined in a module
 ```clojure
 (handlers/register-handler-fx

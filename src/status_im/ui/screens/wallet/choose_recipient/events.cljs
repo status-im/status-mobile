@@ -8,12 +8,12 @@
             [status-im.utils.ethereum.ens :as ens]
             [re-frame.core :as re-frame]))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :wallet/toggle-flashlight
- (fn [db]
+ (fn [{:keys [db]}]
    (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
          toggled-state (if (= :on flashlight-state) :off :on)]
-     (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
+     {:db (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state)})))
 
 (defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity from-chat?]}]
   {:pre [(not (nil? address))]}

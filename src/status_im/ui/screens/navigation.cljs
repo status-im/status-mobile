@@ -129,11 +129,11 @@
  (fn [cofx [_ & [go-to-view-id screen-params]]]
    (navigate-to-cofx go-to-view-id screen-params cofx)))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :navigate-to-modal
  navigation-interceptors
- (fn [db [_ modal-view]]
-   (assoc db :modal modal-view)))
+ (fn [{:keys [db]} [_ modal-view]]
+   {:db (assoc db :modal modal-view)}))
 
 (handlers/register-handler-fx
  :navigation-replace

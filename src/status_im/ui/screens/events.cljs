@@ -100,15 +100,15 @@
  (fn [state]
    (status/app-state-change state)))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :set
- (fn [db [_ k v]]
-   (assoc db k v)))
+ (fn [{:keys [db]} [_ k v]]
+   {:db (assoc db k v)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :set-in
- (fn [db [_ path v]]
-   (assoc-in db path v)))
+ (fn [{:keys [db]} [_ path v]]
+   {:db (assoc-in db path v)}))
 
 (defn app-state-change [state {:keys [db] :as cofx}]
   (let [app-coming-from-background? (= state "active")]
@@ -128,22 +128,22 @@
  (fn [_ [_ options]]
    {:request-permissions-fx options}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :set-swipe-position
- (fn [db [_ item-id value]]
-   (assoc-in db [:chat-animations item-id :delete-swiped] value)))
+ (fn [{:keys [db]} [_ item-id value]]
+   {:db (assoc-in db [:chat-animations item-id :delete-swiped] value)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :show-tab-bar
- (fn [db _]
-   (assoc db :tab-bar-visible? true)))
+ (fn [{:keys [db]} _]
+   {:db (assoc db :tab-bar-visible? true)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :hide-tab-bar
- (fn [db _]
-   (assoc db :tab-bar-visible? false)))
+ (fn [{:keys [db]} _]
+   {:db (assoc db :tab-bar-visible? false)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :update-window-dimensions
- (fn [db [_ dimensions]]
-   (assoc db :dimensions/window (dimensions/window dimensions))))
+ (fn [{:keys [db]} [_ dimensions]]
+   {:db (assoc db :dimensions/window (dimensions/window dimensions))}))

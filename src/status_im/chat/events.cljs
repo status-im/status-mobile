@@ -30,30 +30,31 @@
 
 ;;;; Handlers
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :set-chat-ui-props
- [re-frame/trim-v]
- (fn [db [kvs]]
-   (models/set-chat-ui-props db kvs)))
+ (fn [{:keys [db]} [_ kvs]]
+   {:db (models/set-chat-ui-props db kvs)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
+ :toggle-chat-ui-props
+ (fn [{:keys [db]} [_ ui-element]]
+   {:db (models/toggle-chat-ui-prop db ui-element)}))
+
+(handlers/register-handler-fx
  :show-message-details
- [re-frame/trim-v]
- (fn [db [details]]
-   (models/set-chat-ui-props db {:show-bottom-info? true
-                                 :bottom-info       details})))
+ (fn [{:keys [db]} [_ details]]
+   {:db (models/set-chat-ui-props db {:show-bottom-info? true
+                                      :bottom-info       details})}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :show-message-options
- [re-frame/trim-v]
- (fn [db [options]]
-   (models/set-chat-ui-props db {:show-message-options? true
-                                 :message-options       options})))
+ (fn [{:keys [db]} [_ options]]
+   {:db (models/set-chat-ui-props db {:show-message-options? true
+                                      :message-options       options})}))
 
 (handlers/register-handler-fx
  :update-message-status
- [re-frame/trim-v]
- (fn [{:keys [db]} [chat-id message-id user-id status]]
+ (fn [{:keys [db]} [_ chat-id message-id user-id status]]
    (let [new-status {:chat-id          chat-id
                      :message-id       message-id
                      :whisper-identity user-id
@@ -65,8 +66,7 @@
 
 (handlers/register-handler-fx
  :navigate-to-chat
- [re-frame/trim-v]
- (fn [cofx [chat-id opts]]
+ (fn [cofx [_ chat-id opts]]
    (models/navigate-to-chat chat-id opts cofx)))
 
 (handlers/register-handler-fx
@@ -78,24 +78,21 @@
 
 (handlers/register-handler-fx
  :start-chat
- [re-frame/trim-v]
- (fn [cofx [contact-id opts]]
+ (fn [cofx [_ contact-id opts]]
    (models/start-chat contact-id opts cofx)))
 
-(defn remove-chat-and-navigate-home [cofx [chat-id]]
+(defn remove-chat-and-navigate-home [cofx [_ chat-id]]
   (handlers-macro/merge-fx cofx
                            (models/remove-chat chat-id)
                            (navigation/replace-view :home)))
 
 (handlers/register-handler-fx
  :remove-chat-and-navigate-home
- [re-frame/trim-v]
  remove-chat-and-navigate-home)
 
 (handlers/register-handler-fx
  :remove-chat-and-navigate-home?
- [re-frame/trim-v]
- (fn [_ [chat-id group?]]
+ (fn [_ [_ chat-id group?]]
    {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
                            :content             (i18n/label :t/delete-chat-confirmation)
                            :confirm-button-text (i18n/label :t/delete)
@@ -122,8 +119,7 @@
 
 (handlers/register-handler-fx
  :create-new-public-chat
- [re-frame/trim-v]
- (fn [cofx [topic]]
+ (fn [cofx [_ topic]]
    (create-new-public-chat topic cofx)))
 
 (defn- group-name-from-contacts [selected-contacts all-contacts username]
@@ -134,8 +130,8 @@
 
 (handlers/register-handler-fx
  :create-new-group-chat-and-open
- [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [{:keys [db random-id] :as cofx} [group-name]]
+ [(re-frame/inject-cofx :random-id)]
+ (fn [{:keys [db random-id] :as cofx} [_ group-name]]
    (let [selected-contacts (:group/selected-contacts db)
          chat-name         (if-not (string/blank? group-name)
                              group-name
@@ -155,24 +151,20 @@
 
 (handlers/register-handler-fx
  :show-profile
- [re-frame/trim-v]
- (fn [cofx [identity]]
+ (fn [cofx [_ identity]]
    (show-profile identity cofx)))
 
 (handlers/register-handler-fx
  :resend-message
- [re-frame/trim-v]
- (fn [cofx [chat-id message-id]]
+ (fn [cofx [_ chat-id message-id]]
    (models.message/resend-message chat-id message-id cofx)))
 
 (handlers/register-handler-fx
  :delete-message
- [re-frame/trim-v]
- (fn [cofx [chat-id message-id]]
+ (fn [cofx [_ chat-id message-id]]
    (models.message/delete-message chat-id message-id cofx)))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :disable-cooldown
- [re-frame/trim-v]
- (fn [db]
-   (assoc db :chat/cooldown-enabled? false)))
+ (fn [{:keys [db]}]
+   {:db (assoc db :chat/cooldown-enabled? false)}))

@@ -36,11 +36,10 @@
                                     (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))]
      (re-frame/dispatch [::filter-added chat-id filter]))))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  ::filter-added
- [re-frame/trim-v]
- (fn [db [chat-id filter]]
-   (assoc-in db [:transport/chats chat-id :filter] filter)))
+ (fn [{:keys [db]} [_ chat-id filter]]
+   {:db (assoc-in db [:transport/chats chat-id :filter] filter)}))
 
 (re-frame/reg-fx
  :shh/add-discovery-filter
@@ -52,11 +51,10 @@
                                     (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message])))]
      (re-frame/dispatch [::discovery-filter-added filter]))))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  ::discovery-filter-added
- [re-frame/trim-v]
- (fn [db [filter]]
-   (assoc db :transport/discovery-filter filter)))
+ (fn [{:keys [db]} [filter]]
+   {:db (assoc db :transport/discovery-filter filter)}))
 
 (re-frame/reg-fx
  :shh/remove-filter

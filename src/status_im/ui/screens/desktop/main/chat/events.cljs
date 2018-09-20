@@ -12,6 +12,5 @@
 
 (handlers/register-handler-fx
  :show-profile-desktop
- [re-frame/trim-v]
- (fn [cofx [identity]]
+ (fn [cofx [_ identity]]
    (show-profile-desktop identity cofx)))

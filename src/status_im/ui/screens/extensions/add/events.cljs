@@ -24,17 +24,17 @@
                               (registry/add extension-data)
                               (registry/activate extension-key)))))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :extension/edit-address
- (fn [db [_ address]]
-   (assoc db :extension-url address)))
+ (fn [{:keys [db]} [_ address]]
+   {:db (assoc db :extension-url address)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :extension/stage
- (fn [db [_ extension-data]]
-   (-> db
-       (assoc :staged-extension extension-data)
-       (navigation/navigate-to :show-extension))))
+ (fn [{:keys [db]} [_ extension-data]]
+   {:db (-> db
+            (assoc :staged-extension extension-data)
+            (navigation/navigate-to :show-extension))}))
 
 (handlers/register-handler-fx
  :extension/show

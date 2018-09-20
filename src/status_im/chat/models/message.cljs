@@ -22,8 +22,7 @@
             [clojure.string :as string]))
 
 (def receive-interceptors
-  [(re-frame/inject-cofx :random-id)
-   re-frame/trim-v])
+  [(re-frame/inject-cofx :random-id)])
 
 (defn- emoji-only-content?
   [content]
@@ -213,8 +212,7 @@
 
 (def send-interceptors
   [(re-frame/inject-cofx :random-id)
-   (re-frame/inject-cofx :random-id-seq)
-   re-frame/trim-v])
+   (re-frame/inject-cofx :random-id-seq)])
 
 (defn- send
   [chat-id message-id send-record {{:keys [network-status current-public-key]} :db :as cofx}]

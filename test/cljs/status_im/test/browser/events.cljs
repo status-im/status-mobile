@@ -43,7 +43,7 @@
    :initialize-test
    (fn [cofx [_]]
      (handlers-macro/merge-fx cofx
-                              (init/initialize-db)
+                              (init/initialize-app-db)
                               (browser/initialize-browsers)
                               (browser/initialize-dapp-permissions)))))
 
