@@ -54,7 +54,7 @@
      [list/item-icon {:icon      :icons/forward
                       :icon-opts {:color :gray}}]]]])
 
-(def default-public-chats ["status" "status 中文" "status 日本語" "status 한국어" "status по-русски" "status español" "status فارسی" "cryptostrikers" "dapps" "ethereum" "openbounty"])
+(def default-public-chats ["status" "status 中文" "status 日本語" "status 한국어" "status по-русски" "status español" "status فارسی" "cryptocurrency" "cryptostrikers" "dapps" "ethereum" "openbounty"])
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
