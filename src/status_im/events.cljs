@@ -1,6 +1,5 @@
 (ns status-im.events
-  (:require status-im.ui.screens.accounts.create.navigation
-            status-im.ui.screens.accounts.recover.navigation
+  (:require status-im.ui.screens.accounts.recover.navigation
             [re-frame.core :as re-frame]
             [status-im.accounts.core :as accounts]
             [status-im.accounts.create.core :as accounts.create]
@@ -509,6 +508,11 @@
  :hardwallet.ui/status-hardwallet-option-pressed
  (fn [cofx _]
    (hardwallet/navigate-to-connect-screen cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/password-option-pressed
+ (fn [cofx _]
+   (accounts.create/navigate-to-create-account-screen cofx)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/go-to-settings-button-pressed

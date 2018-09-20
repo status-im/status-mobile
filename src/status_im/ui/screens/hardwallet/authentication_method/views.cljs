@@ -39,4 +39,4 @@
                                  :on-press #(re-frame/dispatch [:hardwallet.ui/status-hardwallet-option-pressed])}]
      [authentication-method-row {:title    (i18n/label :t/password)
                                  :icon     :icons/password
-                                 :on-press #(re-frame/dispatch [:navigate-to :create-account])}]]]])
+                                 :on-press #(re-frame/dispatch [:hardwallet.ui/password-option-pressed])}]]]])
