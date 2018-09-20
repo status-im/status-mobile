@@ -36,7 +36,7 @@
   (handlers-macro/merge-fx
    cofx
    {:hardwallet/check-nfc-enabled nil}
-   (navigation/navigate-to-cofx :hardwallet/connect nil)))
+   (navigation/navigate-to-cofx :hardwallet-connect nil)))
 
 (defn hardwallet-supported? [db]
   (and config/hardwallet-enabled?
@@ -45,8 +45,40 @@
 
 (defn return-back-from-nfc-settings [app-coming-from-background? {:keys [db]}]
   (when (and app-coming-from-background?
-             (= :hardwallet/connect (:view-id db)))
+             (= :hardwallet-connect (:view-id db)))
     {:hardwallet/check-nfc-enabled nil}))
+
+(defn- proceed-to-pin-confirmation [fx]
+  (assoc-in fx [:db :hardwallet :pin :enter-step] :confirmation))
+
+(defn- pin-match [fx]
+  (assoc-in fx [:db :hardwallet :pin :status] :validating))
+
+(defn- pin-mismatch [fx]
+  (assoc-in fx [:db :hardwallet :pin] {:status       :error
+                                       :error        :t/pin-mismatch
+                                       :original     []
+                                       :confirmation []
+                                       :enter-step   :original}))
+
+(defn process-pin-input [number enter-step {:keys [db]}]
+  (let [db' (update-in db [:hardwallet :pin enter-step] conj number)
+        numbers-entered (count (get-in db' [:hardwallet :pin enter-step]))]
+    (cond-> {:db (assoc-in db' [:hardwallet :pin :status] nil)}
+      (and (= enter-step :original)
+           (= 6 numbers-entered))
+      (proceed-to-pin-confirmation)
+
+      (and (= enter-step :confirmation)
+           (= (get-in db' [:hardwallet :pin :original])
+              (get-in db' [:hardwallet :pin :confirmation])))
+      (pin-match)
+
+      (and (= enter-step :confirmation)
+           (= 6 numbers-entered)
+           (not= (get-in db' [:hardwallet :pin :original])
+                 (get-in db' [:hardwallet :pin :confirmation])))
+      (pin-mismatch))))
 
 (re-frame/reg-fx
  :hardwallet/check-nfc-support

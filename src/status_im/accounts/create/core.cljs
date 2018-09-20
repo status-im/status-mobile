@@ -109,7 +109,7 @@
 
 (defn navigate-to-authentication-method [{:keys [db] :as cofx}]
   (if (hardwallet/hardwallet-supported? db)
-    (navigation/navigate-to-cofx :hardwallet/authentication-method nil cofx)
+    (navigation/navigate-to-cofx :hardwallet-authentication-method nil cofx)
     (navigate-to-create-account-screen cofx)))
 
 ;;;; COFX

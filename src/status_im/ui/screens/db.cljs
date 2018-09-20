@@ -60,7 +60,10 @@
              :push-notifications/stored          {}
              :registry                           {}
              :hardwallet                         {:nfc-supported? false
-                                                  :nfc-enabled?   false}})
+                                                  :nfc-enabled?   false
+                                                  :pin            {:original     []
+                                                                   :confirmation []
+                                                                   :enter-step   :original}}})
 
 ;;;;GLOBAL
 

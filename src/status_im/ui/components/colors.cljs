@@ -16,6 +16,7 @@
 (def gray-transparent "rgba(184, 193, 199, 0.5)") ;; Used for tabs
 (def gray-notifications "#4A5054cc") ;; Used for notifications background
 (def gray-border "#ececf0")
+(def gray-background "#eceffc")
 (def blue "#4360df") ;; Used as main wallet color, and ios home add button
 (def blue-transparent "rgba(67, 96, 223, 0.2)")
 (def blue-transparent-10 "rgba(67, 96, 223, 0.1)")
