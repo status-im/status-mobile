@@ -231,6 +231,7 @@
     "wallet-onboarding-title": "Simple and secure cryptocurrency wallet",
     "logout": "Log out",
     "status-not-sent": "Not sent. Tap for options",
+    "status-not-sent-without-tap": "Not sent",
     "edit-network-config": "Edit network config",
     "clear-history-confirmation": "Clear history?",
     "connect": "Connect",
