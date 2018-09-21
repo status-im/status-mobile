@@ -14,7 +14,6 @@
    (assert whisper-identity)
    (let [request-command (get-in db [:id->command ["request" #{:personal-chats}]])]
      (handlers-macro/merge-fx cofx
-                              (navigation/navigate-to-clean :home)
                               (chat-model/start-chat whisper-identity nil)
                               (commands-sending/send whisper-identity
                                                      request-command
