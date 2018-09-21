@@ -168,7 +168,7 @@
 (defn text-message
   [{:keys [content timestamp-str group-chat outgoing] :as message}]
   [message-view message
-   (let [parsed-text (cached-parse-text content :browse-link-from-message)
+   (let [parsed-text (cached-parse-text content :browser.ui/message-link-pressed)
          ref (reagent/atom nil)
          collapsible? (should-collapse? content group-chat)
          collapsed? (reagent/atom collapsible?)

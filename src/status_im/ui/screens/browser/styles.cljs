@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.browser.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors])
+  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
 
 (def browser {:flex 1})
 

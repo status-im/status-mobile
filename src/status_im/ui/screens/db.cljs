@@ -15,7 +15,7 @@
             status-im.ui.screens.profile.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
-            status-im.ui.screens.browser.db
+            status-im.browser.db
             status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db))
 

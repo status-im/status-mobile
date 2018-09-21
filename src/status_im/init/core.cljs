@@ -7,7 +7,7 @@
             [status-im.data-store.core :as data-store]
             [status-im.data-store.realm.core :as realm]
             [status-im.i18n :as i18n]
-            [status-im.models.browser :as browser]
+            [status-im.browser.core :as browser]
             [status-im.models.contacts :as models.contacts]
             [status-im.models.dev-server :as models.dev-server]
             [status-im.protocol.core :as protocol]

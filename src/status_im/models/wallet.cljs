@@ -110,18 +110,18 @@
         [second_param first_param]))))
 
 (defn web3-error-callback [fx {:keys [webview-bridge]} {:keys [message-id]} message]
-  (assoc fx :send-to-bridge-fx [{:type      constants/web3-send-async-callback
-                                 :messageId message-id
-                                 :error     message}
-                                webview-bridge]))
+  (assoc fx :browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
+                                               :messageId message-id
+                                               :error     message}
+                                     :webview webview-bridge}))
 
 (defn dapp-complete-transaction [id result method message-id webview]
-  (cond-> {:send-to-bridge-fx [{:type      constants/web3-send-async-callback
-                                :messageId message-id
-                                :result    {:jsonrpc "2.0"
-                                            :id      (int id)
-                                            :result  result}}
-                               webview]
+  (cond-> {:browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
+                                              :messageId message-id
+                                              :result    {:jsonrpc "2.0"
+                                                          :id      (int id)
+                                                          :result  result}}
+                                    :webview webview}
            :dispatch          [:navigate-back]}
 
     (= method constants/web3-personal-sign)

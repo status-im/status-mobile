@@ -22,7 +22,7 @@
        [toolbar/actions [{:icon      :icons/info
                           :icon-opts {:color               :black
                                       :accessibility-label :hardwallet-connect-info-button}
-                          :handler   #(re-frame/dispatch [:open-url-in-browser "https://hardwallet.status.im"])}]]]
+                          :handler   #(re-frame/dispatch [:hardwallet.ui/connect-info-button-pressed])}]]]
       [react/view styles/hardwallet-connect
        [react/view styles/hardwallet-card-image-container
         [react/image {:source (:hardwallet-card resources/ui)

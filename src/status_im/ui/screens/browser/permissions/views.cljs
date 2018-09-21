@@ -1,20 +1,18 @@
 (ns status-im.ui.screens.browser.permissions.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.browser.permissions :as browser.permissions]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.models.browser :as model]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.browser.styles :as styles])
+  (:require-macros [status-im.utils.views :as views]))
 
-(views/defview permissions-panel [{:keys [dapp? name] :as browser} {:keys [requested-permission params]}]
-  (views/letsubs [dapp [:get-dapp-by-name name]
-                  bottom-anim-value (anim/create-value -354)
+(views/defview permissions-panel [{:keys [dapp? name dapp] :as browser} {:keys [requested-permission dapp-name]}]
+  (views/letsubs [bottom-anim-value (anim/create-value -354)
                   alpha-value       (anim/create-value 0)
                   hide-panel        #(anim/start
                                       (anim/parallel
@@ -27,8 +25,7 @@
                               (anim/timing alpha-value {:toValue  0.6
                                                         :duration 500})]))}
     (let [_ (when-not requested-permission (js/setTimeout hide-panel 10))
-          {:keys [dapp-name]} params
-          {:keys [title description icon]} (get model/permissions requested-permission)]
+          {:keys [title description icon]} (get browser.permissions/supported-permissions requested-permission)]
       [react/view styles/permissions-panel-container
        [react/animated-view {:style (styles/permissions-panel-background alpha-value)}]
        [react/animated-view {:style (styles/permissions-panel bottom-anim-value)}
@@ -55,11 +52,10 @@
         [react/text {:style styles/permissions-panel-description-label}
          description]
         [react/view {:flex-direction :row :margin-top 14}
-         [components.common/button {:on-press #(re-frame/dispatch [:next-dapp-permission params])
+         [components.common/button {:on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-denied dapp-name])
                                     :label    (i18n/label :t/deny)}]
          [react/view {:width 16}]
-         [components.common/button {:on-press #(re-frame/dispatch [:next-dapp-permission params requested-permission
-                                                                   (:permissions-data params)])
+         [components.common/button {:on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-allowed dapp-name requested-permission])
                                     :label    (i18n/label :t/allow)}]]
         ;; TODO (andrey) will be in next PR
         #_[react/view {:flex-direction :row :margin-top 19}
