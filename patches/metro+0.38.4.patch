@@ -1,15 +1,14 @@
 patch-package
---- a/node_modules/metro/src/JSTransformer/index.js
-+++ b/node_modules/metro/src/JSTransformer/index.js
-@@ -151,6 +151,8 @@ module.exports = class Transformer {
-     /^--heap[_-]growing[_-]percent=[0-9]+$/.test(arg) ||
-     /^--max[_-]old[_-]space[_-]size=[0-9]+$/.test(arg));
- 
+--- a/node_modules/metro/src/JSTransformer.js
++++ b/node_modules/metro/src/JSTransformer.js
+@@ -135,6 +135,7 @@ module.exports = class Transformer {
+     if (execArgv.length > 0 && execArgv[0].charAt(0) !== '-') {
+       execArgv.shift();
+     }
 +    execArgv.push("--max-old-space-size=8192");
-+
+ 
      const env = _extends({},
      process.env, {
-       // Force color to print syntax highlighted code frames.
 --- a/node_modules/metro/src/defaults.js
 +++ b/node_modules/metro/src/defaults.js
 @@ -45,7 +45,7 @@ exports.sourceExts = ['js', 'json'];
