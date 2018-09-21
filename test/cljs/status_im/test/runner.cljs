@@ -4,7 +4,8 @@
             [status-im.test.contacts.events]
             [status-im.test.contacts.subs]
             [status-im.test.data-store.realm.core]
-            [status-im.test.browser.events]
+            [status-im.test.browser.core]
+            [status-im.test.browser.permissions]
             [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
@@ -110,4 +111,5 @@
  'status-im.test.accounts.recover.core
  'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db
- 'status-im.test.browser.events)
+ 'status-im.test.browser.core
+ 'status-im.test.browser.permissions)

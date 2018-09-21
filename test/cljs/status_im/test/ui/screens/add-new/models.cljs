@@ -12,7 +12,7 @@
     (is (= :my-profile
            (get-in (models/handle-qr-code "0x04e1433c1a8ad71280e6d4b1814aa3958ba6eb451da47ea1d4a4bfc4a04969c445548f3bd9d40fa7e4356aa62075b4d7615179ef1332f1d6a7c59b96c4ab8e04c1" cofx) [:db :view-id]))))
   (testing "handle universal link"
-    (is (= (:browse (models/handle-qr-code "status-im://browse/www.cryptokitties.co" cofx))
+    (is (= (:browser/show-browser-selection (models/handle-qr-code "status-im://browse/www.cryptokitties.co" cofx))
            "status-im://browse/www.cryptokitties.co")))
   (testing "handle invalid qr code"
     (is (:utils/show-popup (models/handle-qr-code "a random string" cofx)))))

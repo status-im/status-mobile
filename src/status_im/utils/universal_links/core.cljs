@@ -39,7 +39,7 @@
 
 (defn handle-browse [url cofx]
   (log/info "universal-links: handling browse " url)
-  {:browse url})
+  {:browser/show-browser-selection url})
 
 (defn handle-public-chat [public-chat cofx]
   (log/info "universal-links: handling public chat " public-chat)

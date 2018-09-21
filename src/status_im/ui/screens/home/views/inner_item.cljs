@@ -18,7 +18,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.models.browser :as model]))
+            [status-im.browser.core :as browser]))
 
 (defview command-short-preview [message]
   (letsubs [id->command [:get-id->command]]
@@ -106,27 +106,25 @@
           [message-content-text last-message]
           [unviewed-indicator chat-id]]]]])))
 
-(defview home-list-browser-item-inner-view [{:keys [name] :as browser}]
-  (letsubs [dapp [:get-dapp-by-name name]
-            url  (model/get-current-url browser)]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-browser browser])}
-     [react/view styles/chat-container
-      [react/view styles/chat-icon-container
-       (if dapp
-         [chat-icon.screen/dapp-icon-browser dapp 36]
-         [react/view styles/browser-icon-container
-          [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
-      [react/view styles/chat-info-container
-       [react/view styles/item-upper-container
-        [react/view styles/name-view
-         [react/view {:flex-shrink 1}
-          [react/text {:style               styles/name-text
-                       :accessibility-label :chat-name-text
-                       :number-of-lines     1}
-           name]]]]
-       [react/view styles/item-lower-container
-        [react/view styles/last-message-container
-         [react/text {:style               styles/last-message-text
-                      :accessibility-label :chat-url-text
-                      :number-of-lines     1}
-          (or url (i18n/label :t/dapp))]]]]]]))
+(defn home-list-browser-item-inner-view [{:keys [dapp url name browser-id] :as browser}]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])}
+   [react/view styles/chat-container
+    [react/view styles/chat-icon-container
+     (if dapp
+       [chat-icon.screen/dapp-icon-browser dapp 36]
+       [react/view styles/browser-icon-container
+        [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
+    [react/view styles/chat-info-container
+     [react/view styles/item-upper-container
+      [react/view styles/name-view
+       [react/view {:flex-shrink 1}
+        [react/text {:style               styles/name-text
+                     :accessibility-label :chat-name-text
+                     :number-of-lines     1}
+         name]]]]
+     [react/view styles/item-lower-container
+      [react/view styles/last-message-container
+       [react/text {:style               styles/last-message-text
+                    :accessibility-label :chat-url-text
+                    :number-of-lines     1}
+        (or url (i18n/label :t/dapp))]]]]]])

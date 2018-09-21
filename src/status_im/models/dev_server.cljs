@@ -1,6 +1,8 @@
 (ns status-im.models.dev-server
-  (:require [status-im.network.core :as network]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [status-im.browser.core :as browser]
+            [status-im.network.core :as network]
+            [status-im.utils.handlers-macro :as handlers-macro]))
 
 (defn start-if-needed
   [{{:account/keys [account]} :db}]
@@ -17,9 +19,10 @@
   {:dev-server/respond [200 {:message "Pong!"}]})
 
 (defmethod process-request! [:POST "dapp" "open"]
-  [{{:keys [url]} :data}]
-  {:dispatch           [:open-url-in-browser url]
-   :dev-server/respond [200 {:message "URL has been opened."}]})
+  [{{:keys [url]} :data cofx :cofx}]
+  (handlers-macro/merge-fx cofx
+                           {:dev-server/respond [200 {:message "URL has been opened."}]}
+                           (browser/open-url url)))
 
 (defmethod process-request! [:POST "network" nil]
   [{:keys [cofx data]}]

@@ -7,6 +7,8 @@
             [status-im.accounts.recover.core :as accounts.recover]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.bootnodes.core :as bootnodes]
+            [status-im.browser.core :as browser]
+            [status-im.browser.permissions :as browser.permissions]
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
             [status-im.hardwallet.core :as hardwallet]
@@ -522,3 +524,120 @@
  :hardwallet.ui/go-to-settings-button-pressed
  (fn [_ _]
    {:hardwallet/open-nfc-settings nil}))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/connect-info-button-pressed
+ (fn [cofx _]
+   (browser/open-url "https://hardwallet.status.im" cofx)))
+
+;; browser module
+
+(handlers/register-handler-fx
+ :browser.ui/browser-item-selected
+ (fn [cofx [_ browser-id]]
+   (browser/open-existing-browser browser-id cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/url-input-pressed
+ (fn [cofx _]
+   (browser/update-browser-option :url-editing? true cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/url-input-blured
+ (fn [cofx _]
+   (browser/update-browser-option :url-editing? false cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/url-submitted
+ (fn [cofx [_ url]]
+   (browser/open-url-in-current-browser url cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/message-link-pressed
+ (fn [cofx [_ link]]
+   (browser/handle-message-link link cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/remove-browser-pressed
+ (fn [cofx [_ browser-id]]
+   (browser/remove-browser browser-id cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/lock-pressed
+ (fn [cofx [_ secure?]]
+   (browser/update-browser-option :show-tooltip (if secure? :secure :not-secure) cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/close-tooltip-pressed
+ (fn [cofx _]
+   (browser/update-browser-option :show-tooltip nil cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/previous-page-button-pressed
+ (fn [cofx _]
+   (browser/navigate-to-previous-page cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/next-page-button-pressed
+ (fn [cofx _]
+   (browser/navigate-to-next-page cofx)))
+
+(handlers/register-handler-fx
+ :browser/navigation-state-changed
+ (fn [cofx [_ event error?]]
+   (browser/navigation-state-changed event error? cofx)))
+
+(handlers/register-handler-fx
+ :browser/bridge-message-received
+ (fn [cofx [_ message]]
+   (browser/process-bridge-message message cofx)))
+
+(handlers/register-handler-fx
+ :browser/error-occured
+ (fn [cofx _]
+   (browser/handle-browser-error cofx)))
+
+(handlers/register-handler-fx
+ :browser/loading-started
+ (fn [cofx _]
+   (browser/update-browser-option :error? false cofx)))
+
+(handlers/register-handler-fx
+ :browser.callback/resolve-ens-multihash-success
+ (fn [cofx [_ hash]]
+   (browser/resolve-ens-multihash-success hash cofx)))
+
+(handlers/register-handler-fx
+ :browser.callback/resolve-ens-multihash-error
+ (fn [cofx _]
+   (browser/update-browser-option :resolving? false cofx)))
+
+(handlers/register-handler-fx
+ :browser.callback/call-rpc
+ (fn [cofx [_ message]]
+   (browser/send-to-bridge message cofx)))
+
+(handlers/register-handler-fx
+ :browser.permissions.ui/dapp-permission-allowed
+ (fn [cofx [_ dapp-name permission]]
+   (browser.permissions/allow-permission dapp-name permission cofx)))
+
+(handlers/register-handler-fx
+ :browser.permissions.ui/dapp-permission-denied
+ (fn [cofx [_ dapp-name]]
+   (browser.permissions/process-next-permission dapp-name cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/open-in-status-option-selected
+ (fn [cofx [_ url]]
+   (browser/open-url url cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/open-dapp-button-pressed
+ (fn [cofx [_ dapp-url]]
+   (browser/open-url dapp-url cofx)))
+
+(handlers/register-handler-fx
+ :browser.ui/dapp-url-submitted
+ (fn [cofx [_ dapp-url]]
+   (browser/open-url dapp-url cofx)))

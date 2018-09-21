@@ -3,7 +3,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.ethereum.erc721 :as erc721]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.browser.core :as browser]))
 
 (defmulti load-collectible-fx (fn [symbol _] symbol))
 
@@ -67,6 +68,5 @@
 
 (handlers/register-handler-fx
  :open-collectible-in-browser
- [re-frame/trim-v]
- (fn [_ [data]]
-   {:dispatch [:open-url-in-browser data]}))
+ (fn [cofx [_ url]]
+   (browser/open-url url cofx)))

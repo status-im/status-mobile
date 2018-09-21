@@ -1,14 +1,16 @@
 (ns status-im.ui.screens.contacts.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
+            [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.contacts :as utils.contacts]))
+            [status-im.utils.identicon :as identicon]))
 
 (reg-sub :get-current-contact-identity :contacts/identity)
 
 (reg-sub :get-contacts :contacts/contacts)
 
-(reg-sub :get-dapps :contacts/dapps)
+(reg-sub :get-dapps
+         (fn [db]
+           (:contacts/dapps db)))
 
 (reg-sub :get-current-contact
          :<- [:get-contacts]
@@ -70,10 +72,17 @@
               (get all-contacts identity')
               (utils.contacts/whisper-id->new-contact identity')))))
 
-(reg-sub :get-dapp-by-name
-         :<- [:get-dapps]
-         (fn [dapps [_ name]]
-           (first (filter #(= (:name %) name) (apply concat (map :data dapps))))))
+(reg-sub :contacts/dapps-by-name
+         :<- [:all-dapps]
+         (fn [dapps]
+           (reduce (fn [dapps-by-name category]
+                     (merge dapps-by-name
+                            (reduce (fn [acc {:keys [name] :as dapp}]
+                                      (assoc acc name dapp))
+                                    {}
+                                    (:data category))))
+                   {}
+                   dapps)))
 
 (reg-sub :get-contact-name-by-identity
          :<- [:get-contacts]

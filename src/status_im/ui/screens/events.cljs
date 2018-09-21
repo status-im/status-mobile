@@ -2,13 +2,10 @@
   (:require status-im.events
             status-im.chat.events
             status-im.dev-server.events
-            [status-im.models.contacts :as models.contacts]
             status-im.ui.screens.add-new.events
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.dimensions :as dimensions]
             status-im.utils.universal-links.events
             status-im.web3.events
             status-im.ui.screens.add-new.new-chat.navigation
@@ -25,21 +22,17 @@
             status-im.ui.screens.wallet.collectibles.cryptostrikers.events
             status-im.ui.screens.wallet.collectibles.etheremon.events
             status-im.ui.screens.wallet.collectibles.superrare.events
-            status-im.ui.screens.browser.events
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
+            [status-im.hardwallet.core :as hardwallet]
             [status-im.native-module.core :as status]
-            [status-im.ui.components.permissions :as permissions]
-            [status-im.transport.core :as transport]
             [status-im.transport.inbox :as inbox]
-            [status-im.ui.screens.db :refer [app-db]]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.random :as random]
+            [status-im.ui.components.permissions :as permissions]
+            [status-im.utils.dimensions :as dimensions]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
-            [status-im.utils.utils :as utils]
-            [status-im.hardwallet.core :as hardwallet]))
+            [status-im.utils.utils :as utils]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
