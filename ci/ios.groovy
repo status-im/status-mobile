@@ -5,7 +5,16 @@ def plutil(name, value) {
 }
 
 def compile(type = 'nightly') {
-  def target = (type == 'release' ? 'adhoc' : 'nightly')
+  def target = 'nightly'
+
+  if (type == 'release') {
+      target = 'adhoc'
+  }
+  
+  if (type == 'testflight') {
+      target = 'release'
+  }
+
   /* configure build metadata */
   plutil('CFBundleShortVersionString', common.version())
   plutil('CFBundleVersion', common.tagBuild())
@@ -20,9 +29,12 @@ def compile(type = 'nightly') {
   ]) {
     sh "bundle exec fastlane ios ${target}"
   }
-  def pkg = common.pkgFilename(type, 'ipa')
-  sh "cp status-adhoc/StatusIm.ipa ${pkg}"
-  return pkg
+  if (type != 'testflight') {
+      def pkg = common.pkgFilename(type, 'ipa')
+      sh "cp status-adhoc/StatusIm.ipa ${pkg}"
+      return pkg
+  }
+  return ''
 }
 
 def uploadToDiawi() {

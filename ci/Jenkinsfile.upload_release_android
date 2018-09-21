@@ -1,102 +1,54 @@
-// We need release builds for users who want to test apps, diawi removes old builds and limits downloads, hence the need for Artifactory.
-// To see env: echo sh(returnStdout: true, script: 'env')
+pipeline {
+  agent { label 'linux' }
 
-env.LANG="en_US.UTF-8"
-env.LANGUAGE="en_US.UTF-8"
-env.LC_ALL="en_US.UTF-8"
-env.FASTLANE_DISABLE_COLORS=1
-env.REALM_DISABLE_ANALYTICS=1
+  options {
+    buildDiscarder(logRotator(
+      numToKeepStr: '60',
+      daysToKeepStr: '30',
+      artifactNumToKeepStr: '60',
+    ))
+  }
 
-def installJSDeps() {
-    def attempt = 1
-    def maxAttempts = 10
-    def installed = false
-    while (!installed && attempt <= maxAttempts) {
-        println "#${attempt} attempt to install npm deps"
-        sh 'npm install'
-        installed = fileExists('node_modules/web3/index.js')
-        attemp = attempt + 1
+  environment {
+    BUILD_PLATFORM = 'android'
+    LANG = 'en_US.UTF-8'
+    LANGUAGE = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
+    FASTLANE_DISABLE_COLORS = 1
+    REALM_DISABLE_ANALYTICS = 1
+    BUNDLE_PATH = "${HOME}/.bundle"
+    ANDROID_HOME = '/usr/lib/android-sdk'
+    ANDROID_SDK_ROOT = '/usr/lib/android-sdk'
+    ANDROID_NDK = '/usr/lib/android-ndk'
+    ANDROID_NDK_HOME = '/usr/lib/android-ndk'
+  }
+
+  stages {
+    stage('Prep') {
+      steps { script {
+          /* Necessary to load methods */
+          mobile = load 'ci/mobile.groovy'
+          cmn    = load 'ci/common.groovy'
+          mobile.prep('release')
+        } }
     }
-}
-
-timeout(90) {
-    node ('fastlane'){
-      def version
-      def build_no
-
-      load "$HOME/env.groovy"
-
-      try {
-
-        stage('Git & Dependencies') {
-          slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
-
-          if (!BRANCH_NAME.startsWith("release/")){
-            error "Wrong branch name format: " + BRANCH_NAME + ", but it should be `release/version`"
-          }
-
-          checkout scm
-
-          sh 'git fetch --tags'
-
-          sh 'rm -rf node_modules'
-          sh 'cp .env.prod .env'
-
-          sh 'scripts/prepare-for-platform.sh mobile'
-          version = readFile("${env.WORKSPACE}/VERSION").trim()
-          installJSDeps()
-
-          sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
-          sh 'cd ios && pod install && cd ..'
-        }
-
-        stage('Tag Build') {
-          withCredentials([[
-            $class: 'UsernamePasswordMultiBinding',
-            credentialsId: 'status-im-auto',
-            usernameVariable: 'GIT_USER',
-            passwordVariable: 'GIT_PASS'
-          ]]) {
-            build_no = sh(
-              returnStdout: true,
-              script: './scripts/build_no.sh --increment'
-            ).trim()
-          }
-        }
-
-        stage('Tests') {
-          sh 'lein test-cljs'
-        }
-
-        stage('Build') {
-          sh 'lein prod-build'
-        }
-
-        stage('Build (Android)') {
-          sh 'cd android && ./gradlew react-native-android:installArchives && ./gradlew assembleRelease -PreleaseVersion=' + version
-        }
-
-        stage('Deploy (Android)') {
-          withCredentials([
-              string(
-                credentialsId: "SUPPLY_JSON_KEY_DATA",
-                variable: 'GOOGLE_PLAY_JSON_KEY'
-              ),
-              string(
-                credentialsId: "SLACK_URL",
-                variable: 'SLACK_URL'
-              )
-          ]) {
-              sh ('bundle exec fastlane android release')
-          }
-        }
-      } catch (e) {
-        slackSend color: 'bad', message: 'Release build failed uploading to the Play Market. ' + env.BUILD_URL
-        throw e
-      }
-
-      stage('Slack Notification') {
-        slackSend color: 'good', message: 'Release build ' + version + ' succesfully aploade to the Play Market'
-      }
+    stage('Lint') {
+      steps { script { cmn.runLint() } }
     }
+    stage('Tests') {
+      steps { script { cmn.runTests() } }
+    }
+    stage('Build') {
+      steps { script { mobile.leinBuild('android') } }
+    }
+    stage('Compile') {
+      steps { script { apk = mobile.android.compile('release') } }
+    }
+    stage('Archive') {
+      steps { script { archiveArtifacts apk } }
+    }
+    stage('Upload') {
+      steps { script { mobile.android.uploadToPlayStore('release') } }
+    }
+  }
 }

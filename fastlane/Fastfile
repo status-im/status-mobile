@@ -5,12 +5,12 @@
 #
 #     https://docs.fastlane.tools/actions
 #
+# Fastlane is updated quite frequently with security patches
+# update_fastlane
 
 # There are a few env variables defined in the .env file in
 # this directory (fastlane/.env)
 
-# Fastlane is updated quite frequently with security patches
-update_fastlane
 
 # unlocks keychain if KEYCHAIN_PASSWORD variable is present
 # (to be used on CI machines)
