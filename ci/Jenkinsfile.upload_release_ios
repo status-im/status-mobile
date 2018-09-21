@@ -87,5 +87,9 @@ timeout(90) {
       stage('Slack Notification') {
         slackSend color: 'good', message: 'Release build ' + version + ' succesfully aploade to iTunes Connect'
       }
+    } catch (e) {
+     slackSend color: 'bad', message: 'Release build failed to build. ' + env.BUILD_URL
+     throw e
     }
+   }
 }
