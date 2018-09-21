@@ -2,6 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.browser :as browser-store]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.i18n :as i18n]
             [status-im.models.browser :as model]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
@@ -135,6 +137,13 @@
 
        (and (= type constants/history-state-changed) platform/ios? (not= "about:blank" url))
        (model/update-browser-history-fx browser url false cofx)
+
+       (= type constants/scan-qr-code)
+       (qr-scanner/scan-qr-code {:modal? false}
+                                (merge {:handler :browser.bridge.callback/scan-qr-code}
+                                       {:type constants/scan-qr-code-callback
+                                        :data data})
+                                cofx)
 
        (= type constants/web3-send-async)
        (model/web3-send-async payload messageId cofx)

@@ -47,6 +47,25 @@ WebViewBridge.onMessage = function (message) {
             }
         }
     }
+
+    else if (data.type === "scan-qr-code-callback")
+    {
+        var id = data.data.messageId;
+        var callback = callbacks[id];
+        if (callback) {
+            var result = data.result;
+            var regex = new RegExp(callback.regex);
+            if (regex.test(result)) {
+                if (callback.resolve) {
+                    callback.resolve(result);
+                }
+            } else {
+                if (callback.reject) {
+                    callback.reject(result);
+                }
+            }
+        }
+    }
 };
 
 var StatusHttpProvider = function () {};
@@ -114,9 +133,18 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
                         messageId: messageId,
                         payload:   payload});
         }
-
     }
 };
+
+StatusHttpProvider.prototype.scanQRCode = function (regex) {
+    return new Promise(function (resolve, reject) {
+        var messageId = callbackId++;
+        callbacks[messageId] = {resolve: resolve, reject: reject, regex: regex};
+        bridgeSend({type:  'scan-qr-code',
+                    messageId: messageId});
+    });
+};
+
 
 StatusHttpProvider.prototype.enable = function () {
     return new Promise(function (resolve, reject) { setTimeout(resolve, 1000);});
