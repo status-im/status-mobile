@@ -28,7 +28,7 @@ class BackToHomeButton(BaseButton):
 class BrowserPreviousPageButton(BaseButton):
     def __init__(self, driver):
         super(BrowserPreviousPageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('previou-page-button')
+        self.locator = self.Locator.accessibility_id('previous-page-button')
 
 
 class BrowserNextPageButton(BaseButton):

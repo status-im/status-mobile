@@ -429,7 +429,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         error_text = send_transaction.element_by_text('Insufficient funds')
         if not error_text.is_element_displayed():
             self.errors.append("'Insufficient funds' error is now shown when sending 1 ETH from chat with balance 0")
-        send_transaction.back_button.click()
+        send_transaction.cross_icon.click()
         chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.asset_by_name('STT').click()
@@ -463,7 +463,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append(
                 "'Insufficient funds' error is now shown when sending %s ETH from chat with balance %s" % (
                     round(eth_value + 1), eth_value))
-        send_transaction.back_button.click()
+        send_transaction.cross_icon.click()
         chat_view.commands_button.click()
         chat_view.send_command.click()
         chat_view.asset_by_name('STT').scroll_to_element()

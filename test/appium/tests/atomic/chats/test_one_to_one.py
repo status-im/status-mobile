@@ -70,44 +70,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
-    @marks.smoke_1
-    @marks.testrail_id(3701)
-    def test_resend_message_offline(self):
-        self.create_drivers(2, offline_mode=True)
-        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
-        home_1, home_2 = sign_in_1.create_user(username_1), sign_in_2.create_user()
-        public_key_2 = home_2.get_public_key()
-        home_2.home_button.click()
-
-        home_1.driver.set_network_connection(1)  # airplane mode on primary device
-
-        chat_1 = home_1.add_contact(public_key_2)
-        message = 'test message'
-        chat_1.chat_message_input.send_keys(message)
-        chat_1.send_message_button.click()
-        progress_time = chat_1.chat_element_by_text(message).progress_bar.measure_time_while_element_is_shown()
-        if not 5 < progress_time < 30:
-            self.errors.append('Progress indicator is shown during %s seconds' % progress_time)
-
-        home_1.driver.set_network_connection(2)  # turning on WiFi connection
-        chat_1.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(30)
-        chat_1.element_by_text('Not sent. Tap for options').click()
-        if not chat_1.element_by_text('Delete message').is_element_displayed():
-            self.errors.append("'Delete message' button is not shown for not sent message")
-
-        chat_element = chat_1.chat_element_by_text(message)
-        chat_1.element_by_text('Resend').click()
-        chat_element.status.wait_for_visibility_of_element()
-        if chat_element.status.text != 'Sent':
-            self.errors.append("Message status is not 'Sent' after resending the message")
-
-        chat_2 = home_2.get_chat_with_user(username_1).click()
-        if not chat_2.chat_element_by_text(message).is_element_displayed(10):
-            self.errors.append("Message with text '%s' is not received" % message)
-
-        self.verify_no_errors()
-
     @marks.testrail_id(3710)
     @marks.smoke_1
     def test_messaging_in_different_networks(self):

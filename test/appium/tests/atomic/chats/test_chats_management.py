@@ -1,4 +1,5 @@
 import pytest
+import time
 
 from tests import marks, group_chat_users, basic_user, camera_access_error_text
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
@@ -158,7 +159,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1, home_2 = device_1.create_user(), device_2.create_user()
         chat_name = 'testaddcontact'
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
-        message = 'test message'
+        message = 'test message' + str(round(time.time()))
 
         chat_2.chat_message_input.send_keys(message)
         chat_2.send_message_button.click()
