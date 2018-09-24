@@ -48,7 +48,6 @@ def prep(type = 'nightly') {
       sh 'cp .env.jenkins .env'; break
   }
   common.installJSDeps('mobile')
-  sh 'cp patches/js_realm.hpp node_modules/realm/src/js_realm.hpp'
   /* install ruby dependencies */
   sh 'bundle install --quiet'
   /* install Maven dependencies */
