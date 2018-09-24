@@ -44,6 +44,7 @@ timeout(90) {
           sh 'scripts/prepare-for-platform.sh mobile'
           version = readFile("${env.WORKSPACE}/VERSION").trim()
           installJSDeps()
+          sh 'cp patches/js_realm.hpp node_modules/realm/src/js_realm.hpp'
 
           sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
 
