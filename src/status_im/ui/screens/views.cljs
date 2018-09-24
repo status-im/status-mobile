@@ -69,7 +69,8 @@
             [status-im.utils.random :as rand]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.config :as config]))
 
 (defn wrap [view-id component]
   (fn []
@@ -129,18 +130,20 @@
     {:screen
      (nav-reagent/stack-navigator
       (stack-screens
-       (cond-> {:login                            login
-                :progress                         progress
-                :create-account                   create-account
-                :recover                          recover
-                :accounts                         accounts
-                :hardwallet-authentication-method hardwallet-authentication-method
-                :hardwallet-connect               hardwallet-connect
-                :hardwallet-setup                 hardwallet-setup
-                :hardwallet-pin                   hardwallet-pin
-                :hardwallet-success               hardwallet-success}
+       (cond-> {:login          login
+                :progress       progress
+                :create-account create-account
+                :recover        recover
+                :accounts       accounts}
          (= :intro view-id)
-         (assoc :intro intro)))
+         (assoc :intro intro)
+
+         config/hardwallet-enabled?
+         (assoc :hardwallet-authentication-method hardwallet-authentication-method
+                :hardwallet-connect hardwallet-connect
+                :hardwallet-setup hardwallet-setup
+                :hardwallet-pin hardwallet-pin
+                :hardwallet-success hardwallet-success)))
       (cond-> {:headerMode "none"}
         (#{:intro :login} view-id)
         (assoc :initialRouteName (name view-id))))}
@@ -259,34 +262,36 @@
        {:screen
         (nav-reagent/stack-navigator
          (stack-screens
-          {:my-profile                       (main-tabs/get-main-tab :my-profile)
-           :profile-photo-capture            profile-photo-capture
-           :about-app                        about-app/about-app
-           :bootnodes-settings               bootnodes-settings
-           :edit-bootnode                    edit-bootnode
-           :offline-messaging-settings       offline-messaging-settings
-           :edit-mailserver                  edit-mailserver
-           :help-center                      help-center
-           :extensions-settings              extensions-settings
-           :add-extension                    add-extension
-           :show-extension                   show-extension
-           :network-settings                 network-settings
-           :network-details                  network-details
-           :edit-network                     edit-network
-           :log-level-settings               log-level-settings
-           :fleet-settings                   fleet-settings
-           :currency-settings                currency-settings
-           :backup-seed                      backup-seed
-           :login                            login
-           :create-account                   create-account
-           :recover                          recover
-           :accounts                         accounts
-           :hardwallet-authentication-method hardwallet-authentication-method
-           :hardwallet-connect               hardwallet-connect
-           :hardwallet-pin                   hardwallet-pin
-           :hardwallet-setup                 hardwallet-setup
-           :hardwallet-success               hardwallet-success
-           :qr-scanner                       qr-scanner})
+          (cond-> {:my-profile                       (main-tabs/get-main-tab :my-profile)
+                   :profile-photo-capture            profile-photo-capture
+                   :about-app                        about-app/about-app
+                   :bootnodes-settings               bootnodes-settings
+                   :edit-bootnode                    edit-bootnode
+                   :offline-messaging-settings       offline-messaging-settings
+                   :edit-mailserver                  edit-mailserver
+                   :help-center                      help-center
+                   :extensions-settings              extensions-settings
+                   :add-extension                    add-extension
+                   :show-extension                   show-extension
+                   :network-settings                 network-settings
+                   :network-details                  network-details
+                   :edit-network                     edit-network
+                   :log-level-settings               log-level-settings
+                   :fleet-settings                   fleet-settings
+                   :currency-settings                currency-settings
+                   :backup-seed                      backup-seed
+                   :login                            login
+                   :create-account                   create-account
+                   :recover                          recover
+                   :accounts                         accounts
+                   :qr-scanner                       qr-scanner}
+
+            config/hardwallet-enabled?
+            (assoc :hardwallet-authentication-method hardwallet-authentication-method
+                   :hardwallet-connect hardwallet-connect
+                   :hardwallet-pin hardwallet-pin
+                   :hardwallet-setup hardwallet-setup
+                   :hardwallet-success hardwallet-success)))
          {:headerMode       "none"
           :initialRouteName "my-profile"})}
        :profile-qr-viewer
