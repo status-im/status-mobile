@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.animations
-  (:require [status-im.ui.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]
+            [status-im.ui.components.colors :as colors]))
 
 (def header-draggable-icon "rgba(73, 84, 93, 0.23)")
 
@@ -11,7 +12,7 @@
    :bottom   0})
 
 (defn expandable-container [anim-value bottom max-height]
-  {:background-color common/color-white
+  {:background-color colors/white
    :height           anim-value
    :left             0
    :right            0
@@ -22,7 +23,7 @@
 
 (def header-container
   {:min-height       19
-   :background-color common/color-white
+   :background-color colors/white
    :align-items      :center})
 
 (def header-icon

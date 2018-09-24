@@ -9,7 +9,7 @@
 
 (defn message-box [{:keys [outgoing] :as message}]
   (let [align (if outgoing :flex-end :flex-start)
-        color (if outgoing colors/hawkes-blue colors/white)]
+        color (if outgoing colors/blue colors/white)]
     {:align-self       align
      :background-color color
      :border-radius    8
@@ -37,9 +37,9 @@
    :text-align-vertical :center
    :width               60})
 
-(defn message-timestamp []
+(defn message-timestamp [outgoing]
   (merge (message-timestamp-placeholder)
-         {:color    colors/gray
+         {:color    (if outgoing colors/white colors/gray)
           :position :absolute
           :bottom   0
           :right    -5}))
@@ -129,8 +129,9 @@
    :color color
    :margin-bottom 4})
 
-(def message-text
-  {:font-size 14})
+(defn message-text [outgoing]
+  {:color (if outgoing colors/white colors/black)
+   :font-size 14})
 
 (def message-container
   {:flex-direction  :column})
@@ -257,5 +258,5 @@
    :tint-color        colors/white})
 
 (defn reply-icon [outgoing]
-  {:tint-color (if outgoing colors/wild-blue-yonder colors/gray)})
+  {:tint-color (if outgoing colors/white colors/gray)})
 

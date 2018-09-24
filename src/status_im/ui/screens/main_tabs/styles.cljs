@@ -15,9 +15,9 @@
 (def tabs-container
   {:flex-direction   :row
    :height           tabs-height
-   :background-color styles/color-white
+   :background-color colors/white
    :border-top-width 1
-   :border-top-color styles/color-light-gray3})
+   :border-top-color colors/black-transparent})
 
 (def tab-container
   {:height          tabs-height
@@ -31,11 +31,11 @@
                 :font-weight (if active? "600" :normal)}
    :text-align :center
    :color      (if active?
-                 styles/color-blue4
-                 styles/color-gray4)})
+                 colors/blue
+                 colors/gray)})
 
 (defn tab-icon [active?]
-  {:color (if active? styles/color-blue4 styles/color-gray4)})
+  {:color (if active? colors/blue colors/gray)})
 
 (def counter-container
   {:position :absolute

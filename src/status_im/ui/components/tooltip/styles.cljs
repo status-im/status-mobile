@@ -38,11 +38,11 @@
    :margin-horizontal  12
    :padding-horizontal 16
    :padding-vertical   9
-   :background-color   colors/gray-notifications
+   :background-color   colors/gray
    :border-radius      8})
 
 (defn tooltip-text [font-size]
-  {:color     styles/color-red-2
+  {:color     colors/red
    :font-size font-size})
 
 (def bottom-tooltip-text

@@ -1,6 +1,6 @@
 (ns status-im.ui.components.toolbar.actions
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.styles :as styles]))
+            [status-im.ui.components.toolbar.styles :as styles]))
 
 (defn add [illuminated? handler]
   {:icon      :icons/add

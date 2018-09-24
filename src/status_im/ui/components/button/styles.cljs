@@ -4,8 +4,8 @@
             [status-im.ui.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-(def border-color styles/color-white-transparent-3)
-(def border-color-high styles/color-white-transparent-4)
+(def border-color colors/white-light-transparent)
+(def border-color-high colors/white-light-transparent)
 
 (def buttons-container {:flex-direction :row})
 
@@ -40,7 +40,7 @@
 
 (defstyle button-text
   {:font-weight        :normal
-   :color              styles/color-white
+   :color              colors/white
    :padding-horizontal 16
    :android            {:font-size        14
                         :padding-vertical 10
@@ -62,16 +62,16 @@
 (def primary-button
   (merge
    button-borders
-   {:background-color styles/color-blue4}))
+   {:background-color colors/blue}))
 
-(def primary-button-text {:color styles/color-white})
+(def primary-button-text {:color colors/white})
 
 (def secondary-button
   (merge
    button-borders
-   {:background-color styles/color-blue4-transparent}))
+   {:background-color colors/blue-light}))
 
-(def secondary-button-text {:color styles/color-blue4})
+(def secondary-button-text {:color colors/blue})
 
 (def button-with-icon-container
   {:flex-direction    :row

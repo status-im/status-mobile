@@ -95,7 +95,7 @@
 
 (def item-icon-forward
   [item-icon {:icon      :icons/forward
-              :icon-opts {:color colors/white-light-transparent}}])
+              :icon-opts {:color colors/white-transparent}}])
 
 (defn- wrap-render-fn [f]
   (fn [data]

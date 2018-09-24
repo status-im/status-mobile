@@ -5,7 +5,8 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.styles :as styles]
-            [status-im.react-native.js-dependencies :as js-dependencies])
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.ui.components.colors :as colors])
   (:refer-clojure :exclude [use]))
 
 (when-not platform/desktop?
@@ -202,17 +203,17 @@
                      (cond
                        (keyword? color)
                        (case color
-                         :dark styles/icon-dark-color
-                         :gray styles/icon-gray-color
-                         :blue styles/color-light-blue
-                         :active styles/color-blue4
-                         :white styles/color-white
-                         :red styles/icon-red-color
-                         styles/icon-dark-color)
+                         :dark colors/black
+                         :gray colors/gray
+                         :blue colors/blue
+                         :active colors/blue
+                         :white colors/white
+                         :red colors/red
+                         colors/black)
                        (string? color)
                        color
                        :else
-                       styles/icon-dark-color))]
+                       colors/black))]
        (if width
          (update icon-vec 1 assoc :width width :height height)
          icon-vec))

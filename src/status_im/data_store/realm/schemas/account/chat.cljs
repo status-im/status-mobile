@@ -1,19 +1,19 @@
 (ns status-im.data-store.realm.schemas.account.chat
-  (:require [status-im.ui.components.styles :refer [default-chat-color]]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def v1 {:name       :chat
          :primaryKey :chat-id
          :properties {:chat-id          :string
                       :name             :string
                       :color            {:type    :string
-                                         :default default-chat-color}
+                                         :default colors/default-chat-color}
                       :group-chat       {:type    :bool
                                          :indexed true}
                       :group-admin      {:type     :string
                                          :optional true}
                       :is-active        :bool
                       :timestamp        :int
-                      :contacts         {:type     "string[]"}
+                      :contacts         {:type "string[]"}
                       :removed-at       {:type     :int
                                          :optional true}
                       :removed-from-at  {:type     :int
@@ -36,7 +36,7 @@
          :properties {:chat-id                :string
                       :name                   :string
                       :color                  {:type    :string
-                                               :default default-chat-color}
+                                               :default colors/default-chat-color}
                       :group-chat             {:type    :bool
                                                :indexed true}
                       :group-admin            {:type     :string
@@ -68,7 +68,7 @@
          :properties {:chat-id                :string
                       :name                   :string
                       :color                  {:type    :string
-                                               :default default-chat-color}
+                                               :default colors/default-chat-color}
                       :group-chat             {:type    :bool
                                                :indexed true}
                       :group-admin            {:type     :string
@@ -98,7 +98,7 @@
          :properties {:chat-id                :string
                       :name                   :string
                       :color                  {:type    :string
-                                               :default default-chat-color}
+                                               :default colors/default-chat-color}
                       :group-chat             {:type    :bool
                                                :indexed true}
                       :group-admin            {:type     :string

@@ -40,7 +40,7 @@
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch [:hide-contact contact-identity])
          :accessibility-label :add-to-contacts-close-button}
-        [vector-icons/icon :icons/close {:color           colors/gray-icon
+        [vector-icons/icon :icons/close {:color           colors/black
                                          :container-style style/add-contact-close-icon}]]])))
 
 (defn- on-options [chat-id chat-name group-chat? public?]

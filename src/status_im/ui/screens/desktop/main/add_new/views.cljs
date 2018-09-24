@@ -68,7 +68,7 @@
             [error-tooltip chat-error])
           [react/text-input {:placeholder       "0x..."
                              :flex              1
-                             :selection-color   colors/hawkes-blue
+                             :selection-color   colors/blue
                              :font              :default
                              :on-change         (fn [e]
                                                   (let [native-event (.-nativeEvent e)
@@ -118,7 +118,7 @@
 
           [react/text-input {:flex            1
                              :font            :default
-                             :selection-color colors/hawkes-blue
+                             :selection-color colors/blue
                              :placeholder     ""
                              :on-change       on-topic-change
                              :on-submit-editing (when-not disable? create-public-chat)}]]

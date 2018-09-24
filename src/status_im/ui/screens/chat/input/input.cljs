@@ -110,7 +110,7 @@
             current-public-key [:get-current-public-key]]
     [react/view {:style style/reply-message-content}
      [react/text {:style style/reply-message-author} (chat-utils/format-reply-author from username current-public-key)]
-     [react/text {:style message-style/style-message-text} message-text]]))
+     [react/text {:style (message-style/style-message-text false)} message-text]]))
 
 (defview reply-message-view []
   (letsubs [{:keys [content from] :as message} [:get-reply-message]]

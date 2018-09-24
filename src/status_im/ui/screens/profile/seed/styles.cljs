@@ -78,11 +78,11 @@
    :border-radius    8
    :background-color colors/white
    :border-width     1
-   :border-color     colors/gray-border})
+   :border-color     colors/gray-lighter})
 
 (def twelve-words-columns-separator
   {:width            1
-   :background-color colors/gray-border})
+   :background-color colors/gray-lighter})
 
 (def enter-word-container
   {:flex    1

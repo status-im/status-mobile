@@ -33,7 +33,7 @@
    :height             63})
 
 (def authentication-method-row-icon-container
-  {:background-color colors/blue-transparent-10
+  {:background-color colors/blue-light
    :width            40
    :height           40
    :border-radius    50

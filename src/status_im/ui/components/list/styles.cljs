@@ -98,7 +98,7 @@
   {:background-color colors/blue})
 
 (def action
-  {:background-color colors/white-transparent
+  {:background-color colors/white-light-transparent
    :border-radius    50})
 
 (def action-disabled

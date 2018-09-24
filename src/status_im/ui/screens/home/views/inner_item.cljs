@@ -110,7 +110,7 @@
      (if dapp
        [chat-icon.screen/dapp-icon-browser dapp 36]
        [react/view styles/browser-icon-container
-        [vector-icons/icon :icons/discover {:color component.styles/color-light-gray6}]])]
+        [vector-icons/icon :icons/discover {:color colors/gray}]])]
     [react/view styles/chat-info-container
      [react/view styles/item-upper-container
       [react/view styles/name-view

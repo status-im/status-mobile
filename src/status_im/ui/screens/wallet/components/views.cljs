@@ -33,7 +33,7 @@
 ;; It might be replaced by some theme mechanism
 
 (defn text-input [props text]
-  [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/white-lighter-transparent
+  [react/text-input (utils.core/deep-merge {:placeholder-text-color colors/white-transparent
                                             :selection-color        colors/white
                                             :style                  {:color          colors/white
                                                                      :font-size      15

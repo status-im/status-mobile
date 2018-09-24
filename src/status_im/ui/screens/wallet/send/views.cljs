@@ -27,7 +27,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.colors :as colors]))
 
 (defn- toolbar [modal? title]
   (let [action (if modal? act/close-white act/back-white)]
@@ -90,7 +91,7 @@
         {:auto-focus             true
          :secure-text-entry      true
          :placeholder            (i18n/label :t/enter-password)
-         :placeholder-text-color components.styles/color-gray4
+         :placeholder-text-color colors/gray
          :on-change-text         #(re-frame/dispatch [:wallet.send/set-password (security/mask-data %)])
          :style                  styles/password
          :accessibility-label    :enter-password-input
@@ -113,7 +114,7 @@
                                               (= :offline network-status))
                      :accessibility-label :sign-transaction-button}
       (i18n/label sign-label)
-      [vector-icons/icon :icons/forward {:color :white}]]]))
+      [vector-icons/icon :icons/forward {:color colors/white}]]]))
 
 ;; "Sign Transaction >" button
 (defn- sign-transaction-button [amount-error to amount sufficient-funds? sufficient-gas? modal? online?]
@@ -134,7 +135,7 @@
                      :text-style          {:color :white}
                      :accessibility-label :sign-transaction-button}
       (i18n/label :t/transactions-sign-transaction)
-      [vector-icons/icon :icons/forward {:color (if sign-enabled? :white :gray)}]]]))
+      [vector-icons/icon :icons/forward {:color (if sign-enabled? colors/white colors/white-light-transparent)}]]]))
 
 (defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?

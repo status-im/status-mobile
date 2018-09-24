@@ -191,10 +191,10 @@
                                              (re-frame/dispatch [:show-transaction-details tx-hash]))}
      [react/view transactions-styles/command-send-status-container
       [vector-icons/icon (if confirmed? :icons/check :icons/dots)
-       {:color           colors/blue
+       {:color           (if outgoing colors/blue-light colors/blue)
         :container-style (transactions-styles/command-send-status-icon outgoing)}]
       [react/view
-       [react/text {:style transactions-styles/command-send-status-text}
+       [react/text {:style (transactions-styles/command-send-status-text outgoing)}
         (i18n/label (cond
                       confirmed? :status-confirmed
                       tx-exists? :status-pending
@@ -210,7 +210,7 @@
        [react/view
         [react/view transactions-styles/command-send-amount-row
          [react/view transactions-styles/command-send-amount
-          [react/text {:style transactions-styles/command-send-amount-text
+          [react/text {:style (transactions-styles/command-send-amount-text outgoing)
                        :font  :medium}
            amount
            [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
@@ -221,7 +221,7 @@
         (when (and fiat-amount
                    platform/mobile?)
           [react/view transactions-styles/command-send-fiat-amount
-           [react/text {:style transactions-styles/command-send-fiat-amount-text}
+           [react/text {:style (transactions-styles/command-send-fiat-amount-text outgoing)}
             (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
         (when (and group-chat
                    recipient-name)
@@ -396,7 +396,7 @@
                               [react/text {:style (transactions-styles/command-request-header-text outgoing)}
                                (i18n/label :transaction-request)]]
                              [react/view transactions-styles/command-request-row
-                              [react/text {:style transactions-styles/command-request-amount-text
+                              [react/text {:style (transactions-styles/command-request-amount-text outgoing)
                                            :font  :medium}
                                amount
                                [react/text {:style (transactions-styles/command-amount-currency-separator outgoing)}
@@ -406,7 +406,7 @@
                                 asset]]]
                              (when platform/mobile?
                                [react/view transactions-styles/command-request-fiat-amount-row
-                                [react/text {:style transactions-styles/command-request-fiat-amount-text}
+                                [react/text {:style (transactions-styles/command-request-fiat-amount-text outgoing)}
                                  (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
                              (when network-mismatch?
                                [react/text {:style transactions-styles/command-request-network-text}

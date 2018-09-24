@@ -1,24 +1,16 @@
 (ns status-im.ui.screens.chat.styles.message.message
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.chat.styles.photos :as photos]
             [status-im.utils.platform :as platform]
             [status-im.constants :as constants]))
 
-(defstyle style-message-text
+(defnstyle style-message-text [outgoing]
   {:font-size      15
-   :color          styles/text1-color
+   :color          (if outgoing colors/white colors/text)
    :letter-spacing -0.2
    :android        {:line-height 22}
    :ios            {:line-height 22}})
-
-(def style-sub-text
-  {:top         -2
-   :font-size   12
-   :color       styles/text2-color
-   :line-height 14
-   :height      16})
 
 (defn message-padding-top
   [{:keys [first-in-group? display-username?]}]
@@ -26,9 +18,6 @@
            first-in-group?)
     6
     2))
-
-(def message-empty-spacing
-  {:height 16})
 
 (defn last-message-padding
   [{:keys [last? typing]}]
@@ -63,7 +52,7 @@
 (defn message-timestamp-placeholder-text [outgoing]
   (assoc message-timestamp
          :color
-         (if outgoing colors/hawkes-blue styles/color-white)))
+         (if outgoing colors/blue colors/white)))
 
 (def message-expand-button
   {:color         colors/gray
@@ -75,7 +64,7 @@
   {:margin-top  18
    :margin-left 40
    :font-size   12
-   :color      styles/text2-color})
+   :color       colors/text-gray})
 
 (defn group-message-wrapper [message]
   (merge {:flex-direction :column}
@@ -109,7 +98,7 @@
    :margin-top     2})
 
 (def delivery-text
-  {:color       styles/color-gray4
+  {:color       colors/gray
    :font-size   12})
 
 (def not-sent-view
@@ -119,7 +108,7 @@
 
 (def not-sent-text
   (assoc delivery-text
-         :color styles/color-red
+         :color colors/red
          :text-align :right
          :padding-top 4))
 
@@ -131,13 +120,13 @@
   {:padding-top 4})
 
 (defn text-message
-  [collapsed?]
-  (assoc style-message-text :margin-bottom (if collapsed? 2 0)))
+  [collapsed? outgoing]
+  (assoc (style-message-text outgoing) :margin-bottom (if collapsed? 2 0)))
 
 (defnstyle emoji-message
   [{:keys [incoming-group]}]
   {:font-size 40
-   :color     styles/text1-color
+   :color     colors/text
    :android   {:line-height 45}
    :ios       {:line-height 46}
    :margin-top (if incoming-group 4 0)})
@@ -153,7 +142,7 @@
                                 16
                                 4)}
          (when-not (= content-type constants/content-type-emoji)
-           {:background-color (if outgoing colors/hawkes-blue styles/color-white)})
+           {:background-color (if outgoing colors/blue colors/white)})
          (when (= content-type constants/content-type-command)
            {:padding-top    12
             :padding-bottom 10})))
@@ -175,26 +164,18 @@
 (def status-from
   {:margin-top 20
    :font-size  18
-   :color      styles/text1-color})
+   :color      colors/text})
 
 (def status-text
   {:margin-top  10
    :font-size   14
    :line-height 20
    :text-align  :center
-   :color       styles/text2-color})
-
-(defn message-animated-container [height]
-  {:height height})
+   :color       colors/text-gray})
 
 (defn message-container [window-width]
   {:position :absolute
    :width    window-width})
-
-(defn new-message-container [margin on-top?]
-  {:background-color styles/color-white
-   :margin-bottom    margin
-   :elevation        (if on-top? 6 5)})
 
 (def message-author-name
   {:font-size      12
@@ -205,7 +186,7 @@
   {:margin-bottom              6
    :padding-bottom             6
    :border-bottom-color        (if outgoing
-                                 colors/blue-light
+                                 colors/white-light-transparent
                                  colors/gray-lighter)
    :border-bottom-width        2
    :border-bottom-left-radius  2

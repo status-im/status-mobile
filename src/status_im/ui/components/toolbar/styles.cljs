@@ -91,3 +91,20 @@
 
 (def counter-container
   {:top 3})
+
+(def icon-add
+  {:width           24
+   :height          24
+   :color           colors/blue})
+
+(def icon-add-illuminated
+  {:width           24
+   :height          24
+   :color           colors/blue
+   :container-style {:background-color (colors/alpha colors/blue 0.12)
+                     :border-radius    32
+                     :width            32
+                     :height           32
+                     :display          :flex
+                     :justify-content  :center
+                     :align-items      :center}})

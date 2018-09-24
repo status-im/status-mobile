@@ -43,7 +43,7 @@
 (def account-badge-text
   {:font-size      17
    :letter-spacing -0.2
-   :color          common/color-black})
+   :color          colors/black})
 
 (defstyle account-badge-pub-key-text
   {:font-size      14

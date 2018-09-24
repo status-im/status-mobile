@@ -8,7 +8,7 @@
 
 (def chat-view
   {:flex             1
-   :background-color component.styles/chat-background})
+   :background-color colors/gray-lighter})
 
 (def toolbar-container
   {:flex           1
@@ -24,7 +24,7 @@
 (def toolbar-view
   {:flex-direction   :row
    :height           56
-   :background-color component.styles/color-white
+   :background-color colors/white
    :elevation        2})
 
 (def action
@@ -54,7 +54,7 @@
    :margin-bottom   2})
 
 (defstyle chat-name-text
-  {:color       component.styles/color-black
+  {:color   colors/black
    :android {:font-size 15
              :line-height 20}
    :ios     {:font-size 16
@@ -66,25 +66,21 @@
    :width         14
    :height        9})
 
-(def up-icon
-  {:width  14
-   :height 8})
-
 (defstyle toolbar-subtitle
-  {:color       component.styles/text4-color
+  {:color       colors/text-gray
    :line-height 15
    :font-size   13
    :ios         {:margin-top 4}})
 
 (defstyle last-activity-text
-  {:color       component.styles/text4-color
+  {:color       colors/text-gray
    :line-height 15
    :ios         {:font-size  14
                  :margin-top 4}
    :android     {:font-size 13}})
 
 (defn actions-wrapper [status-bar-height]
-  {:background-color component.styles/color-white
+  {:background-color colors/white
    :elevation        2
    :position         :absolute
    :top              (+ 55 status-bar-height)
@@ -94,7 +90,7 @@
 (def actions-separator
   {:margin-left      16
    :height           1.5
-   :background-color component.styles/separator-color})
+   :background-color colors/black-transparent})
 
 (def actions-view
   {:margin-vertical 10})
@@ -115,13 +111,8 @@
 
 (def action-title
   {:margin-top -2.5
-   :color      component.styles/text1-color
+   :color      colors/text
    :font-size  14})
-
-(def action-subtitle
-  {:margin-top 1
-   :color      component.styles/text2-color
-   :font-size  12})
 
 (def typing-all
   {:marginBottom 20})
@@ -137,7 +128,7 @@
 (def typing-text
   {:margin-top -2
    :font-size  12
-   :color      component.styles/text2-color})
+   :color      colors/text-gray})
 
 (def overlay-highlight
   {:flex 1})
@@ -154,7 +145,7 @@
    :elevation        8})
 
 (defn bottom-info-container [height]
-  {:background-color component.styles/color-white
+  {:background-color colors/white
    :elevation        2
    :position         :absolute
    :bottom           16
@@ -212,10 +203,6 @@
 
 (def add-contact-close-icon
   {:margin-right 12})
-
-(defstyle actions-list-view
-  {:ios {:border-bottom-color component.styles/color-gray3
-         :border-bottom-width 0.5}})
 
 (def message-view-preview
   {:flex            1

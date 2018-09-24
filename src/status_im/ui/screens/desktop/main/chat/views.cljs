@@ -98,27 +98,28 @@
   (views/letsubs [username [:get-contact-name-by-identity from]]
     [react/view {:style (message.style/quoted-message-container outgoing)}
      [react/view {:style message.style/quoted-message-author-container}
-      [icons/icon :icons/reply {:style (styles/reply-icon outgoing)}]
+      [icons/icon :icons/reply {:style (styles/reply-icon outgoing)
+                                :container-style (when outgoing {:opacity 0.4})}]
       [react/text {:style (message.style/quoted-message-author outgoing)}
        (chat-utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}
       text]]))
 
-(views/defview message-with-timestamp [text {:keys [message-id timestamp outgoing content current-public-key] :as message} style]
+(views/defview message-with-timestamp [text {:keys [message-id timestamp outgoing content current-public-key]} style]
   [react/view {:style style}
    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
     [react/view {:style styles/message-container}
      (when (:response-to content)
        [quoted-message (:response-to content) outgoing current-public-key])
      [react/view {:style styles/message-wrapper}
-      [react/text {:style           (styles/message-text message)
+      [react/text {:style           (styles/message-text outgoing)
                    :selectable      true
-                   :selection-color (if outgoing colors/white colors/hawkes-blue)}
+                   :selection-color (if outgoing colors/white colors/blue-light)}
        text]
       [react/text {:style (styles/message-timestamp-placeholder)}
        (time/timestamp->time timestamp)]
-      [react/text {:style (styles/message-timestamp)}
+      [react/text {:style (styles/message-timestamp outgoing)}
        (time/timestamp->time timestamp)]]]]])
 
 (views/defview text-only-message [text message]
@@ -337,4 +338,4 @@
         [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
         [react/text {:style           {:font-size 14}
                      :selectable      true
-                     :selection-color colors/hawkes-blue} whisper-identity]]])))
+                     :selection-color colors/blue} whisper-identity]]])))

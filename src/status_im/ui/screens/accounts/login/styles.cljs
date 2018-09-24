@@ -18,7 +18,7 @@
 (def sign-you-in
   {:margin-top     16
    :font-size      13
-   :color          colors/text-light-gray})
+   :color          colors/black})
 
 (def bottom-button-container
   {:flex-direction    :row
@@ -33,7 +33,7 @@
 
 (def login-badge-name
   {:font-size  15
-   :color      colors/text-light-gray
+   :color      colors/black
    :margin-top 8})
 
 (def password-container

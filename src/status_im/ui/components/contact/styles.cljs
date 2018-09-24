@@ -21,7 +21,7 @@
    :justify-content :center})
 
 (defstyle name-text
-  {:color   common/text1-color
+  {:color   colors/text
    :android {:font-size 16}
    :ios     {:font-size      17
              :letter-spacing -0.2}})
@@ -29,7 +29,7 @@
 (def info-text
   {:margin-top 1
    :font-size  12
-   :color      common/text2-color})
+   :color      colors/text-gray})
 
 (def contact-container
   {:flex-direction   :row

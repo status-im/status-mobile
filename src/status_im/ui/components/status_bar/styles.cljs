@@ -30,11 +30,11 @@
 
 ;; :transparent
 (defstyle status-bar-transparent
-  {:ios     (create-status-bar-style {:background-color styles/color-transparent})
+  {:ios     (create-status-bar-style {:background-color colors/transparent})
    :android (create-status-bar-style {:translucent?     true})})
 
 (def view-transparent
-  (create-view-style {:background-color styles/color-transparent}))
+  (create-view-style {:background-color colors/transparent}))
 
 ;; :modal
 (defstyle status-bar-modal
@@ -70,12 +70,12 @@
 
 ;; :transaction
 (defstyle status-bar-transaction
-  {:ios     (create-status-bar-style {:background-color styles/color-transparent})
-   :android (create-status-bar-style {:background-color styles/color-dark-blue-2})})
+  {:ios     (create-status-bar-style {:background-color colors/transparent})
+   :android (create-status-bar-style {:background-color colors/black})})
 
 (defstyle view-transaction
-  {:ios     (create-view-style {:background-color styles/color-transparent})
-   :android (create-view-style {:background-color styles/color-dark-blue-2
+  {:ios     (create-view-style {:background-color colors/transparent})
+   :android (create-view-style {:background-color colors/black
                                 :height           0})})
 
 ;; TODO(jeluard) Fix status-bar mess by removing useless view and introducing 2dn level tab-bar
@@ -86,7 +86,7 @@
    :android (create-status-bar-style {:translucent?     true})})
 
 (def view-wallet-tab
-  (create-view-style {:background-color styles/color-blue4}))
+  (create-view-style {:background-color colors/blue}))
 
 ;; :wallet
 (defstyle status-bar-wallet
@@ -94,7 +94,7 @@
    :android (create-status-bar-style {:translucent?     true})})
 
 (def view-wallet
-  (create-view-style {:background-color styles/color-blue4
+  (create-view-style {:background-color colors/blue
                       :elevation        elevation}))
 
 ;; :default

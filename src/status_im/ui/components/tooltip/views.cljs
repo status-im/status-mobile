@@ -24,7 +24,7 @@
     {:component-did-mount (animations/animate-tooltip -150 bottom-anim-value opacity-value -10)}
     [react/view styles/bottom-tooltip-container
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
-      [vector-icons/icon :icons/tooltip-triangle {:color           colors/gray-notifications
+      [vector-icons/icon :icons/tooltip-triangle {:color           colors/gray
                                                   :style           styles/tooltip-triangle
                                                   :container-style {:transform [{:rotate "180deg"}]}}]
       [react/view styles/bottom-tooltip-text-container

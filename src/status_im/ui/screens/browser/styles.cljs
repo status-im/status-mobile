@@ -11,7 +11,7 @@
    :android         {:padding-bottom 6}})
 
 (def dapp-name-text
-  {:color     colors/text-light-gray
+  {:color     colors/black
    :font-size 16})
 
 (defstyle dapp-text
@@ -44,7 +44,7 @@
 
 (def web-view-loading
   {:flex             1
-   :background-color colors/gray-transparent
+   :background-color colors/gray
    :align-items      :center
    :justify-content  :center
    :position         :absolute

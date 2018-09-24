@@ -14,7 +14,7 @@
    :width         size
    :height        size
    :opacity       0.4
-   :border-color  colors/photo-border-color
+   :border-color  colors/gray
    :border-width  1
    :border-radius (radius size)})
 

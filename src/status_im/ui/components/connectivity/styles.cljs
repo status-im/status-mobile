@@ -6,7 +6,7 @@
 (defnstyle text-wrapper [{:keys [top window-width pending? modal?]}]
   (cond->
    {:opacity          1.0
-    :background-color colors/gray-notifications
+    :background-color colors/gray
     :height           35
     :position         :absolute}
     platform/desktop?

@@ -38,7 +38,7 @@
     [react/view {:style tabs.styles/tab-container}
      (let [icon (if active? icon-active icon-inactive)]
        [react/view
-        [icons/icon icon {:style {:tint-color (if active? colors/blue colors/gray-icon)}}]])
+        [icons/icon icon {:style {:tint-color (if active? colors/blue colors/black)}}]])
      [react/view
       [react/text {:style (tabs.styles/tab-title active?)}
        title]]

@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def hint
-  {:color colors/white-lighter-transparent})
+  {:color colors/white-transparent})
 
 (def footer
   {:color colors/white

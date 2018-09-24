@@ -1,7 +1,6 @@
 (ns status-im.chat.commands.impl.transactions.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]))
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def asset-container
   {:flex-direction   :row
@@ -42,16 +41,16 @@
 
 (defn command-send-status-icon [outgoing]
   {:background-color (if outgoing
-                       colors/blue-darker
-                       colors/blue-transparent)
+                       colors/black-transparent
+                       colors/blue-light)
    :width            24
    :height           24
    :border-radius    16
    :padding-top      4
    :padding-left     4})
 
-(defstyle command-send-status-text
-  {:color       colors/blue
+(defnstyle command-send-status-text [outgoing]
+  {:color       (if outgoing colors/white-transparent colors/blue)
    :android     {:margin-top 3}
    :ios         {:margin-top 4}
    :margin-left 6
@@ -70,9 +69,9 @@
    :align-items    :flex-end
    :max-width      250})
 
-(defstyle command-send-amount-text
+(defnstyle command-send-amount-text [outgoing]
   {:font-size   22
-   :color       colors/blue
+   :color       (if outgoing colors/white colors/blue)
    :ios         {:letter-spacing -0.5}})
 
 (def command-send-currency
@@ -81,13 +80,13 @@
 
 (defn command-amount-currency-separator [outgoing]
   {:opacity 0
-   :color (if outgoing colors/hawkes-blue colors/white)})
+   :color   colors/white})
 
 (defn command-send-currency-text [outgoing]
   {:font-size      22
    :margin-left    4
    :letter-spacing 1
-   :color          (if outgoing colors/wild-blue-yonder colors/blue-transparent-40)})
+   :color          (if outgoing colors/white-transparent colors/blue-light)})
 
 (defn command-request-currency-text [outgoing]
   {:font-size      22
@@ -103,9 +102,9 @@
    :justify-content :flex-end
    :margin-top      6})
 
-(def command-send-fiat-amount-text
+(defn command-send-fiat-amount-text [outgoing]
   {:font-size 12
-   :color     colors/black})
+   :color     (if outgoing colors/white colors/black)})
 
 (def command-send-recipient-text
   {:color       colors/blue
@@ -113,7 +112,7 @@
    :line-height 18})
 
 (defn command-send-timestamp [outgoing]
-  {:color      (if outgoing colors/wild-blue-yonder colors/gray)
+  {:color      (if outgoing colors/white-transparent colors/gray)
    :margin-top 6
    :font-size  12})
 
@@ -143,7 +142,7 @@
 (defn command-request-message-view [outgoing]
   {:border-radius    14
    :padding-vertical 4
-   :background-color (if outgoing colors/hawkes-blue styles/color-white)})
+   :background-color (if outgoing colors/blue colors/white)})
 
 (defn command-request-header-text [outgoing]
   {:font-size 12
@@ -153,10 +152,10 @@
   {:flex-direction :row
    :margin-top     6})
 
-(defstyle command-request-amount-text
+(defnstyle command-request-amount-text [outgoing]
   {:font-size   22
    :ios         {:letter-spacing -0.5}
-   :color       colors/black})
+   :color       (if outgoing colors/white colors/black)})
 
 (def command-request-separator-line
   {:background-color colors/gray-light
@@ -175,9 +174,9 @@
 (def command-request-fiat-amount-row
   {:margin-top 6})
 
-(def command-request-fiat-amount-text
+(defn command-request-fiat-amount-text [outgoing]
   {:font-size 12
-   :color     colors/black})
+   :color     (if outgoing colors/white colors/black)})
 
 (def command-request-recipient-text
   {:color       colors/blue

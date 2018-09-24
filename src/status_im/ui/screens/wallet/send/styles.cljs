@@ -71,7 +71,7 @@
 
 (def advanced-button
   {:flex-direction   :row
-   :background-color styles/color-blue6
+   :background-color colors/black-transparent
    :border-radius    50
    :padding          8
    :align-items      :center})
@@ -106,7 +106,7 @@
   {:color            colors/white})
 
 (def advanced-fees-details-text
-  {:color colors/white-lighter-transparent})
+  {:color colors/white-transparent})
 
 (def transaction-fee-block-wrapper
   {:flex-direction :row})
@@ -125,7 +125,7 @@
    :margin-right     15
    :align-items      :center
    :justify-content  :center
-   :background-color colors/blue-dark})
+   :background-color colors/black-transparent})
 
 (def transaction-fee-info-icon-text
   {:color            colors/white
@@ -135,7 +135,7 @@
   {:keyboard-type          :numeric
    :auto-capitalize        "none"
    :placeholder            "0.000"
-   :placeholder-text-color colors/white-lighter-transparent
+   :placeholder-text-color colors/white-transparent
    :selection-color        colors/white
    :style                  wallet.components.styles/text-input})
 

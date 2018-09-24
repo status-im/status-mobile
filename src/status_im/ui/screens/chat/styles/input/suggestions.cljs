@@ -1,14 +1,12 @@
 (ns status-im.ui.screens.chat.styles.input.suggestions
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def item-height 52)
 (def border-height 1)
 
 (def root
-  {:background-color common/color-white
+  {:background-color colors/white
    :border-top-color colors/gray-light
    :border-top-width 1})
 
@@ -21,7 +19,7 @@
    :border-bottom-width border-height})
 
 (def item-suggestion-name
-  {:color     common/color-black
+  {:color     colors/black
    :font-size 15})
 
 (def item-suggestion-description

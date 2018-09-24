@@ -32,7 +32,7 @@
    :font-size      14
    :letter-spacing -0.2
    :text-align     :center
-   :color          colors/white-lighter-transparent})
+   :color          colors/white-transparent})
 
 (def set-up-button
   {:flex-direction   :row

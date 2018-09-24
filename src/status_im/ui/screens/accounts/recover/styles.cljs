@@ -24,7 +24,7 @@
 (def sign-you-in
   {:margin-top     16
    :font-size      13
-   :color          colors/text-light-gray})
+   :color          colors/black})
 
 (def recovery-phrase-input
   {:flex                1

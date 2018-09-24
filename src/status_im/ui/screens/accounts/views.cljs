@@ -27,7 +27,7 @@
                   :numberOfLines  1}
       public-key]]
     [react/view {:flex 1}]
-    [icons/icon :icons/forward {:color (colors/alpha colors/gray-icon 0.4)}]]])
+    [icons/icon :icons/forward {:color (colors/alpha colors/black 0.4)}]]])
 
 (defview accounts []
   (letsubs [accounts [:get-accounts]]

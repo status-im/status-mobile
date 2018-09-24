@@ -1,9 +1,8 @@
 (ns status-im.ui.screens.chat.styles.input.parameter-box
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def root
-  {:background-color    common/color-white
+  {:background-color    colors/white
    :border-bottom-color colors/gray-light
    :border-bottom-width 1})
 

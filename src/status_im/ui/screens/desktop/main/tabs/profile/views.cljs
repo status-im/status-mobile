@@ -39,7 +39,7 @@
      [react/view {:style styles/tooltip-icon-text}
       [vector-icons/icon :icons/check
        {:style styles/check-icon}]
-      [react/text {:style {:font-size 14 :color colors/tooltip-green-text}}
+      [react/text {:style {:font-size 14 :color colors/green}}
        (i18n/label :sharing-copied-to-clipboard)]]
      [react/view {:style styles/tooltip-triangle}]]))
 
@@ -56,7 +56,7 @@
       [react/view {:style {:align-items :center}}
        [react/text {:style            styles/qr-code-text
                     :selectable       true
-                    :selection-color  colors/hawkes-blue}
+                    :selection-color  colors/blue}
         public-key]
        (when tooltip-opacity
          [copied-tooltip tooltip-opacity])]

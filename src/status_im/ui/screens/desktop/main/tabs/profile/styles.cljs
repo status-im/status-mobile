@@ -96,13 +96,13 @@
 (def close-icon
   {:height       24
    :width        24
-   :tint-color   colors/gray-icon})
+   :tint-color   colors/black})
 
 (def check-icon
   {:height       16
    :width        16
    :margin-right 8
-   :tint-color   colors/tooltip-green-text})
+   :tint-color   colors/green})
 
 (def qr-code-title
   {:font-size     20
