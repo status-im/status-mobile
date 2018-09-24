@@ -99,6 +99,7 @@ void RCTStatus::startNode(QString configString) {
     }
 
     configJSON["DataDir"] = absDataDirPath;
+    configJSON["BackupDisabledDataDir"] = absDataDirPath;
     configJSON["KeyStoreDir"] = rootDir.absoluteFilePath("keystore");
     configJSON["LogFile"] = dataDir.absoluteFilePath("geth.log");
 

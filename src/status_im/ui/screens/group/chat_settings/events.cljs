@@ -14,8 +14,7 @@
  (fn [{:keys [db] :as cofx} [_ chat-id]]
    (handlers-macro/merge-fx cofx
                             {:db (assoc db
-                                        :new-chat-name (get-in db [:chats chat-id :name])
-                                        :group/group-type :chat-group)}
+                                        :new-chat-name (get-in db [:chats chat-id :name]))}
                             (navigation/navigate-to-cofx :group-chat-profile nil))))
 
 (handlers/register-handler-fx
@@ -33,7 +32,7 @@
                               (models.message/receive
                                (models.message/system-message current-chat-id message-id now
                                                               (str "You've added " (apply str (interpose ", " added-participants-names)))))
-                              (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
+                              (transport/send (group-chat/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
 
 (handlers/register-handler-fx
  :remove-group-chat-participants
@@ -48,7 +47,7 @@
                               (models.message/receive
                                (models.message/system-message current-chat-id message-id now
                                                               (str "You've removed " (apply str (interpose ", " removed-participants-names)))))
-                              (transport/send (group-chat/GroupAdminUpdate. nil participants) current-chat-id)))))
+                              (transport/send (group-chat/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
 
 (handlers/register-handler-fx
  :set-group-chat-name

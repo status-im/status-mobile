@@ -40,12 +40,14 @@
 (spec/def :account/sharing-usage-data? (spec/nilable boolean?))
 (spec/def :account/dev-mode? (spec/nilable boolean?))
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
+(spec/def :account/installation-id :global/not-empty-string)
 (spec/def :account/wallet-set-up-passed? (spec/nilable boolean?))
 (spec/def :account/mainnet-warning-shown? (spec/nilable boolean?))
 
 (spec/def :accounts/account (allowed-keys
                              :req-un [:account/name :account/address :account/public-key
-                                      :account/photo-path :account/signing-phrase]
+                                      :account/photo-path :account/signing-phrase
+                                      :account/installation-id]
                              :opt-un [:account/debug? :account/status :account/last-updated
                                       :account/email :account/signed-up? :account/network
                                       :account/networks :account/settings :account/wnode

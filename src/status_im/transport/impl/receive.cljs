@@ -11,6 +11,11 @@
   (receive [this chat-id signature _ cofx]
     (models.group-chat/handle-group-admin-update this chat-id signature cofx)))
 
+(extend-type transport.group-chat/GroupChatCreate
+  message/StatusMessage
+  (receive [this _ signature _ cofx]
+    (models.group-chat/handle-group-chat-create this signature cofx)))
+
 (extend-type transport.group-chat/GroupLeave
   message/StatusMessage
   (receive [this chat-id signature _ cofx]

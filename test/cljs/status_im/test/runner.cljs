@@ -10,6 +10,7 @@
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
             [status-im.test.mailserver.core]
+            [status-im.test.node.core]
             [status-im.test.models.bootnode]
             [status-im.test.models.account]
             [status-im.test.models.contact]
@@ -74,6 +75,7 @@
  'status-im.test.init.core
  'status-im.test.data-store.realm.core
  'status-im.test.mailserver.core
+ 'status-im.test.node.core
  'status-im.test.models.bootnode
  'status-im.test.models.account
  'status-im.test.models.contact
