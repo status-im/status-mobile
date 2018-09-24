@@ -7,10 +7,10 @@
             [status-im.native-module.core :as status]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.ethereum.mnemonic :as mnemonic]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.security :as security]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.utils.fx :as fx]))
 
 (defn check-password-errors [password]
   (cond (string/blank? password) :required-field
@@ -37,49 +37,55 @@
                     (types/clj->json))]
        (re-frame/dispatch [:accounts.recover.callback/recover-account-success data password])))))
 
-(defn set-phrase [masked-recovery-phrase {:keys [db]}]
+(fx/defn set-phrase
+  [{:keys [db]} masked-recovery-phrase]
   (let [recovery-phrase (security/unmask masked-recovery-phrase)]
     {:db (update db :accounts/recover assoc
                  :passphrase (string/lower-case recovery-phrase)
                  :passphrase-valid? (not (check-phrase-errors recovery-phrase)))}))
 
-(defn validate-phrase [{:keys [db]}]
+(fx/defn validate-phrase
+  [{:keys [db]}]
   (let [recovery-phrase (get-in db [:accounts/recover :passphrase])]
     {:db (update db :accounts/recover assoc
                  :passphrase-error (check-phrase-errors recovery-phrase)
                  :passphrase-warning (check-phrase-warnings recovery-phrase))}))
 
-(defn set-password [masked-password {:keys [db]}]
+(fx/defn set-password
+  [{:keys [db]} masked-password]
   (let [password (security/unmask masked-password)]
     {:db (update db :accounts/recover assoc
                  :password password
                  :password-valid? (not (check-password-errors password)))}))
 
-(defn validate-password [{:keys [db]}]
+(fx/defn validate-password
+  [{:keys [db]}]
   (let [password (get-in db [:accounts/recover :password])]
     {:db (assoc-in db [:accounts/recover :password-error] (check-password-errors password))}))
 
-(defn validate-recover-result [{:keys [error pubkey address]} password {:keys [db] :as cofx}]
+(fx/defn validate-recover-result
+  [{:keys [db] :as cofx} {:keys [error pubkey address]} password]
   (if (empty? error)
     (let [account {:pubkey     pubkey
                    :address    address
                    :photo-path (identicon/identicon pubkey)
                    :mnemonic   ""}]
-      (accounts.create/on-account-created account password true cofx))
+      (accounts.create/on-account-created cofx account password true))
     {:db (assoc-in db [:accounts/recover :password-error] :recover-password-invalid)}))
 
-(defn on-account-recovered [result password {:keys [db] :as cofx}]
+(fx/defn on-account-recovered
+  [{:keys [db] :as cofx} result password]
   (let [data (types/json->clj result)]
-    (handlers-macro/merge-fx cofx
-                             {:db (dissoc db :accounts/recover)}
-                             (validate-recover-result data password))))
+    (fx/merge cofx
+              {:db (dissoc db :accounts/recover)}
+              (validate-recover-result data password))))
 
-(defn recover-account [{:keys [db]}]
+(fx/defn recover-account [{:keys [db]}]
   (let [{:keys [password passphrase]} (:accounts/recover db)]
     {:db (assoc-in db [:accounts/recover :processing?] true)
      :accounts.recover/recover-account [(security/mask-data passphrase) password]}))
 
-(defn recover-account-with-checks [{:keys [db] :as cofx}]
+(fx/defn recover-account-with-checks [{:keys [db] :as cofx}]
   (let [{:keys [passphrase processing?]} (:accounts/recover db)]
     (when-not processing?
       (if (mnemonic/status-generated-phrase? passphrase)
@@ -90,10 +96,10 @@
           :confirm-button-text (i18n/label :recovery-confirm-phrase)
           :on-accept           #(re-frame/dispatch [:accounts.recover.ui/recover-account-confirmed])}}))))
 
-(defn navigate-to-recover-account-screen [{:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (dissoc db :accounts/recover)}
-                           (navigation/navigate-to-cofx :recover nil)))
+(fx/defn navigate-to-recover-account-screen [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (dissoc db :accounts/recover)}
+            (navigation/navigate-to-cofx :recover nil)))
 
 (re-frame/reg-fx
  :accounts.recover/recover-account

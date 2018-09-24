@@ -1,5 +1,4 @@
 (ns status-im.events
-  (:require-macros [status-im.utils.handlers-macro :as handlers-macro])
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.core :as accounts]
             [status-im.accounts.create.core :as accounts.create]
@@ -27,6 +26,7 @@
              :as
              currency-settings.models]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [taoensso.timbre :as log]))
 
@@ -40,7 +40,7 @@
 (handlers/register-handler-fx
  :init.ui/data-reset-cancelled
  (fn [cofx [_ encryption-key]]
-   (init/initialize-app encryption-key cofx)))
+   (init/initialize-app cofx encryption-key)))
 
 (handlers/register-handler-fx
  :init/app-started
@@ -50,12 +50,12 @@
 (handlers/register-handler-fx
  :init.callback/get-encryption-key-success
  (fn [cofx [_ encryption-key]]
-   (init/initialize-app encryption-key cofx)))
+   (init/initialize-app cofx encryption-key)))
 
 (handlers/register-handler-fx
  :init.callback/get-device-UUID-success
  (fn [cofx [_ device-uuid]]
-   (init/set-device-uuid device-uuid cofx)))
+   (init/set-device-uuid cofx device-uuid)))
 
 (handlers/register-handler-fx
  :init.callback/init-store-success
@@ -66,7 +66,7 @@
 (handlers/register-handler-fx
  :init.callback/init-store-error
  (fn [cofx [_ encryption-key error]]
-   (init/handle-init-store-error encryption-key cofx)))
+   (init/handle-init-store-error cofx encryption-key)))
 
 (handlers/register-handler-fx
  :init.callback/account-change-success
@@ -85,7 +85,7 @@
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
  (fn [cofx [_ address]]
-   (init/initialize-account address cofx)))
+   (init/initialize-account cofx address)))
 
 (handlers/register-handler-fx
  :init.callback/account-change-error
@@ -102,39 +102,39 @@
 (handlers/register-handler-fx
  :accounts.ui/mainnet-warning-shown
  (fn [cofx _]
-   (accounts.update/account-update {:mainnet-warning-shown? true} cofx)))
+   (accounts.update/account-update cofx {:mainnet-warning-shown? true} {})))
 
 (handlers/register-handler-fx
  :accounts.ui/dev-mode-switched
  (fn [cofx [_ dev-mode?]]
-   (accounts/switch-dev-mode dev-mode? cofx)))
+   (accounts/switch-dev-mode cofx dev-mode?)))
 
 (handlers/register-handler-fx
  :accounts.ui/web3-opt-in-mode-switched
  (fn [cofx [_ opt-in]]
-   (accounts/switch-web3-opt-in-mode opt-in cofx)))
+   (accounts/switch-web3-opt-in-mode cofx opt-in)))
 
 (handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
  (fn [cofx [_ modal?]]
-   (accounts/confirm-wallet-set-up modal? cofx)))
+   (accounts/confirm-wallet-set-up cofx modal?)))
 
 ;; accounts create module
 
 (handlers/register-handler-fx
  :accounts.create.ui/next-step-pressed
  (fn [cofx [_ step password password-confirm]]
-   (accounts.create/next-step step password password-confirm cofx)))
+   (accounts.create/next-step cofx step password password-confirm)))
 
 (handlers/register-handler-fx
  :accounts.create.ui/step-back-pressed
  (fn [cofx [_ step password password-confirm]]
-   (accounts.create/step-back step cofx)))
+   (accounts.create/step-back cofx step)))
 
 (handlers/register-handler-fx
  :accounts.create.ui/input-text-changed
  (fn [cofx [_ input-key text]]
-   (accounts.create/account-set-input-text input-key text cofx)))
+   (accounts.create/account-set-input-text cofx input-key text)))
 
 (handlers/register-handler-fx
  :accounts.create.callback/create-account-success
@@ -142,7 +142,7 @@
   (re-frame/inject-cofx :accounts.create/get-signing-phrase)
   (re-frame/inject-cofx :accounts.create/get-status)]
  (fn [cofx [_ result password]]
-   (accounts.create/on-account-created result password false cofx)))
+   (accounts.create/on-account-created cofx result password false)))
 
 (handlers/register-handler-fx
  :accounts.create.ui/create-new-account-button-pressed
@@ -159,7 +159,7 @@
 (handlers/register-handler-fx
  :accounts.recover.ui/passphrase-input-changed
  (fn [cofx [_ recovery-phrase]]
-   (accounts.recover/set-phrase recovery-phrase cofx)))
+   (accounts.recover/set-phrase cofx recovery-phrase)))
 
 (handlers/register-handler-fx
  :accounts.recover.ui/passphrase-input-blured
@@ -169,7 +169,7 @@
 (handlers/register-handler-fx
  :accounts.recover.ui/password-input-changed
  (fn [cofx [_ masked-password]]
-   (accounts.recover/set-password masked-password cofx)))
+   (accounts.recover/set-password cofx masked-password)))
 
 (handlers/register-handler-fx
  :accounts.recover.ui/password-input-blured
@@ -192,7 +192,7 @@
   (re-frame/inject-cofx :accounts.create/get-signing-phrase)
   (re-frame/inject-cofx :accounts.create/get-status)]
  (fn [cofx [_ result password]]
-   (accounts.recover/on-account-recovered result password cofx)))
+   (accounts.recover/on-account-recovered cofx result password)))
 
 ;; accounts login module
 
@@ -204,24 +204,24 @@
 (handlers/register-handler-fx
  :accounts.login.callback/login-success
  (fn [cofx [_ login-result]]
-   (accounts.login/user-login-callback login-result cofx)))
+   (accounts.login/user-login-callback cofx login-result)))
 
 (handlers/register-handler-fx
  :accounts.login.ui/account-selected
  (fn [cofx [_ address photo-path name]]
-   (accounts.login/open-login address photo-path name cofx)))
+   (accounts.login/open-login cofx address photo-path name)))
 
 (handlers/register-handler-fx
  :accounts.login.callback/get-user-password-success
  (fn [cofx [_ password]]
-   (accounts.login/open-login-callback password cofx)))
+   (accounts.login/open-login-callback cofx password)))
 
 ;; accounts logout module
 
 (handlers/register-handler-fx
  :accounts.logout.ui/logout-pressed
  (fn [cofx _]
-   (accounts.logout/show-logout-confirmation)))
+   (accounts.logout/show-logout-confirmation cofx)))
 
 (handlers/register-handler-fx
  :accounts.logout.ui/logout-confirmed
@@ -240,17 +240,17 @@
 (handlers/register-handler-fx
  :mailserver.ui/user-defined-mailserver-selected
  (fn [cofx [_ mailserver-id]]
-   (mailserver/edit mailserver-id cofx)))
+   (mailserver/edit cofx mailserver-id)))
 
 (handlers/register-handler-fx
  :mailserver.ui/default-mailserver-selected
  (fn [cofx [_ mailserver-id]]
-   (mailserver/show-connection-confirmation mailserver-id cofx)))
+   (mailserver/show-connection-confirmation cofx mailserver-id)))
 
 (handlers/register-handler-fx
  :mailserver.ui/add-pressed
  (fn [cofx _]
-   (navigation/navigate-to-cofx :edit-mailserver nil cofx)))
+   (navigation/navigate-to-cofx cofx :edit-mailserver nil)))
 
 (handlers/register-handler-fx
  :mailserver.ui/save-pressed
@@ -261,7 +261,7 @@
 (handlers/register-handler-fx
  :mailserver.ui/input-changed
  (fn [cofx [_ input-key value]]
-   (mailserver/set-input input-key value cofx)))
+   (mailserver/set-input cofx input-key value)))
 
 (handlers/register-handler-fx
  :mailserver.ui/delete-confirmed
@@ -271,22 +271,22 @@
 (handlers/register-handler-fx
  :mailserver.ui/delete-pressed
  (fn [cofx [_ mailserver-id]]
-   (mailserver/show-delete-confirmation mailserver-id cofx)))
+   (mailserver/show-delete-confirmation cofx mailserver-id)))
 
 (handlers/register-handler-fx
  :mailserver.callback/qr-code-scanned
  (fn [cofx [_ _ url]]
-   (mailserver/set-url-from-qr url cofx)))
+   (mailserver/set-url-from-qr cofx url)))
 
 (handlers/register-handler-fx
  :mailserver.ui/connect-pressed
  (fn [cofx [_  mailserver-id]]
-   (mailserver/show-connection-confirmation mailserver-id cofx)))
+   (mailserver/show-connection-confirmation cofx mailserver-id)))
 
 (handlers/register-handler-fx
  :mailserver.ui/connect-confirmed
  (fn [cofx [_ current-fleet mailserver-id]]
-   (mailserver/save-settings current-fleet mailserver-id cofx)))
+   (mailserver/save-settings cofx current-fleet mailserver-id)))
 
 ;; network module
 
@@ -299,7 +299,7 @@
 (handlers/register-handler-fx
  :network.ui/input-changed
  (fn [cofx [_ input-key value]]
-   (network/set-input input-key value cofx)))
+   (network/set-input cofx input-key value)))
 
 (handlers/register-handler-fx
  :network.ui/add-network-pressed
@@ -314,12 +314,12 @@
 (handlers/register-handler-fx
  :network.ui/save-non-rpc-network-pressed
  (fn [cofx [_ network]]
-   (network/save-non-rpc-network network cofx)))
+   (network/save-non-rpc-network cofx network)))
 
 (handlers/register-handler-fx
  :network.ui/remove-network-confirmed
  (fn [cofx [_ network]]
-   (network/remove-network network cofx)))
+   (network/remove-network cofx network)))
 
 (handlers/register-handler-fx
  :network.ui/connect-network-pressed
@@ -334,46 +334,46 @@
 (handlers/register-handler-fx
  :network/connection-status-changed
  (fn [{db :db :as cofx} [_ is-connected?]]
-   (network/handle-connection-status-change is-connected? cofx)))
+   (network/handle-connection-status-change cofx is-connected?)))
 
 (handlers/register-handler-fx
  :network/network-status-changed
  (fn [cofx [_ data]]
-   (network/handle-network-status-change data cofx)))
+   (network/handle-network-status-change cofx data)))
 
 ;; fleet module
 
 (handlers/register-handler-fx
  :fleet.ui/save-fleet-confirmed
  (fn [cofx [_ fleet]]
-   (fleet/save fleet cofx)))
+   (fleet/save cofx fleet)))
 
 (handlers/register-handler-fx
  :fleet.ui/fleet-selected
  (fn [cofx [_ fleet]]
-   (fleet/show-save-confirmation fleet cofx)))
+   (fleet/show-save-confirmation cofx fleet)))
 
 ;; bootnodes module
 
 (handlers/register-handler-fx
  :bootnodes.ui/custom-bootnodes-switch-toggled
  (fn [cofx [_ value]]
-   (bootnodes/toggle-custom-bootnodes value cofx)))
+   (bootnodes/toggle-custom-bootnodes cofx value)))
 
 (handlers/register-handler-fx
  :bootnodes.ui/add-bootnode-pressed
  (fn [cofx [_ bootnode-id]]
-   (bootnodes/edit bootnode-id cofx)))
+   (bootnodes/edit cofx bootnode-id)))
 
 (handlers/register-handler-fx
  :bootnodes.callback/qr-code-scanned
  (fn [cofx [_ _ url]]
-   (bootnodes/set-bootnodes-from-qr url cofx)))
+   (bootnodes/set-bootnodes-from-qr cofx url)))
 
 (handlers/register-handler-fx
  :bootnodes.ui/input-changed
  (fn [cofx [_ input-key value]]
-   (bootnodes/set-input input-key value cofx)))
+   (bootnodes/set-input cofx input-key value)))
 
 (handlers/register-handler-fx
  :bootnodes.ui/save-pressed
@@ -384,57 +384,57 @@
 (handlers/register-handler-fx
  :bootnodes.ui/delete-pressed
  (fn [_ [_ id]]
-   (bootnodes/show-delete-bootnode-confirmation id)))
+   (bootnodes/show-delete-bootnode-confirmation _ id)))
 
 (handlers/register-handler-fx
  :bootnodes.ui/delete-confirmed
  (fn [cofx [_ bootnode-id]]
-   (bootnodes/delete-bootnode bootnode-id cofx)))
+   (bootnodes/delete-bootnode cofx bootnode-id)))
 
 ;; log-level module
 
 (handlers/register-handler-fx
  :log-level.ui/change-log-level-confirmed
  (fn [cofx [_ log-level]]
-   (log-level/save-log-level log-level cofx)))
+   (log-level/save-log-level cofx log-level)))
 
 (handlers/register-handler-fx
  :log-level.ui/log-level-selected
  (fn [cofx [_ log-level]]
-   (log-level/show-change-log-level-confirmation log-level cofx)))
+   (log-level/show-change-log-level-confirmation cofx log-level)))
 
 ;; Browser bridge module
 
 (handlers/register-handler-fx
  :browser.bridge.callback/qr-code-scanned
  (fn [cofx [_ _ data message]]
-   (browser/handle-scanned-qr-code data message cofx)))
+   (browser/handle-scanned-qr-code cofx data message)))
 
 ;; qr-scanner module
 
 (handlers/register-handler-fx
  :qr-scanner.ui/scan-qr-code-pressed
  (fn [cofx [_ identifier handler & [opts]]]
-   (qr-scanner/scan-qr-code identifier (merge {:handler handler} opts) cofx)))
+   (qr-scanner/scan-qr-code cofx identifier (merge {:handler handler} opts))))
 
 (handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-success
  (fn [cofx [_ context data]]
-   (qr-scanner/set-qr-code context data cofx)))
+   (qr-scanner/set-qr-code cofx context data)))
 
 ;; privacy-policy module
 
 (handlers/register-handler-fx
  :privacy-policy/privacy-policy-button-pressed
- (fn [_ _]
-   (privacy-policy/open-privacy-policy-link)))
+ (fn [cofx _]
+   (privacy-policy/open-privacy-policy-link cofx)))
 
 ;; wallet modules
 
 (handlers/register-handler-fx
  :wallet.settings.ui/currency-selected
  (fn [cofx [_ currency]]
-   (currency-settings.models/set-currency currency cofx)))
+   (currency-settings.models/set-currency cofx currency)))
 
 ;; chat module
 
@@ -460,14 +460,14 @@
  :signals/signal-received
  (fn [cofx [_ event-str]]
    (log/debug :event-str event-str)
-   (signals/process event-str cofx)))
+   (signals/process cofx event-str)))
 
 ;; protocol module
 
 (handlers/register-handler-fx
  :protocol.ui/close-app-confirmed
- (fn [_ _]
-   (protocol/handle-close-app-confirmed)))
+ (fn [cofx _]
+   (protocol/handle-close-app-confirmed cofx)))
 
 (handlers/register-handler-fx
  :protocol/state-sync-timed-out
@@ -486,7 +486,7 @@
 (handlers/register-handler-fx
  :notifications/notification-event-received
  (fn [cofx [_ event]]
-   (notifications/handle-push-notification event cofx)))
+   (notifications/handle-push-notification cofx event)))
 
 (handlers/register-handler-fx
  :notifications.callback/notification-stored
@@ -513,12 +513,12 @@
 (handlers/register-handler-fx
  :hardwallet.callback/check-nfc-support-success
  (fn [cofx [_ supported?]]
-   (hardwallet/set-nfc-support supported? cofx)))
+   (hardwallet/set-nfc-support cofx supported?)))
 
 (handlers/register-handler-fx
  :hardwallet.callback/check-nfc-enabled-success
  (fn [cofx [_ enabled?]]
-   (hardwallet/set-nfc-enabled enabled? cofx)))
+   (hardwallet/set-nfc-enabled cofx enabled?)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/status-hardwallet-option-pressed
@@ -538,14 +538,14 @@
 (handlers/register-handler-fx
  :hardwallet.ui/connect-info-button-pressed
  (fn [cofx _]
-   (browser/open-url "https://hardwallet.status.im" cofx)))
+   (browser/open-url cofx "https://hardwallet.status.im")))
 
 (handlers/register-handler-fx
  :hardwallet.ui/hold-card-button-pressed
  (fn [{:keys [db] :as cofx} _]
-   (handlers-macro/merge-fx cofx
-                            {:db (assoc-in db [:hardwallet :setup-step] :begin)}
-                            (navigation/navigate-to-cofx :hardwallet-setup nil))))
+   (fx/merge cofx
+             {:db (assoc-in db [:hardwallet :setup-step] :begin)}
+             (navigation/navigate-to-cofx :hardwallet-setup nil))))
 
 (handlers/register-handler-fx
  :hardwallet.ui/begin-setup-button-pressed
@@ -562,9 +562,9 @@
 (handlers/register-handler-fx
  :hardwallet.ui/connection-error-confirm-button-pressed
  (fn [{:keys [db] :as cofx} _]
-   (handlers-macro/merge-fx cofx
-                            {:db (assoc-in db [:hardwallet :setup-step] :begin)}
-                            (navigation/navigate-to-cofx :hardwallet-setup nil))))
+   (fx/merge cofx
+             {:db (assoc-in db [:hardwallet :setup-step] :begin)}
+             (navigation/navigate-to-cofx :hardwallet-setup nil))))
 
 (handlers/register-handler-fx
  :hardwallet.ui/secret-keys-next-button-pressed
@@ -584,12 +584,12 @@
 (handlers/register-handler-fx
  :hardwallet.ui/success-button-pressed
  (fn [cofx _]
-   (navigation/navigate-to-cofx :home nil cofx)))
+   (navigation/navigate-to-cofx cofx :home nil)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/pin-numpad-button-pressed
  (fn [cofx [_ number step]]
-   (hardwallet/process-pin-input number step cofx)))
+   (hardwallet/process-pin-input cofx number step)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/pin-numpad-delete-button-pressed
@@ -602,42 +602,42 @@
 (handlers/register-handler-fx
  :browser.ui/browser-item-selected
  (fn [cofx [_ browser-id]]
-   (browser/open-existing-browser browser-id cofx)))
+   (browser/open-existing-browser cofx browser-id)))
 
 (handlers/register-handler-fx
  :browser.ui/url-input-pressed
  (fn [cofx _]
-   (browser/update-browser-option :url-editing? true cofx)))
+   (browser/update-browser-option cofx :url-editing? true)))
 
 (handlers/register-handler-fx
  :browser.ui/url-input-blured
  (fn [cofx _]
-   (browser/update-browser-option :url-editing? false cofx)))
+   (browser/update-browser-option cofx :url-editing? false)))
 
 (handlers/register-handler-fx
  :browser.ui/url-submitted
  (fn [cofx [_ url]]
-   (browser/open-url-in-current-browser url cofx)))
+   (browser/open-url-in-current-browser cofx url)))
 
 (handlers/register-handler-fx
  :browser.ui/message-link-pressed
  (fn [cofx [_ link]]
-   (browser/handle-message-link link cofx)))
+   (browser/handle-message-link cofx link)))
 
 (handlers/register-handler-fx
  :browser.ui/remove-browser-pressed
  (fn [cofx [_ browser-id]]
-   (browser/remove-browser browser-id cofx)))
+   (browser/remove-browser cofx browser-id)))
 
 (handlers/register-handler-fx
  :browser.ui/lock-pressed
  (fn [cofx [_ secure?]]
-   (browser/update-browser-option :show-tooltip (if secure? :secure :not-secure) cofx)))
+   (browser/update-browser-option cofx :show-tooltip (if secure? :secure :not-secure))))
 
 (handlers/register-handler-fx
  :browser.ui/close-tooltip-pressed
  (fn [cofx _]
-   (browser/update-browser-option :show-tooltip nil cofx)))
+   (browser/update-browser-option cofx :show-tooltip nil)))
 
 (handlers/register-handler-fx
  :browser.ui/previous-page-button-pressed
@@ -652,12 +652,12 @@
 (handlers/register-handler-fx
  :browser/navigation-state-changed
  (fn [cofx [_ event error?]]
-   (browser/navigation-state-changed event error? cofx)))
+   (browser/navigation-state-changed cofx event error?)))
 
 (handlers/register-handler-fx
  :browser/bridge-message-received
  (fn [cofx [_ message]]
-   (browser/process-bridge-message message cofx)))
+   (browser/process-bridge-message cofx message)))
 
 (handlers/register-handler-fx
  :browser/error-occured
@@ -667,49 +667,49 @@
 (handlers/register-handler-fx
  :browser/loading-started
  (fn [cofx _]
-   (browser/update-browser-option :error? false cofx)))
+   (browser/update-browser-option cofx :error? false)))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-success
  (fn [cofx [_ hash]]
-   (browser/resolve-ens-multihash-success hash cofx)))
+   (browser/resolve-ens-multihash-success cofx hash)))
 
 (handlers/register-handler-fx
  :browser.callback/resolve-ens-multihash-error
  (fn [cofx _]
-   (browser/update-browser-option :resolving? false cofx)))
+   (browser/update-browser-option cofx :resolving? false)))
 
 (handlers/register-handler-fx
  :browser.callback/call-rpc
  (fn [cofx [_ message]]
-   (browser/send-to-bridge message cofx)))
+   (browser/send-to-bridge cofx message)))
 
 (handlers/register-handler-fx
  :browser.permissions.ui/dapp-permission-allowed
  (fn [cofx [_ dapp-name permission]]
-   (browser.permissions/allow-permission dapp-name permission cofx)))
+   (browser.permissions/allow-permission cofx dapp-name permission)))
 
 (handlers/register-handler-fx
  :browser.permissions.ui/dapp-permission-denied
  (fn [cofx [_ dapp-name]]
-   (browser.permissions/process-next-permission dapp-name cofx)))
+   (browser.permissions/process-next-permission cofx dapp-name)))
 
 (handlers/register-handler-fx
  :browser.ui/open-in-status-option-selected
  (fn [cofx [_ url]]
-   (browser/open-url url cofx)))
+   (browser/open-url cofx url)))
 
 (handlers/register-handler-fx
  :browser.ui/open-dapp-button-pressed
  (fn [cofx [_ dapp-url]]
-   (browser/open-url dapp-url cofx)))
+   (browser/open-url cofx dapp-url)))
 
 (handlers/register-handler-fx
  :browser.ui/dapp-url-submitted
  (fn [cofx [_ dapp-url]]
-   (browser/open-url dapp-url cofx)))
+   (browser/open-url cofx dapp-url)))
 
 (handlers/register-handler-fx
  :browser.ui/open-modal-chat-button-pressed
  (fn [cofx [_ host]]
-   (browser/open-chat-from-browser host cofx)))
+   (browser/open-chat-from-browser cofx host)))

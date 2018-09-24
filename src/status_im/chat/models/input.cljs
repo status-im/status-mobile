@@ -5,7 +5,8 @@
             [status-im.chat.models :as chat-model]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.js-dependencies :as dependencies]
+            [status-im.utils.fx :as fx]))
 
 (def space-char " ")
 
@@ -89,16 +90,16 @@
                     (str const/arg-wrapping-char arg const/arg-wrapping-char)))))
          (str/join const/spacing-char))))
 
-(defn set-chat-input-text
+(fx/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
-  [new-input {{:keys [current-chat-id] :as db} :db}]
+  [{{:keys [current-chat-id] :as db} :db} new-input]
   {:db (-> (chat-model/set-chat-ui-props db {:validation-messages nil})
            (assoc-in [:chats current-chat-id :input-text] (text->emoji new-input)))})
 
-(defn set-chat-input-metadata
+(fx/defn set-chat-input-metadata
   "Sets user invisible chat input metadata for current-chat"
-  [metadata {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} metadata]
   (let [current-chat-id (:current-chat-id db)]
     {:db (assoc-in db [:chats current-chat-id :input-metadata] metadata)}))
 
@@ -114,10 +115,11 @@
                                  :chat/spam-messages-frequency 0
                                  :chat/cooldown-enabled? true)})
 
-(defn process-cooldown [{{:keys [chat/last-outgoing-message-sent-at
-                                 chat/cooldowns
-                                 chat/spam-messages-frequency
-                                 current-chat-id] :as db} :db :as cofx}]
+(fx/defn process-cooldown
+  [{{:keys [chat/last-outgoing-message-sent-at
+            chat/cooldowns
+            chat/spam-messages-frequency
+            current-chat-id] :as db} :db :as cofx}]
   (when (chat-model/public-chat? current-chat-id cofx)
     (let [spamming-fast? (< (- (datetime/timestamp) last-outgoing-message-sent-at)
                             (+ const/spam-interval-ms (* 1000 cooldowns)))

@@ -3,7 +3,7 @@
             [status-im.transport.message.core :as transport]
             [status-im.transport.message.v1.contact :as message.v1.contact]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 (defn can-add-to-contacts? [{:keys [pending? dapp?]}]
   (and (not dapp?)
@@ -24,7 +24,7 @@
      :address       address
      :fcm-token     fcm-token}))
 
-(defn- add-new-contact [{:keys [whisper-identity] :as contact} {:keys [db]}]
+(fx/defn add-new-contact [{:keys [db]} {:keys [whisper-identity] :as contact}]
   (let [new-contact (assoc contact
                            :pending? false
                            :hide-contact? false
@@ -35,17 +35,18 @@
                         (assoc-in [:contacts/new-identity] ""))
      :data-store/tx [(contacts-store/save-contact-tx new-contact)]}))
 
-(defn send-contact-request [{:keys [whisper-identity pending? dapp?] :as contact} {:keys [db] :as cofx}]
+(fx/defn send-contact-request
+  [{:keys [db] :as cofx} {:keys [whisper-identity pending? dapp?] :as contact}]
   (when-not dapp?
     (if pending?
       (transport/send (message.v1.contact/map->ContactRequestConfirmed (own-info db)) whisper-identity cofx)
       (transport/send (message.v1.contact/map->ContactRequest (own-info db)) whisper-identity cofx))))
 
-(defn add-contact [whisper-id {:keys [db] :as cofx}]
+(fx/defn add-contact [{:keys [db] :as cofx} whisper-id]
   (let [contact (build-contact whisper-id cofx)]
-    (handlers-macro/merge-fx cofx
-                             (add-new-contact contact)
-                             (send-contact-request contact))))
+    (fx/merge cofx
+              (add-new-contact contact)
+              (send-contact-request contact))))
 
 (defn handle-contact-update
   [public-key
@@ -76,18 +77,17 @@
                                                      (:address contact)
                                                      (utils.contacts/public-key->address public-key))
                                :last-updated     timestamp-ms
-                               ;;NOTE (yenda) in case of concurrent contact request
+                                  ;;NOTE (yenda) in case of concurrent contact request
                                :pending?         (get contact :pending? true)}
                                fcm-token (assoc :fcm-token fcm-token))]
         ;;NOTE (yenda) only update if there is changes to the contact
         (when-not (= contact-props
                      (select-keys contact [:whisper-identity :public-key :address
                                            :photo-path :name :fcm-token :pending?]))
-          (handlers-macro/merge-fx cofx
-                                   {:db            (update-in db [:contacts/contacts public-key]
-                                                              merge contact-props)
-                                    :data-store/tx [(contacts-store/save-contact-tx
-                                                     contact-props)]}))))))
+          {:db            (update-in db [:contacts/contacts public-key]
+                                     merge contact-props)
+           :data-store/tx [(contacts-store/save-contact-tx
+                            contact-props)]})))))
 
 (def receive-contact-request handle-contact-update)
 (def receive-contact-request-confirmation handle-contact-update)

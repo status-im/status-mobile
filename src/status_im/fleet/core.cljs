@@ -4,8 +4,8 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [status-im.utils.types :as types])
+            [status-im.utils.types :as types]
+            [status-im.utils.fx :as fx])
   (:require-macros [status-im.utils.slurp :refer [slurp]]))
 
 (defn current-fleet
@@ -40,8 +40,8 @@
           {}
           fleets))
 
-(defn show-save-confirmation
-  [fleet {:keys [db] :as cofx}]
+(fx/defn show-save-confirmation
+  [{:keys [db] :as cofx} fleet]
   {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
                           :content             (i18n/label :t/change-fleet
                                                            {:fleet fleet})
@@ -49,12 +49,11 @@
                           :on-accept           #(re-frame/dispatch [:fleet.ui/save-fleet-confirmed (keyword fleet)])
                           :on-cancel           nil}})
 
-(defn save
-  [fleet {:keys [db now] :as cofx}]
+(fx/defn save
+  [{:keys [db now] :as cofx} fleet]
   (let [settings (get-in db [:account/account :settings])]
-    (handlers-macro/merge-fx cofx
-                             (accounts.update/update-settings
-                              (if fleet
-                                (assoc settings :fleet fleet)
-                                (dissoc settings :fleet))
-                              [:accounts.update.callback/save-settings-success]))))
+    (accounts.update/update-settings cofx
+                                     (if fleet
+                                       (assoc settings :fleet fleet)
+                                       (dissoc settings :fleet))
+                                     {:success-event [:accounts.update.callback/save-settings-success]})))

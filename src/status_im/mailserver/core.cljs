@@ -5,7 +5,8 @@
             [status-im.i18n :as i18n]
             [status-im.fleet.core :as fleet]
             [status-im.accounts.update.core :as accounts.update]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]
+            [status-im.ui.screens.navigation :as navigation]))
 
 (def enode-address-regex #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 (def enode-url-regex #"enode://[a-zA-Z0-9]+:(.+)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
@@ -26,7 +27,7 @@
   (let [[initial host] (extract-address-components address)]
     (str "enode://" initial ":" password "@" host)))
 
-(defn set-input [input-key value {:keys [db]}]
+(fx/defn set-input [{:keys [db]} input-key value]
   {:db (update
         db
         :mailservers/manage
@@ -51,14 +52,14 @@
          :id id
          :name mailserver-name))
 
-(defn connected? [id {:keys [db]}]
+(defn connected? [{:keys [db]} id]
   (= (:inbox/current-id db) id))
 
-(defn fetch [id {:keys [db] :as cofx}]
+(defn fetch [{:keys [db] :as cofx} id]
   (get-in db [:inbox/wnodes (fleet/current-fleet db) id]))
 
 (defn fetch-current [{:keys [db] :as cofx}]
-  (fetch (:inbox/current-id db) cofx))
+  (fetch cofx (:inbox/current-id db)))
 
 (defn preferred-mailserver-id [{:keys [db] :as cofx}]
   (get-in db [:account/account :settings :wnode (fleet/current-fleet db)]))
@@ -87,7 +88,7 @@
         preference    (preferred-mailserver-id cofx)
         choices       (-> db :inbox/wnodes current-fleet keys)]
     (if (and preference
-             (fetch preference cofx))
+             (fetch cofx preference))
       preference
       (if current-id
         (round-robin choices current-id)
@@ -95,21 +96,27 @@
 
 (def default? (comp not :user-defined fetch))
 
-(defn delete [id {:keys [db] :as cofx}]
+(fx/defn delete
+  [{:keys [db] :as cofx} id]
   (merge (when-not (or
-                    (default? id cofx)
-                    (connected? id cofx))
+                    (default? cofx id)
+                    (connected? cofx id))
            {:db            (update-in db [:inbox/wnodes (fleet/current-fleet db)] dissoc id)
             :data-store/tx [(data-store.mailservers/delete-tx id)]})
          {:dispatch [:navigate-back]}))
 
-(defn set-current-mailserver [{:keys [db] :as cofx}]
-  {:db (assoc db :inbox/current-id (selected-or-random-id cofx))})
+(fx/defn set-current-mailserver
+  [{:keys [db] :as cofx}]
+  {:db (assoc db :inbox/current-id
+              (selected-or-random-id cofx))})
 
-(defn set-initial-last-request [{:keys [db now] :as cofx}]
-  {:db (update-in db [:account/account :last-request] (fnil identity (quot now 1000)))})
+(fx/defn set-initial-last-request
+  [{:keys [db now] :as cofx}]
+  {:db (update-in db [:account/account :last-request]
+                  (fnil identity (quot now 1000)))})
 
-(defn add-custom-mailservers [mailservers {:keys [db]}]
+(fx/defn add-custom-mailservers
+  [{:keys [db]} mailservers]
   {:db (reduce (fn [db {:keys [id fleet] :as mailserver}]
                  (assoc-in db [:inbox/wnodes fleet id]
                            (-> mailserver
@@ -118,20 +125,20 @@
                db
                mailservers)})
 
-(defn edit [id {:keys [db] :as cofx}]
+(fx/defn edit [{:keys [db] :as cofx} id]
   (let [{:keys [id
                 address
                 password
-                name]}   (fetch id cofx)
-        url              (when address (build-url address password))
-        fxs              (handlers-macro/merge-fx
-                          cofx
-                          (set-input :id id)
-                          (set-input :url (str url))
-                          (set-input :name (str name)))]
-    (assoc fxs :dispatch [:navigate-to :edit-mailserver])))
+                name]}   (fetch cofx id)
+        url              (when address (build-url address password))]
+    (fx/merge cofx
+              (set-input :id id)
+              (set-input :url (str url))
+              (set-input :name (str name))
+              (navigation/navigate-to-cofx :edit-mailserver nil))))
 
-(defn upsert [{{:mailservers/keys [manage] :account/keys [account] :as db} :db :as cofx}]
+(fx/defn upsert
+  [{{:mailservers/keys [manage] :account/keys [account] :as db} :db :as cofx}]
   (let [{:keys [name url id]} manage
         current-fleet         (fleet/current-fleet db)
         mailserver            (build
@@ -139,7 +146,7 @@
                                    (keyword (string/replace (:random-id cofx) "-" "")))
                                (:value name)
                                (:value url))
-        current               (connected? (:id mailserver) cofx)]
+        current               (connected? cofx (:id mailserver))]
     {:db (-> db
              (dissoc :mailservers/manage)
              (assoc-in [:inbox/wnodes current-fleet (:id mailserver)] mailserver))
@@ -152,8 +159,8 @@
                       :success-event (when current [:accounts.logout.ui/logout-confirmed])}]
      :dispatch [:navigate-back]}))
 
-(defn show-connection-confirmation
-  [mailserver-id {:keys [db]}]
+(fx/defn show-connection-confirmation
+  [{:keys [db]} mailserver-id]
   (let [current-fleet (fleet/current-fleet db)]
     {:ui/show-confirmation
      {:title               (i18n/label :t/close-app-title)
@@ -163,23 +170,22 @@
       :on-accept           #(re-frame/dispatch [:mailserver.ui/connect-confirmed current-fleet mailserver-id])
       :on-cancel           nil}}))
 
-(defn show-delete-confirmation
-  [mailserver-id {:keys [db]}]
+(fx/defn show-delete-confirmation
+  [{:keys [db]} mailserver-id]
   {:ui/show-confirmation
    {:title               (i18n/label :t/delete-mailserver-title)
     :content             (i18n/label :t/delete-mailserver-are-you-sure)
     :confirm-button-text (i18n/label :t/delete-mailserver)
     :on-accept           #(re-frame/dispatch [:mailserver.ui/delete-confirmed mailserver-id])}})
 
-(defn save-settings
-  [current-fleet mailserver-id {:keys [db] :as cofx}]
+(fx/defn save-settings
+  [{:keys [db] :as cofx} current-fleet mailserver-id]
   (let [settings (get-in db [:account/account :settings])]
-    (handlers-macro/merge-fx cofx
-                             (accounts.update/update-settings
-                              (assoc-in settings [:wnode current-fleet] mailserver-id)
-                              [:accounts.update.callback/save-settings-success]))))
+    (accounts.update/update-settings cofx
+                                     (assoc-in settings [:wnode current-fleet] mailserver-id)
+                                     {:success-event [:accounts.update.callback/save-settings-success]})))
 
-(defn set-url-from-qr
-  [url cofx]
+(fx/defn set-url-from-qr
+  [cofx url]
   (assoc (set-input :url url cofx)
          :dispatch [:navigate-back]))

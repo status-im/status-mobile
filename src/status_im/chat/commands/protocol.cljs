@@ -11,15 +11,15 @@
     "Scope of the command, defined as set of values representing contexts
      where in which command is available, together with `id` it forms unique
      identifier for each command.
-     Available values for the set are: 
+     Available values for the set are:
      `id-of-the-any-chat` - command if available only for the specified chat
      `:personal-chats` - command is available for any personal 1-1 chat
      `:group-chats` - command is available for any group chat
      `:public-chats` - command is available for any public chat ")
   (description [this] "Description of the command")
   (parameters [this]
-    "Ordered sequence of command parameter templates, where each parameter 
-     is defined as map consisting of mandatory `:id`, `:title` and `:type` keys, 
+    "Ordered sequence of command parameter templates, where each parameter
+     is defined as map consisting of mandatory `:id`, `:title` and `:type` keys,
      and optional `:suggestions` field.
      When used, `:suggestions` containes reference to any generic helper component
      rendering suggestions for the argument (input code will handle when and where
@@ -30,7 +30,7 @@
     found and command send workflow can proceed, or one/more errors to display.
     Each error is represented by the map containing `:title` and `:description` keys.")
   (on-send [this command-message cofx]
-    "Function which can provide any extra effects to be produced in addition to 
+    "Function which can provide any extra effects to be produced in addition to
     normal message effects which happen whenever message is sent")
   (on-receive [this command-message cofx]
     "Function which can provide any extre effects to be produced in addition to

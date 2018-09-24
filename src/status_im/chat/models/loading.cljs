@@ -7,11 +7,11 @@
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
             [status-im.utils.datetime :as time]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
 
-(defn- add-default-contacts
+(fx/defn add-default-contacts
   [{:keys [db default-contacts] :as cofx}]
   (let [new-contacts      (-> {}
                               (into (map (fn [[id props]]
@@ -43,10 +43,10 @@
                  :message-id)
            message-references))
 
-(defn group-chat-messages
+(fx/defn group-chat-messages
   "Takes chat-id, new messages + cofx and properly groups them
   into the `:message-groups`index in db"
-  [chat-id messages {:keys [db]}]
+  [{:keys [db]} chat-id messages]
   {:db (reduce (fn [db [datemark grouped-messages]]
                  (update-in db [:chats chat-id :message-groups datemark]
                             (fn [message-references]
@@ -60,14 +60,14 @@
                (group-by (comp time/day-relative :timestamp)
                          (filter :show? messages)))})
 
-(defn- group-messages
+(fx/defn group-messages
   [{:keys [db]}]
   (reduce-kv (fn [fx chat-id {:keys [messages]}]
-               (group-chat-messages chat-id (vals messages) fx))
+               (group-chat-messages fx chat-id (vals messages)))
              {:db db}
              (:chats db)))
 
-(defn initialize-chats
+(fx/defn initialize-chats
   "Initialize all persisted chats on startup"
   [{:keys [db default-dapps all-stored-chats get-stored-messages get-stored-user-statuses
            get-stored-unviewed-messages stored-message-ids] :as cofx}]
@@ -85,15 +85,15 @@
                                                                                 (set message-ids))))))
                       {}
                       all-stored-chats)]
-    (handlers-macro/merge-fx cofx
-                             {:db (assoc db
-                                         :chats          chats
-                                         :contacts/dapps default-dapps)}
-                             (group-messages)
-                             (add-default-contacts)
-                             (commands/load-commands commands/register))))
+    (fx/merge cofx
+              {:db (assoc db
+                          :chats          chats
+                          :contacts/dapps default-dapps)}
+              (group-messages)
+              (add-default-contacts)
+              (commands/load-commands commands/register))))
 
-(defn initialize-pending-messages
+(fx/defn initialize-pending-messages
   "Change status of own messages which are still in `sending` status to `not-sent`
   (If signal from status-go has not been received)"
   [{:keys [db]}]
@@ -125,14 +125,13 @@
           indexed-messages (index-messages new-messages)
           new-message-ids  (keys indexed-messages)
           new-statuses     (get-stored-user-statuses current-chat-id new-message-ids)]
-      (handlers-macro/merge-fx
-       cofx
-       {:db (-> db
-                (update-in [:chats current-chat-id :messages] merge indexed-messages)
-                (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
-                (update-in [:chats current-chat-id :not-loaded-message-ids]
-                           #(apply disj % new-message-ids))
-                (assoc-in [:chats current-chat-id :all-loaded?]
-                          (> constants/default-number-of-messages (count new-messages))))}
-       (group-chat-messages current-chat-id new-messages)
-       (chat-model/mark-messages-seen current-chat-id)))))
+      (fx/merge cofx
+                {:db (-> db
+                         (update-in [:chats current-chat-id :messages] merge indexed-messages)
+                         (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
+                         (update-in [:chats current-chat-id :not-loaded-message-ids]
+                                    #(apply disj % new-message-ids))
+                         (assoc-in [:chats current-chat-id :all-loaded?]
+                                   (> constants/default-number-of-messages (count new-messages))))}
+                (group-chat-messages current-chat-id new-messages)
+                (chat-model/mark-messages-seen current-chat-id)))))

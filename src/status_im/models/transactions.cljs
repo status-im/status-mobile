@@ -3,9 +3,9 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.semaphores :as semaphores]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 (def sync-interval-ms 15000)
 (def confirmations-count-threshold 12)
@@ -32,7 +32,7 @@
                   chat-transactions
                   (wallet-transactions-set db))))))
 
-(defn- schedule-sync [cofx]
+(fx/defn schedule-sync [cofx]
   {:utils/dispatch-later [{:ms       sync-interval-ms
                            :dispatch [:sync-wallet-transactions]}]})
 
@@ -55,7 +55,7 @@
      chat-transactions
      (wallet-transactions-set db))))
 
-(defn load-missing-chat-transactions
+(fx/defn load-missing-chat-transactions
   "Find missing chat transactions and store them at [:wallet :chat-transactions]
   to be used later by have-missing-chat-transactions? on every sync request"
   [{:keys [db] :as cofx}]
@@ -64,7 +64,7 @@
                    [:wallet :chat-transactions]
                    (missing-chat-transactions cofx))}))
 
-(defn run-update [{{:keys [network network-status web3] :as db} :db}]
+(fx/defn run-update [{{:keys [network network-status web3] :as db} :db}]
   (when (not= network-status :offline)
     (let [network (get-in db [:account/account :networks network])
           chain (ethereum/network->chain-keyword network)]
@@ -89,7 +89,7 @@
         (< sync-interval-ms
            (- (time/timestamp) last-updated-at)))))
 
-(defn sync
+(fx/defn sync
   "Fetch updated data for any unconfirmed transactions or incoming chat transactions missing in wallet
   and schedule new recurring sync request"
   [{:keys [db] :as cofx}]
@@ -102,15 +102,15 @@
                (time-to-sync? cofx)
                (or (have-unconfirmed-transactions? cofx)
                    (have-missing-chat-transactions? cofx)))
-        (handlers-macro/merge-fx cofx
-                                 (run-update)
-                                 (schedule-sync))
+        (fx/merge cofx
+                  (run-update)
+                  (schedule-sync))
         (schedule-sync cofx)))
-    {:db (semaphores/free :sync-wallet-transactions? cofx)}))
+    (semaphores/free cofx :sync-wallet-transactions?)))
 
-(defn start-sync [cofx]
-  (when-not (semaphores/locked? :sync-wallet-transactions? cofx)
-    (handlers-macro/merge-fx cofx
-                             (load-missing-chat-transactions)
-                             (semaphores/lock :sync-wallet-transactions?)
-                             (sync))))
+(fx/defn start-sync [cofx]
+  (when-not (semaphores/locked? cofx :sync-wallet-transactions?)
+    (fx/merge cofx
+              (load-missing-chat-transactions)
+              (semaphores/lock :sync-wallet-transactions?)
+              (sync))))

@@ -3,7 +3,8 @@
             [status-im.chat.commands.core :as commands]
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.models :as chat-model]
-            [status-im.chat.models.input :as input-model]))
+            [status-im.chat.models.input :as input-model]
+            [status-im.utils.fx :as fx]))
 
 (defn- current-param-position [input-text selection]
   (when selection
@@ -25,10 +26,10 @@
       (> input-params-count params-count) :more-than-needed)))
 
 (defn selected-chat-command
-  "Takes input text, text-selection and `protocol/id->command-props` map (result of 
-  the `chat-commands` fn) and returns the corresponding `command-props` entry, 
+  "Takes input text, text-selection and `protocol/id->command-props` map (result of
+  the `chat-commands` fn) and returns the corresponding `command-props` entry,
   or nothing if input text doesn't match any available command.
-  Besides keys `:params` and `:type`, the returned map contains: 
+  Besides keys `:params` and `:type`, the returned map contains:
   * `:input-params` - parsed parameters from the input text as map of `param-id->entered-value`
   # `:current-param-position` - index of the parameter the user is currently focused on (cursor position
   in relation to parameters), could be nil if the input is not selected
@@ -50,9 +51,9 @@
                  :current-param-position (current-param-position input-text text-selection)
                  :command-completion (command-completion input-params params)))))))
 
-(defn set-command-parameter
+(fx/defn set-command-parameter
   "Set value as command parameter for the current chat"
-  [last-param? param-index value {:keys [db]}]
+  [{:keys [db]} last-param? param-index value]
   (let [{:keys [current-chat-id chats]} db
         [command & params]  (-> (get-in chats [current-chat-id :input-text])
                                 input-model/split-command-args)
@@ -73,9 +74,9 @@
              (chat-model/set-chat-ui-props {:validation-messages nil})
              (assoc-in [:chats current-chat-id :input-text] input-text))}))
 
-(defn select-chat-input-command
+(fx/defn select-chat-input-command
   "Takes command and (optional) map of input-parameters map and sets it as current-chat input"
-  [{:keys [type params]} input-params {:keys [db]}]
+  [{:keys [db]} {:keys [type params]} input-params]
   (let [{:keys [current-chat-id chat-ui-props]} db]
     {:db (-> db
              (chat-model/set-chat-ui-props {:show-suggestions?   false

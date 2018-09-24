@@ -1,6 +1,7 @@
-(ns status-im.models.contacts)
+(ns status-im.models.contacts
+  (:require [status-im.utils.fx :as fx]))
 
-(defn load-contacts
+(fx/defn load-contacts
   [{:keys [db all-contacts]}]
   (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
         contacts (into {} contacts-list)]

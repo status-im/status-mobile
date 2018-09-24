@@ -7,7 +7,7 @@
             [status-im.network.net-info :as net-info]
             [status-im.transport.inbox :as inbox]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -55,7 +55,8 @@
   (let [network  (get (:networks (:account/account db)) (:network db))]
     (ethereum/network->chain-keyword network)))
 
-(defn set-input [input-key value {:keys [db]}]
+(fx/defn set-input
+  [{:keys [db]} input-key value]
   {:db (-> db
            (update-in [:networks/manage input-key] assoc :value value)
            (update-in [:networks/manage] validate-manage))})
@@ -82,85 +83,84 @@
                                        (:value chain)
                                        (:value network-id))
              new-networks (merge {(:id network) network} (:networks account))]
-         (handlers-macro/merge-fx cofx
-                                  {:db (dissoc db :networks/manage)}
-                                  (action-handler on-success (:id network))
-                                  (accounts.update/account-update
-                                   {:networks new-networks}
-                                   success-event)))
+         (fx/merge cofx
+                   {:db (dissoc db :networks/manage)}
+                   #(action-handler on-success (:id network) %)
+                   (accounts.update/account-update
+                    {:networks new-networks}
+                    {:success-event success-event})))
        (action-handler on-failure)))))
 
 ;; No edit functionality actually implemented
-(defn edit [{db :db}]
+(fx/defn edit
+  [{db :db}]
   {:db       (assoc db :networks/manage (validate-manage default-manage))
    :dispatch [:navigate-to :edit-network]})
 
-(defn connect [{:keys [db now] :as cofx} {:keys [network on-success on-failure]}]
+(fx/defn connect [{:keys [db now] :as cofx} {:keys [network on-success on-failure]}]
   (if (get-in db [:account/account :networks network])
     (let [current-network (get-in db [:account/account :networks (:network db)])]
       (if (ethereum/network-with-upstream-rpc? current-network)
-        (handlers-macro/merge-fx cofx
-                                 (action-handler on-success network)
-                                 (accounts.update/account-update
-                                  {:network      network
-                                   :last-updated now}
-                                  [:accounts.update.callback/save-settings-success]))
-        (handlers-macro/merge-fx cofx
-                                 {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
-                                                         :content             (i18n/label :t/close-app-content)
-                                                         :confirm-button-text (i18n/label :t/close-app-button)
-                                                         :on-accept           #(re-frame/dispatch [:network.ui/save-non-rpc-network-pressed network])
-                                                         :on-cancel           nil}}
-                                 (action-handler on-success network))))
+        (fx/merge cofx
+                  #(action-handler on-success network %)
+                  (accounts.update/account-update
+                   {:network      network
+                    :last-updated now}
+                   {:success-event [:accounts.update.callback/save-settings-success]}))
+        (fx/merge cofx
+                  {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
+                                          :content             (i18n/label :t/close-app-content)
+                                          :confirm-button-text (i18n/label :t/close-app-button)
+                                          :on-accept           #(re-frame/dispatch [:network.ui/save-non-rpc-network-pressed network])
+                                          :on-cancel           nil}}
+                  #(action-handler on-success network %))))
     (action-handler on-failure)))
 
-(defn delete [{{:account/keys [account]} :db :as cofx} {:keys [network on-success on-failure]}]
+(fx/defn delete
+  [{{:account/keys [account]} :db :as cofx} {:keys [network on-success on-failure]}]
   (let [current-network? (= (:network account) network)]
     (if (or current-network?
             (not (get-in account [:networks network])))
-      (handlers-macro/merge-fx cofx
-                               {:ui/show-error (i18n/label :t/delete-network-error)}
-                               (action-handler on-failure network))
-      (handlers-macro/merge-fx cofx
-                               {:ui/show-confirmation {:title               (i18n/label :t/delete-network-title)
-                                                       :content             (i18n/label :t/delete-network-confirmation)
-                                                       :confirm-button-text (i18n/label :t/delete)
-                                                       :on-accept           #(re-frame/dispatch [:network.ui/remove-network-confirmed network])
-                                                       :on-cancel           nil}}
-                               (action-handler on-success network)))))
+      (fx/merge cofx
+                {:ui/show-error (i18n/label :t/delete-network-error)}
+                #(action-handler on-failure network %))
+      (fx/merge cofx
+                {:ui/show-confirmation {:title               (i18n/label :t/delete-network-title)
+                                        :content             (i18n/label :t/delete-network-confirmation)
+                                        :confirm-button-text (i18n/label :t/delete)
+                                        :on-accept           #(re-frame/dispatch [:network.ui/remove-network-confirmed network])
+                                        :on-cancel           nil}}
+                #(action-handler on-success network %)))))
 
-(defn save-non-rpc-network
-  [network {:keys [db now] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           (accounts.update/account-update
-                            {:network      network
-                             :last-updated now}
-                            [:network.callback/non-rpc-network-saved])))
+(fx/defn save-non-rpc-network
+  [{:keys [db now] :as cofx} network]
+  (accounts.update/account-update cofx
+                                  {:network      network
+                                   :last-updated now}
+                                  {:success-event [:network.callback/non-rpc-network-saved]}))
 
-(defn remove-network
-  [network {:keys [db now] :as cofx}]
+(fx/defn remove-network
+  [{:keys [db now] :as cofx} network]
   (let [networks (dissoc (get-in db [:account/account :networks]) network)]
-    (handlers-macro/merge-fx cofx
-                             (accounts.update/account-update
-                              {:networks     networks
-                               :last-updated now}
-                              [:navigate-back]))))
+    (accounts.update/account-update cofx
+                                    {:networks     networks
+                                     :last-updated now}
+                                    {:success-event [:navigate-back]})))
 
-(defn save-network
+(fx/defn save-network
   [cofx]
   (save cofx
         {:data          (get-in cofx [:db :networks/manage])
          :success-event [:navigate-back]}))
 
-(defn handle-connection-status-change
-  [is-connected? {:keys [db] :as cofx}]
-  (handlers-macro/merge-fx
-   cofx
-   {:db (assoc db :network-status (if is-connected? :online :offline))}
-   (inbox/request-messages)))
+(fx/defn handle-connection-status-change
+  [{:keys [db] :as cofx} is-connected?]
+  (fx/merge cofx
+            {:db (assoc db :network-status (if is-connected? :online :offline))}
+            (inbox/request-messages)))
 
-(defn handle-network-status-change
-  [data cofx]
+(fx/defn handle-network-status-change
+  [cofx data]
   {:network/notify-status-go data})
 
 (re-frame/reg-fx

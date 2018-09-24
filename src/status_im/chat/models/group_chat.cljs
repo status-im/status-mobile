@@ -7,8 +7,8 @@
    [status-im.chat.models :as models.chat]
    [status-im.transport.message.core :as message]
    [status-im.transport.message.v1.group-chat :as transport.group-chat]
-   [status-im.utils.handlers-macro :as handlers-macro]
-   [status-im.chat.models.message :as models.message]))
+   [status-im.chat.models.message :as models.message]
+   [status-im.utils.fx :as fx]))
 
 (defn- participants-diff [existing-participants-set new-participants-set]
   {:removed (set/difference existing-participants-set new-participants-set)
@@ -41,37 +41,38 @@
               admin-name              (or (get-in db [:contacts/contacts group-admin :name])
                                           group-admin)]
           (if (removed me) ;; we were removed
-            (handlers-macro/merge-fx cofx
-                                     (models.message/receive
-                                      (models.message/system-message chat-id random-id now
-                                                                     (str admin-name " " (i18n/label :t/removed-from-chat))))
-                                     (models.chat/upsert-chat {:chat-id         chat-id
-                                                               :removed-from-at now
-                                                               :is-active       false})
-                                     (transport.utils/unsubscribe-from-chat chat-id))
-            (handlers-macro/merge-fx cofx
-                                     (models.message/receive
-                                      (models.message/system-message chat-id random-id now
-                                                                     (prepare-system-message admin-name
-                                                                                             added
-                                                                                             removed
-                                                                                             (:contacts/contacts db))))
-                                     (group/participants-added chat-id added)
-                                     (group/participants-removed chat-id removed)))))
+            (fx/merge cofx
+                      (models.message/receive
+                       (models.message/system-message chat-id random-id now
+                                                      (str admin-name " " (i18n/label :t/removed-from-chat))))
+                      (models.chat/upsert-chat {:chat-id         chat-id
+                                                :removed-from-at now
+                                                :is-active       false})
+                      (transport.utils/unsubscribe-from-chat chat-id))
+            (fx/merge cofx
+                      (models.message/receive
+                       (models.message/system-message chat-id random-id now
+                                                      (prepare-system-message admin-name
+                                                                              added
+                                                                              removed
+                                                                              (:contacts/contacts db))))
+                      (group/participants-added chat-id added)
+                      (group/participants-removed chat-id removed)))))
       ;; first time we hear about chat -> create it if we are among participants
       (when (get (set participants) me)
-        (models.chat/add-group-chat chat-id chat-name signature participants cofx)))))
+        (models.chat/add-group-chat cofx chat-id chat-name signature participants)))))
 
-(defn handle-group-leave [chat-id signature {:keys [db random-id now] :as cofx}]
+(fx/defn handle-group-leave
+  [{:keys [db random-id now] :as cofx} chat-id signature]
   (let [me                       (:current-public-key db)
         participant-leaving-name (or (get-in db [:contacts/contacts signature :name])
                                      signature)]
     (when (and
            (not= signature me)
            (get-in db [:chats chat-id])) ;; chat is present
-      (handlers-macro/merge-fx cofx
-                               (models.message/receive
-                                (models.message/system-message chat-id random-id now
-                                                               (str participant-leaving-name " " (i18n/label :t/left))))
-                               (group/participants-removed chat-id #{signature})
-                               (transport.group-chat/send-new-group-key nil chat-id)))))
+      (fx/merge cofx
+                (models.message/receive
+                 (models.message/system-message chat-id random-id now
+                                                (str participant-leaving-name " " (i18n/label :t/left))))
+                (group/participants-removed chat-id #{signature})
+                (transport.group-chat/send-new-group-key nil chat-id)))))

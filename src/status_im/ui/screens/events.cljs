@@ -30,9 +30,9 @@
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.dimensions :as dimensions]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.http :as http]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.fx :as fx]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -103,13 +103,18 @@
  (fn [{:keys [db]} [_ path v]]
    {:db (assoc-in db path v)}))
 
+(fx/defn on-return-from-background [cofx]
+  (fx/merge cofx
+            (inbox/request-messages)
+            (hardwallet/return-back-from-nfc-settings)))
+
 (defn app-state-change [state {:keys [db] :as cofx}]
   (let [app-coming-from-background? (= state "active")]
-    (handlers-macro/merge-fx cofx
-                             {::app-state-change-fx state
-                              :db                   (assoc db :app-state state)}
-                             (inbox/request-messages app-coming-from-background?)
-                             (hardwallet/return-back-from-nfc-settings app-coming-from-background?))))
+    (fx/merge cofx
+              {::app-state-change-fx state
+               :db                   (assoc db :app-state state)}
+              #(when app-coming-from-background?
+                 (on-return-from-background %)))))
 
 (handlers/register-handler-fx
  :app-state-change

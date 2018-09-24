@@ -7,15 +7,14 @@
             [status-im.chat.models :as models]
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message :as models.message]
-            [status-im.constants :as constants]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.i18n :as i18n]
             [status-im.transport.message.core :as transport.message]
             [status-im.transport.message.v1.group-chat :as group-chat]
             [status-im.transport.message.v1.public-chat :as public-chat]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.utils :as utils]))
 
 ;;;; Effects
@@ -67,7 +66,7 @@
 (handlers/register-handler-fx
  :navigate-to-chat
  (fn [cofx [_ chat-id opts]]
-   (models/navigate-to-chat chat-id opts cofx)))
+   (models/navigate-to-chat cofx chat-id opts)))
 
 (handlers/register-handler-fx
  :load-more-messages
@@ -82,9 +81,9 @@
    (models/start-chat contact-id opts cofx)))
 
 (defn remove-chat-and-navigate-home [cofx [_ chat-id]]
-  (handlers-macro/merge-fx cofx
-                           (models/remove-chat chat-id)
-                           (navigation/replace-view :home)))
+  (fx/merge cofx
+            (models/remove-chat chat-id)
+            (navigation/replace-view :home)))
 
 (handlers/register-handler-fx
  :remove-chat-and-navigate-home
@@ -111,17 +110,17 @@
                            :confirm-button-text (i18n/label :t/clear)
                            :on-accept           #(re-frame/dispatch [:clear-history])}}))
 
-(defn create-new-public-chat [topic modal? cofx]
-  (handlers-macro/merge-fx cofx
-                           (models/add-public-chat topic)
-                           (models/navigate-to-chat topic {:modal?              modal?
-                                                           :navigation-replace? true})
-                           (public-chat/join-public-chat topic)))
+(fx/defn create-new-public-chat [cofx topic modal?]
+  (fx/merge cofx
+            (models/add-public-chat topic)
+            (models/navigate-to-chat topic {:modal?              modal?
+                                            :navigation-replace? true})
+            (public-chat/join-public-chat topic)))
 
 (handlers/register-handler-fx
  :create-new-public-chat
  (fn [cofx [_ topic modal?]]
-   (create-new-public-chat topic modal? cofx)))
+   (create-new-public-chat cofx topic modal?)))
 
 (defn- group-name-from-contacts [selected-contacts all-contacts username]
   (->> selected-contacts
@@ -139,31 +138,30 @@
                              (group-name-from-contacts selected-contacts
                                                        (:contacts/contacts db)
                                                        (:username db)))]
-     (handlers-macro/merge-fx
-      cofx
-      {:db (assoc db :group/selected-contacts #{})}
-      (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
-      (navigation/navigate-to-cofx :home nil)
-      (models/navigate-to-chat random-id {})
-      (transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id)))))
+     (fx/merge cofx
+               {:db (assoc db :group/selected-contacts #{})}
+               (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
+               (navigation/navigate-to-cofx :home nil)
+               (models/navigate-to-chat random-id {})
+               #(transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id %)))))
 
-(defn show-profile [identity {:keys [db]}]
-  (navigation/navigate-to-cofx :profile nil {:db (assoc db :contacts/identity identity)}))
+(fx/defn show-profile [{:keys [db]} identity]
+  (navigation/navigate-to-cofx {:db (assoc db :contacts/identity identity)} :profile nil))
 
 (handlers/register-handler-fx
  :show-profile
  (fn [cofx [_ identity]]
-   (show-profile identity cofx)))
+   (show-profile cofx identity)))
 
 (handlers/register-handler-fx
  :resend-message
  (fn [cofx [_ chat-id message-id]]
-   (models.message/resend-message chat-id message-id cofx)))
+   (models.message/resend-message cofx chat-id message-id)))
 
 (handlers/register-handler-fx
  :delete-message
  (fn [cofx [_ chat-id message-id]]
-   (models.message/delete-message chat-id message-id cofx)))
+   (models.message/delete-message cofx chat-id message-id)))
 
 (handlers/register-handler-fx
  :disable-cooldown

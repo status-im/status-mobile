@@ -3,7 +3,6 @@
             [taoensso.timbre :as log]
             [status-im.chat.models.message :as message-model]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.models.transactions :as wallet.transactions]))
 
 ;;;; Handlers
@@ -13,7 +12,7 @@
  (fn [messages]
    (re-frame/dispatch [:chat-received-message/add messages])))
 
-(defn- filter-messages [messages cofx]
+(defn- filter-messages [cofx messages]
   (:accumulated (reduce (fn [{:keys [seen-ids] :as acc}
                              {:keys [message-id] :as message}]
                           (if (and (message-model/add-to-chat? cofx message)
@@ -30,4 +29,4 @@
  :chat-received-message/add
  message-model/receive-interceptors
  (fn [cofx [_ messages]]
-   (message-model/receive-many (filter-messages messages cofx) cofx)))
+   (message-model/receive-many cofx (filter-messages cofx messages))))

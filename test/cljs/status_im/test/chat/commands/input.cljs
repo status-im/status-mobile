@@ -5,7 +5,7 @@
             [status-im.chat.commands.input :as input]))
 
 (deftest selected-chat-command-test
-  (let [fx       (core/load-commands #{test-core/TestCommandInstance test-core/AnotherTestCommandInstance} {:db {}})
+  (let [fx       (core/load-commands {:db {}} #{test-core/TestCommandInstance test-core/AnotherTestCommandInstance})
         commands (core/chat-commands (get-in fx [:db :id->command])
                                      (get-in fx [:db :access-scope->command-id])
                                      {:chat-id    "contact"})]
@@ -32,19 +32,16 @@
                         {:db {:chats           {"test" {:input-text input-text}}
                               :current-chat-id "test"}})]
       (is (= "/test-command first-value "
-             (get-in (input/set-command-parameter
-                      false 0 "first-value"
-                      (create-cofx "/test-command"))
+             (get-in (input/set-command-parameter (create-cofx "/test-command")
+                                                  false 0 "first-value")
                      [:db :chats "test" :input-text])))
       (is (= "/test-command first-value second-value \"last value\""
-             (get-in (input/set-command-parameter
-                      false 1 "second-value"
-                      (create-cofx "/test-command first-value edited \"last value\""))
+             (get-in (input/set-command-parameter (create-cofx "/test-command first-value edited \"last value\"")
+                                                  false 1 "second-value")
                      [:db :chats "test" :input-text])))
       (is (= "/test-command first-value second-value \"last value\""
-             (get-in (input/set-command-parameter
-                      false 2 "last value"
-                      (create-cofx "/test-command first-value second-value"))
+             (get-in (input/set-command-parameter (create-cofx "/test-command first-value second-value")
+                                                  false 2 "last value")
                      [:db :chats "test" :input-text]))))))
 
 (deftest parse-parameters-test

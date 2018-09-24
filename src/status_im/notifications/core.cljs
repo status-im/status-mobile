@@ -5,7 +5,7 @@
             [taoensso.timbre :as log]
             [status-im.chat.models :as chat-model]
             [status-im.utils.platform :as platform]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 ;; Work in progress namespace responsible for push notifications and interacting
 ;; with Firebase Cloud Messaging.
@@ -73,7 +73,7 @@
           (then #(log/debug "Notification channel created:" channel-id)
                 #(log/error "Notification channel creation error:" channel-id %)))))
 
-  (defn store-event [{:keys [from to]} {:keys [db] :as cofx}]
+  (fx/defn store-event [{:keys [from to]} {:keys [db] :as cofx}]
     (let [{:keys [address photo-path name]} (->> (get-in cofx [:db :accounts/accounts])
                                                  vals
                                                  (filter #(= (:public-key %) to))
@@ -82,15 +82,16 @@
         {:db       (assoc-in db [:push-notifications/stored to] from)
          :dispatch [:notifications.callback/notification-stored address photo-path name]})))
 
-  (defn handle-push-notification [{:keys [from to] :as event} {:keys [db] :as cofx}]
+  (fx/defn handle-push-notification
+    [{:keys [db] :as cofx} {:keys [from to] :as event}]
     (let [current-public-key (get-in cofx [:db :current-public-key])]
       (if current-public-key
         ;; TODO(yenda) why do we ignore the notification if
         ;; it is not for the current account ?
         (when (= to current-public-key)
-          (handlers-macro/merge-fx cofx
-                                   {:db (update db :push-notifications/stored dissoc to)}
-                                   (chat-model/navigate-to-chat from nil)))
+          (fx/merge cofx
+                    {:db (update db :push-notifications/stored dissoc to)}
+                    (chat-model/navigate-to-chat from nil)))
         (store-event event cofx))))
 
   (defn parse-notification-payload [s]
@@ -150,14 +151,14 @@
           (then #(log/debug "Display Notification" title body))
           (then #(log/debug "Display Notification error" title body))))))
 
-(defn process-stored-event [address cofx]
+(fx/defn process-stored-event [cofx address]
   (when-not platform/desktop?
     (let [to (get-in cofx [:db :accounts/accounts address :public-key])
           from (get-in cofx [:db :push-notifications/stored to])]
       (when from
-        (handle-push-notification {:from from
-                                   :to   to}
-                                  cofx)))))
+        (handle-push-notification cofx
+                                  {:from from
+                                   :to   to})))))
 
 (re-frame/reg-fx
  :notifications/display-notification

@@ -86,13 +86,13 @@
                                            :error true}
                                    :chain {:value "mainnet"
                                            :error false}}}}
-           (model/set-input :url "http://valid.com"
-                            {:db {:networks/manage {:url   {:value "something"
+           (model/set-input {:db {:networks/manage {:url   {:value "something"
                                                             :error true}
                                                     :name  {:value ""
                                                             :error false}
                                                     :chain {:value "mainnet"
-                                                            :error false}}}})))))
+                                                            :error false}}}}
+                            :url "http://valid.com")))))
 
 (deftest save
   (testing "it does not save a network with an invalid url"

@@ -12,7 +12,7 @@
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.ui.components.react :as react-comp]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 ;;;; Effects
 
@@ -44,9 +44,9 @@
 
 ;;;; Helper functions
 
-(defn chat-input-focus
+(fx/defn chat-input-focus
   "Returns fx for focusing on active chat input reference"
-  [ref {{:keys [current-chat-id chat-ui-props]} :db}]
+  [{{:keys [current-chat-id chat-ui-props]} :db} ref]
   (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
     {::focus-rn-component cmp-ref}))
 
@@ -55,25 +55,25 @@
 (handlers/register-handler-fx
  :set-chat-input-text
  (fn [cofx [_ text]]
-   (input-model/set-chat-input-text text cofx)))
+   (input-model/set-chat-input-text cofx text)))
 
 (handlers/register-handler-fx
  :select-chat-input-command
  (fn [{:keys [db] :as cofx} [_ command params metadata]]
-   (handlers-macro/merge-fx cofx
-                            (input-model/set-chat-input-metadata metadata)
-                            (commands-input/select-chat-input-command command params)
-                            (chat-input-focus :input-ref))))
+   (fx/merge cofx
+             (input-model/set-chat-input-metadata metadata)
+             (commands-input/select-chat-input-command command params)
+             (chat-input-focus :input-ref))))
 
 (handlers/register-handler-fx
  :set-command-parameter
  (fn [cofx [_ last-param? index value]]
-   (commands-input/set-command-parameter last-param? index value cofx)))
+   (commands-input/set-command-parameter cofx last-param? index value)))
 
 (handlers/register-handler-fx
  :chat-input-focus
  (fn [cofx [_ ref]]
-   (chat-input-focus ref cofx)))
+   (chat-input-focus cofx ref)))
 
 (handlers/register-handler-fx
  :chat-input-blur
@@ -84,10 +84,9 @@
 (defn command-complete-fx
   "command is complete, set `:sending-in-progress?` flag and proceed with command processing"
   [input-text command {:keys [db now random-id] :as cofx}]
-  (handlers-macro/merge-fx
-   cofx
-   {:db (model/set-chat-ui-props db {:sending-in-progress? true})}
-   (commands-sending/validate-and-send input-text command)))
+  (fx/merge cofx
+            {:db (model/set-chat-ui-props db {:sending-in-progress? true})}
+            (commands-sending/validate-and-send input-text command)))
 
 (defn command-not-complete-fx
   "command is not complete, just add space after command if necessary"
@@ -101,13 +100,12 @@
   "no command detected, when not empty, proceed by sending text message without command processing"
   [input-text current-chat-id {:keys [db] :as cofx}]
   (when-not (string/blank? input-text)
-    (handlers-macro/merge-fx
-     cofx
-     (input-model/set-chat-input-text nil)
-     (input-model/set-chat-input-metadata nil)
-     (message-model/send-message {:chat-id      current-chat-id
-                                  :content-type constants/text-content-type
-                                  :content      input-text}))))
+    (fx/merge cofx
+              (input-model/set-chat-input-text nil)
+              (input-model/set-chat-input-metadata nil)
+              (message-model/send-message {:chat-id      current-chat-id
+                                           :content-type constants/text-content-type
+                                           :content      input-text}))))
 
 (handlers/register-handler-fx
  :send-current-message

@@ -10,8 +10,8 @@
   (is (= :aud (subs/get-currency {:account/account {:settings {:wallet {:currency :aud}}}}))))
 
 (deftest set-currency
-  (let [cofx (models/set-currency :usd {:db {:account/account {:settings {:wallet {}}}}})]
+  (let [cofx (models/set-currency {:db {:account/account {:settings {:wallet {}}}}} :usd)]
     (is (= [:db :get-balance :get-tokens-balance :get-prices :data-store/base-tx] (keys cofx)))
     (is (= :usd (get-in cofx [:db :account/account :settings :wallet :currency]))))
-  (is (= :jpy (get-in (models/set-currency :jpy {:db {:account/account {:settings {:wallet {}}}}})
+  (is (= :jpy (get-in (models/set-currency {:db {:account/account {:settings {:wallet {}}}}} :jpy)
                       [:db :account/account :settings :wallet :currency]))))

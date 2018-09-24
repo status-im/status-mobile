@@ -5,7 +5,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.types :as types]
             [status-im.utils.platform :as utils.platform]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -112,27 +113,25 @@
       (assoc :NoDiscovery true)
       (add-log-level config/log-level-status-go)))
 
-(defn start
-  ([cofx]
-   (start nil cofx))
-  ([address {:keys [db]}]
-   (let [network     (if address
-                       (get-account-network db address)
-                       (:network db))
-         node-config (if address
-                       (get-account-node-config db address)
-                       (get-node-config db network))
-         node-config-json (types/clj->json node-config)]
-     (log/info "Node config: " node-config-json)
-     {:db         (assoc db :network network)
-      :node/start node-config-json})))
+(fx/defn start
+  [{:keys [db]} address]
+  (let [network     (if address
+                      (get-account-network db address)
+                      (:network db))
+        node-config (if address
+                      (get-account-node-config db address)
+                      (get-node-config db network))
+        node-config-json (types/clj->json node-config)]
+    (log/info "Node config: " node-config-json)
+    {:db         (assoc db :network network)
+     :node/start node-config-json}))
 
 (defn restart
   []
   {:node/stop nil})
 
-(defn initialize
-  [address {{:keys [status-node-started?] :as db} :db :as cofx}]
+(fx/defn initialize
+  [{{:keys [status-node-started?] :as db} :db :as cofx} address]
   (if (not status-node-started?)
     (start address cofx)
     (restart)))

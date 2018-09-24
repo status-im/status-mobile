@@ -4,20 +4,19 @@
             [status-im.init.core :as init]
             [status-im.transport.core :as transport]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
-(defn logout
+(fx/defn logout
   [{:keys [db] :as cofx}]
   (let [{:transport/keys [chats]} db]
-    (handlers-macro/merge-fx
-     cofx
-     {:keychain/clear-user-password (get-in db [:account/account :address])
-      :dev-server/stop              nil}
-     (navigation/navigate-to-clean :login)
-     (transport/stop-whisper)
-     (init/initialize-keychain))))
+    (fx/merge cofx
+              {:keychain/clear-user-password (get-in db [:account/account :address])
+               :dev-server/stop              nil}
+              (navigation/navigate-to-clean :login {})
+              (transport/stop-whisper)
+              (init/initialize-keychain))))
 
-(defn show-logout-confirmation []
+(fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation
    {:title               (i18n/label :t/logout-title)
     :content             (i18n/label :t/logout-are-you-sure)

@@ -14,7 +14,7 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]
             [status-im.utils.ethereum.resolver :as resolver]
-            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.multihash :as multihash]
             [status-im.utils.platform :as platform]
@@ -23,12 +23,12 @@
             [status-im.utils.universal-links.core :as utils.universal-links]
             [taoensso.timbre :as log]))
 
-(defn initialize-browsers
+(fx/defn initialize-browsers
   [{:keys [db all-stored-browsers]}]
   (let [browsers (into {} (map #(vector (:browser-id %) %) all-stored-browsers))]
     {:db (assoc db :browser/browsers browsers)}))
 
-(defn  initialize-dapp-permissions
+(fx/defn  initialize-dapp-permissions
   [{:keys [db all-dapp-permissions]}]
   (let [dapp-permissions (into {} (map #(vector (:dapp %) %) all-dapp-permissions))]
     {:db (assoc db :dapps/permissions dapp-permissions)}))
@@ -42,7 +42,8 @@
       (and (not error?)
            (string/starts-with? (get-current-url browser) "https://"))))
 
-(defn remove-browser [browser-id {:keys [db]}]
+(fx/defn remove-browser
+  [{:keys [db]} browser-id]
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
    :data-store/tx [(browser-store/remove-browser-tx browser-id)]})
 
@@ -60,9 +61,9 @@
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (assoc browser :unsafe? (dependencies/phishing-detect history-host))))
 
-(defn update-browser
-  [{:keys [browser-id history history-index error? dapp?] :as browser}
-   {:keys [db now]}]
+(fx/defn update-browser
+  [{:keys [db now]}
+   {:keys [browser-id history history-index error? dapp?] :as browser}]
   (let [updated-browser (-> (assoc browser :timestamp now)
                             (check-if-dapp-in-list)
                             (check-if-phishing-url))]
@@ -77,24 +78,24 @@
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))
 
-(defn navigate-to-previous-page
+(fx/defn navigate-to-previous-page
   [cofx]
   (let [{:keys [history-index] :as browser} (get-current-browser (:db cofx))]
     (when (can-go-back? browser)
-      (update-browser (assoc browser :history-index (dec history-index)) cofx))))
+      (update-browser cofx (assoc browser :history-index (dec history-index))))))
 
 (defn can-go-forward? [{:keys [history-index history]}]
   (< history-index (dec (count history))))
 
-(defn navigate-to-next-page
+(fx/defn navigate-to-next-page
   [cofx]
   (let [{:keys [history-index] :as browser} (get-current-browser (:db cofx))]
     (when (can-go-forward? browser)
-      (update-browser (assoc browser :history-index (inc history-index)) cofx))))
+      (update-browser cofx (assoc browser :history-index (inc history-index))))))
 
-(defn update-browser-history
+(fx/defn update-browser-history
   ;; TODO: not clear how this works
-  [browser url loading? cofx]
+  [cofx browser url loading?]
   (when-not loading?
     (let [history-index (:history-index browser)
           history       (:history browser)
@@ -107,10 +108,10 @@
               new-index   (if slash?
                             history-index
                             (dec (count new-history)))]
-          (update-browser (assoc browser
+          (update-browser cofx
+                          (assoc browser
                                  :history new-history
-                                 :history-index new-index)
-                          cofx))))))
+                                 :history-index new-index)))))))
 
 (defn ens? [host]
   (and (string? host)
@@ -122,20 +123,19 @@
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success hash])
       (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
 
-(defn resolve-ens-multihash-success
-  [hash {:keys [db] :as cofx}]
+(fx/defn resolve-ens-multihash-success
+  [{:keys [db] :as cofx} hash]
   (let [options (:browser/options db)
         browsers (:browser/browsers db)
         browser (get browsers (:browser-id options))
         history-index (:history-index browser)]
-    (handlers-macro/merge-fx
-     cofx
-     {:db (assoc-in db [:browser/options :resolving?] false)}
-     (update-browser (assoc-in browser [:history history-index]
-                               (str "https://ipfs.infura.io/ipfs/" hash))))))
+    (fx/merge cofx
+              {:db (assoc-in db [:browser/options :resolving?] false)}
+              (update-browser (assoc-in browser [:history history-index]
+                                        (str "https://ipfs.infura.io/ipfs/" hash))))))
 
-(defn resolve-ens-multihash
-  [host loading? error? {{:keys [web3 network] :as db} :db}]
+(fx/defn resolve-ens-multihash
+  [{{:keys [web3 network] :as db} :db} host loading? error?]
   (when (and (not loading?)
              (not error?)
              (ens? host))
@@ -148,86 +148,82 @@
                                        :ens-name host
                                        :cb       resolve-ens-multihash-callback}})))
 
-(defn update-browser-option
-  [option-key option-value {:keys [db]}]
+(fx/defn update-browser-option
+  [{:keys [db]} option-key option-value]
   {:db (assoc-in db [:browser/options option-key] option-value)})
 
-(defn handle-browser-error [cofx]
-  (handlers-macro/merge-fx cofx
-                           (update-browser-option :error? true)
-                           (update-browser-option :loading? false)))
+(fx/defn handle-browser-error
+  [cofx]
+  (fx/merge cofx
+            (update-browser-option :error? true)
+            (update-browser-option :loading? false)))
 
-(defn update-browser-loading-option
-  [loading? cofx]
-  ;; TODO(yenda) why are we doing this ?
-  (when platform/ios?
-    (update-browser-option :loading? loading? cofx)))
-
-(defn update-browser-on-nav-change
-  [browser url loading? error? cofx]
+(fx/defn update-browser-on-nav-change
+  [cofx browser url loading? error?]
   (when (not= "about:blank" url)
     (let [host (http/url-host url)]
-      (handlers-macro/merge-fx cofx
-                               (resolve-ens-multihash host loading? error?)
-                               (update-browser-history browser url loading?)))))
+      (fx/merge cofx
+                (resolve-ens-multihash host loading? error?)
+                (update-browser-history browser url loading?)))))
 
-(defn navigation-state-changed [event error? cofx]
+(fx/defn navigation-state-changed
+  [cofx event error?]
   (let [browser (get-current-browser (:db cofx))
         {:strs [url loading]} (js->clj event)]
-    (handlers-macro/merge-fx cofx
-                             (update-browser-loading-option loading)
-                             (update-browser-on-nav-change browser url loading error?))))
+    (fx/merge cofx
+              #(when platform/ios?
+                 (update-browser-option % :loading? loading))
+              (update-browser-on-nav-change browser url loading error?))))
 
-(defn open-url-in-current-browser
+(fx/defn open-url-in-current-browser
   "Opens a url in the current browser, which mean no new entry is added to the home page
   and history of the current browser is updated so that the user can navigate back to the
   origin url"
   ;; TODO(yenda) is that desirable ?
-  [url cofx]
+  [cofx url]
   (let [browser (get-current-browser (:db cofx))
         normalized-url (http/normalize-and-decode-url url)
         host           (http/url-host normalized-url)]
-    (handlers-macro/merge-fx cofx
-                             (update-browser-option :url-editing? false)
-                             (resolve-ens-multihash host false false)
-                             (update-browser-history browser normalized-url false))))
+    (fx/merge cofx
+              (update-browser-option :url-editing? false)
+              (resolve-ens-multihash host false false)
+              (update-browser-history browser normalized-url false))))
 
-(defn navigate-to-browser
+(fx/defn navigate-to-browser
   [{{:keys [view-id]} :db :as cofx}]
   (if (= view-id :dapp-description)
-    (navigation/navigate-reset
-     {:index   1
-      :actions [{:routeName :home}
-                {:routeName :browser}]}
-     cofx)
-    (navigation/navigate-to-cofx :browser nil cofx)))
+    (navigation/navigate-reset cofx
+                               {:index   1
+                                :actions [{:routeName :home}
+                                          {:routeName :browser}]})
+    (navigation/navigate-to-cofx cofx :browser nil)))
 
-(defn open-url
+(fx/defn open-url
   "Opens a url in the browser. If a host can be extracted from the url and
   there is already a browser for this host, this browser is reused
   If the browser is reused, the history is flushed"
-  [url {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} url]
   (let [normalized-url (http/normalize-and-decode-url url)
         host (http/url-host normalized-url)
         browser {:browser-id    (or host (random/id))
                  :history-index 0
                  :history       [normalized-url]}]
-    (handlers-macro/merge-fx cofx
-                             {:db (assoc db :browser/options
-                                         {:browser-id (:browser-id browser)})}
-                             (navigate-to-browser)
-                             (update-browser browser)
-                             (resolve-ens-multihash host false false))))
+    (fx/merge cofx
+              {:db (assoc db :browser/options
+                          {:browser-id (:browser-id browser)})}
+              (navigate-to-browser)
+              (update-browser browser)
+              (resolve-ens-multihash host false false))))
 
-(defn open-existing-browser
+(fx/defn open-existing-browser
   "Opens an existing browser with it's history"
-  [browser-id {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} browser-id]
   (let [browser (get-in db [:browser/browsers browser-id])]
-    (handlers-macro/merge-fx cofx
-                             {:db (assoc db :browser/options
-                                         {:browser-id browser-id})}
-                             (update-browser browser)
-                             (navigation/navigate-to-cofx :browser nil))))
+    (fx/merge cofx
+              {:db (assoc db :browser/options
+                          {:browser-id browser-id})}
+              (update-browser browser)
+              (navigation/navigate-to-cofx :browser nil))))
 
 (defn web3-send-async
   [{:keys [method] :as payload} message-id {:keys [db]}]
@@ -243,7 +239,8 @@
                                               :error     %1
                                               :result    %2}])]}))
 
-(defn send-to-bridge [message cofx]
+(fx/defn send-to-bridge
+  [cofx message]
   {:browser/send-to-bridge {:message message
                             :webview (get-in cofx [:db :webview-bridge])}})
 
@@ -259,14 +256,14 @@
                       cofx)
       (web3-send-async payload message-id cofx))))
 
-(defn handle-scanned-qr-code
-  [data message cofx]
-  (handlers-macro/merge-fx cofx
-                           (send-to-bridge (assoc message :result data))
-                           (navigation/navigate-back)))
+(fx/defn handle-scanned-qr-code
+  [cofx data message]
+  (fx/merge cofx
+            (send-to-bridge (assoc message :result data))
+            (navigation/navigate-back)))
 
-(defn process-bridge-message
-  [message {:keys [db] :as cofx}]
+(fx/defn process-bridge-message
+  [{:keys [db] :as cofx} message]
   (let [{:browser/keys [options browsers]} db
         {:keys [browser-id]} options
         browser (get browsers browser-id)
@@ -287,18 +284,19 @@
       (web3-send-async-read-only dapp-name payload messageId cofx)
 
       (= type constants/scan-qr-code)
-      (qr-scanner/scan-qr-code {:modal? false}
+      (qr-scanner/scan-qr-code cofx
+                               {:modal? false}
                                (merge {:handler :browser.bridge.callback/qr-code-scanned}
                                       {:type constants/scan-qr-code-callback
-                                       :data data})
-                               cofx)
+                                       :data data}))
 
       (= type constants/status-api-request)
-      (browser.permissions/process-permissions dapp-name permissions cofx))))
+      (browser.permissions/process-permissions cofx dapp-name permissions))))
 
-(defn handle-message-link [link cofx]
+(fx/defn handle-message-link
+  [cofx link]
   (if (utils.universal-links/universal-link? link)
-    (utils.universal-links/handle-url link cofx)
+    (utils.universal-links/handle-url cofx link)
     {:browser/show-browser-selection link}))
 
 (defn filter-letters-numbers-and-replace-dot-on-dash [value]
@@ -310,7 +308,8 @@
           (= cc 46)
           "-")))
 
-(defn open-chat-from-browser [host cofx]
+(fx/defn open-chat-from-browser
+  [cofx host]
   (let [topic (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash host)))]
     {:dispatch [:create-new-public-chat topic true]}))
 

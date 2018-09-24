@@ -9,10 +9,10 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.money :as money]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -168,7 +168,7 @@
             (assoc-error-message :balance-update :error-unable-to-get-balance)
             (assoc-in [:wallet :balance-loading?] false))}))
 
-(defn update-token-balance-success [symbol balance {:keys [db]}]
+(fx/defn update-token-balance-success [{:keys [db]} symbol balance]
   {:db (-> db
            (assoc-in [:wallet :balance symbol] balance)
            (assoc-in [:wallet :balance-loading?] false))})
@@ -176,7 +176,7 @@
 (handlers/register-handler-fx
  :update-token-balance-success
  (fn [cofx [_ symbol balance]]
-   (update-token-balance-success symbol balance cofx)))
+   (update-token-balance-success cofx symbol balance)))
 
 (handlers/register-handler-fx
  :update-token-balance-fail
@@ -242,7 +242,6 @@
 (handlers/register-handler-fx
  :wallet-setup-navigate-back
  (fn [{:keys [db] :as cofx}]
-   (handlers-macro/merge-fx
-    cofx
-    {:db (assoc-in db [:wallet :send-transaction] {})}
-    (navigation/navigate-back))))
+   (fx/merge cofx
+             {:db (assoc-in db [:wallet :send-transaction] {})}
+             (navigation/navigate-back))))

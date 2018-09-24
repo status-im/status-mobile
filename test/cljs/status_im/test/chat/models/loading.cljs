@@ -37,7 +37,7 @@
     (testing "New messages are grouped/sorted correctly, hidden messages are not grouped"
       (is (= '(2 3)
              (map :message-id
-                  (-> (get-in (loading/group-chat-messages "chat-id" new-messages cofx)
+                  (-> (get-in (loading/group-chat-messages cofx "chat-id" new-messages)
                               [:db :chats "chat-id" :message-groups])
                       first
                       second)))))))

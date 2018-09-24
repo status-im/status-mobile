@@ -1,5 +1,6 @@
 (ns status-im.chat.commands.receiving
-  (:require [status-im.chat.commands.protocol :as protocol]))
+  (:require [status-im.chat.commands.protocol :as protocol]
+            [status-im.utils.fx :as fx]))
 
 ;; TODO(janherich) remove after couple of releases when danger of messages
 ;; with old command references will be low
@@ -16,10 +17,10 @@
     (or (get id->command path)
         (get id->command (get old->new-path path)))))
 
-(defn receive
+(fx/defn receive
   "Performs receive effects for command message. Does nothing
   when message is not of the command type or command can't be found."
-  [message {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} message]
   (let [id->command (:id->command db)]
     (when-let [{:keys [type]} (lookup-command-by-ref message id->command)]
       (protocol/on-receive type message cofx))))

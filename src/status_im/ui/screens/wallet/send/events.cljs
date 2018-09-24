@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.wallet.send.events
-  (:require-macros [status-im.utils.handlers-macro :as handlers-macro])
   (:require [re-frame.core :as re-frame]
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.chat.models.message :as models.message]
@@ -13,8 +12,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.erc20 :as erc20]
             [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
@@ -150,8 +149,7 @@
                                    :data             data
                                    :dapp-transaction queued-transaction
                                    :method           method})]
-               (navigation/navigate-to-cofx
-                :wallet-sign-message-modal nil {:db db''}))
+               (navigation/navigate-to-cofx {:db db''} :wallet-sign-message-modal nil))
              {:db db'})))))))
 
 (handlers/register-handler-fx
@@ -161,12 +159,11 @@
  (fn [{:keys [db] :as cofx} [_ chat-id params]]
    ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id
    ;; for the recipient, we always redirect to `:wallet-transaction-sent` even when we don't
-   (if-let [send-command (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
-     (handlers-macro/merge-fx cofx
-                              (commands-sending/send chat-id send-command params)
-                              (navigation/navigate-to-clean :wallet-transaction-sent))
-     (handlers-macro/merge-fx cofx
-                              (navigation/navigate-to-clean :wallet-transaction-sent)))))
+   (let [send-command? (and chat-id (get-in db [:id->command ["send" #{:personal-chats}]]))]
+     (fx/merge cofx
+               #(when send-command?
+                  (commands-sending/send % chat-id send-command? params))
+               (navigation/navigate-to-clean :wallet-transaction-sent {})))))
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
@@ -266,10 +263,9 @@
 (handlers/register-handler-fx
  :close-transaction-sent-screen
  (fn [{:keys [db] :as cofx} [_ chat-id]]
-   (handlers-macro/merge-fx
-    cofx
-    {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
-    (navigation/navigate-back))))
+   (fx/merge cofx
+             {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
+             (navigation/navigate-back))))
 
 (handlers/register-handler-fx
  :sync-wallet-transactions

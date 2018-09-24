@@ -66,4 +66,4 @@
 (handlers/register-handler-fx
  :open-collectible-in-browser
  (fn [cofx [_ url]]
-   (browser/open-url url cofx)))
+   (browser/open-url cofx url)))

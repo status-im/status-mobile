@@ -1,10 +1,10 @@
 (ns status-im.hardwallet.core
-  (:require-macros [status-im.utils.handlers-macro :as handlers-macro])
-  (:require [status-im.utils.platform :as platform]
-            [status-im.utils.config :as config]
+  (:require [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [re-frame.core :as re-frame]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.platform :as platform]))
 
 (defn check-nfc-support []
   (when config/hardwallet-enabled?
@@ -20,10 +20,12 @@
         isEnabled
         (then #(re-frame/dispatch [:hardwallet.callback/check-nfc-enabled-success %])))))
 
-(defn set-nfc-support [supported? {:keys [db]}]
+(fx/defn set-nfc-support
+  [{:keys [db]} supported?]
   {:db (assoc-in db [:hardwallet :nfc-supported?] supported?)})
 
-(defn set-nfc-enabled [enabled? {:keys [db]}]
+(fx/defn set-nfc-enabled
+  [{:keys [db]} enabled?]
   {:db (assoc-in db [:hardwallet :nfc-enabled?] enabled?)})
 
 (defn open-nfc-settings []
@@ -32,20 +34,18 @@
         -default
         goToNfcSetting)))
 
-(defn navigate-to-connect-screen [cofx]
-  (handlers-macro/merge-fx
-   cofx
-   {:hardwallet/check-nfc-enabled nil}
-   (navigation/navigate-to-cofx :hardwallet-connect nil)))
+(fx/defn navigate-to-connect-screen [cofx]
+  (fx/merge cofx
+            {:hardwallet/check-nfc-enabled nil}
+            (navigation/navigate-to-cofx :hardwallet-connect nil)))
 
 (defn hardwallet-supported? [db]
   (and config/hardwallet-enabled?
        platform/android?
        (get-in db [:hardwallet :nfc-supported?])))
 
-(defn return-back-from-nfc-settings [app-coming-from-background? {:keys [db]}]
-  (when (and app-coming-from-background?
-             (= :hardwallet-connect (:view-id db)))
+(fx/defn return-back-from-nfc-settings [{:keys [db]}]
+  (when (= :hardwallet-connect (:view-id db))
     {:hardwallet/check-nfc-enabled nil}))
 
 (defn- proceed-to-pin-confirmation [fx]
@@ -61,7 +61,8 @@
                                        :confirmation []
                                        :enter-step   :original}))
 
-(defn process-pin-input [number enter-step {:keys [db]}]
+(fx/defn process-pin-input
+  [{:keys [db]} number enter-step]
   (let [db' (update-in db [:hardwallet :pin enter-step] conj number)
         numbers-entered (count (get-in db' [:hardwallet :pin enter-step]))]
     (cond-> {:db (assoc-in db' [:hardwallet :pin :status] nil)}

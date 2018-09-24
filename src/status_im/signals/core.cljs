@@ -5,45 +5,45 @@
             [status-im.node.core :as node]
             [status-im.transport.handlers :as transport.handlers]
             [status-im.transport.inbox :as inbox]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
-(defn status-node-started
+(fx/defn status-node-started
   [{db :db :as cofx}]
-  (let [fx {:db (assoc db :status-node-started? true)}]
-    (if (:password (accounts.db/credentials cofx))
-      (handlers-macro/merge-fx cofx
-                               fx
-                               (accounts.login/login))
-      fx)))
+  (fx/merge cofx
+            {:db (assoc db :status-node-started? true)}
+            #(when (:password (accounts.db/credentials cofx))
+               (accounts.login/login %))))
 
-(defn status-node-stopped
+(fx/defn status-node-stopped
   [cofx]
   (let [{:keys [address]} (accounts.db/credentials cofx)]
-    (node/start address cofx)))
+    (node/start cofx address)))
 
-(defn status-module-initialized [{:keys [db]}]
+(fx/defn status-module-initialized [{:keys [db]}]
   {:db                             (assoc db :status-module-initialized? true)
    :init/status-module-initialized nil})
 
-(defn summary [peers-summary {:keys [db] :as cofx}]
+(fx/defn summary
+  [{:keys [db] :as cofx} peers-summary]
   (let [previous-summary (:peers-summary db)
         peers-count      (count peers-summary)]
-    (handlers-macro/merge-fx cofx
-                             {:db (assoc db
-                                         :peers-summary peers-summary
-                                         :peers-count peers-count)}
-                             (transport.handlers/resend-contact-messages previous-summary)
-                             (inbox/peers-summary-change-fx previous-summary))))
+    (fx/merge cofx
+              {:db (assoc db
+                          :peers-summary peers-summary
+                          :peers-count peers-count)}
+              (transport.handlers/resend-contact-messages previous-summary)
+              (inbox/peers-summary-change previous-summary))))
 
-(defn process [event-str cofx]
+(fx/defn process
+  [cofx event-str]
   (let [{:keys [type event]} (types/json->clj event-str)]
     (case type
       "node.started"       (status-node-started cofx)
       "node.stopped"       (status-node-stopped cofx)
       "module.initialized" (status-module-initialized cofx)
-      "envelope.sent"      (transport.handlers/update-envelope-status (:hash event) :sent cofx)
-      "envelope.expired"   (transport.handlers/update-envelope-status (:hash event) :sent cofx)
-      "discovery.summary"  (summary event cofx)
+      "envelope.sent"      (transport.handlers/update-envelope-status cofx (:hash event) :sent)
+      "envelope.expired"   (transport.handlers/update-envelope-status cofx (:hash event) :sent)
+      "discovery.summary"  (summary cofx event)
       (log/debug "Event " type " not handled"))))

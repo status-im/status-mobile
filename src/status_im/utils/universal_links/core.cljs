@@ -1,16 +1,15 @@
 (ns status-im.utils.universal-links.core
-  (:require
-   [taoensso.timbre :as log]
-   [re-frame.core :as re-frame]
-   [status-im.utils.config :as config]
-   [status-im.chat.events :as chat.events]
-   [status-im.accounts.db :as accounts.db]
-   [status-im.ui.components.list-selection :as list-selection]
-   [status-im.ui.components.react  :as react]
-   [status-im.utils.handlers-macro :as handlers-macro]
-   [cljs.spec.alpha :as spec]
-   [status-im.ui.screens.navigation :as navigation]
-   [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]))
+  (:require [cljs.spec.alpha :as spec]
+            [re-frame.core :as re-frame]
+            [status-im.accounts.db :as accounts.db]
+            [status-im.chat.events :as chat.events]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -37,21 +36,21 @@
     ;; as it is opened in safari on iOS
     (re-frame/dispatch [:handle-universal-link url])))
 
-(defn handle-browse [url cofx]
+(fx/defn handle-browse [cofx url]
   (log/info "universal-links: handling browse " url)
   {:browser/show-browser-selection url})
 
-(defn handle-public-chat [public-chat cofx]
+(fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat " public-chat)
-  (chat.events/create-new-public-chat public-chat false cofx))
+  (chat.events/create-new-public-chat cofx public-chat false))
 
-(defn handle-view-profile [profile-id {:keys [db] :as cofx}]
+(fx/defn handle-view-profile [{:keys [db] :as cofx} profile-id]
   (log/info "universal-links: handling view profile" profile-id)
   (if (new-chat.db/own-whisper-identity? db profile-id)
-    (navigation/navigate-to-cofx :my-profile nil cofx)
-    (chat.events/show-profile profile-id cofx)))
+    (navigation/navigate-to-cofx cofx :my-profile nil)
+    (chat.events/show-profile cofx profile-id)))
 
-(defn handle-extension [url cofx]
+(fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)
   {:extension/load [url :extensions/stage]})
 
@@ -65,45 +64,45 @@
     (re-frame/dispatch [:handle-universal-link url])
     (log/debug "universal-links: no url")))
 
-(defn route-url
+(fx/defn route-url
   "Match a url against a list of routes and handle accordingly"
-  [url cofx]
+  [cofx url]
   (cond
     (match-url url public-chat-regex)
-    (handle-public-chat (match-url url public-chat-regex) cofx)
+    (handle-public-chat cofx (match-url url public-chat-regex))
 
     (spec/valid? :global/public-key (match-url url profile-regex))
-    (handle-view-profile (match-url url profile-regex) cofx)
+    (handle-view-profile cofx (match-url url profile-regex))
 
     (match-url url browse-regex)
-    (handle-browse url cofx)
+    (handle-browse cofx url)
 
     (and config/extensions-enabled? (match-url url extension-regex))
-    (handle-extension url cofx)
+    (handle-extension cofx url)
 
     :else (handle-not-found url)))
 
-(defn store-url-for-later
+(fx/defn store-url-for-later
   "Store the url in the db to be processed on login"
-  [url {:keys [db]}]
+  [{:keys [db]} url]
   (log/info :store-url-for-later)
   {:db (assoc db :universal-links/url url)})
 
-(defn handle-url
+(fx/defn handle-url
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
-  [url cofx]
+  [cofx url]
   (if (accounts.db/logged-in? cofx)
-    (route-url url cofx)
-    (store-url-for-later url cofx)))
+    (route-url cofx url)
+    (store-url-for-later cofx url)))
 
-(defn process-stored-event
+(fx/defn process-stored-event
   "Return an event description for processing a url if in the database"
   [{:keys [db] :as cofx}]
   (when-let [url (:universal-links/url db)]
-    (handlers-macro/merge-fx cofx
-                             {:db (dissoc db :universal-links/url)}
-                             (handle-url url))))
+    (fx/merge cofx
+              {:db (dissoc db :universal-links/url)}
+              (handle-url url))))
 
 (defn unwrap-js-url [e]
   (-> e

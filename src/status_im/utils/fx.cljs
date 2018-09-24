@@ -1,7 +1,7 @@
 (ns status-im.utils.fx
-  (:require-macros status-im.utils.fx
-                   [taoensso.timbre :as log])
-  (:require [clojure.set :as set])
+  (:require-macros status-im.utils.fx)
+  (:require [clojure.set :as set]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [merge]))
 
 (defn- update-db [cofx fx]

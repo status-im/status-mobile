@@ -1,8 +1,7 @@
 (ns status-im.test.browser.core
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.browser.core :as browser]
-            [status-im.utils.types :as types]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.types :as types]))
 
 (defn has-navigated-to-browser? [result]
   (and (= (get result :status-im.ui.screens.navigation/navigate-to)
@@ -26,7 +25,7 @@
         dapp2-url "http://test2.com"]
 
     (testing "user opens a dapp"
-      (let [result-open (browser/open-url dapp1-url {:now 1})]
+      (let [result-open (browser/open-url {:db {} :now 1} dapp1-url)]
         (is (= dapp1-url (get-in result-open [:db :browser/options :browser-id]))
             "browser-id should be dapp1-url")
         (is (has-navigated-to-browser? result-open)
@@ -42,8 +41,9 @@
             "some properties of the browser are not correct")
 
         (testing "then a second dapp"
-          (let [result-open-2 (browser/open-url dapp2-url {:db (:db result-open)
-                                                           :now 2})
+          (let [result-open-2 (browser/open-url {:db (:db result-open)
+                                                 :now 2}
+                                                dapp2-url)
                 dapp2-host "test2.com"]
             (is (= dapp2-host (get-in result-open-2 [:db :browser/options :browser-id]))
                 "browser-id should be dapp2 host")
@@ -59,14 +59,15 @@
                 "some properties of the browser are not correct")
 
             (testing "then removes the second dapp"
-              (let [result-remove-2 (browser/remove-browser dapp2-host {:db (:db result-open-2)})]
+              (let [result-remove-2 (browser/remove-browser {:db (:db result-open-2)} dapp2-host)]
                 (is (= #{dapp1-url}
                        (set (keys (get-in result-remove-2 [:db :browser/browsers]))))
                     "the second dapp shouldn't be in the browser list anymore")))))
 
         (testing "then opens the dapp again"
-          (let [result-open-existing (browser/open-existing-browser dapp1-url {:db (:db result-open)
-                                                                               :now 2})
+          (let [result-open-existing (browser/open-existing-browser {:db (:db result-open)
+                                                                     :now 2}
+                                                                    dapp1-url)
                 dapp1-url2 (str "http://" dapp1-url "/nav2")
                 browser (get-in result-open-existing [:db :browser/browsers dapp1-url])]
             (is (not (has-wrong-properties? result-open-existing
@@ -85,11 +86,11 @@
 
             (testing "then navigates to a new url in the dapp"
               (let [result-navigate (browser/navigation-state-changed
+                                     {:db (:db result-open-existing)
+                                      :now 4}
                                      (clj->js {"url" dapp1-url2
                                                "loading" false})
-                                     false
-                                     {:db (:db result-open-existing)
-                                      :now 4})]
+                                     false)]
                 (is (not (has-wrong-properties? result-navigate
                                                 dapp1-url
                                                 {:browser-id "cryptokitties.co"

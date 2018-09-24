@@ -5,7 +5,7 @@
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.handlers-macro :as handlers-macro]
+            [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
@@ -35,16 +35,17 @@
                (re-frame/dispatch [:init.callback/account-change-error])))))
 
 ;;;; Handlers
-(defn login [cofx]
+(fx/defn login [cofx]
   (let [{:keys [address password save-password?]} (accounts.db/credentials cofx)]
     {:accounts.login/login [address password save-password?]}))
 
-(defn user-login [{:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (assoc-in db [:accounts/login :processing] true)}
-                           (node/initialize (get-in db [:accounts/login :address]))))
+(fx/defn user-login [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc-in db [:accounts/login :processing] true)}
+            (node/initialize (get-in db [:accounts/login :address]))))
 
-(defn user-login-callback [login-result {db :db :as cofx}]
+(fx/defn user-login-callback
+  [{db :db :as cofx} login-result]
   (let [data    (types/json->clj login-result)
         error   (:error data)
         success (empty? error)]
@@ -58,7 +59,7 @@
                    :error error
                    :processing false)})))
 
-(defn open-login [address photo-path name {:keys [db]}]
+(fx/defn open-login [{:keys [db]} address photo-path name]
   {:db (-> db
            (update :accounts/login assoc
                    :address address
@@ -71,14 +72,14 @@
    :keychain/get-user-password [address
                                 #(re-frame/dispatch [:accounts.login.callback/get-user-password-success %])]})
 
-(defn open-login-callback
-  [password {:keys [db] :as cofx}]
+(fx/defn open-login-callback
+  [{:keys [db] :as cofx} password]
   (if password
-    (handlers-macro/merge-fx cofx
-                             {:db (assoc-in db [:accounts/login :password] password)}
-                             (navigation/navigate-to-cofx :progress nil)
-                             (user-login))
-    (navigation/navigate-to-clean :login cofx)))
+    (fx/merge cofx
+              {:db (assoc-in db [:accounts/login :password] password)}
+              (navigation/navigate-to-cofx :progress nil)
+              (user-login))
+    (navigation/navigate-to-clean cofx :login nil)))
 
 (re-frame/reg-fx
  :accounts.login/login

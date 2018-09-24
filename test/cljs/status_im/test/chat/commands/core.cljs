@@ -65,7 +65,7 @@
 (def AnotherTestCommandInstance (AnotherTestCommand.))
 
 (deftest load-commands-test
-  (let [fx (core/load-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
+  (let [fx (core/load-commands {:db {}} #{TestCommandInstance AnotherTestCommandInstance})]
     (testing "Primary composite key index for command is correctly created"
       (is (= TestCommandInstance
              (get-in fx [:db :id->command
@@ -94,7 +94,7 @@
                      (core/command-id AnotherTestCommandInstance))))))
 
 (deftest chat-commands-test
-  (let [fx (core/load-commands #{TestCommandInstance AnotherTestCommandInstance} {:db {}})]
+  (let [fx (core/load-commands {:db {}} #{TestCommandInstance AnotherTestCommandInstance})]
     (testing "That relevant commands are looked up for chat"
       (is (= #{TestCommandInstance AnotherTestCommandInstance}
              (into #{}

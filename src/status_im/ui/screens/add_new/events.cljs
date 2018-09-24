@@ -7,4 +7,4 @@
  :handle-qr-code
  (fn [cofx [_ _ data]]
    (log/debug "qr code scanned with data " data)
-   (models/handle-qr-code data cofx)))
+   (models/handle-qr-code cofx data)))

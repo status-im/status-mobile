@@ -47,20 +47,20 @@
     (testing "correct name"
       (is (= {:db {:mailservers/manage {:name {:value "value"
                                                :error false}}}}
-             (mailserver/set-input :name "value" {}))))
+             (mailserver/set-input {:db {}} :name "value"))))
     (testing "blank name"
       (is (= {:db {:mailservers/manage {:name {:value ""
                                                :error true}}}}
-             (mailserver/set-input :name "" {})))))
+             (mailserver/set-input {:db {}} :name "")))))
   (testing "it validates enodes url"
     (testing "correct url"
       (is (= {:db {:mailservers/manage {:url {:value valid-enode-url
                                               :error false}}}}
-             (mailserver/set-input :url valid-enode-url {}))))
+             (mailserver/set-input {:db {}} :url valid-enode-url))))
     (testing "broken url"
       (is (= {:db {:mailservers/manage {:url {:value "broken"
                                               :error true}}}}
-             (mailserver/set-input :url "broken" {}))))))
+             (mailserver/set-input {:db {}} :url "broken"))))))
 
 (deftest edit-mailserver
   (let [db {:inbox/wnodes
@@ -70,7 +70,7 @@
                              :name    "name"}}}}
         cofx {:db db}]
     (testing "when no id is given"
-      (let [actual (mailserver/edit nil cofx)]
+      (let [actual (mailserver/edit cofx nil)]
         (testing "it resets :mailserver/manage"
           (is (= {:id   {:value nil
                          :error false}
@@ -80,11 +80,11 @@
                          :error true}}
                  (-> actual :db :mailservers/manage))))
         (testing "it navigates to edit-mailserver view"
-          (is (= [:navigate-to :edit-mailserver]
-                 (-> actual :dispatch))))))
+          (is (= :edit-mailserver
+                 (:status-im.ui.screens.navigation/navigate-to actual))))))
     (testing "when an id is given"
       (testing "when the wnode is in the list"
-        (let [actual (mailserver/edit "a" cofx)]
+        (let [actual (mailserver/edit cofx "a")]
           (testing "it populates the fields with the correct values"
             (is (= {:id   {:value "a"
                            :error false}
@@ -94,10 +94,10 @@
                            :error false}}
                    (-> actual :db :mailservers/manage))))
           (testing "it navigates to edit-mailserver view"
-            (is (= [:navigate-to :edit-mailserver]
-                   (-> actual :dispatch))))))
+            (is (= :edit-mailserver
+                   (:status-im.ui.screens.navigation/navigate-to actual))))))
       (testing "when the wnode is not in the list"
-        (let [actual (mailserver/edit "not-existing" cofx)]
+        (let [actual (mailserver/edit cofx "not-existing")]
           (testing "it populates the fields with the correct values"
             (is (= {:id   {:value nil
                            :error false}
@@ -107,22 +107,22 @@
                            :error true}}
                    (-> actual :db :mailservers/manage))))
           (testing "it navigates to edit-mailserver view"
-            (is (= [:navigate-to :edit-mailserver]
-                   (-> actual :dispatch)))))))))
+            (is (= :edit-mailserver
+                   (:status-im.ui.screens.navigation/navigate-to actual)))))))))
 
 (deftest connected-mailserver
   (testing "it returns true when set in inbox/current-id"
     (let [cofx {:db {:inbox/current-id "a"}}]
-      (is (mailserver/connected? "a" cofx))))
+      (is (mailserver/connected? cofx "a"))))
   (testing "it returns false otherwise"
-    (is (not (mailserver/connected? "a" {})))))
+    (is (not (mailserver/connected? {:db {}} "a")))))
 
 (deftest fetch-mailserver
   (testing "it fetches the mailserver from the db"
     (let [cofx {:db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
                                                     :name    "old-name"
                                                     :address "enode://old-id:old-password@url:port"}}}}}]
-      (is (mailserver/fetch "a" cofx)))))
+      (is (mailserver/fetch cofx "a")))))
 
 (deftest fetch-current-mailserver
   (testing "it fetches the mailserver from the db with corresponding id"
@@ -187,9 +187,9 @@
                                                     :name         "old-name"
                                                     :user-defined true
                                                     :address      "enode://old-id:old-password@url:port"}}}}}
-          actual (mailserver/delete "a" cofx)]
+          actual (mailserver/delete cofx "a")]
       (testing "it removes the mailserver from the list"
-        (is (not (mailserver/fetch "a" actual))))
+        (is (not (mailserver/fetch actual "a"))))
       (testing "it stores it in the db"
         (is (= 1 (count (:data-store/tx actual)))))))
   (testing "the mailserver is not user-defined"
@@ -197,7 +197,7 @@
                 :db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
                                                     :name    "old-name"
                                                     :address "enode://old-id:old-password@url:port"}}}}}
-          actual (mailserver/delete "a" cofx)]
+          actual (mailserver/delete cofx "a")]
       (testing "it does not delete the mailserver"
         (is (= {:dispatch [:navigate-back]} actual)))))
   (testing "the user is connected to the mailserver"
@@ -205,7 +205,7 @@
                 :db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
                                                     :name    "old-name"
                                                     :address "enode://old-id:old-password@url:port"}}}}}
-          actual (mailserver/delete "a" cofx)]
+          actual (mailserver/delete cofx "a")]
       (testing "it does not remove the mailserver from the list"
         (is (= {:dispatch [:navigate-back]} actual))))))
 

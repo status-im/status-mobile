@@ -21,12 +21,12 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 (defn init-store!
   "Try to decrypt the database, move on if successful otherwise go back to
@@ -55,12 +55,12 @@
       (then reset-keychain!)
       (catch reset-keychain!)))
 
-(defn initialize-keychain
+(fx/defn initialize-keychain
   "Entrypoint, fetches the key from the keychain and initialize the app"
   [cofx]
   {:keychain/get-encryption-key [:init.callback/get-encryption-key-success]})
 
-(defn initialize-app-db
+(fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [status-module-initialized? status-node-started? view-id
             network-status network peers-count peers-summary device-UUID]
@@ -76,25 +76,26 @@
               :device-UUID device-UUID
               :view-id view-id)})
 
-(defn initialize-app
-  [encryption-key cofx]
-  (handlers-macro/merge-fx cofx
-                           {:init/get-device-UUID                           nil
-                            :init/init-store                                encryption-key
-                            :ui/listen-to-window-dimensions-change          nil
-                            :init/testfairy-alert                           nil
-                            :notifications/handle-initial-push-notification nil
-                            :network/listen-to-network-status               nil
-                            :network/listen-to-connection-status            nil
-                            :hardwallet/check-nfc-support                   nil
-                            :hardwallet/check-nfc-enabled                   nil}
-                           (initialize-app-db)
-                           (node/start)))
+(fx/defn initialize-app
+  [cofx encryption-key]
+  (fx/merge cofx
+            {:init/get-device-UUID                           nil
+             :init/init-store                                encryption-key
+             :ui/listen-to-window-dimensions-change          nil
+             :init/testfairy-alert                           nil
+             :notifications/handle-initial-push-notification nil
+             :network/listen-to-network-status               nil
+             :network/listen-to-connection-status            nil
+             :hardwallet/check-nfc-support                   nil
+             :hardwallet/check-nfc-enabled                   nil}
+            (initialize-app-db)
+            (node/start nil)))
 
-(defn set-device-uuid [device-uuid {:keys [db]}]
+(fx/defn set-device-uuid
+  [{:keys [db]} device-uuid]
   {:db (assoc db :device-UUID device-uuid)})
 
-(defn handle-change-account-error
+(fx/defn handle-change-account-error
   [cofx]
   {:ui/show-confirmation
    {:title               (i18n/label :invalid-key-title)
@@ -105,7 +106,7 @@
     :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled ""])
     :on-accept           #(re-frame/dispatch [:init.ui/data-reset-accepted])}})
 
-(defn handle-init-store-error
+(fx/defn handle-init-store-error
   [encryption-key cofx]
   {:ui/show-confirmation
    {:title               (i18n/label :decryption-failed-title)
@@ -116,28 +117,29 @@
     :on-cancel           #(re-frame/dispatch [:init.ui/data-reset-cancelled encryption-key])
     :on-accept           #(re-frame/dispatch [:init.ui/data-reset-accepted])}})
 
-(defn load-accounts [{:keys [db all-accounts]}]
+(fx/defn load-accounts [{:keys [db all-accounts]}]
   (let [accounts (->> all-accounts
                       (map (fn [{:keys [address] :as account}]
                              [address account]))
                       (into {}))]
     {:db (assoc db :accounts/accounts accounts)}))
 
-(defn initialize-views [cofx]
+(fx/defn initialize-views
+  [cofx]
   (let [{{:accounts/keys [accounts] :as db} :db} cofx]
     (if (empty? accounts)
-      (navigation/navigate-to-clean :intro cofx)
+      (navigation/navigate-to-clean cofx :intro nil)
       (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
-        (accounts.login/open-login address photo-path name cofx)))))
+        (accounts.login/open-login cofx address photo-path name)))))
 
-(defn load-accounts-and-initialize-views
+(fx/defn load-accounts-and-initialize-views
   "DB has been decrypted, load accounts and initialize-view"
   [cofx]
-  (handlers-macro/merge-fx cofx
-                           (load-accounts)
-                           (initialize-views)))
+  (fx/merge cofx
+            (load-accounts)
+            (initialize-views)))
 
-(defn initialize-account-db [address {:keys [db web3]}]
+(fx/defn initialize-account-db [{:keys [db web3]} address]
   (let [{:universal-links/keys [url]
          :keys [accounts/accounts accounts/create contacts/contacts networks/networks
                 network network-status peers-count peers-summary view-id navigation-stack
@@ -168,38 +170,46 @@
            (assoc-in [:accounts/create :step] :enter-name))}))
 
 (defn initialize-wallet [cofx]
-  (when-not platform/desktop?
-    (handlers-macro/merge-fx cofx
-                             (models.wallet/update-wallet)
-                             (transactions/run-update)
-                             (transactions/start-sync))))
+  (fx/merge cofx
+            (models.wallet/update-wallet)
+            (transactions/run-update)
+            (transactions/start-sync)))
 
-(defn login-only-events [address {:keys [db] :as cofx}]
-  (when (not= (:view-id db) :create-account)
-    (handlers-macro/merge-fx cofx
-                             {:notifications/request-notifications-permissions nil}
-                             (navigation/navigate-to-cofx :home nil)
-                             (universal-links/process-stored-event)
-                             (notifications/process-stored-event address))))
+(defn login-only-events [cofx address]
+  (fx/merge cofx
+            {:notifications/request-notifications-permissions nil}
+            (navigation/navigate-to-cofx :home nil)
+            (universal-links/process-stored-event)
+            (notifications/process-stored-event address)))
 
-(defn initialize-account [address {:keys [web3] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:web3/set-default-account    [web3 address]
-                            :web3/fetch-node-version     [web3
-                                                          #(re-frame/dispatch
-                                                            [:web3/fetch-node-version-callback %])]
-                            :notifications/get-fcm-token nil}
-                           (initialize-account-db address)
-                           (protocol/initialize-protocol address)
-                           (models.contacts/load-contacts)
-                           (models.dev-server/start-if-needed)
-                           (chat-loading/initialize-chats)
-                           (chat-loading/initialize-pending-messages)
-                           (browser/initialize-browsers)
-                           (browser/initialize-dapp-permissions)
-                           (initialize-wallet)
-                           (accounts.update/update-sign-in-time)
-                           (login-only-events address)))
+(defn dev-mode? [cofx]
+  (get-in [:db :account/account :dev-mode?] cofx))
+
+(defn creating-account? [cofx]
+  (= (get-in cofx [:db :view-id])
+     :create-account))
+
+(fx/defn initialize-account [{:keys [db web3] :as cofx} address]
+  (fx/merge cofx
+            {:web3/set-default-account    [web3 address]
+             :web3/fetch-node-version     [web3
+                                           #(re-frame/dispatch
+                                             [:web3/fetch-node-version-callback %])]
+             :notifications/get-fcm-token nil}
+            (initialize-account-db address)
+            (protocol/initialize-protocol address)
+            (models.contacts/load-contacts)
+            #(when (dev-mode? %)
+               (models.dev-server/start))
+            (chat-loading/initialize-chats)
+            (chat-loading/initialize-pending-messages)
+            (browser/initialize-browsers)
+            (browser/initialize-dapp-permissions)
+            #(when-not platform/desktop?
+               (initialize-wallet %))
+            (accounts.update/update-sign-in-time)
+            #(when-not (creating-account? %)
+               (login-only-events % address))))
 
 (re-frame/reg-fx
  :init/init-store

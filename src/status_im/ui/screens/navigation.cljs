@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.navigation
   (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.navigation :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 ;; private helper fns
 
@@ -20,20 +20,22 @@
 
 ;; public fns
 
-(defn navigate-to-clean
-  ([view-id cofx] (navigate-to-clean view-id cofx nil))
-  ([view-id {:keys [db]} screen-params]
-   (log/debug "current view-id " (:view-id db))
-   (let [db (cond-> db
-              (seq screen-params)
-              (assoc-in [:navigation/screen-params view-id] screen-params))]
-     {:db                 (push-view db view-id)
-      ::navigate-to-clean view-id})))
+(fx/defn navigate-to-clean
+  [{:keys [db]} view-id screen-params]
+  (log/debug "current view-id " (:view-id db)
+             "changing to " view-id)
+  (let [db (cond-> db
+             (seq screen-params)
+             (assoc-in [:navigation/screen-params view-id] screen-params))]
+    {:db                 (push-view db view-id)
+     ::navigate-to-clean view-id}))
 
-(defn replace-view [view-id _]
+(fx/defn replace-view
+  [_ view-id]
   {::navigate-replace view-id})
 
-(defn navigate-forget [view-id {:keys [db]}]
+(fx/defn navigate-forget
+  [{:keys [db]} view-id]
   {:db (assoc db :view-id view-id)})
 
 (defmulti unload-data!
@@ -51,7 +53,8 @@
     (dissoc db :was-modal?) ;;TODO check how it worked with this bug
     (apply preload-data! db args)))
 
-(defn navigate-to-cofx [go-to-view-id screen-params {:keys [db]}]
+(fx/defn navigate-to-cofx
+  [{:keys [db]} go-to-view-id screen-params]
   (let [view-id (:view-id db)
         db      (cond-> (assoc db :view-id go-to-view-id)
                   (seq screen-params)
@@ -62,8 +65,8 @@
                      (push-view db go-to-view-id))
      ::navigate-to go-to-view-id}))
 
-(defn navigate-reset
-  [{:keys [index actions] :as config} {:keys [db]}]
+(fx/defn navigate-reset
+  [{:keys [db]} {:keys [index actions] :as config}]
   {:db              (assoc db :view-id
                            (:routeName (get actions index)))
    ::navigate-reset config})
@@ -119,7 +122,7 @@
  :navigate-to
  navigation-interceptors
  (fn [cofx [_ & [go-to-view-id screen-params]]]
-   (navigate-to-cofx go-to-view-id screen-params cofx)))
+   (navigate-to-cofx cofx go-to-view-id screen-params)))
 
 (handlers/register-handler-fx
  :navigate-to-modal
@@ -133,7 +136,7 @@
  (fn [cofx [_ view-id]]
    (replace-view view-id cofx)))
 
-(defn navigate-back
+(fx/defn navigate-back
   [{{:keys [navigation-stack view-id] :as db} :db}]
   (assoc
    {::navigate-back nil}
@@ -154,14 +157,14 @@
 (handlers/register-handler-fx
  :navigate-to-clean
  (fn [cofx [_ view-id params]]
-   (navigate-to-clean view-id cofx params)))
+   (navigate-to-clean cofx view-id params)))
 
 (handlers/register-handler-fx
  :navigate-to-tab
  navigation-interceptors
  (fn [{:keys [db] :as cofx} [_ view-id]]
-   (handlers-macro/merge-fx cofx
-                            {:db (-> db
-                                     (assoc :prev-tab-view-id (:view-id db))
-                                     (assoc :prev-view-id (:view-id db)))}
-                            (navigate-to-cofx view-id {}))))
+   (fx/merge cofx
+             {:db (-> db
+                      (assoc :prev-tab-view-id (:view-id db))
+                      (assoc :prev-view-id (:view-id db)))}
+             (navigate-to-cofx view-id {}))))

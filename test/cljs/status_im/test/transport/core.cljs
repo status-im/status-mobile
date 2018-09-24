@@ -7,9 +7,9 @@
   (let [cofx {:db {:account/account {:public-key "1"}
                    :semaphores #{}}}]
     (testing "it adds the discover filter"
-      (is (= (:shh/add-discovery-filter (protocol/initialize-protocol "user-address" cofx)))))
+      (is (= (:shh/add-discovery-filter (protocol/initialize-protocol cofx "user-address")))))
     (testing "it restores the sym-keys"
-      (is (= (:shh/restore-sym-keys (protocol/initialize-protocol  "user-address" cofx)))))
+      (is (= (:shh/restore-sym-keys (protocol/initialize-protocol cofx  "user-address")))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta
@@ -42,5 +42,5 @@
                                     ms-3])]
         (is (= expected-wnodes
                (get-in
-                (protocol/initialize-protocol "user-address" cofx-with-ms)
+                (protocol/initialize-protocol cofx-with-ms "user-address")
                 [:db :inbox/wnodes])))))))

@@ -4,7 +4,7 @@
             [status-im.data-store.dapp-permissions :as dapp-permissions]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 (def supported-permissions
   {constants/dapp-permission-contact-code {:title       (i18n/label :t/wants-to-access-profile)
@@ -36,7 +36,7 @@
                                                           (:address account))}
                  (vec allowed-permissions))))
 
-(defn send-permissions-data-to-bridge
+(fx/defn send-permissions-data-to-bridge
   "If there is granted permissions, return the data to the bridge
   If no permission were granted and dapp requested web3 permission,
   return `web3-permission-request-denied` message type
@@ -66,8 +66,8 @@
       :else
       {:db new-db})))
 
-(defn update-dapp-permissions
-  [dapp-name {:keys [db]}]
+(fx/defn update-dapp-permissions
+  [{:keys [db]} dapp-name]
   (let [allowed-permissions-set (get-allowed-permissions db)
         allowed-permissions     {:dapp dapp-name
                                  :permissions (vec allowed-permissions-set)}]
@@ -75,12 +75,12 @@
       {:db            (assoc-in db [:dapps/permissions dapp-name] allowed-permissions)
        :data-store/tx [(dapp-permissions/save-dapp-permissions allowed-permissions)]})))
 
-(defn process-next-permission
+(fx/defn process-next-permission
   "Process next permission by removing it from pending permissions
   and prompting user
   if there is no pending permissions left, save all granted permissions
   and return the result to the bridge"
-  [dapp-name {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} dapp-name]
   (let [pending-permissions (get-pending-permissions db)
         next-permission (first pending-permissions)]
     (if next-permission
@@ -89,24 +89,24 @@
                (assoc-in [:browser/options :show-permission]
                          {:requested-permission next-permission
                           :dapp-name dapp-name}))}
-      (handlers-macro/merge-fx cofx
-                               {:db (assoc-in db [:browser/options :show-permission] nil)}
-                               (update-dapp-permissions dapp-name)
-                               (send-permissions-data-to-bridge)))))
+      (fx/merge cofx
+                {:db (assoc-in db [:browser/options :show-permission] nil)}
+                (update-dapp-permissions dapp-name)
+                (send-permissions-data-to-bridge)))))
 
-(defn allow-permission
+(fx/defn allow-permission
   "Add permission to set of allowed permission and process next permission"
-  [dapp-name permission {:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (add-allowed-permission db permission)}
-                           (process-next-permission dapp-name)))
+  [{:keys [db] :as cofx} dapp-name permission]
+  (fx/merge cofx
+            {:db (add-allowed-permission db permission)}
+            (process-next-permission dapp-name)))
 
-(defn process-permissions
+(fx/defn process-permissions
   "Process the permissions requested by a dapp
   If all supported permissions are already granted, return the result immediatly
   to the bridge
   Otherwise process the first permission which will prompt user"
-  [dapp-name requested-permissions cofx]
+  [cofx dapp-name requested-permissions]
   (let [requested-permissions-set    (set requested-permissions)
         current-dapp-permissions     (get-in cofx [:db :dapps/permissions dapp-name :permissions])
         current-dapp-permissions-set (set current-dapp-permissions)
@@ -122,4 +122,4 @@
                                                  :requested-permissions requested-permissions-set})]
     (if (empty? pending-permissions)
       (send-permissions-data-to-bridge new-cofx)
-      (process-next-permission dapp-name new-cofx))))
+      (process-next-permission new-cofx dapp-name))))

@@ -8,15 +8,15 @@
             [status-im.transport.inbox :as inbox]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
-(defn init-whisper
+(fx/defn init-whisper
   "Initialises whisper protocol by:
   - adding fixed shh discovery filter
   - restoring existing symetric keys along with their unique filters
   - (optionally) initializing offline inboxing"
-  [current-account-id {:keys [db web3] :as cofx}]
+  [{:keys [db web3] :as cofx} current-account-id]
   (log/debug :init-whisper)
   (when-let [public-key (get-in db [:account/account :public-key])]
     (let [sym-key-added-callback (fn [chat-id sym-key sym-key-id]
@@ -24,15 +24,15 @@
                                                                         :sym-key    sym-key
                                                                         :sym-key-id sym-key-id}]))
           topic (transport.utils/get-topic constants/contact-discovery)]
-      (handlers-macro/merge-fx cofx
-                               {:shh/add-discovery-filter {:web3           web3
-                                                           :private-key-id public-key
-                                                           :topic topic}
-                                :shh/restore-sym-keys {:web3       web3
-                                                       :transport  (:transport/chats db)
-                                                       :on-success sym-key-added-callback}}
-                               (inbox/connect-to-mailserver)
-                               (transport.handlers/resend-contact-messages)))))
+      (fx/merge cofx
+                {:shh/add-discovery-filter {:web3           web3
+                                            :private-key-id public-key
+                                            :topic topic}
+                 :shh/restore-sym-keys {:web3       web3
+                                        :transport  (:transport/chats db)
+                                        :on-success sym-key-added-callback}}
+                (inbox/connect-to-mailserver)
+                (transport.handlers/resend-contact-messages [])))))
 
 ;;TODO (yenda) remove once go implements persistence
 ;;Since symkeys are not persisted, we restore them via add sym-keys,
@@ -61,7 +61,7 @@
                            (fn [js-error js-message]
                              (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))))
 
-(defn stop-whisper
+(fx/defn stop-whisper
   "Stops whisper protocol by removing all existing shh filters
   It is necessary to remove the filters because status-go there isn't currently a logout feature in status-go
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive

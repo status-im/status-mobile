@@ -5,7 +5,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 (re-frame/reg-fx
  :extension/load
@@ -16,13 +16,13 @@
  :extension/install
  (fn [cofx [_ extension-data]]
    (let [extension-key (get-in extension-data ['meta :name])]
-     (handlers-macro/merge-fx cofx
-                              {:ui/show-confirmation {:title     (i18n/label :t/success)
-                                                      :content   (i18n/label :t/extension-installed)
-                                                      :on-accept #(re-frame/dispatch [:navigate-to-clean :home])
-                                                      :on-cancel nil}}
-                              (registry/add extension-data)
-                              (registry/activate extension-key)))))
+     (fx/merge cofx
+               {:ui/show-confirmation {:title     (i18n/label :t/success)
+                                       :content   (i18n/label :t/extension-installed)
+                                       :on-accept #(re-frame/dispatch [:navigate-to-clean :home])
+                                       :on-cancel nil}}
+               #(registry/add extension-data %)
+               #(registry/activate extension-key %)))))
 
 (handlers/register-handler-fx
  :extension/edit-address
@@ -32,9 +32,9 @@
 (handlers/register-handler-fx
  :extension/stage
  (fn [{:keys [db] :as cofx} [_ extension-data]]
-   (handlers-macro/merge-fx cofx
-                            {:db (assoc db :staged-extension extension-data)}
-                            (navigation/navigate-to-cofx :show-extension nil))))
+   (fx/merge cofx
+             {:db (assoc db :staged-extension extension-data)}
+             (navigation/navigate-to-cofx :show-extension nil))))
 
 (handlers/register-handler-fx
  :extension/show

@@ -1,6 +1,5 @@
 (ns status-im.ui.components.desktop.events
-  (:require [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+  (:require [status-im.utils.handlers :as handlers]))
 
 (handlers/register-handler-fx
  :show-desktop-tab

@@ -4,11 +4,11 @@
             [status-im.transport.core :as transport]
             [status-im.transport.inbox :as transport.inbox]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.semaphores :as semaphores]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.fx :as fx]))
 
-(defn update-sync-state
+(fx/defn update-sync-state
   [{{:keys [sync-state sync-data] :as db} :db} error sync]
   (let [{:keys [highestBlock currentBlock] :as state}
         (js->clj sync :keywordize-keys true)
@@ -28,36 +28,37 @@
            (not= sync-state new-state)
            (assoc :sync-state new-state))}))
 
-(defn check-sync-state
+(fx/defn check-sync-state
   [{{:keys [web3] :as db} :db :as cofx}]
   (if (:account/account db)
     {:web3/get-syncing web3
      :dispatch-later    [{:ms 10000 :dispatch [:protocol/state-sync-timed-out]}]}
-    (semaphores/free :check-sync-state? cofx)))
+    (semaphores/free cofx :check-sync-state?)))
 
-(defn start-check-sync-state
+(fx/defn start-check-sync-state
   [{{:keys [network account/account] :as db} :db :as cofx}]
-  (when (and (not (semaphores/locked? :check-sync-state? cofx))
+  (when (and (not (semaphores/locked? cofx :check-sync-state?))
              (not (ethereum/network-with-upstream-rpc? (get-in account [:networks network]))))
-    (handlers-macro/merge-fx cofx
-                             (check-sync-state)
-                             (semaphores/lock :check-sync-state?))))
+    (fx/merge cofx
+              (check-sync-state)
+              (semaphores/lock :check-sync-state?))))
 
-(defn initialize-protocol
-  [address {:data-store/keys [transport mailservers] :keys [db web3] :as cofx}]
+(fx/defn initialize-protocol
+  [{:data-store/keys [transport mailservers] :keys [db web3] :as cofx} address]
   (let [network (get-in db [:account/account :network])
         network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
-    (handlers-macro/merge-fx cofx
-                             {:db                              (assoc db
-                                                                      :rpc-url constants/ethereum-rpc-url
-                                                                      :transport/chats transport)
-                              :protocol/assert-correct-network {:web3 web3
-                                                                :network-id network-id}}
-                             (start-check-sync-state)
-                             (transport.inbox/initialize-offline-inbox mailservers)
-                             (transport/init-whisper address))))
+    (fx/merge cofx
+              {:db                              (assoc db
+                                                       :rpc-url constants/ethereum-rpc-url
+                                                       :transport/chats transport)
+               :protocol/assert-correct-network {:web3 web3
+                                                 :network-id network-id}}
+              (start-check-sync-state)
+              (transport.inbox/initialize-offline-inbox mailservers)
+              (transport/init-whisper address))))
 
-(defn handle-close-app-confirmed []
+(fx/defn handle-close-app-confirmed
+  [_]
   {:ui/close-application nil})
 
 (re-frame/reg-fx

@@ -13,12 +13,12 @@
             [status-im.utils.config :as config]
             [status-im.utils.random :as random]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 (defn get-signing-phrase [cofx]
   (assoc cofx :signing-phrase (signing-phrase/generate)))
@@ -37,9 +37,9 @@
   {:db (update db :accounts/create assoc :step :account-creating :error nil)
    :accounts.create/create-account (:password create)})
 
-(defn- add-account
+(fx/defn add-account
   "Takes db and new account, creates map of effects describing adding account to database and realm"
-  [{:keys [address] :as account} cofx]
+  [cofx {:keys [address] :as account}]
   (let [db (:db cofx)
         {:networks/keys [networks]} db
         enriched-account (assoc account
@@ -49,10 +49,12 @@
     {:db                 (assoc-in db [:accounts/accounts address] enriched-account)
      :data-store/base-tx [(accounts-store/save-account-tx enriched-account)]}))
 
-(defn on-account-created [{:keys [pubkey address mnemonic]} password seed-backed-up {:keys [random-guid-generator
-                                                                                            signing-phrase
-                                                                                            status
-                                                                                            db] :as cofx}]
+(fx/defn on-account-created
+  [{:keys [random-guid-generator
+           signing-phrase
+           status
+           db] :as cofx}
+   {:keys [pubkey address mnemonic]} password seed-backed-up]
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key      pubkey
                             :installation-id (random-guid-generator)
@@ -67,12 +69,12 @@
                             :settings        (constants/default-account-settings)}]
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
-      (handlers-macro/merge-fx cofx
-                               {:db (assoc db :accounts/login {:address normalized-address
-                                                               :password password
-                                                               :processing true})}
-                               (add-account account)
-                               (accounts.login/user-login)))))
+      (fx/merge cofx
+                {:db (assoc db :accounts/login {:address normalized-address
+                                                :password password
+                                                :processing true})}
+                (add-account account)
+                (accounts.login/user-login)))))
 
 (defn reset-account-creation [{db :db}]
   {:db (update db :accounts/create assoc
@@ -81,17 +83,19 @@
                :password-confirm nil
                :error nil)})
 
-(defn account-set-input-text [input-key text {db :db}]
+(fx/defn account-set-input-text
+  [{db :db} input-key text]
   {:db (update db :accounts/create merge {input-key text :error nil})})
 
 (defn account-set-name [{{:accounts/keys [create] :as db} :db :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db                                  (assoc db :accounts/create {:show-welcome? true})
-                            :notifications/request-notifications-permissions nil
-                            :dispatch                            [:navigate-to :home]}
-                           (accounts.update/account-update {:name (:name create)})))
+  (fx/merge cofx
+            {:db                                  (assoc db :accounts/create {:show-welcome? true})
+             :notifications/request-notifications-permissions nil
+             :dispatch                            [:navigate-to :home]}
+            (accounts.update/account-update {:name (:name create)} {})))
 
-(defn next-step [step password password-confirm {:keys [db] :as cofx}]
+(fx/defn next-step
+  [{:keys [db] :as cofx} step password password-confirm]
   (case step
     :enter-password {:db (assoc-in db [:accounts/create :step] :confirm-password)}
     :confirm-password (if (= password password-confirm)
@@ -99,22 +103,25 @@
                         {:db (assoc-in db [:accounts/create :error] (i18n/label :t/password_error1))})
     :enter-name (account-set-name cofx)))
 
-(defn step-back [step cofx]
+(fx/defn step-back
+  [cofx step]
   (case step
     :enter-password (navigation/navigate-back cofx)
     :confirm-password (reset-account-creation cofx)))
 
-(defn navigate-to-create-account-screen [{:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (update db :accounts/create
-                                        #(-> %
-                                             (assoc :step :enter-password)
-                                             (dissoc :password :password-confirm :name :error)))}
-                           (navigation/navigate-to-cofx :create-account nil)))
+(fx/defn navigate-to-create-account-screen
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (update db :accounts/create
+                         #(-> %
+                              (assoc :step :enter-password)
+                              (dissoc :password :password-confirm :name :error)))}
+            (navigation/navigate-to-cofx :create-account nil)))
 
-(defn navigate-to-authentication-method [{:keys [db] :as cofx}]
+(fx/defn navigate-to-authentication-method
+  [{:keys [db] :as cofx}]
   (if (hardwallet/hardwallet-supported? db)
-    (navigation/navigate-to-cofx :hardwallet-authentication-method nil cofx)
+    (navigation/navigate-to-cofx cofx :hardwallet-authentication-method nil)
     (navigate-to-create-account-screen cofx)))
 
 ;;;; COFX

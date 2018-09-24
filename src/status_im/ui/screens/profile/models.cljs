@@ -6,9 +6,9 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.chat.models :as chat-models]
             [status-im.chat.commands.input :as commands-input]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.image-processing :as image-processing]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]))
 
 (defn open-image-picker! [callback-event]
   (react/show-image-picker
@@ -23,9 +23,9 @@
 
 (defn send-transaction [chat-id {:keys [db] :as cofx}]
   (let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
-    (handlers-macro/merge-fx cofx
-                             (chat-models/start-chat chat-id {:navigation-replace? true})
-                             (commands-input/select-chat-input-command send-command nil))))
+    (fx/merge cofx
+              (chat-models/start-chat chat-id {:navigation-replace? true})
+              (commands-input/select-chat-input-command send-command nil))))
 
 (defn- valid-name? [name]
   (spec/valid? :profile/name name))
@@ -49,7 +49,8 @@
       name
       (get-in db [:account/account :name]))))
 
-(defn clear-profile [{:keys [db]}]
+(fx/defn clear-profile
+  [{:keys [db]}]
   {:db (dissoc db :my-profile/profile :my-profile/default-name :my-profile/editing?)})
 
 (defn start-editing [{:keys [db]}]
@@ -65,9 +66,9 @@
                              :last-updated now}
                             (if photo-path
                               {:photo-path photo-path}))]
-    (handlers-macro/merge-fx cofx
-                             (clear-profile)
-                             (accounts.update/account-update cleaned-edit))))
+    (fx/merge cofx
+              (clear-profile)
+              (accounts.update/account-update cleaned-edit {}))))
 
 (defn start-editing-group-chat-profile [{:keys [db]}]
   {:db (assoc db :group-chat-profile/editing? true)})
@@ -87,9 +88,9 @@
   {:db (update db :my-profile/seed assoc :step step :error nil :word nil)})
 
 (defn finish [{:keys [db] :as cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-                           (accounts.update/clean-seed-phrase)))
+  (fx/merge cofx
+            {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
+            (accounts.update/clean-seed-phrase)))
 
 (defn copy-to-clipboard! [value]
   (react/copy-to-clipboard value))

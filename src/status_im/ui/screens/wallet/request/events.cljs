@@ -5,20 +5,20 @@
             [status-im.utils.handlers :as handlers]
             [status-im.chat.models :as chat-model]
             [status-im.chat.commands.sending :as commands-sending]
-            [status-im.utils.money :as money]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]))
 
 (handlers/register-handler-fx
  :wallet-send-request
  (fn [{:keys [db] :as cofx} [_ whisper-identity amount symbol decimals]]
    (assert whisper-identity)
    (let [request-command (get-in db [:id->command ["request" #{:personal-chats}]])]
-     (handlers-macro/merge-fx cofx
-                              (chat-model/start-chat whisper-identity nil)
-                              (commands-sending/send whisper-identity
-                                                     request-command
-                                                     {:asset  (name symbol)
-                                                      :amount (str (money/internal->formatted amount symbol decimals))})))))
+     (fx/merge cofx
+               (chat-model/start-chat whisper-identity nil)
+               (commands-sending/send whisper-identity
+                                      request-command
+                                      {:asset  (name symbol)
+                                       :amount (str (money/internal->formatted amount symbol decimals))})))))
 
 (handlers/register-handler-fx
  :wallet.request/set-and-validate-amount

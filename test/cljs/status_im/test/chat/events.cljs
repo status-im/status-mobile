@@ -5,6 +5,6 @@
 (deftest show-profile-test
   (testing "Dafault behaviour: navigate to profile"
     (let [{:keys [db]} (chat-events/show-profile
-                        "a"
-                        {:db {:navigation-stack '(:home)}})]
+                        {:db {:navigation-stack '(:home)}}
+                        "a")]
       (is (= "a" (:contacts/identity db))))))

@@ -48,13 +48,12 @@
             :current-chat-id "chat-id"
             :chats {"chat-id" {:messages {}}}}]
     (testing "a message coming from you!"
-      (let [actual (message/receive
-                    {:from "me"
-                     :message-id "id"
-                     :chat-id "chat-id"
-                     :content "b"
-                     :clock-value 1}
-                    {:db db})
+      (let [actual (message/receive {:db db}
+                                    {:from "me"
+                                     :message-id "id"
+                                     :chat-id "chat-id"
+                                     :content "b"
+                                     :clock-value 1})
             message (get-in actual [:db :chats "chat-id" :messages "id"])
             status  (get-in actual [:db :chats "chat-id" :message-statuses "id" "me" :status])]
         (testing "it adds the message"
@@ -71,7 +70,7 @@
           (is (= :sent status)))))))
 
 (deftest receive-send-seen
-  (let [db           {:db {:chats {"chat-id" {}}
+  (let [cofx         {:db {:chats {"chat-id" {}}
                            :account/account {:public-key "a"}
                            :current-chat-id "chat-id"
                            :view-id :chat}}
@@ -83,23 +82,20 @@
         extract-seen (comp :payload :message first :shh/post)]
     (testing "it send a seen message when the chat is 1-to-1 and is open"
       (is (instance? protocol/MessagesSeen
-                     (extract-seen (message/receive message db))))
-      (is (= #{"1"} (:message-ids (extract-seen (message/receive message db))))))
+                     (extract-seen (message/receive cofx message))))
+      (is (= #{"1"} (:message-ids (extract-seen (message/receive cofx message))))))
     (testing "it does not send any when the chat is public"
       (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :chats "chat-id" :public?] true))))))
+                 (message/receive (assoc-in cofx [:db :chats "chat-id" :public?] true)
+                                  message)))))
     (testing "it does not send any when we are in a different chat"
       (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :current-chat-id] :different))))))
+                 (message/receive (assoc-in cofx [:db :current-chat-id] :different)
+                                  message)))))
     (testing "it does not send any when we are not in a chat view"
       (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :view-id] :home))))))))
+                 (message/receive (assoc-in cofx [:db :view-id] :home)
+                                  message)))))))
 
 (deftest delete-message
   (let [timestamp (time/now)
@@ -118,8 +114,8 @@
                                                               :clock-value 0
                                                               :timestamp   timestamp}}
                                            :message-groups {"datetime-today" '({:message-id 0})}}}}}
-        fx1       (message/delete-message "chat-id" 1 cofx1)
-        fx2       (message/delete-message "chat-id" 0 cofx2)]
+        fx1       (message/delete-message cofx1 "chat-id" 1)
+        fx2       (message/delete-message cofx2 "chat-id" 0)]
     (testing "Deleting message deletes it along with all references"
       (is (= '(0)
              (keys (get-in fx1 [:db :chats "chat-id" :messages]))))

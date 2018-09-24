@@ -7,7 +7,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.hex :as utils.hex]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.utils.fx :as fx]))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -186,7 +187,7 @@
 (defn tokens-symbols [v chain]
   (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))
 
-(defn update-wallet
+(fx/defn update-wallet
   [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
   (let [network     (get-in db [:account/account :networks network])
         chain       (ethereum/network->chain-keyword network)

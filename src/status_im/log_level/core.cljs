@@ -2,20 +2,19 @@
   (:require [re-frame.core :as re-frame]
             [status-im.accounts.update.core :as accounts.update]
             [status-im.i18n :as i18n]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
-(defn save-log-level
-  [log-level {:keys [db now] :as cofx}]
+(fx/defn save-log-level
+  [{:keys [db now] :as cofx} log-level]
   (let [settings (get-in db [:account/account :settings])]
-    (handlers-macro/merge-fx cofx
-                             (accounts.update/update-settings
-                              (if log-level
-                                (assoc settings :log-level log-level)
-                                (dissoc settings :log-level))
-                              [:accounts.update.callback/save-settings-success]))))
+    (accounts.update/update-settings cofx
+                                     (if log-level
+                                       (assoc settings :log-level log-level)
+                                       (dissoc settings :log-level))
+                                     {:success-event [:accounts.update.callback/save-settings-success]})))
 
-(defn show-change-log-level-confirmation
-  [{:keys [name value] :as log-level} {:keys [db]}]
+(fx/defn show-change-log-level-confirmation
+  [{:keys [db]} {:keys [name value] :as log-level}]
   {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
                           :content             (i18n/label :t/change-log-level
                                                            {:log-level name})

@@ -1,6 +1,5 @@
 (ns status-im.chat.commands.impl.transactions
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]
-                   [status-im.utils.handlers-macro :as handlers-macro])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
@@ -19,6 +18,7 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.datetime :as datetime]
+            [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
@@ -302,25 +302,24 @@
           next-view-id          (if (:wallet-set-up-passed? sender-account)
                                   :wallet-send-transaction-modal
                                   :wallet-onboarding-setup)]
-      (handlers-macro/merge-fx
-       cofx
-       {:db               (-> db
-                              (update-in [:wallet :send-transaction]
-                                         assoc
-                                         :amount (money/formatted->internal value symbol decimals)
-                                         :amount-text amount
-                                         :amount-error error)
-                              (choose-recipient.events/fill-request-details
-                               (transaction-details recipient-contact symbol))
-                              (update-in [:wallet :send-transaction]
-                                         dissoc :id :password :wrong-password?))
-        ;; TODO(janherich) - refactor wallet send events, updating gas price
-        ;; is generic thing which shouldn't be defined in wallet.send, then
-        ;; we can include the utility helper without running into circ-dep problem
-        :update-gas-price {:web3          (:web3 db)
-                           :success-event :wallet/update-gas-price-success
-                           :edit?         false}}
-       (navigation/navigate-to-cofx next-view-id {}))))
+      (fx/merge cofx
+                {:db (-> db
+                         (update-in [:wallet :send-transaction]
+                                    assoc
+                                    :amount (money/formatted->internal value symbol decimals)
+                                    :amount-text amount
+                                    :amount-error error)
+                         (choose-recipient.events/fill-request-details
+                          (transaction-details recipient-contact symbol))
+                         (update-in [:wallet :send-transaction]
+                                    dissoc :id :password :wrong-password?))
+                 ;; TODO(janherich) - refactor wallet send events, updating gas price
+                 ;; is generic thing which shouldn't be defined in wallet.send, then
+                 ;; we can include the utility helper without running into circ-dep problem
+                 :update-gas-price {:web3          (:web3 db)
+                                    :success-event :wallet/update-gas-price-success
+                                    :edit?         false}}
+                (navigation/navigate-to-cofx next-view-id {}))))
   protocol/EnhancedParameters
   (enhance-send-parameters [_ parameters cofx]
     (-> (inject-network-info parameters cofx)

@@ -2,13 +2,11 @@
   (:require [clojure.string :as string]
             [status-im.browser.core :as browser]
             [status-im.network.core :as network]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
-(defn start-if-needed
-  [{{:account/keys [account]} :db}]
-  (let [{:keys [dev-mode?]} account]
-    (when dev-mode?
-      {:dev-server/start nil})))
+(defn start
+  []
+  {:dev-server/start nil})
 
 ;; Specific server operations
 
@@ -20,9 +18,9 @@
 
 (defmethod process-request! [:POST "dapp" "open"]
   [{{:keys [url]} :data cofx :cofx}]
-  (handlers-macro/merge-fx cofx
-                           {:dev-server/respond [200 {:message "URL has been opened."}]}
-                           (browser/open-url url)))
+  (fx/merge cofx
+            {:dev-server/respond [200 {:message "URL has been opened."}]}
+            (browser/open-url url)))
 
 (defmethod process-request! [:POST "network" nil]
   [{:keys [cofx data]}]

@@ -1,10 +1,11 @@
 (ns status-im.qr-scanner.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.fx :as fx]))
 
-(defn scan-qr-code
-  [{:keys [modal?] :as identifier} qr-codes {:keys [db]}]
+(fx/defn scan-qr-code
+  [{:keys [db]} {:keys [modal?] :as identifier} qr-codes]
   {:db                     (assoc db :qr-codes qr-codes)
    :request-permissions-fx {:permissions [:camera]
                             :on-allowed  #(re-frame/dispatch [(if modal? :navigate-to-modal :navigate-to)
@@ -15,8 +16,8 @@
                                                                (i18n/label :t/camera-access-error))
                                             50))}})
 
-(defn set-qr-code
-  [context data {:keys [db]}]
+(fx/defn set-qr-code
+  [{:keys [db]} context data]
   (merge {:db (-> db
                   (update :qr-codes dissoc context)
                   (dissoc :current-qr-context))}

@@ -6,7 +6,7 @@
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.message :as message-model]
-            [status-im.utils.handlers-macro :as handlers-macro]))
+            [status-im.utils.fx :as fx]))
 
 ;; TODO(janherich) remove after couple of releases when danger of messages
 ;; with old command references will be low
@@ -43,9 +43,9 @@
                            :params       (or new-parameter-map parameter-map)}
                           content)}))
 
-(defn validate-and-send
+(fx/defn validate-and-send
   "Validates and sends command in current chat"
-  [input-text {:keys [type params] :as command} {:keys [db now random-id] :as cofx}]
+  [{:keys [db now random-id] :as cofx} input-text {:keys [type params] :as command}]
   (let [chat-id       (:current-chat-id db)
         parameter-map (commands-input/parse-parameters params input-text)]
     (if-let [validation-error (protocol/validate type parameter-map cofx)]
@@ -53,28 +53,28 @@
       {:db (chat-model/set-chat-ui-props db {:validation-messages  validation-error
                                              :sending-in-progress? false})}
       ;; no errors, define clean-up effects which will have to be performed in all cases
-      (let [cleanup-fx (handlers-macro/merge-fx cofx
-                                                {:db (chat-model/set-chat-ui-props
-                                                      db {:sending-in-progress? false})}
-                                                (input-model/set-chat-input-text nil))]
+      (let [cleanup-fx (fx/merge cofx
+                                 {:db (chat-model/set-chat-ui-props
+                                       db {:sending-in-progress? false})}
+                                 (input-model/set-chat-input-text nil))]
         (if (satisfies? protocol/Yielding type)
           ;; yield control implemented, don't send the message
-          (handlers-macro/merge-fx cofx
-                                   cleanup-fx
-                                   (protocol/yield-control type parameter-map))
+          (fx/merge cofx
+                    cleanup-fx
+                    #(protocol/yield-control type parameter-map %))
           ;; no yield control, proceed with sending the command message
           (let [command-message (create-command-message chat-id type parameter-map cofx)]
-            (handlers-macro/merge-fx cofx
-                                     cleanup-fx
-                                     (protocol/on-send type command-message)
-                                     (input-model/set-chat-input-metadata nil)
-                                     (message-model/send-message command-message))))))))
+            (fx/merge cofx
+                      cleanup-fx
+                      #(protocol/on-send type command-message %)
+                      (input-model/set-chat-input-metadata nil)
+                      (message-model/send-message command-message))))))))
 
-(defn send
+(fx/defn send
   "Sends command with given parameters in particular chat"
-  [chat-id {:keys [type]} parameter-map cofx]
+  [cofx chat-id {:keys [type]} parameter-map]
   (let [command-message (create-command-message chat-id type parameter-map cofx)]
-    (handlers-macro/merge-fx cofx
-                             (protocol/on-send type command-message)
-                             (input-model/set-chat-input-metadata nil)
-                             (message-model/send-message command-message))))
+    (fx/merge cofx
+              #(protocol/on-send type command-message %)
+              (input-model/set-chat-input-metadata nil)
+              (message-model/send-message command-message))))

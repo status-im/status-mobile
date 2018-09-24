@@ -6,7 +6,8 @@
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.impl.transactions :as transactions]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.fx :as fx]))
 
 (def register
   "Register of all commands. Whenever implementing a new command,
@@ -101,10 +102,10 @@
     {:id->command              id->command
      :access-scope->command-id access-scope->command-id}))
 
-(defn load-commands
+(fx/defn load-commands
   "Takes collection of things implementing the command protocol and db,
   correctly indexes them and adds them to db in a way that preserves existing commands"
-  [commands {:keys [db]}]
+  [{:keys [db]} commands]
   (let [{:keys [id->command access-scope->command-id]} (index-commands commands)]
     {:db (-> db
              (update :id->command merge id->command)
