@@ -187,11 +187,12 @@
  :shh/restore-sym-keys
  (fn [{:keys [web3 transport on-success]}]
    (doseq [[chat-id {:keys [sym-key]}] transport]
-     (add-sym-key {:web3       web3
-                   :sym-key    sym-key
-                   :on-success (fn [sym-key-id]
-                                 (on-success chat-id sym-key sym-key-id))
-                   :on-error   log-error}))))
+     (when sym-key
+       (add-sym-key {:web3       web3
+                     :sym-key    sym-key
+                     :on-success (fn [sym-key-id]
+                                   (on-success chat-id sym-key sym-key-id))
+                     :on-error   log-error})))))
 
 (defn add-new-sym-key [{:keys [web3 sym-key on-success]}]
   (add-sym-key {:web3       web3

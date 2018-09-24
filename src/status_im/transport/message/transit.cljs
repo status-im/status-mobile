@@ -46,8 +46,8 @@
 (deftype MessageHandler []
   Object
   (tag [this v] "c4")
-  (rep [this {:keys [content content-type message-type clock-value timestamp chat-id]}]
-    #js [content content-type message-type clock-value timestamp chat-id]))
+  (rep [this {:keys [content content-type message-type clock-value timestamp]}]
+    #js [content content-type message-type clock-value timestamp]))
 
 (deftype MessagesSeenHandler []
   Object
@@ -67,11 +67,11 @@
   (rep [this _]
     (clj->js nil)))
 
-(deftype GroupChatCreateHandler []
+(deftype GroupMembershipUpdateHandler []
   Object
-  (tag [this v] "g4")
-  (rep [this {:keys [chat-name participants chat-id]}]
-    #js [chat-name participants chat-id]))
+  (tag [this v] "g5")
+  (rep [this {:keys [chat-id chat-name admin participants signature message]}]
+    #js [chat-id chat-name admin participants signature message]))
 
 (def writer (transit/writer :json
                             {:handlers
@@ -83,7 +83,7 @@
                               v1.protocol/MessagesSeen            (MessagesSeenHandler.)
                               v1.group-chat/GroupAdminUpdate      (GroupAdminUpdateHandler.)
                               v1.group-chat/GroupLeave            (GroupLeaveHandler.)
-                              v1.group-chat/GroupChatCreate       (GroupChatCreateHandler.)}}))
+                              v1.protocol/GroupMembershipUpdate (GroupMembershipUpdateHandler.)}}))
 
 ;;
 ;; Reader handlers
@@ -98,14 +98,14 @@
                                      (v1.contact/ContactRequest. name profile-image address fcm-token))
                               "c3" (fn [[name profile-image address fcm-token]]
                                      (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
-                              "c4" (fn [[content content-type message-type clock-value timestamp chat-id]]
-                                     (v1.protocol/Message. content content-type message-type clock-value timestamp chat-id))
+                              "c4" (fn [[content content-type message-type clock-value timestamp]]
+                                     (v1.protocol/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]
                                      (v1.contact/ContactUpdate. name profile-image address fcm-token))
-                              "g4" (fn [[name participants chat-id]]
-                                     (v1.group-chat/GroupChatCreate. name participants chat-id))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
+                              "g5" (fn [[chat-id chat-name admin participants signature message]]
+                                     (v1.protocol/GroupMembershipUpdate. chat-id chat-name admin participants nil signature message))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

@@ -2,7 +2,9 @@
   (:require
    [status-im.chat.models.group-chat :as models.group-chat]
    [status-im.models.contact :as models.contact]
+   [status-im.group-chats.core :as group-chats]
    [status-im.transport.message.core :as message]
+   [status-im.transport.message.v1.protocol :as transport.protocol]
    [status-im.transport.message.v1.contact :as transport.contact]
    [status-im.transport.message.v1.group-chat :as transport.group-chat]))
 
@@ -11,10 +13,10 @@
   (receive [this chat-id signature _ cofx]
     (models.group-chat/handle-group-admin-update this chat-id signature cofx)))
 
-(extend-type transport.group-chat/GroupChatCreate
+(extend-type transport.protocol/GroupMembershipUpdate
   message/StatusMessage
   (receive [this _ signature _ cofx]
-    (models.group-chat/handle-group-chat-create this signature cofx)))
+    (group-chats/handle-membership-update this signature cofx)))
 
 (extend-type transport.group-chat/GroupLeave
   message/StatusMessage

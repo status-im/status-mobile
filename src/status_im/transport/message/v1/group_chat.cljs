@@ -25,7 +25,7 @@
                                                                                    :payload this}}
                                                          (init-chat-if-new chat-id)))))
 
-(defrecord GroupChatCreate [chat-name participants chat-id]
+(defrecord GroupMembershipUpdate [chat-id chat-name admin participants leaves signature message]
   message/StatusMessage
   (send [this chat-id cofx]
     (let [{:keys [current-public-key web3]} (:db cofx)]

@@ -60,6 +60,17 @@
                                 :src     current-public-key
                                 :chat    chat-id
                                 :payload payload}]}))
+(defn wrap-group-message [chat-id message cofx]
+  (when-let [chat (get-in cofx [:db :chats chat-id])]
+    (GroupMembershipUpdate.
+     chat-id
+     (:chat-name chat)
+     (:group-admin chat)
+     (:contacts chat)
+     nil
+     nil
+     message)))
+
 (defn send-group-message
   "Sends the payload using to dst"
   [chat-id success-event payload {:keys [db] :as cofx}]
@@ -71,7 +82,7 @@
                               :success-event success-event
                               :src     current-public-key
                               :dsts    recipients
-                              :payload payload}}))
+                              :payload (wrap-group-message chat-id payload cofx)}}))
 
 (fx/defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
@@ -101,9 +112,9 @@
   (send [this cofx chat-id])
   (receive [this chat-id sig timestamp cofx]))
 
-(defrecord Message [content content-type message-type clock-value timestamp chat-id]
+(defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
-  (send [this _ cofx]
+  (send [this chat-id cofx]
     (let [params     {:chat-id       chat-id
                       :payload       this
                       :success-event [:transport/set-message-envelope-hash
