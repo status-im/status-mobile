@@ -322,7 +322,8 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [{:keys [message webview]}]
-   (.sendToBridge webview (types/clj->json message))))
+   (when (and message webview)
+     (.sendToBridge webview (types/clj->json message)))))
 
 (re-frame/reg-fx
  :browser/call-rpc

@@ -21,10 +21,7 @@ window.addEventListener('message', function (event) {
 WebViewBridge.onMessage = function (message) {
     data = JSON.parse(message);
 
-    if (data.type === "navigate-to-blank")
-        window.location.href = "about:blank";
-
-    else if (data.type === "status-api-success")
+    if (data.type === "status-api-success")
     {
         if (data.keys == 'WEB3')
         {

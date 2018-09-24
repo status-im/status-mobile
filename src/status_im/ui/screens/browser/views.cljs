@@ -48,12 +48,10 @@
         [react/touchable-highlight {:style {:flex 1} :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
          [react/text {:style styles/url-text} (http/url-host url)]])]]))
 
-(defn toolbar [webview error? url browser browser-id url-editing?]
+(defn toolbar [error? url browser browser-id url-editing?]
   [toolbar.view/toolbar {}
    [toolbar.view/nav-button-with-count
     (actions/close (fn []
-                     (when @webview
-                       (.sendToBridge @webview "navigate-to-blank"))
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
@@ -108,7 +106,7 @@
                                 (not (nil? (:url props)))))}
   [react/view styles/browser
    [status-bar/status-bar]
-   [toolbar webview error? url browser browser-id url-editing?]
+   [toolbar error? url browser browser-id url-editing?]
    [react/view components.styles/flex
     (if unsafe?
       [site-blocked.views/view {:can-go-back? can-go-back?
