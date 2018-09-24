@@ -731,5 +731,6 @@
     "create-pin": "Create a PIN",
     "create-pin-description": "You'll need your card + this PIN to log in and to confirm transactions",
     "repeat-pin": "Repeate your PIN",
-    "pin-mismatch": "PIN does not match"
+    "pin-mismatch": "PIN does not match",
+    "view-my-wallet": "View my wallet"
 }
