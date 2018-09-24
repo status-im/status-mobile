@@ -1,7 +1,6 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
-find_package(Go REQUIRED)
 
 set(REACT_NATIVE_DESKTOP_EXTERNAL_MODULES_TYPE_NAMES ${REACT_NATIVE_DESKTOP_EXTERNAL_MODULES_TYPE_NAMES}
                                                      \"RCTStatus\" PARENT_SCOPE)
@@ -11,40 +10,28 @@ set(REACT_NATIVE_DESKTOP_EXTERNAL_MODULES_SRC ${REACT_NATIVE_DESKTOP_EXTERNAL_MO
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
-if (WIN32 AND NOT CUSTOM_STATUSGO_BUILD_DIR_PATH)
-  set(CUSTOM_STATUSGO_BUILD_DIR_PATH "C:/srd-build/StatusGo")
-endif()
-if (CUSTOM_STATUSGO_BUILD_DIR_PATH)
-  set(StatusGo_ROOT ${CUSTOM_STATUSGO_BUILD_DIR_PATH})
-else()
-  set(StatusGo_ROOT "${CMAKE_CURRENT_BINARY_DIR}/StatusGo")
-endif()
-set(StatusGo_PREFIX "${StatusGo_ROOT}/src/github.com/status-im")
-set(StatusGo_SOURCE_DIR  "${StatusGo_PREFIX}/status-go")
-set(StatusGo_INCLUDE_DIR "${StatusGo_SOURCE_DIR}/build/bin")
-set(StatusGo_STATIC_LIB
-     "${StatusGo_SOURCE_DIR}/build/bin/${CMAKE_STATIC_LIBRARY_PREFIX}status${CMAKE_STATIC_LIBRARY_SUFFIX}")
+set(STATUSGO_GIT_TAG v0.14.1-29-g2676f506)
+set(StatusGo_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
 
-include_directories(${StatusGo_INCLUDE_DIR})
+STRING(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
+set(StatusGo_Package_URL "http://status-im.ams3.digitaloceanspaces.com/status-go-${CMAKE_SYSTEM_NAME_LOWER}-${STATUSGO_GIT_TAG}.zip")
 
-if (WIN32)
-  set(CONFIGURE_SCRIPT build-status-go.bat)
-else()
-  set(CONFIGURE_SCRIPT build-status-go.sh)
-endif()
-
-ExternalProject_Add(StatusGo_ep
-  PREFIX ${StatusGo_PREFIX}
-  SOURCE_DIR ${StatusGo_SOURCE_DIR}
-  GIT_REPOSITORY https://github.com/status-im/status-go.git
-  GIT_TAG v0.15.0
-  BUILD_BYPRODUCTS ${StatusGo_STATIC_LIB}
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIGURE_SCRIPT} ${GO_ROOT_PATH} ${StatusGo_ROOT} ${StatusGo_SOURCE_DIR}
+ExternalProject_Add(StatusGo
+  PREFIX ${StatusGo_ROOT}
+  URL ${StatusGo_Package_URL}
+  CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
 )
+ExternalProject_Get_Property(StatusGo source_dir SOURCE_DIR)
 
-set(REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS ${REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS} StatusGo_ep PARENT_SCOPE)
+set(StatusGo_INCLUDE_DIR "${SOURCE_DIR}/include")
+set(StatusGo_STATIC_LIB
+     "${SOURCE_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}status${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+include_directories(${StatusGo_INCLUDE_DIR})
+
+set(REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS ${REACT_NATIVE_DESKTOP_EXTERNAL_PROJECT_DEPS} StatusGo PARENT_SCOPE)
 
 if (APPLE)
   set(STATUSGO_DEPS_LIBS "-framework Foundation"

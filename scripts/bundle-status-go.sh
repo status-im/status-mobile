@@ -54,7 +54,7 @@ for platform in "$@"; do
         rm -r $STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus/Statusgo.framework/ || true
 
         # Then copy over framework:
-        cp -R $STATUS_GO_HOME/build/bin/statusgo-ios-9.3-framework/Statusgo.framework $STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus/Statusgo.framework
+        cp -R $STATUS_GO_HOME/build/lib/statusgo-ios-9.3-framework/Statusgo.framework $STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus/Statusgo.framework
 
         # In Xcode, clean and build. If you have any scripts to do this, make sure that
         # you don't accidentally run the mvn step to undo your manual install.
@@ -75,7 +75,7 @@ for platform in "$@"; do
         target=$STATUS_REACT_HOME/modules/react-native-status/android/libs/status-im/status-go/local
         [ -d $target ] || mkdir -p $target
         # Copy over framework:
-        cp -R $STATUS_GO_HOME/build/bin/statusgo-android-16.aar $target/status-go-local.aar
+        cp -R $STATUS_GO_HOME/build/lib/statusgo-android-16.aar $target/status-go-local.aar
 
         # It might also be a good idea to print something custom so you can easily tell
         # the difference between an old and new version of status-go.
