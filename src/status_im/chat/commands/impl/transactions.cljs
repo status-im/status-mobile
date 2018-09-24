@@ -86,10 +86,8 @@
   [label-key {:keys [content]}]
   (let [{:keys [amount asset]} (:params content)]
     [chat-preview/text {}
-     (str (i18n/label label-key)
-          (i18n/label-number amount)
-          " "
-          asset)]))
+     (i18n/label label-key {:amount (i18n/label-number amount)
+                            :asset  asset})]))
 
 (def personal-send-request-params
   [{:id          :asset

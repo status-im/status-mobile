@@ -71,7 +71,7 @@
     "command-button-send": "Wyślij",
     "command-button-sent": "Wysłano",
     "command-requesting": "Prośba",
-    "command-sending": "Wyślij transakcję",
+    "command-sending": "Wyślij transakcję {{amount}} {{asset}}",
     "confirm": "Potwierdź",
     "confirmation-code": [
         "str",

@@ -602,7 +602,7 @@
     "decryption-failed-title": "We were not able to decrypt your data",
     "word-n": "Word #{{number}}",
     "deny": "Deny",
-    "command-sending": "Send transaction ",
+    "command-sending": "Send transaction {{amount}} {{asset}}",
     "currency-display-name-hrk": "Croatia Kuna",
     "currency-display-name-gbp": "British Pound",
     "currency-display-name-etb": "Ethiopian Birr",
