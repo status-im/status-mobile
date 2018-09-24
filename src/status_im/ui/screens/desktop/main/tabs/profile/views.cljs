@@ -121,4 +121,6 @@
 (views/defview profile-data []
   (views/letsubs
     [user [:get-current-account]]
+    {:component-will-unmount
+     #(re-frame/dispatch [:set :my-profile/editing? false])}
     [profile user]))
