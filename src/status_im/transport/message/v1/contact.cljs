@@ -9,8 +9,8 @@
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
-  (send [this chat-id {:keys [db random-id] :as cofx}]
-    (let [topic      (transport.utils/get-topic random-id)
+  (send [this chat-id {:keys [db random-id-generator] :as cofx}]
+    (let [topic      (transport.utils/get-topic (random-id-generator))
           on-success (fn [sym-key sym-key-id]
                        (re-frame/dispatch [:contact/send-new-sym-key
                                            {:sym-key-id sym-key-id

@@ -65,7 +65,7 @@
     :datetime-ago-format :close-app-button :block :camera-access-error
     :wallet-invalid-address :address-explication :remove
     :transactions-delete-content :transactions-unsigned-empty
-    :transaction-moved-text :add-members :sign-later-title :sharing-cancel
+    :transaction-moved-text :add-members :sign-later-title
     :yes :dapps :popular-tags :network-settings :twelve-words-in-correct-order
     :transaction-moved-title :photos-access-error :hash
     :removed-from-chat :done :remove-from-contacts :delete-chat :new-group-chat

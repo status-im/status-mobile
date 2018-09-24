@@ -74,7 +74,7 @@
                                                   :status           message-status}]))
                                 (into {}))
               statuses     (vals (merge participants user-statuses))]
-          [overlay {:on-click-outside #(re-frame/dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
+          [overlay {:on-click-outside #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-bottom-info? false}])}
            [container (* styles/item-height (count statuses))
             [list/flat-list {:contentContainerStyle styles/bottom-info-list-container
                              :data                statuses

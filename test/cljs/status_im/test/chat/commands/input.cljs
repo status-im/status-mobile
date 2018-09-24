@@ -4,6 +4,25 @@
             [status-im.chat.commands.core :as core]
             [status-im.chat.commands.input :as input]))
 
+(deftest starts-as-command?-test
+  (is (not (input/starts-as-command? nil)))
+  (is (not (input/command-ends-with-space? "")))
+  (is (not (input/command-ends-with-space? "word1 word2 word3")))
+  (is (input/command-ends-with-space? "word1 word2 ")))
+
+(deftest split-command-args-test
+  (is (nil? (input/split-command-args nil)))
+  (is (= [""] (input/split-command-args "")))
+  (is (= ["@browse" "google.com"] (input/split-command-args "@browse google.com")))
+  (is (= ["@browse" "google.com"] (input/split-command-args "  @browse   google.com  ")))
+  (is (= ["/send" "1.0" "John Doe"] (input/split-command-args "/send 1.0 \"John Doe\"")))
+  (is (= ["/send" "1.0" "John Doe"] (input/split-command-args "/send     1.0     \"John     Doe\"   "))))
+
+(deftest join-command-args-test
+  (is (nil? (input/join-command-args nil)))
+  (is (= "" (input/join-command-args [""])))
+  (is (= "/send 1.0 \"John Doe\"" (input/join-command-args ["/send" "1.0" "John Doe"]))))
+
 (deftest selected-chat-command-test
   (let [fx       (core/load-commands {:db {}} #{test-core/TestCommandInstance test-core/AnotherTestCommandInstance})
         commands (core/chat-commands (get-in fx [:db :id->command])

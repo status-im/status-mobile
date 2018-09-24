@@ -1,6 +1,5 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
-            [status-im.test.chat.events]
             [status-im.test.contacts.events]
             [status-im.test.contacts.subs]
             [status-im.test.data-store.realm.core]
@@ -68,7 +67,6 @@
 
 (doo-tests
  'status-im.test.utils.async
- 'status-im.test.chat.events
  'status-im.test.chat.subs
  'status-im.test.chat.models
  'status-im.test.contacts.events

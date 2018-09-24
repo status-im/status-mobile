@@ -57,12 +57,12 @@
                      :style           styles/chat-last-message}
          (if (= constants/content-type-command (:content-type last-message))
            [chat-item/command-short-preview last-message]
-           (or (:content last-message) (i18n/label :no-messages-yet)))]]
+           (or (get-in last-message [:content :text]) (i18n/label :no-messages-yet)))]]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]]])))
 
 (defn chat-list-item [[chat-id chat]]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
    [chat-list-item-inner-view (assoc chat :chat-id chat-id)]])
 
 (views/defview chat-list-view []

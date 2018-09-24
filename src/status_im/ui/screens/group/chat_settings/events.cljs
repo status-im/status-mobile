@@ -20,9 +20,11 @@
 
 (handlers/register-handler-fx
  :add-new-group-chat-participants
- [(re-frame/inject-cofx :random-id)]
- (fn [{{:keys [current-chat-id selected-participants] :as db} :db now :now message-id :random-id :as cofx} _]
-   (let [participants             (concat (get-in db [:chats current-chat-id :contacts]) selected-participants)
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [{{:keys [current-chat-id selected-participants] :as db} :db
+       now :now random-id-generator :random-id-generator :as cofx} _]
+   (let [message-id               (random-id-generator)
+         participants             (concat (get-in db [:chats current-chat-id :contacts]) selected-participants)
          contacts                 (:contacts/contacts db)
          added-participants-names (map #(get-in contacts [% :name]) selected-participants)]
      (fx/merge cofx
@@ -37,9 +39,11 @@
 
 (handlers/register-handler-fx
  :remove-group-chat-participants
- [(re-frame/inject-cofx :random-id)]
- (fn [{{:keys [current-chat-id] :as db} :db now :now message-id :random-id :as cofx} [_ removed-participants]]
-   (let [participants               (remove removed-participants (get-in db [:chats current-chat-id :contacts]))
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [{{:keys [current-chat-id] :as db} :db now :now random-id-generator :random-id-generator :as cofx}
+      [_ removed-participants]]
+   (let [message-id                 (random-id-generator)
+         participants               (remove removed-participants (get-in db [:chats current-chat-id :contacts]))
          contacts                   (:contacts/contacts db)
          removed-participants-names (map #(get-in contacts [% :name]) removed-participants)]
      (fx/merge cofx

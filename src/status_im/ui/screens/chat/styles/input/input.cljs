@@ -15,6 +15,51 @@
    :border-top-color colors/gray-light
    :elevation        2})
 
+(def reply-message
+  {:flex-direction :row
+   :align-items    :flex-start
+   :border-width   1
+   :border-radius  10
+   :border-color   colors/gray-light
+   :padding-top    10
+   :padding-bottom 10
+   :padding-right  14
+   :padding-left   7
+   :margin-top     12
+   :margin-left    12
+   :margin-right   12})
+
+(def reply-message-content
+  {:flex-direction :column
+   :padding-left   7
+   :margin-right   30
+   :max-height     140
+   :overflow       :scroll})
+
+(def reply-message-author
+  {:font-size      12
+   :color          colors/gray
+   :padding-bottom 6})
+
+(def reply-message-container
+  {:flex-direction :column-reverse})
+
+(def cancel-reply-highlight
+  {:position :absolute
+   :z-index  5
+   :top      0
+   :right    0
+   :height   26})
+
+(def cancel-reply-container
+  {:flex-direction  :row
+   :justify-content :flex-end
+   :margin-right     12})
+
+(def cancel-reply-icon
+  {:background-color colors/gray
+   :border-radius    12})
+
 (def input-container
   {:flex-direction   :row
    :align-items      :flex-end

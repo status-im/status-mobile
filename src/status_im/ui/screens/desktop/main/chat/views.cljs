@@ -63,7 +63,7 @@
                    :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
        (i18n/label :t/clear-history)]
       [react/text {:style (styles/profile-actions-text colors/black)
-                   :on-press #(re-frame/dispatch [:chat.ui/delete-chat-pressed chat-id])}
+                   :on-press #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}
        (i18n/label :t/delete-chat)]]]))
 
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
@@ -177,14 +177,14 @@
                                                            y (.-y (.-contentOffset ne))]
                                                        (when (<= y 0)
                                                          (when @scroll-timer (js/clearTimeout @scroll-timer))
-                                                         (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:load-more-messages]) 300)))
+                                                         (reset! scroll-timer (js/setTimeout #(re-frame/dispatch [:chat.ui/load-more-messages]) 300)))
                                                        (reset! scroll-height (+ y (.-height (.-layoutMeasurement ne))))))
                            :ref                    #(reset! scroll-ref %)}
         [react/view
          (doall
           (for [[index {:keys [from content message-id type value] :as message-obj}] (map-indexed vector messages)]
             ^{:key message-obj}
-            [message content (= from current-public-key)
+            [message (:text content) (= from current-public-key)
              (assoc message-obj :group-chat group-chat
                     :current-public-key current-public-key)]))]]
        [connectivity/error-view]])))
@@ -216,17 +216,17 @@
                                                       (when should-send
                                                         (.clear @inp-ref)
                                                         (.focus @inp-ref)
-                                                        (re-frame/dispatch [:send-current-message]))))
+                                                        (re-frame/dispatch [:chat.ui/send-current-message]))))
                           :on-change              (fn [e]
                                                     (let [native-event (.-nativeEvent e)
                                                           text         (.-text native-event)]
                                                       (reagent/set-state component {:empty? (= "" text)})
-                                                      (re-frame/dispatch [:set-chat-input-text text])))}]
+                                                      (re-frame/dispatch [:chat.ui/set-chat-input-text text])))}]
        [react/touchable-highlight {:style    styles/send-button
                                    :on-press (fn []
                                                (.clear @inp-ref)
                                                (.focus @inp-ref)
-                                               (re-frame/dispatch [:send-current-message]))}
+                                               (re-frame/dispatch [:chat.ui/send-current-message]))}
         [react/view {:style (styles/send-icon empty?)}
          [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow empty?)}]]]])))
 

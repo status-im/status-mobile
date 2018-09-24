@@ -28,11 +28,6 @@
    (assoc coeffects :random-guid-generator guid)))
 
 (re-frame/reg-cofx
- :random-id
+ :random-id-generator
  (fn [coeffects _]
-   (assoc coeffects :random-id (id))))
-
-(re-frame/reg-cofx
- :random-id-seq
- (fn [coeffects _]
-   (assoc coeffects :random-id-seq (repeatedly id))))
+   (assoc coeffects :random-id-generator id)))

@@ -16,7 +16,7 @@
                                                  :chain   "mainnet_rpc"
                                                  :id      "someid"}}}
           actual       (model/upsert
-                        {:random-id "some-id"
+                        {:random-id-generator   (constantly "some-id")
                          :db {:bootnodes/manage new-bootnode
                               :network          "mainnet_rpc"
                               :account/account  {}}})]
@@ -30,7 +30,7 @@
                                             :chain   "mainnet_rpc"
                                             :id      "a"}}}
           actual       (model/upsert
-                        {:random-id "some-id"
+                        {:random-id-generator   (constantly "some-id")
                          :db {:bootnodes/manage new-bootnode
                               :network          "mainnet_rpc"
                               :account/account  {:bootnodes

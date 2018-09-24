@@ -15,7 +15,7 @@
 (extend-type transport.protocol/GroupLeave
   message/StatusMessage
   (receive [this chat-id signature _ cofx]
-    (models.group-chat/handle-group-leave chat-id signature cofx)))
+    (models.group-chat/handle-group-leave cofx chat-id signature)))
 
 (extend-type transport.contact/ContactRequest
   message/StatusMessage

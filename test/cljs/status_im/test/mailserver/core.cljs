@@ -182,7 +182,7 @@
 
 (deftest delete-mailserver
   (testing "the user is not connected to the mailserver"
-    (let [cofx {:random-id "random-id"
+    (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:inbox/wnodes {:eth.beta {"a" {:id           "a"
                                                     :name         "old-name"
                                                     :user-defined true
@@ -193,7 +193,7 @@
       (testing "it stores it in the db"
         (is (= 1 (count (:data-store/tx actual)))))))
   (testing "the mailserver is not user-defined"
-    (let [cofx {:random-id "random-id"
+    (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
                                                     :name    "old-name"
                                                     :address "enode://old-id:old-password@url:port"}}}}}
@@ -201,7 +201,7 @@
       (testing "it does not delete the mailserver"
         (is (= {:dispatch [:navigate-back]} actual)))))
   (testing "the user is connected to the mailserver"
-    (let [cofx {:random-id "random-id"
+    (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:inbox/wnodes {:eth.beta {"a" {:id      "a"
                                                     :name    "old-name"
                                                     :address "enode://old-id:old-password@url:port"}}}}}
@@ -211,7 +211,7 @@
 
 (deftest upsert-mailserver
   (testing "new mailserver"
-    (let [cofx {:random-id "random-id"
+    (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:mailservers/manage {:name {:value "test-name"}
                                           :url  {:value "enode://test-id:test-password@url:port"}}
 
@@ -231,7 +231,7 @@
       (testing "it stores it in the db"
         (is (= 1 (count (:data-store/tx actual)))))))
   (testing "existing mailserver"
-    (let [cofx {:random-id "random-id"
+    (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:mailservers/manage {:id   {:value  :a}
                                           :name {:value "new-name"}
                                           :url  {:value "enode://new-id:new-password@url:port"}}

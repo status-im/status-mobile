@@ -51,7 +51,7 @@
      :accessibility-label :delete-chat-button}]))
 
 (defn contact-actions [contact]
-  [{:action #(re-frame/dispatch [:show-profile (:whisper-identity contact)])
+  [{:action #(re-frame/dispatch [:chat.ui/show-profile (:whisper-identity contact)])
     :label  (i18n/label :t/view-profile)}
    #_{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
       :label  (i18n/label :t/remove-from-chat)}])
@@ -66,7 +66,7 @@
      :accessibility-label :member-item
      :inner-props         {:accessibility-label :member-name-text}
      :on-press            (when (not= whisper-identity current-user-identity)
-                            #(re-frame/dispatch [:show-profile whisper-identity]))}]])
+                            #(re-frame/dispatch [:chat.ui/show-profile whisper-identity]))}]])
 
 (defview chat-group-contacts-view [admin? group-admin-identity current-user-identity]
   (letsubs [contacts [:get-current-chat-contacts]]

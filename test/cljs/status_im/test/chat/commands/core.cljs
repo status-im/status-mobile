@@ -71,12 +71,12 @@
              (get-in fx [:db :id->command
                          (core/command-id TestCommandInstance) :type]))))
     (testing "Suggestions for parameters are injected with correct selection events"
-      (is (= [:set-command-parameter false 0 "first-value"]
+      (is (= [:chat.ui/set-command-parameter false 0 "first-value"]
              ((get-in fx [:db :id->command
                           (core/command-id TestCommandInstance) :params
                           0 :suggestions])
               "first-value")))
-      (is (= [:set-command-parameter true 2 "last-value"]
+      (is (= [:chat.ui/set-command-parameter true 2 "last-value"]
              ((get-in fx [:db :id->command
                           (core/command-id TestCommandInstance) :params
                           2 :suggestions])

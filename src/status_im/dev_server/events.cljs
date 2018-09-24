@@ -26,7 +26,7 @@
 
 (handlers/register-handler-fx
  :process-http-request
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ url type data]]
    (try
      (models.dev-server/process-request! {:cofx cofx

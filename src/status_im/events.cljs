@@ -9,6 +9,12 @@
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
+            [status-im.chat.models :as chat]
+            [status-im.chat.models.group-chat :as chat.group]
+            [status-im.chat.models.message :as chat.message]
+            [status-im.chat.models.loading :as chat.loading]
+            [status-im.chat.models.input :as chat.input]
+            [status-im.chat.commands.input :as commands.input]
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
             [status-im.hardwallet.core :as hardwallet]
@@ -254,7 +260,7 @@
 
 (handlers/register-handler-fx
  :mailserver.ui/save-pressed
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx _]
    (mailserver/upsert cofx)))
 
@@ -292,7 +298,7 @@
 
 (handlers/register-handler-fx
  :network.ui/save-network-pressed
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx]
    (network/save-network cofx)))
 
@@ -377,7 +383,7 @@
 
 (handlers/register-handler-fx
  :bootnodes.ui/save-pressed
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx _]
    (bootnodes/upsert cofx)))
 
@@ -441,18 +447,138 @@
 (handlers/register-handler-fx
  :chat.ui/clear-history-pressed
  (fn [_ _]
-   {:ui/show-confirmation {:title (i18n/label :t/clear-history-title)
-                           :content (i18n/label :t/clear-history-confirmation-content)
+   {:ui/show-confirmation {:title               (i18n/label :t/clear-history-title)
+                           :content             (i18n/label :t/clear-history-confirmation-content)
                            :confirm-button-text (i18n/label :t/clear-history-action)
-                           :on-accept #(re-frame/dispatch [:clear-history])}}))
+                           :on-accept           #(re-frame/dispatch [:chat.ui/clear-history])}}))
 
 (handlers/register-handler-fx
- :chat.ui/delete-chat-pressed
- (fn [_ [_ chat-id]]
-   {:ui/show-confirmation {:title (i18n/label :t/delete-chat-confirmation)
-                           :content ""
-                           :confirm-button-text (i18n/label :t/delete-chat-action)
-                           :on-accept #(re-frame/dispatch [:remove-chat-and-navigate-home chat-id])}}))
+ :chat.ui/remove-chat-pressed
+ (fn [_ [_ chat-id group?]]
+   {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
+                           :content             (i18n/label :t/delete-chat-confirmation)
+                           :confirm-button-text (i18n/label :t/delete)
+                           :on-accept           #(re-frame/dispatch [:chat.ui/remove-chat chat-id])}}))
+
+(handlers/register-handler-fx
+ :chat.ui/set-chat-ui-props
+ (fn [{:keys [db]} [_ kvs]]
+   {:db (chat/set-chat-ui-props db kvs)}))
+
+(handlers/register-handler-fx
+ :chat.ui/show-message-details
+ (fn [{:keys [db]} [_ details]]
+   {:db (chat/set-chat-ui-props db {:show-bottom-info? true
+                                    :bottom-info       details})}))
+
+(handlers/register-handler-fx
+ :chat.ui/show-message-options
+ (fn [{:keys [db]} [_ options]]
+   {:db (chat/set-chat-ui-props db {:show-message-options? true
+                                    :message-options       options})}))
+
+(handlers/register-handler-fx
+ :chat.ui/navigate-to-chat
+ (fn [cofx [_ chat-id opts]]
+   (chat/navigate-to-chat cofx chat-id opts)))
+
+(handlers/register-handler-fx
+ :chat.ui/load-more-messages
+ [(re-frame/inject-cofx :data-store/get-messages)
+  (re-frame/inject-cofx :data-store/get-user-statuses)]
+ (fn [cofx _]
+   (chat.loading/load-more-messages cofx)))
+
+(handlers/register-handler-fx
+ :chat.ui/start-chat
+ (fn [cofx [_ contact-id opts]]
+   (chat/start-chat cofx contact-id opts)))
+
+(handlers/register-handler-fx
+ :chat.ui/start-public-chat
+ (fn [cofx [_ topic modal?]]
+   (chat/start-public-chat cofx topic modal?)))
+
+(handlers/register-handler-fx
+ :chat.ui/start-group-chat
+ (fn [cofx [_ group-name]]
+   (chat.group/start-group-chat cofx group-name)))
+
+(handlers/register-handler-fx
+ :chat.ui/remove-chat
+ (fn [cofx [_ chat-id]]
+   (chat/remove-chat cofx chat-id)))
+
+(handlers/register-handler-fx
+ :chat.ui/clear-history
+ (fn [{{:keys [current-chat-id]} :db :as cofx} _]
+   (chat/clear-history cofx current-chat-id)))
+
+(handlers/register-handler-fx
+ :chat.ui/resend-message
+ (fn [cofx [_ chat-id message-id]]
+   (chat.message/resend-message cofx chat-id message-id)))
+
+(handlers/register-handler-fx
+ :chat.ui/delete-message
+ (fn [cofx [_ chat-id message-id]]
+   (chat.message/delete-message cofx chat-id message-id)))
+
+(handlers/register-handler-fx
+ :chat.ui/show-profile
+ (fn [cofx [_ identity]]
+   (navigation/navigate-to-cofx
+    (assoc-in cofx [:db :contacts/identity] identity) :profile nil)))
+
+(handlers/register-handler-fx
+ :chat.ui/set-chat-input-text
+ (fn [cofx [_ text]]
+   (chat.input/set-chat-input-text cofx text)))
+
+(handlers/register-handler-fx
+ :chat.ui/select-chat-input-command
+ (fn [cofx [_ command params previous-command-message]]
+   (chat.input/select-chat-input-command cofx command params previous-command-message)))
+
+(handlers/register-handler-fx
+ :chat.ui/set-command-prefix
+ (fn [cofx _]
+   (chat.input/set-command-prefix cofx)))
+
+(handlers/register-handler-fx
+ :chat.ui/cancel-message-reply
+ (fn [cofx _]
+   (chat.input/cancel-message-reply cofx)))
+
+(handlers/register-handler-fx
+ :chat.ui/reply-to-message
+ (fn [cofx [_ message-id]]
+   (chat.input/reply-to-message cofx message-id)))
+
+(handlers/register-handler-fx
+ :chat.ui/set-command-parameter
+ (fn [cofx [_ last-param? index value]]
+   (commands.input/set-command-parameter cofx last-param? index value)))
+
+(handlers/register-handler-fx
+ :chat.ui/send-current-message
+ (fn [cofx _]
+   (chat.input/send-current-message cofx)))
+
+(handlers/register-handler-fx
+ :chat/disable-cooldown
+ (fn [cofx _]
+   (chat/disable-chat-cooldown cofx)))
+
+(handlers/register-handler-fx
+ :message/add
+ (fn [cofx [_ messages]]
+   (chat.message/receive-many cofx messages)))
+
+(handlers/register-handler-fx
+ :message/update-message-status
+ (fn [cofx [_ chat-id message-id status]]
+   (chat.message/update-message-status cofx chat-id message-id status)))
 
 ;; signal module
 

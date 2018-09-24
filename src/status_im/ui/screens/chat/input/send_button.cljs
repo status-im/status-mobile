@@ -30,7 +30,7 @@
     (when (and (sendable? input-text network-status)
                (or (not command-completion)
                    (#{:complete :less-than-needed} command-completion)))
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:send-current-message])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/send-current-message])}
        (let [spin (.interpolate spin-value (clj->js {:inputRange  [0 1]
                                                      :outputRange ["0deg" "90deg"]}))]
          [react/animated-view

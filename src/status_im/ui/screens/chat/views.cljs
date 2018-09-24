@@ -95,7 +95,7 @@
       :preview [react/view style/message-view-preview]}
      [react/touchable-without-feedback
       {:on-press (fn [_]
-                   (re-frame/dispatch [:set-chat-ui-props {:messages-focused? true}])
+                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
                    (react/dismiss-keyboard!))}
       [react/animated-view {:style (style/message-view-animated opacity)}
        message-view]]]))
@@ -118,8 +118,8 @@
   (letsubs [messages           [:get-current-chat-messages-stream]
             chat               [:get-current-chat]
             current-public-key [:get-current-public-key]]
-    {:component-did-mount #(re-frame/dispatch [:set-chat-ui-props {:messages-focused? true
-                                                                   :input-focused? false}])}
+    {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                           :input-focused? false}])}
     (if (empty? messages)
       [empty-chat-container chat]
       [list/flat-list {:data                      messages
@@ -130,7 +130,7 @@
                                                                   :current-public-key current-public-key
                                                                   :row                message}])
                        :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                       :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps :handled}])))
 

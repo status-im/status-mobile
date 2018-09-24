@@ -96,8 +96,9 @@
 
 (deftest save
   (testing "it does not save a network with an invalid url"
-    (is (nil? (model/save {:random-id "random"
+    (is (nil? (model/save {:random-id-generator  (constantly "random")
                            :db {:networks/manage {:url {:value "wrong"}
                                                   :chain {:value "1"}
                                                   :name {:value "empty"}}
-                                :account/account {}}})))))
+                                :account/account {}}}
+                          {})))))

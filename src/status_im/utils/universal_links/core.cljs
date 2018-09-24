@@ -2,7 +2,7 @@
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
             [status-im.accounts.db :as accounts.db]
-            [status-im.chat.events :as chat.events]
+            [status-im.chat.models :as chat]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -42,13 +42,13 @@
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat " public-chat)
-  (chat.events/create-new-public-chat cofx public-chat false))
+  (chat/start-public-chat cofx public-chat false))
 
 (fx/defn handle-view-profile [{:keys [db] :as cofx} profile-id]
   (log/info "universal-links: handling view profile" profile-id)
   (if (new-chat.db/own-whisper-identity? db profile-id)
     (navigation/navigate-to-cofx cofx :my-profile nil)
-    (chat.events/show-profile cofx profile-id)))
+    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] profile-id) :profile nil)))
 
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)

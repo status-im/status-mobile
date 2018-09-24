@@ -26,7 +26,7 @@
          (map-indexed
           (fn [i {:keys [type] :as command}]
             ^{:key i}
-            [suggestion-item {:on-press            #(re-frame/dispatch [:select-chat-input-command command nil])
+            [suggestion-item {:on-press            #(re-frame/dispatch [:chat.ui/select-chat-input-command command nil])
                               :name                (commands/command-name type)
                               :description         (commands/command-description type)
                               :last?               (= i (dec (count available-commands)))

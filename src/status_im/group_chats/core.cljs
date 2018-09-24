@@ -1,14 +1,13 @@
 (ns status-im.group-chats.core
-  (:require
-   [status-im.utils.config :as config]
-   [status-im.transport.utils :as transport.utils]
-   [status-im.transport.db :as transport.db]
-   [status-im.transport.utils :as transport.utils]
-   [status-im.transport.message.core :as protocol.message]
-   [status-im.transport.message.v1.core :as transport]
-   [status-im.transport.message.v1.protocol :as transport.protocol]
-   [status-im.utils.fx :as fx]
-   [status-im.chat.models :as models.chat]))
+  (:require [status-im.utils.config :as config]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.transport.db :as transport.db]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.transport.message.core :as protocol.message]
+            [status-im.transport.message.v1.core :as transport]
+            [status-im.transport.message.v1.protocol :as transport.protocol]
+            [status-im.utils.fx :as fx]
+            [status-im.chat.models :as models.chat]))
 
 (defn wrap-group-message [cofx chat-id message]
   (when-let [chat (get-in cofx [:db :chats chat-id])]

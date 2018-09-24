@@ -95,7 +95,8 @@
      :icons/info                (js/require "./resources/icons/info.svg")
      :icons/hardwallet          (js/require "./resources/icons/hardwallet.svg")
      :icons/password            (js/require "./resources/icons/password.svg")
-     :icons/nfc                 (js/require "./resources/icons/nfc.svg")}
+     :icons/nfc                 (js/require "./resources/icons/nfc.svg")
+     :icons/reply               (js/require "./resources/icons/reply.svg")}
     {:icons/discover            (components.svg/slurp-svg "./resources/icons/bottom/discover_gray.svg")
      :icons/contacts            (components.svg/slurp-svg "./resources/icons/bottom/contacts_gray.svg")
      :icons/home                (components.svg/slurp-svg "./resources/icons/bottom/home_gray.svg")
@@ -164,7 +165,8 @@
      :icons/info                (components.svg/slurp-svg "./resources/icons/info.svg")
      :icons/hardwallet          (components.svg/slurp-svg "./resources/icons/hardwallet.svg")
      :icons/password            (components.svg/slurp-svg "./resources/icons/password.svg")
-     :icons/nfc                 (components.svg/slurp-svg "./resources/icons/nfc.svg")}))
+     :icons/nfc                 (components.svg/slurp-svg "./resources/icons/nfc.svg")
+     :icons/reply               (components.svg/slurp-svg "./resources/icons/reply.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

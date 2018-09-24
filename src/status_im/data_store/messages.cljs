@@ -1,20 +1,14 @@
 (ns status-im.data-store.messages
-  (:require [cljs.reader :as reader]
+  (:require [cljs.tools.reader.edn :as edn]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.realm.core :as core]
             [status-im.utils.core :as utils]))
 
-(defn- command-type?
-  [type]
-  (contains?
-   #{constants/content-type-command constants/content-type-command-request}
-   type))
-
-(defn- transform-message [{:keys [content-type] :as message}]
-  (cond-> (update message :message-type keyword)
-    (command-type? content-type)
-    (update :content reader/read-string)))
+(defn- transform-message [message]
+  (-> message
+      (update :message-type keyword)
+      (update :content edn/read-string)))
 
 (defn- get-by-chat-id
   ([chat-id]
@@ -25,13 +19,6 @@
                       (core/page from (+ from constants/default-number-of-messages))
                       (core/all-clj :message))]
      (map transform-message messages))))
-
-;; TODO janherich: define as cofx once debug handlers are refactored
-(defn get-log-messages
-  [chat-id]
-  (->> (get-by-chat-id chat-id 0)
-       (filter #(= (:content-type %) constants/content-type-log-message))
-       (map #(select-keys % [:content :timestamp]))))
 
 (def default-values
   {:to             nil})
@@ -78,10 +65,7 @@
 (defn- prepare-content [content]
   (if (string? content)
     content
-    (pr-str
-     ;; TODO janherich: this is ugly and not systematic, define something like `:not-persisent`
-     ;; option for command params instead
-     (update content :params dissoc :password :password-confirmation))))
+    (pr-str content)))
 
 (defn- prepare-message [message]
   (utils/update-if-present message :content prepare-content))

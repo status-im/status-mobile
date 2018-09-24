@@ -154,7 +154,7 @@
 
 (handlers/register-handler-fx
  :send-transaction-message
- (concat models.message/send-interceptors
+ (concat [(re-frame/inject-cofx :random-id-generator)]
          navigation/navigation-interceptors)
  (fn [{:keys [db] :as cofx} [_ chat-id params]]
    ;;NOTE(goranjovic): we want to send the payment message only when we have a whisper id

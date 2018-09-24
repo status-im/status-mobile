@@ -1,6 +1,5 @@
 (ns status-im.data-store.user-statuses
   (:require [clojure.string :as string]
-            [cljs.reader :as reader]
             [re-frame.core :as re-frame]
             [status-im.data-store.realm.core :as core]))
 

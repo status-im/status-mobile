@@ -15,10 +15,10 @@
 
 (deftest receive-whisper-messages-test
   (testing "an error is reported"
-    (is (nil? (handlers/receive-whisper-messages {:db {}} [nil "error" #js [] nil]))))
+    (is (nil? (handlers/receive-whisper-messages {:db {}} "error" #js [] nil))))
   (testing "messages is undefined"
-    (is (nil? (handlers/receive-whisper-messages {:db {}} [nil nil js/undefined nil]))))
+    (is (nil? (handlers/receive-whisper-messages {:db {}} nil js/undefined nil))))
   (testing "happy path"
-    (let [actual (handlers/receive-whisper-messages {:db {}} [nil nil messages sig])]
+    (let [actual (handlers/receive-whisper-messages {:db {}} nil messages sig)]
       (testing "it add an fx for the message"
         (is (:chat-received-message/add-fx actual))))))

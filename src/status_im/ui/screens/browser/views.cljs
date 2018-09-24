@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.browser.views
-  (:require [cljs.reader :as reader]
+  (:require [cljs.tools.reader.edn :as edn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.browser.core :as browser]
@@ -24,7 +24,7 @@
    [status-im.utils.views :as views]))
 
 (def browser-config
-  (reader/read-string (slurp "./src/status_im/utils/browser_config.edn")))
+  (edn/read-string (slurp "./src/status_im/utils/browser_config.edn")))
 
 (defn toolbar-content [url {:keys [secure?] :as browser} url-editing?]
   (let [url-text (atom url)]

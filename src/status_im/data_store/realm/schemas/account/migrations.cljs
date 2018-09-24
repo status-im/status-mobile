@@ -66,3 +66,21 @@
   (let [mailservers     (.objects new-realm "mailserver")]
     (dotimes [i (.-length mailservers)]
       (aset (aget mailservers i) "fleet" "eth.beta"))))
+
+(defn v12 [old-realm new-realm]
+  (log/debug "migrating v12 account database")
+  (some-> new-realm
+          (.objects "message")
+          (.filtered (str "content-type = \"text/plain\""))
+          (.map (fn [message _ _]
+                  (let [content     (aget message "content")
+                        new-content {:text content}]
+                    (aset message "content" (pr-str new-content))))))
+  (some-> new-realm
+          (.objects "message")
+          (.filtered (str "content-type = \"emoji\""))
+          (.map (fn [message _ _]
+                  (let [content     (aget message "content")
+                        new-content {:text content}]
+                    (aset message "content" (pr-str new-content)))))))
+

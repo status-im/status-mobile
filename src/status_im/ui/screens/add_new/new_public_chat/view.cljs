@@ -30,7 +30,7 @@
                                                                                     (i18n/label :t/topic-name-error))])
                                (re-frame/dispatch [:set :public-group-topic %]))
        :on-submit-editing   #(when (and topic (spec/valid? ::v/topic topic))
-                               (re-frame/dispatch [:create-new-public-chat topic]))
+                               (re-frame/dispatch [:chat.ui/start-public-chat topic]))
        :auto-capitalize     :none
        :auto-focus          false
        :accessibility-label :chat-name-input
@@ -47,7 +47,7 @@
     (first topic)]])
 
 (defn- render-topic [topic]
-  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:create-new-public-chat topic])
+  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/start-public-chat topic])
                               :accessibility-label :chat-item}
    [react/view
     [list/item

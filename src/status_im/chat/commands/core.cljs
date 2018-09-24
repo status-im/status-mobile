@@ -55,7 +55,7 @@
                          (if suggestions
                            (update param :suggestions partial
                                    (fn [value]
-                                     [:set-command-parameter
+                                     [:chat.ui/set-command-parameter
                                       (= idx last-param-idx) idx value]))
                            param))
                        parameters))))

@@ -3,6 +3,7 @@
   (:require [status-im.transport.message.v1.contact :as v1.contact]
             [status-im.transport.message.v1.protocol :as v1.protocol]
             [status-im.transport.message.v1.core :as v1]
+            [status-im.constants :as constants]
             [cognitect.transit :as transit]))
 
 ;; When adding a new reccord implenting the StatusMessage protocol it is required to implement:
@@ -45,7 +46,7 @@
 
 (deftype MessageHandler []
   Object
-  (tag [this v] "c4")
+  (tag [this v] "c7")
   (rep [this {:keys [content content-type message-type clock-value timestamp]}]
     #js [content content-type message-type clock-value timestamp]))
 
@@ -82,6 +83,16 @@
 ;; Reader handlers
 ;;
 
+(defn- safe-content-parse [content-type content]
+  ;; handling only the text content case
+  (if (= content-type constants/text-content-type)
+    (if (and (map? content) (string? (:text content)))
+      ;; correctly formatted map
+      content
+      ;; create safe `{:text string-content}` value from anything else
+      {:text (str content)})
+    content))
+
 ;; Here we only need to call the record with the arguments parsed from the clojure datastructures
 (def reader (transit/reader :json
                             {:handlers
@@ -92,7 +103,9 @@
                               "c3" (fn [[name profile-image address fcm-token]]
                                      (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
                               "c4" (fn [[content content-type message-type clock-value timestamp]]
-                                     (v1.protocol/Message. content content-type message-type clock-value timestamp))
+                                     (v1.protocol/Message. (safe-content-parse content-type content) content-type message-type clock-value timestamp))
+                              "c7" (fn [[content content-type message-type clock-value timestamp]]
+                                     (v1.protocol/Message. (safe-content-parse content-type content) content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]

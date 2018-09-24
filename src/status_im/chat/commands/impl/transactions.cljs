@@ -275,7 +275,7 @@
     ;; by the wallet, where we yield control in the next step
     (personal-send-request-validation parameters cofx))
   (on-send [_ {:keys [chat-id] :as send-message} {:keys [db]}]
-    (when-let [{:keys [responding-to]} (get-in db [:chats chat-id :input-metadata])]
+    (when-let [responding-to (get-in db [:chats chat-id :metadata :responding-to-command])]
       (when-let [request-message (get-in db [:chats chat-id :messages responding-to])]
         (when (params-unchanged? send-message request-message)
           (let [updated-request-message (assoc-in request-message [:content :params :answered?] true)]
@@ -430,10 +430,9 @@
                status-initialized?
                (not outgoing)
                (not answered?))
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:select-chat-input-command
-                                                                   command
-                                                                   [(or asset "ETH") amount]
-                                                                   {:responding-to message-id}])}
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch [:chat.ui/select-chat-input-command
+                                         command [(or asset "ETH") amount] message-id])}
          markup]
         markup))))
 

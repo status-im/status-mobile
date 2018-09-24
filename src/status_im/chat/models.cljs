@@ -1,13 +1,18 @@
 (ns status-im.chat.models
-  (:require [status-im.data-store.chats :as chats-store]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.transport.message.core :as transport.message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.message.v1.core :as transport]
+            [status-im.transport.message.v1.public-chat :as public-chat]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.i18n :as i18n]
+            [status-im.utils.utils :as utils]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
@@ -129,7 +134,8 @@
             #(when (multi-user-chat? % chat-id)
                (remove-transport % chat-id))
             (deactivate-chat chat-id)
-            (clear-history chat-id)))
+            (clear-history chat-id)
+            (navigation/navigate-to-cofx :home {})))
 
 (fx/defn send-messages-seen
   [{:keys [db] :as cofx} chat-id message-ids]
@@ -200,3 +206,25 @@
               (upsert-chat {:chat-id chat-id
                             :is-active true})
               (navigate-to-chat chat-id opts))))
+
+(fx/defn start-public-chat
+  "Starts a new public chat"
+  [cofx topic modal?]
+  (fx/merge cofx
+            (add-public-chat topic)
+            (navigate-to-chat topic {:modal?              modal?
+                                     :navigation-replace? true})
+            (public-chat/join-public-chat topic)))
+
+(fx/defn disable-chat-cooldown
+  "Turns off chat cooldown (protection against message spamming)"
+  [{:keys [db]}]
+  {:db (assoc db :chat/cooldown-enabled? false)})
+
+;; effects
+(re-frame/reg-fx
+ :show-cooldown-warning
+ (fn [_]
+   (utils/show-popup nil
+                     (i18n/label :cooldown/warning-message)
+                     #())))

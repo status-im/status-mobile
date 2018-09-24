@@ -38,11 +38,11 @@
      [react/text {:style styles/last-message-text}
       ""]
 
-     (:content content)
+     (:text content)
      [react/text {:style               styles/last-message-text
                   :number-of-lines     1
                   :accessibility-label :chat-message-text}
-      (:content content)]
+      (:text content)]
 
      (contains? #{constants/content-type-command
                   constants/content-type-command-request}
@@ -91,7 +91,7 @@
   (letsubs [last-message [:get-last-message chat-id]
             chat-name    [:get-chat-name chat-id]]
     (let [truncated-chat-name (utils/truncate-str chat-name 30)]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
        [react/view styles/chat-container
         [react/view styles/chat-icon-container
          [chat-icon.screen/chat-icon-view-chat-list chat-id group-chat truncated-chat-name color online false]]
