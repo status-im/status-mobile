@@ -27,7 +27,8 @@
   to produce the same effects (excepted :db, :data-source/tx and :data-source/base-tx effects).
   :data-source/tx and :data-source/base-tx effects are handled specially and their results
   (list of transactions) are compacted to one transactions list (for each effect). "
-  {:added "1.0"}
+  {:added "1.0"
+   :deprecated "Please use utils.fx/merge function instead"}
   [cofx & forms]
   (let [form (first forms)]
     (if (or (symbol? form)
