@@ -314,9 +314,10 @@
 
 (defonce rand-label (rand/id))
 
+(defonce main-component (atom nil))
+
 (defn main []
-  (let [view-id        (re-frame/subscribe [:get :view-id])
-        main-component (atom nil)]
+  (let [view-id        (re-frame/subscribe [:get :view-id])]
     (reagent/create-class
      {:component-did-mount
       (fn []
