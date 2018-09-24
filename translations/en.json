@@ -49,7 +49,7 @@
     "install": "Install",
     "chat-send-eth": "{{amount}} ETH",
     "address": "Address",
-    "command-requesting": "Requesting ",
+    "command-requesting": "Requesting {{amount}} {{asset}}",
     "mailserver-details": "Mailserver details",
     "new-public-group-chat": "Join public chat",
     "datetime-hour": {
