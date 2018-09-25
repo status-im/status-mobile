@@ -90,9 +90,11 @@
     [react/view
      [icons/icon :icons/arrow-right]]]
    [react/touchable-highlight
-    {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])}
+    {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])
+     :accessibility-label :modal-chat-button}
     [icons/icon :icons/chats]]
-   [react/touchable-highlight {:on-press #(.reload @webview)}
+   [react/touchable-highlight {:on-press #(.reload @webview)
+                               :accessibility-label :refresh-page-button}
     [icons/icon :icons/refresh]]])
 
 ;; should-component-update is called only when component's props are changed,

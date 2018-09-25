@@ -40,8 +40,7 @@ class BrowserNextPageButton(BaseButton):
 class BrowserRefreshPageButton(BaseButton):
     def __init__(self, driver):
         super(BrowserRefreshPageButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@content-desc='next-page-button']/following-sibling::*/*[@content-desc='icon']")
+        self.locator = self.Locator.accessibility_id('refresh-page-button')
 
 
 class WebViewBrowserButton(BaseButton):

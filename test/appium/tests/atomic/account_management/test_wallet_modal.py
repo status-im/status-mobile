@@ -24,7 +24,7 @@ class TestWalletModal(SingleDeviceTestCase):
         if wallet_modal.address_text.text != '0x' + user['address']:
             self.errors.append('Wallet address is not shown in wallet modal')
         modal_usd_value = wallet_modal.get_usd_total_value()
-        if modal_usd_value > usd_value * 1.001 or modal_usd_value < usd_value * 0.999:
+        if modal_usd_value > usd_value * 1.005 or modal_usd_value < usd_value * 0.995:
             self.errors.append('Total value in USD is not correct in wallet modal')
         if wallet_modal.get_eth_value() != eth_value:
             self.errors.append('ETH value is not correct in wallet modal')
