@@ -224,10 +224,7 @@
         (when (and group-chat
                    recipient-name)
           [react/text {:style transactions-styles/command-send-recipient-text}
-           (str
-            (i18n/label :send-sending-to)
-            " "
-            recipient-name)])
+           (i18n/label :send-sending-to {:recipient-name recipient-name})])
         [react/view
          [react/text {:style (transactions-styles/command-send-timestamp outgoing)}
           (str (i18n/label :sent-at) " " timestamp-str)]]
