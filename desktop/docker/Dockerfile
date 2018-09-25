@@ -36,10 +36,10 @@ RUN apt-get update && apt-get -y --no-install-recommends install curl software-p
     apt-get remove -y software-properties-common && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      wget git unzip golang-go nodejs yarn file \
+      wget git unzip golang-go nodejs yarn file python \
       apt-transport-https locales openjdk-8-jdk-headless \
       extra-cmake-modules build-essential gcc g++ fuse \
-      libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 \
+      libx11-xcb1 libxss1 libasound2 libgl-dev libsm6 libxrandr2 python-dev \
       libjasper-dev libegl1-mesa libxcomposite-dev libxcursor-dev && \
     locale-gen en_US.UTF-8 && \
     npm install -g npm@5.5.1 && \
