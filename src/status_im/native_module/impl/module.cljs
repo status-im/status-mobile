@@ -85,7 +85,7 @@
   (when status
     (call-module #(.addPeer status enode on-result))))
 
-(defn recover-account [passphrase password on-result]
+(defn access-account [passphrase password on-result]
   (when status
     (call-module #(.recoverAccount status passphrase password on-result))))
 

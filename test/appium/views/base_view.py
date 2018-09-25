@@ -148,8 +148,7 @@ class SaveButton(BaseButton):
 class NextButton(BaseButton):
     def __init__(self, driver):
         super(NextButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='NEXT']")
+        self.locator = self.Locator.accessibility_id('next-button')
 
 
 class DoneButton(BaseButton):

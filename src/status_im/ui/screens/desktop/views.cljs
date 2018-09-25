@@ -8,7 +8,7 @@
 
             [status-im.ui.screens.accounts.create.views :as create.views]
             [status-im.ui.screens.accounts.login.views :as login.views]
-            [status-im.ui.screens.accounts.recover.views :as recover.views]
+            [status-im.ui.screens.accounts.access.views :as access.views]
             [status-im.ui.screens.accounts.views :as accounts.views]))
 
 (enable-console-print!)
@@ -18,7 +18,7 @@
     (let [component (case view-id
                       :intro intro.views/intro
                       :accounts accounts.views/accounts
-                      :recover recover.views/recover
+                      :access-account access.views/access-account
                       :create-account create.views/create-account
                       :new-group  new-group
                       :contact-toggle-list contact-toggle-list

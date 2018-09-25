@@ -8,7 +8,6 @@
             [status-im.ui.screens.main-tabs.views :as main-tabs]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
-            [status-im.ui.screens.accounts.recover.views :refer [recover]]
             [status-im.ui.screens.accounts.views :refer [accounts]]
 
             [status-im.ui.screens.progress.views :refer [progress]]
@@ -56,6 +55,7 @@
             [status-im.ui.screens.add-new.open-dapp.views :refer [open-dapp dapp-description]]
             [status-im.ui.screens.intro.views :refer [intro]]
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
+            [status-im.ui.screens.accounts.access.views :refer [access-account]]
             [status-im.ui.screens.hardwallet.authentication-method.views :refer [hardwallet-authentication-method]]
             [status-im.ui.screens.hardwallet.connect.views :refer [hardwallet-connect]]
             [status-im.ui.screens.hardwallet.pin.views :refer [hardwallet-pin]]
@@ -130,20 +130,20 @@
     {:screen
      (nav-reagent/stack-navigator
       (stack-screens
-       (cond-> {:login          login
-                :progress       progress
-                :create-account create-account
-                :recover        recover
-                :accounts       accounts}
+       (cond-> {:login                            login
+                :progress                         progress
+                :create-account                   create-account
+                :access-account                   access-account
+                :accounts                         accounts}
          (= :intro view-id)
          (assoc :intro intro)
 
          config/hardwallet-enabled?
          (assoc :hardwallet-authentication-method hardwallet-authentication-method
-                :hardwallet-connect hardwallet-connect
-                :hardwallet-setup hardwallet-setup
-                :hardwallet-pin hardwallet-pin
-                :hardwallet-success hardwallet-success)))
+                :hardwallet-connect               hardwallet-connect
+                :hardwallet-setup                 hardwallet-setup
+                :hardwallet-pin                   hardwallet-pin
+                :hardwallet-success               hardwallet-success)))
       (cond-> {:headerMode "none"}
         (#{:intro :login} view-id)
         (assoc :initialRouteName (name view-id))))}
@@ -286,7 +286,7 @@
                    :backup-seed                      backup-seed
                    :login                            login
                    :create-account                   create-account
-                   :recover                          recover
+                   :access-account                   access-account
                    :accounts                         accounts
                    :qr-scanner                       qr-scanner}
 

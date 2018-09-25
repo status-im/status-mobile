@@ -196,7 +196,7 @@
                  :group/selected-contacts
                  :accounts/accounts
                  :accounts/create
-                 :accounts/recover
+                 :accounts/access
                  :accounts/login
                  :account/account
                  :my-profile/profile

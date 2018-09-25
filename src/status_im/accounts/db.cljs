@@ -61,7 +61,7 @@
 ;;used during creating account
 (spec/def :accounts/create (spec/nilable map?))
 ;;used during recovering account
-(spec/def :accounts/recover (spec/nilable map?))
+(spec/def :accounts/access (spec/nilable map?))
 ;;used during logging
 (spec/def :accounts/login (spec/nilable map?))
 ;;logged in account

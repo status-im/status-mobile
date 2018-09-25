@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.accounts.recover.styles
+(ns status-im.ui.screens.accounts.access.styles
   (:require [status-im.ui.components.colors :as colors]))
 
 (def screen-container
@@ -29,3 +29,9 @@
 (def recovery-phrase-input
   {:flex                1
    :text-align-vertical :top})
+
+(def input-description
+  {:font-size      14
+   :letter-spacing -0.2
+   :color          colors/gray
+   :line-height    21})

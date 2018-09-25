@@ -118,11 +118,14 @@ class SignInView(BaseView):
 
     def recover_access(self, passphrase: str, password: str = common_password):
         recover_access_view = self.i_have_account_button.click()
-        recover_access_view.passphrase_input.click()
+        recover_access_view.recovery_phrase_input.click()
         recover_access_view.send_as_keyevent(passphrase)
+        recover_access_view.next_button.click()
         recover_access_view.password_input.click()
         recover_access_view.send_as_keyevent(password)
-        recover_access_view.sign_in_button.click()
+        recover_access_view.next_button.click()
+        recover_access_view.confirm_password_input.set_value(password)
+        recover_access_view.access_button.click()
         return self.get_home_view()
 
     def open_status_test_dapp(self):

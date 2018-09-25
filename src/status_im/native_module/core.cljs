@@ -12,8 +12,8 @@
 (defn create-account [password callback]
   (native-module/create-account password callback))
 
-(defn recover-account [passphrase password callback]
-  (native-module/recover-account passphrase password callback))
+(defn access-account [passphrase password callback]
+  (native-module/access-account passphrase password callback))
 
 (defn login [address password callback]
   (native-module/login address password callback))

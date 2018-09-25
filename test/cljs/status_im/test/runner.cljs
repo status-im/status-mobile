@@ -52,7 +52,7 @@
             [status-im.test.init.core]
             [status-im.test.ui.screens.add-new.models]
             [status-im.test.utils.fx]
-            [status-im.test.accounts.recover.core]
+            [status-im.test.accounts.access.core]
             [status-im.test.hardwallet.core]
             [status-im.test.ui.screens.currency-settings.models]
             [status-im.test.ui.screens.wallet.db]))
@@ -116,7 +116,7 @@
  'status-im.test.utils.http
  'status-im.test.utils.fx
  'status-im.test.ui.screens.add-new.models
- 'status-im.test.accounts.recover.core
+ 'status-im.test.accounts.access.core
  'status-im.test.hardwallet.core
  'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db

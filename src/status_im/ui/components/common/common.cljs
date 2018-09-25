@@ -63,8 +63,10 @@
    [react/view {:style (styles/logo-container size shadow?)}
     [icons/icon :icons/logo (styles/logo icon-size)]]))
 
-(defn bottom-button [{:keys [label disabled? on-press forward?]}]
-  [react/touchable-highlight {:on-press on-press :disabled disabled?}
+(defn bottom-button [{:keys [label disabled? on-press forward? accessibility-label]}]
+  [react/touchable-highlight {:on-press            on-press
+                              :disabled            disabled?
+                              :accessibility-label accessibility-label}
    [react/view (styles/bottom-button disabled?)
     [react/text {:style      styles/bottom-button-label
                  :uppercase? true}
