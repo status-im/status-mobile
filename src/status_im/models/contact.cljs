@@ -1,7 +1,7 @@
 (ns status-im.models.contact
   (:require [status-im.data-store.contacts :as contacts-store]
             [status-im.transport.message.core :as transport]
-            [status-im.transport.message.v1.contact :as message.v1.contact]
+            [status-im.transport.message.v1.core :as v1]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.fx :as fx]))
 
@@ -39,8 +39,8 @@
   [{:keys [db] :as cofx} {:keys [whisper-identity pending? dapp?] :as contact}]
   (when-not dapp?
     (if pending?
-      (transport/send (message.v1.contact/map->ContactRequestConfirmed (own-info db)) whisper-identity cofx)
-      (transport/send (message.v1.contact/map->ContactRequest (own-info db)) whisper-identity cofx))))
+      (transport/send (v1/map->ContactRequestConfirmed (own-info db)) whisper-identity cofx)
+      (transport/send (v1/map->ContactRequest (own-info db)) whisper-identity cofx))))
 
 (fx/defn add-contact [{:keys [db] :as cofx} whisper-id]
   (let [contact (build-contact whisper-id cofx)]

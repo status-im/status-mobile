@@ -3,12 +3,14 @@
    [status-im.transport.utils :as transport.utils]
    [status-im.transport.db :as transport.db]
    [status-im.transport.message.core :as protocol.message]
+   [status-im.transport.message.v1.core :as transport]
+   [status-im.transport.message.v1.protocol :as transport.protocol]
    [status-im.utils.fx :as fx]
    [status-im.chat.models :as models.chat]))
 
-(fx/defn wrap-group-message [cofx chat-id message]
+(defn wrap-group-message [cofx chat-id message]
   (when-let [chat (get-in cofx [:db :chats chat-id])]
-    (GroupMembershipUpdate.
+    (transport/GroupMembershipUpdate.
      chat-id
      (:name chat)
      (:group-admin chat)
@@ -34,6 +36,12 @@
                                :dsts    (disj participants current-public-key)
                                :payload payload}})))
 
+(fx/defn handle-group-leave [payload chat-id cofx]
+  (transport.protocol/send cofx
+                           {:chat-id       chat-id
+                            :payload       payload
+                            :success-event [:group/unsubscribe-from-chat chat-id]}))
+
 (fx/defn handle-membership-update [cofx {:keys [chat-id chat-name participants leaves message signature version] :as membership-update} sender-signature]
   (let [chat-fx (if-let [previous-chat (get-in cofx [:db :chats chat-id])]
                   (update-membership cofx previous-chat membership-update)
@@ -49,5 +57,5 @@
     (if message
       (fx/merge cofx
                 chat-fx
-                (protocol.message/receive message chat-id sender-signature nil))
+                #(protocol.message/receive message chat-id sender-signature nil %))
       chat-fx)))

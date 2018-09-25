@@ -3,7 +3,7 @@
             [status-im.i18n :as i18n]
             [status-im.chat.models.message :as models.message]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.transport.message.v1.group-chat :as group-chat]
+            [status-im.transport.message.v1.core :as protocol]
             [status-im.transport.message.core :as transport]
             [status-im.utils.handlers :as handlers]
             [status-im.data-store.chats :as chats-store]
@@ -33,7 +33,7 @@
                (models.message/receive
                 (models.message/system-message current-chat-id message-id now
                                                (str "You've added " (apply str (interpose ", " added-participants-names)))))
-               #_(transport/send (group-chat/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
+               #_(transport/send (protocol/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
 
 (handlers/register-handler-fx
  :remove-group-chat-participants
@@ -48,7 +48,7 @@
                (models.message/receive
                 (models.message/system-message current-chat-id message-id now
                                                (str "You've removed " (apply str (interpose ", " removed-participants-names)))))
-               #_(transport/send (group-chat/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
+               #_(transport/send (protocol/GroupAdminUpdate. nil participants current-chat-id) current-chat-id)))))
 
 (handlers/register-handler-fx
  :set-group-chat-name

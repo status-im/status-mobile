@@ -129,6 +129,9 @@
        (cons username)
        (string/join ", ")))
 
+(fx/defn send-group-update [cofx group-update chat-id]
+  (transport.message/send group-update chat-id cofx))
+
 (handlers/register-handler-fx
  :create-new-group-chat-and-open
  [(re-frame/inject-cofx :random-id)]
@@ -141,7 +144,7 @@
                {:db (assoc db :group/selected-contacts #{})}
                (models/navigate-to-chat random-id {})
                (group-chats/handle-membership-update group-update my-pk)
-               (transport.message/send group-update random-id)))))
+               (send-group-update group-update random-id)))))
 
 (fx/defn show-profile [{:keys [db]} identity]
   (navigation/navigate-to-cofx {:db (assoc db :contacts/identity identity)} :profile nil))

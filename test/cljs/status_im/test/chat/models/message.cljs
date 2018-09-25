@@ -1,6 +1,6 @@
 (ns status-im.test.chat.models.message
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.transport.message.v1.protocol :as protocol]
+            [status-im.transport.message.v1.core :as protocol]
             [status-im.chat.models.message :as message]
             [status-im.utils.datetime :as time]))
 

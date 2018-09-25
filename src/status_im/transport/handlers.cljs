@@ -5,9 +5,8 @@
             [status-im.data-store.transport :as transport-store]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.transit :as transit]
-            [status-im.transport.message.v1.contact :as v1.contact]
-            [status-im.transport.message.v1.group-chat :as v1.group-chat]
             [status-im.transport.message.v1.protocol :as protocol]
+            [status-im.transport.message.v1.core :as v1]
             [status-im.transport.shh :as shh]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.fx :as fx]
@@ -76,7 +75,7 @@
                                  :chat-id    chat-id}
                 :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
                                                                      :chat    chat-transport-info})]}
-               #(message/send (v1.contact/NewContactKey. sym-key topic message)
+               #(message/send (v1/NewContactKey. sym-key topic message)
                               chat-id %)))))
 
 (handlers/register-handler-fx
@@ -179,9 +178,9 @@
      :fcm-token     fcm-token}))
 
 (fx/defn resend-contact-request [cofx own-info chat-id {:keys [sym-key topic]}]
-  (message/send (v1.contact/NewContactKey. sym-key
-                                           topic
-                                           (v1.contact/map->ContactRequest own-info))
+  (message/send (v1/NewContactKey. sym-key
+                                   topic
+                                   (v1/map->ContactRequest own-info))
                 chat-id cofx))
 
 (fx/defn resend-contact-message
@@ -191,13 +190,13 @@
       "contact-request"
       (resend-contact-request cofx own-info chat-id chat)
       "contact-request-confirmation"
-      (message/send (v1.contact/map->ContactRequestConfirmed own-info)
+      (message/send (v1/map->ContactRequestConfirmed own-info)
                     chat-id
                     cofx)
       "contact-update"
       (protocol/send cofx
                      {:chat-id chat-id
-                      :payload (v1.contact/map->ContactUpdate own-info)})
+                      :payload (v1/map->ContactUpdate own-info)})
       nil)))
 
 (fx/defn resend-contact-messages
@@ -210,3 +209,4 @@
                                             (resend-contact-message own-info chat-id))
                                           (keys (:transport/chats db)))]
       (apply fx/merge cofx resend-contact-message-fxs))))
+

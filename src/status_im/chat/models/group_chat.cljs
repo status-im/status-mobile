@@ -6,7 +6,6 @@
    [status-im.ui.screens.group.core :as group]
    [status-im.chat.models :as models.chat]
    [status-im.transport.message.core :as message]
-   [status-im.transport.message.v1.group-chat :as transport.group-chat]
    [status-im.chat.models.message :as models.message]
    [status-im.utils.fx :as fx]))
 

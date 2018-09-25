@@ -25,9 +25,9 @@
            [name profile-image address fcm-token]
   message/StatusMessage)
 
-(defrecord
- NewContactKey
- [sym-key topic message] message/StatusMessage)
+(defrecord NewContactKey
+           [sym-key topic message] message/StatusMessage)
 
-(defrecord GroupLeave []
+(defrecord GroupLeave
+           []
   message/StatusMessage)

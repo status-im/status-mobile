@@ -1,8 +1,6 @@
 (ns ^{:doc "Transit custom readers and writers, required when adding a new record implementing StatusMessage protocol"}
  status-im.transport.message.transit
-  (:require [status-im.transport.message.v1.contact :as v1.contact]
-            [status-im.transport.message.v1.protocol :as v1.protocol]
-            [status-im.transport.message.v1.group-chat :as v1.group-chat]
+  (:require [status-im.transport.message.v1.core :as v1]
             [cognitect.transit :as transit]))
 
 ;; When adding a new reccord implenting the StatusMessage protocol it is required to implement:
@@ -69,14 +67,14 @@
 
 (def writer (transit/writer :json
                             {:handlers
-                             {v1.contact/NewContactKey            (NewContactKeyHandler.)
-                              v1.contact/ContactRequest           (ContactRequestHandler.)
-                              v1.contact/ContactRequestConfirmed  (ContactRequestConfirmedHandler.)
-                              v1.contact/ContactUpdate            (ContactUpdateHandler.)
-                              v1.protocol/Message                 (MessageHandler.)
-                              v1.protocol/MessagesSeen            (MessagesSeenHandler.)
-                              v1.group-chat/GroupLeave            (GroupLeaveHandler.)
-                              v1.protocol/GroupMembershipUpdate (GroupMembershipUpdateHandler.)}}))
+                             {v1/NewContactKey            (NewContactKeyHandler.)
+                              v1/ContactRequest           (ContactRequestHandler.)
+                              v1/ContactRequestConfirmed  (ContactRequestConfirmedHandler.)
+                              v1/ContactUpdate            (ContactUpdateHandler.)
+                              v1/Message                  (MessageHandler.)
+                              v1/MessagesSeen             (MessagesSeenHandler.)
+                              v1/GroupLeave               (GroupLeaveHandler.)
+                              v1/GroupMembershipUpdate    (GroupMembershipUpdateHandler.)}}))
 
 ;;
 ;; Reader handlers
@@ -86,19 +84,19 @@
 (def reader (transit/reader :json
                             {:handlers
                              {"c1" (fn [[sym-key topic message]]
-                                     (v1.contact/NewContactKey. sym-key topic message))
+                                     (v1/NewContactKey. sym-key topic message))
                               "c2" (fn [[name profile-image address fcm-token]]
-                                     (v1.contact/ContactRequest. name profile-image address fcm-token))
+                                     (v1/ContactRequest. name profile-image address fcm-token))
                               "c3" (fn [[name profile-image address fcm-token]]
-                                     (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
+                                     (v1/ContactRequestConfirmed. name profile-image address fcm-token))
                               "c4" (fn [[content content-type message-type clock-value timestamp]]
-                                     (v1.protocol/Message. content content-type message-type clock-value timestamp))
+                                     (v1/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
-                                     (v1.protocol/MessagesSeen. message-ids))
+                                     (v1/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]
-                                     (v1.contact/ContactUpdate. name profile-image address fcm-token))
+                                     (v1/ContactUpdate. name profile-image address fcm-token))
                               "g5" (fn [[chat-id chat-name admin participants signature message]]
-                                     (v1.protocol/GroupMembershipUpdate. chat-id chat-name admin participants nil signature message))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
+                                     (v1/GroupMembershipUpdate. chat-id chat-name admin participants nil signature message))}})) ; removed group chat handlers for https://github.com/status-im/status-react/issues/4506
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"
