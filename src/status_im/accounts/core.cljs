@@ -17,7 +17,7 @@
       (utils/show-popup
        (i18n/label :mainnet-is-default-alert-title)
        (i18n/label :mainnet-is-default-alert-text)
-       #(re-frame/dispatch [:accounts.ui/update-mainnet-warning-shown])))))
+       #(re-frame/dispatch [:accounts.ui/mainnet-warning-shown])))))
 
 (defn- chat-send? [transaction]
   (and (seq transaction)
