@@ -7,6 +7,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.fleet-settings.styles :as styles]
+            [status-im.fleet.core :as fleet-core]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -34,7 +35,7 @@
           fleet]]]])))
 
 (def fleets
-  ["eth.staging" "eth.beta" "eth.test"])
+  (map name (keys fleet-core/fleets)))
 
 (views/defview fleet-settings []
   (views/letsubs [current-fleet [:settings/current-fleet]]
