@@ -31,14 +31,17 @@
    :flex-direction   :row
    :margin-top       16})
 
-(def add-contact-input
-  {:font-size        14
-   :background-color colors/gray-lighter
-   :margin-right     12
-   :border-radius    8})
+(defn add-contact-input [error?]
+  (cond-> {:font-size        14
+           :background-color colors/gray-lighter
+           :margin-right     12
+           :border-radius    8}
+    error?
+    (assoc :border-color colors/red
+           :border-width 1)))
 
-(def add-pub-chat-input
-  (assoc add-contact-input :padding-left 10))
+(defn add-pub-chat-input [error?]
+  (assoc (add-contact-input error?) :padding-left 10))
 
 (defn add-contact-button [error?]
   {:width            140
@@ -84,3 +87,28 @@
    :width         5
    :height        16
    :margin-bottom -16})
+(def tooltip-container
+  {:position    :absolute
+   :align-items :center
+   :align-self  :center
+   :top         -34})
+
+(def tooltip-icon-text
+  {:justify-content  :center
+   :align-items      :center
+   :flex 1
+   :height           24
+   :border-radius    8
+   :padding-left     10
+   :padding-right    10
+   :background-color colors/red-light})
+
+(def tooltip-triangle
+  {:width              0
+   :height             0
+   :border-top-width   9.1
+   :border-left-width  9.1
+   :border-right-width 9.1
+   :border-left-color  :transparent
+   :border-right-color :transparent
+   :border-top-color   colors/red-light})
