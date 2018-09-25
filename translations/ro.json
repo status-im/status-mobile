@@ -118,11 +118,6 @@
     "status-sending": "Se trimite",
     "next": "Mai departe",
     "recent": "Recente",
-    "confirmation-code": [
-        "str",
-        "Mulțumim! Ți-am trims un mesaj text cu un cod ",
-        "de confirmare. Te rugăm să ne transmiți acel cod pentru a-ți confirma numărul de telefon"
-    ],
     "status": "Status",
     "from": "De la",
     "wrong-password": "Parola greșită",

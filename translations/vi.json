@@ -118,11 +118,6 @@
     "status-sending": "Đang gửi",
     "next": "Tiếp theo",
     "recent": "Gần đây",
-    "confirmation-code": [
-        "str",
-        "Cảm ơn! Chúng tôi đã gửi cho bạn một tin nhắn văn bản với một xác nhận ",
-        "Vui lòng cung cấp mã đó để xác nhận số điện thoại của bạn"
-    ],
     "status": "Trạng thái",
     "from": "Từ",
     "wrong-password": "Mật khẩu sai",

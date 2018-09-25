@@ -73,11 +73,6 @@
     "scan-qr": "Piga picha QR",
     "status-sending": "Kutuma",
     "recent": "Hivi karibuni",
-    "confirmation-code": [
-        "str",
-        "Asante! Tumekutumia ujumbe mfupi na uthibitisho ",
-        "kificho. Tafadhali peana hicho kificho kuthibitisha namba yako ya simu"
-    ],
     "status": "Hali",
     "wrong-password": "Nenosiri sio halali",
     "sharing-share": "Dela...",

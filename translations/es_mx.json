@@ -123,11 +123,6 @@
     "status-sending": "Enviando",
     "next": "Siguiente",
     "recent": "Recientes",
-    "confirmation-code": [
-        "str",
-        "¡Gracias! Te hemos enviado un mensaje de texto con un código de confirmación ",
-        ". Por favor, usa el código para confirmar tu número de teléfono"
-    ],
     "status": "Estado",
     "from": "De",
     "wrong-password": "Contraseña incorrecta",

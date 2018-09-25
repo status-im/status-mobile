@@ -135,11 +135,6 @@
     "transactions-filter-type": "Type",
     "next": "Neste",
     "recent": "Nylig",
-    "confirmation-code": [
-        "str",
-        "Topp! Vi har sendt deg en tekstmelding med bekreftelseskode.",
-        "Vennligst send oss tilbake koden for å verifisere at dette er din telefon"
-    ],
     "status": "Status",
     "from": "Fra",
     "wrong-password": "Feil passord",

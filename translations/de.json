@@ -187,11 +187,6 @@
     "transactions-filter-type": "Typ",
     "next": "Weiter",
     "recent": "Kürzliche Status",
-    "confirmation-code": [
-        "str",
-        "Danke! Wir haben dir eine Textnachricht mit einem Bestätigungscode ",
-        "gesendet. Bitte gib diesen Code an, um deine Telefonnummer zu verifizieren."
-    ],
     "open-on-etherscan": "Auf Etherscan.io öffnen",
     "share": "Teilen",
     "status": "Status",

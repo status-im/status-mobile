@@ -194,11 +194,6 @@
     "next": "次へ",
     "recent": "最近のステータス",
     "wallet-send-token": "送信 {{symbol}}",
-    "confirmation-code": [
-        "str",
-        "ありがとうございます！ 確認コードが記載されたメッセージが",
-        "送信されました。電話番号を確認するにはそのコードを入力してください"
-    ],
     "open-on-etherscan": "Etherscan.ioを開く",
     "offline-messaging-settings": "オフラインメッセージの設定",
     "share": "シェア",

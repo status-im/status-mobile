@@ -123,11 +123,6 @@
     "status-sending": "Menghantar",
     "next": "Seterusnya",
     "recent": "Terbaru",
-    "confirmation-code": [
-        "str",
-        "Terima kasih! Kami telah menghantar kepada anda satu mesej mengandungi kod",
-        "pengesahan. Sila berikan kod tersebut untuk mengesahkan nombor telefon anda"
-    ],
     "status": "Status",
     "from": "Dari",
     "wrong-password": "Kata laluan salah",

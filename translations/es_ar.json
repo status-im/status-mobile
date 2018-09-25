@@ -118,11 +118,6 @@
     "status-sending": "Enviando",
     "next": "Siguiente",
     "recent": "Reciente",
-    "confirmation-code": [
-        "str",
-        "¡Gracias! Te hemos enviado un código de confirmación por mensaje de texto. ",
-        "Ingresa este código para confirmar tu número telefónico"
-    ],
     "status": "Estatus",
     "from": "De",
     "wrong-password": "Contraseña incorrecta",

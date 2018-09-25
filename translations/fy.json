@@ -123,11 +123,6 @@
     "status-sending": "Wurdt ferstjoerd ",
     "next": "Folgjende",
     "recent": "Koartlyn",
-    "confirmation-code": [
-        "str",
-        "Tiige tank! Wy ha dy in sms stjoerd mei in befêstigingskoade",
-        ". Jou dyn koade op om dyn telefoannûmer te befêstigje"
-    ],
     "status": "Status",
     "from": "Fan",
     "wrong-password": "Ferkeard wachtwurd",

@@ -118,11 +118,6 @@
     "status-sending": "Besig om te stuur",
     "next": "Volgende",
     "recent": "Onlangs",
-    "confirmation-code": [
-        "str",
-        "Dankie! Ons het vir u 'n SMS gestuur met 'n bevestigings ",
-        "kode. Verskaf asseblief daardie kode om u telefoonnommer te bevestig"
-    ],
     "status": "Status",
     "from": "Van",
     "wrong-password": "Verkeerde wagwoord",

@@ -118,11 +118,6 @@
     "status-sending": "Pošiljanje",
     "next": "Naprej",
     "recent": "Nedavno",
-    "confirmation-code": [
-        "str",
-        "Hvala! Poslali smo ti sporočilo s potrditveno ",
-        "kodo. Prosimo, vnesi to kodo in potrdi svojo telefonsko številko"
-    ],
     "status": "Status",
     "from": "Od",
     "wrong-password": "Napačno geslo",

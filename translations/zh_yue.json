@@ -123,11 +123,6 @@
     "status-sending": "發送中",
     "next": "下一個",
     "recent": "最近發現",
-    "confirmation-code": [
-        "str",
-        "謝謝！我們已以短訊形式將確認信息發送給你",
-        "代碼。請提供該代碼，以確認你的電話號碼"
-    ],
     "status": "狀態",
     "from": "從",
     "wrong-password": "密碼錯誤",

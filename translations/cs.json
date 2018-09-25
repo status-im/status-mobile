@@ -133,11 +133,6 @@
     "transactions-filter-type": "Typ",
     "next": "Další",
     "recent": "Poslední",
-    "confirmation-code": [
-        "str",
-        "Díky! Poslali jsme Ti textovou zprávu s kódem pro potvrzení. ",
-        "Prosím potvrď své telefonní číslo zadáním tohoto kódu."
-    ],
     "status": "Status",
     "from": "Od",
     "wrong-password": "Špatné heslo",

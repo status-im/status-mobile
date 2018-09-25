@@ -186,11 +186,6 @@
     "transactions-filter-type": "Tipo",
     "next": "Siguiente",
     "recent": "Estados recientes",
-    "confirmation-code": [
-        "str",
-        "¡Gracias! Has enviado un mensaje de texto con un código de confirmación. ",
-        "Por favor danos ese código para confirmar tu número de teléfono"
-    ],
     "open-on-etherscan": "Abrir en Etherscan.io",
     "share": "Compartir",
     "status": "Estado",

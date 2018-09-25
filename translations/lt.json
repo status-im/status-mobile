@@ -187,11 +187,6 @@
     "transactions-filter-type": "Tipas",
     "next": "Sekantis",
     "recent": "Paskiausios būsenos",
-    "confirmation-code": [
-        "str",
-        "Dėkui! Mes išsiuntėme jums teksto pranešimą su patvirtinimo kodu. ",
-        "Prašau nurodyti šį kodą, kad patvirtintumėte savo telefono numerį"
-    ],
     "open-on-etherscan": "Atidaryti Etherscan",
     "share": "Dalintis",
     "status": "Status",

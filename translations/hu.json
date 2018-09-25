@@ -118,11 +118,6 @@
     "status-sending": "Küldés",
     "next": "Következő",
     "recent": "Legutóbbi",
-    "confirmation-code": [
-        "str",
-        "Köszönjük! Küldtünk neked egy szöveges üzenetet megerősítési ",
-        "kóddal. Kérjük, add meg a kódot telefonszámod megerősítése érdekében"
-    ],
     "status": "Állapot",
     "from": "Feladó",
     "wrong-password": "Hibás jelszó",

@@ -118,11 +118,6 @@
     "status-sending": "Invio in corso",
     "next": "Avanti",
     "recent": "Recente",
-    "confirmation-code": [
-        "str",
-        "Grazie! Ti abbiamo inviato un messaggio con un codice di ",
-        "conferma. Utilizza tale codice per confermare il tuo numero di telefono"
-    ],
     "status": "Stato",
     "from": "Da",
     "wrong-password": "Password errata",

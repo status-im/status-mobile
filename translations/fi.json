@@ -123,11 +123,6 @@
     "status-sending": "Lähetetään",
     "next": "Seuraava",
     "recent": "Uusimmat",
-    "confirmation-code": [
-        "str",
-        "Kiitos! Olemme lähettäneet sinulle tekstiviestin, jossa on vahvistus ",
-        "koodi. Ole hyvä ja anna koodi vahvistaaksesi puhelinnumerosi"
-    ],
     "status": "Tila",
     "from": "Lähettäjältä",
     "wrong-password": "Väärä salasana",

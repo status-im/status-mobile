@@ -202,11 +202,6 @@
     "transactions-filter-type": "Type",
     "next": "Suivant",
     "recent": "Récent",
-    "confirmation-code": [
-        "str",
-        "Merci ! Nous vous avons envoyé un message texte contenant le code ",
-        "de confirmation. Veuillez fournir ce code pour confirmer votre numéro de téléphone"
-    ],
     "open-on-etherscan": "Ouvrir sur Etherscan.io",
     "offline-messaging-settings": "Configuration de la messagerie hors-ligne",
     "share": "Partager",

@@ -123,11 +123,6 @@
     "status-sending": "发送中",
     "next": "下一个",
     "recent": "最近",
-    "confirmation-code": [
-        "str",
-        "谢谢！我们已经给您发了一个确认短信",
-        "代码。请提供该代码以确认您的电话号码"
-    ],
     "status": "状态",
     "from": "从",
     "wrong-password": "错误的密码",

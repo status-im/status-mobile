@@ -118,11 +118,6 @@
     "status-sending": "Gönderiliyor...",
     "next": "Sonraki",
     "recent": "Güncel",
-    "confirmation-code": [
-        "str",
-        "Teşekkürler! Size onay kodunu içeren bir kısa mesaj ",
-        "gönderdim. Telefon numaranızı onaylamak için lütfen bu kodu girin"
-    ],
     "status": "Durum",
     "from": "Şuradan:",
     "wrong-password": "Hatalı Şifre",

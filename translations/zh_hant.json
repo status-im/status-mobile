@@ -187,11 +187,6 @@
     "transactions-filter-type": "類型",
     "next": "下一個",
     "recent": "最近",
-    "confirmation-code": [
-        "str",
-        "謝謝！我們已經向你發送了一條包含確認代碼的短信，",
-        "請提供該代碼以確認你的電話號碼。"
-    ],
     "open-on-etherscan": "打開 Etherscan.io",
     "share": "分享",
     "status": "狀態",

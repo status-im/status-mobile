@@ -118,11 +118,6 @@
     "status-sending": "A enviar",
     "next": "Próximo",
     "recent": "Recente",
-    "confirmation-code": [
-        "str",
-        "Obrigado! Enviámos-lhe uma mensagem de texto com um código de ",
-        "confirmação. Por favor, forneça esse código para confirmar o seu número de telefone"
-    ],
     "status": "Estado",
     "from": "De",
     "wrong-password": "Palavra-passe errada",

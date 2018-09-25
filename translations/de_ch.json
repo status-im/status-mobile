@@ -71,11 +71,6 @@
     "scan-qr": "QR scannen",
     "status-sending": "Senden",
     "recent": "Kürzlich",
-    "confirmation-code": [
-        "str",
-        "Vielen Dank! Wir haben Dir eine SMS mit einem Bestätigungcode",
-        "zugesandt. Bitte gebe diesen Code zur Bestätigung deiner Telefonnummer ein"
-    ],
     "status": "Status",
     "wrong-password": "Falsches Passwort",
     "contacts-group-new-chat": "Starte neuen Gruppenchat",

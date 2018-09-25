@@ -123,11 +123,6 @@
     "status-sending": "Sender",
     "next": "Næste",
     "recent": "Seneste",
-    "confirmation-code": [
-        "str",
-        "Tak! Vi har sendt dig en sms med en bekræftelseskode. ",
-        "Vær venlig at indtaste koden for at bekræfte dit telefonnummer"
-    ],
     "status": "Status",
     "from": "Fra",
     "wrong-password": "Forkert kodeord",

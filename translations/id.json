@@ -71,11 +71,6 @@
     "scan-qr": "memindai kode QR ini",
     "status-sending": "mengirim",
     "recent": "terbaru",
-    "confirmation-code": [
-        "str",
-        "terima kasih! Kami telah mengirim pesan teks untuk mengkonfirmasi akun anda ",
-        "kode. untuk mengkonfirmasi nomor telepon Anda, masukkan kode ini"
-    ],
     "status": "kondisi",
     "wrong-password": "kata sandi salah",
     "contacts-group-new-chat": "untuk memulai obrolan baru",

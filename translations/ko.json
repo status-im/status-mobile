@@ -77,11 +77,6 @@
     "command-requesting": "요청 중",
     "command-sending": "출금",
     "confirm": "비밀번호 확인",
-    "confirmation-code": [
-        "str",
-        "감사합니다! 확인 코드를 문자 메시지로 보내 드렸습니다. ",
-        "전화번호 검증을 위해 확인 코드를 입력해 주세요"
-    ],
     "confirmations": "확인",
     "confirmations-helper-text": "12번 확인된 거래는 확정된 것으로 간주됩니다.",
     "connect": "접속",

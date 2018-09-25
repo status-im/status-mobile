@@ -190,11 +190,6 @@
     "next": "Nästa",
     "recent": "Senaste",
     "wallet-send-token": "Sänd {{symbol}}",
-    "confirmation-code": [
-        "str",
-        "Tack! Vi har skickat dig ett textmeddelande med en bekräftelse ",
-        "kod. Var god ange den koden för att bekräfta ditt telefonnummer"
-    ],
     "open-on-etherscan": "Öppna på Etherscan.io",
     "share": "Dela",
     "status": "Status",

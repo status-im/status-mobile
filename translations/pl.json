@@ -73,11 +73,6 @@
     "command-requesting": "Prośba {{amount}} {{asset}}",
     "command-sending": "Wyślij transakcję {{amount}} {{asset}}",
     "confirm": "Potwierdź",
-    "confirmation-code": [
-        "str",
-        "Dziękujemy! Wysłaliśmy ci SMS-a z kodem",
-        "kod. Prosimy o podanie kodu w celu zweryfikowania swojego numeru telefonu"
-    ],
     "confirmations": "Potwierdzenia",
     "confirmations-helper-text": "Kiedy transakcja ma 12 potwierdzeń, możesz uznać ją za uregulowaną.",
     "connect": "Połącz",

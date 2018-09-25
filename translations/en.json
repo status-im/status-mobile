@@ -421,11 +421,6 @@
     "bootnodes-enabled": "Bootnodes enabled",
     "your-data-belongs-to-you": "If you lose your recovery phrase you lose your data and funds",
     "empty-chat-description-one-to-one": "Any messages you send here are encrypted and can only be read by you and ",
-    "confirmation-code": [
-        "str",
-        "Thanks! We've sent you a text message with a confirmation ",
-        "code. Please provide that code to confirm your phone number"
-    ],
     "open-on-etherscan": "Open on Etherscan.io",
     "currency-display-name-lkr": "Sri Lanka Rupee",
     "currency-display-name-lrd": "Liberia Dollar",

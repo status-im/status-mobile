@@ -122,11 +122,6 @@
     "status-sending": "Wordt verstuurd",
     "next": "Volgende",
     "recent": "Recent",
-    "confirmation-code": [
-        "str",
-        "Bedankt! We hebben je een sms gestuurd met een bevestigingscode",
-        ". Geef die code op om jouw telefoonnummer te bevestigen"
-    ],
     "status": "Status",
     "from": "Van",
     "wrong-password": "Verkeerd wachtwoord",

@@ -73,11 +73,6 @@
     "command-requesting": "Solicitando",
     "command-sending": "Enviar transacción",
     "confirm": "Confirmar",
-    "confirmation-code": [
-        "str",
-        "¡Gracias! Te hemos enviado un mensaje de texto con un código de confirmación ",
-        ". Por favor, usa el código para confirmar tu número de teléfono"
-    ],
     "confirmations": "Confirmaciones",
     "confirmations-helper-text": "Cuando la transacción tenga 12 confirmaciones, puede considerarla resuelta.",
     "connect": "Conectar",

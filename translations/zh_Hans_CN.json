@@ -73,11 +73,6 @@
     "command-requesting": "请求",
     "command-sending": "发送交易",
     "confirm": "确认",
-    "confirmation-code": [
-        "str",
-        "谢谢！我们已经向你发送了一条包含确认代码的短信，",
-        "请提供该代码以确认你的电话号码。"
-    ],
     "confirmations": "确认",
     "confirmations-helper-text": "请等待达到至少12个确认，来确保交易已被安全地处理。",
     "connect": "连接",

@@ -72,11 +72,6 @@
     "scan-qr": "QR-nota photographere",
     "status-sending": "allegere",
     "recent": "novae",
-    "confirmation-code": [
-        "str",
-        "gratias tibi! misimus nuntium conscriptionis cum notae. ",
-        "transcribe notam, ut nummerum telefonicum possimus verificare."
-    ],
     "status": "status",
     "wrong-password": "falsum signum acranum",
     "contacts-group-new-chat": "novum colloquium circli",
