@@ -55,8 +55,8 @@
                                "contact-update")
                  :data-store/tx tx}
                 (transport/send-with-pubkey {:chat-id       chat-id
-                                            :payload       payload
-                                            :success-event success-event})))))
+                                             :payload       payload
+                                             :success-event success-event})))))
 
 (extend-type v1/ContactUpdate
   message/StatusMessage

@@ -26,7 +26,8 @@
   message/StatusMessage)
 
 (defrecord NewContactKey
-           [sym-key topic message] message/StatusMessage)
+           [sym-key topic message]
+  message/StatusMessage)
 
 (defrecord GroupLeave
            []

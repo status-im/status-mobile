@@ -15,9 +15,6 @@
 (def invitation-m2 {:id "m-2"
                     :user member-2})
 
-(def invitation-m2 {:id "m-2"
-                    :user member-2})
-
 (def initial-message {:chat-id chat-id
                       :chat-name chat-name
                       :admin admin
