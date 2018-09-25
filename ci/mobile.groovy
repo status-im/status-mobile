@@ -59,14 +59,6 @@ def prep(type = 'nightly') {
   }
 }
 
-def runLint() {
-  sh 'lein cljfmt check'
-}
-
-def runTests() {
-  sh 'lein test-cljs'
-}
-
 def leinBuild(platform) {
   sh "lein prod-build-${platform}"
 }

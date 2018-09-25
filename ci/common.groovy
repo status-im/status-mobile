@@ -15,7 +15,7 @@ def getBuildType() {
   }
   return params.BUILD_TYPE
 }
-  
+
 def buildBranch(name = null, buildType) {
   /* need to drop origin/ to match definitions of child jobs */
   def branchName = env.GIT_BRANCH.replace('origin/', '')
@@ -143,13 +143,13 @@ def githubNotify(apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl, changeId) {
         "* [AppImage](${appUrl})"
     }
     def script = (
-      "curl "+ 
-      "-u status-im:${githubToken} " + 
-      "-H 'Content-Type: application/json' " + 
+      "curl "+
+      "-u status-im:${githubToken} " +
+      "-H 'Content-Type: application/json' " +
       "--data '{\"body\": \"${message}\"}' " +
       "https://api.github.com/repos/status-im/status-react/issues/${changeId}/comments"
     )
-    def ghOutput = sh(returnStdout: true, script: script) 
+    def ghOutput = sh(returnStdout: true, script: script)
     println("Result of github comment curl: " + ghOutput);
   }
 }
@@ -158,6 +158,14 @@ def getParentRunEnv(name) {
   def c = currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause)
   if (c == null) { return null }
   return c.getUpstreamRun().getEnvironment()[name]
+}
+
+def runLint() {
+  sh 'lein cljfmt check'
+}
+
+def runTests() {
+  sh 'lein test-cljs'
 }
 
 return this

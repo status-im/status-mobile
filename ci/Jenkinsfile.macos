@@ -8,7 +8,7 @@ pipeline {
       artifactNumToKeepStr: '30',
     ))
   }
-  
+
   environment {
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
@@ -16,7 +16,7 @@ pipeline {
     QT_PATH = '/Users/administrator/qt/5.9.1'
     PATH = "${env.QT_PATH}/clang_64/bin:${env.PATH}"
   }
-  
+
   stages {
     stage('Prep') {
       steps {
@@ -26,6 +26,16 @@ pipeline {
           cmn     = load 'ci/common.groovy'
           desktop.prepDeps()
         }
+      }
+    }
+    stage('Lint') {
+      steps {
+        script { cmn.runLint() }
+      }
+    }
+    stage('Tests') {
+      steps {
+        script { cmn.runTests() }
       }
     }
     stage('Build') {
