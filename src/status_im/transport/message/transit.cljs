@@ -55,12 +55,6 @@
   (rep [this {:keys [message-ids]}]
     (clj->js message-ids)))
 
-(deftype GroupAdminUpdateHandler []
-  Object
-  (tag [this v] "g2")
-  (rep [this {:keys [chat-name participants chat-id]}]
-    #js [chat-name participants chat-id]))
-
 (deftype GroupLeaveHandler []
   Object
   (tag [this v] "g3")
@@ -81,7 +75,6 @@
                               v1.contact/ContactUpdate            (ContactUpdateHandler.)
                               v1.protocol/Message                 (MessageHandler.)
                               v1.protocol/MessagesSeen            (MessagesSeenHandler.)
-                              v1.group-chat/GroupAdminUpdate      (GroupAdminUpdateHandler.)
                               v1.group-chat/GroupLeave            (GroupLeaveHandler.)
                               v1.protocol/GroupMembershipUpdate (GroupMembershipUpdateHandler.)}}))
 

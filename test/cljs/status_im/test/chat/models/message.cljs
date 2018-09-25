@@ -87,8 +87,8 @@
     (testing "it does not send any when the chat is a group-chat"
       (is (nil? (extract-seen
                  (message/receive
-                  message
-                  (assoc-in cofx [:db :chats "chat-id" :group-chat] true))))))
+                  (assoc-in cofx [:db :chats "chat-id" :group-chat] true)
+                  message)))))
     (testing "it does not send any when we are in a different chat"
       (is (nil? (extract-seen
                  (message/receive (assoc-in cofx [:db :current-chat-id] :different)

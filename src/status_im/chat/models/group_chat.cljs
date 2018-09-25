@@ -79,8 +79,8 @@
            (not= signature me)
            (get-in db [:chats chat-id])) ;; chat is present
 
-      (fx/mergex cofx
-                               (models.message/receive
-                                (models.message/system-message chat-id random-id now
-                                                               (str participant-leaving-name " " (i18n/label :t/left))))
-                               (group/participants-removed chat-id #{signature})))))
+      (fx/merge cofx
+                (models.message/receive
+                 (models.message/system-message chat-id random-id now
+                                                (str participant-leaving-name " " (i18n/label :t/left))))
+                (group/participants-removed chat-id #{signature})))))

@@ -3,9 +3,9 @@
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [taoensso.timbre :as log]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.config :as config]
             [status-im.chat.core :as chat]
+            [status-im.group-chats.core :as group-chats]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.core :as message]
             [status-im.transport.utils :as transport.utils]
@@ -41,9 +41,9 @@
                                         :topic    topic}
                                        whisper-opts)}]}))
 
-(defn send-direct-message
+(fx/defn send-direct-message
   "Sends the payload using to dst"
-  [dst success-event payload {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} dst success-event payload]
   (let [{:keys [current-public-key web3]} db]
     {:shh/send-direct-message [{:web3 web3
                                 :success-event success-event
@@ -51,25 +51,15 @@
                                 :dst     dst
                                 :payload payload}]}))
 
-(defn send-public-message
+(fx/defn send-public-message
   "Sends the payload to topic"
-  [chat-id success-event payload {:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} chat-id success-event payload]
   (let [{:keys [current-public-key web3]} db]
     {:shh/send-public-message [{:web3 web3
                                 :success-event success-event
                                 :src     current-public-key
                                 :chat    chat-id
                                 :payload payload}]}))
-(defn wrap-group-message [chat-id message cofx]
-  (when-let [chat (get-in cofx [:db :chats chat-id])]
-    (GroupMembershipUpdate.
-     chat-id
-     (:chat-name chat)
-     (:group-admin chat)
-     (:contacts chat)
-     nil
-     nil
-     message)))
 
 (defn send-group-message
   "Sends the payload using to dst"
@@ -82,7 +72,7 @@
                               :success-event success-event
                               :src     current-public-key
                               :dsts    recipients
-                              :payload (wrap-group-message chat-id payload cofx)}}))
+                              :payload (group-chats/wrap-group-message cofx chat-id payload)}}))
 
 (fx/defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
@@ -101,17 +91,6 @@
          (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id]))
        public-keys))
 
-;; TODO currently not used
-(defrecord Ack [message-ids]
-  message/StatusMessage
-  (send [this cofx chat-id])
-  (receive [this chat-id sig timestamp cofx]))
-
-(defrecord Seen [message-ids]
-  message/StatusMessage
-  (send [this cofx chat-id])
-  (receive [this chat-id sig timestamp cofx]))
-
 (defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
   (send [this chat-id cofx]
@@ -125,7 +104,6 @@
 
         :group-user-message
         (when config/group-chats-enabled?
-          (log/debug "Sending group message")
           (send-group-message
            chat-id
            (:success-event params)
@@ -148,7 +126,7 @@
            (:success-event params)
            this
            cofx)
-        (send-with-pubkey cofx params))))
+          (send-with-pubkey cofx params)))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
@@ -168,6 +146,6 @@
        this
        cofx)
       (send cofx {:chat-id chat-id
-             :payload this})))
+                  :payload this})))
   (receive [this chat-id signature _ cofx]
     (chat/receive-seen cofx chat-id signature this)))

@@ -60,7 +60,6 @@
 
 (defn handle-response [success-event error-event]
   (fn [err resp]
-    (log/debug "Handling response" err resp)
     (if-not err
       (if success-event
         (re-frame/dispatch (conj success-event resp))

@@ -30,7 +30,7 @@
 (deftest handle-group-membership-update
   (testing "a brand new chat"
     (let [actual   (->
-                    (group-chats/handle-membership-update initial-message admin {})
+                    (group-chats/handle-membership-update {:db {}} initial-message admin)
                     :db
                     :chats
                     (get chat-id))]
@@ -50,7 +50,7 @@
                                       :membership-version 2}}}}]
       (testing "an update from the admin is received"
         (testing "the message is an older version"
-          (let [actual (group-chats/handle-membership-update initial-message admin cofx)]
+          (let [actual (group-chats/handle-membership-update cofx initial-message admin)]
             (testing "it noops"
               (is (not actual)))))
         (testing "the message is a more recent version"

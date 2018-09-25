@@ -14,22 +14,11 @@
   (if (nil? (get-in cofx [:db :transport/chats chat-id]))
     (protocol/init-chat {:chat-id chat-id} cofx)))
 
-(defrecord GroupAdminUpdate [chat-name participants chat-id]
-  message/StatusMessage
-  (send [this chat-id cofx]
-    (let [{:keys [current-public-key web3]} (:db cofx)] (handlers-macro/merge-fx
-                                                         cofx
-                                                         {:shh/send-group-message {:web3 web3
-                                                                                   :src     current-public-key
-                                                                                   :dsts    (disj participants current-public-key)
-                                                                                   :payload this}}
-                                                         (init-chat-if-new chat-id)))))
-
 (defrecord GroupMembershipUpdate [chat-id chat-name admin participants leaves signature message]
   message/StatusMessage
   (send [this chat-id cofx]
     (let [{:keys [current-public-key web3]} (:db cofx)]
-      (handlers-macro/merge-fx
+      (fx/merge
        cofx
        {:shh/send-group-message {:web3 web3
                                  :src     current-public-key

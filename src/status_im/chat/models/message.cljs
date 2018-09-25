@@ -127,12 +127,12 @@
         current-chat?                 (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
         {:keys [group-chat] :as chat} (get-in db [:chats chat-id])
         message                       (-> raw-message
-                                       (commands-receiving/enhance-receive-parameters cofx)
-                                       (ensure-clock-value chat)
+                                          (commands-receiving/enhance-receive-parameters cofx)
+                                          (ensure-clock-value chat)
                                        ;; TODO (cammellos): Refactor so it's not computed twice
-                                       (add-outgoing-status cofx)
+                                          (add-outgoing-status cofx)
                                        ;; TODO (janherich): Remove after couple of releases
-                                       update-legacy-type)]
+                                          update-legacy-type)]
     (fx/merge cofx
               {:confirm-messages-processed [{:web3   web3
                                              :js-obj js-obj}]}

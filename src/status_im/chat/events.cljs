@@ -10,7 +10,7 @@
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.i18n :as i18n]
             [status-im.transport.message.core :as transport.message]
-            [status-im.transport.message.v1.protocol :as protocol]
+            [status-im.transport.message.v1.core :as protocol]
             [status-im.transport.message.v1.public-chat :as public-chat]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
@@ -138,11 +138,10 @@
                                  my-pk)
          group-update (protocol/GroupMembershipUpdate. random-id group-name my-pk selected-contacts nil nil nil)]
      (fx/merge cofx
-      cofx
-      {:db (assoc db :group/selected-contacts #{})}
-      (models/navigate-to-chat random-id {})
-      (group-chats/handle-membership-update group-update my-pk)
-      (transport.message/send group-update random-id)))))
+               {:db (assoc db :group/selected-contacts #{})}
+               (models/navigate-to-chat random-id {})
+               (group-chats/handle-membership-update group-update my-pk)
+               (transport.message/send group-update random-id)))))
 
 (fx/defn show-profile [{:keys [db]} identity]
   (navigation/navigate-to-cofx {:db (assoc db :contacts/identity identity)} :profile nil))

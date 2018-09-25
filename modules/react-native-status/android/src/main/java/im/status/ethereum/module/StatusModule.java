@@ -156,16 +156,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         // retrieve parameters from app config, that will be applied onto the Go-side config later on
         final String absDataDirPath = pathCombine(absRootDirPath, jsonConfig.getString("DataDir"));
         final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
-        final Boolean pfsEnabled = jsonConfig.getBoolean("PFSEnabled");
-        final String backupDisabledDataDir = absRootDirPath + "/no_backup/ethereum";
-
         final String gethLogFilePath = logEnabled ? prepareLogsFile() : null;
 
         jsonConfig.put("DataDir", absDataDirPath);
         jsonConfig.put("KeyStoreDir", absKeystoreDirPath);
         jsonConfig.put("LogFile", gethLogFilePath);
-        jsonConfig.put("PFSEnabled", pfsEnabled);
-        jsonConfig.put("BackupDisabledDataDir", backupDisabledDataDir);
 
         return jsonConfig.toString();
     }
@@ -415,65 +410,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String res = Statusgo.CreateAccount(password);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
-    public void createContactCode(final Callback callback) {
-        Log.d(TAG, "createBundle");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.CreateContactCode();
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
-    public void processContactCode(final String bundle, final Callback callback) {
-        Log.d(TAG, "processing Bundle");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.ProcessContactCode(bundle);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
-    public void extractIdentityFromContactCode(final String bundle, final Callback callback) {
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.ExtractIdentityFromContactCode(bundle);
 
                 callback.invoke(res);
             }

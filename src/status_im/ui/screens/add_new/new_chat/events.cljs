@@ -1,7 +1,5 @@
 (ns status-im.ui.screens.add-new.new-chat.events
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.ui.screens.add-new.new-chat.db :as db]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.ens :as ens]
