@@ -5,7 +5,6 @@
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
-            [status-im.utils.handlers-macro :as handlers-macro]
             [status-im.utils.fx :as fx]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
@@ -42,33 +41,39 @@
                                             :payload this
                                             :success-event success-event})))))
 
+(fx/defn send-contact-update
+  [{:keys [db] :as cofx} chat-id payload]
+  (when-let [chat (get-in cofx [:db :transport/chats chat-id])]
+    (let [updated-chat  (assoc chat :resend? "contact-update")
+          tx            [(transport-store/save-transport-tx {:chat-id chat-id
+                                                             :chat    updated-chat})]
+          success-event [:transport/set-contact-message-envelope-hash chat-id]]
+      (fx/merge cofx
+                {:db (assoc-in db
+                               [:transport/chats chat-id :resend?]
+                               "contact-update")
+                 :data-store/tx tx}
+                (protocol/send-with-pubkey {:chat-id       chat-id
+                                            :payload       payload
+                                            :success-event success-event})))))
+
 (defrecord ContactUpdate [name profile-image address fcm-token]
   message/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    (let [public-keys (reduce (fn [acc [_ {:keys [public-key pending?]}]]
-                                (if (and public-key
-                                         (not pending?))
-                                  (conj acc public-key)
-                                  acc))
-                              #{}
-                              (:contacts/contacts db))
-          recipients  (filter #(public-keys (first %)) (:transport/chats db))]
-      (handlers-macro/merge-effects
-       cofx
-       (fn [[chat-id chat] temp-cofx]
-         (let [updated-chat  (assoc chat :resend? "contact-update")
-               tx            [(transport-store/save-transport-tx {:chat-id chat-id
-                                                                  :chat    updated-chat})]
-               success-event [:transport/set-contact-message-envelope-hash chat-id]]
-           (fx/merge temp-cofx
-                     {:db            (assoc-in db
-                                               [:transport/chats chat-id :resend?]
-                                               "contact-update")
-                      :data-store/tx tx}
-                     (protocol/send-with-pubkey {:chat-id       chat-id
-                                                 :payload       this
-                                                 :success-event success-event}))))
-       recipients))))
+    ;;TODO: here we look for contact which have a :public-key to differentiate
+    ;;actual contacts from dapps
+    ;;This is not an ideal solution and we should think about a more reliable way
+    ;;to do this when we refactor app-db
+    (let [contact-public-keys (reduce (fn [acc [_ {:keys [public-key pending?]}]]
+                                        (if (and public-key
+                                                 (not pending?))
+                                          (conj acc public-key)
+                                          acc))
+                                      #{}
+                                      (:contacts/contacts db))
+          ;;NOTE: chats with contacts use public-key as chat-id
+          send-contact-update-fxs (map #(send-contact-update % this) contact-public-keys)]
+      (apply fx/merge cofx send-contact-update-fxs))))
 
 (fx/defn remove-chat-filter
   "Stops the filter for the given chat-id"

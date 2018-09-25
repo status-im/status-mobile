@@ -170,7 +170,8 @@
         chat-ids        (keys chat->message)
         chats-fx-fns    (map #(chat-model/upsert-chat {:chat-id   %
                                                        :is-active true
-                                                       :timestamp now}) chat-ids)
+                                                       :timestamp now})
+                             chat-ids)
         messages-fx-fns (map #(add-received-message true %) messages)
         groups-fx-fns   (map #(update-group-messages chat->message %) chat-ids)]
     (apply fx/merge cofx (concat chats-fx-fns messages-fx-fns groups-fx-fns))))

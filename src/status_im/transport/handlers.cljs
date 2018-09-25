@@ -7,13 +7,12 @@
             [status-im.transport.message.transit :as transit]
             [status-im.transport.message.v1.contact :as v1.contact]
             [status-im.transport.message.v1.group-chat :as v1.group-chat]
+            [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.shh :as shh]
             [status-im.transport.utils :as transport.utils]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.handlers-macro :as handlers-macro]
-            [taoensso.timbre :as log]
-            [status-im.transport.message.v1.protocol :as protocol]
-            [status-im.utils.fx :as fx]))
+            [taoensso.timbre :as log]))
 
 (fx/defn update-last-received-from-inbox
   "Distinguishes messages that are expired from those that are not
@@ -22,7 +21,7 @@
   (when (> (- now-in-s timestamp) ttl)
     {:db (assoc db :inbox/last-received now)}))
 
-(defn receive-message
+(fx/defn receive-message
   [cofx now-in-s chat-id js-message]
   (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
@@ -43,12 +42,11 @@
   [{:keys [now] :as cofx} [_ js-error js-messages chat-id]]
   (if (and (not js-error)
            js-messages)
-    (let [now-in-s (quot now 1000)]
-      (handlers-macro/merge-effects
-       cofx
-       (fn [message temp-cofx]
-         (receive-message temp-cofx now-in-s chat-id message))
-       (js-array->seq js-messages)))
+    (let [now-in-s (quot now 1000)
+          receive-message-fxs (map (fn [message]
+                                     (receive-message now-in-s chat-id message))
+                                   (js-array->seq js-messages))]
+      (apply fx/merge cofx receive-message-fxs))
     (log/error "Something went wrong" js-error js-messages)))
 
 (handlers/register-handler-fx
@@ -229,24 +227,29 @@
                                            (v1.contact/map->ContactRequest own-info))
                 chat-id cofx))
 
+(fx/defn resend-contact-message
+  [cofx own-info chat-id]
+  (let [{:keys [resend?] :as chat} (get-in cofx [:db :transport/chats chat-id])]
+    (case resend?
+      "contact-request"
+      (resend-contact-request cofx own-info chat-id chat)
+      "contact-request-confirmation"
+      (message/send (v1.contact/map->ContactRequestConfirmed own-info)
+                    chat-id
+                    cofx)
+      "contact-update"
+      (protocol/send cofx
+                     {:chat-id chat-id
+                      :payload (v1.contact/map->ContactUpdate own-info)})
+      nil)))
+
 (fx/defn resend-contact-messages
   [{:keys [db] :as cofx} previous-summary]
   (when (and (zero? (count previous-summary))
              (= :online (:network-status db))
              (pos? (count (:peers-summary db))))
-    (let [own-info (own-info db)]
-      (handlers-macro/merge-effects
-       cofx
-       (fn [[chat-id {:keys [resend?] :as chat}] temp-cofx]
-         (case resend?
-           "contact-request"
-           (resend-contact-request own-info chat-id chat temp-cofx)
-           "contact-request-confirmation"
-           (message/send (v1.contact/map->ContactRequestConfirmed own-info)
-                         chat-id temp-cofx)
-           "contact-update"
-           (protocol/send {:chat-id chat-id
-                           :payload (v1.contact/map->ContactUpdate own-info)}
-                          temp-cofx)
-           nil))
-       (:transport/chats db)))))
+    (let [own-info (own-info db)
+          resend-contact-message-fxs (map (fn [chat-id]
+                                            (resend-contact-message own-info chat-id))
+                                          (keys (:transport/chats db)))]
+      (apply fx/merge cofx resend-contact-message-fxs))))
