@@ -153,7 +153,7 @@
         [messages-view-animation
          [messages-view group-chat modal?]]
         [react/view style/message-view-preview])
-      [input/container modal?]
+      [input/container]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
       (when show-message-options?

@@ -102,12 +102,12 @@
         [vi/icon :icons/input-commands {:container-style style/input-commands-icon
                                         :color           :dark}]]])))
 
-(defview input-container [modal?]
+(defview input-container []
   (letsubs [margin               [:chat-input-margin]
             {:keys [input-text]} [:get-current-chat]
             result-box           [:get-current-chat-ui-prop :result-box]]
     (let [single-line-input? (:singleLineInput result-box)]
-      [react/view {:style     (style/root (if modal? 0 margin))
+      [react/view {:style     (style/root margin)
                    :on-layout #(let [h (-> (.-nativeEvent %)
                                            (.-layout)
                                            (.-height))]
@@ -119,9 +119,9 @@
           [commands-button]
           [send-button/send-button-view])]])))
 
-(defn container [modal?]
+(defn container []
   [react/view
    [parameter-box/parameter-box-view]
    [suggestions/suggestions-view]
    [validation-messages/validation-messages-view]
-   [input-container modal?]])
+   [input-container]])

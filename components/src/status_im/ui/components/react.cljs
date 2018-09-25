@@ -287,5 +287,8 @@
   (views/letsubs []
     (let [main-screen-view (create-main-screen-view current-view)]
       [main-screen-view styles/flex
-       [keyboard-avoiding-view {:flex 1 :flex-direction :column}
+       [(if (= current-view :chat-modal)
+          view
+          keyboard-avoiding-view)
+        {:flex 1 :flex-direction :column}
         (apply vector view styles/flex components)]])))
