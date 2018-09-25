@@ -29,7 +29,7 @@
 
 (views/defview show-extension []
   (views/letsubs [{:keys [data errors]} [:get-staged-extension]]
-    [react/view components.styles/flex
+    [react/view styles/screen
      [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar (i18n/label :t/extension)]
@@ -52,12 +52,12 @@
        [components.common/bottom-button
         {:forward?  true
          :label     (i18n/label :t/install)
-         :disabled? (seq errors)
+         :disabled? (not (empty? errors))
          :on-press  #(re-frame/dispatch [:extension/install data])}]]]]))
 
 (views/defview add-extension []
   (views/letsubs [extension-url [:get-extension-url]]
-    [react/view components.styles/flex
+    [react/view styles/screen
      [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar (i18n/label :t/extension-find)]

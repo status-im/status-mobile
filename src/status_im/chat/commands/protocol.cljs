@@ -21,7 +21,7 @@
     "Ordered sequence of command parameter templates, where each parameter
      is defined as map consisting of mandatory `:id`, `:title` and `:type` keys,
      and optional `:suggestions` field.
-     When used, `:suggestions` containes reference to any generic helper component
+     When used, `:suggestions` contains reference to any generic helper component
      rendering suggestions for the argument (input code will handle when and where
      to render it)")
   (validate [this parameters cofx]

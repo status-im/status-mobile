@@ -4,5 +4,5 @@
 (re-frame/reg-sub
  :get-collectible-token
  :<- [:collectibles]
- (fn [collectibles [_ nft-symbol token-id]]
-   (get-in collectibles [(keyword nft-symbol) (js/parseInt token-id)])))
+ (fn [collectibles [_ {:keys [symbol token]}]]
+   (get-in collectibles [(keyword symbol) (js/parseInt token)])))

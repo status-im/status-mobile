@@ -1,7 +1,7 @@
 (ns status-im.chat.commands.core
   (:require [re-frame.core :as re-frame]
             [clojure.set :as set]
-            [pluto.host :as host]
+            [pluto.reader.hooks :as hooks]
             [status-im.constants :as constants]
             [status-im.chat.constants :as chat-constants]
             [status-im.chat.commands.protocol :as protocol]
@@ -129,30 +129,30 @@
 
 (def command-hook
   "Hook for extensions"
-  (reify host/AppHook
-    (id [_] :commands)
-    (properties [_] {:scope         #{:personal-chats :public-chats}
-                     :description   :string
-                     :short-preview :view
-                     :preview       :view
-                     :parameters    [{:id           :keyword
-                                      :type         {:one-of #{:text :phone :password :number}}
-                                      :placeholder  :string
-                                      :suggestions? :component}]})
-    (hook-in [_ id {:keys [description scope parameters preview short-preview]} cofx]
-      (let [new-command (reify protocol/Command
-                          (id [_] (name id))
-                          (scope [_] scope)
-                          (description [_] description)
-                          (parameters [_] parameters)
-                          (validate [_ _ _])
-                          (on-send [_ _ _])
-                          (on-receive [_ _ _])
-                          (short-preview [_ props] (short-preview props))
-                          (preview [_ props] (preview props)))]
-        (load-commands [new-command] cofx)))
-    (unhook [_ id {:keys [scope]} {:keys [db] :as cofx}]
-      (remove-command (get-in db [:id->command [(name id) scope] :type]) cofx))))
+  {:properties
+   {:scope         #{:personal-chats :public-chats}
+    :short-preview :view
+    :preview       :view
+    :parameters    [{:id           :keyword
+                     :type         {:one-of #{:text :phone :password :number}}
+                     :placeholder  :string
+                     :suggestions  :view}]}
+   :hook
+   (reify hooks/Hook
+     (hook-in [_ id {:keys [description scope parameters preview short-preview]} cofx]
+       (let [new-command (reify protocol/Command
+                           (id [_] (name id))
+                           (scope [_] scope)
+                           (description [_] description)
+                           (parameters [_] parameters)
+                           (validate [_ _ _])
+                           (on-send [_ _ _])
+                           (on-receive [_ _ _])
+                           (short-preview [_ props] (short-preview props))
+                           (preview [_ props] (preview props)))]
+         (load-commands cofx [new-command])))
+     (unhook [_ id {:keys [scope]} {:keys [db] :as cofx}]
+       (remove-command (get-in db [:id->command [(name id) scope] :type]) cofx)))})
 
 (handlers/register-handler-fx
  :load-commands

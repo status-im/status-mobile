@@ -3,6 +3,10 @@
   (:require [status-im.ui.components.styles :as styles]
             [status-im.ui.components.colors :as colors]))
 
+(def screen
+  {:flex             1
+   :background-color colors/white})
+
 (def wrapper
   {:flex   1
    :margin 16})

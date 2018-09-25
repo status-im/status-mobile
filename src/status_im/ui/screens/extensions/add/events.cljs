@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.extensions.add.events
   (:require [re-frame.core :as re-frame]
             [pluto.registry :as registry]
-            [status-im.extensions.registry :as extensions]
+            [status-im.extensions.core :as extensions]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
@@ -19,7 +19,7 @@
      (fx/merge cofx
                {:ui/show-confirmation {:title     (i18n/label :t/success)
                                        :content   (i18n/label :t/extension-installed)
-                                       :on-accept #(re-frame/dispatch [:navigate-to-clean :home])
+                                       :on-accept #(re-frame/dispatch [:navigate-to-clean :my-profile])
                                        :on-cancel nil}}
                #(registry/add extension-data %)
                #(registry/activate extension-key %)))))
