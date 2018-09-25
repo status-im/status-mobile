@@ -78,7 +78,7 @@
        (if (ethereum/address? recipient)
          {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
           :dispatch [:navigate-back]}
-         {:show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
+         {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
 
 (handlers/register-handler-fx
  :wallet/fill-request-from-url
