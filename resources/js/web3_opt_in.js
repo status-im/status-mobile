@@ -84,6 +84,7 @@ function getSyncResponse (payload) {
 
 var ReadOnlyProvider = function () {};
 
+ReadOnlyProvider.prototype.isStatus = true;
 ReadOnlyProvider.prototype.isConnected = function () { return true; };
 
 ReadOnlyProvider.prototype.send = function (payload) {
