@@ -4,7 +4,3 @@
 (defmethod nav/preload-data! :add-participants-toggle-list
   [db _]
   (assoc db :selected-participants #{}))
-
-(defmethod nav/preload-data! :new-public-chat
-  [db]
-  (dissoc db :public-group-topic :public-group-topic-error))

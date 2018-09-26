@@ -8,3 +8,8 @@
 
 (spec/def ::topic (spec/and :global/not-empty-string
                             (partial re-matches #"[a-z0-9\-]+")))
+
+(defn valid-topic? [topic]
+  (and topic
+       (spec/valid? ::topic topic)
+       (not (spec/valid? :global/public-key topic))))

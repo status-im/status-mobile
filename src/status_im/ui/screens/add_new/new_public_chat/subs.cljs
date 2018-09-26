@@ -5,8 +5,9 @@
             [cljs.spec.alpha :as spec]))
 
 (re-frame/reg-sub
- :new-topic-error-message
+ :public-chat.new/topic-error-message
  :<- [:get :public-group-topic]
  (fn [topic]
-   (when-not (spec/valid? ::db/topic topic)
+   (when-not (or (empty? topic)
+                 (db/valid-topic? topic))
      (i18n/label :topic-name-error))))

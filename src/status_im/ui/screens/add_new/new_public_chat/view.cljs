@@ -9,7 +9,7 @@
             [status-im.ui.components.text-input.view :as text-input.view]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.screens.add-new.new-public-chat.db :as v]
+            [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.ui.screens.add-new.new-public-chat.styles :as styles]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             status-im.utils.db
@@ -25,11 +25,8 @@
     [react/view common.styles/flex
      [text-input.view/text-input-with-label
       {:container           styles/input-container
-       :on-change-text      #(do
-                               (re-frame/dispatch [:set :public-group-topic-error (when-not (spec/valid? ::v/topic %)
-                                                                                    (i18n/label :t/topic-name-error))])
-                               (re-frame/dispatch [:set :public-group-topic %]))
-       :on-submit-editing   #(when (and topic (spec/valid? ::v/topic topic))
+       :on-change-text      #(re-frame/dispatch [:set :public-group-topic %])
+       :on-submit-editing   #(when (db/valid-topic? topic)
                                (re-frame/dispatch [:chat.ui/start-public-chat topic]))
        :auto-capitalize     :none
        :auto-focus          false
@@ -61,7 +58,7 @@
 
 (views/defview new-public-chat []
   (views/letsubs [topic [:get :public-group-topic]
-                  error [:get :public-group-topic-error]]
+                  error [:public-chat.new/topic-error-message]]
     [react/keyboard-avoiding-view styles/group-container
      [status-bar/status-bar]
      [toolbar/simple-toolbar

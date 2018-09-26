@@ -9,7 +9,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.desktop.main.add-new.styles :as styles]
             [status-im.ui.screens.add-new.new-public-chat.view :refer [default-public-chats]]
-            [status-im.ui.screens.add-new.new-public-chat.db :as public-chat-db]
+            [status-im.ui.screens.add-new.new-public-chat.db :as public-chat.db]
             [taoensso.timbre :as log]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]))
@@ -30,9 +30,6 @@
 (defn topic-input-placeholder []
   [react/text {:style styles/topic-placeholder} "#"])
 
-(defn on-topic-change [e]
-  (let [text (.. e -nativeEvent -text)]
-    (re-frame/dispatch [:set :public-group-topic text])))
 (views/defview error-tooltip [text]
   [react/view {:style styles/tooltip-container}
    [react/view {:style styles/tooltip-icon-text}
@@ -45,7 +42,7 @@
                   contacts             [:all-added-people-contacts]
                   chat-error           [:new-identity-error]
                   topic                [:get :public-group-topic]
-                  topic-error          [:new-topic-error-message]]
+                  topic-error          [:public-chat.new/topic-error-message]]
     {:component-will-unmount #(re-frame/dispatch [:new-chat/set-new-identity nil])}
     [react/scroll-view
      [react/view {:style styles/new-contact-view}
@@ -103,13 +100,12 @@
         (i18n/label :new-public-group-chat)]]
       [react/text {:style styles/new-contact-subtitle} (i18n/label :public-group-topic)]
       [react/view {:style styles/new-contact-separator}]
-      (let [disable?            (or (not (string/blank? topic-error))
+      (let [disable?            (or topic-error
                                     (string/blank? topic))
-            show-error-tooltip? (and topic-error (not (string/blank? topic)))
-            create-public-chat #(when-not topic-error
-                                  (do
-                                    (re-frame/dispatch [:set :public-group-topic nil])
-                                    (re-frame/dispatch [:chat.ui/start-public-chat topic])))]
+            show-error-tooltip? topic-error
+            create-public-chat #(when (public-chat.db/valid-topic? topic)
+                                  (re-frame/dispatch [:set :public-group-topic nil])
+                                  (re-frame/dispatch [:chat.ui/start-public-chat topic]))]
         [react/view {:style styles/add-contact-edit-view}
          [react/view {:flex  1
                       :style (styles/add-pub-chat-input show-error-tooltip?)}
@@ -120,8 +116,11 @@
                              :font            :default
                              :selection-color colors/blue
                              :placeholder     ""
-                             :on-change       on-topic-change
-                             :on-submit-editing (when-not disable? create-public-chat)}]]
+                             :on-change       (fn [e]
+                                                (let [text (.. e -nativeEvent -text)]
+                                                  (re-frame/dispatch [:set :public-group-topic text])))
+                             :on-submit-editing (when-not disable?
+                                                  create-public-chat)}]]
          [react/touchable-highlight {:disabled disable?
                                      :on-press create-public-chat}
           [react/view {:style (styles/add-contact-button disable?)}

@@ -516,7 +516,7 @@
     "word-n-description": "In order to check if you have backed up your recovery phrase correctly, enter the word #{{number}} above.",
     "status-sent": "Sent",
     "status-prompt": "Set your status. Using #hastags will help others discover you and talk about what's on your mind",
-    "topic-name-error": "Topic names use only lowercase letters (a to z) & dashes (-)",
+    "topic-name-error": "Use only lowercase letters (a to z), numbers & dashes (-). Do not use contact codes",
     "delete-contact-confirmation": "This contact will be removed from your contacts",
     "datetime-today": "today",
     "dapp-would-like-to-connect-wallet": "would like\n to connect to your wallet",

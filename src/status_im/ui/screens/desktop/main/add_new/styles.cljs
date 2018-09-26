@@ -87,17 +87,17 @@
    :width         5
    :height        16
    :margin-bottom -16})
+
 (def tooltip-container
   {:position    :absolute
    :align-items :center
    :align-self  :center
-   :top         -34})
+   :bottom         34})
 
 (def tooltip-icon-text
   {:justify-content  :center
    :align-items      :center
    :flex 1
-   :height           24
    :border-radius    8
    :padding-left     10
    :padding-right    10
