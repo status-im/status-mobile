@@ -115,7 +115,7 @@
   (fx/merge cofx
             (models/add-public-chat topic)
             (models/navigate-to-chat topic {:modal?              modal?
-                                            :navigation-replace? true})
+                                            :navigation-reset? true})
             (public-chat/join-public-chat topic)))
 
 (handlers/register-handler-fx

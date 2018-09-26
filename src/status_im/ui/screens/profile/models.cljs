@@ -24,7 +24,7 @@
 (defn send-transaction [chat-id {:keys [db] :as cofx}]
   (let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
     (fx/merge cofx
-              (chat-models/start-chat chat-id {:navigation-replace? true})
+              (chat-models/start-chat chat-id {:navigation-reset? true})
               (commands-input/select-chat-input-command send-command nil))))
 
 (defn- valid-name? [name]
