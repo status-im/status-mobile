@@ -45,7 +45,7 @@ void ReportPublisher::restartAndQuit() {
                             bundleExtension.size());
   }
   QString cmd = QString("open %1").arg(appPath);
-#elif defined(Q_OS_LINUX)
+#else
   QString cmd = appPath;
 #endif
 
@@ -95,7 +95,7 @@ bool ReportPublisher::prepareLogFiles(QString reportDirPath) {
 QString ReportPublisher::resolveDataStoragePath() {
   QFileInfo minidumpFileInfo(m_minidumpFilePath);
   QString dataStoragePath =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
+      QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) +
       QDir::separator() + minidumpFileInfo.baseName();
   QDir dir(dataStoragePath);
   if (!dir.exists()) {

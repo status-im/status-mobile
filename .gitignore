@@ -129,13 +129,21 @@ cmake_install.cmake
 CMakeCache.txt
 **/CMakeFiles/
 /StatusImPackage/*
+*.AppImage
 /desktop/bin/*
 /desktop/lib/*
 /desktop/modules/*
 /desktop/Makefile
+/desktop/run-app.bat
 /desktop/run-app.sh
 /desktop/CMakeFiles/
 /desktop/reportApp/Makefile
-/desktop/reportApp/reportApp
-/desktop/reportApp/reportApp_autogen/
-/linuxdeployqt-*.AppImage
+*_autogen/
+CompleteBundleWin.cmake
+logger_settings.ini
+
+# Conan
+conan*.txt
+conanbuildinfo.*
+conan.cmake
+/.conan_*/

@@ -190,7 +190,7 @@ bool redirectLogIntoFile() {
 
 QString getDataStoragePath() {
   QString dataStoragePath =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+      QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
   QDir dir(dataStoragePath);
   if (!dir.exists()) {
     dir.mkpath(".");

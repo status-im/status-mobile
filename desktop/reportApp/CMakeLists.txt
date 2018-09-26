@@ -13,12 +13,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
 set(APP_NAME "reportApp")
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Qml REQUIRED)
-find_package(Qt5Quick REQUIRED)
-find_package(Qt5WebSockets REQUIRED)
-find_package(Qt5Svg REQUIRED)
-
 set(MAIN_CPP_SOURCE reportpublisher.cpp
                     reportpublisher.cpp
                     main.cpp)

@@ -1,10 +1,19 @@
 #!/bin/bash
 
-export GOROOT=$1
-export GOPATH=$2
+export GOROOT=$2
+export GOPATH=$3
 export PATH=$GOROOT/bin:$GOROOT:$GOPATH:$PATH
+if [ "$1" = 'Windows' ]; then
+  export GOOS=windows
+  export GOARCH=amd64
+  export CGO_ENABLED=1
+  export CC=$5
+  export CC_FOR_TARGET=$5
+  export CXX_FOR_TARGET=$6
+fi
  
-cd $3/lib
+cd $4/lib
 go get ./
 cd ..
+
 make statusgo-library

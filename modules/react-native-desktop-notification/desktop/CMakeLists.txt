@@ -9,6 +9,11 @@ set(REACT_NATIVE_DESKTOP_EXTERNAL_MODULES_SRC ${REACT_NATIVE_DESKTOP_EXTERNAL_MO
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 set(SN_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SnoreNotify_ep-prefix/src/SnoreNotify_ep)
+if (WIN32)
+  set(SnoreNotify_CMAKE_ARGS -DMINGW=1 -DBUILD_osxnotificationcenter=OFF -DBUILD_sound=OFF -DBUILD_speech=OFF -DBUILD_toasty=OFF -DBUILD_snoretoast=OFF
+                             -DBUILD_freedesktop_backend=OFF -DBUILD_snarl=OFF -DBUILD_growl=OFF -DBUILD_trayicon=OFF -DBUILD_pushover_backend=OFF)
+endif()
+
 if (UNIX AND NOT APPLE)
   set(SN_LIBPATHSUFFIX /${CMAKE_LIBRARY_ARCHITECTURE})
   set(SnoreNotifyFreedesktop_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snore_backend_freedesktop${CMAKE_STATIC_LIBRARY_SUFFIX})
@@ -33,7 +38,29 @@ set(SnoreNotifyBackendSettings_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${
 set(SnoreNotifySettings_STATIC_LIB ${SN_PREFIX}/lib${SN_LIBPATHSUFFIX}/${CMAKE_STATIC_LIBRARY_PREFIX}snoresettings-qt5${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(SnoreNotify_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${SN_PREFIX} -DSNORE_STATIC=ON -DBUILD_daemon=OFF -DBUILD_settings=OFF
                            -DBUILD_snoresend=OFF ${SnoreNotify_CMAKE_ARGS})
-
+if (CMAKE_CROSSCOMPILING)
+  set(SnoreNotify_CMAKE_ARGS ${SnoreNotify_CMAKE_ARGS}
+                            "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}"
+                            "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
+                            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+                            "-DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}"
+                            # These are only useful if you're cross-compiling.
+                            # They, however, will not hurt regardless.
+                            "-DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}"
+                            "-DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}"
+                            "-DCMAKE_AR=${CMAKE_AR}"
+                            "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+                            "-DCMAKE_C_COMPILER_AR=${CMAKE_C_COMPILER_AR}"
+                            "-DCMAKE_C_COMPILER_RANLIB=${CMAKE_C_COMPILER_RANLIB}"
+                            "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+                            "-DCMAKE_CXX_COMPILER_AR=${CMAKE_CXX_COMPILER_AR}"
+                            "-DCMAKE_CXX_COMPILER_RANLIB=${CMAKE_CXX_COMPILER_RANLIB}"
+                            "-DCMAKE_LINKER=${CMAKE_LINKER}"
+                            "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
+                            "-DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}"
+                            "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
+                            "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}")
+endif()
 
 ExternalProject_Add(SnoreNotify_ep
   GIT_REPOSITORY https://github.com/status-im/snorenotify.git

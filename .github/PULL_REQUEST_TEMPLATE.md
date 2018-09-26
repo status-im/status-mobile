@@ -22,6 +22,7 @@ fixes #...
 - iOS
 - macOS
 - Linux
+- Windows
 
 <!-- (Specify if some specific areas has to be tested, for example 1-1 chats) -->
 #### Areas that maybe impacted (optional)

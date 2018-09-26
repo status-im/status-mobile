@@ -11,8 +11,20 @@ cmake_minimum_required(VERSION 2.8.11)
 set(APP_NAME Status)
 set(JS_APP_NAME StatusIm)
 set(REACT_BUILD_STATIC_LIB ON)
+project(${APP_NAME} CXX)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUNICODE -std=c11")
+set(CMAKE_INSTALL_PREFIX bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PREFIX}" CACHE PATH "Where to place compiled executables.")
+set(${APP_NAME}_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
+
+set(USED_QT_MODULES Core Qml Quick WebSockets Svg)
+include(QtConfiguration)
 
 message(STATUS "EXTERNAL_MODULES_DIR: ${EXTERNAL_MODULES_DIR}")
 
@@ -38,12 +50,23 @@ endforeach(external_module)
 
 add_subdirectory(reportApp)
 
+# Import any new Qt modules that have been added by external dependencies
+import_qt_modules()
+
 # APPLICATION_MAIN_CPP_PATH contains absolute path to generated template copy of main.cpp for application executable
 get_filename_component(APPLICATION_MAIN_CPP_PATH main.cpp ABSOLUTE)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/react-native/React/Layout)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/react-native/ReactQt/runtime/src ${CMAKE_CURRENT_BINARY_DIR}/lib)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/react-native/ReactQt/application/src ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(REACTQT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/react-native/React)
+include_directories(${REACTQT_DIR}/Layout)
+add_subdirectory(${REACTQT_DIR}Qt/runtime/src ${CMAKE_CURRENT_BINARY_DIR}/lib)
+add_subdirectory(${REACTQT_DIR}Qt/application/src ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+if (Qt5_POSITION_INDEPENDENT_CODE)
+  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif(Qt5_POSITION_INDEPENDENT_CODE)
+
+#set(SOURCE_ROOT ${CMAKE_SOURCE_DIR})
+include(CompleteBundle)
 
 if (WIN32)
   set(RUN_SCRIPT_FILE_NAME "run-app.bat")
@@ -56,4 +79,3 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/${RUN_SCRIPT_FILE_NAME}
   @ONLY
 )
-
