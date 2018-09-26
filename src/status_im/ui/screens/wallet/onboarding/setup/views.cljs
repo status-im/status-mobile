@@ -17,7 +17,7 @@
 (defn signing-word [word]
   [react/view styles/signing-word
    [react/text {:style           styles/signing-word-text
-                :font            :roboto-mono
+                :font            :monospace
                 :number-of-lines 1}
     word]])
 

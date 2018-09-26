@@ -1,20 +1,18 @@
 (ns status-im.desktop.platform)
 
 (def fonts-macos
-  {:light         {:font-family "SFProText-Light"}
-   :default       {:font-family "SFProText-Regular"}
+  {:default       {:font-family "SFProText-Regular"}
    :medium        {:font-family "SFProText-Medium"}
 
    :toolbar-title {:font-family "SFProText-Regular"}
-   :roboto-mono   {:font-family "RobotoMono-Medium"}})
+   :monospace     {:font-family "RobotoMono-Medium"}})
 
 (def fonts-linux
-  {:light         {:font-family "Arial" :font-weight 100}
-   :default       {:font-family "Arial" :font-weight 400}
+  {:default       {:font-family "Arial" :font-weight 400}
    :medium        {:font-family "Arial" :font-weight 800}
 
    :toolbar-title {:font-family  "Arial" :font-weight 400}
-   :roboto-mono   {:font-family "RobotoMono-Medium"}})
+   :monospace     {:font-family "RobotoMono-Medium"}})
 
 ;; Structure to be exported
 
