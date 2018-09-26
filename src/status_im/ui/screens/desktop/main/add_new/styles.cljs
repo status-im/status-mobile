@@ -37,6 +37,9 @@
    :margin-right     12
    :border-radius    8})
 
+(def add-pub-chat-input
+  (assoc add-contact-input :padding-left 10))
+
 (defn add-contact-button [error?]
   {:width            140
    :height           45
@@ -72,3 +75,12 @@
 (def suggested-topic-text
   {:font-size 25.6
    :color     colors/white})
+
+(def topic-placeholder
+  {:flex          0
+   :top           -63
+   :left          5
+   :font-size     14
+   :width         5
+   :height        16
+   :margin-bottom -16})
