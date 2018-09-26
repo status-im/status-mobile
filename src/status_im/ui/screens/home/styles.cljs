@@ -69,9 +69,12 @@
    :flex           1
    :margin-right   4})
 
-(def name-text
+(defstyle name-text
   {:color     component.styles/text1-color
-   :font-size 16})
+   :android {:font-size 16
+             :height    26}
+   :ios     {:font-size 17
+             :height    26}})
 
 (defstyle private-group-icon-container
   {:width        20
