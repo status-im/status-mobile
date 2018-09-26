@@ -83,7 +83,7 @@
 (defn remove-chat-and-navigate-home [cofx [_ chat-id]]
   (fx/merge cofx
             (models/remove-chat chat-id)
-            (navigation/replace-view :home)))
+            (navigation/navigate-to-cofx :home {})))
 
 (handlers/register-handler-fx
  :remove-chat-and-navigate-home
