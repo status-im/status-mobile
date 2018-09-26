@@ -83,7 +83,7 @@
 
 (defn command-complete-fx
   "command is complete, set `:sending-in-progress?` flag and proceed with command processing"
-  [input-text command {:keys [db now random-id] :as cofx}]
+  [input-text command {:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (model/set-chat-ui-props db {:sending-in-progress? true})}
             (commands-sending/validate-and-send input-text command)))
@@ -109,7 +109,7 @@
 
 (handlers/register-handler-fx
  :send-current-message
- message-model/send-interceptors
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx} _]
    (when-not (get-in db [:chat-ui-props current-chat-id :sending-in-progress?])
      (let [input-text   (get-in db [:chats current-chat-id :input-text])
@@ -118,7 +118,7 @@
                                                                 access-scope->command-id
                                                                 (get-in db [:chats current-chat-id])))]
        (if command
-          ;; Returns true if current input contains command
+         ;; Returns true if current input contains command
          (if (= :complete (:command-completion command))
            (command-complete-fx input-text command cofx)
            (command-not-complete-fx input-text current-chat-id cofx))

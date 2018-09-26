@@ -138,12 +138,13 @@
               (navigation/navigate-to-cofx :edit-mailserver nil))))
 
 (fx/defn upsert
-  [{{:mailservers/keys [manage] :account/keys [account] :as db} :db :as cofx}]
+  [{{:mailservers/keys [manage] :account/keys [account] :as db} :db
+    random-id-generator :random-id-generator :as cofx}]
   (let [{:keys [name url id]} manage
         current-fleet         (fleet/current-fleet db)
         mailserver            (build
                                (or (:value id)
-                                   (keyword (string/replace (:random-id cofx) "-" "")))
+                                   (keyword (string/replace (random-id-generator) "-" "")))
                                (:value name)
                                (:value url))
         current               (connected? cofx (:id mailserver))]

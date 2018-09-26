@@ -68,28 +68,26 @@
    (when handler
      (handler data cofx))))
 
-(defn save
-  ([cofx]
-   (save cofx nil))
-  ([{{:network/keys [manage]
-      :account/keys [account] :as db} :db :as cofx}
-    {:keys [data success-event on-success on-failure]}]
-   (let [data (or data manage)]
-     (if (valid-manage? data)
-       (let [{:keys [name url chain network-id]} data
-             network      (new-network (:random-id cofx)
-                                       (:value name)
-                                       (:value url)
-                                       (:value chain)
-                                       (:value network-id))
-             new-networks (merge {(:id network) network} (:networks account))]
-         (fx/merge cofx
-                   {:db (dissoc db :networks/manage)}
-                   #(action-handler on-success (:id network) %)
-                   (accounts.update/account-update
-                    {:networks new-networks}
-                    {:success-event success-event})))
-       (action-handler on-failure)))))
+(fx/defn save
+  [{{:network/keys [manage] :account/keys [account] :as db} :db
+    random-id-generator :random-id-generator :as cofx}
+   {:keys [data success-event on-success on-failure]}]
+  (let [data (or data manage)]
+    (if (valid-manage? data)
+      (let [{:keys [name url chain network-id]} data
+            network      (new-network (random-id-generator)
+                                      (:value name)
+                                      (:value url)
+                                      (:value chain)
+                                      (:value network-id))
+            new-networks (merge {(:id network) network} (:networks account))]
+        (fx/merge cofx
+                  {:db (dissoc db :networks/manage)}
+                  #(action-handler on-success (:id network) %)
+                  (accounts.update/account-update
+                   {:networks new-networks}
+                   {:success-event success-event})))
+      (action-handler on-failure))))
 
 ;; No edit functionality actually implemented
 (fx/defn edit

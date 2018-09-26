@@ -21,9 +21,6 @@
             [clojure.string :as string]
             [status-im.utils.fx :as fx]))
 
-(def receive-interceptors
-  [(re-frame/inject-cofx :random-id)])
-
 (defn- emoji-only-content?
   [content]
   (and (string? content) (re-matches constants/regx-emoji content)))
@@ -198,10 +195,6 @@
              (>= deleted-at-clock-value clock-value)))))
 
 ;;;; Send message
-
-(def send-interceptors
-  [(re-frame/inject-cofx :random-id)
-   (re-frame/inject-cofx :random-id-seq)])
 
 (fx/defn send
   [{{:keys [network-status current-public-key]} :db :as cofx} chat-id message-id send-record]

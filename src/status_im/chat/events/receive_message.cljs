@@ -27,6 +27,6 @@
 
 (handlers/register-handler-fx
  :chat-received-message/add
- message-model/receive-interceptors
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ messages]]
    (message-model/receive-many cofx (filter-messages cofx messages))))

@@ -52,7 +52,7 @@
 (handlers/register-handler-fx
  :protocol/receive-whisper-message
  [handlers/logged-in
-  (re-frame/inject-cofx :random-id)]
+  (re-frame/inject-cofx :random-id-generator)]
  receive-whisper-messages)
 
 (handlers/register-handler-fx
@@ -62,7 +62,8 @@
 
 (handlers/register-handler-fx
  :contact/send-new-sym-key
- (fn [{:keys [db random-id] :as cofx} [_ {:keys [chat-id topic message sym-key sym-key-id]}]]
+ (fn [{:keys [db] :as cofx}
+      [_ {:keys [chat-id topic message sym-key sym-key-id]}]]
    (let [{:keys [web3 current-public-key]} db
          chat-transport-info               (-> (get-in db [:transport/chats chat-id])
                                                (assoc :sym-key-id sym-key-id
@@ -130,7 +131,7 @@
 
 (handlers/register-handler-fx
  :group/add-new-sym-key
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [{:keys [db] :as cofx} [_ {:keys [sym-key-id sym-key chat-id signature timestamp message]}]]
    (let [{:keys [web3 current-public-key]} db
          topic                            (transport.utils/get-topic chat-id)

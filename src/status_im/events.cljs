@@ -254,7 +254,7 @@
 
 (handlers/register-handler-fx
  :mailserver.ui/save-pressed
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx _]
    (mailserver/upsert cofx)))
 
@@ -292,7 +292,7 @@
 
 (handlers/register-handler-fx
  :network.ui/save-network-pressed
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx]
    (network/save-network cofx)))
 
@@ -377,7 +377,7 @@
 
 (handlers/register-handler-fx
  :bootnodes.ui/save-pressed
- [(re-frame/inject-cofx :random-id)]
+ [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx _]
    (bootnodes/upsert cofx)))
 

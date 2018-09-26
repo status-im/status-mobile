@@ -59,16 +59,16 @@
                {:success-event (when (custom-bootnodes-in-use? cofx)
                                  [:accounts.update.callback/save-settings-success])}))))
 
-(fx/defn upsert [{{:bootnodes/keys [manage] :account/keys [account] :as db} :db :as cofx}]
-  (let [{:keys [name
-                id
-                url]} manage
-        network       (:network db)
-        bootnode      (build
-                       (or (:value id) (:random-id cofx))
-                       (:value name)
-                       (:value url)
-                       network)
+(fx/defn upsert
+  [{{:bootnodes/keys [manage] :account/keys [account] :as db} :db
+    random-id-generator :random-id-generator :as cofx}]
+  (let [{:keys [name id url]} manage
+        network (:network db)
+        bootnode (build
+                  (or (:value id) (random-id-generator))
+                  (:value name)
+                  (:value url)
+                  network)
         new-bootnodes (assoc-in
                        (:bootnodes account)
                        [network (:id bootnode)]
