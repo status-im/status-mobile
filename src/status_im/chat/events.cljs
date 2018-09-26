@@ -100,7 +100,7 @@
 (handlers/register-handler-fx
  :clear-history
  (fn [{{:keys [current-chat-id]} :db :as cofx} _]
-   (models/clear-history current-chat-id cofx)))
+   (models/clear-history cofx current-chat-id)))
 
 (handlers/register-handler-fx
  :clear-history?
