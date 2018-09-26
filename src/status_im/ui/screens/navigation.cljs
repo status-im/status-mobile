@@ -134,7 +134,7 @@
  :navigation-replace
  navigation-interceptors
  (fn [cofx [_ view-id]]
-   (replace-view view-id cofx)))
+   (replace-view cofx view-id)))
 
 (fx/defn navigate-back
   [{{:keys [navigation-stack view-id] :as db} :db}]

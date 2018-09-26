@@ -7,4 +7,4 @@
  :handle-universal-link
  (fn [cofx [_ url]]
    (log/debug "universal links: event received for " url)
-   (universal-links/handle-url url cofx)))
+   (universal-links/handle-url cofx url)))

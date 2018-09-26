@@ -78,7 +78,7 @@
 (handlers/register-handler-fx
  :start-chat
  (fn [cofx [_ contact-id opts]]
-   (models/start-chat contact-id opts cofx)))
+   (models/start-chat cofx contact-id opts)))
 
 (defn remove-chat-and-navigate-home [cofx [_ chat-id]]
   (fx/merge cofx
