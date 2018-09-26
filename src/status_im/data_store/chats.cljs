@@ -10,7 +10,9 @@
                              (core/sorted :clock-value :desc)
                              (core/single-clj :message)
                              :clock-value)]
-    (assoc chat :last-clock-value (or last-clock-value 0))))
+    (-> chat
+        (update :contacts #(into #{} %))
+        (assoc :last-clock-value (or last-clock-value 0)))))
 
 (re-frame/reg-cofx
  :data-store/all-chats

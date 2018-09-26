@@ -6,6 +6,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.datetime :as time]
+            [status-im.group-chats.core :as group-chats]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.input :as input]
@@ -15,7 +16,7 @@
             [status-im.notifications.core :as notifications]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.message.core :as transport]
-            [status-im.transport.message.v1.protocol :as protocol]
+            [status-im.transport.message.v1.core :as protocol]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [clojure.string :as string]
@@ -94,7 +95,7 @@
 (fx/defn send-message-seen
   [cofx chat-id message-id send-seen?]
   (when send-seen?
-    (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
+    (transport/send (protocol/MessagesSeen. #{message-id}) chat-id cofx)))
 
 (defn ensure-clock-value [{:keys [clock-value] :as message} {:keys [last-clock-value]}]
   (if clock-value
@@ -124,15 +125,15 @@
    batch?
    {:keys [from message-id chat-id content content-type clock-value js-obj] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
-        current-chat?              (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
-        {:keys [public?] :as chat} (get-in db [:chats chat-id])
-        message                    (-> raw-message
-                                       (commands-receiving/enhance-receive-parameters cofx)
-                                       (ensure-clock-value chat)
+        current-chat?                 (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
+        {:keys [group-chat] :as chat} (get-in db [:chats chat-id])
+        message                       (-> raw-message
+                                          (commands-receiving/enhance-receive-parameters cofx)
+                                          (ensure-clock-value chat)
                                        ;; TODO (cammellos): Refactor so it's not computed twice
-                                       (add-outgoing-status cofx)
+                                          (add-outgoing-status cofx)
                                        ;; TODO (janherich): Remove after couple of releases
-                                       update-legacy-type)]
+                                          update-legacy-type)]
     (fx/merge cofx
               {:confirm-messages-processed [{:web3   web3
                                              :js-obj js-obj}]}
@@ -145,7 +146,7 @@
                                                        :else :received))
               (commands-receiving/receive message)
               (display-notification chat-id)
-              (send-message-seen chat-id message-id (and (not public?)
+              (send-message-seen chat-id message-id (and (not group-chat)
                                                          current-chat?
                                                          (not (= constants/system from))
                                                          (not (:outgoing message)))))))
@@ -208,7 +209,11 @@
   (if (= network-status :offline)
     {:dispatch-later [{:ms       10000
                        :dispatch [:update-message-status chat-id message-id current-public-key :not-sent]}]}
-    (transport/send send-record chat-id cofx)))
+    (let [wrapped-record (if (= (:message-type send-record) :group-user-message)
+                           (group-chats/wrap-group-message cofx chat-id send-record)
+                           send-record)]
+
+      (transport/send wrapped-record chat-id cofx))))
 
 (defn add-message-type [message {:keys [chat-id group-chat public?]}]
   (cond-> message

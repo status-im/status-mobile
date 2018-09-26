@@ -1,7 +1,7 @@
 (ns status-im.accounts.update.core
   (:require [status-im.data-store.accounts :as accounts-store]
             [status-im.transport.message.core :as transport]
-            [status-im.transport.message.v1.contact :as message.contact]
+            [status-im.transport.message.v1.core :as v1]
             [status-im.utils.fx :as fx]))
 
 (fx/defn account-update
@@ -18,7 +18,7 @@
     (if (or (:name new-account-fields) (:photo-path new-account-fields))
       (fx/merge cofx
                 fx
-                #(transport/send (message.contact/ContactUpdate. name photo-path address fcm-token) nil %))
+                #(transport/send (v1/ContactUpdate. name photo-path address fcm-token) nil %))
       fx)))
 
 (fx/defn clean-seed-phrase

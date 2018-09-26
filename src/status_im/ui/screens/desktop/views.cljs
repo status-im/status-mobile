@@ -3,6 +3,9 @@
   (:require [status-im.ui.screens.desktop.main.views :as main.views]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.intro.views :as intro.views]
+            [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list]]
+            [status-im.ui.screens.group.views :refer [new-group]]
+
             [status-im.ui.screens.accounts.create.views :as create.views]
             [status-im.ui.screens.accounts.login.views :as login.views]
             [status-im.ui.screens.accounts.recover.views :as recover.views]
@@ -17,6 +20,8 @@
                       :accounts accounts.views/accounts
                       :recover recover.views/recover
                       :create-account create.views/create-account
+                      :new-group  new-group
+                      :contact-toggle-list contact-toggle-list
                       (:new-contact
                        :advanced-settings
                        :chat :home

@@ -10,10 +10,11 @@
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.i18n :as i18n]
             [status-im.transport.message.core :as transport.message]
-            [status-im.transport.message.v1.group-chat :as group-chat]
+            [status-im.transport.message.v1.core :as protocol]
             [status-im.transport.message.v1.public-chat :as public-chat]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
+            [status-im.group-chats.core :as group-chats]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :as utils]))
 
@@ -128,22 +129,22 @@
        (cons username)
        (string/join ", ")))
 
+(fx/defn send-group-update [cofx group-update chat-id]
+  (transport.message/send group-update chat-id cofx))
+
 (handlers/register-handler-fx
  :create-new-group-chat-and-open
  [(re-frame/inject-cofx :random-id)]
  (fn [{:keys [db random-id] :as cofx} [_ group-name]]
-   (let [selected-contacts (:group/selected-contacts db)
-         chat-name         (if-not (string/blank? group-name)
-                             group-name
-                             (group-name-from-contacts selected-contacts
-                                                       (:contacts/contacts db)
-                                                       (:username db)))]
+   (let [my-pk             (:current-public-key db)
+         selected-contacts (conj (:group/selected-contacts db)
+                                 my-pk)
+         group-update (protocol/GroupMembershipUpdate. random-id group-name my-pk selected-contacts nil nil nil)]
      (fx/merge cofx
                {:db (assoc db :group/selected-contacts #{})}
-               (models/add-group-chat random-id chat-name (:current-public-key db) selected-contacts)
-               (navigation/navigate-to-cofx :home nil)
                (models/navigate-to-chat random-id {})
-               #(transport.message/send (group-chat/GroupAdminUpdate. chat-name selected-contacts) random-id %)))))
+               (group-chats/handle-membership-update group-update my-pk)
+               (send-group-update group-update random-id)))))
 
 (fx/defn show-profile [{:keys [db]} identity]
   (navigation/navigate-to-cofx {:db (assoc db :contacts/identity identity)} :profile nil))
