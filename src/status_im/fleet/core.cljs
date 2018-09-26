@@ -17,8 +17,16 @@
                   (get-in db [:account/account :settings :fleet]))
                 config/fleet))))
 
+(def fleets-with-les
+  [:les.dev.ropsten :les.dev.mainnet])
+
+(defn fleet-supports-les? [fleet]
+  (not (nil? (some #(= fleet %) fleets-with-les))))
+
 (def fleets
-  (:fleets (types/json->clj (slurp "resources/config/fleets.json"))))
+  (reduce merge (map #(:fleets (types/json->clj %))
+                     [(slurp "resources/config/fleets.json")
+                      (slurp "resources/config/fleets-les.json")])))
 
 (defn format-wnode
   [wnode address]

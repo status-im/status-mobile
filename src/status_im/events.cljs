@@ -338,6 +338,11 @@
    (network/delete cofx {:network network})))
 
 (handlers/register-handler-fx
+ :network.ui/network-entry-pressed
+ (fn [cofx [_ network]]
+   (network/open-network-details cofx network)))
+
+(handlers/register-handler-fx
  :network/connection-status-changed
  (fn [{db :db :as cofx} [_ is-connected?]]
    (network/handle-connection-status-change cofx is-connected?)))
