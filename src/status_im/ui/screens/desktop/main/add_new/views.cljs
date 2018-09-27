@@ -59,21 +59,23 @@
       (let [disable?            (or (not (string/blank? chat-error))
                                     (string/blank? new-contact-identity))
             show-error-tooltip? (and chat-error
-                                     (not (string/blank? new-contact-identity)))]
+                                     (not (string/blank? new-contact-identity)))
+            create-1to1-chat #(re-frame/dispatch [:add-contact-handler new-contact-identity])]
         [react/view {:style styles/add-contact-edit-view}
          [react/view {:flex 1
                       :style (styles/add-contact-input show-error-tooltip?)}
           (when show-error-tooltip?
             [error-tooltip chat-error])
-          [react/text-input {:placeholder      "0x..."
-                             :flex             1
-                             :selection-color  colors/hawkes-blue
-                             :font             :default
-                             :on-change        (fn [e]
-                                                 (let [native-event (.-nativeEvent e)
-                                                       text (.-text native-event)]
-                                                   (re-frame/dispatch [:new-chat/set-new-identity text])))}]]
-         [react/touchable-highlight {:disabled disable? :on-press #(re-frame/dispatch [:add-contact-handler new-contact-identity])}
+          [react/text-input {:placeholder       "0x..."
+                             :flex              1
+                             :selection-color   colors/hawkes-blue
+                             :font              :default
+                             :on-change         (fn [e]
+                                                  (let [native-event (.-nativeEvent e)
+                                                        text         (.-text native-event)]
+                                                    (re-frame/dispatch [:new-chat/set-new-identity text])))
+                             :on-submit-editing (when-not disable? create-1to1-chat)}]]
+         [react/touchable-highlight {:disabled disable? :on-press create-1to1-chat}
           [react/view
            {:style (styles/add-contact-button disable?)}
            [react/text
@@ -103,7 +105,11 @@
       [react/view {:style styles/new-contact-separator}]
       (let [disable?            (or (not (string/blank? topic-error))
                                     (string/blank? topic))
-            show-error-tooltip? (and topic-error (not (string/blank? topic)))]
+            show-error-tooltip? (and topic-error (not (string/blank? topic)))
+            create-public-chat #(when-not topic-error
+                                  (do
+                                    (re-frame/dispatch [:set :public-group-topic nil])
+                                    (re-frame/dispatch [:chat.ui/start-public-chat topic])))]
         [react/view {:style styles/add-contact-edit-view}
          [react/view {:flex  1
                       :style (styles/add-pub-chat-input show-error-tooltip?)}
@@ -114,12 +120,10 @@
                              :font            :default
                              :selection-color colors/hawkes-blue
                              :placeholder     ""
-                             :on-change       on-topic-change}]]
+                             :on-change       on-topic-change
+                             :on-submit-editing (when-not disable? create-public-chat)}]]
          [react/touchable-highlight {:disabled disable?
-                                     :on-press #(when-not topic-error
-                                                  (do
-                                                    (re-frame/dispatch [:set :public-group-topic nil])
-                                                    (re-frame/dispatch [:chat.ui/start-public-chat topic])))}
+                                     :on-press create-public-chat}
           [react/view {:style (styles/add-contact-button disable?)}
            [react/text {:style (styles/add-contact-button-text disable?)}
             (i18n/label :new-public-group-chat)]]]])

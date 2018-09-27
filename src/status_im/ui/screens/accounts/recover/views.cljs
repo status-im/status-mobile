@@ -47,7 +47,8 @@
      :on-change-text    #(re-frame/dispatch [:accounts.recover.ui/password-input-changed (security/mask-data %)])
      :on-blur           #(re-frame/dispatch [:accounts.recover.ui/password-input-blured])
      :secure-text-entry true
-     :error             (when error (i18n/label error))}]])
+     :error             (when error (i18n/label error))
+     :on-submit-editing #(re-frame/dispatch [:accounts.recover.ui/sign-in-button-pressed])}]])
 
 (defview recover []
   (letsubs [recovered-account [:get-recover-account]]
