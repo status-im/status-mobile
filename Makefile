@@ -37,6 +37,8 @@ setup: ##@prepare Install all the requirements for status-react
 prepare-desktop: ##@prepare Install desktop platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh desktop
 	npm install
+
+dev-desktop: prepare-desktop
 	ln -sf './node_modules/re-natal/index.js' './re-natal'
 	./re-natal use-figwheel
 	./re-natal enable-source-maps
