@@ -20,7 +20,7 @@
 
 (re-frame/reg-fx
  :utils/show-popup
- (fn [[title content on-dismiss]]
+ (fn [{:keys [title content on-dismiss]}]
    (show-popup title content on-dismiss)))
 
 (defn show-confirmation
