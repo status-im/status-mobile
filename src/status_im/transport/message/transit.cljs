@@ -100,6 +100,8 @@
                                      (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
                               "c4" (fn [[content content-type message-type clock-value timestamp]]
                                      (v1.protocol/Message. content content-type message-type clock-value timestamp))
+                              "c7" (fn [[content content-type message-type clock-value timestamp]]
+                                     (v1.protocol/Message. (:text content) content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]
