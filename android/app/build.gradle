@@ -167,7 +167,7 @@ android {
     }
     dexOptions {
         jumboMode true
-        javaMaxHeapSize "4g"
+        javaMaxHeapSize "8g"
     }
     signingConfigs {
         release {
