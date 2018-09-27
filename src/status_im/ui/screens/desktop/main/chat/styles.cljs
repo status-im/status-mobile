@@ -44,6 +44,15 @@
           :bottom   0
           :right    -5}))
 
+(def message-command-container
+  {:align-self         :flex-start
+   :border-radius      8
+   :padding-horizontal 12
+   :padding-vertical   10
+   :background-color   colors/white
+   :align-items        :flex-start
+   :width              230})
+
 (def author
   {:color         colors/gray
    :font-size     12

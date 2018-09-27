@@ -20,6 +20,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
+            [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.choose-recipient.events :as choose-recipient.events]
             [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
@@ -217,7 +218,8 @@
            [react/text {:style (transactions-styles/command-send-currency-text outgoing)
                         :font  :default}
             asset]]]]
-        (when fiat-amount
+        (when (and fiat-amount
+                   platform/mobile?)
           [react/view transactions-styles/command-send-fiat-amount
            [react/text {:style transactions-styles/command-send-fiat-amount-text}
             (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
@@ -228,7 +230,8 @@
         [react/view
          [react/text {:style (transactions-styles/command-send-timestamp outgoing)}
           (str (i18n/label :sent-at) " " timestamp-str)]]
-        [send-status tx-hash outgoing]
+        (when platform/mobile?
+          [send-status tx-hash outgoing])
         (when network-mismatch?
           [react/text send-network])]])))
 
@@ -401,9 +404,10 @@
                                [react/text {:style (transactions-styles/command-request-currency-text outgoing)
                                             :font  :default}
                                 asset]]]
-                             [react/view transactions-styles/command-request-fiat-amount-row
-                              [react/text {:style transactions-styles/command-request-fiat-amount-text}
-                               (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]]
+                             (when platform/mobile?
+                               [react/view transactions-styles/command-request-fiat-amount-row
+                                [react/text {:style transactions-styles/command-request-fiat-amount-text}
+                                 (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
                              (when network-mismatch?
                                [react/text {:style transactions-styles/command-request-network-text}
                                 (str (i18n/label :on) " " request-network)])
@@ -415,7 +419,8 @@
                                 (i18n/label :at)
                                 " "
                                 timestamp-str)]]
-                             (when-not outgoing
+                             (when (and (not outgoing)
+                                        platform/mobile?)
                                [react/view
                                 [react/view transactions-styles/command-request-separator-line]
                                 [react/view transactions-styles/command-request-button

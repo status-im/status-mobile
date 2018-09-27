@@ -120,8 +120,17 @@
        [photo-placeholder])
      [message-with-timestamp text message (styles/message-box message)]]]])
 
-(defn message [text me? {:keys [message-id chat-id message-status user-statuses from
-                                current-public-key content-type group-chat outgoing type value] :as message}]
+(defmulti message (fn [_ _ {:keys [content-type]}] content-type))
+
+(defmethod message constants/content-type-command
+  [_ _ message]
+  [react/view {:style (styles/message-row message)}
+   [react/view {:style styles/message-command-container}
+    [message/message-content-command message]]])
+
+(defmethod message :default
+  [text me? {:keys [message-id chat-id message-status user-statuses from
+                    current-public-key content-type group-chat outgoing type value] :as message}]
   (when (nil? message-id)
     (log/debug "nil?" message))
   (if (= type :datemark)
