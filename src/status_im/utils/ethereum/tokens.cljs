@@ -375,6 +375,10 @@
                     :name     "Berlin Coin"
                     :address  "0x80046305aaab08f6033b56a360c184391165dc2d"
                     :decimals 18}
+                   {:symbol   :USDC
+                    :name     "USD//C"
+                    :address  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+                    :decimals 6}
                    ;; NOTE(goranjovic) : the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
