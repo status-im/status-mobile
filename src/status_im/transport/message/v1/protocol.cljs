@@ -9,7 +9,8 @@
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.core :as transport]
             [status-im.transport.utils :as transport.utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [cljs.spec.alpha :as spec]))
 
 (def ^:private whisper-opts
   {:ttl       10 ;; ttl of 10 sec
@@ -107,7 +108,10 @@
              :show?      true
              :chat-id    chat-id
              :from       signature
-             :js-obj     (:js-obj cofx))]}))
+             :js-obj     (:js-obj cofx))]})
+  (validate [this]
+    (when (spec/valid? :message/message this)
+      (spec/conform :message/message this))))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage
@@ -120,4 +124,7 @@
       (send cofx {:chat-id chat-id
                   :payload this})))
   (receive [this chat-id signature _ cofx]
-    (chat/receive-seen cofx chat-id signature this)))
+    (chat/receive-seen cofx chat-id signature this))
+  (validate [this]
+    (when (spec/valid? :message/message-seen this)
+      this)))
