@@ -1,16 +1,23 @@
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 
-IMAGE_NAME = statusteam/linux-desktop-ubuntu:16.04
-QT_MD5SUM = b8dd904894ac6b09076b5f61d8b9d71a
-QT_ARCHIVE = qt-opensource-linux-x64-5.9.1.run
+# WARNING: Change version in Dockerfile too
+QT_VERSION = 5.11.2
+QT_VER_MJR = 5.11
+QT_ARCHIVE = qt-opensource-linux-x64-$(QT_VERSION).run
+QT_MD5SUM  = 974fda61267cfb6e45984ee5f0a285f8
+QT_URL = https://download.qt.io/archive/qt
+
+IMAGE_TAG = qt-$(QT_VERSION)
+IMAGE_NAME = statusteam/linux-desktop-ubuntu:$(IMAGE_TAG)
 
 build: $(QT_ARCHIVE)
 	docker build \
-		--label "commit=$(GIT_COMMIT)" \
+		--build-arg="QT_VERSION=$(QT_VERSION)" \
+		--label="commit=$(GIT_COMMIT)" \
 		-t $(IMAGE_NAME) .
 
 $(QT_ARCHIVE):
-	wget https://download.qt.io/archive/qt/5.9/5.9.1/$(QT_ARCHIVE)
+	wget $(QT_URL)/$(QT_VER_MJR)/$(QT_VERSION)/$(QT_ARCHIVE)
 	echo "$(QT_MD5SUM)  $(QT_ARCHIVE)" | md5sum --check
 
 push: build

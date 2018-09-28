@@ -1,22 +1,33 @@
 FROM ubuntu:16.04 AS qt_build
 
+ARG QT_VERSION
+
 RUN apt-get update && apt-get -y install \
       git libx11-xcb1 libxss1 libasound2 libfontconfig1 libdbus-1-3 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD qt-opensource-linux-x64-5.9.1.run /tmp/
+# This variable defines which parts of QT will be extracted from the .run file.
+# You can list available packages in a Qt .run file by using:
+#   extract-qt-installer --list-packages qt-installer.run
+ENV QT_CI_PACKAGES qt.qt5.5112.gcc_64,qt.qt5.5112.qtwebengine.gcc_64
+
+# We run this as part of a separate container to reduce number of stages.
+# We also remove some of the static-linked binaries since they are so big.
+# Crucial ones: qmake,rcc,moc,uic,qdbuscpp2xml,qdbusxml2cpp,lrelease,lupdate,lconvert
+ADD qt-opensource-linux-x64-${QT_VERSION}.run /tmp/
 RUN git clone --depth=1 https://github.com/benlau/qtci.git /tmp/qtci && \
-    /tmp/qtci/bin/extract-qt-installer /tmp/qt-opensource-linux-x64-5.9.1.run /opt/qt && \
-    cd /opt/qt && \
-    rm -fr Examples Docs Tools 5.9.1/android_armv7 \
-      MaintenanceTool.dat MaintenanceTool MaintenanceTool.ini
+    /tmp/qtci/bin/extract-qt-installer --disable-progress-report \
+        /tmp/qt-opensource-linux-x64-${QT_VERSION}.run /opt/qt-all && \
+    find /opt/qt-all/${QT_VERSION}/gcc_64/bin -type f -regextype posix-egrep -regex \
+        '.*\/(qdoc|qgltf|linguist|designer|assistant|qhelpconverter|qmlprofiler)$' -delete
 
 FROM ubuntu:16.04
 
-COPY --from=qt_build /opt/qt /opt/qt
-RUN ln -s /opt/qt/5.9.1/gcc_64/mkspecs /usr/local/mkspecs && \
-    ln -s /opt/qt/5.9.1/gcc_64/plugins /usr/local/plugins && \
-    ln -s /opt/qt/5.9.1/gcc_64 /opt/qt59
+ARG QT_VERSION
+
+COPY --from=qt_build /opt/qt-all/${QT_VERSION}/gcc_64 /opt/qt
+RUN ln -s /opt/qt/mkspecs /usr/local/mkspecs && \
+    ln -s /opt/qt/plugins /usr/local/plugins
 
 ENV LANG en_US.UTF-8 \
     LC_ALL en_US.UTF-8 \
@@ -24,18 +35,19 @@ ENV LANG en_US.UTF-8 \
     LEIN_HOME /var/tmp/lein \
     NPM_CONFIG_CACHE /var/tmp/npm
 
-# We have to do this because Jenkins doens't let us
+# We have to do this because Jenkins doesn't let us
 # https://issues.jenkins-ci.org/browse/JENKINS-49076
-ENV PATH /opt/qt59/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH /opt/qt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN apt-get update && apt-get -y --no-install-recommends install curl software-properties-common && \
+RUN apt-get update && apt-get -q -y --no-install-recommends install curl software-properties-common && \
     curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     add-apt-repository -y ppa:longsleep/golang-backports && \
     apt-get remove -y software-properties-common && \
     apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive \
+      apt-get -q -y --no-install-recommends install \
       wget git unzip golang-go nodejs yarn file python \
       apt-transport-https locales openjdk-8-jdk-headless \
       extra-cmake-modules build-essential gcc g++ fuse \

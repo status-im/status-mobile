@@ -3,7 +3,7 @@ pipeline {
     /* privileged mode is necessary for fuse */
     docker {
       label 'linux-new'
-      image 'statusteam/linux-desktop-ubuntu:16.04'
+      image 'statusteam/linux-desktop-ubuntu:qt-5.11.2'
       args (
         "--privileged "+
         "-v /dev/fuse:/dev/fuse "+
@@ -32,7 +32,7 @@ pipeline {
     LC_ALL = 'en_US.UTF-8'
     NPM_CONFIG_CACHE = '/var/tmp/npm'
     LEIN_HOME = '/var/tmp/lein'
-    QT_PATH = '/opt/qt59'
+    QT_PATH = '/opt/qt'
     STATUSIM_APPIMAGE = '/opt/StatusImAppImage.zip'
   }
 

@@ -13,8 +13,8 @@ pipeline {
     LANG = 'en_US.UTF-8'
     LANGUAGE = 'en_US.UTF-8'
     LC_ALL = 'en_US.UTF-8'
-    QT_PATH = '/Users/administrator/qt/5.9.1'
-    PATH = "${env.QT_PATH}/clang_64/bin:${env.PATH}"
+    QT_PATH = '/usr/local/opt/qt'
+    PATH = "/usr/local/opt/qt/bin:${env.PATH}"
   }
 
   stages {
