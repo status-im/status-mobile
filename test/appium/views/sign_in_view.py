@@ -111,7 +111,6 @@ class SignInView(BaseView):
         self.element_by_text_part('Display name').wait_for_element(60)
         username = username if username else 'user_%s' % get_current_time()
         self.name_input.set_value(username)
-        self.confirm()
 
         self.next_button.click()
         return self.get_home_view()
