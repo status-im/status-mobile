@@ -11,14 +11,19 @@
             [status-im.ui.screens.browser.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))
 
-(views/defview permissions-panel [{:keys [dapp? name dapp] :as browser} {:keys [requested-permission dapp-name]}]
+(views/defview permissions-panel [{:keys [dapp? dapp]} {:keys [requested-permission dapp-name]}]
   (views/letsubs [bottom-anim-value (anim/create-value -354)
                   alpha-value       (anim/create-value 0)
-                  hide-panel        #(anim/start
-                                      (anim/parallel
-                                       [(anim/spring bottom-anim-value {:toValue -354})
-                                        (anim/timing alpha-value {:toValue  0
-                                                                  :duration 500})]))]
+                  hide-panel        (fn []
+                                      (js/setTimeout #(re-frame/dispatch
+                                                       [:browser.permissions.ui/permission-animation-finished
+                                                        dapp-name])
+                                                     600)
+                                      (anim/start
+                                       (anim/parallel
+                                        [(anim/spring bottom-anim-value {:toValue -354})
+                                         (anim/timing alpha-value {:toValue  0
+                                                                   :duration 500})])))]
     {:component-did-mount #(anim/start
                             (anim/parallel
                              [(anim/spring bottom-anim-value {:toValue -20})
@@ -52,16 +57,13 @@
         [react/text {:style styles/permissions-panel-description-label}
          description]
         [react/view {:flex-direction :row :margin-top 14}
-         [components.common/button {:on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-denied dapp-name])
-                                    :label    (i18n/label :t/deny)}]
+         [components.common/button
+          {:on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-denied])
+           :label    (i18n/label :t/deny)}]
          [react/view {:width 16}]
-         [components.common/button {:on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-allowed dapp-name requested-permission])
-                                    :label    (i18n/label :t/allow)}]]
-        ;; TODO (andrey) will be in next PR
-        #_[react/view {:flex-direction :row :margin-top 19}
-           [icons/icon :icons/settings {:color colors/blue}]
-           [react/text {:style styles/permissions-panel-permissions-label}
-            (i18n/label :t/manage-permissions)]]]])))
+         [components.common/button
+          {:on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-allowed])
+           :label    (i18n/label :t/allow)}]]]])))
 
 ;; NOTE (andrey) we need this complex function, to show animation before component will be unmounted
 (defn permissions-anim-panel [browser show-permission]

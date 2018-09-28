@@ -15,10 +15,7 @@
 (spec/def :browser/url-editing? (spec/nilable boolean?))
 (spec/def :browser/show-tooltip (spec/nilable keyword?))
 (spec/def :browser/show-permission (spec/nilable map?))
-
-(spec/def :browser/pending-permissions set?)
-(spec/def :browser/allowed-permissions set?)
-(spec/def :browser/requested-permissions set?)
+(spec/def :browser/pending-permissions (spec/nilable list?))
 
 (spec/def :browser/options
   (spec/nilable
@@ -30,8 +27,6 @@
              :browser/show-tooltip
              :browser/show-permission
              :browser/pending-permissions
-             :browser/allowed-permissions
-             :browser/requested-permissions
              :browser/error?])))
 
 (spec/def :browser/browser

@@ -6,69 +6,76 @@ function bridgeSend(data){
     WebViewBridge.send(JSON.stringify(data));
 }
 
-window.addEventListener('message', function (event) {
-    if (!event.data || !event.data.type) { return; }
-    if (event.data.type === 'STATUS_API_REQUEST') {
-        bridgeSend({
-            type: 'status-api-request',
-            permissions: event.data.permissions,
-            host: window.location.hostname
-        });
-    }
-});
+function sendAPIrequest(permission) {
+    var messageId = callbackId++;
+
+    bridgeSend({
+        type: 'api-request',
+        permission: permission,
+        messageId: messageId,
+        host: window.location.hostname
+    });
+
+    return new Promise(function (resolve, reject) { callbacks[messageId] = {resolve: resolve, reject: reject};});
+}
 
 WebViewBridge.onMessage = function (message) {
     data = JSON.parse(message);
+    var id = data.messageId;
+    var callback = callbacks[id];
 
-    if (data.type === "status-api-success")
-    {
-        window.dispatchEvent(new CustomEvent('statusapi', { detail: { permissions: data.keys,
-                                                                      data:        data.data
-                                                                    } }));
-    }
+    if (callback) {
 
-    else if (data.type === "web3-send-async-callback")
-    {
-        var id = data.messageId;
-        var callback = callbacks[id];
-        if (callback) {
-            if (callback.results)
-            {
-                callback.results.push(data.error || data.result);
-                if (callback.results.length == callback.num)
-                    callback.callback(undefined, callback.results);
-            }
-            else
-            {
-                callback.callback(data.error, data.result);
-            }
-        }
-    }
-
-    else if (data.type === "scan-qr-code-callback")
-    {
-        var id = data.data.messageId;
-        var callback = callbacks[id];
-        if (callback) {
-            var result = data.result;
-            var regex = new RegExp(callback.regex);
-            if (regex.test(result)) {
-                if (callback.resolve) {
-                    callback.resolve(result);
-                }
+        if (data.type === "api-response") {
+            if (data.isAllowed) {
+                callback.resolve(data.data);
             } else {
-                if (callback.reject) {
-                    callback.reject(result);
+                callback.reject(new Error("Denied"));
+            }
+        } else if (data.type === "web3-send-async-callback") {
+            var id = data.messageId;
+            var callback = callbacks[id];
+            if (callback) {
+                if (callback.results) {
+                    callback.results.push(data.error || data.result);
+                    if (callback.results.length == callback.num)
+                        callback.callback(undefined, callback.results);
+                } else {
+                    callback.callback(data.error, data.result);
+                }
+            }
+        } else if (data.type === "scan-qr-code-callback") {
+            var id = data.data.messageId;
+            var callback = callbacks[id];
+            if (callback) {
+                var result = data.result;
+                var regex = new RegExp(callback.regex);
+                if (regex.test(result)) {
+                    if (callback.resolve) {
+                        callback.resolve(result);
+                    }
+                } else {
+                    if (callback.reject) {
+                        callback.reject(result);
+                    }
                 }
             }
         }
     }
 };
 
+var StatusAPI = function () {};
+
+StatusAPI.prototype.getContactCode = function () {
+    return sendAPIrequest('contact-code');
+};
+
 var StatusHttpProvider = function () {};
 
 StatusHttpProvider.prototype.isStatus = true;
 StatusHttpProvider.prototype.isConnected = function () { return true; };
+
+StatusHttpProvider.prototype.status = new StatusAPI();
 
 function web3Response (payload, result){
     return {id: payload.id,

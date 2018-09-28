@@ -268,7 +268,7 @@
         {:keys [browser-id]} options
         browser (get browsers browser-id)
         data    (types/json->clj message)
-        {{:keys [url]} :navState :keys [type host permissions payload messageId]} data
+        {{:keys [url]} :navState :keys [type host permission payload messageId]} data
         {:keys [dapp? name]} browser
         dapp-name (if dapp? name host)]
     (cond
@@ -290,8 +290,8 @@
                                       {:type constants/scan-qr-code-callback
                                        :data data}))
 
-      (= type constants/status-api-request)
-      (browser.permissions/process-permissions cofx dapp-name permissions))))
+      (= type constants/api-request)
+      (browser.permissions/process-permission cofx dapp-name permission messageId))))
 
 (fx/defn handle-message-link
   [cofx link]

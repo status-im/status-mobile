@@ -1,52 +1,52 @@
 if(typeof ReadOnlyProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
-var ethereumPromise = {};
 
 function bridgeSend(data){
     WebViewBridge.send(JSON.stringify(data));
 }
 
-window.addEventListener('message', function (event) {
-    if (!event.data || !event.data.type) { return; }
-    if (event.data.type === 'STATUS_API_REQUEST') {
-        bridgeSend({
-            type: 'status-api-request',
-            permissions: event.data.permissions,
-            host: window.location.hostname
-        });
-    }
-});
+function sendAPIrequest(permission) {
+    var messageId = callbackId++;
+
+    bridgeSend({
+        type: 'api-request',
+        permission: permission,
+        messageId: messageId,
+        host: window.location.hostname
+    });
+
+    return new Promise(function (resolve, reject) { callbacks[messageId] = {resolve: resolve, reject: reject};});
+}
 
 WebViewBridge.onMessage = function (message) {
     data = JSON.parse(message);
+    var id = data.messageId;
+    var callback = callbacks[id];
 
-    if (data.type === "status-api-success")
+    if (callback)
     {
-        if (data.keys == 'WEB3')
+        if (data.type === "api-response")
         {
-            ethereumPromise.allowed = true;
-            window.currentAccountAddress = data.data["WEB3"];
-            ethereumPromise.resolve();
+            if (data.isAllowed)
+            {
+                if (data.permission == 'web3')
+                {
+                    window.currentAccountAddress = data.data;
+                    callback.resolve();
+                }
+                else
+                {
+                    callback.resolve(data.data);
+                }
+            }
+            else
+            {
+                callback.reject(new Error("Denied"));
+            }
         }
-        else
+        else if (data.type === "web3-send-async-callback")
         {
-            window.dispatchEvent(new CustomEvent('statusapi', { detail: { permissions: data.keys,
-                                                                          data:        data.data
-                                                                        } }));
-        }
-    }
-
-    else if (data.type === "web3-permission-request-denied")
-    {
-        ethereumPromise.reject(new Error("Denied"));
-    }
-
-    else if (data.type === "web3-send-async-callback")
-    {
-        var id = data.messageId;
-        var callback = callbacks[id];
-        if (callback) {
             if (callback.results)
             {
                 callback.results.push(data.error || data.result);
@@ -82,10 +82,18 @@ function getSyncResponse (payload) {
     }
 }
 
+var StatusAPI = function () {};
+
+StatusAPI.prototype.getContactCode = function () {
+    return sendAPIrequest('contact-code');
+};
+
 var ReadOnlyProvider = function () {};
 
 ReadOnlyProvider.prototype.isStatus = true;
 ReadOnlyProvider.prototype.isConnected = function () { return true; };
+
+ReadOnlyProvider.prototype.status = new StatusAPI();
 
 ReadOnlyProvider.prototype.send = function (payload) {
     if (payload.method == "eth_uninstallFilter"){
@@ -100,15 +108,7 @@ ReadOnlyProvider.prototype.send = function (payload) {
 };
 
 ReadOnlyProvider.prototype.enable = function () {
-    bridgeSend({
-        type: 'status-api-request',
-        permissions: ['WEB3'],
-        host: window.location.hostname
-    });
-    return new Promise(function (resolve, reject) {
-                        ethereumPromise.resolve = resolve;
-                        ethereumPromise.reject = reject;
-                        });
+    return sendAPIrequest('web3');
 };
 
 ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {

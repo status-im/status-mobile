@@ -837,11 +837,16 @@
 
 (handlers/register-handler-fx
  :browser.permissions.ui/dapp-permission-allowed
- (fn [cofx [_ dapp-name permission]]
-   (browser.permissions/allow-permission cofx dapp-name permission)))
+ (fn [cofx _]
+   (browser.permissions/allow-permission cofx)))
 
 (handlers/register-handler-fx
  :browser.permissions.ui/dapp-permission-denied
+ (fn [cofx _]
+   (browser.permissions/deny-permission cofx)))
+
+(handlers/register-handler-fx
+ :browser.permissions.ui/permission-animation-finished
  (fn [cofx [_ dapp-name]]
    (browser.permissions/process-next-permission cofx dapp-name)))
 
