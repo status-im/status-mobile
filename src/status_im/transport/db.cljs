@@ -13,9 +13,9 @@
 (spec/def ::resend? (spec/nilable #{"contact-request" "contact-request-confirmation" "contact-update"}))
 
 ;; optional
-(spec/def ::sym-key-id string?)
+(spec/def ::sym-key-id (spec/nilable string?))
 ;;TODO (yenda) remove once go implements persistence
-(spec/def ::sym-key string?)
+(spec/def ::sym-key (spec/nilable string?))
 (spec/def ::filter any?)
 
 (spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic ::fetch-history?]

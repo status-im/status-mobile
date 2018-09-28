@@ -10,6 +10,7 @@
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
             [status-im.test.mailserver.core]
+            [status-im.test.group-chats.core]
             [status-im.test.node.core]
             [status-im.test.models.bootnode]
             [status-im.test.models.account]
@@ -36,6 +37,7 @@
             [status-im.test.utils.clocks]
             [status-im.test.utils.ethereum.eip681]
             [status-im.test.utils.ethereum.core]
+            [status-im.test.utils.ethereum.abi-spec]
             [status-im.test.utils.ethereum.ens]
             [status-im.test.utils.ethereum.mnemonic]
             [status-im.test.utils.random]
@@ -74,6 +76,7 @@
  'status-im.test.init.core
  'status-im.test.data-store.realm.core
  'status-im.test.mailserver.core
+ 'status-im.test.group-chats.core
  'status-im.test.node.core
  'status-im.test.models.bootnode
  'status-im.test.models.account
@@ -102,6 +105,7 @@
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
  'status-im.test.utils.ethereum.mnemonic
+ 'status-im.test.utils.ethereum.abi-spec
  'status-im.test.utils.ethereum.ens
  'status-im.test.utils.random
  'status-im.test.utils.gfycat.core

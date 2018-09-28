@@ -15,7 +15,7 @@
   [cofx whisper-id]
   (fx/merge cofx
             (models.contact/add-contact whisper-id)
-            (chat.models/start-chat whisper-id {:navigation-replace? true})))
+            (chat.models/start-chat whisper-id {:navigation-reset? true})))
 
 (re-frame/reg-cofx
  :get-default-contacts

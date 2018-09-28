@@ -1,7 +1,8 @@
 import pytest
 
-from tests import marks, transaction_users, camera_access_error_text, common_password, transaction_users_wallet
+from tests import marks, camera_access_error_text
 from tests.base_test_case import SingleDeviceTestCase
+from tests.users import wallet_users
 from views.sign_in_view import SignInView
 
 
@@ -41,9 +42,9 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(1449)
     def test_open_transaction_on_etherscan(self):
-        user = transaction_users['A_USER']
+        user = wallet_users['A']
         sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(user['passphrase'], user['password'])
+        home_view = sign_in_view.recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         transactions_view = wallet_view.transaction_history_button.click()
@@ -57,9 +58,9 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(1450)
     def test_copy_transaction_hash(self):
-        user = transaction_users['A_USER']
+        user = wallet_users['A']
         sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(user['passphrase'], user['password'])
+        home_view = sign_in_view.recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         transactions_view = wallet_view.transaction_history_button.click()
@@ -151,9 +152,9 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(3730)
     def test_filter_transactions_history(self):
-        user = transaction_users_wallet['C_USER']
+        user = wallet_users['C']
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=user['passphrase'], password=user['password'])
+        sign_in_view.recover_access(passphrase=user['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
 

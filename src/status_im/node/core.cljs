@@ -134,7 +134,7 @@
 (fx/defn initialize
   [{{:keys [status-node-started?] :as db} :db :as cofx} address]
   (if (not status-node-started?)
-    (start address cofx)
+    (start cofx address)
     (restart)))
 
 (re-frame/reg-fx

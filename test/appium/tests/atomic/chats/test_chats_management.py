@@ -1,7 +1,8 @@
 import pytest
 import time
 
-from tests import marks, group_chat_users, basic_user, camera_access_error_text
+from tests import marks, camera_access_error_text
+from tests.users import basic_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -30,16 +31,16 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_swipe_to_delete_1_1_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        chat = home.add_contact(group_chat_users['A_USER']['public_key'])
+        chat = home.add_contact(basic_user['public_key'])
         chat.chat_message_input.send_keys('test message')
         chat.send_message_button.click()
         chat.get_back_to_home_view()
-        home.get_chat_with_user(group_chat_users['A_USER']['username']).swipe_and_delete()
+        home.get_chat_with_user(basic_user['username']).swipe_and_delete()
         self.driver.close_app()
         self.driver.launch_app()
         sign_in.accept_agreements()
         sign_in.sign_in()
-        if home.get_chat_with_user(group_chat_users['A_USER']['username']).is_element_displayed():
+        if home.get_chat_with_user(basic_user['username']).is_element_displayed():
             pytest.fail('Deleted 1-1 chat is present after relaunch app')
 
     @marks.testrail_id(3718)
@@ -69,7 +70,7 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_add_contact_by_pasting_public_key(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        public_key = group_chat_users['A_USER']['public_key']
+        public_key = basic_user['public_key']
 
         chat = home.join_public_chat(home.get_public_chat_name())
         chat.chat_message_input.send_keys(public_key)
@@ -87,7 +88,7 @@ class TestChatManagement(SingleDeviceTestCase):
         start_new_chat.get_back_to_home_view()
         home.plus_button.click()
         start_new_chat.start_new_chat_button.click()
-        if not start_new_chat.element_by_text(group_chat_users['A_USER']['username']).is_element_displayed():
+        if not start_new_chat.element_by_text(basic_user['username']).is_element_displayed():
             pytest.fail("List of contacts doesn't contain added user")
 
     @marks.testrail_id(3719)
@@ -128,7 +129,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         start_new_chat = home.plus_button.click()
         start_new_chat.start_new_chat_button.click()
-        start_new_chat.public_key_edit_box.set_value(group_chat_users['B_USER']['public_key'][:-1])
+        start_new_chat.public_key_edit_box.set_value(basic_user['public_key'][:-1])
         start_new_chat.confirm()
         warning_text = start_new_chat.element_by_text('Please enter or scan a valid contact code or username')
         if not warning_text.is_element_displayed():

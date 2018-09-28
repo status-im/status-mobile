@@ -1780,7 +1780,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -o errexit\nexport NODE_BINARY=\"node --max-old-space-size=4096\"\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"node --max-old-space-size=8192\"\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
 		2EAC54E16AB243C3EBBFE1BA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

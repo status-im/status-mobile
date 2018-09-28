@@ -1,7 +1,8 @@
 import pytest
 
-from tests import marks, transaction_users
+from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
+from tests.users import wallet_users
 from views.sign_in_view import SignInView
 
 
@@ -10,9 +11,9 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(3794)
     def test_wallet_modal_public_chat(self):
-        user = transaction_users['A_USER']
+        user = wallet_users['A']
         sign_in = SignInView(self.driver)
-        sign_in.recover_access(user['passphrase'], user['password'])
+        sign_in.recover_access(user['passphrase'])
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
         usd_value = wallet.get_usd_total_value()
@@ -36,9 +37,9 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(3795)
     def test_wallet_modal_dapp(self):
-        user = transaction_users['B_USER']
+        user = wallet_users['B']
         sign_in = SignInView(self.driver)
-        sign_in.recover_access(user['passphrase'], user['password'])
+        sign_in.recover_access(user['passphrase'])
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
         usd_value = wallet.get_usd_total_value()
@@ -65,9 +66,9 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(3797)
     def test_wallet_modal_transaction_history(self):
-        user = transaction_users['B_USER']
+        user = wallet_users['B']
         sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(user['passphrase'], user['password'])
+        home = sign_in.recover_access(user['passphrase'])
         start_new_chat = home.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.element_by_text('Airswap').click()
@@ -80,9 +81,9 @@ class TestWalletModal(SingleDeviceTestCase):
 
     @marks.testrail_id(3800)
     def test_close_and_open_wallet_modal(self):
-        user = transaction_users['B_USER']
+        user = wallet_users['B']
         sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(user['passphrase'], user['password'])
+        home = sign_in.recover_access(user['passphrase'])
         start_new_chat = home.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.element_by_text('Airswap').click()

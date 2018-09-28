@@ -58,6 +58,62 @@
                                              (on-success resp)
                                              (on-error err))))))
 
+(defn handle-response [success-event error-event]
+  (fn [err resp]
+    (if-not err
+      (if success-event
+        (re-frame/dispatch (conj success-event resp))
+        (log/debug :shh/post-success))
+      (re-frame/dispatch [error-event err resp]))))
+
+(re-frame/reg-fx
+ :shh/send-direct-message
+ (fn [post-calls]
+   (doseq [{:keys [web3 payload src dst success-event error-event]
+            :or   {error-event :protocol/send-status-message-error}} post-calls]
+     (let [direct-message (clj->js {:pubKey dst
+                                    :sig src
+                                    :payload (-> payload
+                                                 transit/serialize
+                                                 transport.utils/from-utf8)})]
+       (.. web3
+           -shh
+           (sendDirectMessage
+            direct-message
+            (handle-response success-event error-event)))))))
+
+(re-frame/reg-fx
+ :shh/send-group-message
+ (fn [params]
+   (let [{:keys [web3 payload src dsts success-event error-event]
+          :or   {error-event :protocol/send-status-message-error}} params
+         message (clj->js {:pubKeys dsts
+                           :sig src
+                           :payload (-> payload
+                                        transit/serialize
+                                        transport.utils/from-utf8)})]
+     (.. web3
+         -shh
+         (sendGroupMessage
+          message
+          (handle-response success-event error-event))))))
+
+(re-frame/reg-fx
+ :shh/send-public-message
+ (fn [post-calls]
+   (doseq [{:keys [web3 payload src chat success-event error-event]
+            :or   {error-event :protocol/send-status-message-error}} post-calls]
+     (let [message (clj->js {:chat chat
+                             :sig src
+                             :payload (-> payload
+                                          transit/serialize
+                                          transport.utils/from-utf8)})]
+       (.. web3
+           -shh
+           (sendPublicMessage
+            message
+            (handle-response success-event error-event)))))))
+
 (re-frame/reg-fx
  :shh/post
  (fn [post-calls]
@@ -128,11 +184,12 @@
  :shh/restore-sym-keys
  (fn [{:keys [web3 transport on-success]}]
    (doseq [[chat-id {:keys [sym-key]}] transport]
-     (add-sym-key {:web3       web3
-                   :sym-key    sym-key
-                   :on-success (fn [sym-key-id]
-                                 (on-success chat-id sym-key sym-key-id))
-                   :on-error   log-error}))))
+     (when sym-key
+       (add-sym-key {:web3       web3
+                     :sym-key    sym-key
+                     :on-success (fn [sym-key-id]
+                                   (on-success chat-id sym-key sym-key-id))
+                     :on-error   log-error})))))
 
 (defn add-new-sym-key [{:keys [web3 sym-key on-success]}]
   (add-sym-key {:web3       web3

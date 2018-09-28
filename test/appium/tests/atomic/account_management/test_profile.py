@@ -1,7 +1,8 @@
 import pytest
 
-from tests import marks, group_chat_users, basic_user, bootnode_address, mailserver_address, camera_access_error_text, \
+from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text
+from tests.users import transaction_senders, basic_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -59,7 +60,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.copy_text()
         profile_view.cross_icon.click()
         home = profile_view.home_button.click()
-        chat = home.add_contact(group_chat_users['A_USER']['public_key'])
+        chat = home.add_contact(transaction_senders['M']['public_key'])
         chat.chat_message_input.click()
         chat.paste_text()
         input_text = chat.chat_message_input.text
@@ -76,7 +77,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet.copy_text()
         wallet.get_back_to_home_view()
         wallet.home_button.click()
-        home.get_chat_with_user(group_chat_users['A_USER']['username']).click()
+        home.get_chat_with_user(transaction_senders['M']['username']).click()
         chat.chat_message_input.click()
         chat.paste_text()
         if chat.chat_message_input.text != address:
@@ -108,7 +109,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Profile button counter is not shown after re-login')
         sign_in_view.profile_button.click()
         profile_view.backup_recovery_phrase()
-        if sign_in_view.profile_button.counter.is_element_displayed():
+        if sign_in_view.profile_button.counter.is_element_displayed(60):
             self.errors.append('Profile button counter is shown after seed phrase backup')
         self.verify_no_errors()
 
@@ -144,7 +145,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.advanced_button.click()
         profile_view.find_text_part('CUSTOM_ROPSTEN')
 
-    @marks.logcat
     @marks.testrail_id(3774)
     def test_logcat_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)

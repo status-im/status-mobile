@@ -59,7 +59,8 @@
     "react-native/Libraries/vendor/emitter/EventEmitter",
     "react-native-fetch-polyfill",
     "text-encoding",
-    "js-sha3"
+    "js-sha3",
+    "web3-utils"
   ],
   "imageDirs": [
     "resources/images",

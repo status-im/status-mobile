@@ -6,7 +6,6 @@
    [status-im.ui.screens.group.core :as group]
    [status-im.chat.models :as models.chat]
    [status-im.transport.message.core :as message]
-   [status-im.transport.message.v1.group-chat :as transport.group-chat]
    [status-im.chat.models.message :as models.message]
    [status-im.utils.fx :as fx]))
 
@@ -30,7 +29,14 @@
       (seq removed-participants)
       (str admin-name " " (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names))))))
 
-(defn handle-group-admin-update [{:keys [chat-name participants]} chat-id signature {:keys [now db random-id] :as cofx}]
+(defn handle-group-chat-create [{:keys [chat-name participants chat-id]} signature {:keys [now db random-id] :as cofx}]
+  (models.chat/add-group-chat chat-id
+                              chat-name
+                              signature
+                              participants
+                              cofx))
+
+(defn handle-group-admin-update [{:keys [chat-name participants chat-id]} chat-id signature {:keys [now db random-id] :as cofx}]
   (let [me (:current-public-key db)]
     ;; we have to check if we already have a chat, or it's a new one
     (if-let [{:keys [group-admin contacts] :as chat} (get-in db [:chats chat-id])]
@@ -70,9 +76,9 @@
     (when (and
            (not= signature me)
            (get-in db [:chats chat-id])) ;; chat is present
+
       (fx/merge cofx
                 (models.message/receive
                  (models.message/system-message chat-id random-id now
                                                 (str participant-leaving-name " " (i18n/label :t/left))))
-                (group/participants-removed chat-id #{signature})
-                (transport.group-chat/send-new-group-key nil chat-id)))))
+                (group/participants-removed chat-id #{signature})))))

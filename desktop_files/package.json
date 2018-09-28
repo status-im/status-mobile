@@ -25,11 +25,12 @@
   "dependencies": {
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",
-    "@babel/core": "7.0.0-rc.2",
-    "@babel/generator": "7.0.0-rc.2",
-    "@babel/helper-builder-react-jsx": "7.0.0-rc.2",
-    "@babel/plugin-transform-block-scoping": "7.0.0-rc.2",
-    "@babel/register": "7.0.0-rc.2",
+    "@babel/core": "7.0.1",
+    "@babel/generator": "7.0.0",
+    "@babel/helper-builder-react-jsx": "7.0.0",
+    "@babel/plugin-transform-block-scoping": "7.0.0",
+    "@babel/register": "7.0.0",
+    "@babel/preset-env": "7.1.0",
     "babel-preset-react-native": "5.0.2",
     "bignumber.js": "github:status-im/bignumber.js#master",
     "buffer": "3.6.0",
@@ -84,7 +85,8 @@
     "string_decoder": "0.10.31",
     "text-encoding": "^0.6.4",
     "url": "0.10.3",
-    "web3": "github:status-im/web3.js#feature/shhext"
+    "web3": "github:status-im/web3.js#feature/shhext",
+    "web3-utils": "1.0.0-beta.36"
   },
   "devDependencies": {
     "patch-package": "^5.1.1"

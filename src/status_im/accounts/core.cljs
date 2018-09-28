@@ -6,12 +6,14 @@
             [status-im.ui.screens.wallet.settings.models :as wallet.settings.models]
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.platform :as platform]))
 
 (fx/defn show-mainnet-is-default-alert [{:keys [db]}]
   (let [enter-name-screen? (= :enter-name (get-in db [:accounts/create :step]))
         shown? (get-in db [:account/account :mainnet-warning-shown?])]
-    (when (and config/mainnet-warning-enabled?
+    (when (and platform/mobile?
+               config/mainnet-warning-enabled?
                (not shown?)
                (not enter-name-screen?))
       (utils/show-popup

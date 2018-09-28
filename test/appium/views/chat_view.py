@@ -1,6 +1,8 @@
 import time
 
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+from tests import common_password
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, PublicKeyText
@@ -311,7 +313,7 @@ class ChatView(BaseView):
             errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
                 [i for i in list(set(expected_messages) - set(received_messages))])))
 
-    def send_funds_to_request(self, amount, sender_password, wallet_set_up=False):
+    def send_funds_to_request(self, amount, sender_password=common_password, wallet_set_up=False):
         gas_popup = self.element_by_text_part('Specify amount')
         send_request_button = self.chat_element_by_text(amount).send_request_button
         send_request_button.click_until_presence_of_element(gas_popup)
@@ -335,7 +337,7 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
 
-    def send_transaction_in_1_1_chat(self, asset, amount, password, wallet_set_up=False):
+    def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False):
         self.commands_button.click()
         self.send_command.click()
         self.asset_by_name(asset).click()

@@ -2,9 +2,12 @@
  status-im.transport.message.v1.protocol
   (:require [status-im.utils.config :as config]
             [status-im.constants :as constants]
+            [taoensso.timbre :as log]
+            [status-im.utils.config :as config]
             [status-im.chat.core :as chat]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.core :as message]
+            [status-im.transport.message.v1.core :as transport]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.fx :as fx]))
 
@@ -38,6 +41,26 @@
                                         :topic    topic}
                                        whisper-opts)}]}))
 
+(fx/defn send-direct-message
+  "Sends the payload using to dst"
+  [{:keys [db] :as cofx} dst success-event payload]
+  (let [{:keys [current-public-key web3]} db]
+    {:shh/send-direct-message [{:web3 web3
+                                :success-event success-event
+                                :src     current-public-key
+                                :dst     dst
+                                :payload payload}]}))
+
+(defn send-public-message
+  "Sends the payload to topic"
+  [{:keys [db] :as cofx} chat-id success-event payload]
+  (let [{:keys [current-public-key web3]} db]
+    {:shh/send-public-message [{:web3 web3
+                                :success-event success-event
+                                :src     current-public-key
+                                :chat    chat-id
+                                :payload payload}]}))
+
 (fx/defn send-with-pubkey
   "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
@@ -50,34 +73,6 @@
                                         :topic   (transport.utils/get-topic constants/contact-discovery)}
                                        whisper-opts)}]}))
 
-(defn- prepare-recipients [public-keys db]
-  (map (fn [public-key]
-         (select-keys (get-in db [:transport/chats public-key]) [:topic :sym-key-id]))
-       public-keys))
-
-(fx/defn multi-send-by-pubkey
-  "Sends payload to multiple participants selected by `:public-keys` key. "
-  [{:keys [db] :as cofx} {:keys [payload public-keys success-event]}]
-  (let [{:keys [current-public-key web3]} db
-        recipients                        (prepare-recipients public-keys db)]
-    {:shh/multi-post {:web3          web3
-                      :success-event success-event
-                      :recipients    recipients
-                      :message       (merge {:sig     current-public-key
-                                             :payload payload}
-                                            whisper-opts)}}))
-
-;; TODO currently not used
-(defrecord Ack [message-ids]
-  message/StatusMessage
-  (send [this cofx chat-id])
-  (receive [this chat-id sig timestamp cofx]))
-
-(defrecord Seen [message-ids]
-  message/StatusMessage
-  (send [this cofx chat-id])
-  (receive [this chat-id sig timestamp cofx]))
-
 (defrecord Message [content content-type message-type clock-value timestamp]
   message/StatusMessage
   (send [this chat-id cofx]
@@ -86,12 +81,25 @@
                       :success-event [:transport/set-message-envelope-hash
                                       chat-id
                                       (transport.utils/message-id this)
-                                      message-type]}
-          group-chat (get-in cofx [:db :chats chat-id :group-chat])]
-      (if (or group-chat
-              config/use-sym-key)
-        (send cofx params)
-        (send-with-pubkey cofx params))))
+                                      message-type]}]
+      (case message-type
+        :public-group-user-message
+        (if config/pfs-encryption-enabled?
+          (send-public-message
+           cofx
+           chat-id
+           (:success-event params)
+           this)
+          (send cofx params))
+
+        :user-message
+        (if config/pfs-encryption-enabled?
+          (send-direct-message
+           cofx
+           chat-id
+           (:success-event params)
+           this)
+          (send-with-pubkey cofx params)))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
@@ -104,8 +112,12 @@
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage
   (send [this chat-id cofx]
-    (send cofx
-          {:chat-id chat-id
-           :payload this}))
+    (if config/pfs-encryption-enabled?
+      (send-direct-message cofx
+                           chat-id
+                           nil
+                           this)
+      (send cofx {:chat-id chat-id
+                  :payload this})))
   (receive [this chat-id signature _ cofx]
     (chat/receive-seen cofx chat-id signature this)))

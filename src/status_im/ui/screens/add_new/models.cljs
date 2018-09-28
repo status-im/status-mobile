@@ -11,9 +11,9 @@
   (if (spec/valid? :global/public-key data)
     (universal-links/handle-view-profile cofx data)
     (or (universal-links/handle-url cofx data)
-        {:utils/show-popup [(i18n/label :t/unable-to-read-this-code)
-                            (i18n/label :t/use-valid-qr-code {:data data})
-                            #(re-frame/dispatch [:navigate-to-clean :home])]})))
+        {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+                            :content    (i18n/label :t/use-valid-qr-code {:data data})
+                            :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}})))
 
 (fx/defn handle-qr-code
   [cofx data]

@@ -377,6 +377,7 @@
     "send-transaction-request": "Send a transaction request",
     "share-contact-code": "Share my contact code",
     "use-valid-contact-code": "Please enter or scan a valid contact code or username",
+    "use-valid-contact-code-desktop": "Please enter a valid contact code or username",
     "no-hashtags-discovered-title": "No #hashtags discovered",
     "enter-dapp-url": "Enter a ÐApp URL",
     "wallet-transaction-total-fee": "Total Fee",

@@ -30,16 +30,6 @@
       navigation-actions
       #js {:routeName (name route)}))))
 
-;; 'Navigation/REPLACE'
-;; https://github.com/react-navigation/react-navigation/blob/master/src/routers/StackActions.js#L5
-(defn navigate-replace [route]
-  (when (can-be-called?)
-    (.dispatch
-     @navigator-ref
-     (.replace
-      stack-actions
-      #js {:routeName (name route)}))))
-
 (defn- navigate [params]
   (when (can-be-called?)
     (.navigate navigation-actions (clj->js params))))

@@ -30,10 +30,6 @@
     {:db                 (push-view db view-id)
      ::navigate-to-clean view-id}))
 
-(fx/defn replace-view
-  [_ view-id]
-  {::navigate-replace view-id})
-
 (fx/defn navigate-forget
   [{:keys [db]} view-id]
   {:db (assoc db :view-id view-id)})
@@ -97,12 +93,6 @@
    (navigation/navigate-back)))
 
 (re-frame/reg-fx
- ::navigate-replace
- (fn [view-id]
-   (log/debug :navigate-replace view-id)
-   (navigation/navigate-replace view-id)))
-
-(re-frame/reg-fx
  ::navigate-reset
  (fn [config]
    (log/debug :navigate-reset config)
@@ -129,12 +119,6 @@
  navigation-interceptors
  (fn [{:keys [db]} [_ modal-view]]
    {:db (assoc db :modal modal-view)}))
-
-(handlers/register-handler-fx
- :navigation-replace
- navigation-interceptors
- (fn [cofx [_ view-id]]
-   (replace-view cofx view-id)))
 
 (fx/defn navigate-back
   [{{:keys [navigation-stack view-id] :as db} :db}]

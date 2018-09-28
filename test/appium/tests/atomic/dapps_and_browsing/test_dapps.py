@@ -1,6 +1,7 @@
 import pytest
-from tests import marks, basic_user
+from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
+from tests.users import basic_user
 from views.sign_in_view import SignInView
 
 
@@ -24,7 +25,7 @@ class TestDApps(SingleDeviceTestCase):
     def test_request_public_key_status_test_daap(self):
         user = basic_user
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=user['passphrase'], password=user['password'])
+        sign_in_view.recover_access(passphrase=user['passphrase'])
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.status_api_button.click()
