@@ -54,9 +54,20 @@
   [cofx]
   {:keychain/get-encryption-key [:init.callback/get-encryption-key-success]})
 
+(fx/defn start-app [cofx]
+  (fx/merge cofx
+            {:init/get-device-UUID                           nil
+             :ui/listen-to-window-dimensions-change          nil
+             :notifications/handle-initial-push-notification nil
+             :network/listen-to-network-status               nil
+             :network/listen-to-connection-status            nil
+             :hardwallet/check-nfc-support                   nil
+             :hardwallet/check-nfc-enabled                   nil}
+            (initialize-keychain)))
+
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [status-module-initialized? view-id
+  [{{:keys [status-module-initialized? view-id hardwallet
             network-status network peers-count peers-summary device-UUID]
      :node/keys [status]
      :or   {network (get app-db :network)}} :db}]
@@ -69,19 +80,13 @@
               :node/status status
               :network network
               :device-UUID device-UUID
-              :view-id view-id)})
+              :view-id view-id
+              :hardwallet (select-keys hardwallet [:nfc-enabled? :nfc-supported?]))})
 
 (fx/defn initialize-app
   [cofx encryption-key]
   (fx/merge cofx
-            {:init/get-device-UUID                           nil
-             :init/init-store                                encryption-key
-             :ui/listen-to-window-dimensions-change          nil
-             :notifications/handle-initial-push-notification nil
-             :network/listen-to-network-status               nil
-             :network/listen-to-connection-status            nil
-             :hardwallet/check-nfc-support                   nil
-             :hardwallet/check-nfc-enabled                   nil}
+            {:init/init-store encryption-key}
             (initialize-app-db)
             (node/initialize nil)))
 
@@ -123,7 +128,14 @@
   (let [{{:accounts/keys [accounts] :as db} :db} cofx]
     (if (empty? accounts)
       (navigation/navigate-to-clean cofx :intro nil)
-      (let [{:keys [address photo-path name]} (first (sort-by :last-sign-in > (vals accounts)))]
+      (let [account-with-notification (first (keys (:push-notifications/stored db)))
+            selection-fn (if (not-empty account-with-notification)
+                           #(filter (fn [account]
+                                      (= account-with-notification
+                                         (:public-key account)))
+                                    %)
+                           #(sort-by :last-sign-in > %))
+            {:keys [address photo-path name]} (first (selection-fn (vals accounts)))]
         (accounts.login/open-login cofx address photo-path name)))))
 
 (fx/defn load-accounts-and-initialize-views

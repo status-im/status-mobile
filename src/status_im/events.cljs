@@ -56,7 +56,7 @@
 (handlers/register-handler-fx
  :init/app-started
  (fn [cofx _]
-   (init/initialize-keychain cofx)))
+   (init/start-app cofx)))
 
 (handlers/register-handler-fx
  :init.callback/get-encryption-key-success
@@ -664,11 +664,6 @@
  :notifications/notification-event-received
  (fn [cofx [_ event]]
    (notifications/handle-push-notification cofx event)))
-
-(handlers/register-handler-fx
- :notifications.callback/notification-stored
- (fn [cofx _]
-   (accounts.login/user-login cofx)))
 
 (handlers/register-handler-fx
  :notifications.callback/get-fcm-token-success
