@@ -83,7 +83,7 @@ def pytest_addoption(parser):
 
     parser.addoption('--public_keys',
                      action='store',
-                     default=None,
+                     default='',
                      help='List of public keys for one-to-one chats')
     parser.addoption('--running_time',
                      action='store',
