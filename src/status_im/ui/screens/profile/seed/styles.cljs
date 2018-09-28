@@ -37,7 +37,7 @@
   {:flex-direction :row})
 
 (def six-word-num
-  {:width          20
+  {:width          25
    :text-align     :right
    :opacity        0.4
    :font-size      15

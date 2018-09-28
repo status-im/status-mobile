@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.user.views :as profile]
             [status-im.utils.build :as build]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.colors :as colors]
@@ -13,7 +12,9 @@
             [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
-            [status-im.ui.screens.profile.user.views :as profile]))
+            [status-im.ui.screens.profile.user.views :as profile]
+            [status-im.ui.screens.profile.seed.views :as profile.recovery]
+            [status-im.ui.components.common.common :as components.common]))
 
 (defn profile-badge [{:keys [name photo-path]} editing?]
   [react/view styles/profile-badge
@@ -82,6 +83,9 @@
           [react/view {:style {:margin-vertical 8}}
            [render-fn node]])]])))
 
+(views/defview backup-recovery-phrase []
+  [profile.recovery/backup-seed])
+
 (defn share-contact-code []
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :qr-code])}
    [react/view {:style styles/share-contact-code}
@@ -92,10 +96,12 @@
                  :accessibility-label :share-my-contact-code-button}
      [vector-icons/icon :icons/qr {:style {:tint-color colors/blue}}]]]])
 
-(views/defview profile [user]
+(views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:get :view-id]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
-    (let [adv-settings-open? (= current-view-id :advanced-settings)]
+    (let [adv-settings-open?           (= current-view-id :advanced-settings)
+          backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
+          show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
       [react/view
        [react/view {:style styles/profile-edit}
         [react/touchable-highlight {:on-press #(re-frame/dispatch (if editing?
@@ -113,6 +119,14 @@
                        :font  (if adv-settings-open? :medium :default)}
            (i18n/label :t/advanced-settings)]
           [vector-icons/icon :icons/forward {:style {:tint-color colors/gray}}]]]
+        (when show-backup-seed?
+          [react/touchable-highlight {:style  (styles/profile-row backup-recovery-phrase-open?)
+                                      :on-press #(re-frame/dispatch [:navigate-to :backup-recovery-phrase])}
+           [react/view {:style styles/adv-settings}
+            [react/text {:style (styles/profile-row-text colors/black)
+                         :font  (if backup-recovery-phrase-open? :medium :default)}
+             (i18n/label :wallet-backup-recovery-title)]
+            [components.common/counter {:size 22} 1]]])
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]

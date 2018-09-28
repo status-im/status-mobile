@@ -53,11 +53,12 @@
                                 :disabled active?
                                 :on-press #(re-frame/dispatch [:show-desktop-tab view-id])}
      [react/view
-      [content active? (if (= view-id :home) cnt nil)]]]))
+      [content active? cnt]]]))
 
 (views/defview main-tabs []
   (views/letsubs [current-tab [:get-in [:desktop/desktop :tab-view-id]]]
     [react/view
      [react/view {:style tabs.styles/tabs-container}
       (for [[index {:keys [content view-id count-subscription]}] tabs-list-indexed]
-        ^{:key index} [tab index content view-id (= current-tab view-id) count-subscription])]]))
+        ^{:key index}
+        [tab index content view-id (= current-tab view-id) count-subscription])]]))

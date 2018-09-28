@@ -19,7 +19,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.profile.seed.styles :as styles]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.styles :as common.styles]))
+            [status-im.ui.components.styles :as common.styles]
+            [status-im.utils.platform :as platform]))
 
 (def steps-numbers
   {:intro       1
@@ -36,8 +37,9 @@
 
 (defn intro []
   [react/view {:style styles/intro-container}
-   [components.common/image-contain {:container-style styles/intro-image}
-    (:lock resources/ui)]
+   (when-not platform/desktop?
+     [components.common/image-contain {:container-style styles/intro-image}
+      (:lock resources/ui)])
    [react/i18n-text {:style styles/intro-text
                      :key   :your-data-belongs-to-you}]
    [react/i18n-text {:style styles/intro-description
@@ -80,16 +82,31 @@
        {:forward? true
         :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
 
-(defview input [error]
+(defview input [error next-handler]
   (letsubs [ref (reagent/atom nil)]
     {:component-did-mount (fn [_] (when config/testfairy-enabled?
                                     (.hideView js-dependencies/testfairy @ref)))}
     [text-input/text-input-with-label
-     {:placeholder    (i18n/label :t/enter-word)
-      :ref            (partial reset! ref)
-      :auto-focus     true
-      :on-change-text #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
-      :error          error}]))
+     {:placeholder       (i18n/label :t/enter-word)
+      :ref               (partial reset! ref)
+      :auto-focus        true
+      :on-change-text    #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
+      :on-submit-editing next-handler
+      :error             error}]))
+
+(defn next-handler [word entered-word step]
+  (fn [_]
+    (cond (not= word entered-word)
+          (re-frame/dispatch [:set-in [:my-profile/seed :error] (i18n/label :t/wrong-word)])
+
+          (= :first-word step)
+          (re-frame/dispatch [:my-profile/set-step :second-word])
+
+          :else
+          (utils/show-question
+           (i18n/label :t/are-you-sure?)
+           (i18n/label :t/are-you-sure-description)
+           #(re-frame/dispatch [:my-profile/finish])))))
 
 (defn enter-word [step [idx word] error entered-word]
   ^{:key word}
@@ -99,7 +116,7 @@
      (i18n/label :t/check-your-recovery-phrase)]
     [react/text {:style styles/enter-word-n}
      (i18n/label :t/word-n {:number (inc idx)})]]
-   [input error]
+   [input error (next-handler word entered-word step)]
    [react/text {:style styles/enter-word-n-description}
     (i18n/label :t/word-n-description {:number (inc idx)})]
    [react/view styles/twelve-words-spacer]
@@ -108,18 +125,7 @@
      {:forward?  (not= :second-word step)
       :label     (when (= :second-word step) (i18n/label :t/done))
       :disabled? (string/blank? entered-word)
-      :on-press  (fn [_]
-                   (cond (not= word entered-word)
-                         (re-frame/dispatch [:set-in [:my-profile/seed :error] (i18n/label :t/wrong-word)])
-
-                         (= :first-word step)
-                         (re-frame/dispatch [:my-profile/set-step :second-word])
-
-                         :else
-                         (utils/show-question
-                          (i18n/label :t/are-you-sure?)
-                          (i18n/label :t/are-you-sure-description)
-                          #(re-frame/dispatch [:my-profile/finish]))))}]]])
+      :on-press  (next-handler word entered-word step)}]]])
 
 (defn finish []
   [react/view {:style styles/finish-container}
@@ -136,12 +142,12 @@
 
 (defview backup-seed []
   (letsubs [current-account [:get-current-account]
-            {:keys [step first-word second-word error word]} [:get :my-profile/seed]]
+            {:keys [step first-word second-word error word]} [:my-profile/recovery]]
     [react/keyboard-avoiding-view {:style styles/backup-seed-container}
      [status-bar/status-bar]
      [toolbar/toolbar
       nil
-      (when-not (#{:finish} step)
+      (when-not (= :finish step)
         (toolbar/nav-button (actions/back #(step-back step))))
       [react/view
        [react/text {:style styles/backup-seed}

@@ -24,9 +24,11 @@
                       :contact-toggle-list contact-toggle-list
                       (:new-contact
                        :advanced-settings
-                       :chat :home
+                       :chat
+                       :home
                        :qr-code
-                       :chat-profile) main.views/main-views
+                       :chat-profile
+                       :backup-recovery-phrase) main.views/main-views
                       :login login.views/login
                       react/view)]
       [react/view {:style {:flex 1}}
