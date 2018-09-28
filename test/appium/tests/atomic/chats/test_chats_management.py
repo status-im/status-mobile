@@ -10,7 +10,8 @@ from views.sign_in_view import SignInView
 @marks.chat
 class TestChatManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(1428)
+    @marks.testrail_id(5426)
+    @marks.medium
     def test_clear_history_one_to_one_chat(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
@@ -26,8 +27,8 @@ class TestChatManagement(SingleDeviceTestCase):
         if not chat_view.no_messages_in_chat.is_element_present():
             pytest.fail('Message history is shown after re-login')
 
-    @marks.testrail_id(1395)
-    @marks.smoke_1
+    @marks.testrail_id(5319)
+    @marks.critical
     def test_swipe_to_delete_1_1_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -43,8 +44,8 @@ class TestChatManagement(SingleDeviceTestCase):
         if home.get_chat_with_user(basic_user['username']).is_element_displayed():
             pytest.fail('Deleted 1-1 chat is present after relaunch app')
 
-    @marks.testrail_id(3718)
-    @marks.smoke_1
+    @marks.testrail_id(5343)
+    @marks.critical
     def test_swipe_to_delete_public_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -65,8 +66,8 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append('Chat history is shown')
         self.verify_no_errors()
 
-    @marks.testrail_id(763)
-    @marks.smoke_1
+    @marks.testrail_id(5304)
+    @marks.critical
     def test_add_contact_by_pasting_public_key(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -91,7 +92,8 @@ class TestChatManagement(SingleDeviceTestCase):
         if not start_new_chat.element_by_text(basic_user['username']).is_element_displayed():
             pytest.fail("List of contacts doesn't contain added user")
 
-    @marks.testrail_id(3719)
+    @marks.testrail_id(5387)
+    @marks.high
     def test_delete_one_to_one_chat_via_delete_button(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -107,7 +109,8 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append("One-to-one' chat is shown after re-login, but the chat has been deleted")
         self.verify_no_errors()
 
-    @marks.testrail_id(3720)
+    @marks.testrail_id(5388)
+    @marks.high
     def test_delete_public_chat_via_delete_button(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -123,7 +126,8 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
         self.verify_no_errors()
 
-    @marks.testrail_id(2172)
+    @marks.testrail_id(5464)
+    @marks.medium
     def test_incorrect_contact_code_start_new_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -135,7 +139,8 @@ class TestChatManagement(SingleDeviceTestCase):
         if not warning_text.is_element_displayed():
             pytest.fail('Error is not shown for invalid public key')
 
-    @marks.testrail_id(2175)
+    @marks.testrail_id(5466)
+    @marks.medium
     def test_deny_camera_access_scanning_contact_code(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -152,8 +157,8 @@ class TestChatManagement(SingleDeviceTestCase):
 @marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
-    @marks.testrail_id(3694)
-    @marks.smoke_1
+    @marks.testrail_id(5332)
+    @marks.critical
     def test_add_contact_from_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

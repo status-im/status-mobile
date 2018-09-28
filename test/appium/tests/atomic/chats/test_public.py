@@ -7,8 +7,8 @@ from views.sign_in_view import SignInView
 @marks.chat
 class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
-    @marks.testrail_id(1383)
-    @marks.smoke_1
+    @marks.testrail_id(5313)
+    @marks.critical
     def test_public_chat_messaging(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -36,7 +36,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         self.verify_no_errors()
 
-    @marks.testrail_id(3706)
+    @marks.testrail_id(5386)
+    @marks.high
     def test_public_chat_clear_history(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -70,7 +71,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
                 chat_1.driver.fail(
                     "Message '%s' is shown after re-login, but public chat history has been cleared" % message)
 
-    @marks.testrail_id(3729)
+    @marks.testrail_id(5360)
+    @marks.critical
     def test_unread_messages_counter_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -106,7 +108,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
     @marks.skip
-    @marks.testrail_id(3752)
+    @marks.testrail_id(5392)
+    @marks.high
     def test_send_korean_characters(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

@@ -13,8 +13,8 @@ from views.sign_in_view import SignInView
 @marks.chat
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
-    @marks.testrail_id(764)
-    @marks.smoke_1
+    @marks.testrail_id(5305)
+    @marks.critical
     def test_text_message_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -32,8 +32,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat = device_2_home.get_chat_with_user(username_1).click()
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
-    @marks.testrail_id(772)
-    @marks.smoke_1
+    @marks.testrail_id(5310)
+    @marks.critical
     def test_offline_messaging_1_1_chat(self):
         self.create_drivers(2, offline_mode=True)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -71,8 +71,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
-    @marks.testrail_id(3710)
-    @marks.smoke_1
+    @marks.testrail_id(5338)
+    @marks.critical
     def test_messaging_in_different_networks(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -101,8 +101,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
-    @marks.testrail_id(1386)
-    @marks.smoke_1
+    @marks.testrail_id(5315)
+    @marks.critical
     def test_send_message_to_newly_added_contact(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -138,8 +138,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.verify_no_errors()
 
-    @marks.testrail_id(1387)
-    @marks.smoke_1
+    @marks.testrail_id(5316)
+    @marks.critical
     def test_add_to_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -181,8 +181,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.verify_no_errors()
 
-    @marks.testrail_id(1413)
-    @marks.smoke_1
+    @marks.testrail_id(5373)
+    @marks.high
     def test_send_and_open_links(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -220,8 +220,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('URL was not opened from 1-1 chat')
         self.verify_no_errors()
 
-    @marks.testrail_id(1431)
-    @marks.smoke_1
+    @marks.testrail_id(5326)
+    @marks.critical
     def test_offline_status(self):
         self.create_drivers(1, offline_mode=True)
         sign_in = SignInView(self.drivers[0])
@@ -247,8 +247,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Offline status is not shown in a public chat')
         self.verify_no_errors()
 
-    @marks.testrail_id(3695)
-    @marks.smoke_1
+    @marks.testrail_id(5374)
+    @marks.high
     def test_message_marked_as_sent_and_seen_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -272,7 +272,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("'Seen' status is not shown under the text message which was read by a receiver")
         self.verify_no_errors()
 
-    @marks.testrail_id(3784)
+    @marks.testrail_id(5362)
+    @marks.critical
     def test_unread_messages_counter_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -304,7 +305,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('New messages counter is shown on chat element for already seen message')
         self.verify_no_errors()
 
-    @marks.testrail_id(1414)
+    @marks.testrail_id(5425)
+    @marks.medium
     def test_bold_and_italic_text_in_messages(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -359,7 +361,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.skip
-    @marks.testrail_id(2781)
+    @marks.testrail_id(5385)
+    @marks.high
     def test_timestamp_in_chats(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -411,8 +414,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 @marks.chat
 class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
-    @marks.testrail_id(1390)
-    @marks.smoke_1
+    @marks.testrail_id(5317)
+    @marks.critical
     def test_copy_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -444,8 +447,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Message text was not copied in 1-1 chat')
         self.verify_no_errors()
 
-    @marks.testrail_id(1398)
-    @marks.smoke_1
+    @marks.testrail_id(5322)
+    @marks.critical
     def test_delete_cut_and_paste_messages(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -467,8 +470,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         chat.chat_element_by_text(message_text[:-2] + ' ').wait_for_visibility_of_element(2)
 
-    @marks.testrail_id(2106)
-    @marks.smoke_1
+    @marks.testrail_id(5328)
+    @marks.critical
     def test_send_emoji(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

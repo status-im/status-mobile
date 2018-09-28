@@ -10,8 +10,8 @@ from views.sign_in_view import SignInView
 @marks.account
 class TestWalletManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(3698)
-    @marks.smoke_1
+    @marks.testrail_id(5335)
+    @marks.critical
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -40,7 +40,8 @@ class TestWalletManagement(SingleDeviceTestCase):
                 self.errors.append('%s button is not shown after wallet setup' % element.name)
         self.verify_no_errors()
 
-    @marks.testrail_id(1449)
+    @marks.testrail_id(5384)
+    @marks.high
     def test_open_transaction_on_etherscan(self):
         user = wallet_users['A']
         sign_in_view = SignInView(self.driver)
@@ -56,7 +57,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         base_web_view.open_in_webview()
         base_web_view.find_text_part(transaction_hash)
 
-    @marks.testrail_id(1450)
+    @marks.testrail_id(5427)
+    @marks.medium
     def test_copy_transaction_hash(self):
         user = wallet_users['A']
         sign_in_view = SignInView(self.driver)
@@ -75,8 +77,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         if public_chat.chat_message_input.text != transaction_hash:
             pytest.fail('Transaction hash was not copied')
 
-    @marks.testrail_id(3713)
-    @marks.smoke_1
+    @marks.testrail_id(5341)
+    @marks.critical
     def test_manage_assets(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -96,7 +98,8 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('%s asset is shown in wallet but was deselected' % deselect_asset)
         self.verify_no_errors()
 
-    @marks.testrail_id(3725)
+    @marks.testrail_id(5358)
+    @marks.critical
     def test_backup_recovery_phrase_warning_from_wallet(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -115,7 +118,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile = wallet.get_profile_view()
         profile.backup_recovery_phrase()
 
-    @marks.testrail_id(3777)
+    @marks.testrail_id(5440)
+    @marks.medium
     def test_no_collectibles_to_send_from_wallet(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -134,7 +138,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         if send_transaction.asset_by_name(asset_name).is_element_displayed():
             pytest.fail('Collectibles can be sent from wallet')
 
-    @marks.testrail_id(2176)
+    @marks.testrail_id(5467)
+    @marks.medium
     def test_deny_camera_access_scanning_wallet_adders(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -150,7 +155,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction.scan_qr_code_button.click()
         send_transaction.deny_button.wait_for_visibility_of_element(2)
 
-    @marks.testrail_id(3730)
+    @marks.testrail_id(5435)
+    @marks.medium
     def test_filter_transactions_history(self):
         user = wallet_users['C']
         sign_in_view = SignInView(self.driver)

@@ -13,8 +13,8 @@ from views.sign_in_view import SignInView
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
-    @marks.smoke_1
-    @marks.testrail_id(3697)
+    @marks.critical
+    @marks.testrail_id(5334)
     def test_network_mismatch_for_send_request_commands(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -70,8 +70,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append('Request funds message was not received')
         self.verify_no_errors()
 
-    @marks.testrail_id(765)
-    @marks.smoke_1
+    @marks.testrail_id(5306)
+    @marks.critical
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_recipients['A']
         sender = transaction_senders['A']
@@ -137,8 +137,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append(e.msg)
         self.verify_no_errors()
 
-    @marks.testrail_id(1391)
-    @marks.smoke_1
+    @marks.testrail_id(5318)
+    @marks.critical
     def test_request_and_receive_eth_in_1_1_chat(self):
         recipient = transaction_recipients['B']
         sender = transaction_senders['J']
@@ -174,8 +174,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append(e.msg)
         self.verify_no_errors()
 
-    @marks.testrail_id(1429)
-    @marks.smoke_1
+    @marks.testrail_id(5324)
+    @marks.critical
     def test_request_eth_in_wallet(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -215,7 +215,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append('Request funds message was not received')
         self.verify_no_errors()
 
-    @marks.testrail_id(1417)
+    @marks.testrail_id(5383)
+    @marks.high
     def test_contact_profile_send_transaction(self):
         self.create_drivers(1)
         recipient = basic_user
@@ -243,8 +244,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction_view.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
 
-    @marks.testrail_id(3744)
-    @marks.smoke_1
+    @marks.testrail_id(5348)
+    @marks.critical
     def test_send_tokens_in_1_1_chat(self):
         recipient = transaction_recipients['C']
         sender = transaction_senders['C']
@@ -274,8 +275,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append(e.msg)
         self.verify_no_errors()
 
-    @marks.testrail_id(3748)
-    @marks.smoke_1
+    @marks.testrail_id(5352)
+    @marks.critical
     def test_request_and_receive_tokens_in_1_1_chat(self):
         recipient = transaction_recipients['D']
         sender = transaction_senders['B']
@@ -309,8 +310,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append(e.msg)
         self.verify_no_errors()
 
-    @marks.testrail_id(3749)
-    @marks.smoke_1
+    @marks.testrail_id(5376)
+    @marks.high
     def test_transaction_confirmed_on_recipient_side(self):
         recipient = transaction_recipients['E']
         sender = transaction_senders['E']
@@ -336,8 +337,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 @marks.transaction
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
-    @marks.testrail_id(3745)
-    @marks.smoke_1
+    @marks.testrail_id(5349)
+    @marks.critical
     def test_send_request_not_enabled_tokens(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -354,7 +355,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.logcat
-    @marks.testrail_id(3771)
+    @marks.testrail_id(5417)
+    @marks.critical
     def test_logcat_send_transaction_in_1_1_chat(self):
         sender = transaction_senders['F']
         sign_in = SignInView(self.driver)
@@ -367,8 +369,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.send_transaction_in_1_1_chat('ETH', amount, unique_password)
         chat.check_no_values_in_logcat(password=unique_password)
 
-    @marks.testrail_id(3736)
-    @marks.smoke_1
+    @marks.testrail_id(5347)
+    @marks.critical
     def test_send_transaction_details_in_1_1_chat(self):
         recipient = basic_user
         sender = transaction_senders['G']
@@ -397,8 +399,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append('Amount is not visible')
         self.verify_no_errors()
 
-    @marks.testrail_id(3750)
-    @marks.smoke_1
+    @marks.testrail_id(5377)
+    @marks.high
     def test_transaction_confirmed_on_sender_side(self):
         sender = transaction_senders['H']
         sign_in = SignInView(self.driver)
@@ -413,7 +415,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         if not chat.chat_element_by_text(amount).contains_text('Confirmed', wait_time=90):
             pytest.fail('Status "Confirmed" is not shown under transaction for the sender')
 
-    @marks.testrail_id(3790)
+    @marks.testrail_id(5410)
+    @marks.high
     def test_insufficient_funds_1_1_chat_0_balance(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -440,7 +443,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append("'Insufficient funds' error is now shown when sending 1 STT from chat with balance 0")
         self.verify_no_errors()
 
-    @marks.testrail_id(3793)
+    @marks.testrail_id(5473)
+    @marks.medium
     def test_insufficient_funds_1_1_chat_positive_balance(self):
         sender = transaction_senders['I']
         sign_in_view = SignInView(self.driver)
