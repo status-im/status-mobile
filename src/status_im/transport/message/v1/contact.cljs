@@ -5,7 +5,8 @@
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [cljs.spec.alpha :as spec]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
@@ -23,7 +24,10 @@
                                          :on-success on-success}]}
                 (protocol/init-chat {:chat-id chat-id
                                      :topic   topic
-                                     :resend? "contact-request"})))))
+                                     :resend? "contact-request"}))))
+  (validate [this]
+    (when (spec/valid? :message/contact-request this)
+      this)))
 
 (defrecord ContactRequestConfirmed [name profile-image address fcm-token]
   message/StatusMessage
@@ -39,7 +43,10 @@
                                                                      :chat    updated-chat})]}
                 (protocol/send-with-pubkey {:chat-id chat-id
                                             :payload this
-                                            :success-event success-event})))))
+                                            :success-event success-event}))))
+  (validate [this]
+    (when (spec/valid? :message/contact-request-confirmed this)
+      this)))
 
 (fx/defn send-contact-update
   [{:keys [db] :as cofx} chat-id payload]
@@ -73,7 +80,10 @@
                                       (:contacts/contacts db))
           ;;NOTE: chats with contacts use public-key as chat-id
           send-contact-update-fxs (map #(send-contact-update % this) contact-public-keys)]
-      (apply fx/merge cofx send-contact-update-fxs))))
+      (apply fx/merge cofx send-contact-update-fxs)))
+  (validate [this]
+    (when (spec/valid? :message/contact-update this)
+      this)))
 
 (fx/defn remove-chat-filter
   "Stops the filter for the given chat-id"
@@ -126,4 +136,7 @@
                     ;; dereferrencing it
                     (remove-chat-filter chat-id)))
         ;; if we don't save the key, we read the message directly
-        (message/receive message chat-id chat-id timestamp cofx)))))
+        (message/receive message chat-id chat-id timestamp cofx))))
+  (validate [this]
+    (when (spec/valid? :message/new-contact-key this)
+      this)))
