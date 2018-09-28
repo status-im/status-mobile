@@ -1,7 +1,8 @@
 import pytest
 
-from tests import marks, common_password, basic_user
+from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
+from tests.users import basic_user
 from views.sign_in_view import SignInView
 
 
@@ -25,7 +26,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         address = wallet.get_wallet_address()
         self.driver.reset()
         sign_in.accept_agreements()
-        sign_in.recover_access(passphrase=' '.join(recovery_phrase.values()), password=common_password)
+        sign_in.recover_access(passphrase=' '.join(recovery_phrase.values()))
         home.connection_status.wait_for_invisibility_of_element(30)
         home.wallet_button.click()
         wallet.set_up_wallet()
@@ -50,7 +51,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
         self.driver.reset()
         sign_in.accept_agreements()
-        sign_in.recover_access(passphrase=' '.join(list(recovery_phrase.values())[::-1]), password=common_password)
+        sign_in.recover_access(passphrase=' '.join(list(recovery_phrase.values())[::-1]))
         if sign_in.get_public_key() == public_key:
             pytest.fail('The same account is recovered with reversed passphrase')
 
@@ -58,5 +59,5 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(3769)
     def test_logcat_recovering_account(self):
         sign_in = SignInView(self.driver)
-        sign_in.recover_access(basic_user['passphrase'], basic_user['password'])
-        sign_in.check_no_values_in_logcat(passphrase=basic_user['passphrase'], password=basic_user['password'])
+        sign_in.recover_access(passphrase=basic_user['passphrase'], password=unique_password)
+        sign_in.check_no_values_in_logcat(passphrase=basic_user['passphrase'], password=unique_password)

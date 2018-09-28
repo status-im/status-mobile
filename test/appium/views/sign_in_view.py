@@ -116,7 +116,7 @@ class SignInView(BaseView):
         self.next_button.click()
         return self.get_home_view()
 
-    def recover_access(self, passphrase, password):
+    def recover_access(self, passphrase: str, password: str = common_password):
         recover_access_view = self.i_have_account_button.click()
         recover_access_view.passphrase_input.click()
         recover_access_view.send_as_keyevent(passphrase)

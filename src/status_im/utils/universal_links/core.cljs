@@ -75,7 +75,7 @@
     (handle-view-profile cofx (match-url url profile-regex))
 
     (match-url url browse-regex)
-    (handle-browse cofx url)
+    (handle-browse cofx (match-url url browse-regex))
 
     (and config/extensions-enabled? (match-url url extension-regex))
     (handle-extension cofx url)

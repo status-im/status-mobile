@@ -22,7 +22,7 @@
       (testing "a browse dapp link"
         (testing "it open the dapps"
           (is
-           (= "status-im://browse/www.cryptokitties.co"
+           (= "www.cryptokitties.co"
               (:browser/show-browser-selection (links/handle-url {:db db} "status-im://browse/www.cryptokitties.co"))))))
       (testing "a user profile link"
         (testing "it loads the profile"

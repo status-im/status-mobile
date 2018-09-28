@@ -1,3 +1,4 @@
+from tests import common_password
 from views.base_element import BaseText
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView, OkButton, ProgressBar
@@ -168,7 +169,7 @@ class SendTransactionView(BaseView):
         self.share_button = ShareButton(self.driver)
         self.progress_bar = ProgressBar(self.driver)
 
-    def sign_transaction(self, sender_password):
+    def sign_transaction(self, sender_password: str = common_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
         self.enter_password_input.send_keys(sender_password)
         self.sign_transaction_button.click_until_presence_of_element(self.progress_bar)

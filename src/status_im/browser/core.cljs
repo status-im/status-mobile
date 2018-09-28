@@ -225,8 +225,8 @@
               (update-browser browser)
               (navigation/navigate-to-cofx :browser nil))))
 
-(defn web3-send-async
-  [{:keys [method] :as payload} message-id {:keys [db]}]
+(fx/defn web3-send-async
+  [{:keys [db]} {:keys [method] :as payload} message-id]
   (if (or (= method constants/web3-send-transaction)
           (= method constants/web3-personal-sign))
     {:db       (update-in db [:wallet :transactions-queue] conj {:message-id message-id :payload payload})
@@ -244,17 +244,17 @@
   {:browser/send-to-bridge {:message message
                             :webview (get-in cofx [:db :webview-bridge])}})
 
-(defn web3-send-async-read-only
-  [dapp-name {:keys [method] :as payload} message-id {:keys [db] :as cofx}]
+(fx/defn web3-send-async-read-only
+  [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
   (let [{:dapps/keys [permissions]} db]
     (if (and (#{"eth_accounts" "eth_coinbase" "eth_sendTransaction" "eth_sign"
                 "eth_signTypedData" "personal_sign" "personal_ecRecover"} method)
              (not (some #{"WEB3"} (get-in permissions [dapp-name :permissions]))))
-      (send-to-bridge {:type      constants/web3-send-async-callback
+      (send-to-bridge cofx
+                      {:type      constants/web3-send-async-callback
                        :messageId message-id
-                       :error     "Denied"}
-                      cofx)
-      (web3-send-async payload message-id cofx))))
+                       :error     "Denied"})
+      (web3-send-async cofx payload message-id))))
 
 (fx/defn handle-scanned-qr-code
   [cofx data message]
@@ -275,13 +275,13 @@
       (and (= type constants/history-state-changed)
            platform/ios?
            (not= "about:blank" url))
-      (update-browser-history browser url false cofx)
+      (update-browser-history cofx browser url false)
 
       (= type constants/web3-send-async)
-      (web3-send-async payload messageId cofx)
+      (web3-send-async cofx payload messageId)
 
       (= type constants/web3-send-async-read-only)
-      (web3-send-async-read-only dapp-name payload messageId cofx)
+      (web3-send-async-read-only cofx dapp-name payload messageId)
 
       (= type constants/scan-qr-code)
       (qr-scanner/scan-qr-code cofx

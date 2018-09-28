@@ -238,15 +238,7 @@ environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == '
 
 
 class MultipleDeviceTestCase(environment):
-
-    def setup_method(self, method):
-        super(MultipleDeviceTestCase, self).setup_method(method)
-        self.senders = dict()
-
-    def teardown_method(self, method):
-        for user in self.senders:
-            self.network_api.faucet(address=self.senders[user]['address'])
-        super(MultipleDeviceTestCase, self).teardown_method(method)
+    pass
 
 
 class MessageReliabilityTestCase(MultipleDeviceTestCase):
