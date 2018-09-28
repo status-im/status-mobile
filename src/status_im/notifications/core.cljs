@@ -73,7 +73,7 @@
           (then #(log/debug "Notification channel created:" channel-id)
                 #(log/error "Notification channel creation error:" channel-id %)))))
 
-  (fx/defn store-event [{:keys [from to]} {:keys [db] :as cofx}]
+  (fx/defn store-event [{:keys [db] :as cofx} {:keys [from to]}]
     (let [{:keys [address photo-path name]} (->> (get-in cofx [:db :accounts/accounts])
                                                  vals
                                                  (filter #(= (:public-key %) to))
@@ -92,7 +92,7 @@
           (fx/merge cofx
                     {:db (update db :push-notifications/stored dissoc to)}
                     (chat-model/navigate-to-chat from nil)))
-        (store-event event cofx))))
+        (store-event cofx event))))
 
   (defn parse-notification-payload [s]
     (try
