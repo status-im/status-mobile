@@ -65,4 +65,4 @@
  :shh/remove-filters
  (fn [filters]
    (doseq [filter filters]
-     (remove-filter! filter))))
+     (when filter (remove-filter! filter)))))
