@@ -147,10 +147,10 @@ geth-connect: ##@other Connect to Geth on the device
 	build/bin/geth attach http://localhost:8545
 
 android-ports: ##@other Add proxies to Android Device/Simulator
-	adb -e reverse tcp:8081 tcp:8081
-	adb -e reverse tcp:3449 tcp:3449
-	adb -e reverse tcp:4567 tcp:4567
-	adb -e forward tcp:5561 tcp:5561
+	adb reverse tcp:8081 tcp:8081
+	adb reverse tcp:3449 tcp:3449
+	adb reverse tcp:4567 tcp:4567
+	adb forward tcp:5561 tcp:5561
 
 
 startdev-%:
