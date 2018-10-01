@@ -72,7 +72,7 @@ QVariantMap DesktopNotification::constantsToExport() { return QVariantMap(); }
 
 void DesktopNotification::sendNotification(QString text) {
   Q_D(DesktopNotification);
-  qDebug() << "call of DesktopNotification::sendNotification";
+  qDebug() << "call of DesktopNotification::sendNotification for msg:" << text;
 
   Snore::Notification notification(
       d_ptr->snoreApp, d_ptr->snoreApp.alerts()[NewMessageAlert], "New message",
