@@ -28,7 +28,10 @@
 
 (defn- delete-chat [chat-id group?]
   {:label  (i18n/label :t/delete-chat)
-   :action #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id group?])})
+   :action #(re-frame/dispatch [(if group?
+                                  :group-chats.ui/remove-chat-pressed
+                                  :chat.ui/remove-chat-pressed)
+                                chat-id])})
 
 (defn- chat-actions [chat-id]
   [view-my-wallet

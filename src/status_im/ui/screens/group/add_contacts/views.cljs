@@ -44,13 +44,14 @@
 (defview contact-toggle-list []
   (letsubs [contacts                [:all-added-people-contacts]
             selected-contacts-count [:selected-contacts-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar]
-     [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
-                           :label   (i18n/label :t/next)
-                           :count   (pos? selected-contacts-count)}
-      (i18n/label :t/group-chat)]
-     [toggle-list contacts group-toggle-contact]]))
+    (when (seq contacts)
+      [react/keyboard-avoiding-view {:style styles/group-container}
+       [status-bar]
+       [toggle-list-toolbar {:handler #(re-frame/dispatch [:navigate-to :new-group])
+                             :label   (i18n/label :t/next)
+                             :count   (pos? selected-contacts-count)}
+        (i18n/label :t/group-chat)]
+       [toggle-list contacts group-toggle-contact]])))
 
 ;; Add participants to existing group chat
 (defview add-participants-toggle-list []
@@ -61,8 +62,9 @@
      [status-bar]
      [toggle-list-toolbar {:count   selected-contacts-count
                            :handler #(do
-                                       (re-frame/dispatch [:add-new-group-chat-participants])
+                                       (re-frame/dispatch [:group-chats.ui/add-members-pressed])
                                        (re-frame/dispatch [:navigate-back]))
                            :label   (i18n/label :t/add)}
       name]
-     [toggle-list contacts group-toggle-participant]]))
+     (when (seq contacts)
+       [toggle-list contacts group-toggle-participant])]))

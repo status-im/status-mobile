@@ -46,20 +46,7 @@
       (testing "it updates existins props"
         (is (= "new-name" (:name actual-chat))))
       (testing "it adds the fx to store a chat"
-        (is store-chat-fx))))
-  (testing "upserting a deleted chat"
-    (let [chat-id        "some-chat-id"
-          contact-name   "contact-name"
-          chat-props     {:chat-id chat-id
-                          :name "new-name"
-                          :extra-prop "some"}
-          cofx           {:some-cofx "b"
-                          :db {:chats {chat-id {:is-active false
-                                                :name "old-name"}}}}]
-      (testing "it updates it if is-active is passed"
-        (is (get-in (chat/upsert-chat  cofx (assoc chat-props :is-active true)) [:db :chats chat-id :is-active])))
-      (testing "it returns the db unchanged"
-        (is (= {:db (:db cofx)} (chat/upsert-chat cofx chat-props)))))))
+        (is store-chat-fx)))))
 
 (deftest add-group-chat
   (let [chat-id "chat-id"
@@ -94,7 +81,7 @@
     (testing "it sets the name"
       (is (= topic (:name chat))))
     (testing "it sets the participants"
-      (is (= [] (:contacts chat))))
+      (is (= #{} (:contacts chat))))
     (testing "it sets the chat-id"
       (is (= topic (:chat-id chat))))
     (testing "it sets the group-chat flag"

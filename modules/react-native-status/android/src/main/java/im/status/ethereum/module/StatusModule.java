@@ -694,8 +694,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
   }
 
   @ReactMethod
-  public void verifyGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
-    Log.d(TAG, "verifyGroupMembershipSignatures");
+  public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
+    Log.d(TAG, "extractGroupMembershipSignatures");
     if (!checkAvailability()) {
       callback.invoke(false);
       return;
@@ -704,7 +704,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     Runnable r = new Runnable() {
       @Override
       public void run() {
-        String result = Statusgo.VerifyGroupMembershipSignatures(signaturePairs);
+        String result = Statusgo.ExtractGroupMembershipSignatures(signaturePairs);
 
         callback.invoke(result);
       }

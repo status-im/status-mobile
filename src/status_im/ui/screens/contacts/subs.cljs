@@ -93,8 +93,8 @@
                (:name current-account)
                (:name (contacts identity))))))
 
-(defn query-chat-contacts [[{:keys [contacts group-admin]} all-contacts] [_ query-fn]]
-  (let [participant-set (into #{} (filter identity) (conj contacts group-admin))]
+(defn query-chat-contacts [[{:keys [contacts]} all-contacts] [_ query-fn]]
+  (let [participant-set (into #{} (filter identity) contacts)]
     (query-fn (comp participant-set :whisper-identity) (vals all-contacts))))
 
 (reg-sub :query-current-chat-contacts
@@ -104,24 +104,26 @@
 
 (reg-sub :get-all-contacts-not-in-current-chat
          :<- [:query-current-chat-contacts remove]
-         identity)
+         (fn [contacts]
+           (remove :dapp? contacts)))
 
-(defn get-all-contacts-in-group-chat [chat-contact-ids group-admin-id contacts current-account]
-  (let [participant-set         (into #{} (filter identity) (conj chat-contact-ids group-admin-id))
-        current-account-contact (-> current-account
+(defn get-all-contacts-in-group-chat [members contacts current-account]
+  (let [current-account-contact (-> current-account
                                     (select-keys [:name :photo-path :public-key])
                                     (clojure.set/rename-keys {:public-key :whisper-identity}))
         all-contacts            (assoc contacts (:whisper-identity current-account-contact) current-account-contact)]
-    (map #(or (get all-contacts %)
-              (utils.contacts/whisper-id->new-contact %))
-         participant-set)))
+    (->> members
+         (map #(or (get all-contacts %)
+                   (utils.contacts/whisper-id->new-contact %)))
+         (remove :dapp?)
+         (sort-by (comp clojure.string/lower-case :name)))))
 
 (reg-sub :get-current-chat-contacts
          :<- [:get-current-chat]
          :<- [:get-contacts]
          :<- [:get-current-account]
-         (fn [[{:keys [contacts group-admin]} all-contacts current-account]]
-           (get-all-contacts-in-group-chat contacts group-admin all-contacts current-account)))
+         (fn [[{:keys [contacts]} all-contacts current-account]]
+           (get-all-contacts-in-group-chat contacts all-contacts current-account)))
 
 (reg-sub :get-contacts-by-chat
          (fn [[_ _ chat-id] _]

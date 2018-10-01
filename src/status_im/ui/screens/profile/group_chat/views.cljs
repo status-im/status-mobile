@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.group-chat.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.screens.profile.group-chat.styles :as styles]
+  (:require [status-im.utils.platform :as platform]
+            [status-im.ui.screens.profile.group-chat.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
@@ -37,57 +38,59 @@
 
 (defn actions [admin? chat-id]
   (concat
-   #_(when admin?
-       [{:label  (i18n/label :add-members)
-         :icon   :icons/add
-         :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
+   (when admin?
+     [{:label  (i18n/label :add-members)
+       :icon   :icons/add
+       :action #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [{:label               (i18n/label :t/clear-history)
      :icon                :icons/close
      :action              #(re-frame/dispatch [:chat.ui/clear-history-pressed])
      :accessibility-label :clear-history-button}
     {:label               (i18n/label :t/delete-chat)
      :icon                :icons/arrow-left
-     :action              #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])
+     :action              #(re-frame/dispatch [:group-chats.ui/remove-chat-pressed chat-id])
      :accessibility-label :delete-chat-button}]))
 
-(defn contact-actions [contact]
-  [{:action #(re-frame/dispatch [:chat.ui/show-profile (:whisper-identity contact)])
+(defn member-actions [chat-id member]
+  [{:action #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) (:whisper-identity member)])
     :label  (i18n/label :t/view-profile)}
-   #_{:action #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity contact)}])
-      :label  (i18n/label :t/remove-from-chat)}])
+   {:action #(re-frame/dispatch [:group-chats.ui/remove-member-pressed chat-id (:whisper-identity member)])
+    :label  (i18n/label :t/remove-from-chat)}])
 
-(defn render-contact [{:keys [name whisper-identity] :as contact} admin? group-admin-identity current-user-identity]
+(defn render-member [chat-id {:keys [name whisper-identity] :as member} admin? current-user-identity]
   [react/view
    [contact/contact-view
-    {:contact             contact
-     :extend-options      (contact-actions contact)
+    {:contact             member
+     :extend-options      (member-actions chat-id member)
      :extend-title        name
-     :extended?           (and admin? (not= whisper-identity group-admin-identity))
+     :extended?           (and admin?
+                               (not= whisper-identity current-user-identity))
      :accessibility-label :member-item
      :inner-props         {:accessibility-label :member-name-text}
      :on-press            (when (not= whisper-identity current-user-identity)
-                            #(re-frame/dispatch [:chat.ui/show-profile whisper-identity]))}]])
+                            #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) whisper-identity]))}]])
 
-(defview chat-group-contacts-view [admin? group-admin-identity current-user-identity]
-  (letsubs [contacts [:get-current-chat-contacts]]
-    [react/view
-     [list/flat-list {:data      contacts
-                      :separator list/default-separator
-                      :key-fn    :address
-                      :render-fn #(render-contact % admin? group-admin-identity current-user-identity)}]]))
+(defview chat-group-members-view [chat-id admin? current-user-identity]
+  (letsubs [members [:get-current-chat-contacts]]
+    (when (seq members)
+      [react/view
+       [list/flat-list {:data      members
+                        :separator list/default-separator
+                        :key-fn    :address
+                        :render-fn #(render-member chat-id % admin? current-user-identity)}]])))
 
-(defn members-list [admin? group-admin-identity current-user-identity]
+(defn members-list [chat-id admin? current-user-identity]
   [react/view
    [profile.components/settings-title (i18n/label :t/members-title)]
-   [chat-group-contacts-view admin? group-admin-identity current-user-identity]])
+   [chat-group-members-view chat-id admin? current-user-identity]])
 
 (defview group-chat-profile []
-  (letsubs [{:keys [group-admin] :as current-chat} [:get-current-chat]
+  (letsubs [{:keys [admins chat-id] :as current-chat} [:get-current-chat]
             editing?                               [:get :group-chat-profile/editing?]
             changed-chat                           [:get :group-chat-profile/profile]
             current-pk                             [:get :current-public-key]]
     (let [shown-chat (merge current-chat changed-chat)
-          admin?     (= current-pk group-admin)]
+          admin?     (admins current-pk)]
       [react/view profile.components.styles/profile
        [status-bar/status-bar]
        (if editing?
@@ -100,10 +103,10 @@
            :editing?             editing?
            :allow-icon-change?   false
            :on-change-text-event :group-chats.ui/name-changed}]
-         [list/action-list (actions admin? (:chat-id current-chat))
+         [list/action-list (actions admin? chat-id)
           {:container-style        styles/action-container
            :action-style           styles/action
            :action-label-style     styles/action-label
            :action-separator-style styles/action-separator
            :icon-opts              styles/action-icon-opts}]
-         [members-list admin? group-admin current-pk]]]])))
+         [members-list chat-id admin? (first admins) current-pk]]]])))

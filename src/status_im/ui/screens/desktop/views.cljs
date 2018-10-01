@@ -5,7 +5,8 @@
             [status-im.ui.screens.intro.views :as intro.views]
             [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list]]
             [status-im.ui.screens.group.views :refer [new-group]]
-
+            [status-im.ui.screens.profile.group-chat.views :refer [group-chat-profile]]
+            [status-im.ui.screens.group.add-contacts.views :refer [add-participants-toggle-list]]
             [status-im.ui.screens.accounts.create.views :as create.views]
             [status-im.ui.screens.accounts.login.views :as login.views]
             [status-im.ui.screens.accounts.recover.views :as recover.views]
@@ -22,6 +23,9 @@
                       :create-account create.views/create-account
                       :new-group  new-group
                       :contact-toggle-list contact-toggle-list
+                      :group-chat-profile group-chat-profile
+                      :add-participants-toggle-list add-participants-toggle-list
+
                       (:new-contact
                        :advanced-settings
                        :chat

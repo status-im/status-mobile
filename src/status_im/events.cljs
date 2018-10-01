@@ -10,7 +10,6 @@
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
             [status-im.chat.models :as chat]
-            [status-im.chat.models.group-chat :as chat.group]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.input :as chat.input]
@@ -470,7 +469,7 @@
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat-pressed
- (fn [_ [_ chat-id group?]]
+ (fn [_ [_ chat-id]]
    {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
                            :content             (i18n/label :t/delete-chat-confirmation)
                            :confirm-button-text (i18n/label :t/delete)
@@ -904,12 +903,35 @@
    (group-chats/save cofx)))
 
 (handlers/register-handler-fx
+ :group-chats.ui/add-members-pressed
+ (fn [cofx _]
+   (group-chats/add-members cofx)))
+
+(handlers/register-handler-fx
+ :group-chats.ui/remove-member-pressed
+ (fn [cofx [_ chat-id public-key]]
+   (group-chats/remove-member cofx chat-id public-key)))
+
+(handlers/register-handler-fx
+ :group-chats.ui/remove-chat-pressed
+ (fn [_ [_ chat-id group?]]
+   {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
+                           :content             (i18n/label :t/delete-chat-confirmation)
+                           :confirm-button-text (i18n/label :t/delete)
+                           :on-accept           #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}}))
+
+(handlers/register-handler-fx
+ :group-chats.ui/remove-chat-confirmed
+ (fn [cofx [_ chat-id]]
+   (group-chats/remove cofx chat-id)))
+
+(handlers/register-handler-fx
  :group-chats.callback/sign-success
  [(re-frame/inject-cofx :random-guid-generator)]
  (fn [cofx [_ group-update]]
    (group-chats/handle-sign-success cofx group-update)))
 
 (handlers/register-handler-fx
- :group-chats.callback/verify-signature-success
+ :group-chats.callback/extract-signature-success
  (fn [cofx [_ group-update sender-signature]]
    (group-chats/handle-membership-update cofx group-update sender-signature)))

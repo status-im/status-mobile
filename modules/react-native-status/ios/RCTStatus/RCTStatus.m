@@ -266,14 +266,14 @@ RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - VerifyGroupMembershipSignatures
-//////////////////////////////////////////////////////////////////// verifyGroupMembershipSignatures
-RCT_EXPORT_METHOD(verifyGroupMembershipSignatures:(NSString *)content
+#pragma mark - ExtractGroupMembershipSignatures
+//////////////////////////////////////////////////////////////////// extractGroupMembershipSignatures
+RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"VerifyGroupMembershipSignatures() method called");
+    NSLog(@"ExtractGroupMembershipSignatures() method called");
 #endif
-    char * result = VerifyGroupMembershipSignatures((char *) [content UTF8String]);
+    char * result = ExtractGroupMembershipSignatures((char *) [content UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 

@@ -8,8 +8,3 @@
   message/StatusMessage
   (send [this chat-id cofx]
     (group-chats/send-membership-update cofx this chat-id)))
-
-(extend-type transport/GroupLeave
-  message/StatusMessage
-  (send [this chat-id cofx]
-    (group-chats/send-group-leave this chat-id cofx)))

@@ -25,7 +25,7 @@
   (and (multi-user-chat? cofx chat-id)
        (not (get-in cofx [:db :chats chat-id :public?]))))
 
-(defn public-chat? [chat-id cofx]
+(defn public-chat? [cofx chat-id]
   (get-in cofx [:db :chats chat-id :public?]))
 
 (defn set-chat-ui-props
@@ -47,7 +47,7 @@
      :group-chat         false
      :is-active          true
      :timestamp          now
-     :contacts           [chat-id]
+     :contacts           #{chat-id}
      :last-clock-value   0}))
 
 (fx/defn upsert-chat
@@ -58,11 +58,8 @@
                   (create-new-chat chat-id cofx))
               chat-props)]
 
-    (if (:is-active chat)
-      {:db            (update-in db [:chats chat-id] merge chat)
-       :data-store/tx [(chats-store/save-chat-tx chat)]}
-      ;; when chat is deleted, don't change anything
-      {:db db})))
+    {:db            (update-in db [:chats chat-id] merge chat)
+     :data-store/tx [(chats-store/save-chat-tx chat)]}))
 
 (fx/defn add-public-chat
   "Adds new public group chat to db & realm"
@@ -72,7 +69,7 @@
                 :is-active        true
                 :name             topic
                 :group-chat       true
-                :contacts         []
+                :contacts         #{}
                 :public?          true}))
 
 (fx/defn add-group-chat
@@ -108,11 +105,8 @@
                      (messages-store/delete-messages-tx chat-id)]}))
 
 (fx/defn remove-transport
-  [{:keys [db] :as cofx} chat-id]
-  ;; if this is private group chat, we have to broadcast leave and unsubscribe after that
-  (if (group-chat? cofx chat-id)
-    (transport.message/send (transport/GroupLeave.) chat-id cofx)
-    (transport.utils/unsubscribe-from-chat cofx chat-id)))
+  [cofx chat-id]
+  (transport.utils/unsubscribe-from-chat cofx chat-id))
 
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]
@@ -131,7 +125,7 @@
   "Removes chat completely from app, producing all necessary effects for that"
   [{:keys [db now] :as cofx} chat-id]
   (fx/merge cofx
-            #(when (multi-user-chat? % chat-id)
+            #(when (public-chat? % chat-id)
                (remove-transport % chat-id))
             (deactivate-chat chat-id)
             (clear-history chat-id)

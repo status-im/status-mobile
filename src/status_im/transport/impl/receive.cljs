@@ -1,6 +1,5 @@
 (ns status-im.transport.impl.receive
   (:require
-   [status-im.chat.models.group-chat :as models.group-chat]
    [status-im.models.contact :as models.contact]
    [status-im.group-chats.core :as group-chats]
    [status-im.transport.message.core :as message]
@@ -11,11 +10,6 @@
   message/StatusMessage
   (receive [this _ signature _ cofx]
     (group-chats/handle-membership-update-received cofx this signature)))
-
-(extend-type transport.protocol/GroupLeave
-  message/StatusMessage
-  (receive [this chat-id signature _ cofx]
-    (models.group-chat/handle-group-leave cofx chat-id signature)))
 
 (extend-type transport.contact/ContactRequest
   message/StatusMessage

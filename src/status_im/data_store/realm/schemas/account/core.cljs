@@ -9,6 +9,7 @@
             [status-im.data-store.realm.schemas.account.browser :as browser]
             [status-im.data-store.realm.schemas.account.dapp-permissions :as dapp-permissions]
             [status-im.data-store.realm.schemas.account.request :as request]
+            [status-im.data-store.realm.schemas.account.membership-update :as membership-update]
             [status-im.data-store.realm.schemas.account.migrations :as migrations]
             [taoensso.timbre :as log]))
 
@@ -148,6 +149,17 @@
           message/v7
           mailserver/v11
           user-status/v1
+          local-storage/v1
+          browser/v8
+          dapp-permissions/v9])
+
+(def v15 [chat/v7
+          transport/v6
+          contact/v1
+          message/v7
+          mailserver/v11
+          user-status/v1
+          membership-update/v1
           local-storage/v1
           browser/v8
           dapp-permissions/v9])

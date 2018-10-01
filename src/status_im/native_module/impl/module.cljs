@@ -134,9 +134,9 @@
      (fn [UUID]
        (callback (string/upper-case UUID))))))
 
-(defn verify-group-membership-signatures [signature-pairs callback]
+(defn extract-group-membership-signatures [signature-pairs callback]
   (when status
-    (call-module #(.verifyGroupMembershipSignatures status signature-pairs callback))))
+    (call-module #(.extractGroupMembershipSignatures status signature-pairs callback))))
 
 (defn sign-group-membership [content callback]
   (when status

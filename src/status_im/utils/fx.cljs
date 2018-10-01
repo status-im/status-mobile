@@ -13,7 +13,7 @@
   #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
     :shh/add-new-sym-keys :shh/get-new-sym-keys :shh/post
     :shh/generate-sym-key-from-password  :confirm-messages-processed
-    :group-chats/verify-membership-signature :utils/dispatch-later})
+    :group-chats/extract-membership-signature :utils/dispatch-later})
 
 (defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)

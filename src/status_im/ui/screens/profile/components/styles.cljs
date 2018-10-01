@@ -31,6 +31,8 @@
   {:font-size   15
    :text-align  :center
    :flex        1
+   :desktop     {:height 20
+                 :width 200}
    :ios         {:letter-spacing      -0.2
                  :margin-top          1
                  :height              45
