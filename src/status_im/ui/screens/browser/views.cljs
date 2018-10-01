@@ -147,7 +147,7 @@
       [react/view styles/web-view-loading
        [react/activity-indicator {:animating true}]])]
    [navigation url webview can-go-back? can-go-forward?]
-   [permissions.views/permissions-anim-panel browser show-permission]
+   [permissions.views/permissions-panel browser show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info
       (if (= show-tooltip :secure)

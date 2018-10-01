@@ -19,8 +19,9 @@
           constants/dapp-permission-web3         (ethereum/normalized-address (:address account))}
          allowed-permission)))
 
-(fx/defn send-permission-data-to-bridge
-  "If there is granted permission, return the data to the bridge"
+(fx/defn send-response-to-bridge
+  "Send response to the bridge. If the permission is allowed, send data associated
+   with the permission"
   [{:keys [db] :as cofx} permission message-id allowed?]
   {:browser/send-to-bridge {:message (cond-> {:type       constants/api-response
                                               :isAllowed  allowed?
@@ -64,14 +65,16 @@
   (let [{:keys [requested-permission message-id dapp-name]} (get-in db [:browser/options :show-permission])]
     (fx/merge (assoc-in cofx [:db :browser/options :show-permission] nil)
               (update-dapp-permissions dapp-name requested-permission true)
-              (send-permission-data-to-bridge requested-permission message-id true))))
+              (send-response-to-bridge requested-permission message-id true)
+              (process-next-permission dapp-name))))
 
 (fx/defn deny-permission
   "Add permission to set of allowed permission and process next permission"
   [{:keys [db] :as cofx}]
   (let [{:keys [requested-permission message-id dapp-name]} (get-in db [:browser/options :show-permission])]
     (fx/merge (assoc-in cofx [:db :browser/options :show-permission] nil)
-              (send-permission-data-to-bridge requested-permission message-id false))))
+              (send-response-to-bridge requested-permission message-id false)
+              (process-next-permission dapp-name))))
 
 (fx/defn process-permission
   "Process the permission requested by a dapp
@@ -82,7 +85,7 @@
         permission-allowed?   (boolean (allowed-permissions permission))
         permission-supported? ((set (keys supported-permissions)) permission)]
     (if (or permission-allowed? (not permission-supported?))
-      (send-permission-data-to-bridge cofx permission message-id permission-allowed?)
+      (send-response-to-bridge cofx permission message-id permission-allowed?)
       (process-next-permission (update-in cofx [:db :browser/options :pending-permissions]
                                           conj {:permission permission
                                                 :message-id message-id})

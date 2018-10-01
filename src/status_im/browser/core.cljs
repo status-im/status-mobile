@@ -249,7 +249,7 @@
   (let [{:dapps/keys [permissions]} db]
     (if (and (#{"eth_accounts" "eth_coinbase" "eth_sendTransaction" "eth_sign"
                 "eth_signTypedData" "personal_sign" "personal_ecRecover"} method)
-             (not (some #{"WEB3"} (get-in permissions [dapp-name :permissions]))))
+             (not (some #{constants/dapp-permission-web3} (get-in permissions [dapp-name :permissions]))))
       (send-to-bridge cofx
                       {:type      constants/web3-send-async-callback
                        :messageId message-id
