@@ -7,7 +7,6 @@
 
 (fx/defn free [{:keys [db]} semaphore]
   #_{:pre [(keyword? semaphore)]}
-  (println {:db (update db :semaphores disj semaphore)})
   {:db (update db :semaphores disj semaphore)})
 
 (defn locked? [{:keys [db]} semaphore]
