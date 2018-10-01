@@ -110,19 +110,28 @@
              :dapp-url    "https://cryptopurr.co/"
              :photo-path  "contacts://cryptopurr"
              :description "A social network for CryptoKitties"}]}
+   {:title (i18n/label :t/default-dapps-media)
+    :data  [{:name        "livepeer.tv"
+             :dapp-url    "http://livepeer.tv/"
+             :photo-path  "contacts://livepeer"
+             :description "Decentralized video broadcasting"}]}
    {:title (i18n/label :t/default-dapps-social-utilities)
     :data  [{:name        "Civitas"
              :dapp-url    "https://communities.colu.com/"
              :photo-path  "contacts://civitas"
              :description "Blockchain-powered local communities"}
-            {:name        "Hexel"
-             :dapp-url    "https://www.onhexel.com/"
-             :photo-path  "contacts://hexel"
-             :description "Create your own cryptocurrency"}
             {:name        "ETHLend"
              :dapp-url    "https://app.ethlend.io"
              :photo-path  "contacts://ethlend"
              :description "Decentralized lending on Ethereum"}
+            {:name        "Hexel"
+             :dapp-url    "https://www.onhexel.com/"
+             :photo-path  "contacts://hexel"
+             :description "Create your own cryptocurrency"}
+            {:name        "Livepeer"
+             :dapp-url    "https://explorer.livepeer.org/"
+             :photo-path  "contacts://livepeer"
+             :description "Decentralized video broadcasting"}
             {:name        "Smartz"
              :dapp-url    "https://smartz.io"
              :photo-path  "contacts://smartz"
@@ -130,9 +139,4 @@
             {:name        "Status Test DApp"
              :dapp-url    "https://status-im.github.io/dapp/"
              :description "Request test assets and test basic web3 functionality."
-             :developer?  true}]}
-   {:title (i18n/label :t/default-dapps-media)
-    :data  [{:name        "LivePeer"
-             :dapp-url    "https://media.livepeer.org/"
-             :photo-path  "contacts://livepeer"
-             :description "Decentralized video broadcasting"}]}])
+             :developer?  true}]}])
