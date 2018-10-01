@@ -15,6 +15,7 @@
     "node_modules/react-native-keychain/desktop",
     "node_modules/react-native-securerandom/desktop",
     "modules/react-native-status/desktop",
+    "modules/react-native-desktop-notification/desktop",
     "node_modules/google-breakpad"
   ],
   "desktopFonts": [
@@ -22,6 +23,7 @@
     "../../../../../resources/fonts/SF-Pro-Text-Medium.otf",
     "../../../../../resources/fonts/SF-Pro-Text-Light.otf"
   ],
+  "desktopJSBundlePath": "/home/max/work/status-react-desktop/status-react6/status-react/StatusImPackage/StatusIm.jsbundle",
   "dependencies": {
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",

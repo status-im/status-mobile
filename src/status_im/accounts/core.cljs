@@ -49,6 +49,11 @@
            {:dev-server/start nil}
            {:dev-server/stop nil})))
 
+(fx/defn enable-notifications [cofx desktop-notifications?]
+  (merge (accounts.update/account-update cofx
+                                         {:desktop-notifications? desktop-notifications?}
+                                         {})))
+
 (fx/defn switch-web3-opt-in-mode [{:keys [db] :as cofx} opt-in]
   (let [settings (get-in db [:account/account :settings])]
     (accounts.update/update-settings cofx
