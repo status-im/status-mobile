@@ -100,6 +100,8 @@ function buildClojureScript() {
   mkdir -p $WORKFOLDER
   echo -e "${GREEN}Work folder created: $WORKFOLDER${NC}"
   echo ""
+  echo -e "deps path: ${STATUSREACTPATH}/desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/libsnore-qt5.0.7.dylib"
+  echo ""
 
   # from index.desktop.js create javascript bundle and resources folder
   echo "Generating StatusIm.jsbundle and assets folder..."
