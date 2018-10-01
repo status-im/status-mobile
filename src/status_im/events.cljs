@@ -935,3 +935,8 @@
  :group-chats.callback/extract-signature-success
  (fn [cofx [_ group-update sender-signature]]
    (group-chats/handle-membership-update cofx group-update sender-signature)))
+
+(handlers/register-handler-fx
+ :profile.ui/ens-names-button-pressed
+ (fn [cofx]
+   (browser/open-url cofx "names.statusnet.eth")))

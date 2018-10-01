@@ -1,5 +1,7 @@
 (ns status-im.ui.screens.profile.events
   (:require [re-frame.core :as re-frame]
+            [status-im.browser.core :as browser]
+            [status-im.ui.screens.profile.models :as profile.models]
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.profile.models :as profile.models]
