@@ -96,7 +96,10 @@
      :icons/hardwallet          (js/require "./resources/icons/hardwallet.svg")
      :icons/password            (js/require "./resources/icons/password.svg")
      :icons/nfc                 (js/require "./resources/icons/nfc.svg")
-     :icons/reply               (js/require "./resources/icons/reply.svg")}
+     :icons/reply               (js/require "./resources/icons/reply.svg")
+     :icons/indicator-big       (js/require "./resources/icons/indicator-big.svg")
+     :icons/indicator-middle    (js/require "./resources/icons/indicator-middle.svg")
+     :icons/indicator-small     (js/require "./resources/icons/indicator-small.svg")}
     {:icons/discover            (components.svg/slurp-svg "./resources/icons/bottom/discover_gray.svg")
      :icons/contacts            (components.svg/slurp-svg "./resources/icons/bottom/contacts_gray.svg")
      :icons/home                (components.svg/slurp-svg "./resources/icons/bottom/home_gray.svg")
@@ -166,7 +169,10 @@
      :icons/hardwallet          (components.svg/slurp-svg "./resources/icons/hardwallet.svg")
      :icons/password            (components.svg/slurp-svg "./resources/icons/password.svg")
      :icons/nfc                 (components.svg/slurp-svg "./resources/icons/nfc.svg")
-     :icons/reply               (components.svg/slurp-svg "./resources/icons/reply.svg")}))
+     :icons/reply               (components.svg/slurp-svg "./resources/icons/reply.svg")
+     :icons/indicator-big       (components.svg/slurp-svg "./resources/icons/indicator-big.svg")
+     :icons/indicator-middle    (components.svg/slurp-svg "./resources/icons/indicator-middle.svg")
+     :icons/indicator-small     (components.svg/slurp-svg "./resources/icons/indicator-small.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)
@@ -186,11 +192,11 @@
                    :style  (merge icon-style style)}]]))
 
 (defn mobile-icon
-  [name {:keys [color container-style style accessibility-label width height]
+  [name {:keys [color container-style accessibility-label width height]
          :or   {accessibility-label :icon}}]
   ^{:key name}
-  [react/view {:style               container-style
-               :accessibility-label accessibility-label}
+  [react/animated-view {:style               container-style
+                        :accessibility-label accessibility-label}
    (if-let [icon-fn (get icons (normalize-property-name name))]
      (let [icon-vec (icon-fn
                      (cond

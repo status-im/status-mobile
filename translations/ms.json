@@ -284,7 +284,7 @@
     "error-unable-to-get-token-balance": "Tidak boleh mendapatkan baki token",
     "error-unable-to-get-transactions": "Tidak dapat memperoleh sejarah transaksi",
     "errors": "Ralat",
-    "estimated-time": "Anggaran masa {{time}}",
+    "estimated-time": "Anggaran masa",
     "eth": "ETH",
     "existing-networks": "Rangkaian sedia ada",
     "existing-wnodes": "Mailserver sedia ada",

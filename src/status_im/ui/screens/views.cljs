@@ -58,7 +58,6 @@
             [status-im.ui.screens.accounts.create.views :refer [create-account]]
             [status-im.ui.screens.hardwallet.authentication-method.views :refer [hardwallet-authentication-method]]
             [status-im.ui.screens.hardwallet.connect.views :refer [hardwallet-connect]]
-            [status-im.ui.screens.hardwallet.pin.views :refer [hardwallet-pin]]
             [status-im.ui.screens.hardwallet.setup.views :refer [hardwallet-setup]]
             [status-im.ui.screens.hardwallet.success.views :refer [hardwallet-success]]
             [status-im.ui.screens.profile.seed.views :refer [backup-seed]]
@@ -142,7 +141,6 @@
          (assoc :hardwallet-authentication-method hardwallet-authentication-method
                 :hardwallet-connect hardwallet-connect
                 :hardwallet-setup hardwallet-setup
-                :hardwallet-pin hardwallet-pin
                 :hardwallet-success hardwallet-success)))
       (cond-> {:headerMode "none"}
         (#{:intro :login} view-id)
@@ -293,7 +291,6 @@
             config/hardwallet-enabled?
             (assoc :hardwallet-authentication-method hardwallet-authentication-method
                    :hardwallet-connect hardwallet-connect
-                   :hardwallet-pin hardwallet-pin
                    :hardwallet-setup hardwallet-setup
                    :hardwallet-success hardwallet-success)))
          {:headerMode       "none"

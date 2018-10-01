@@ -2,14 +2,11 @@
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
-(def container
-  {:flex             1
-   :background-color colors/white})
-
-(def inner-container
-  {:flex-direction :column
-   :flex           1
-   :align-items    :center})
+(defstyle pin-container
+  {:flex            1
+   :flex-direction  :column
+   :justify-content :space-between
+   :ios             {:margin-top 30}})
 
 (defstyle error-container
   {:android {:margin-top 25}
@@ -19,23 +16,6 @@
   {:color      colors/red
    :font-size  15
    :text-align :center})
-
-(def maintain-card-container
-  {:flex-direction  :row
-   :align-items     :center
-   :justify-content :center
-   :margin-top      81
-   :width           369
-   :height          60
-   :border-radius   10
-   :border-width    1
-   :border-color    colors/blue
-   :border-style    :dashed})
-
-(def maintain-card-text
-  {:padding-horizontal 20
-   :font-size          12
-   :color              colors/blue})
 
 (def center-container
   {:flex-direction :column

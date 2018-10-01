@@ -58,31 +58,26 @@
 
 (defn pin-view [{:keys [pin title step status error]}]
   (let [enabled? (not= status :validating)]
-    [react/view styles/container
-     [react/view styles/inner-container
-      [react/view styles/maintain-card-container
-       [vector-icons/icon :icons/hardwallet {:color colors/blue}]
-       [react/text {:style styles/maintain-card-text}
-        (i18n/label :t/maintain-card-to-phone-contact)]]
-      [react/view styles/center-container
-       [react/text {:style styles/center-title-text
-                    :font  :bold}
-        (i18n/label title)]
-       [react/text {:style           styles/create-pin-text
-                    :number-of-lines 2}
-        (i18n/label :t/create-pin-description)]
-       (case status
-         :validating [react/view styles/waiting-indicator-container
-                      [react/activity-indicator {:animating true
-                                                 :size      :small}]]
-         :error [react/view styles/error-container
-                 [react/text {:style styles/error-text
-                              :font  :medium}
-                  (i18n/label error)]]
-         [pin-indicators pin])
-       [numpad step enabled?]]]]))
+    [react/view styles/pin-container
+     [react/view styles/center-container
+      [react/text {:style styles/center-title-text
+                   :font  :bold}
+       (i18n/label title)]
+      [react/text {:style           styles/create-pin-text
+                   :number-of-lines 2}
+       (i18n/label :t/create-pin-description)]
+      (case status
+        :validating [react/view styles/waiting-indicator-container
+                     [react/activity-indicator {:animating true
+                                                :size      :small}]]
+        :error [react/view styles/error-container
+                [react/text {:style styles/error-text
+                             :font  :medium}
+                 (i18n/label error)]]
+        [pin-indicators pin])
+      [numpad step enabled?]]]))
 
-(defview hardwallet-pin []
+(defview main []
   (letsubs [original [:hardwallet/pin]
             confirmation [:hardwallet/pin-confirmation]
             enter-step [:hardwallet/pin-enter-step]

@@ -5,6 +5,12 @@
   ([anim] (.start anim))
   ([anim callback] (.start anim callback)))
 
+(defn anim-loop [animation]
+  (.loop react/animated animation))
+
+(defn interpolate [anim-value config]
+  (.interpolate anim-value (clj->js config)))
+
 (defn timing [anim-value config]
   (.timing react/animated anim-value (clj->js config)))
 

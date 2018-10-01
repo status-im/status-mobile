@@ -677,7 +677,31 @@
 (handlers/register-handler-fx
  :hardwallet.ui/begin-setup-button-pressed
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:hardwallet :setup-step] :prepare)}))
+   {:db (assoc-in db [:hardwallet :setup-step] :preparing)}))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/pair-card-button-pressed
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:hardwallet :setup-step] :enter-pair-code)}))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/pair-code-input-changed
+ (fn [{:keys [db]} [_ pair-code]]
+   {:db (assoc-in db [:hardwallet :pair-code] pair-code)}))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/pair-code-next-button-pressed
+ (fn [{:keys [db]} _]))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/no-pairing-slots-help-button-pressed
+ (fn [cofx _]
+   (browser/open-url "https://hardwallet.status.im" cofx)))
+
+(handlers/register-handler-fx
+ :hardwallet.ui/card-already-linked-help-button-pressed
+ (fn [cofx _]
+   (browser/open-url "https://hardwallet.status.im" cofx)))
 
 (handlers/register-handler-fx
  :hardwallet/connection-error
