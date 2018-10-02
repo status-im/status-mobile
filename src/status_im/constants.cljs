@@ -37,8 +37,9 @@
 (def mainnet-networks
   {"mainnet"     {:id     "mainnet",
                   :name   "Mainnet",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir   "/ethereum/mainnet"}}
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+                           :DataDir        "/ethereum/mainnet"
+                           :LightEthConfig {:Enabled true}}}
    "mainnet_rpc" {:id     "mainnet_rpc",
                   :name   "Mainnet with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
@@ -49,8 +50,9 @@
 (def testnet-networks
   {"testnet"     {:id     "testnet",
                   :name   "Ropsten",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :testnet)
-                           :DataDir   "/ethereum/testnet"}}
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                           :DataDir        "/ethereum/testnet"
+                           :LightEthConfig {:Enabled true}}}
    "testnet_rpc" {:id     "testnet_rpc",
                   :name   "Ropsten with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
@@ -59,8 +61,9 @@
                                             :URL     "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4"}}}
    "rinkeby"     {:id     "rinkeby",
                   :name   "Rinkeby",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :rinkeby)
-                           :DataDir   "/ethereum/rinkeby"}}
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
+                           :DataDir        "/ethereum/rinkeby"
+                           :LightEthConfig {:Enabled true}}}
    "rinkeby_rpc" {:id     "rinkeby_rpc",
                   :name   "Rinkeby with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
