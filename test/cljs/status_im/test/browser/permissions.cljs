@@ -28,7 +28,7 @@
                                                                          :messageId  1
                                                                          :permission "contact-code"}))]
         (is (= (get-in result-ask [:db :browser/options :show-permission])
-               {:requested-permission "contact-code" :dapp-name "test.com" :message-id 1}))
+               {:requested-permission "contact-code" :dapp-name "test.com" :message-id 1 :yield-control? nil}))
         (is (zero? (count (get-in result-ask [:db :dapps/permissions]))))
 
         (testing "then user accepts the supported permission"

@@ -191,6 +191,7 @@
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
+(def ^:const dapp-permission-qr-code "qr-code")
 (def ^:const api-response "api-response")
 (def ^:const api-request "api-request")
 (def ^:const history-state-changed "history-state-changed")

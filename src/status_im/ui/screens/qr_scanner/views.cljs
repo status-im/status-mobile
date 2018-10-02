@@ -7,13 +7,18 @@
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.qr-scanner.styles :as styles]))
+            [status-im.ui.screens.qr-scanner.styles :as styles]
+            [status-im.ui.components.toolbar.actions :as actions]))
 
-(defview qr-scanner-toolbar [title hide-nav?]
-  (letsubs [modal [:get :modal]]
-    [react/view
-     [status-bar/status-bar]
-     [toolbar/simple-toolbar title]]))
+(defview qr-scanner-toolbar [title identifier]
+  [react/view
+   [status-bar/status-bar]
+   [toolbar/toolbar nil
+    [toolbar/nav-button (actions/back
+                         #(do
+                            (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel identifier])
+                            (re-frame/dispatch [:navigate-back])))]
+    [toolbar/content-title title]]])
 
 (defn on-barcode-read [identifier data]
   (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success identifier (camera/get-qr-code-data data)]))
@@ -23,7 +28,7 @@
             camera-initialized? (reagent/atom false)
             barcode-read? (reagent/atom false)]
     [react/view styles/barcode-scanner-container
-     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) (not @camera-initialized?)]
+     [qr-scanner-toolbar (or (:toolbar-title identifier) (i18n/label :t/scan-qr)) identifier]
      [camera/camera {:onBarCodeRead #(if (:multiple? identifier)
                                        (on-barcode-read identifier %)
                                        (when-not @barcode-read?

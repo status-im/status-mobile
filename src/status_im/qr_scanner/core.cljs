@@ -23,3 +23,12 @@
                   (dissoc :current-qr-context))}
          (when-let [qr-codes (:qr-codes db)]
            {:dispatch [(:handler qr-codes) context data (dissoc qr-codes :handler)]})))
+
+(fx/defn set-qr-code-cancel
+  [{:keys [db]} context]
+  (merge {:db (-> db
+                  (update :qr-codes dissoc context)
+                  (dissoc :current-qr-context))}
+         (when-let [qr-codes (:qr-codes db)]
+           (when-let [handler (:cancel-handler qr-codes)]
+             {:dispatch [handler context qr-codes]}))))

@@ -6,8 +6,9 @@ function bridgeSend(data){
     WebViewBridge.send(JSON.stringify(data));
 }
 
-function sendAPIrequest(permission) {
+function sendAPIrequest(permission, params) {
     var messageId = callbackId++;
+    var params = params || {};
 
     bridgeSend({
         type: 'api-request',
@@ -16,7 +17,30 @@ function sendAPIrequest(permission) {
         host: window.location.hostname
     });
 
-    return new Promise(function (resolve, reject) { callbacks[messageId] = {resolve: resolve, reject: reject};});
+    return new Promise(function (resolve, reject) {
+        params['resolve'] = resolve;
+        params['reject'] = reject;
+        callbacks[messageId] = params;
+    });
+}
+
+function qrCodeResponse(data, callback){
+    var result = data.data;
+    var regex = new RegExp(callback.regex);
+    if (!result) {
+        if (callback.reject) {
+            callback.reject(new Error("Cancelled"));
+        }
+    }
+    else if (regex.test(result)) {
+        if (callback.resolve) {
+            callback.resolve(result);
+        }
+    } else {
+        if (callback.reject) {
+            callback.reject(new Error("Doesn't match"));
+        }
+    }
 }
 
 WebViewBridge.onMessage = function (message) {
@@ -24,38 +48,31 @@ WebViewBridge.onMessage = function (message) {
     var id = data.messageId;
     var callback = callbacks[id];
 
-    if (callback)
-    {
-        if (data.type === "api-response")
-        {
-            if (data.isAllowed)
-            {
-                if (data.permission == 'web3')
-                {
+    if (callback) {
+        if (data.type === "api-response") {
+            if (data.permission == 'qr-code'){
+                qrCodeResponse(data, callback);
+            } else if (data.isAllowed) {
+                if (data.permission == 'web3') {
                     window.currentAccountAddress = data.data;
                     callback.resolve();
-                }
-                else
-                {
+                } else {
                     callback.resolve(data.data);
                 }
-            }
-            else
-            {
+            } else {
                 callback.reject(new Error("Denied"));
             }
-        }
-        else if (data.type === "web3-send-async-callback")
-        {
-            if (callback.results)
-            {
-                callback.results.push(data.error || data.result);
-                if (callback.results.length == callback.num)
-                    callback.callback(undefined, callback.results);
-            }
-            else
-            {
-                callback.callback(data.error, data.result);
+        } else if (data.type === "web3-send-async-callback") {
+            var id = data.messageId;
+            var callback = callbacks[id];
+            if (callback) {
+                if (callback.results) {
+                    callback.results.push(data.error || data.result);
+                    if (callback.results.length == callback.num)
+                        callback.callback(undefined, callback.results);
+                } else {
+                    callback.callback(data.error, data.result);
+                }
             }
         }
     }
@@ -91,9 +108,16 @@ StatusAPI.prototype.getContactCode = function () {
 var ReadOnlyProvider = function () {};
 
 ReadOnlyProvider.prototype.isStatus = true;
+ReadOnlyProvider.prototype.status = new StatusAPI();
 ReadOnlyProvider.prototype.isConnected = function () { return true; };
 
-ReadOnlyProvider.prototype.status = new StatusAPI();
+ReadOnlyProvider.prototype.enable = function () {
+    return sendAPIrequest('web3');
+};
+
+ReadOnlyProvider.prototype.scanQRCode = function (regex) {
+    return sendAPIrequest('qr-code', {regex: regex});
+};
 
 ReadOnlyProvider.prototype.send = function (payload) {
     if (payload.method == "eth_uninstallFilter"){
@@ -105,10 +129,6 @@ ReadOnlyProvider.prototype.send = function (payload) {
     } else {
         return web3Response(payload, null);
     }
-};
-
-ReadOnlyProvider.prototype.enable = function () {
-    return sendAPIrequest('web3');
 };
 
 ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
@@ -143,7 +163,6 @@ ReadOnlyProvider.prototype.sendAsync = function (payload, callback) {
 
    }
 };
-
 }
 
 console.log("ReadOnlyProvider");

@@ -419,8 +419,13 @@
 
 (handlers/register-handler-fx
  :browser.bridge.callback/qr-code-scanned
- (fn [cofx [_ _ data message]]
-   (browser/handle-scanned-qr-code cofx data message)))
+ (fn [cofx [_ _ data qr-code-data]]
+   (browser/handle-scanned-qr-code cofx data (:data qr-code-data))))
+
+(handlers/register-handler-fx
+ :browser.bridge.callback/qr-code-canceled
+ (fn [cofx [_ _ qr-code-data]]
+   (browser/handle-canceled-qr-code cofx (:data qr-code-data))))
 
 ;; qr-scanner module
 
@@ -433,6 +438,11 @@
  :qr-scanner.callback/scan-qr-code-success
  (fn [cofx [_ context data]]
    (qr-scanner/set-qr-code cofx context data)))
+
+(handlers/register-handler-fx
+ :qr-scanner.callback/scan-qr-code-cancel
+ (fn [cofx [_ context]]
+   (qr-scanner/set-qr-code-cancel cofx context)))
 
 ;; privacy-policy module
 

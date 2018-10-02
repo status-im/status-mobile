@@ -16,6 +16,7 @@
 (spec/def :browser/show-tooltip (spec/nilable keyword?))
 (spec/def :browser/show-permission (spec/nilable map?))
 (spec/def :browser/pending-permissions (spec/nilable list?))
+(spec/def :browser/yielding-control? (spec/nilable boolean?))
 
 (spec/def :browser/options
   (spec/nilable
@@ -27,6 +28,7 @@
              :browser/show-tooltip
              :browser/show-permission
              :browser/pending-permissions
+             :browser/yielding-control?
              :browser/error?])))
 
 (spec/def :browser/browser
