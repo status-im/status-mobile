@@ -1,5 +1,10 @@
 apply plugin: 'com.android.library'
 
+def getStatusGoVersion = { ->
+    version = new File('../STATUS_GO_VERSION').text
+    return version.replaceAll("\\s","")
+}
+
 android {
     compileSdkVersion 26
 
@@ -18,7 +23,7 @@ dependencies {
 
     // WARNING: If you change this, make sure the GitHub release of the .aar exists.
     // WARNING: status-go is downloaded in Makefile and has a hardcoded version too.
-    String statusGoVersion = '0.16.0'
+    String statusGoVersion = getStatusGoVersion()
     final String statusGoGroup = 'status-im', statusGoName = 'status-go'
 
     // Check if the local status-go jar exists, and compile against that if it does
