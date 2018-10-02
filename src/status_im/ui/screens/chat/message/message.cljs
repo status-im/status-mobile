@@ -52,8 +52,9 @@
 (def rtl-characters-regex #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
 
 (defn right-to-left-text? [content]
-  (let [char (first content)]
-    (re-matches rtl-characters-regex char)))
+  (when-not (empty? content)
+    (let [char (first content)]
+      (re-matches rtl-characters-regex char))))
 
 (defview message-timestamp [t justify-timestamp? outgoing command? content]
   (when-not command?
