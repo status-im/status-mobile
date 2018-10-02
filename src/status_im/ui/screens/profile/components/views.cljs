@@ -103,6 +103,6 @@
    [react/view styles/settings-item-text-wrapper
     [react/i18n-text {:style styles/settings-item-text :key label-kw}]]
    [react/switch {:on-tint-color   colors/blue
-                  :value           value
+                  :value           (boolean value)
                   :on-value-change action-fn
                   :disabled        (not active?)}]])
