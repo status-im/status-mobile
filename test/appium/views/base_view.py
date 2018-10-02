@@ -133,8 +133,8 @@ class ProfileButton(TabButton):
         return ProfileView(self.driver)
 
     def click(self):
-        from views.profile_view import ShareMyContactKeyButton
-        self.click_until_presence_of_element(ShareMyContactKeyButton(self.driver))
+        from views.profile_view import ShareMyProfileButton
+        self.click_until_presence_of_element(ShareMyProfileButton(self.driver))
         return self.navigate()
 
 
@@ -481,7 +481,7 @@ class BaseView(object):
 
     def get_public_key(self):
         profile_view = self.profile_button.click()
-        profile_view.share_my_contact_key_button.click()
+        profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element()
         public_key = profile_view.public_key_text.text
         profile_view.cross_icon.click()

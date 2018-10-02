@@ -5,7 +5,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from tests import common_password
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView, ProgressBar
-from views.profile_view import ProfilePictureElement, PublicKeyText
+from views.profile_view import ProfilePictureElement, ProfileAddressText
 
 
 class ChatMessageInput(BaseEditBox):
@@ -279,7 +279,7 @@ class ChatView(BaseView):
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
-        self.public_key_text = PublicKeyText(self.driver)
+        self.profile_address_text = ProfileAddressText(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
