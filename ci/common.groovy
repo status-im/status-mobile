@@ -16,7 +16,9 @@ def getBuildType() {
   return params.BUILD_TYPE
 }
 
-def buildBranch(name = null, buildType) {
+def buildBranch(name = null, buildType = null) {
+  /* default to current build type */
+  buildType = buildType ? buildType : getBuildType()
   /* need to drop origin/ to match definitions of child jobs */
   def branchName = env.GIT_BRANCH.replace('origin/', '')
   /* always pass the BRANCH and BUILD_TYPE params with current branch */
@@ -95,6 +97,10 @@ def uploadArtifact(path) {
   /* defaults for upload */
   def domain = 'ams3.digitaloceanspaces.com'
   def bucket = 'status-im'
+  /* There's so many PR builds we need a separate bucket */
+  if (getBuildType() == 'pr') {
+    bucket = 'status-im-prs'
+  }
   withCredentials([usernamePassword(
     credentialsId: 'digital-ocean-access-keys',
     usernameVariable: 'DO_ACCESS_KEY',
@@ -152,6 +158,20 @@ def githubNotify(apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl, changeId) {
     def ghOutput = sh(returnStdout: true, script: script)
     println("Result of github comment curl: " + ghOutput);
   }
+}
+
+def pkgFind(glob) {
+  return findFiles(glob: "pkg/*${glob}")[0].path
+}
+
+def setBuildDesc(Map links) {
+  def desc = 'Links: \n'
+  links.each { type, url ->
+    if (url != null) {
+      desc += "<a href=\"${url}\">${type}</a>  \n"
+    }
+  }
+  currentBuild.description = desc
 }
 
 def getParentRunEnv(name) {
