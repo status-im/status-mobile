@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=StatusIm
-Comment=StatusIm Desktop
-Exec=StatusIm
-Icon=StatusIm
+Name=Status
+Comment=Status Desktop
+Exec=Status
+Icon=Status
 Categories=Network;
 Name[en_US]=Status.desktop
