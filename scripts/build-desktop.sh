@@ -100,18 +100,16 @@ function buildClojureScript() {
   mkdir -p $WORKFOLDER
   echo -e "${GREEN}Work folder created: $WORKFOLDER${NC}"
   echo ""
-  echo -e "deps path: ${STATUSREACTPATH}/desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/libsnore-qt5.0.7.dylib"
-  echo ""
 
   # from index.desktop.js create javascript bundle and resources folder
-  echo "Generating StatusIm.jsbundle and assets folder..."
-  react-native bundle --entry-file index.desktop.js --bundle-output "$WORKFOLDER/StatusIm.jsbundle" \
+  echo "Generating Status.jsbundle and assets folder..."
+  react-native bundle --entry-file index.desktop.js --bundle-output "$WORKFOLDER/Status.jsbundle" \
                       --dev false --platform desktop --assets-dest "$WORKFOLDER/assets"
   echo -e "${GREEN}Generating done.${NC}"
   echo ""
 
   # Add path to javascript bundle to package.json
-  jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/StatusIm.jsbundle\""
+  jsBundleLine="\"desktopJSBundlePath\": \"$WORKFOLDER/Status.jsbundle\""
   jsPackagePath=$(joinExistingPath "$STATUSREACTPATH" 'desktop_files/package.json')
   if grep -Fq "$jsBundleLine" "$jsPackagePath"; then
     echo -e "${GREEN}Found line in package.json.${NC}"
@@ -135,7 +133,7 @@ function compile() {
           -DCMAKE_BUILD_TYPE=Release \
           -DEXTERNAL_MODULES_DIR="$(joinStrings ${external_modules_dir[@]})" \
           -DDESKTOP_FONTS="$(joinStrings ${external_fonts[@]})" \
-          -DJS_BUNDLE_PATH="$WORKFOLDER/StatusIm.jsbundle" \
+          -DJS_BUNDLE_PATH="$WORKFOLDER/Status.jsbundle" \
           -DCMAKE_CXX_FLAGS:='-DBUILD_FOR_BUNDLE=1 -std=c++11'
     make -j5
   popd
@@ -148,7 +146,7 @@ function bundleLinux() {
     QTBIN=$(joinExistingPath "$QT_PATH" 'bin')
   fi
 
-  # invoke linuxdeployqt to create StatusIm.AppImage
+  # invoke linuxdeployqt to create Status.AppImage
   echo "Creating AppImage..."
 
   pushd $WORKFOLDER
@@ -167,7 +165,7 @@ function bundleLinux() {
   usrBinPath=$(joinPath "$WORKFOLDER" "AppDir/usr/bin")
   cp -r ./deployment/linux/usr $WORKFOLDER/AppDir
   cp ./.env $usrBinPath
-  cp ./desktop/bin/StatusIm $usrBinPath
+  cp ./desktop/bin/Status $usrBinPath
   cp ./desktop/reportApp/reportApp $usrBinPath
   
   if [ ! -f $DEPLOYQT ]; then
@@ -181,15 +179,15 @@ function bundleLinux() {
   fi
 
   rm -f Application-x86_64.AppImage
-  rm -f StatusIm-x86_64.AppImage
+  rm -f Status-x86_64.AppImage
 
-  [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'StatusIm') 
+  [ $VERBOSE_LEVEL -ge 1 ] && ldd $(joinExistingPath "$usrBinPath" 'Status') 
   $DEPLOYQT \
     $(joinExistingPath "$usrBinPath" 'reportApp') \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip -no-translations -qmake="$(joinExistingPath "${QTBIN}" 'qmake')" \
     -qmldir="$STATUSREACTPATH/desktop/reportApp"
 
-  desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/StatusIm.desktop')"
+  desktopFilePath="$(joinExistingPath "$WORKFOLDER" 'AppDir/usr/share/applications/Status.desktop')"
   $DEPLOYQT \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -always-overwrite -no-strip \
@@ -199,30 +197,30 @@ function bundleLinux() {
     -qmldir="$(joinExistingPath "$STATUSREACTPATH" 'node_modules/react-native')"
 
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/StatusIm
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
     cp -r assets/share/assets AppDir/usr/bin
     cp -rf StatusImAppImage/* AppDir/usr/bin
-    rm -f AppDir/usr/bin/StatusIm.AppImage
+    rm -f AppDir/usr/bin/Status.AppImage
   popd
 
   $DEPLOYQT \
     $desktopFilePath \
     -verbose=$VERBOSE_LEVEL -appimage -qmake="$qmakePath"
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/StatusIm
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
     cp -r assets/share/assets AppDir/usr/bin
     cp -rf StatusImAppImage/* AppDir/usr/bin
-    rm -f AppDir/usr/bin/StatusIm.AppImage
+    rm -f AppDir/usr/bin/Status.AppImage
     cp -rf ../desktop/modules/react-native-desktop-notification/desktop/SnoreNotify_ep-prefix/src/SnoreNotify_ep/lib/x86_64-linux-gnu/plugins AppDir/usr/lib
   popd
   $APPIMAGETOOL \
     "$WORKFOLDER/AppDir"
   pushd $WORKFOLDER
-    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/StatusIm
-    rm -rf StatusIm.AppImage
+    [ $VERBOSE_LEVEL -ge 1 ] && ldd AppDir/usr/bin/Status
+    rm -rf Status.AppImage
   popd
 
-  echo -e "${GREEN}Package ready in ./StatusIm-x86_64.AppImage!${NC}"
+  echo -e "${GREEN}Package ready in ./Status-x86_64.AppImage!${NC}"
   echo ""
 }
 
@@ -240,7 +238,7 @@ function bundleMacOS() {
     cp -r assets/share/assets Status.app/Contents/Resources
     ln -sf ../Resources/assets ../Resources/ubuntu-server ../Resources/node_modules Status.app/Contents/MacOS
     chmod +x Status.app/Contents/Resources/ubuntu-server
-    cp ../desktop/bin/StatusIm Status.app/Contents/MacOS/Status
+    cp ../desktop/bin/Status Status.app/Contents/MacOS/Status
     cp ../desktop/reportApp/reportApp Status.app/Contents/MacOS
     cp ../.env Status.app/Contents/Resources
     ln -sf ../Resources/.env Status.app/Contents/MacOS/.env

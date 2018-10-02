@@ -5,3 +5,4 @@ Comment=StatusIm Desktop
 Exec=StatusIm
 Icon=StatusIm
 Categories=Network;
+Name[en_US]=Status.desktop

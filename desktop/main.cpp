@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QGuiApplication app(argc, argv);
 
-  app.setApplicationName("StatusIm");
+  app.setApplicationName("Status");
 
   QString appPath = QCoreApplication::applicationDirPath();
 #ifndef BUILD_FOR_BUNDLE
@@ -258,7 +258,7 @@ int main(int argc, char **argv) {
 
 void writeLogsToFile() {
   QMutexLocker locker(&consoleOutputMutex);
-  QFile logFile(getDataStoragePath() + "/StatusIm.log");
+  QFile logFile(getDataStoragePath() + "/Status.log");
   if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
     for (QString message : consoleOutputStrings) {
       logFile.write(message.toStdString().c_str());

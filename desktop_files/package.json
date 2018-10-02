@@ -23,7 +23,6 @@
     "../../../../../resources/fonts/SF-Pro-Text-Medium.otf",
     "../../../../../resources/fonts/SF-Pro-Text-Light.otf"
   ],
-  "desktopJSBundlePath": "/home/max/work/status-react-desktop/status-react6/status-react/StatusImPackage/StatusIm.jsbundle",
   "dependencies": {
     "assert": "1.4.1",
     "asyncstorage-down": "4.0.1",
