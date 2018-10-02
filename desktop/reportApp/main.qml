@@ -21,7 +21,7 @@ Rectangle {
       anchors.centerIn: parent
       Text {
         Layout.alignment: Qt.AlignCenter
-        text: "Oh, no! StatusIm application just crashed!"
+        text: "Oh, no! Status application just crashed!"
         font.bold: true
         font.pointSize: 25
       }
