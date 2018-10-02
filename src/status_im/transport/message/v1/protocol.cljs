@@ -111,7 +111,7 @@
              :js-obj     (:js-obj cofx))]})
   (validate [this]
     (when (spec/valid? :message/message this)
-      (spec/conform :message/message this))))
+      this)))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

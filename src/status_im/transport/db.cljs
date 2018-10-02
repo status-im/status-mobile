@@ -51,12 +51,7 @@
 (spec/def :message.content/command-path (spec/tuple string? (spec/coll-of (spec/or :scope keyword? :chat-id string?) :kind set? :min-count 1)))
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
-(spec/def ::content (spec/conformer (fn [content]
-                                      (cond
-                                        (string? content) {:text content}
-                                        (map? content) content
-                                        :else :clojure.spec/invalid))))
-(spec/def ::content-type #{"text/plain" "command"})
+(spec/def ::content-type #{"text/plain" "command" "command-request"})
 (spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
 (spec/def ::clock-value (spec/nilable pos-int?))
 (spec/def ::timestamp (spec/nilable pos-int?))
@@ -88,6 +83,10 @@
 (defmulti content-type :content-type)
 
 (defmethod content-type "command" [_]
+  (spec/merge :message/message-common
+              (spec/keys :req-un [:message.command/content])))
+
+(defmethod content-type "command-request" [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.command/content])))
 
