@@ -5,7 +5,6 @@
             [clojure.string :as string]
             [status-im.ui.screens.chat.styles.message.message :as message.style]
             [status-im.ui.screens.chat.message.message :as message]
-            [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.utils :as chat-utils]
@@ -91,17 +90,32 @@
                                      photo-path)}
                      :style  styles/photo-style}]])))
 
-(views/defview message-with-timestamp [text {:keys [timestamp outgoing] :as message} style]
+(views/defview quoted-message [{:keys [from text]} outgoing current-public-key]
+  (views/letsubs [username [:get-contact-name-by-identity from]]
+    [react/view {:style (message.style/quoted-message-container outgoing)}
+     [react/view {:style message.style/quoted-message-author-container}
+      [icons/icon :icons/reply {:style (styles/reply-icon outgoing)}]
+      [react/text {:style (message.style/quoted-message-author outgoing)}
+       (chat-utils/format-reply-author from username current-public-key)]]
+     [react/text {:style           (message.style/quoted-message-text outgoing)
+                  :number-of-lines 5}
+      text]]))
+
+(views/defview message-with-timestamp [text {:keys [message-id timestamp outgoing content current-public-key] :as message} style]
   [react/view {:style style}
-   [react/view {:style styles/message-wrapper}
-    [react/text {:style           (styles/message-text message)
-                 :selectable      true
-                 :selection-color (if outgoing colors/white colors/hawkes-blue)}
-     text]
-    [react/text {:style (styles/message-timestamp-placeholder)}
-     (time/timestamp->time timestamp)]
-    [react/text {:style (styles/message-timestamp)}
-     (time/timestamp->time timestamp)]]])
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
+    [react/view {:style styles/message-container}
+     (when (:response-to content)
+       [quoted-message (:response-to content) outgoing current-public-key])
+     [react/view {:style styles/message-wrapper}
+      [react/text {:style           (styles/message-text message)
+                   :selectable      true
+                   :selection-color (if outgoing colors/white colors/hawkes-blue)}
+       text]
+      [react/text {:style (styles/message-timestamp-placeholder)}
+       (time/timestamp->time timestamp)]
+      [react/text {:style (styles/message-timestamp)}
+       (time/timestamp->time timestamp)]]]]])
 
 (views/defview text-only-message [text message]
   [react/view {:style (styles/message-row message)}
@@ -212,6 +226,35 @@
        [react/view {:style (styles/send-icon empty?)}
         [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow empty?)}]]])))
 
+(views/defview reply-message [from message-text]
+  (views/letsubs [username           [:get-contact-name-by-identity from]
+                  current-public-key [:get-current-public-key]]
+    [react/view {:style styles/reply-content-container}
+     [react/text {:style styles/reply-content-author}
+      (chat-utils/format-reply-author from username current-public-key)]
+     [react/text {:style styles/reply-content-message} message-text]]))
+
+(views/defview reply-member-photo [from]
+  (letsubs [photo-path [:get-photo-path from]]
+    [react/image {:source {:uri (if (string/blank? photo-path)
+                                  (identicon/identicon from)
+                                  photo-path)}
+                  :style  styles/reply-photo-style}]))
+
+(views/defview reply-message-view []
+  (views/letsubs [{:keys [content from] :as message} [:get-reply-message]]
+    (when message
+      [react/view {:style styles/reply-wrapper}
+       [react/view {:style styles/reply-container}
+        [reply-member-photo from]
+        [reply-message from (:text content)]]
+       [react/touchable-highlight
+        {:style               styles/reply-close-highlight
+         :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
+         :accessibility-label :cancel-message-reply}
+        [react/view {}
+         [icons/icon :icons/close {:style styles/reply-close-icon}]]]])))
+
 (views/defview chat-text-input [chat-id input-text]
   (views/letsubs [inp-ref (atom nil)]
     {:component-will-update
@@ -253,6 +296,7 @@
     [react/view {:style styles/chat-view}
      [toolbar-chat-view current-chat]
      [messages-view current-chat]
+     [reply-message-view]
      [chat-text-input chat-id input-text]]))
 
 (views/defview chat-profile []

@@ -132,6 +132,9 @@
 (def message-text
   {:font-size 14})
 
+(def message-container
+  {:flex-direction  :column})
+
 (def message-wrapper
   {:flex-direction  :row
    :flex-wrap       :wrap})
@@ -208,3 +211,51 @@
   {:margin-bottom  4
    :font-size      14
    :color          colors/black})
+
+(def reply-wrapper
+  {:flex-direction :column-reverse})
+
+(def reply-photo-style
+  {:width         40
+   :height        40
+   :margin-right  5})
+
+(def reply-container
+  {:flex-direction   :row
+   :align-items      :flex-start
+   :border-width     1
+   :border-radius    10
+   :border-color     colors/gray-light
+   :margin           10})
+
+(def reply-content-container
+  {:flex-direction :column
+   :padding-bottom 10})
+
+(def reply-content-author
+  {:margin-top     5
+   :color          colors/gray
+   :font-size      12
+   :padding-bottom 3})
+
+(def reply-content-message
+  {:padding-left   7
+   :margin-right   50
+   :max-height     140
+   :overflow       :scroll})
+
+(def reply-close-highlight
+  {:position :absolute
+   :z-index  5
+   :top      3
+   :right    8
+   :height   26})
+
+(def reply-close-icon
+  {:border-radius     12
+   :background-color  colors/gray
+   :tint-color        colors/white})
+
+(defn reply-icon [outgoing]
+  {:tint-color (if outgoing colors/wild-blue-yonder colors/gray)})
+
