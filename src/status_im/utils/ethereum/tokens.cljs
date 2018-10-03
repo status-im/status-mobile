@@ -379,6 +379,10 @@
                     :name     "USD//C"
                     :address  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
                     :decimals 6}
+                   {:symbol   :LPT
+                    :name     "Livepeer Token"
+                    :address  "0x58b6a8a3302369daec383334672404ee733ab239"
+                    :decimals 18}
                    ;; NOTE(goranjovic) : the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
