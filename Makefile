@@ -53,7 +53,7 @@ _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare wor
 prepare-ios: _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
 	cd modules/react-native-status/ios/RCTStatus/ && \
 		curl -sOL "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-ios-$(STATUS_GO_VER).zip" && \
-		unzip -q status-go-ios-$(STATUS_GO_VER).zip
+		unzip -q -o status-go-ios-$(STATUS_GO_VER).zip
 ifeq ($(OS),Darwin)
 	cd ios && pod install
 endif
