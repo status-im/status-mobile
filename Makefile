@@ -4,6 +4,7 @@ help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
 GITHUB_URL = https://github.com/status-im/status-go/releases/download
+RCTSTATUS_DIR = modules/react-native-status/ios/RCTStatus
 STATUS_GO_VER = $(shell cat STATUS_GO_VERSION)
 
 OS := $(shell uname)
@@ -51,9 +52,10 @@ _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare wor
 	npm install
 
 prepare-ios: _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
-	cd modules/react-native-status/ios/RCTStatus/ && \
-		curl -sOL "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-ios-$(STATUS_GO_VER).zip" && \
-		unzip -q -o status-go-ios-$(STATUS_GO_VER).zip
+ifeq ("$(wildcard $(RCTSTATUS_DIR)/status-go-ios-0.16.0.zip)","")
+	cd $(RCTSTATUS_DIR) && curl -#OL --progress-bar "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-ios-$(STATUS_GO_VER).zip"
+endif
+	unzip -q -o $(RCTSTATUS_DIR)/status-go-ios-$(STATUS_GO_VER).zip
 ifeq ($(OS),Darwin)
 	cd ios && pod install
 endif
