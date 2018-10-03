@@ -18,7 +18,7 @@
   {:flex-direction  :row
    :align-items     :center
    :justify-content :space-between
-   :margin-top      81
+   :margin-top      41
    :width           "90%"
    :height          60
    :border-radius   10
@@ -82,6 +82,11 @@
    :color      colors/gray
    :text-align :center})
 
+(def center-title-text
+  {:font-size  22
+   :text-align :center
+   :color      colors/black})
+
 (def bottom-button-container
   {:background-color colors/gray-background
    :align-items      :center
@@ -98,6 +103,13 @@
    :line-height    20
    :text-transform :uppercase})
 
+(def next-button-container
+  {:flex-direction  :row
+   :align-self      :flex-end
+   :width           "100%"
+   :margin-vertical 15
+   :margin-right    21})
+
 ;; prepare step
 
 (def center-container
@@ -105,9 +117,11 @@
    :align-items    :center
    :height         200})
 
-(def center-title-text
-  {:font-size 22
-   :color     colors/black})
+(def wizard-step-text
+  {:font-size      12
+   :color          colors/blue
+   :text-align     :center
+   :padding-bottom 18})
 
 (def generating-codes-for-pairing-text
   {:font-size   15
@@ -149,7 +163,7 @@
 
 (def puk-code-explanation-text
   {:font-size   15
-   :width       "90%"
+   :width       292
    :text-align  :center
    :padding-top 5
    :color       colors/gray})
@@ -159,29 +173,27 @@
    :flex-direction  :row})
 
 (defstyle puk-code-numbers-inner-container
-  {:width            "85%"
-   :android          {:margin-horizontal 16}
-   :height           64
-   :margin-top       20
-   :align-items      :center
-   :justify-content  :center
-   :border-width     1
-   :border-color     colors/gray-light
-   :border-radius    10})
+  {:width           "85%"
+   :android         {:margin-horizontal 16}
+   :height          64
+   :margin-top      20
+   :align-items     :center
+   :justify-content :center
+   :border-width    1
+   :border-color    colors/gray-light
+   :border-radius   10})
 
 (def puk-code-text
   {:font-size  17
    :text-align :center
    :color      colors/green})
 
-(def next-button-container
-  {:flex-direction  :row
-   :margin-vertical 15})
+;; card ready
 
-(def secret-keys-next-button-container
-  (assoc next-button-container
-         :width "100%"
-         :margin-right 12))
+(def card-ready-container secret-keys-container)
+
+(def card-ready-inner-container
+  {:align-self :center})
 
 ;; enter pair code
 

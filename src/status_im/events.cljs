@@ -748,6 +748,11 @@
    (when-not (empty? (get-in db [:hardwallet :pin step]))
      {:db (update-in db [:hardwallet :pin step] pop)})))
 
+(handlers/register-handler-fx
+ :hardwallet.ui/create-pin-button-pressed
+ (fn [{:keys [db]} _]
+   {:db (update-in db [:hardwallet :setup-step] :pin)}))
+
 ;; browser module
 
 (handlers/register-handler-fx

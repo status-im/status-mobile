@@ -5,8 +5,8 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.screens.hardwallet.pin.styles :as styles]))
+            [status-im.ui.screens.hardwallet.pin.styles :as styles]
+            [status-im.ui.screens.hardwallet.components :as components]))
 
 (defn numpad-button [n step enabled?]
   [react/touchable-highlight
@@ -60,6 +60,7 @@
   (let [enabled? (not= status :validating)]
     [react/view styles/pin-container
      [react/view styles/center-container
+      [components/wizard-step 4]
       [react/text {:style styles/center-title-text
                    :font  :bold}
        (i18n/label title)]
