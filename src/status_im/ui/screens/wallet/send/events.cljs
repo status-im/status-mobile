@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.chat.commands.sending :as commands-sending]
             [status-im.chat.models.message :as models.message]
+            [status-im.chat.models :as chat.models]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.models.transactions :as wallet.transactions]
@@ -260,12 +261,17 @@
              cofx)
             :dispatch [:wallet/update-gas-price true]))))
 
+(fx/defn navigate-after-transaction [{:keys [db] :as cofx} chat-id]
+  (if (= :wallet-send-transaction-modal (second (:navigation-stack db)))
+    (chat.models/navigate-to-chat cofx chat-id {})
+    (navigation/navigate-back cofx)))
+
 (handlers/register-handler-fx
  :close-transaction-sent-screen
- (fn [{:keys [db] :as cofx} [_ chat-id]]
+ (fn [cofx [_ chat-id]]
    (fx/merge cofx
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
-             (navigation/navigate-back))))
+             (navigate-after-transaction chat-id))))
 
 (handlers/register-handler-fx
  :sync-wallet-transactions
