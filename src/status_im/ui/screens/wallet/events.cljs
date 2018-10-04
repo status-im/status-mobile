@@ -64,7 +64,8 @@
 (re-frame/reg-fx
  :get-transactions
  (fn [{:keys [web3 chain account-id token-addresses success-event error-event]}]
-   (transactions/get-transactions chain
+   (transactions/get-transactions web3
+                                  chain
                                   account-id
                                   #(re-frame/dispatch [success-event % account-id])
                                   #(re-frame/dispatch [error-event %]))

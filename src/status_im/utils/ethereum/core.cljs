@@ -139,6 +139,12 @@
                        (cb result)
                        (handle-error error)))))
 
+(defn get-block-info-with-txs [web3 number cb]
+  (.getBlock (.-eth web3) number :true (fn [error result]
+                                         (if-not error
+                                           (cb (js->clj result :keywordize-keys true))
+                                           (handle-error error)))))
+
 (defn get-block-info [web3 number cb]
   (.getBlock (.-eth web3) number (fn [error result]
                                    (if-not error

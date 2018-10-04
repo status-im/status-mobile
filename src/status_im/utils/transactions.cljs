@@ -1,5 +1,7 @@
 (ns status-im.utils.transactions
-  (:require [status-im.utils.http :as http]
+  (:require [status-im.utils.ethereum.core :as ethereum]
+            [cljs-time.core :as t]
+            [status-im.utils.http :as http]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
@@ -55,9 +57,64 @@
                  (assoc transactions hash (format-transaction account transaction)))
                {})))
 
-(defn get-transactions [chain account on-success on-error]
-  (let [url (get-transaction-url chain account)]
-    (log/debug "HTTP GET" url)
-    (http/get url
-              #(on-success (format-transactions-response % account))
-              on-error)))
+;; web3 experiments
+
+(defn- format-transaction-details-web3 [currentBlockNumber account timestamp blockNumber {:keys [hash from to gas gasPrice gasUsed nonce input value]}]
+  (let [inbound? (= (str "0x" account) to)
+        confirmations (- currentBlockNumber blockNumber)]
+    {:value         (.toFixed value)
+    ;; timestamp is in seconds, we convert it in ms
+     :timestamp     (str timestamp "000")
+     :symbol        :ETH
+     :type          (cond inbound? :inbound
+                          :else    :outbound)
+     :block         (.toFixed blockNumber)
+     :hash          hash
+     :from          from
+     :to            to
+     :gas-limit     (.toFixed gas)
+     :gas-price     (.toFixed gasPrice)
+     :gas-used      gasUsed
+     :nonce         (.toFixed nonce)
+     :confirmations confirmations
+     :data          input}))
+
+(defn- filter-txs-by-account [account txs]
+  (filter
+   (fn [{:keys [to from]}]
+     (let [acc (str "0x" account)]
+       (or (= acc to) (= acc from))))
+   txs))
+
+(defn- format-transaction-web3 [currentBlockNumber account {:keys [transactions timestamp number]}]
+  (reduce (fn [txs {:keys [hash] :as transaction}]
+            (assoc txs hash (format-transaction-details-web3 currentBlockNumber account timestamp number transaction)))
+          {} (filter-txs-by-account account transactions)))
+
+(defn- get-transactions-web3 [web3 account currentBlockNumber blockNumber targetBlockNumber txs on-success]
+  (do
+    (println  "getting block info:" blockNumber " - txs found so far: " (count txs))
+    (if (>= blockNumber targetBlockNumber)
+      (ethereum/get-block-info-with-txs
+       web3
+       blockNumber
+       (fn [blockInfo]
+         (get-transactions-web3 web3 account currentBlockNumber (dec blockNumber) targetBlockNumber (merge txs (format-transaction-web3 currentBlockNumber account blockInfo)) on-success)))
+      (if (< blockNumber targetBlockNumber) (on-success txs)))))
+
+(defn get-transactions [web3 chain account on-success on-error]
+  (let [start (t/now)]
+    (ethereum/get-block-number web3
+                               (fn [currentBlockNumber]
+                                 (do
+                                   (println "currentBlockNumber: " currentBlockNumber)
+                                   (get-transactions-web3 web3 account currentBlockNumber currentBlockNumber (- currentBlockNumber 50) {}
+                                                          (fn [txs]
+                                                            (do
+                                                              (println "elapsed: " (t/in-millis (t/interval start (t/now))) "ms")
+                                                              (on-success txs)))))))))
+  ;;(let [url (get-transaction-url chain account)]
+  ;;  (log/debug "HTTP GET" url)
+  ;;  (http/get url
+  ;;            #(println (format-transactions-response % account))
+  ;;            on-error)))
