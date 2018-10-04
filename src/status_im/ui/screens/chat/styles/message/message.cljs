@@ -100,6 +100,44 @@
     {:align-self    :flex-start
      :padding-left  (if platform/desktop? 24 8)}))
 
+(defn- calculate-translate
+  [total initial-scale padding]
+  (* (- (/ total 2) padding)
+     (- 1 initial-scale)))
+
+(defn anim-initial-translateX
+  [total-width initial-scale styles]
+  (let [{:keys [padding-left padding-right align-items] :or {padding-left 0 padding-right 0}} styles]
+    (condp = align-items
+      :flex-start (- (calculate-translate total-width initial-scale padding-left))
+      :flex-end  (calculate-translate total-width initial-scale padding-right)
+      0)))
+
+(defn anim-initial-translateY
+  [total-height initial-scale {:keys [padding-bottom] :or {padding-bottom 0}}]
+  (calculate-translate total-height initial-scale padding-bottom))
+
+(defn animated-message-body [anim anim-range {:keys [outgoing] :as message} view-size]
+  (let [initial-scale 0.25
+        interpolate   (fn [output-range]
+                        (.interpolate anim (clj->js {:inputRange  anim-range
+                                                     :outputRange output-range})))]
+    (if-not view-size
+      {:opacity    0}
+      [{:opacity   anim}
+       {:transform [{:translateX
+                     (interpolate [(anim-initial-translateX
+                                    (:width view-size)
+                                    initial-scale
+                                    (group-message-view outgoing))   0])}
+                    {:translateY
+                     (interpolate [(anim-initial-translateY
+                                    (:height view-size)
+                                    initial-scale
+                                    (group-message-wrapper message)) 0])}
+                    {:scale
+                     (interpolate [initial-scale                     1])}]}])))
+
 (def message-author
   {:width      photos/default-size
    :align-self :flex-end})

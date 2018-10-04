@@ -31,8 +31,8 @@
 (defn- prepare-message
   [{:keys [content] :as message} chat-id current-chat?]
   ;; TODO janherich: enable the animations again once we can do them more efficiently
-  (cond-> (assoc message :appearing? true)
-    (not current-chat?) (assoc :appearing? false)
+  (cond-> (assoc message :appearing? true :animate? true)
+    (not current-chat?) (assoc :appearing? false :animate? false)
     (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
 
 (fx/defn re-index-message-groups
@@ -303,6 +303,10 @@
                                                        :show?       true)
                                                 (add-message-type chat))]
     (upsert-and-send cofx message-data)))
+
+(fx/defn animation-finished
+  [{:keys [db]} chat-id message-id]
+  {:db (assoc-in db [:chats chat-id :messages message-id :animate?] false)})
 
 ;; effects
 

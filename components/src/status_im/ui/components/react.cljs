@@ -72,6 +72,7 @@
 (def animated (.-Animated js-dependencies/react-native))
 (def animated-view (reagent/adapt-react-class (.-View animated)))
 (def animated-text (reagent/adapt-react-class (.-Text animated)))
+(def easing (.-Easing js-dependencies/react-native))
 
 (def dimensions (.-Dimensions js-dependencies/react-native))
 (def keyboard (.-Keyboard js-dependencies/react-native))

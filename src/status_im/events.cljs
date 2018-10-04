@@ -591,6 +591,11 @@
  (fn [cofx [_ chat-id message-id status]]
    (chat.message/update-message-status cofx chat-id message-id status)))
 
+(handlers/register-handler-fx
+ :message/animation-finished-callback
+ (fn [cofx [_ chat-id message-id]]
+   (chat.message/animation-finished cofx chat-id message-id)))
+
 ;; signal module
 
 (handlers/register-handler-fx

@@ -347,7 +347,31 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn chat-message [{:keys [message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
+(defview animated-message-body [{:keys [chat-id message-id] :as message} content]
+  (letsubs [anim-range   (vector 0 1)
+            anim         (animation/create-value (first anim-range))
+            view-size    (reagent/atom nil)]
+    {:component-did-update (fn [_]
+                             (when @view-size
+                               (animation/start
+                                (animation/timing
+                                 anim
+                                 {:toValue         (second anim-range)
+                                  :easing          (.bezier react/easing 0.165 0.84 0.44 1)
+                                  :duration        400
+                                  :useNativeDriver true})
+                                #(re-frame/dispatch [:message/animation-finished-callback chat-id message-id]))))}
+    (let [on-layout-handler (fn [event]
+                              (when-not @view-size
+                                (let [layout (-> event .-nativeEvent .-layout)
+                                      height (.-height layout)
+                                      width  (.-width layout)]
+                                  (reset! view-size {:height height :width width}))))]
+      [react/animated-view {:on-layout on-layout-handler
+                            :style (style/animated-message-body anim anim-range message @view-size)}
+       [message-body message content]])))
+
+(defn chat-message [{:keys [message-id outgoing group-chat modal? current-public-key content-type content animate?] :as message}]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
@@ -356,8 +380,8 @@
                                                  (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
-       [message-content message-body (merge message
-                                            {:current-public-key current-public-key
-                                             :group-chat         group-chat
-                                             :modal?             modal?
-                                             :incoming-group     incoming-group})])]]])
+       [message-content (if animate? animated-message-body message-body)  (merge message
+                                                                                 {:current-public-key current-public-key
+                                                                                  :group-chat         group-chat
+                                                                                  :modal?             modal?
+                                                                                  :incoming-group     incoming-group})])]]])
