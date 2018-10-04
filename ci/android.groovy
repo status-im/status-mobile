@@ -6,7 +6,6 @@ def compile(type = 'nightly') {
   if (type == 'release') {
     gradleOpt += "-PreleaseVersion='${common.version()}'"
   }
-  sh 'make prepare-android'
   dir('android') {
     sh "./gradlew assembleRelease ${gradleOpt}"
   }
