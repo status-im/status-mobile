@@ -10,6 +10,7 @@
             [status-im.ui.screens.chat.input.suggestions :as suggestions]
             [status-im.ui.screens.chat.input.validation-messages :as validation-messages]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
@@ -108,10 +109,7 @@
   (letsubs [username           [:get-contact-name-by-identity from]
             current-public-key [:get-current-public-key]]
     [react/view {:style style/reply-message-content}
-     [react/text {:style style/reply-message-author} (or (and (= from current-public-key)
-                                                              (i18n/label :t/You))
-                                                         username
-                                                         (gfycat/generate-gfy from))]
+     [react/text {:style style/reply-message-author} (chat-utils/format-reply-author from username current-public-key)]
      [react/text {:style message-style/style-message-text} message-text]]))
 
 (defview reply-message-view []

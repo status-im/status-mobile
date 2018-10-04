@@ -8,6 +8,7 @@
             [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
             [reagent.core :as reagent]
+            [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
@@ -69,7 +70,7 @@
 (views/defview message-author-name [{:keys [outgoing from] :as message}]
   (views/letsubs [current-account [:get-current-account]
                   incoming-name   [:get-contact-name-by-identity from]]
-    (let [name (or incoming-name (gfycat/generate-gfy from))]
+    (let [name (chat-utils/format-author from incoming-name)]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-contact-dialog from name (boolean incoming-name)])}
        [react/text {:style styles/author} name]])))
 

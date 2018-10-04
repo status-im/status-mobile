@@ -7,6 +7,7 @@
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
+            [status-im.utils.gfycat.core :as gfy]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.profile.components.styles :as styles]))
 
@@ -38,7 +39,12 @@
     [react/text {:style           styles/profile-name-text
                  :font            :medium
                  :number-of-lines 1}
-     name]]])
+     name]
+    (when (:public-key contact)
+      [react/text {:style styles/profile-three-words
+                   :font :medium
+                   :number-of-lines 1}
+       (gfy/generate-gfy (:public-key contact))])]])
 
 (defn- profile-header-edit [{:keys [name group-chat] :as contact}
                             icon-options on-change-text-event allow-icon-change?]

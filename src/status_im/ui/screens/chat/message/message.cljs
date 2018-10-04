@@ -15,6 +15,7 @@
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.utils.core :as utils]
+            [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
@@ -171,10 +172,8 @@
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
       [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
-      [react/text {:style (style/quoted-message-author outgoing)} (or (and (= from current-public-key)
-                                                                           (i18n/label :t/You))
-                                                                      username
-                                                                      (gfycat/generate-gfy from))]]
+      [react/text {:style (style/quoted-message-author outgoing)}
+       (chat-utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (style/quoted-message-text outgoing)
                   :number-of-lines 5}
       text]]))
@@ -328,9 +327,8 @@
 
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
-    [react/text {:style style/message-author-name} (or username
-                                                       message-username
-                                                       (gfycat/generate-gfy from))])) ; TODO: We defensively generate the name for now, to be revisited when new protocol is defined
+    [react/text {:style style/message-author-name}
+     (chat-utils/format-author from (or username message-username))]))
 
 (defn message-body
   [{:keys [last-in-group?

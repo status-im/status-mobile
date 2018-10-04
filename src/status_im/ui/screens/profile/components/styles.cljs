@@ -21,6 +21,12 @@
    :ios              {:letter-spacing -0.2}
    :android          {:color colors/black}})
 
+(defstyle profile-three-words
+  {:font-size        12
+   :text-align       :center
+   :ios              {:letter-spacing -0.2}
+   :android          {:color colors/black}})
+
 (defstyle profile-name-input-text
   {:font-size   15
    :text-align  :center
