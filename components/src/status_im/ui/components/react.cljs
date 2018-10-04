@@ -93,17 +93,11 @@
     (vec (map string/upper-case ts))
     ts))
 
-(defn escape-html [text]
-  (if (and platform/desktop? (string? text))
-    (clojure.string/escape text {\< "&lt;", \> "&gt;", \& "&amp;"})
-   text))
-
 (defn text
   ([t]
-   [text-class (escape-html t)])
+   [text-class t])
   ([opts t & ts]
    (->> (conj ts t)
-        (map escape-html)
         (transform-to-uppercase opts)
         (concat [text-class (add-font-style :style opts)])
         (vec))))
