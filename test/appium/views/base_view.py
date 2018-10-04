@@ -225,7 +225,7 @@ class ProgressBar(BaseElement):
 class WalletModalButton(BaseButton):
     def __init__(self, driver):
         super(WalletModalButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('wallet-modal-button')
+        self.locator = self.Locator.xpath_selector("//*[@text='View my wallet']")
 
     def navigate(self):
         from views.wallet_view import WalletView

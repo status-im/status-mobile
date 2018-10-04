@@ -55,12 +55,18 @@ class AlwaysButton(BaseButton):
         self.locator = self.Locator.text_part_selector('ALWAYS')
 
 
+class WebViewMenuButton(BaseButton):
+    def __init__(self, driver):
+        super(WebViewMenuButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chat-menu-button')
+
+
 class URLEditBoxLockIcon(BaseEditBox):
 
     def __init__(self, driver):
         super(URLEditBoxLockIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//*[@content-desc='wallet-modal-button']/../preceding-sibling::*[1]//*[@content-desc='icon']")
+            "//*[@content-desc='chat-menu-button']/../preceding-sibling::*[1]//*[@content-desc='icon']")
 
 
 class PolicySummary(BaseElement):
@@ -85,6 +91,7 @@ class BaseWebView(BaseView):
         self.browser_next_page_button = BrowserNextPageButton(self.driver)
 
         self.web_view_browser = WebViewBrowserButton(self.driver)
+        self.web_view_menu_button = WebViewMenuButton(self.driver)
         self.always_button = AlwaysButton(self.driver)
         self.browser_refresh_page_button = BrowserRefreshPageButton(self.driver)
 

@@ -5,7 +5,6 @@ from tests.base_test_case import SingleDeviceTestCase
 from tests.users import wallet_users
 from views.sign_in_view import SignInView
 
-
 @marks.wallet_modal
 class TestWalletModal(SingleDeviceTestCase):
 
@@ -22,6 +21,7 @@ class TestWalletModal(SingleDeviceTestCase):
         stt_value = wallet.get_stt_value()
         home = wallet.home_button.click()
         chat = home.join_public_chat(home.get_public_chat_name())
+        chat.chat_options.click()
         wallet_modal = chat.wallet_modal_button.click()
         if wallet_modal.address_text.text != '0x' + user['address']:
             self.errors.append('Wallet address is not shown in wallet modal')
@@ -51,8 +51,9 @@ class TestWalletModal(SingleDeviceTestCase):
         start_new_chat = home.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.element_by_text('Airswap').click()
-        start_new_chat.open_button.click()
-        wallet_modal = start_new_chat.wallet_modal_button.click()
+        webview = start_new_chat.open_button.click()
+        webview.web_view_menu_button.click()
+        wallet_modal = webview.wallet_modal_button.click()
         if wallet_modal.address_text.text != '0x' + user['address']:
             self.errors.append('Wallet address is not shown in wallet modal')
         modal_usd_value = wallet_modal.get_usd_total_value()
@@ -75,8 +76,9 @@ class TestWalletModal(SingleDeviceTestCase):
         start_new_chat = home.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.element_by_text('Airswap').click()
-        start_new_chat.open_button.click()
-        wallet_modal = start_new_chat.wallet_modal_button.click()
+        web_view = start_new_chat.open_button.click()
+        web_view.web_view_menu_button.click()
+        wallet_modal = web_view.wallet_modal_button.click()
         transaction_history = wallet_modal.transaction_history_button.click()
         transaction_history.transactions_table.wait_for_visibility_of_element()
         if transaction_history.transactions_table.get_transactions_number() < 1:
@@ -91,9 +93,9 @@ class TestWalletModal(SingleDeviceTestCase):
         start_new_chat = home.plus_button.click()
         start_new_chat.open_d_app_button.click()
         start_new_chat.element_by_text('Airswap').click()
-        start_new_chat.open_button.click()
-        web_view = start_new_chat.get_base_web_view()
-        wallet_modal = start_new_chat.wallet_modal_button.click()
+        web_view = start_new_chat.open_button.click()
+        web_view.web_view_menu_button.click()
+        wallet_modal = web_view.wallet_modal_button.click()
         if not wallet_modal.usd_total_value.is_element_displayed():
             pytest.fail("Wallet modal doesn't contain balance")
         transaction_history = wallet_modal.transaction_history_button.click()
@@ -104,6 +106,7 @@ class TestWalletModal(SingleDeviceTestCase):
             pytest.fail('Modal wallet was not closed')
         web_view.cross_icon.click()
         chat = home.join_public_chat(home.get_public_chat_name())
+        chat.chat_options.click()
         chat.wallet_modal_button.click()
         if not wallet_modal.usd_total_value.is_element_displayed():
             pytest.fail("Wallet modal was not opened")
