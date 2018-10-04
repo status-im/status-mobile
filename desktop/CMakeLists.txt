@@ -9,6 +9,7 @@
 cmake_minimum_required(VERSION 2.8.11)
 
 set(APP_NAME StatusIm)
+set(JS_APP_NAME StatusIm)
 set(REACT_BUILD_STATIC_LIB ON)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
