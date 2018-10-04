@@ -22,7 +22,8 @@
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.desktop.main.chat.events :as chat.events]))
+            [status-im.ui.screens.desktop.main.chat.events :as chat.events]
+            [status-im.ui.screens.desktop.main.buidl.views :as buidl]))
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
@@ -293,11 +294,13 @@
 
 (views/defview chat-view []
   (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:get-current-chat]]
-    [react/view {:style styles/chat-view}
-     [toolbar-chat-view current-chat]
-     [messages-view current-chat]
-     [reply-message-view]
-     [chat-text-input chat-id input-text]]))
+    (if (= chat-id "status-buidl-test")
+      [buidl/buidl-view]
+      [react/view {:style styles/chat-view}
+       [toolbar-chat-view current-chat]
+       [messages-view current-chat]
+       [reply-message-view]
+       [chat-text-input chat-id input-text]])))
 
 (views/defview chat-profile []
   (letsubs [identity        [:get-current-contact-identity]
@@ -307,7 +310,7 @@
           {:keys [pending? whisper-identity public-key]} contact]
       [react/view {:style styles/chat-profile-body}
        [profile.views/profile-badge contact]
-                  ;; for private chat, public key will be chat-id
+       ;; for private chat, public key will be chat-id
        [react/view
         (if (or (nil? pending?) pending?)
           [react/touchable-highlight {:on-press #(re-frame/dispatch [:add-contact whisper-identity])}

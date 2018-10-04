@@ -5,7 +5,7 @@
             [status-im.ui.screens.intro.views :as intro.views]
             [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list]]
             [status-im.ui.screens.group.views :refer [new-group]]
-
+            status-im.ui.screens.desktop.main.buidl.core
             [status-im.ui.screens.accounts.create.views :as create.views]
             [status-im.ui.screens.accounts.login.views :as login.views]
             [status-im.ui.screens.accounts.recover.views :as recover.views]

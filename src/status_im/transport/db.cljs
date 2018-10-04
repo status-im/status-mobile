@@ -79,12 +79,17 @@
 (spec/def :message.text/content (spec/keys :req-un [:message.content/text]
                                            :req-opt [:message.content/response-to]))
 (spec/def :message.command/content (spec/keys :req-un [:message.content/command-path :message.content/params]))
+(spec/def :message.buidl/content map?)
 
 (defmulti content-type :content-type)
 
 (defmethod content-type "command" [_]
   (spec/merge :message/message-common
               (spec/keys :req-un [:message.command/content])))
+
+(defmethod content-type "buidl" [_]
+  (spec/merge :message/message-common
+              (spec/keys :req-un [:message.buidl/content])))
 
 (defmethod content-type "command-request" [_]
   (spec/merge :message/message-common
