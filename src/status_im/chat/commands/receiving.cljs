@@ -2,20 +2,11 @@
   (:require [status-im.chat.commands.protocol :as protocol]
             [status-im.utils.fx :as fx]))
 
-;; TODO(janherich) remove after couple of releases when danger of messages
-;; with old command references will be low
-(def ^:private old->new-path
-  {["transactor" :command 83 "send"]    ["send" #{:personal-chats}]
-   ["transactor" :command 83 "request"] ["request" #{:personal-chats}]})
-
 (defn lookup-command-by-ref
   "Function which takes message object and looks up associated entry from the
   `id->command` map if it can be found"
   [{:keys [content]} id->command]
-  (when-let [path (or (:command-path content)
-                      (:command-ref content))]
-    (or (get id->command path)
-        (get id->command (get old->new-path path)))))
+  (get id->command (:command-path content)))
 
 (fx/defn receive
   "Performs receive effects for command message. Does nothing

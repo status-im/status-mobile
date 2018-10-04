@@ -211,20 +211,13 @@
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
-(defmethod message-content constants/text-content-type
+(defmethod message-content constants/content-type-text
   [wrapper message]
   [wrapper message [text-message message]])
 
 (defmethod message-content constants/content-type-status
   [_ _]
   [message-content-status])
-
-;; TODO(janherich) in the future, `content-type-command-request` will be deprecated
-;; as it's the same thing as command
-(defmethod message-content constants/content-type-command-request
-  [wrapper message]
-  [wrapper message
-   [message-view message [message-content-command message]]])
 
 (defmethod message-content constants/content-type-command
   [wrapper message]
@@ -359,7 +352,7 @@
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
                                                 (react/dismiss-keyboard!))
-                               :on-long-press #(when (= content-type constants/text-content-type)
+                               :on-long-press #(when (= content-type constants/content-type-text)
                                                  (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]

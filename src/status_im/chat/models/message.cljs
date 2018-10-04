@@ -101,11 +101,6 @@
     message
     (assoc message :clock-value (utils.clocks/send last-clock-value))))
 
-(defn- update-legacy-data [{:keys [content-type content] :as message}]
-  (cond-> message
-    (= constants/content-type-command-request content-type)
-    (assoc :content-type constants/content-type-command)))
-
 (fx/defn display-notification
   [cofx chat-id]
   (when config/in-app-notifications-enabled?
@@ -130,9 +125,7 @@
                                           (commands-receiving/enhance-receive-parameters cofx)
                                           (ensure-clock-value chat)
                                           ;; TODO (cammellos): Refactor so it's not computed twice
-                                          (add-outgoing-status cofx)
-                                          ;; TODO (janherich): Remove after couple of releases
-                                          update-legacy-data)]
+                                          (add-outgoing-status cofx))]
     (fx/merge cofx
               {:confirm-messages-processed [{:web3   web3
                                              :js-obj js-obj}]}
@@ -207,7 +200,7 @@
    :timestamp    timestamp
    :show?        true
    :content      content
-   :content-type constants/text-content-type})
+   :content-type constants/content-type-text})
 
 (defn group-message? [{:keys [message-type]}]
   (#{:group-user-message :public-group-user-message} message-type))

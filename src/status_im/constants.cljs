@@ -6,14 +6,14 @@
 
 (def ethereum-rpc-url "http://localhost:8545")
 
-(def text-content-type "text/plain")
+(def content-type-text "text/plain")
 (def content-type-command "command")
 (def content-type-command-request "command-request")
 (def content-type-status "status")
 (def content-type-emoji "emoji")
 
 (def desktop-content-types
-  #{text-content-type content-type-emoji})
+  #{content-type-text content-type-emoji})
 
 (def min-password-length 6)
 (def max-chat-name-length 20)

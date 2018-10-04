@@ -44,14 +44,36 @@
   (rep [this {:keys [name profile-image address fcm-token]}]
     #js [name profile-image address fcm-token]))
 
+;; It's necessary to support old clients understanding only older, verbose command content (`release/0.9.25` and older)
+(defn- new->legacy-command-data [{:keys [command-path params] :as content}]
+  (get {["send" #{:personal-chats}]    [{:command-ref ["transactor" :command 83 "send"]
+                                         :command "send"
+                                         :bot "transactor"
+                                         :command-scope-bitmask 83}
+                                        constants/content-type-command]
+        ["request" #{:personal-chats}] [{:command-ref ["transactor" :command 83 "request"]
+                                         :request-command-ref ["transactor" :command 83 "send"]
+                                         :command "request"
+                                         :request-command "send"
+                                         :bot "transactor"
+                                         :command-scope-bitmask 83
+                                         :prefill [(get params :asset)
+                                                   (get params :amount)]}
+                                        constants/content-type-command-request]}
+       command-path))
+
 (deftype MessageHandler []
   Object
   (tag [this v] "c4")
   (rep [this {:keys [content content-type message-type clock-value timestamp]}]
-    (if (= content-type constants/text-content-type)
-      ;; append new content add the end, still pass content the old way at the old index
+    (condp = content-type
+      constants/content-type-text ;; append new content add the end, still pass content the old way at the old index
       #js [(:text content) content-type message-type clock-value timestamp content]
-      #js [content content-type message-type clock-value timestamp content])))
+      constants/content-type-command ;; handle command compatibility issues
+      (let [[legacy-content legacy-content-type] (new->legacy-command-data content)]
+        #js [(merge content legacy-content) (or legacy-content-type content-type) message-type clock-value timestamp])
+      ;; no need for legacy conversions for rest of the content types
+      #js [content content-type message-type clock-value timestamp])))
 
 (deftype MessagesSeenHandler []
   Object
@@ -86,15 +108,31 @@
 ;; Reader handlers
 ;;
 
-(defn- safe-content-parse [content-type content]
+(def ^:private legacy-ref->new-path
+  {["transactor" :command 83 "send"]    ["send" #{:personal-chats}]
+   ["transactor" :command 83 "request"] ["request" #{:personal-chats}]})
+
+(defn- legacy->new-command-content [{:keys [command-path command-ref] :as content}]
+  (if command-path
+    ;; `:command-path` set, message produced by newer app version, nothing to do
+    content
+    ;; we have to look up `:command-path` based on legacy `:command-ref` value (`release/0.9.25` and older) and assoc it to content
+    (assoc content :command-path (get legacy-ref->new-path command-ref))))
+
+(defn- legacy->new-message-data [content content-type]
   ;; handling only the text content case
-  (if (= content-type constants/text-content-type)
+  (cond
+    (= content-type constants/content-type-text)
     (if (and (map? content) (string? (:text content)))
       ;; correctly formatted map
-      content
+      [content content-type]
       ;; create safe `{:text string-content}` value from anything else
-      {:text (str content)})
-    content))
+      [{:text (str content)} content-type])
+    (or (= content-type constants/content-type-command)
+        (= content-type constants/content-type-command-request))
+    [(legacy->new-command-content content) constants/content-type-command]
+    :else
+    [content content-type]))
 
 ;; Here we only need to call the record with the arguments parsed from the clojure datastructures
 (def reader (transit/reader :json
@@ -106,9 +144,10 @@
                               "c3" (fn [[name profile-image address fcm-token]]
                                      (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
                               "c4" (fn [[legacy-content content-type message-type clock-value timestamp content]]
-                                     (v1.protocol/Message. (safe-content-parse content-type (or content legacy-content)) content-type message-type clock-value timestamp))
+                                     (let [[new-content new-content-type] (legacy->new-message-data (or content legacy-content) content-type)]
+                                       (v1.protocol/Message. new-content new-content-type message-type clock-value timestamp)))
                               "c7" (fn [[content content-type message-type clock-value timestamp]]
-                                     (v1.protocol/Message. (safe-content-parse content-type content) content-type message-type clock-value timestamp))
+                                     (v1.protocol/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
                                      (v1.protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]

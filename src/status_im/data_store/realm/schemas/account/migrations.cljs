@@ -86,3 +86,11 @@
 
 (defn v13 [old-realm new-realm]
   (log/debug "migrating v13 account database"))
+
+(defn v14 [old-realm new-realm]
+  (log/debug "migrating v14 account database")
+  (some-> new-realm
+          (.objects "message")
+          (.filtered (str "content-type = \"command-request\""))
+          (.map (fn [message _ _]
+                  (aset message "content-type" "command")))))

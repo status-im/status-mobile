@@ -44,9 +44,7 @@
                   :accessibility-label :chat-message-text}
       (:text content)]
 
-     (contains? #{constants/content-type-command
-                  constants/content-type-command-request}
-                content-type)
+     (= constants/content-type-command content-type)
      [command-short-preview message]
 
      :else
