@@ -1,8 +1,9 @@
 import pytest
 
+from support.utilities import fill_string_with_char
 from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import basic_user
+from tests.users import basic_user, transaction_senders
 from views.sign_in_view import SignInView
 
 
@@ -62,3 +63,84 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(passphrase=basic_user['passphrase'], password=unique_password)
         sign_in.check_no_values_in_logcat(passphrase=basic_user['passphrase'], password=unique_password)
+
+
+class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
+    @marks.testrail_id(5363)
+    def test_pass_phrase_validation(self):
+        signin_view = SignInView(self.driver)
+        recover_access_view = signin_view.i_have_account_button.click()
+        phrase_outside_the_mnemonic = 'one two three four five six seven eight nine ten eleven twelve'
+        validations = [
+            {
+                'phrase': '    ',
+                'element to check': recover_access_view.warnings.required_field,
+                'validation message': 'Required field',
+            },
+            {
+                'phrase': 'a',
+                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
+                'validation message': 'Recovery phrase is invalid'
+            },
+            {
+                'phrase': 'one two three four five six seven eight nine ten eleven twelve thirteen',
+                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
+                'validation message': 'Recovery phrase is invalid'
+            },
+            {
+                'phrase': '; two three four five six seven eight nine ten eleven twelve',
+                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
+                'validation message': 'Recovery phrase is invalid'
+            },
+            {
+                'phrase': phrase_outside_the_mnemonic,
+                'element to check': recover_access_view.warnings.misspelled_words,
+                'validation message': 'Some words might be misspelled'
+            },
+        ]
+
+        # we're performing the same steps changing only phrase per attempt
+        for validation in validations:
+            phrase, elm, msg = validation.get('phrase'), validation.get('element to check'), validation.get(
+                'validation message')
+            if signin_view.i_have_account_button.is_element_displayed():
+                signin_view.i_have_account_button.click()
+            recover_access_view.send_as_keyevent(phrase)
+            recover_access_view.password_input.click()
+
+            if not elm.is_element_displayed():
+                self.errors.append('"{}" message is not shown'.format(msg))
+            recover_access_view.click_system_back_button()
+
+        signin_view.i_have_account_button.click()
+        recover_access_view.send_as_keyevent(phrase_outside_the_mnemonic)
+        recover_access_view.password_input.click()
+        recover_access_view.send_as_keyevent('123456')
+        recover_access_view.sign_in_button.click()
+        recover_access_view.cancel_button.click()
+
+        if recover_access_view.cancel_button.is_element_displayed():
+            self.errors.append('Something went wrong. Probably, the confirmation pop up did not disappear')
+
+        recover_access_view.click_system_back_button()
+        signin_view.i_have_account_button.click()
+        recover_access_view.send_as_keyevent(phrase_outside_the_mnemonic)
+        recover_access_view.password_input.click()
+        recover_access_view.send_as_keyevent('123456')
+        recover_access_view.sign_in_button.click()
+        home_view = recover_access_view.confirm_phrase_button.click()
+
+        if not home_view.profile_button.is_element_displayed():
+            self.errors.append('Something went wrong. Probably, could not reach the home screen out.')
+
+        self.verify_no_errors()
+
+    @marks.testrail_id(5499)
+    def test_passphrase_whitespaces_ignored_while_recovering_access(self):
+        signin_view = SignInView(self.driver)
+        sender = transaction_senders['U']
+        passphrase = fill_string_with_char(sender['passphrase'], ' ', 3, True, True)
+        home_view = signin_view.recover_access(passphrase=passphrase)
+
+        assert home_view.profile_button.is_element_displayed(), \
+            'Something went wrong. Probably, could not reach the home screen out.'
