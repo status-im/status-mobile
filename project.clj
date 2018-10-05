@@ -40,7 +40,7 @@
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
             "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
-  :profiles {:dev      {:dependencies [[com.cemerick/piggieback "0.2.2"]]
+  :profiles {:dev      {:dependencies [[cider/piggieback "0.3.9"]]
                         :cljsbuild    {:builds
                                        {:ios
                                         {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
