@@ -239,6 +239,9 @@ function bundleMacOS() {
     install_name_tool -add_rpath "@executable_path/../Frameworks" \
                       -delete_rpath "${QT_PATH}/lib" \
                       'Status.app/Contents/MacOS/reportApp'
+    install_name_tool -add_rpath "@executable_path/../Frameworks" \
+                      -delete_rpath "${QT_PATH}/lib" \
+                      'Status.app/Contents/MacOS/Status'
     cp -f ../deployment/macos/Info.plist Status.app/Contents
     cp -f ../deployment/macos/status-icon.icns Status.app/Contents/Resources
     $DEPLOYQT Status.app -verbose=$VERBOSE_LEVEL \
