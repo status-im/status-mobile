@@ -6,9 +6,11 @@
             [status-im.utils.core :as utils]))
 
 (defn- transform-message [message]
-  (-> message
-      (update :message-type keyword)
-      (update :content edn/read-string)))
+  (try
+    (-> message
+        (update :message-type keyword)
+        (update :content edn/read-string))
+    (catch :default e nil)))
 
 (defn- get-by-chat-id
   ([chat-id]

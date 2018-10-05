@@ -67,87 +67,160 @@
                    :on-press #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}
        (i18n/label :t/delete-chat)]]]))
 
-(views/defview send-button [inp-ref input-text]
-  (let [empty? (= "" input-text)]
-    [react/touchable-highlight {:style    styles/send-button
-                                :on-press (fn [e]
-                                            (let [native-event (.-nativeEvent e)
-                                                  text         (.-text native-event)]
-                                              (re-frame/dispatch [:send-buidl-message {:tags #{(keyword @input-text)}
-                                                                                       :issue 1
-                                                                                       :github-issue 4212}]))
-                                            (.clear @inp-ref)
-                                            (.focus @inp-ref))}
-     [react/view {:style (styles/send-icon empty?)}
-      [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow empty?)}]]]))
+(views/defview buidl-text-input [field]
+  (let [component               (reagent/current-component)
+        set-container-height-fn #(reagent/set-state component {:container-height %})
+        {:keys [container-height]} (reagent/state component)]
+    [react/view {:style {:flex-direction    :row
+                         :overflow          :hidden
+                         :justify-content :center
+                         :align-items :center
+                         :align-content :center}}
+     [react/text {:style {:font-size 15
+                          :width 80}}
+      (string/capitalize (str (name field) ":"))]
+     [react/text-input {:placeholder (str "Type " (name field) "...")
+                        :auto-focus             true
+                        :multiline              true
+                        :blur-on-submit         true
+                        :style                  (styles/chat-text-input container-height)
+                        :font                   :default
+                        :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent %))))
+                        :on-change              (fn [e]
+                                                  (let [native-event (.-nativeEvent e)
+                                                        text         (.-text native-event)]
+                                                    (re-frame/dispatch [:buidl/set-issue-input-field field text])))}]]))
 
-(views/defview buidl-text-input [chat-id]
-  (views/letsubs [inp-ref (atom nil)
-                  input-text (reagent/atom "")]
-    {:should-component-update
-     (fn [_ [_ old-chat-id] [_ new-chat-id]]
-       ;; update component only when switch to another chat
-       (not= old-chat-id new-chat-id))}
-    (let [component               (reagent/current-component)
-          set-container-height-fn #(reagent/set-state component {:container-height %})
-          {:keys [container-height]} (reagent/state component)]
-      [react/view {:style (styles/chat-box container-height)}
-       [react/text-input {:placeholder            (i18n/label :t/type-a-message)
-                          :auto-focus             true
-                          :multiline              true
-                          :blur-on-submit         true
-                          :style                  (styles/chat-text-input container-height)
-                          :font                   :default
-                          :ref                    #(reset! inp-ref %)
-                          :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent %))))
-                          :default-value          @input-text
-                          :on-key-press           (fn [e]
-                                                    (let [native-event (.-nativeEvent e)
-                                                          key          (.-key native-event)
-                                                          modifiers    (js->clj (.-modifiers native-event))
-                                                          should-send  (and (= key "Enter") (not (contains? (set modifiers) "shift")))]
-                                                      (when should-send
-                                                        (re-frame/dispatch [:send-buidl-message {:tags #{(keyword @input-text)}
-                                                                                                 :issue 1
-                                                                                                 :github-issue 4212}])
-                                                        (.clear @inp-ref)
-                                                        (.focus @inp-ref))))
-                          :on-change              (fn [e]
-                                                    (let [native-event (.-nativeEvent e)
-                                                          text         (.-text native-event)]
-                                                      (reset! input-text text)))}]
-       [send-button inp-ref input-text]])))
-
-(defn tag-view [[tag value]]
-  [react/view {:style {:border-radius 5
-                       :padding 10
-                       :margin 2
-                       :height 200
-                       :width 200
-                       :background-color colors/blue-dark
-                       :flex-direction :row
-                       :flex 1}}
-   [react/text {:style {:flex 1
-                        :font-size 10
+(defn tag-view [tag]
+  [react/touchable-highlight {:style {:border-radius 5
+                                      :margin 2
+                                      :width 100
+                                      :height 40
+                                      :background-color colors/blue-dark
+                                      :justify-content :center
+                                      :align-items :center
+                                      :align-content :center
+                                      :flex-direction :row}
+                              :on-press #(re-frame/dispatch [:chat.ui/start-public-chat (str "status-buidl-test-tag-" tag)])}
+   [react/text {:style {:font-size 10
                         :font-weight :bold
-                        :color colors/white}} tag]
-   [react/text {:style {:flex 1
-                        :font-size 8
-                        :color colors/white
-                        :text-align :right}} value]])
+                        :color colors/white}} tag]])
+
+(defn add-tag-view [tag]
+  [react/touchable-highlight {:style {:border-radius 5
+                                      :margin 2
+                                      :width 100
+                                      :height 40
+                                      :background-color colors/blue-dark
+                                      :justify-content :center
+                                      :align-items :center
+                                      :align-content :center
+                                      :flex-direction :row}
+                              :on-press #(re-frame/dispatch [:buidl/add-tag tag])}
+   [react/text {:style {:font-size 10
+                        :font-weight :bold
+                        :color colors/white}} tag]])
+
+(views/defview issue-view [{:keys [id title content tags]}]
+  [react/view {:style {:flex-direction :row
+                       :margin-horizontal 2
+                       :margin-vertical 5
+                       :padding 2
+                       :border-radius 5
+                       :background-color colors/white}}
+   [react/touchable-highlight {:style {:flex 1}
+                               :on-press #(re-frame/dispatch [:chat.ui/start-public-chat (str "status-buidl-test-issue-" id)])}
+    [react/view
+     [react/text {:style {:font-size 12
+                          :font-weight :bold}}
+      title]
+     [react/text {:style {:font-size 10}}
+      content]]]
+   [react/view
+    (doall
+     (for [tag tags]
+       ^{:key tag} [tag-view tag]))]])
+
+(defn new-issue-title []
+  [react/view {:style {:flex-direction :column}}
+   [buidl-text-input :title]])
+
+(defn new-issue-content []
+  [react/view {:style {:flex-direction :column}}
+   [buidl-text-input :content]])
+
+(views/defview new-issue-tags []
+  (views/letsubs [tags [:buidl.issue.ui/tags]
+                  available-tags [:buidl.issue.ui/available-tags]]
+    [react/view {:style {:flex-direction :column}}
+     [react/view {:style {:background-color colors/gray-lighter
+                          :flex-direction :row
+                          :flex-wrap :wrap}}
+      (doall
+       (for [tag tags]
+         ^{:key tag} [add-tag-view tag]))]
+     [buidl-text-input :tag]
+     [react/view {:style {:background-color colors/gray-lighter
+                          :flex-direction :row
+                          :flex-wrap :wrap}}
+      (doall
+       (for [tag available-tags]
+         ^{:key tag} [add-tag-view tag]))]]))
+
+(views/defview new-issue [step]
+  (case step
+    :title [new-issue-title]
+    :content [new-issue-content]
+    :tags [new-issue-tags]
+    nil))
+
+(views/defview new-issue-button [step]
+  (let [action (case step
+                 nil #(re-frame/dispatch [:buidl/new-issue])
+                 :tags #(re-frame/dispatch [:buidl/create-issue])
+                 #(re-frame/dispatch [:buidl/next-step]))
+        label (case step
+                nil "New issue"
+                :tags "Create issue"
+                "Next step")]
+    [react/touchable-highlight {:style {:height           34
+                                        :width            34
+                                        :justify-content  :center
+                                        :align-items      :center
+                                        :align-self       :center}
+                                :on-press action}
+     [react/view {:style {:border-radius 4
+                          :background-color colors/blue-dark
+                          :width 120
+                          :height 30
+                          :justify-content :center
+                          :align-items :center
+                          :align-content :center}}
+      [react/text {:style {:color colors/white
+                           :font-size 14}}
+       label]]]))
 
 (views/defview buidl-view []
   (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:get-current-chat]
-                  messages [:buidl/get-messages]
-                  tags [:buidl/get-tags]]
-    [react/view {:style styles/chat-view}
+                  issues [:buidl/get-issues]
+                  tags   [:buidl/get-tags]
+                  {:keys [step]} [:buidl.ui/issue]]
+    [react/view {:style {:flex             1
+                         :flex-direction :column}}
      [toolbar-chat-view current-chat]
-     #_[react/text  (pr-str messages)]
-     [react/text (pr-str tags)]
-     [react/view {:flex 1
-                  :flex-direction :row
-                  :flex-wrap :wrap}
+     [react/view {:style {:background-color colors/gray-lighter
+                          :flex-direction :row
+                          :flex-wrap :wrap}}
       (doall
-       (for [[index tag] (map-indexed vector tags)]
-         ^{:key index} [tag-view tag]))]
-     #_[buidl-text-input chat-id]]))
+       (for [tag  tags]
+         ^{:key tag} [tag-view tag]))]
+     [react/view {:style {:flex 1
+                          :background-color colors/gray-lighter}}
+      [react/scroll-view {:style {:overflow :hidden
+                                  :flex-direction :column}}
+       [react/view
+        (doall
+         (for [{:keys [id] :as issue}  issues]
+           ^{:key id} [issue-view issue]))]]]
+     [new-issue step]
+     [new-issue-button step]]))

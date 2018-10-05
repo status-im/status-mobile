@@ -216,6 +216,13 @@
                                      :navigation-reset? true})
             (public-chat/join-public-chat topic)))
 
+(fx/defn start-public-chat-without-navigation
+  "Starts a new public chat"
+  [cofx topic]
+  (fx/merge cofx
+            (add-public-chat topic)
+            (public-chat/join-public-chat topic)))
+
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"
   [{:keys [db]}]

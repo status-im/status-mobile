@@ -182,7 +182,8 @@
 
 (spec/def ::db (allowed-keys
                 :opt
-                [:contacts/contacts
+                [:ui/buidl
+                 :contacts/contacts
                  :contacts/dapps
                  :contacts/new-identity
                  :contacts/new-identity-error
