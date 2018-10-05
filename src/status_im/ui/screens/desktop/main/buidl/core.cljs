@@ -6,7 +6,8 @@
             [cljs.spec.alpha :as spec]
             [status-im.utils.random :as random]
             [clojure.string :as string]
-            [status-im.chat.models :as chat.models]))
+            [status-im.chat.models :as chat.models]
+            [status-im.utils.build :as build]))
 
 (spec/def :buidl/tag (spec/and :global/not-empty-string
                                (partial re-matches #"[a-z0-9\-]+")))
@@ -14,8 +15,10 @@
 
 (spec/def ::content string?)
 (spec/def ::title string?)
+(spec/def ::tag-filter :buidl/tag)
 
-(spec/def ui/buidl (spec/keys :opt-un [::content ::title :buidl/tags :buidl/tag :buidl/step]))
+(spec/def ::new-issue (spec/keys :opt-un [::content ::title :buidl/tags :buidl/tag :buidl/step]))
+(spec/def ui/buidl (spec/keys :opt-un [::new-issue ::tag-filter]))
 
 (re-frame/reg-sub
  :buidl/get-messages
@@ -23,10 +26,28 @@
    (vals (get-in db [:chats "status-buidl-test" :messages]))))
 
 (re-frame/reg-sub
+ :buidl/get-tag-filter
+ (fn [db]
+   (get-in db [:ui/buidl :tag-filter] "")))
+
+(re-frame/reg-sub
  :buidl/get-issues
  :<- [:buidl/get-messages]
  (fn [messages]
    (keep #(get-in % [:content :issue]) messages)))
+
+(re-frame/reg-sub
+ :buidl/get-filtered-issues
+ :<- [:buidl/get-issues]
+ :<- [:buidl/get-tag-filter]
+ (fn [[issues tag-filter]]
+   (if (empty? tag-filter)
+     issues
+     (keep #(when (some (fn [tag]
+                          (clojure.string/includes? tag tag-filter))
+                        (:tags %))
+              %)
+           issues))))
 
 (re-frame/reg-sub
  :buidl/get-tags
@@ -41,29 +62,40 @@
            issues)))
 
 (re-frame/reg-sub
- :buidl.ui/issue
- (fn [db]
-   (:ui/buidl db)))
+ :buidl/get-filtered-tags
+ :<- [:buidl/get-tags]
+ :<- [:buidl/get-tag-filter]
+ (fn [[tags tag-filter]]
+   (if (empty? tag-filter)
+     tags
+     (keep #(when (clojure.string/includes? % tag-filter)
+              %)
+           tags))))
 
 (re-frame/reg-sub
- :buidl.issue.ui/tags
- :<- [:buidl.ui/issue]
+ :buidl.ui/new-issue
+ (fn [db]
+   (get-in db [:ui/buidl :new-issue])))
+
+(re-frame/reg-sub
+ :buidl.new-issue.ui/tags
+ :<- [:buidl.ui/new-issue]
  (fn [issue]
    (or (:tags issue)
        #{})))
 
 (re-frame/reg-sub
- :buidl.issue.ui/tag-input
- :<- [:buidl.ui/issue]
+ :buidl.new-issue.ui/tag-input
+ :<- [:buidl.ui/new-issue]
  (fn [issue]
    (or (:tag issue)
        "")))
 
 (re-frame/reg-sub
- :buidl.issue.ui/available-tags
+ :buidl.new-issue.ui/available-tags
  :<- [:buidl/get-tags]
- :<- [:buidl.issue.ui/tag-input]
- :<- [:buidl.issue.ui/tags]
+ :<- [:buidl.new-issue.ui/tag-input]
+ :<- [:buidl.new-issue.ui/tags]
  (fn [[existing-tags tag-input issue-tags]]
    (if (empty? tag-input)
      existing-tags
@@ -89,37 +121,38 @@
 (handlers/register-handler-fx
  :buidl/set-issue-input-field
  (fn [cofx [_ field text]]
-   {:db (assoc-in (:db cofx) [:ui/buidl field] text)}))
+   {:db (assoc-in (:db cofx) [:ui/buidl :new-issue field] text)}))
+
+(handlers/register-handler-fx
+ :buidl/tag-filter-changed
+ (fn [cofx [_ tag-filter]]
+   {:db (assoc-in (:db cofx) [:ui/buidl :tag-filter] tag-filter)}))
 
 (handlers/register-handler-fx
  :buidl/add-tag
  (fn [cofx [_ tag]]
    (when (spec/valid? :buidl/tag tag)
-     {:db (update-in (:db cofx) [:ui/buidl :tags] #(if % (conj % tag) #{tag}))})))
-
-(defn generate-tags [tags]
-  (into #{} (keep #(when (spec/valid? :buidl/tag %) %)
-                  (string/split tags #" "))))
+     {:db (update-in (:db cofx) [:ui/buidl :new-issue :tags] #(if % (conj % tag) #{tag}))})))
 
 (handlers/register-handler-fx
  :buidl/new-issue
  (fn [cofx _]
-   {:db (assoc (:db cofx) :ui/buidl {:step :title})}))
+   {:db (assoc-in (:db cofx) [:ui/buidl :new-issue] {:step :title})}))
 
 (handlers/register-handler-fx
  :buidl/next-step
  (fn [cofx _]
-   (let [step (get-in cofx [:db :ui/buidl :step])]
-     {:db (assoc-in (:db cofx) [:ui/buidl :step] (case step
-                                                   :title :content
-                                                   :content :tags))})))
+   (let [step (get-in cofx [:db :ui/buidl :new-issue :step])]
+     {:db (assoc-in (:db cofx) [:ui/buidl :new-issue :step] (case step
+                                                              :title :content
+                                                              :content :tags))})))
 
 (handlers/register-handler-fx
  :buidl/create-issue
  (fn [cofx _]
-   (let [{:keys [content tags title]} (get-in cofx [:db :ui/buidl])]
+   (let [{:keys [content tags title]} (get-in cofx [:db :ui/buidl :new-issue])]
      (fx/merge cofx
-               {:db (dissoc (:db cofx) :ui/buidl)}
+               {:db (update (:db cofx) :ui/buidl dissoc :new-issue)}
                (send-buidl {:issue {:tags tags
                                     :id (random/id)
                                     :title title

@@ -66,7 +66,9 @@
                                       :margin 2
                                       :padding 4
                                       :height 23
-                                      :background-color colors/blue-dark
+                                      :background-color (if (= tag "clear filter")
+                                                          colors/red
+                                                          colors/blue-dark)
                                       :justify-content :center
                                       :align-items :center
                                       :align-content :center}
@@ -147,8 +149,8 @@
    [buidl-text-input :content]])
 
 (views/defview new-issue-tags []
-  (views/letsubs [tags [:buidl.issue.ui/tags]
-                  available-tags [:buidl.issue.ui/available-tags]]
+  (views/letsubs [tags [:buidl.new-issue.ui/tags]
+                  available-tags [:buidl.new-issue.ui/available-tags]]
     [react/view {:style {:flex-direction :column
                          :margin 5
                          :border-radius 5
@@ -200,20 +202,43 @@
                            :font-size 14}}
        label]]]))
 
+(defn tag-filter-input [tag-filter tag-filter-ref]
+  [react/text-input {:placeholder "Type here to filter tags..."
+                     :auto-focus             true
+                     :blur-on-submit         true
+                     :style {:color :black
+                             :height            30
+                             :margin-left       20
+                             :margin-right      22}
+                     :ref #(reset! tag-filter-ref %)
+                     :default-value tag-filter
+                     :on-change (fn [e]
+                                  (let [native-event (.-nativeEvent e)
+                                        text         (.-text native-event)]
+                                    (re-frame/dispatch [:buidl/tag-filter-changed text])))}])
+
 (views/defview buidl-view []
   (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:get-current-chat]
-                  issues [:buidl/get-issues]
-                  tags   [:buidl/get-tags]
-                  {:keys [step]} [:buidl.ui/issue]]
+                  issues [:buidl/get-filtered-issues]
+                  tag-filter   [:buidl/get-tag-filter]
+                  tag-filter-ref (atom nil)
+                  tags   [:buidl/get-filtered-tags]
+                  {:keys [step]} [:buidl.ui/new-issue]]
     [react/view {:style {:flex             1
                          :flex-direction :column}}
      [toolbar-chat-view current-chat]
+     [tag-filter-input tag-filter tag-filter-ref]
      [react/view {:style {:background-color colors/gray-lighter
                           :flex-direction :row
                           :flex-wrap :wrap}}
+      (when (not-empty tag-filter)
+        [tag-view "clear filter" {:on-press #(do (.clear @tag-filter-ref)
+                                                 (.focus @tag-filter-ref)
+                                                 (re-frame/dispatch [:buidl/tag-filter-changed ""]))}])
       (doall
        (for [tag  tags]
-         ^{:key tag} [tag-view tag {:on-press #(re-frame/dispatch [:chat.ui/start-public-chat (str "status-buidl-test-tag-" tag)])}]))]
+         ^{:key tag} [tag-view tag {:on-press #(do (.setNativeProps @tag-filter-ref #js {:text tag})
+                                                   (re-frame/dispatch [:buidl/tag-filter-changed tag]))}]))]
      [react/view {:style {:flex 1
                           :padding-bottom 50
                           :background-color colors/gray-lighter}}
