@@ -61,8 +61,9 @@
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [status-module-initialized? status-node-started? view-id
+  [{{:keys [status-module-initialized? view-id
             network-status network peers-count peers-summary device-UUID]
+     :node/keys [status]
      :or   {network (get app-db :network)}} :db}]
   {:db (assoc app-db
               :contacts/contacts {}
@@ -70,7 +71,7 @@
               :peers-count (or peers-count 0)
               :peers-summary (or peers-summary [])
               :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-              :status-node-started? status-node-started?
+              :node/status status
               :network network
               :device-UUID device-UUID
               :view-id view-id)})
@@ -88,7 +89,7 @@
              :hardwallet/check-nfc-support                   nil
              :hardwallet/check-nfc-enabled                   nil}
             (initialize-app-db)
-            (node/start nil)))
+            (node/initialize nil)))
 
 (fx/defn set-device-uuid
   [{:keys [db]} device-uuid]
@@ -142,7 +143,8 @@
   (let [{:universal-links/keys [url]
          :keys [accounts/accounts accounts/create contacts/contacts networks/networks
                 network network-status peers-count peers-summary view-id navigation-stack
-                status-module-initialized? status-node-started? device-UUID semaphores]
+                status-module-initialized? device-UUID semaphores]
+         :node/keys [status]
          :or   {network (get app-db :network)}} db
         current-account (get accounts address)
         account-network-id (get current-account :network network)
@@ -152,7 +154,7 @@
                         :view-id view-id
                         :navigation-stack navigation-stack
                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                        :status-node-started? status-node-started?
+                        :node/status status
                         :accounts/create create
                         :networks/networks networks
                         :account/account current-account

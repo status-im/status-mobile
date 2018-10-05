@@ -23,7 +23,7 @@
             (is (= [:login-account-internal "testnet" "password"] (get-in actual [:db :node/after-start]))))))
 
       (testing "status-go has started & the user is on mainnet"
-        (let [db (assoc-in initial-db [:db :status-node-started?] true)
+        (let [db (assoc-in initial-db [:db :node/status] :started)
               actual (models/user-login "mainnet" "password" db)]
           (testing "it does not start status-node if it has already started"
             (is (not (:init/initialize-geth actual))))
@@ -32,7 +32,7 @@
 
       (testing "the user has selected a different network"
         (testing "status-go has started"
-          (let [db     (assoc-in initial-db [:db :status-node-started?] true)
+          (let [db     (assoc-in initial-db [:db :node/status] :started)
                 actual (models/user-login "testnet" "password" db)]
             (testing "it dispatches start-node"
               (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password"])))
@@ -65,7 +65,7 @@
                                         {:bootnodes {"mainnet_rpc" true}})
                   actual (models/user-login "mainnet" "password" bootnodes-enabled-db)]
               (testing "status-node has started"
-                (let [db (assoc-in bootnodes-enabled-db [:db :status-node-started?] true)
+                (let [db (assoc-in bootnodes-enabled-db [:db :node/status] :started)
                       actual (models/user-login "mainnet" "password" db)]
                   (testing "it dispatches start-node"
                     (is (get-in actual [:db :node/after-stop] [:start-node "testnet" "password"])))
@@ -82,7 +82,7 @@
 
           (testing "custom bootnodes not enabled"
             (testing "status-node has started"
-              (let [db (assoc-in bootnodes-db [:db :status-node-started?] true)
+              (let [db (assoc-in bootnodes-db [:db :node/status] :started)
                     actual (models/user-login "mainnet" "password" db)]
                 (testing "it does not start status-node if it has already started"
                   (is (not (:init/initialize-geth actual))))

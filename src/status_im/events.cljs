@@ -8,6 +8,7 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
+            [status-im.node.core :as node]
             [status-im.browser.permissions :as browser.permissions]
             [status-im.chat.commands.input :as commands.input]
             [status-im.chat.models :as chat]
