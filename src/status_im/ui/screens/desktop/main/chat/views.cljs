@@ -120,20 +120,23 @@
   [react/view {:style style}
    (when (:response-to content)
      [quoted-message (:response-to content) outgoing current-public-key])
-   [react/view {:flex-direction  :column}
-    (doall
-     (for [[index-sentence sentence] (map-indexed vector (put-links-in-vector text))]
-       [react/view {:flex-direction :row
-                    :flex-wrap :wrap}
-        (doall
-         (for [[index word] (map-indexed vector sentence)]
-           ^{:key (str message-id index-sentence index)}
-           (if (vector? word)
-             [link-button word]
-             [react/text {:style {:font-size 9}
-                          :selectable      true
-                          :selection-color (if outgoing colors/white colors/hawkes-blue)}
-              word])))]))
+   [react/touchable-highlight {:on-press #(when (= "right" (.-button (.-nativeEvent %)))
+                                            (utils/show-popup "" "Message copied to clipboard")
+                                            (react/copy-to-clipboard text))}
+    [react/view {:flex-direction  :column}
+     (doall
+      (for [[index-sentence sentence] (map-indexed vector (put-links-in-vector text))]
+        [react/view {:flex-direction :row
+                     :flex-wrap :wrap}
+         (doall
+          (for [[index word] (map-indexed vector sentence)]
+            ^{:key (str message-id index-sentence index)}
+            (if (vector? word)
+              [link-button word]
+              [react/text {:style {:font-size 9}
+                           :selectable      true
+                           :selection-color (if outgoing colors/white colors/hawkes-blue)}
+               word])))]))]
     [react/text {:style (styles/message-timestamp-placeholder)}
      (time/timestamp->time timestamp)]
     [react/text {:style (styles/message-timestamp)}
