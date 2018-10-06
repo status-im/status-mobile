@@ -17,11 +17,6 @@
 
 (defview passphrase-input [passphrase error warning]
   (letsubs [input-ref (reagent/atom nil)]
-    {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @input-ref)))
-     ;;TODO(rasom): remove this line when default-value will
-     ;;be fixed in react-native-desktop
-     :should-component-update (fn [] false)}
     [text-input/text-input-with-label
      {:style               styles/recovery-phrase-input
       :height              92
