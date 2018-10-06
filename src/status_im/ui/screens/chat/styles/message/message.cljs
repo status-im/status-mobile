@@ -206,6 +206,7 @@
                      colors/gray)})
 
 (defn quoted-message-text [outgoing]
-  {:color (if outgoing
+  {:font-size 12
+   :color (if outgoing
             colors/wild-blue-yonder
             colors/gray)})

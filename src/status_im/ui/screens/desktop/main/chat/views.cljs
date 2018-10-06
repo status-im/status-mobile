@@ -22,7 +22,9 @@
             [status-im.ui.screens.desktop.main.chat.styles :as styles]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.desktop.main.chat.events :as chat.events]))
+            [status-im.ui.screens.desktop.main.chat.events :as chat.events]
+            [status-im.ui.screens.chat.message.message :as chat.message]
+            [status-im.utils.http :as http]))
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
@@ -106,21 +108,60 @@
                   :number-of-lines 5}
       text]]))
 
-(views/defview message-with-timestamp [text {:keys [message-id timestamp outgoing content current-public-key]} style]
+(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+
+(def regx-tag #"#[a-z0-9\-]+")
+
+(defn put-links-in-vector [text]
+  (map #(map (fn [token]
+               (cond
+                 (re-matches regx-tag token) [:tag token]
+                 (re-matches regx-url token)  [:link token]
+                 :default (str token " ")))
+             (string/split % #" "))
+       (string/split text #"\n")))
+
+(defn link-button [[link-tag link] outgoing]
+  [react/touchable-highlight {:style {}
+                              :on-press #(case link-tag
+                                           :link (.openURL react/linking (http/normalize-url link))
+                                           :tag (re-frame/dispatch [:chat.ui/start-public-chat (subs link 1)]))}
+   [react/text {:style {:font-size 14
+                        :text-decoration-line :underline
+                        :color (if outgoing colors/white colors/blue)
+                        :padding-bottom 1
+                        :margin-right 5}}
+    link]])
+
+(views/defview message-with-timestamp
+  [text {:keys [message-id timestamp outgoing content current-public-key]} style]
   [react/view {:style style}
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
+   [react/touchable-highlight {:style {}
+                               :on-press #(if (= "right" (.-button (.-nativeEvent %)))
+                                            (do (utils/show-popup "" "Message copied to clipboard")
+                                                (react/copy-to-clipboard text))
+                                            (re-frame/dispatch [:chat.ui/reply-to-message message-id]))}
     [react/view {:style styles/message-container}
      (when (:response-to content)
        [quoted-message (:response-to content) outgoing current-public-key])
-     [react/view {:style styles/message-wrapper}
-      [react/text {:style           (styles/message-text outgoing)
-                   :selectable      true
-                   :selection-color (if outgoing colors/white colors/blue-light)}
-       text]
-      [react/text {:style (styles/message-timestamp-placeholder)}
-       (time/timestamp->time timestamp)]
-      [react/text {:style (styles/message-timestamp outgoing)}
-       (time/timestamp->time timestamp)]]]]])
+     [react/view {:flex-direction  :column}
+      (doall
+       (for [[index-sentence sentence] (map-indexed vector (put-links-in-vector text))]
+         ^{:key (str message-id index-sentence)}
+         [react/view {:flex-direction :row
+                      :flex-wrap :wrap}
+          (doall
+           (for [[index word] (map-indexed vector sentence)]
+             (if (vector? word)
+               ^{:key (str message-id index-sentence index)}
+               [link-button word outgoing]
+               ^{:key (str message-id index-sentence index)}
+               [react/text {:style (styles/message-text outgoing)}
+                word])))]))]
+     [react/text {:style (styles/message-timestamp-placeholder)}
+      (time/timestamp->time timestamp)]
+     [react/text {:style (styles/message-timestamp outgoing)}
+      (time/timestamp->time timestamp)]]]])
 
 (views/defview text-only-message [text message]
   [react/view {:style (styles/message-row message)}

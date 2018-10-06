@@ -259,4 +259,3 @@
 
 (defn reply-icon [outgoing]
   {:tint-color (if outgoing colors/white colors/gray)})
-
