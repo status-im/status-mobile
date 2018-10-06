@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.desktop.main.buidl.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
+  (:require [status-im.utils.http :as http]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
@@ -73,9 +74,32 @@
                                       :align-items :center
                                       :align-content :center}
                               :on-press on-press}
-   [react/text {:style {:font-size 10
+   [react/text {:style {:font-size 9
                         :color colors/white}
                 :font :medium} tag]])
+
+(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+
+(def regx-tag #"#[a-z0-9\-]+")
+
+(defn put-links-in-vector [text]
+  (map #(map (fn [token]
+               (cond
+                 (re-matches regx-tag token) [:tag token]
+                 (re-matches regx-url token)  [:link token]
+                 :default (str token " ")))
+             (string/split % #" "))
+       (string/split text #"\n")))
+
+(defn link-button [[link-tag link]]
+  [react/touchable-highlight {:style {}
+                              :on-press #(case link-tag
+                                           :link (.openURL react/linking (http/normalize-url link))
+                                           :tag (re-frame/dispatch [:chat.ui/start-public-chat (subs link 1)]))}
+   [react/text {:style {:font-size 9
+                        :color colors/blue
+                        :padding-bottom 1}
+                :font :medium} (str link " ")]])
 
 (views/defview issue-view [{:keys [id title content tags]}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/start-public-chat (str "status-buidl-test-issue-" id)])}
@@ -94,15 +118,22 @@
      [react/text {:style {:font-size 12
                           :color colors/gray}}
       (str "#" id)]]
+    [react/view {:style {:margin 2
+                         :padding 4}}
+     [react/view {:flex-direction  :column}
+      (doall
+       (for [[index-sentence sentence] (map-indexed vector (put-links-in-vector content))]
+         [react/view {:flex-direction :row
+                      :flex-wrap :wrap}
+          (doall
+           (for [[index word] (map-indexed vector sentence)]
+             ^{:key (str message-id index-sentence index)}
+             (if (vector? word)
+               [link-button word]
+               [react/text {:style {:font-size 9}}
+                word])))]))]]
     [react/view {:flex-direction :row
                  :flex-wrap :wrap}
-     [react/view {:style {:margin 2
-                          :padding 4
-                          :justify-content :center
-                          :align-items :center
-                          :align-content :center}}
-      [react/text {:style {:font-size 10}}
-       content]]
      (doall
       (for [tag tags]
         ^{:key tag} [tag-view tag {:on-press #(re-frame/dispatch [:chat.ui/start-public-chat (str "status-buidl-test-tag-" tag)])}]))]]])
