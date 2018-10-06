@@ -93,48 +93,53 @@
                                      photo-path)}
                      :style  styles/photo-style}]])))
 
-(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}|#[a-z0-9\-]+")
 
 (defn put-links-in-vector [text]
   (let [links (map first (re-seq regx-url text))]
     (reduce (fn [text-coll link]
-              (reduce (fn [acc text-part]
-                        (if (string? text-part)
-                          (let [c (string/split (str text-part " ") link)]
-                            (if (= (count c) 1)
-                              (conj acc (first c))
-                              (concat acc (remove empty?
-                                                  (map #(if (string? %) (string/trim %) %)
-                                                       (interpose [link] c))))))
-                          (conj acc text-part)))
-                      []
-                      text-coll))
+              (let [link-tag (cond
+                               (string/starts-with? link "#") :tag
+                               :else :link)]
+                (reduce (fn [acc text-part]
+                          (if (string? text-part)
+                            (let [c (string/split (str text-part " ") link)]
+                              (if (= (count c) 1)
+                                (conj acc (first c))
+                                (concat acc (remove empty?
+                                                    (map #(if (string? %) (string/trim %) %)
+                                                         (interpose [link-tag link] c))))))
+                            (conj acc text-part)))
+                        []
+                        text-coll)))
             [text]
             links)))
 
-(defn link-button [link]
+(defn link-button [[link-tag link]]
   [react/touchable-highlight {:style {:margin-horizontal 2
                                       :justify-content :center
                                       :align-items :center
                                       :align-content :center}
-                              :on-press #(.openURL react/linking (http/normalize-url link))}
+                              :on-press #(case link-tag
+                                           :link (.openURL react/linking (http/normalize-url link))
+                                           :tag (re-frame/dispatch [:chat.ui/start-public-chat (subs link 1)]))}
    [react/text {:style {:font-size 9
                         :color colors/blue}
                 :font :medium} link]])
 
-(views/defview message-with-timestamp [text {:keys [timestamp outgoing] :as message} style]
+(views/defview message-with-timestamp [text {:keys [timestamp outgoing message-id] :as message} style]
   [react/view {:style style}
    (when (:response-to content)
      [quoted-message (:response-to content) outgoing current-public-key])
    [react/view {:style styles/message-wrapper}
     (doall
      (for [[index text-part] (map-indexed vector (put-links-in-vector text))]
-       ^{:key index} (if (vector? text-part)
-                       [link-button (first text-part)]
-                       [react/text {:style           (styles/message-text message)
-                                    :selectable      true
-                                    :selection-color (if outgoing colors/white colors/hawkes-blue)}
-                        text-part])))
+       ^{:key (str message-id index)} (if (vector? text-part)
+                                        [link-button text-part]
+                                        [react/text {:style           (styles/message-text message)
+                                                     :selectable      true
+                                                     :selection-color (if outgoing colors/white colors/hawkes-blue)}
+                                         text-part])))
     [react/text {:style (styles/message-timestamp-placeholder)}
      (time/timestamp->time timestamp)]
     [react/text {:style (styles/message-timestamp)}
