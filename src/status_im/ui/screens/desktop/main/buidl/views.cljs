@@ -165,74 +165,6 @@
                                                       text         (.-text native-event)]
                                                   (re-frame/dispatch [:buidl/set-issue-input-field field text])))}]])
 
-(defn new-issue-title []
-  [react/view {:style {:flex-direction :column
-                       :margin 5
-                       :border-radius 5
-                       :background-color colors/white}}
-   [buidl-text-input :title]])
-
-(defn new-issue-content []
-  [react/view {:style {:flex-direction :column
-                       :margin 5
-                       :border-radius 5
-                       :background-color colors/white}}
-   [buidl-text-input :content]])
-
-(views/defview new-issue-tags []
-  (views/letsubs [tags [:buidl.new-issue.ui/tags]
-                  available-tags [:buidl.new-issue.ui/available-tags]]
-    [react/view {:style {:flex-direction :column
-                         :margin 5
-                         :border-radius 5
-                         :background-color colors/white}}
-     [react/view {:style {:background-color colors/gray-lighter
-                          :flex-direction :row
-                          :flex-wrap :wrap}}
-      (doall
-       (for [tag tags]
-         ^{:key tag} [tag-view tag {:on-press #(re-frame/dispatch [:buidl/add-tag tag])}]))]
-     [buidl-text-input :tag]
-     [react/view {:style {:background-color colors/gray-lighter
-                          :flex-direction :row
-                          :flex-wrap :wrap}}
-      (doall
-       (for [tag available-tags]
-         ^{:key tag} [tag-view tag {:on-press #(re-frame/dispatch [:buidl/add-tag tag])}]))]]))
-
-(views/defview new-issue [step]
-  (case step
-    :title [new-issue-title]
-    :content [new-issue-content]
-    :tags [new-issue-tags]
-    nil))
-
-(views/defview new-issue-button [step]
-  (let [action (case step
-                 nil #(re-frame/dispatch [:buidl/new-issue])
-                 :tags #(re-frame/dispatch [:buidl/create-issue])
-                 #(re-frame/dispatch [:buidl/next-step]))
-        label (case step
-                nil "New issue"
-                :tags "Create issue"
-                "Next step")]
-    [react/touchable-highlight {:style {:height           34
-                                        :width            34
-                                        :justify-content  :center
-                                        :align-items      :center
-                                        :align-self       :center}
-                                :on-press action}
-     [react/view {:style {:border-radius 4
-                          :background-color colors/blue-dark
-                          :width 120
-                          :height 30
-                          :justify-content :center
-                          :align-items :center
-                          :align-content :center}}
-      [react/text {:style {:color colors/white
-                           :font-size 14}}
-       label]]]))
-
 (defn tag-filter-input [tag-filter tag-filter-ref]
   [react/text-input {:placeholder "Type here to filter tags..."
                      :auto-focus             true
@@ -248,16 +180,30 @@
                                         text         (.-text native-event)]
                                     (re-frame/dispatch [:buidl/tag-filter-changed text])))}])
 
-(views/defview buidl-view []
-  (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:get-current-chat]
-                  issues [:buidl/get-filtered-issues]
-                  tag-filter   [:buidl/get-tag-filter]
+(views/defview buidl-tab []
+  (views/letsubs [tag-filter   [:buidl/get-tag-filter]
                   tag-filter-ref (atom nil)
-                  tags   [:buidl/get-filtered-tags]
-                  {:keys [step]} [:buidl.ui/new-issue]]
+                  tags   [:buidl/get-filtered-tags]]
     [react/view {:style {:flex             1
-                         :flex-direction :column}}
-     [toolbar-chat-view current-chat]
+                         :flex-direction :column
+                         :background-color colors/gray-lighter}}
+     [react/view {:style {:flex-direction :row
+                          :align-items    :center
+                          :height         68
+                          :padding        11
+                          :background-color colors/white}}
+      [react/view {:style {:flex 1}}]
+      [react/text {:style {:font-size 16
+                           :margin-right 20}
+                   :font :medium} "Create a new issue"]
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:buidl/new-issue])}
+       [react/view {:style {:background-color colors/blue
+                            :width            34
+                            :height           34
+                            :border-radius    34
+                            :justify-content  :center
+                            :align-items      :center}}
+        [icons/icon :icons/add {:style {:tint-color :white}}]]]]
      [tag-filter-input tag-filter tag-filter-ref]
      [react/view {:style {:background-color colors/gray-lighter
                           :flex-direction :row
@@ -269,7 +215,13 @@
       (doall
        (for [tag  tags]
          ^{:key tag} [tag-view tag {:on-press #(do (.setNativeProps @tag-filter-ref #js {:text tag})
-                                                   (re-frame/dispatch [:buidl/tag-filter-changed tag]))}]))]
+                                                   (re-frame/dispatch [:buidl/tag-filter-changed tag]))}]))]]))
+
+(views/defview buidl-view []
+  (views/letsubs [issues [:buidl/get-filtered-issues]
+                  tag-filter   [:buidl/get-tag-filter]]
+    [react/view {:style {:flex             1
+                         :flex-direction :column}}
      [react/view {:style {:flex 1
                           :padding-bottom 50
                           :background-color colors/gray-lighter}}
@@ -278,8 +230,4 @@
        [react/view {:style {:flex-direction :column}}
         (doall
          (for [{:keys [id] :as issue}  issues]
-           ^{:key id} [issue-view issue]))]]]
-     [react/view {:style {:flex-direction :column
-                          :background-color colors/gray-lighter}}
-      [new-issue step]
-      [new-issue-button step]]]))
+           ^{:key id} [issue-view issue]))]]]]))

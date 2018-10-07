@@ -7,7 +7,8 @@
             [status-im.utils.random :as random]
             [clojure.string :as string]
             [status-im.chat.models :as chat.models]
-            [status-im.utils.build :as build]))
+            [status-im.utils.build :as build]
+            [status-im.ui.screens.navigation :as navigation]))
 
 (spec/def :buidl/tag (spec/and :global/not-empty-string
                                (partial re-matches #"[a-z0-9\-]+")))
@@ -19,6 +20,11 @@
 
 (spec/def ::new-issue (spec/keys :opt-un [::content ::title :buidl/tags :buidl/tag :buidl/step]))
 (spec/def ui/buidl (spec/keys :opt-un [::new-issue ::tag-filter]))
+
+(re-frame/reg-sub
+ :buidl/get-todos
+ (fn [db]
+   0))
 
 (re-frame/reg-sub
  :buidl/get-messages
@@ -137,7 +143,11 @@
 (handlers/register-handler-fx
  :buidl/new-issue
  (fn [cofx _]
-   {:db (assoc-in (:db cofx) [:ui/buidl :new-issue] {:step :title})}))
+   (fx/merge cofx
+             {:db (assoc-in (:db cofx) [:ui/buidl :new-issue] {:title "Title"
+                                                               :content "Content"
+                                                               :step :title})}
+             (navigation/navigate-to-cofx :new-issue {}))))
 
 (handlers/register-handler-fx
  :buidl/next-step
@@ -152,7 +162,9 @@
  (fn [cofx _]
    (let [{:keys [content tags title]} (get-in cofx [:db :ui/buidl :new-issue])]
      (fx/merge cofx
-               {:db (update (:db cofx) :ui/buidl dissoc :new-issue)}
+               {:db (-> (:db cofx)
+                        (update :ui/buidl dissoc :new-issue)
+                        (assoc :view-id :buidl))}
                (send-buidl {:issue {:tags tags
                                     :id (random/id)
                                     :title title

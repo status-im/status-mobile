@@ -26,8 +26,10 @@
                        :advanced-settings
                        :chat
                        :home
+                       :buidl
                        :qr-code
                        :chat-profile
+                       :new-issue
                        :backup-recovery-phrase) main.views/main-views
                       :login login.views/login
                       react/view)]

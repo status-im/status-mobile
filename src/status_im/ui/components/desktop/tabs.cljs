@@ -24,7 +24,11 @@
     :content {:title         "Profile"
               :icon-inactive :icons/profile
               :icon-active   :icons/profile-active}
-    :count-subscription  :get-profile-unread-messages-number}])
+    :count-subscription  :get-profile-unread-messages-number}
+   {:view-id :buidl
+    :content {:title         "Buidl"
+              :emoji         "🛠"}
+    :count-subscription  :buidl/get-todos}])
 
 (defn- counter [cnt]
   (let [[unviewed-messages-label large?] (if (< 9 cnt)
@@ -33,12 +37,16 @@
     [react/view {:style tabs.styles/unread-messages-icon}
      [react/text {:style (tabs.styles/unread-messages-text large?)} unviewed-messages-label]]))
 
-(defn- tab-content [{:keys [title icon-active icon-inactive]}]
+(defn- tab-content [{:keys [title icon-active icon-inactive emoji]}]
   (fn [active? cnt]
     [react/view {:style tabs.styles/tab-container}
-     (let [icon (if active? icon-active icon-inactive)]
-       [react/view
-        [icons/icon icon {:style {:tint-color (if active? colors/blue colors/gray-icon)}}]])
+     (if emoji
+       [react/text {:style {:font-size 15
+                            :color (if active? colors/blue colors/gray-icon)}}
+        emoji]
+       (let [icon (if active? icon-active icon-inactive)]
+         [react/view
+          [icons/icon icon {:style {:tint-color (if active? colors/blue colors/gray-icon)}}]]))
      [react/view
       [react/text {:style (tabs.styles/tab-title active?)}
        title]]
@@ -50,7 +58,6 @@
 (views/defview tab [index content view-id active? count-subscription]
   (views/letsubs [cnt [count-subscription]]
     [react/touchable-highlight {:style    (merge tabs.styles/tab-container {:flex 1})
-                                :disabled active?
                                 :on-press #(re-frame/dispatch [:show-desktop-tab view-id])}
      [react/view
       [content active? cnt]]]))

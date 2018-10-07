@@ -318,18 +318,11 @@
 
 (views/defview chat-view []
   (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:get-current-chat]]
-    (if (= chat-id "status-buidl-test")
-      [buidl/buidl-view]
-      (if (string/starts-with? chat-id "status-buildl-test")
-        [react/view {:style styles/chat-view}
-         [toolbar-chat-view current-chat]
-         [messages-view current-chat]
-         [chat-text-input chat-id input-text]]
-        [react/view {:style styles/chat-view}
-         [toolbar-chat-view current-chat]
-         [messages-view current-chat]
-         [reply-message-view]
-         [chat-text-input chat-id input-text]]))))
+    [react/view {:style styles/chat-view}
+     [toolbar-chat-view current-chat]
+     [messages-view current-chat]
+     [reply-message-view]
+     [chat-text-input chat-id input-text]]))
 
 (views/defview chat-profile []
   (letsubs [identity        [:get-current-contact-identity]
