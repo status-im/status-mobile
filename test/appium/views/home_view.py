@@ -152,3 +152,15 @@ class HomeView(BaseView):
         chat_view = self.get_chat_view()
         start_new_chat.confirm_until_presence_of_element(chat_view.chat_message_input)
         return chat_view
+
+    def open_status_test_dapp(self):
+        profile_view = self.profile_button.click()
+        profile_view.advanced_button.click()
+        profile_view.debug_mode_toggle.click()
+        home_view = profile_view.home_button.click()
+        start_new_chat_view = home_view.plus_button.click()
+        start_new_chat_view.open_d_app_button.click()
+        start_new_chat_view.status_test_dapp_button.scroll_to_element()
+        status_test_dapp = start_new_chat_view.status_test_dapp_button.click()
+        start_new_chat_view.open_button.click()
+        return status_test_dapp

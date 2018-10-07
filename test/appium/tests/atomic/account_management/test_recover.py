@@ -67,6 +67,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
 class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
     @marks.testrail_id(5363)
+    @marks.critical
     def test_pass_phrase_validation(self):
         signin_view = SignInView(self.driver)
         recover_access_view = signin_view.i_have_account_button.click()
@@ -136,11 +137,12 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5499)
+    @marks.critical
     def test_passphrase_whitespaces_ignored_while_recovering_access(self):
         signin_view = SignInView(self.driver)
         sender = transaction_senders['U']
         passphrase = fill_string_with_char(sender['passphrase'], ' ', 3, True, True)
         home_view = signin_view.recover_access(passphrase=passphrase)
 
-        assert home_view.profile_button.is_element_displayed(), \
-            'Something went wrong. Probably, could not reach the home screen out.'
+        if not home_view.profile_button.is_element_displayed():
+            self.driver.fail('Something went wrong. Probably, could not reach the home screen out.')

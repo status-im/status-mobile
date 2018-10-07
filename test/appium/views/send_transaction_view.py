@@ -1,5 +1,5 @@
 from tests import common_password
-from views.base_element import BaseText
+from views.base_element import BaseText, BaseElement
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView, OkButton, ProgressBar
 
@@ -137,6 +137,12 @@ class ShareButton(BaseButton):
         self.locator = self.Locator.accessibility_id('share-button')
 
 
+class OnboardingMessage(BaseElement):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_selector('Set up your wallet')
+
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -168,6 +174,8 @@ class SendTransactionView(BaseView):
 
         self.share_button = ShareButton(self.driver)
         self.progress_bar = ProgressBar(self.driver)
+
+        self.onboarding_message = OnboardingMessage(self.driver)
 
     def sign_transaction(self, sender_password: str = common_password):
         self.sign_transaction_button.click_until_presence_of_element(self.enter_password_input)
