@@ -27,6 +27,10 @@
                     :name     "DAI"
                     :address  "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
                     :decimals 18}
+                   {:symbol   :MKR
+                    :name     "MKR"
+                    :address  "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+                    :decimals 18}
                    {:symbol   :EOS
                     :name     "EOS"
                     :address  "0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0"
