@@ -208,3 +208,7 @@
   {:margin-bottom  4
    :font-size      14
    :color          colors/black})
+
+(def hyperlink
+  (assoc message-text
+         :color colors/blue))

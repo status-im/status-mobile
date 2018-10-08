@@ -105,14 +105,14 @@
                   (fn [text-seq]
                     (map (fn [text] {:text text :url? false}) text-seq))))
 
-(defn- autolink [string event-on-press]
+(defn- autolink [string event-on-press style]
   (->> (parse-url string)
        (map-indexed (fn [idx {:keys [text url?]}]
                       (if url?
                         (let [[url _ _ _ text] (re-matches #"(?i)^((\w+://)?(www\d{0,3}[.])?)?(.*)$" text)]
                           [react/text
                            {:key      idx
-                            :style    {:color colors/blue}
+                            :style    (or style {:color colors/blue})
                             :on-press #(re-frame/dispatch [event-on-press url])}
                            url])
                         text)))
@@ -128,7 +128,7 @@
        replacements))
 
 ;; todo rewrite this, naive implementation
-(defn- parse-text [string event-on-press]
+(defn- parse-text [string event-on-press style]
   (parse-str-regx string
                   regx-styled
                   (fn [text-seq]
@@ -143,7 +143,7 @@
                     (map-indexed (fn [idx string]
                                    (apply react/text
                                           {:key (str idx "_" string)}
-                                          (autolink string event-on-press)))
+                                          (autolink string event-on-press style)))
                                  text-seq))))
 
 ; We can't use CSS as nested Text element don't accept margins nor padding
@@ -181,7 +181,7 @@
 (defn text-message
   [{:keys [content timestamp-str group-chat outgoing current-public-key] :as message}]
   [message-view message
-   (let [parsed-text (cached-parse-text (:text content) :browser.ui/message-link-pressed)
+   (let [parsed-text (cached-parse-text (:text content) :browser.ui/message-link-pressed nil)
          ref (reagent/atom nil)
          collapsible? (should-collapse? (:text content) group-chat)
          collapsed? (reagent/atom collapsible?)

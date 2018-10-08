@@ -4,6 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [clojure.string :as string]
             [status-im.ui.screens.chat.styles.message.message :as message.style]
+            [status-im.ui.components.list-selection :as ls]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.utils.gfycat.core :as gfycat.core]
             [taoensso.timbre :as log]
@@ -97,7 +98,7 @@
     [react/text {:style           (styles/message-text message)
                  :selectable      true
                  :selection-color (if outgoing colors/white colors/hawkes-blue)}
-     text]
+     (message/cached-parse-text text :browser.ui/message-link-pressed styles/hyperlink)]
     [react/text {:style (styles/message-timestamp-placeholder)}
      (time/timestamp->time timestamp)]
     [react/text {:style (styles/message-timestamp)}

@@ -1,6 +1,7 @@
 (ns status-im.ui.components.list-selection
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [taoensso.timbre :as log]
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
@@ -31,12 +32,16 @@
          :cancel-text (i18n/label :t/message-options-cancel)}))
 
 (defn browse [link]
-  (show {:title       (i18n/label :t/browsing-title)
-         :options     [{:label  (i18n/label :t/browsing-open-in-status)
-                        :action #(re-frame/dispatch [:browser.ui/open-in-status-option-selected link])}
-                       {:label  (i18n/label :t/browsing-open-in-web-browser)
-                        :action #(.openURL react/linking (http/normalize-url link))}]
-         :cancel-text (i18n/label :t/browsing-cancel)}))
+  (if platform/desktop?
+    (do
+      (log/debug "### open-url " link)
+      (.openURL react/linking (http/normalize-url link)))
+    (show {:title       (i18n/label :t/browsing-title)
+           :options     [{:label  (i18n/label :t/browsing-open-in-status)
+                          :action #(re-frame/dispatch [:browser.ui/open-in-status-option-selected link])}
+                         {:label  (i18n/label :t/browsing-open-in-web-browser)
+                          :action #(.openURL react/linking (http/normalize-url link))}]
+           :cancel-text (i18n/label :t/browsing-cancel)})))
 
 (defn browse-dapp [link]
   (show {:title       (i18n/label :t/browsing-title)
