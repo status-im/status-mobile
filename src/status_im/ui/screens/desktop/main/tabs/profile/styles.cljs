@@ -44,6 +44,9 @@
 (def profile-user-name
   {:font-size   18})
 
+(def profile-three-words
+  {:font-size   14})
+
 (def profile-editing-user-name
   (merge profile-user-name
          {:height           20

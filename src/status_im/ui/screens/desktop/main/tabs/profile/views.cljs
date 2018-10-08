@@ -8,6 +8,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [taoensso.timbre :as log]
+            [status-im.utils.gfycat.core :as gfy]
             [clojure.string :as string]
             [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
@@ -16,7 +17,7 @@
             [status-im.ui.screens.profile.seed.views :as profile.recovery]
             [status-im.ui.components.common.common :as components.common]))
 
-(defn profile-badge [{:keys [name photo-path]} editing?]
+(defn profile-badge [{:keys [name photo-path public-key]} editing?]
   [react/view styles/profile-badge
    [react/image {:source {:uri photo-path}
                  :style  styles/profile-photo}]
@@ -31,7 +32,13 @@
      [react/text {:style           styles/profile-user-name
                   :font           :medium
                   :number-of-lines 1}
-      name])])
+      name])
+   (let [gfy-name (gfy/generate-gfy public-key)]
+     (when (and (not= gfy-name gfy/unknown-gfy)
+                (not= gfy-name name))
+       [react/text {:style           styles/profile-three-words
+                    :number-of-lines 1}
+        gfy-name]))])
 
 (views/defview copied-tooltip [opacity]
   (views/letsubs []
