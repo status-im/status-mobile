@@ -1,4 +1,3 @@
-import pytest
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -14,6 +13,9 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         username_1, username_2 = 'user_1', 'user_2'
         home_1, home_2 = device_1.create_user(username=username_1), device_2.create_user(username=username_2)
+        profile_1 = home_1.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        profile_1.home_button.click()
         public_key_2 = home_2.get_public_key()
         home_2.home_button.click()
 
@@ -28,10 +30,11 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
 
         chat_2.verify_message_is_under_today_text(message, self.errors)
-        if chat_2.chat_element_by_text(message).username.text != username_1:
-            self.errors.append("Username '%s' is not shown next to the received message" % username_1)
+        full_username = '%s :: %s' % (username_1, default_username_1)
+        if chat_2.chat_element_by_text(message).username.text != full_username:
+            self.errors.append("Username '%s' is not shown next to the received message" % full_username)
 
-        if chat_1.element_by_text(username_1).is_element_displayed():
+        if chat_1.element_by_text_part(username_1).is_element_displayed():
             self.errors.append("Username '%s' is shown for the sender" % username_1)
 
         self.verify_no_errors()

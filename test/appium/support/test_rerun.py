@@ -18,8 +18,9 @@ RERUN_ERRORS = [
     "Sauce could not start your job",
     "HTTP Error 303",
     "http.client.RemoteDisconnected: Remote end closed connection without response",
-    "[Errno 110] Connection timed out"
-    "replacement transaction underpriced"
+    "[Errno 110] Connection timed out",
+    "replacement transaction underpriced",
+    "StaleElementReferenceException"
 ]
 
 

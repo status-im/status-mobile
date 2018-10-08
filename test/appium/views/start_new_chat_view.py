@@ -39,6 +39,10 @@ class OpenButton(BaseButton):
         super(OpenButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('open-dapp-button')
 
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
 
 class CreateButton(BaseButton):
     def __init__(self, driver):

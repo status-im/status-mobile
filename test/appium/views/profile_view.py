@@ -101,11 +101,18 @@ class ConfirmLogoutButton(BaseButton):
         self.locator = self.Locator.text_selector('LOG OUT')
 
 
-class UserNameText(BaseText):
+class UserNameSetByUserText(BaseText):
     def __init__(self, driver):
-        super(UserNameText, self).__init__(driver)
+        super(UserNameSetByUserText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView[1]')
+
+
+class DefaultUserNameText(BaseText):
+    def __init__(self, driver):
+        super(DefaultUserNameText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView[2]')
 
 
 class ShareMyProfileButton(BaseButton):
@@ -417,7 +424,8 @@ class ProfileView(BaseView):
 
         self.main_currency_button = MainCurrencyButton(self.driver)
 
-        self.username_text = UserNameText(self.driver)
+        self.username_set_by_user_text = UserNameSetByUserText(self.driver)
+        self.default_username_text = DefaultUserNameText(self.driver)
         self.share_my_profile_button = ShareMyProfileButton(self.driver)
         self.edit_button = EditButton(self.driver)
         self.profile_picture = ProfilePictureElement(self.driver)
