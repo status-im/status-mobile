@@ -40,15 +40,17 @@
 (re-frame/reg-fx
  :data-store/base-tx
  (fn [transactions]
-   (async/go (async/>! data-source/realm-queue
-                       (partial perform-transactions
-                                transactions
-                                @data-source/base-realm)))))
+   (perform-transactions transactions @data-source/base-realm)
+   #_(async/go (async/>! data-source/realm-queue
+                         (partial perform-transactions
+                                  transactions
+                                  @data-source/base-realm)))))
 
 (re-frame/reg-fx
  :data-store/tx
  (fn [transactions]
-   (async/go (async/>! data-source/realm-queue
-                       (partial perform-transactions
-                                transactions
-                                @data-source/account-realm)))))
+   (perform-transactions transactions @data-source/account-realm)
+   #_(async/go (async/>! data-source/realm-queue
+                         (partial perform-transactions
+                                  transactions
+                                  @data-source/account-realm)))))
