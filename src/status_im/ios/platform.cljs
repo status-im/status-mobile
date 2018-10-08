@@ -12,14 +12,14 @@
                       :font-weight "bold"}})
 
 ;; iPhone X dimensions
-(def x-width 375)
 (def x-height 812)
+(def xs-height 896)
 
 (defn iphone-x-dimensions? []
   (let [{:keys [width height]} (-> (.-Dimensions rn-dependencies/react-native)
                                    (.get "window")
                                    (js->clj :keywordize-keys true))]
-    (and (= width x-width) (= height x-height))))
+    (or (= height x-height) (= height xs-height))))
 
 (def platform-specific
   {:fonts                        fonts
