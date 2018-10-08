@@ -11,6 +11,7 @@
 #include "rctstatus.h"
 #include "bridge.h"
 #include "eventdispatcher.h"
+#include "logger.h"
 
 #include <QDebug>
 #include <QJsonDocument>
@@ -38,11 +39,13 @@ public:
 
 Bridge* RCTStatusPrivate::bridge = nullptr;
 RCTStatus* RCTStatusPrivate::rctStatus = nullptr;
+const QString RCTSTATUS = "RCTStatus";
 
 RCTStatus::RCTStatus(QObject* parent) : QObject(parent), d_ptr(new RCTStatusPrivate) {
     RCTStatusPrivate::rctStatus = this;
     SetSignalEventCallback((void*)&RCTStatus::statusGoEventCallback);
     connect(this, &RCTStatus::statusGoEvent, this, &RCTStatus::onStatusGoEvent);
+    registerLogModule(RCTSTATUS);
 }
 
 RCTStatus::~RCTStatus() {}
@@ -66,7 +69,7 @@ QVariantMap RCTStatus::constantsToExport() {
 
 void RCTStatus::getDeviceUUID(double callbackId) {
   Q_D(RCTStatus);
-  qDebug() << "call of RCTStatus::getDeviceUUID";
+  rnLog(RCTSTATUS) << "::getDeviceUUID call";
 
   d->bridge->invokePromiseCallback(callbackId, QVariantList{"com.status.StatusIm"});
 }
@@ -74,16 +77,16 @@ void RCTStatus::getDeviceUUID(double callbackId) {
 
 void RCTStatus::startNode(QString configString) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::startNode with param configString:" << configString;
+    rnLog(RCTSTATUS) << "::startNode call with param configString:" << configString;
 
     QJsonParseError jsonError;
     const QJsonDocument& jsonDoc = QJsonDocument::fromJson(configString.toUtf8(), &jsonError);
     if (jsonError.error != QJsonParseError::NoError){
-        qDebug() << jsonError.errorString();
+        rnLog(RCTSTATUS) << jsonError.errorString();
     }
 
     QVariantMap configJSON = jsonDoc.toVariant().toMap();
-    qDebug() << " RCTStatus::startNode configString: " << configJSON;
+    rnLog(RCTSTATUS) << "::startNode configString: " << configJSON;
 
     int networkId = configJSON["NetworkId"].toInt();
     QString relativeDataDirPath = configJSON["DataDir"].toString();
@@ -104,25 +107,25 @@ void RCTStatus::startNode(QString configString) {
     configJSON["LogFile"] = dataDir.absoluteFilePath("geth.log");
 
     const QJsonDocument& updatedJsonDoc = QJsonDocument::fromVariant(configJSON);
-    qDebug() << " RCTStatus::startNode updated configString: " << updatedJsonDoc.toVariant().toMap();
+    rnLog(RCTSTATUS) << "::startNode updated configString: " << updatedJsonDoc.toVariant().toMap();
     const char* result = StartNode(QString(updatedJsonDoc.toJson(QJsonDocument::Compact)).toUtf8().data());
-    qDebug() << "RCTStatus::startNode StartNode result: " << statusGoResultError(result);
+    rnLog(RCTSTATUS) << "::startNode StartNode result: " << statusGoResultError(result);
 }
 
 
 void RCTStatus::stopNode() {
-    qDebug() << "call of RCTStatus::stopNode";
+    rnLog(RCTSTATUS) << "::stopNode call";
     const char* result = StopNode();
-    qDebug() << "RCTStatus::stopNode StopNode result: " << statusGoResultError(result);
+    rnLog(RCTSTATUS) << "::stopNode StopNode result: " << statusGoResultError(result);
 }
 
 
 void RCTStatus::createAccount(QString password, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::createAccount with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::createAccount call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString password, double callbackId) {
             const char* result = CreateAccount(password.toUtf8().data());
-            qDebug() << "RCTStatus::createAccount CreateAccount result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::createAccount CreateAccount result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, password, callbackId);
 }
@@ -130,10 +133,10 @@ void RCTStatus::createAccount(QString password, double callbackId) {
 
 void RCTStatus::notifyUsers(QString token, QString payloadJSON, QString tokensJSON, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::notifyUsers with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::notifyUsers call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString token, QString payloadJSON, QString tokensJSON, double callbackId) {
             const char* result = NotifyUsers(token.toUtf8().data(), payloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
-            qDebug() << "RCTStatus::notifyUsers Notify result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::notifyUsers Notify result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, token, payloadJSON, tokensJSON, callbackId);
 }
@@ -141,10 +144,10 @@ void RCTStatus::notifyUsers(QString token, QString payloadJSON, QString tokensJS
 
 void RCTStatus::addPeer(QString enode, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::addPeer with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::addPeer call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString enode, double callbackId) {
             const char* result = AddPeer(enode.toUtf8().data());
-            qDebug() << "RCTStatus::addPeer AddPeer result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::addPeer AddPeer result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, enode, callbackId);
 }
@@ -152,10 +155,10 @@ void RCTStatus::addPeer(QString enode, double callbackId) {
 
 void RCTStatus::recoverAccount(QString passphrase, QString password, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::recoverAccount with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::recoverAccount call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString passphrase, QString password, double callbackId) {
             const char* result = RecoverAccount(password.toUtf8().data(), passphrase.toUtf8().data());
-            qDebug() << "RCTStatus::recoverAccount RecoverAccount result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::recoverAccount RecoverAccount result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, passphrase, password, callbackId);
 }
@@ -163,10 +166,10 @@ void RCTStatus::recoverAccount(QString passphrase, QString password, double call
 
 void RCTStatus::login(QString address, QString password, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::login with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::login call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString address, QString password, double callbackId) {
             const char* result = Login(address.toUtf8().data(), password.toUtf8().data());
-            qDebug() << "RCTStatus::login Login result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::login Login result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, address, password, callbackId);
 }
@@ -174,10 +177,10 @@ void RCTStatus::login(QString address, QString password, double callbackId) {
 
 void RCTStatus::sendTransaction(QString txArgsJSON, QString password, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::sendTransaction with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::sendTransaction call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString txArgsJSON, QString password, double callbackId) {
             const char* result = SendTransaction(txArgsJSON.toUtf8().data(), password.toUtf8().data());
-            qDebug() << "RCTStatus::sendTransaction SendTransaction result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "sendTransaction SendTransaction result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, txArgsJSON, password, callbackId);
 }
@@ -185,10 +188,10 @@ void RCTStatus::sendTransaction(QString txArgsJSON, QString password, double cal
 
 void RCTStatus::signMessage(QString rpcParams, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::signMessage with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::signMessage call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString rpcParams, double callbackId) {
             const char* result = SignMessage(rpcParams.toUtf8().data());
-            qDebug() << "RCTStatus::signMessage SignMessage result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::signMessage SignMessage result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, rpcParams, callbackId);
 }
@@ -236,20 +239,20 @@ void RCTStatus::clearStorageAPIs() {
 
 void RCTStatus::callRPC(QString payload, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::callRPC with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::callRPC call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString payload, double callbackId) {
             const char* result = CallRPC(payload.toUtf8().data());
-            qDebug() << "RCTStatus::callRPC CallRPC result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::callRPC CallRPC result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, payload, callbackId);
 }
 
 void RCTStatus::callPrivateRPC(QString payload, double callbackId) {
     Q_D(RCTStatus);
-    qDebug() << "call of RCTStatus::callPrivateRPC with param callbackId: " << callbackId;
+    rnLog(RCTSTATUS) << "::callPrivateRPC call with param callbackId: " << callbackId;
     QtConcurrent::run([&](QString payload, double callbackId) {
             const char* result = CallPrivateRPC(payload.toUtf8().data());
-            qDebug() << "RCTStatus::callPrivateRPC CallPrivateRPC result: " << statusGoResultError(result);
+            rnLog(RCTSTATUS) << "::callPrivateRPC CallPrivateRPC result: " << statusGoResultError(result);
             d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
         }, payload, callbackId);
 }
@@ -258,22 +261,22 @@ void RCTStatus::closeApplication() {
 }
 
 bool RCTStatus::JSCEnabled() {
-    qDebug() << "call of RCTStatus::JSCEnabled";
+    rnLog(RCTSTATUS) << "::JSCEnabled call";
     return false;
 }
 
 void RCTStatus::statusGoEventCallback(const char* event) {
-    qDebug() << "call of RCTStatus::statusGoEventCallback ... event: " << event;
+    rnLog(RCTSTATUS) << "::statusGoEventCallback call, ... event: " << event;
     RCTStatusPrivate::rctStatus->emitStatusGoEvent(event);
 }
 
 void RCTStatus::emitStatusGoEvent(QString event) {
-    qDebug() << "call of RCTStatus::emitStatusGoEvent ... event: " << event;
+    rnLog(RCTSTATUS) << "::emitStatusGoEvent call, ... event: " << event;
     Q_EMIT statusGoEvent(event);
 }
 
 void RCTStatus::onStatusGoEvent(QString event) {
-    qDebug() << "call of RCTStatus::onStatusGoEvent ... event: " << event.toUtf8().data();
+    rnLog(RCTSTATUS) << "::onStatusGoEvent call, ... event: " << event.toUtf8().data();
     RCTStatusPrivate::bridge->eventDispatcher()->sendDeviceEvent("gethEvent", QVariantMap{{"jsonEvent", event.toUtf8().data()}});
 }
 
@@ -282,7 +285,7 @@ QString RCTStatus::statusGoResultError(const char* result)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(QString(result).toUtf8(), &jsonError);
     if (jsonError.error != QJsonParseError::NoError){
-        qDebug() << jsonError.errorString();
+        rnLog(RCTSTATUS) << jsonError.errorString();
         return QString("");
     }
 
