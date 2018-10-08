@@ -73,7 +73,7 @@ class PolicySummary(BaseElement):
 
     def __init__(self, driver):
         super(PolicySummary, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Policy summary')
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="Policy summary"] | //*[@text="Policy summary"]')
 
 
 class BaseWebView(BaseView):
@@ -105,4 +105,5 @@ class BaseWebView(BaseView):
 
     def open_in_webview(self):
         self.web_view_browser.click()
-        self.always_button.click()
+        if self.always_button.is_element_displayed():
+            self.always_button.click()

@@ -16,6 +16,7 @@ class TestLinksVerifications(SingleDeviceTestCase):
             self.driver.fail('{} Sign in view!'.format(no_link_found_error_msg))
 
         base_web_view = signin_view.privacy_policy_link.click()
+        base_web_view.open_in_webview()
         if not base_web_view.policy_summary.is_element_displayed():
             self.errors.append('{} Sign in view!'.format(no_link_open_error_msg))
 
