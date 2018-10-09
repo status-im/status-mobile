@@ -132,7 +132,7 @@
          :properties {:chat-id                :string
                       :name                   :string
                       :color                  {:type    :string
-                                               :default default-chat-color}
+                                               :default colors/default-chat-color}
                       :group-chat             {:type    :bool
                                                :indexed true}
                       :is-active              :bool
