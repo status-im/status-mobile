@@ -5,8 +5,8 @@
 ;; Seen messages
 (fx/defn receive-seen
   [{:keys [db js-obj]} chat-id sender {:keys [message-ids]}]
-  (merge {:confirm-messages-processed [{:web3   (:web3 db)
-                                        :js-obj js-obj}]}
+  (merge {:transport/confirm-messages-processed [{:web3   (:web3 db)
+                                                  :js-obj js-obj}]}
          (when-let [seen-messages-ids (-> (get-in db [:chats chat-id :messages])
                                           (select-keys message-ids)
                                           keys)]

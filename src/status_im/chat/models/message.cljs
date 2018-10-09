@@ -17,8 +17,7 @@
             [status-im.utils.types :as types]
             [status-im.notifications.core :as notifications]
             [status-im.transport.utils :as transport.utils]
-            [status-im.transport.message.core :as transport]
-            [status-im.transport.message.v1.protocol :as protocol]
+            [status-im.transport.message.protocol :as protocol]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.fx :as fx]
@@ -94,7 +93,7 @@
 (fx/defn send-message-seen
   [cofx chat-id message-id send-seen?]
   (when send-seen?
-    (transport/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
+    (protocol/send (protocol/map->MessagesSeen {:message-ids #{message-id}}) chat-id cofx)))
 
 (defn ensure-clock-value [{:keys [clock-value] :as message} {:keys [last-clock-value]}]
   (if clock-value
@@ -127,8 +126,8 @@
                                           ;; TODO (cammellos): Refactor so it's not computed twice
                                           (add-outgoing-status cofx))]
     (fx/merge cofx
-              {:confirm-messages-processed [{:web3   web3
-                                             :js-obj js-obj}]}
+              {:transport/confirm-messages-processed [{:web3   web3
+                                                       :js-obj js-obj}]}
               (add-message batch? message current-chat?)
               ;; Checking :outgoing here only works for now as we don't have a :seen
               ;; status for public chats, if we add processing of our own messages
@@ -216,7 +215,7 @@
                            (group-chats/wrap-group-message cofx chat-id send-record)
                            send-record)]
 
-      (transport/send wrapped-record chat-id cofx))))
+      (protocol/send wrapped-record chat-id cofx))))
 
 (defn add-message-type [message {:keys [chat-id group-chat public?]}]
   (cond-> message

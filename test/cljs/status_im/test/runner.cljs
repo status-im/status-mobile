@@ -19,7 +19,6 @@
             [status-im.test.models.wallet]
             [status-im.test.transport.core]
             [status-im.test.transport.inbox]
-            [status-im.test.transport.handlers]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
             [status-im.test.chat.models.loading]
@@ -97,7 +96,6 @@
  'status-im.test.i18n
  'status-im.test.transport.core
  'status-im.test.transport.inbox
- 'status-im.test.transport.handlers
  'status-im.test.protocol.web3.inbox
  'status-im.test.utils.utils
  'status-im.test.utils.money

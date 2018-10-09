@@ -11,9 +11,8 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.db :as transport.db]
             [status-im.transport.utils :as transport.utils]
-            [status-im.transport.message.core :as protocol.message]
-            [status-im.transport.message.v1.core :as transport]
-            [status-im.transport.message.v1.protocol :as transport.protocol]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as models.chat]))
 
@@ -105,7 +104,7 @@
   "Wrap a group message in a membership update"
   [cofx chat-id message]
   (when-let [chat (get-in cofx [:db :chats chat-id])]
-    (transport/map->GroupMembershipUpdate.
+    (message.group-chat/map->GroupMembershipUpdate.
      {:chat-id              chat-id
       :membership-updates   (:membership-updates chat)
       :message              message})))
@@ -123,7 +122,7 @@
       {:shh/send-group-message {:web3          web3
                                 :src           current-public-key
                                 :dsts          (disj members current-public-key)
-                                :success-event [:transport/set-message-envelope-hash
+                                :success-event [:transport/message-sent
                                                 chat-id
                                                 (transport.utils/message-id (:message payload))
                                                 :group-user-message]
@@ -137,8 +136,8 @@
 (defn chat->group-update
   "Transform a chat in a GroupMembershipUpdate"
   [chat-id {:keys [membership-updates]}]
-  (transport/map->GroupMembershipUpdate. {:chat-id            chat-id
-                                          :membership-updates membership-updates}))
+  (message.group-chat/map->GroupMembershipUpdate. {:chat-id            chat-id
+                                                   :membership-updates membership-updates}))
 
 (defn handle-sign-response
   "Callback to dispatch on sign response"
@@ -312,9 +311,9 @@
                 (update-membership previous-chat membership-update)
                 #(when (and message
                             ;; don't allow anything but group messages
-                            (instance? transport.protocol/Message message)
+                            (instance? protocol/Message message)
                             (= :group-user-message (:message-type message)))
-                   (protocol.message/receive message chat-id sender-signature nil %))))))
+                   (protocol/receive message chat-id sender-signature nil %))))))
 
 (defn handle-sign-success
   "Upsert chat and send signed payload to group members"

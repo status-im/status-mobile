@@ -44,3 +44,39 @@
     (let [transport (core/single
                      (core/get-by-field realm :transport :chat-id chat-id))]
       (core/delete realm transport))))
+
+(defn deserialize-inbox-topic [serialized-inbox-topic]
+  (-> serialized-inbox-topic
+      (dissoc :topic)
+      (update :chat-ids edn/read-string)))
+
+(re-frame/reg-cofx
+ :data-store/transport-inbox-topics
+ (fn [cofx _]
+   (assoc cofx
+          :data-store/transport-inbox-topics
+          (reduce (fn [acc {:keys [topic] :as inbox-topic}]
+                    (assoc acc topic (deserialize-inbox-topic inbox-topic)))
+                  {}
+                  (-> @core/account-realm
+                      (core/get-all :transport-inbox-topic)
+                      (core/all-clj :transport-inbox-topic))))))
+
+(defn save-transport-inbox-topic-tx
+  "Returns tx function for saving transport inbox topic"
+  [{:keys [topic inbox-topic]}]
+  (fn [realm]
+    (core/create realm
+                 :transport-inbox-topic
+                 (-> inbox-topic
+                     (assoc :topic topic)
+                     (update :chat-ids pr-str))
+                 true)))
+
+(defn delete-transport-inbox-topic-tx
+  "Returns tx function for deleting transport inbox-topic"
+  [topic]
+  (fn [realm]
+    (let [transport-inbox-topic (core/single
+                                 (core/get-by-field realm :transport-inbox-topic :topic topic))]
+      (core/delete realm transport-inbox-topic))))

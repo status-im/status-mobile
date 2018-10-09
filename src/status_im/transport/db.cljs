@@ -1,41 +1,61 @@
 (ns ^{:doc "DB spec and utils for the transport layer"}
  status-im.transport.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as s]
             status-im.ui.screens.contacts.db
-            [status-im.utils.clocks :as utils.clocks]
-            [clojure.string :as s]))
+            [status-im.utils.clocks :as utils.clocks])
+  (:require-macros [status-im.utils.db :refer [allowed-keys]]))
 
 ;; required
 (spec/def ::ack (spec/coll-of string? :kind vector?))
 (spec/def ::seen (spec/coll-of string? :kind vector?))
 (spec/def ::pending-ack (spec/coll-of string? :kind vector?))
 (spec/def ::pending-send (spec/coll-of string? :kind vector?))
-(spec/def ::topic string?)
-(spec/def ::fetch-history? boolean?)
 (spec/def ::resend? (spec/nilable #{"contact-request" "contact-request-confirmation" "contact-update"}))
+(spec/def ::request-from pos-int?)
 
 ;; optional
+(spec/def ::topic (spec/nilable string?))
+(spec/def ::request-id (spec/nilable string?))
+(spec/def ::request-to (spec/nilable pos-int?))
 (spec/def ::sym-key-id (spec/nilable string?))
 ;;TODO (yenda) remove once go implements persistence
 (spec/def ::sym-key (spec/nilable string?))
-(spec/def ::filter any?)
+(spec/def :transport/filter-id (spec/or :keyword keyword?
+                                        :chat-id :global/not-empty-string))
+(spec/def :transport/filter any?)
+(spec/def :request/from pos-int?)
+(spec/def :request/to pos-int?)
+(spec/def :request/cursor :global/not-empty-string)
+(spec/def :transport.inbox/request (spec/keys :req-un [:request/from :request/to ::topic]))
+(spec/def ::request-from pos-int?)
+(spec/def :transport.inbox.topic/last-request ::request-from)
+(spec/def :transport.inbox.topic/chat-id (spec/or :keyword keyword?
+                                                  :chat-id :global/not-empty-string))
+(spec/def :transport.inbox.topic/chat-ids (spec/coll-of :transport.inbox.topic/chat-id
+                                                        :kind set?
+                                                        :min-count 1))
+(spec/def :transport.inbox.topic/request-pending? boolean?)
 
-(spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic ::fetch-history?]
-                                        :opt-un [::sym-key-id ::sym-key ::filter ::resend?]))
+(spec/def :transport.inbox/topic (allowed-keys :req-un [:transport.inbox.topic/last-request
+                                                        :transport.inbox.topic/chat-ids]
+                                               :opt-un [:transport.inbox.topic/request-pending?]))
+(spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
+                                        :opt-un [::sym-key-id ::sym-key ::resend?]))
 
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
-(spec/def :transport/discovery-filter (spec/nilable any?))
+(spec/def :transport/filters (spec/map-of :transport/filter-id :transport/filter))
+(spec/def :transport.inbox/topics (spec/map-of :global/not-empty-string :transport.inbox/topic))
+(spec/def :transport.inbox/requests (spec/map-of :global/not-empty-string :transport.inbox/request))
 
 (defn create-chat
   "Initialize datastructure for chat representation at the transport level
   Currently only :topic is actually used"
-  [{:keys [topic resend?]}]
+  [{:keys [topic resend? now]}]
   {:ack                   []
    :seen                  []
    :pending-ack           []
    :pending-send          []
-   :fetch-history?        true
    :resend?               resend?
    :topic                 topic})
 

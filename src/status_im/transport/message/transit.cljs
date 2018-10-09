@@ -1,8 +1,8 @@
 (ns ^{:doc "Transit custom readers and writers, required when adding a new record implementing StatusMessage protocol"}
  status-im.transport.message.transit
-  (:require [status-im.transport.message.v1.contact :as v1.contact]
-            [status-im.transport.message.v1.protocol :as v1.protocol]
-            [status-im.transport.message.v1.core :as v1]
+  (:require [status-im.transport.message.contact :as contact]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.message.group-chat :as group-chat]
             [status-im.constants :as constants]
             [cognitect.transit :as transit]))
 
@@ -89,13 +89,13 @@
 
 (def writer (transit/writer :json
                             {:handlers
-                             {v1.contact/NewContactKey           (NewContactKeyHandler.)
-                              v1.contact/ContactRequest          (ContactRequestHandler.)
-                              v1.contact/ContactRequestConfirmed (ContactRequestConfirmedHandler.)
-                              v1.contact/ContactUpdate           (ContactUpdateHandler.)
-                              v1.protocol/Message                (MessageHandler.)
-                              v1.protocol/MessagesSeen           (MessagesSeenHandler.)
-                              v1/GroupMembershipUpdate           (GroupMembershipUpdateHandler.)}}))
+                             {contact/NewContactKey            (NewContactKeyHandler.)
+                              contact/ContactRequest           (ContactRequestHandler.)
+                              contact/ContactRequestConfirmed  (ContactRequestConfirmedHandler.)
+                              contact/ContactUpdate            (ContactUpdateHandler.)
+                              protocol/Message                 (MessageHandler.)
+                              protocol/MessagesSeen            (MessagesSeenHandler.)
+                              group-chat/GroupMembershipUpdate (GroupMembershipUpdateHandler.)}}))
 
 ;;
 ;; Reader handlers
@@ -131,22 +131,22 @@
 (def reader (transit/reader :json
                             {:handlers
                              {"c1" (fn [[sym-key topic message]]
-                                     (v1.contact/NewContactKey. sym-key topic message))
+                                     (contact/NewContactKey. sym-key topic message))
                               "c2" (fn [[name profile-image address fcm-token]]
-                                     (v1.contact/ContactRequest. name profile-image address fcm-token))
+                                     (contact/ContactRequest. name profile-image address fcm-token))
                               "c3" (fn [[name profile-image address fcm-token]]
-                                     (v1.contact/ContactRequestConfirmed. name profile-image address fcm-token))
+                                     (contact/ContactRequestConfirmed. name profile-image address fcm-token))
                               "c4" (fn [[legacy-content content-type message-type clock-value timestamp content]]
                                      (let [[new-content new-content-type] (legacy->new-message-data (or content legacy-content) content-type)]
-                                       (v1.protocol/Message. new-content new-content-type message-type clock-value timestamp)))
+                                       (protocol/Message. new-content new-content-type message-type clock-value timestamp)))
                               "c7" (fn [[content content-type message-type clock-value timestamp]]
-                                     (v1.protocol/Message. content content-type message-type clock-value timestamp))
+                                     (protocol/Message. content content-type message-type clock-value timestamp))
                               "c5" (fn [message-ids]
-                                     (v1.protocol/MessagesSeen. message-ids))
+                                     (protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]
-                                     (v1.contact/ContactUpdate. name profile-image address fcm-token))
+                                     (contact/ContactUpdate. name profile-image address fcm-token))
                               "g5" (fn [[chat-id membership-updates message]]
-                                     (v1/GroupMembershipUpdate. chat-id membership-updates message))}}))
+                                     (group-chat/GroupMembershipUpdate. chat-id membership-updates message))}}))
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

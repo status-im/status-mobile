@@ -4,12 +4,13 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.transport :as transport-store]
-            [status-im.transport.handlers :as transport.handlers]
             [status-im.transport.inbox :as inbox]
+            [status-im.transport.message.core :as message]
+            [status-im.transport.shh :as shh]
             [status-im.transport.utils :as transport.utils]
+            [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]))
+            [taoensso.timbre :as log]))
 
 (fx/defn init-whisper
   "Initialises whisper protocol by:
@@ -19,6 +20,7 @@
   [{:keys [db web3] :as cofx} current-account-id]
   (log/debug :init-whisper)
   (when-let [public-key (get-in db [:account/account :public-key])]
+
     (let [sym-key-added-callback (fn [chat-id sym-key sym-key-id]
                                    (re-frame/dispatch [::sym-key-added {:chat-id    chat-id
                                                                         :sym-key    sym-key
@@ -32,7 +34,7 @@
                                         :transport  (:transport/chats db)
                                         :on-success sym-key-added-callback}}
                 (inbox/connect-to-mailserver)
-                (transport.handlers/resend-contact-messages [])))))
+                (message/resend-contact-messages [])))))
 
 ;;TODO (yenda) remove once go implements persistence
 ;;Since symkeys are not persisted, we restore them via add sym-keys,
@@ -67,7 +69,5 @@
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive
   account A messages without this."
   [{:keys [db]}]
-  (let [{:transport/keys [chats discovery-filter]} db
-        chat-filters                               (keep :filter (vals chats))
-        all-filters                                (conj chat-filters discovery-filter)]
-    {:shh/remove-filters all-filters}))
+  (let [{:transport/keys [filters]} db]
+    {:shh/remove-filters (vals filters)}))

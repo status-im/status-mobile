@@ -1,11 +1,11 @@
-(ns status-im.transport.message.v1.core
-  (:require [status-im.transport.message.core :as message]
-            [taoensso.timbre :as log]
-            [cljs.spec.alpha :as spec]))
+(ns status-im.transport.message.group-chat
+  (:require [cljs.spec.alpha :as spec]
+            [status-im.transport.message.protocol :as protocol]
+            [taoensso.timbre :as log]))
 
 (defrecord GroupMembershipUpdate
            [chat-id membership-updates message]
-  message/StatusMessage
+  protocol/StatusMessage
   (validate [this]
     (if (spec/valid? :message/group-membership-update this)
       this

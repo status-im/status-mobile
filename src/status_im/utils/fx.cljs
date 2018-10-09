@@ -12,7 +12,7 @@
 (def ^:private mergable-keys
   #{:data-store/tx :data-store/base-tx :chat-received-message/add-fx
     :shh/add-new-sym-keys :shh/get-new-sym-keys :shh/post
-    :shh/generate-sym-key-from-password  :confirm-messages-processed
+    :shh/generate-sym-key-from-password  :transport/confirm-messages-processed
     :group-chats/extract-membership-signature :utils/dispatch-later})
 
 (defn- safe-merge [fx new-fx]

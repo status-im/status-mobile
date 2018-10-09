@@ -49,7 +49,10 @@
              :inbox/wnodes                       fleet/default-wnodes
              :my-profile/editing?                false
              :transport/chats                    {}
+             :transport/filters                  {}
              :transport/message-envelopes        {}
+             :transport.inbox/topics             {}
+             :transport.inbox/requests           {}
              :chat/cooldowns                     0
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
@@ -86,7 +89,7 @@
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
-(spec/def ::mailserver-status (spec/nilable keyword?))
+(spec/def ::mailserver-status (spec/nilable #{:disconnected :connecting :added :connected :error}))
 
 (spec/def ::app-state string?)
 
@@ -212,7 +215,6 @@
                  :mailservers/manage
                  :bootnodes/manage
                  :inbox/wnodes
-                 :inbox/last-received
                  :inbox/current-id
                  :inbox/fetching?
                  :universal-links/url
@@ -227,7 +229,9 @@
                  :chat/spam-messages-frequency
                  :transport/message-envelopes
                  :transport/chats
-                 :transport/discovery-filter
+                 :transport/filters
+                 :transport.inbox/topics
+                 :transport.inbox/requests
                  :desktop/desktop
                  :dimensions/window
                  :dapps/permissions]

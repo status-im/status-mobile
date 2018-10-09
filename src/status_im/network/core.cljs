@@ -157,7 +157,7 @@
   [{:keys [db] :as cofx} is-connected?]
   (fx/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
-            (inbox/request-messages)))
+            (inbox/request-messages nil)))
 
 (defn- navigate-to-network-details
   [cofx network show-warning?]

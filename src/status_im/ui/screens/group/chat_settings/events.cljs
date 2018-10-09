@@ -3,8 +3,6 @@
             [status-im.i18n :as i18n]
             [status-im.chat.models.message :as models.message]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.transport.message.v1.core :as protocol]
-            [status-im.transport.message.core :as transport]
             [status-im.utils.handlers :as handlers]
             [status-im.data-store.chats :as chats-store]
             [status-im.utils.fx :as fx]))

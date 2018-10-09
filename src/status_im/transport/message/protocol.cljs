@@ -1,17 +1,19 @@
 (ns ^{:doc "Protocol API and protocol utils"}
- status-im.transport.message.v1.protocol
-  (:require [status-im.utils.config :as config]
-            [status-im.constants :as constants]
-            [taoensso.timbre :as log]
-            [status-im.utils.config :as config]
+ status-im.transport.message.protocol
+  (:require [cljs.spec.alpha :as spec]
             [status-im.chat.core :as chat]
-            [status-im.utils.clocks :as utils.clocks]
+            [status-im.constants :as constants]
             [status-im.transport.db :as transport.db]
-            [status-im.transport.message.core :as message]
-            [status-im.transport.message.v1.core :as transport]
             [status-im.transport.utils :as transport.utils]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [cljs.spec.alpha :as spec]))
+            [taoensso.timbre :as log]))
+
+(defprotocol StatusMessage
+  "Protocol for the messages that are sent through the transport layer"
+  (send [this chat-id cofx] "Method producing all effects necessary for sending the message record")
+  (receive [this chat-id signature timestamp cofx] "Method producing all effects necessary for receiving the message record")
+  (validate [this] "Method returning the message if it is valid or nil if it is not"))
 
 (def ^:private whisper-opts
   {:ttl       10 ;; ttl of 10 sec
@@ -21,15 +23,15 @@
 (fx/defn init-chat
   "Initialises chat on protocol layer.
   If topic is not passed as argument it is derived from `chat-id`"
-  [{:keys [db]}
-   {:keys [chat-id topic resend?]
-    :or   {topic   (transport.utils/get-topic chat-id)}}]
+  [{:keys [db now]}
+   {:keys [chat-id topic resend?]}]
   {:db (assoc-in db
                  [:transport/chats chat-id]
                  (transport.db/create-chat {:topic   topic
-                                            :resend? resend?}))})
+                                            :resend? resend?
+                                            :now     now}))})
 
-(fx/defn send
+(fx/defn send-with-sym-key
   "Sends the payload using symetric key and topic from db (looked up by `chat-id`)"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   ;; we assume that the chat contains the contact public-key
@@ -76,11 +78,11 @@
                                        whisper-opts)}]}))
 
 (defrecord Message [content content-type message-type clock-value timestamp]
-  message/StatusMessage
+  StatusMessage
   (send [this chat-id cofx]
     (let [params     {:chat-id       chat-id
                       :payload       this
-                      :success-event [:transport/set-message-envelope-hash
+                      :success-event [:transport/message-sent
                                       chat-id
                                       (transport.utils/message-id this)
                                       message-type]}]
@@ -92,7 +94,7 @@
            chat-id
            (:success-event params)
            this)
-          (send cofx params))
+          (send-with-sym-key cofx params))
 
         :user-message
         (if config/pfs-encryption-enabled?
@@ -116,15 +118,15 @@
       (log/warn "failed to validate Message" (spec/explain :message/message this)))))
 
 (defrecord MessagesSeen [message-ids]
-  message/StatusMessage
+  StatusMessage
   (send [this chat-id cofx]
     (if config/pfs-encryption-enabled?
       (send-direct-message cofx
                            chat-id
                            nil
                            this)
-      (send cofx {:chat-id chat-id
-                  :payload this})))
+      (send-with-sym-key cofx {:chat-id chat-id
+                               :payload this})))
   (receive [this chat-id signature _ cofx]
     (chat/receive-seen cofx chat-id signature this))
   (validate [this]

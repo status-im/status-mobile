@@ -1,16 +1,16 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
             [goog.object :as object]
-            [status-im.constants :as constants]
-            [status-im.chat.constants :as chat.constants]
-            [status-im.chat.models :as chat]
-            [status-im.chat.models.message :as chat.message]
+            [re-frame.core :as re-frame]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
             [status-im.chat.commands.sending :as commands.sending]
-            [status-im.utils.datetime :as datetime]
+            [status-im.chat.constants :as chat.constants]
+            [status-im.chat.models :as chat]
+            [status-im.chat.models.message :as chat.message]
+            [status-im.constants :as constants]
             [status-im.js-dependencies :as dependencies]
+            [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 

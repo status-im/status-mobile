@@ -1,23 +1,18 @@
 (ns status-im.chat.models
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
-            [status-im.transport.message.core :as transport.message]
-            [status-im.transport.message.v1.protocol :as protocol]
-            [status-im.transport.message.v1.core :as transport]
-            [status-im.transport.message.v1.public-chat :as public-chat]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.ui.components.styles :as styles]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.i18n :as i18n]
-            [status-im.utils.utils :as utils]
+            [status-im.transport.chat.core :as transport.chat]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.transport.message.public-chat :as public-chat]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.fx :as fx]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.utils :as utils]))
 
 (defn multi-user-chat? [cofx chat-id]
   (get-in cofx [:db :chats chat-id :group-chat]))
@@ -105,10 +100,6 @@
      :data-store/tx [(chats-store/clear-history-tx chat-id last-message-clock-value)
                      (messages-store/delete-messages-tx chat-id)]}))
 
-(fx/defn remove-transport
-  [cofx chat-id]
-  (transport.utils/unsubscribe-from-chat cofx chat-id))
-
 (fx/defn deactivate-chat
   [{:keys [db now] :as cofx} chat-id]
   {:db (-> db
@@ -127,7 +118,7 @@
   [{:keys [db now] :as cofx} chat-id]
   (fx/merge cofx
             #(when (public-chat? % chat-id)
-               (remove-transport % chat-id))
+               (transport.chat/unsubscribe-from-chat % chat-id))
             (deactivate-chat chat-id)
             (clear-history chat-id)
             (navigation/navigate-to-cofx :home {})))
@@ -135,7 +126,7 @@
 (fx/defn send-messages-seen
   [{:keys [db] :as cofx} chat-id message-ids]
   (when (not (get-in db [:chats chat-id :group-chat]))
-    (transport.message/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
+    (protocol/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
 ;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
 (fx/defn mark-messages-seen

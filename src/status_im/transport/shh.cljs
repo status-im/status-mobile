@@ -1,9 +1,9 @@
 (ns ^{:doc "Whisper API and events for managing keys and posting messages"}
  status-im.transport.shh
-  (:require [taoensso.timbre :as log]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
+            [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
-            [status-im.transport.message.transit :as transit]))
+            [taoensso.timbre :as log]))
 
 (defn get-new-key-pair [{:keys [web3 on-success on-error]}]
   (if web3
@@ -70,7 +70,7 @@
  :shh/send-direct-message
  (fn [post-calls]
    (doseq [{:keys [web3 payload src dst success-event error-event]
-            :or   {error-event :protocol/send-status-message-error}} post-calls]
+            :or   {error-event :transport/send-status-message-error}} post-calls]
      (let [direct-message (clj->js {:pubKey dst
                                     :sig src
                                     :payload (-> payload
@@ -86,7 +86,7 @@
  :shh/send-group-message
  (fn [params]
    (let [{:keys [web3 payload src dsts success-event error-event]
-          :or   {error-event :protocol/send-status-message-error}} params
+          :or   {error-event :transport/send-status-message-error}} params
          message (clj->js {:pubKeys dsts
                            :sig src
                            :payload (-> payload
@@ -102,7 +102,7 @@
  :shh/send-public-message
  (fn [post-calls]
    (doseq [{:keys [web3 payload src chat success-event error-event]
-            :or   {error-event :protocol/send-status-message-error}} post-calls]
+            :or   {error-event :transport/send-status-message-error}} post-calls]
      (let [message (clj->js {:chat chat
                              :sig src
                              :payload (-> payload
@@ -118,7 +118,7 @@
  :shh/post
  (fn [post-calls]
    (doseq [{:keys [web3 message success-event error-event]
-            :or   {error-event :protocol/send-status-message-error}} post-calls]
+            :or   {error-event :transport/send-status-message-error}} post-calls]
      (post-message {:web3            web3
                     :whisper-message (update message :payload (comp transport.utils/from-utf8
                                                                     transit/serialize))
@@ -126,28 +126,6 @@
                                        #(re-frame/dispatch (conj success-event %))
                                        #(log/debug :shh/post-success))
                     :on-error        #(re-frame/dispatch [error-event %])}))))
-
-;; This event params contain a recipients key because it's a vector of map with public-key and topic keys.
-;; the :shh/post event has public-key and topic keys at the top level of the args map.
-;; This event is used to send messages to multiple recipients when you can't send it on a topic.
-;; It is used for renewing keys in a private group chat, because if someone leaves/join.
-;; We want to change the symmetric key but we can't do that in the group topic with the old key
-;; otherwise leavers can still eavesdrop / joiners can read past history."
-(re-frame/reg-fx
- :shh/multi-post
- (fn [{:keys [web3 message recipients success-event error-event]
-       :or {error-event :protocol/send-status-message-error}}]
-   (let [whisper-message (update message :payload (comp transport.utils/from-utf8
-                                                        transit/serialize))]
-     (doseq [{:keys [sym-key-id topic]} recipients]
-       (post-message {:web3            web3
-                      :whisper-message (assoc whisper-message
-                                              :topic topic
-                                              :symKeyID sym-key-id)
-                      :on-success      (if success-event
-                                         #(re-frame/dispatch success-event)
-                                         #(log/debug :shh/post-success))
-                      :on-error        #(re-frame/dispatch [error-event %])})))))
 
 (defn add-sym-key
   [{:keys [web3 sym-key on-success on-error]}]

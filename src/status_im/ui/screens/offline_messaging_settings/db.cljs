@@ -12,10 +12,11 @@
 (spec/def :wnode/user-defined boolean?)
 (spec/def :wnode/password ::not-blank-string)
 (spec/def :wnode/sym-key-id string?)
+(spec/def :wnode/generating-sym-key? boolean?)
 (spec/def :wnode/wnode (allowed-keys :req-un [:wnode/address :wnode/name :wnode/id]
                                      :opt-un [:wnode/sym-key-id
+                                              :wnode/generating-sym-key?
                                               :wnode/user-defined
                                               :wnode/password]))
 
 (spec/def :inbox/wnodes (spec/nilable (spec/map-of keyword? (spec/map-of :wnode/id :wnode/wnode))))
-(spec/def :inbox/last-received integer?)
