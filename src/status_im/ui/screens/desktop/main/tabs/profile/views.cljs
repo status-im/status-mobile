@@ -105,8 +105,10 @@
 
 (views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
   (views/letsubs [current-view-id [:get :view-id]
+                  nightly-version [:get-in [:desktop/desktop :nightly-version]]
                   editing?        [:get :my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in account map) and horrible way to access it woth `:get`/`:set` subs/events
-    (let [adv-settings-open?           (= current-view-id :advanced-settings)
+    (let [{:keys [url commit]}         nightly-version
+          adv-settings-open?           (= current-view-id :advanced-settings)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
           show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
       [react/view
@@ -137,7 +139,14 @@
         [react/view {:style (styles/profile-row false)}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:accounts.logout.ui/logout-confirmed])}
           [react/text {:style (styles/profile-row-text colors/red)} (i18n/label :t/logout)]]
-         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]]])))
+         [react/view [react/text {:style (styles/profile-row-text colors/gray)} "V" build/version " (" build/commit-sha ")"]]]
+        (when (and url commit (not= (subs build/commit-sha 0 6) commit))
+          [react/view {:style {:margin-top 20}}
+           [react/touchable-highlight {:on-press #(.openURL react/linking url)}
+            [react/view {:style styles/share-contact-code}
+             [react/view {:style styles/share-contact-code-text-container}
+              [react/text {:style styles/share-contact-code-text}
+               (str "Download latest " commit)]]]]])]])))
 
 (views/defview profile-data []
   (views/letsubs

@@ -21,6 +21,9 @@
 (def mobile? (not= os "desktop"))
 (def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
+(def isMacOs? (when platform (.-isMacOs platform)))
+(def isNix? (when platform (or (.-isLinux platform) (.-isUnix platform))))
+
 (def platform-specific
   (cond
     android? android/platform-specific

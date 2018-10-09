@@ -31,7 +31,10 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
@@ -144,3 +147,16 @@
  :update-window-dimensions
  (fn [{:keys [db]} [_ dimensions]]
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))
+
+(handlers/register-handler-fx
+ :fetch-desktop-version-success
+ (fn [{:keys [db]} [_ result]]
+   (when (and result (not (str/blank? result)) (or platform/isMacOs? platform/isNix?))
+     (let [lines (str/split-lines result)
+           var   (if platform/isMacOs? "DMG_URL=\"" "NIX_URL=\"")
+           param (first (filter #(not= -1 (.indexOf % var)) lines))]
+       (when param
+         (let [url    (subs param (+ 9 (.indexOf param var)) (- (count param) 1))
+               dt     (- (count url) (if platform/isMacOs? 12 17))
+               commit (subs url (- dt 6) dt)]
+           {:db (assoc-in db [:desktop/desktop :nightly-version] {:url url :commit commit})}))))))
