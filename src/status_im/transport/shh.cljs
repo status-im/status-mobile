@@ -83,6 +83,21 @@
             (handle-response success-event error-event)))))))
 
 (re-frame/reg-fx
+ :shh/send-pairing-message
+ (fn [params]
+   (let [{:keys [web3 payload src dsts success-event error-event]
+          :or   {error-event :protocol/send-status-message-error}} params
+         message (clj->js {:sig src
+                           :payload (-> payload
+                                        transit/serialize
+                                        transport.utils/from-utf8)})]
+     (.. web3
+         -shh
+         (sendPairingMessage
+          message
+          (handle-response success-event error-event))))))
+
+(re-frame/reg-fx
  :shh/send-group-message
  (fn [params]
    (let [{:keys [web3 payload src dsts success-event error-event]

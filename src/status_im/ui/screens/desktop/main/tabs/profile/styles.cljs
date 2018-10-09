@@ -172,3 +172,6 @@
    :margin-top       36
    :margin-bottom    16
    :font-size        16})
+
+(def pair-button
+  {:margin-left 32})

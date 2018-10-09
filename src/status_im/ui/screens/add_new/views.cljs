@@ -13,7 +13,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.config :as config]))
 
-(defn- options-list [{:keys [anon-id]}]
+(defn- options-list [{:keys [dev-mode?]}]
   [react/view action-button.styles/actions-list
    [action-button/action-button
     {:label               (i18n/label :t/start-new-chat)
@@ -23,14 +23,14 @@
      :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}]
    [action-button/action-separator]
    ;; Hide behind flag (false by default), till everything is fixed in group chats
-   (when config/group-chats-enabled?
+   (when (config/group-chats-enabled? dev-mode?)
      [action-button/action-button
       {:label               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
        :icon                :icons/contacts
        :icon-opts           {:color colors/blue}
        :on-press            #(re-frame/dispatch [:contact.ui/start-group-chat-pressed])}])
-   (when config/group-chats-enabled?
+   (when (config/group-chats-enabled? dev-mode?)
      [action-button/action-separator])
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)
@@ -69,4 +69,4 @@
      [status-bar/status-bar]
      [toolbar/simple-toolbar (i18n/label :t/new)]
      [common/separator]
-     [options-list (assoc account :anon-id device-UUID)]]))
+     [options-list account]]))

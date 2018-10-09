@@ -100,7 +100,11 @@
              :RequireTopics         (get-topics network)
              :InstallationID        installation-id
              :PFSEnabled            (or config/pfs-encryption-enabled?
-                                        config/group-chats-enabled?))
+                                        ;; We don't check dev-mode? here as
+                                        ;; otherwise we would have to restart the node
+                                        ;; when the user enables it
+                                        (config/group-chats-enabled? true)
+                                        (config/pairing-enabled? true)))
 
       (and
        config/bootnodes-settings-enabled?

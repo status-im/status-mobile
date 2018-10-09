@@ -1,6 +1,7 @@
 (ns status-im.chat.subs
   (:require [clojure.string :as string]
             [re-frame.core :refer [reg-sub subscribe]]
+            [status-im.utils.config :as utils.config]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.input :as commands.input]
@@ -76,9 +77,13 @@
      platform/ios? kb-height
      :default 0)))
 
-(defn active-chats [[contacts chats]]
-  (reduce (fn [acc [chat-id {:keys [is-active] :as chat}]]
-            (if is-active
+(defn active-chats [[contacts chats {:keys [dev-mode?]}]]
+  (reduce (fn [acc [chat-id {:keys [group-chat public? is-active] :as chat}]]
+            (if (and is-active
+                   ;; not a group chat
+                     (or (not (and group-chat (not public?)))
+                       ;; if it's a group chat
+                         (utils.config/group-chats-enabled? dev-mode?)))
               (assoc acc chat-id (if-let [contact (get contacts chat-id)]
                                    (-> chat
                                        (assoc :name (:name contact))
@@ -93,6 +98,7 @@
  :get-active-chats
  :<- [:get-contacts]
  :<- [:get-chats]
+ :<- [:get-current-account]
  active-chats)
 
 (reg-sub

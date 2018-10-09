@@ -26,6 +26,7 @@
              :tab-bar-visible?                   true
              :navigation-stack                   '()
              :contacts/contacts                  {}
+             :pairing/installations              {}
              :qr-codes                           {}
              :group/selected-contacts            #{}
              :chats                              {}
@@ -198,6 +199,7 @@
                  :contacts/click-handler
                  :contacts/click-action
                  :contacts/click-params
+                 :pairing/installations
                  :commands/stored-command
                  :group/selected-contacts
                  :accounts/accounts

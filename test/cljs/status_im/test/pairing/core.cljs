@@ -1,0 +1,142 @@
+(ns status-im.test.pairing.core
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.transport.message.pairing :as transport.pairing]
+            [status-im.utils.config :as config]
+            [status-im.pairing.core :as pairing]))
+
+(deftest merge-contact-test
+  (testing "vanilla contacts"
+    (let [contact-1 {:pending? false
+                     :this-should-be-kept true
+                     :last-updated 1
+                     :name "name-v1"
+                     :photo-path "photo-v1"}
+          contact-2 {:pending? false
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}
+          expected  {:pending? false
+                     :this-should-be-kept true
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}]
+      (is (= expected (pairing/merge-contact contact-1 contact-2)))))
+  (testing "without last-updated"
+    (let [contact-1 {:pending? false
+                     :name "name-v1"
+                     :photo-path "photo-v1"}
+          contact-2 {:pending? false
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}
+          expected  {:pending? false
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}]
+      (is (= expected (pairing/merge-contact contact-1 contact-2)))))
+  (testing "nil contact"
+    (let [contact-1 nil
+          contact-2 {:pending? false
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}
+          expected  {:pending? false
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}]
+      (is (= expected (pairing/merge-contact contact-1 contact-2)))))
+  (testing "not pending in one device"
+    (let [contact-1 {:pending? false
+                     :last-updated 1
+                     :name "name-v1"
+                     :photo-path "photo-v1"}
+          contact-2 {:pending? true
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}
+          expected  {:pending? false
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}]
+      (is (= expected (pairing/merge-contact contact-1 contact-2)))))
+  (testing "pending in one device and nil"
+    (let [contact-1 nil
+          contact-2 {:pending? true
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}
+          expected  {:pending? true
+                     :last-updated 2
+                     :name "name-v2"
+                     :photo-path "photo-v2"}]
+      (is (= expected (pairing/merge-contact contact-1 contact-2))))))
+
+(deftest handle-sync-installation-test
+  (with-redefs [config/pairing-enabled? (constantly true)]
+    (let [old-contact-1 {:name "old-contact-one"
+                         :last-updated 0
+                         :photo-path "old-contact-1"
+                         :pending? true}
+          new-contact-1 {:name "new-contact-one"
+                         :last-updated 1
+                         :photo-path "new-contact-1"
+                         :pending? false}
+          old-contact-2 {:name "old-contact-2"
+                         :last-updated 0
+                         :photo-path "old-contact-2"
+                         :pending? false}
+          new-contact-2 {:name "new-contact-2"
+                         :last-updated 1
+                         :photo-path "new-contact-2"
+                         :pending? false}
+          contact-3      {:name "contact-3"
+                          :photo-path "contact-3"
+                          :pending? false}
+          contact-4      {:name "contact-4"
+                          :photo-path "contact-4"
+                          :pending? true}
+          cofx {:db {:current-public-key "us"
+                     :contacts/contacts {"contact-1" old-contact-1
+                                         "contact-2" new-contact-2
+                                         "contact-3" contact-3}}}
+          sync-message {:contacts {"contact-1" new-contact-1
+                                   "contact-2" old-contact-2
+                                   "contact-4" contact-4}}
+          expected {"contact-1" new-contact-1
+                    "contact-2" new-contact-2
+                    "contact-3" contact-3
+                    "contact-4" contact-4}]
+      (testing "not coming from us"
+        (is (not (pairing/handle-sync-installation cofx sync-message "not-us"))))
+      (testing "coming from us"
+        (is (= expected (get-in
+                         (pairing/handle-sync-installation cofx sync-message "us")
+                         [:db :contacts/contacts])))))))
+
+(deftest sync-installation-messages-test
+  (testing "it creates a sync installation message"
+    (let [cofx {:db {:current-public-key "us"
+                     :contacts/contacts {"contact-1" {:name "contact-1"}
+                                         "contact-2" {:name "contact-2"}}}}
+          expected [(transport.pairing/SyncInstallation. {"contact-1" {:name "contact-1"}})
+                    (transport.pairing/SyncInstallation. {"contact-2" {:name "contact-2"}})]]
+      (is (= expected (pairing/sync-installation-messages cofx))))))
+
+(deftest handle-bundles-added-test
+  (with-redefs [config/pairing-enabled? (constantly true)]
+    (let [installation-1 {:confirmed? true
+                          :installation-id "installation-1"}
+          cofx {:db {:current-public-key "us"
+                     :pairing/installations {"installation-1" installation-1}}}]
+      (testing "new installations"
+        (let [new-installation {:identity "us" :installationID "installation-2"}
+              expected {"installation-1" installation-1
+                        "installation-2" {:confirmed? false
+                                          :installation-id "installation-2"}}]
+          (is (= expected (get-in (pairing/handle-bundles-added cofx new-installation) [:db :pairing/installations])))))
+      (testing "already existing installation"
+        (let [old-installation {:identity "us" :installationID "installation-1"}]
+          (is (not (pairing/handle-bundles-added cofx old-installation)))))
+      (testing "not from us"
+        (let [new-installation {:identity "not-us" :installationID "does-not-matter"}]
+          (is (not (pairing/handle-bundles-added cofx new-installation))))))))

@@ -61,3 +61,6 @@
   {:font-size      15
    :letter-spacing -0.2
    :color          colors/blue})
+
+(def pair-button
+  {:margin-left 32})

@@ -113,3 +113,6 @@
           (.objects "transport-inbox-topic")
           (.map (fn [inbox-topic _ _]
                   (aset inbox-topic "last-request" 1)))))
+
+(defn v19 [old-realm new-realm]
+  (log/debug "migrating v19 account database"))

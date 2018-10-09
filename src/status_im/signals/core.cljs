@@ -3,6 +3,7 @@
             [status-im.accounts.login.core :as accounts.login]
             [status-im.init.core :as init]
             [status-im.node.core :as node]
+            [status-im.pairing.core :as pairing]
             [status-im.transport.inbox :as inbox]
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
@@ -55,6 +56,7 @@
       "module.initialized" (status-module-initialized cofx)
       "envelope.sent"      (transport.message/update-envelope-status cofx (:hash event) :sent)
       "envelope.expired"   (transport.message/update-envelope-status cofx (:hash event) :sent)
+      "bundles.added"      (pairing/handle-bundles-added cofx event)
       "mailserver.request.completed" (when (accounts.db/logged-in? cofx)
                                        (inbox/update-inbox-topics cofx {:request-id (:requestID event)
                                                                         :cursor     (:cursor event)}))

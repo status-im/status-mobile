@@ -3,6 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.utils.build :as build]
+            [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
@@ -11,6 +12,7 @@
             [status-im.utils.gfycat.core :as gfy]
             [clojure.string :as string]
             [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging.views]
+            [status-im.ui.screens.pairing.views :as pairing.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.screens.desktop.main.tabs.profile.styles :as styles]
             [status-im.ui.screens.profile.user.views :as profile]
@@ -74,11 +76,24 @@
         [react/text {:style styles/qr-code-copy-text}
          (i18n/label :copy-qr)]]]]]))
 
+(defn installations-section [installations]
+  [react/view
+   [react/view {:style styles/title-separator}]
+   [react/text {:style styles/mailserver-title} (i18n/label :devices)]
+   [react/touchable-highlight {:style styles/pair-button
+                               :on-press pairing.views/pair!}
+    [react/text (i18n/label :pair)]]
+   (for [installation installations]
+     ^{:key (:installation-id installation)}
+     [react/view {:style {:margin-vertical 8}}
+      [pairing.views/render-row installation]])])
+
 (views/defview advanced-settings []
   (views/letsubs [current-wnode-id [:settings/current-wnode]
+                  installations    [:pairing/installations]
                   wnodes           [:settings/fleet-wnodes]]
     (let [render-fn (offline-messaging.views/render-row current-wnode-id)]
-      [react/view
+      [react/scroll-view
        [react/text {:style styles/advanced-settings-title
                     :font  :medium}
         (i18n/label :advanced-settings)]
@@ -88,7 +103,9 @@
         (for [node (vals wnodes)]
           ^{:key (:id node)}
           [react/view {:style {:margin-vertical 8}}
-           [render-fn node]])]])))
+           [render-fn node]])]
+       (when (config/pairing-enabled? true)
+         (installations-section installations))])))
 
 (views/defview backup-recovery-phrase []
   [profile.recovery/backup-seed])

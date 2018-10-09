@@ -21,7 +21,7 @@
           (is (= "id" (:InstallationID actual))))))
     (testing "pfs & group chats disabled"
       (with-redefs [config/pfs-encryption-enabled? false
-                    config/group-chats-enabled? false]
+                    config/group-chats-enabled? (constantly false)]
         (testing "the user is not logged in"
           (let [actual (parse-node-config (node/start cofx nil))]
             (is (not (:PFSEnabled actual)))))
@@ -37,7 +37,7 @@
             (let [actual (parse-node-config (node/start cofx address))]
               (is (:PFSEnabled actual))))))
       (testing "group chats is enabled"
-        (with-redefs [config/group-chats-enabled? true]
+        (with-redefs [config/group-chats-enabled? (constantly true)]
           (testing "the user is not logged in"
             (let [actual (parse-node-config (node/start cofx nil))]
               (is (not (:PFSEnabled actual)))))

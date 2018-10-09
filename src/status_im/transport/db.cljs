@@ -104,6 +104,7 @@
 (spec/def :message/message-seen (spec/keys :req-un [:message/ids]))
 
 (spec/def :message/group-membership-update (spec/keys :req-un [:group-chat/membership-updates :group-chat/chat-id]))
+(spec/def :message/sync-installation (spec/keys :req-un [:contacts/contacts]))
 
 (spec/def :message/message-common (spec/keys :req-un [::content-type ::message-type ::clock-value ::timestamp]))
 (spec/def :message.text/content (spec/keys :req-un [:message.content/text]

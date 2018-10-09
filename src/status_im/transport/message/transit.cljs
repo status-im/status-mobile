@@ -3,6 +3,7 @@
   (:require [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.group-chat :as group-chat]
+            [status-im.transport.message.pairing :as pairing]
             [status-im.constants :as constants]
             [cognitect.transit :as transit]))
 
@@ -87,6 +88,12 @@
   (rep [this {:keys [chat-id membership-updates message]}]
     #js [chat-id membership-updates message]))
 
+(deftype SyncInstallationHandler []
+  Object
+  (tag [this v] "p1")
+  (rep [this {:keys [contacts]}]
+    #js [contacts]))
+
 (def writer (transit/writer :json
                             {:handlers
                              {contact/NewContactKey            (NewContactKeyHandler.)
@@ -95,7 +102,8 @@
                               contact/ContactUpdate            (ContactUpdateHandler.)
                               protocol/Message                 (MessageHandler.)
                               protocol/MessagesSeen            (MessagesSeenHandler.)
-                              group-chat/GroupMembershipUpdate (GroupMembershipUpdateHandler.)}}))
+                              group-chat/GroupMembershipUpdate (GroupMembershipUpdateHandler.)
+                              pairing/SyncInstallation         (SyncInstallationHandler.)}}))
 
 ;;
 ;; Reader handlers
@@ -146,7 +154,9 @@
                               "c6" (fn [[name profile-image address fcm-token]]
                                      (contact/ContactUpdate. name profile-image address fcm-token))
                               "g5" (fn [[chat-id membership-updates message]]
-                                     (group-chat/GroupMembershipUpdate. chat-id membership-updates message))}}))
+                                     (group-chat/GroupMembershipUpdate. chat-id membership-updates message))
+                              "p1" (fn [[contacts]]
+                                     (pairing/SyncInstallation. contacts))}}))
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"
