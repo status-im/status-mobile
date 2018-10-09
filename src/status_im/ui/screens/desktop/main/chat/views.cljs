@@ -133,14 +133,18 @@
                         :margin-right 5}}
     link]])
 
+(defn- message-sent? [user-statuses current-public-key]
+  (not= (get-in user-statuses [current-public-key :status]) :not-sent))
+
 (views/defview message-with-timestamp
-  [text {:keys [message-id timestamp outgoing content current-public-key]} style]
+  [text {:keys [message-id timestamp outgoing content current-public-key user-statuses]} style]
   [react/view {:style style}
    [react/touchable-highlight {:style {}
                                :on-press #(if (= "right" (.-button (.-nativeEvent %)))
                                             (do (utils/show-popup "" "Message copied to clipboard")
                                                 (react/copy-to-clipboard text))
-                                            (re-frame/dispatch [:chat.ui/reply-to-message message-id]))}
+                                            (when (message-sent? user-statuses current-public-key)
+                                              (re-frame/dispatch [:chat.ui/reply-to-message message-id])))}
     [react/view {:style styles/message-container}
      (when (:response-to content)
        [quoted-message (:response-to content) outgoing current-public-key])

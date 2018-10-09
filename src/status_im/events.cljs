@@ -83,6 +83,7 @@
   (re-frame/inject-cofx :data-store/get-messages)
   (re-frame/inject-cofx :data-store/get-user-statuses)
   (re-frame/inject-cofx :data-store/get-unviewed-messages)
+  (re-frame/inject-cofx :data-store/get-referenced-messages)
   (re-frame/inject-cofx :data-store/message-ids)
   (re-frame/inject-cofx :data-store/get-local-storage-data)
   (re-frame/inject-cofx :data-store/get-all-contacts)
@@ -500,7 +501,8 @@
 (handlers/register-handler-fx
  :chat.ui/load-more-messages
  [(re-frame/inject-cofx :data-store/get-messages)
-  (re-frame/inject-cofx :data-store/get-user-statuses)]
+  (re-frame/inject-cofx :data-store/get-user-statuses)
+  (re-frame/inject-cofx :data-store/get-referenced-messages)]
  (fn [cofx _]
    (chat.loading/load-more-messages cofx)))
 

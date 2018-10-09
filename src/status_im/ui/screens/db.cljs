@@ -281,6 +281,7 @@
                  :chat/message-groups
                  :chat/message-statuses
                  :chat/not-loaded-message-ids
+                 :chat/referenced-messages
                  :chat/last-clock-value
                  :chat/loaded-chats
                  :chat/bot-db

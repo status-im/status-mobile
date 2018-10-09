@@ -120,6 +120,12 @@
  (fn [{:keys [message-statuses]}]
    (or message-statuses {})))
 
+(reg-sub
+ :get-current-chat-referenced-messages
+ :<- [:get-current-chat]
+ (fn [{:keys [referenced-messages]}]
+   (or referenced-messages {})))
+
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group"
   [message-groups messages]
@@ -129,15 +135,16 @@
 
 (defn quoted-message-data
   "Selects certain data from quoted message which must be available in the view"
-  [message-id messages]
-  (let [{:keys [from content]} (get messages message-id)]
+  [message-id messages referenced-messages]
+  (let [{:keys [from content]} (get messages message-id
+                                    (get referenced-messages message-id))]
     {:from from
      :text (:text content)}))
 
 (defn messages-with-datemarks-and-statuses
   "Converts message groups into sequence of messages interspersed with datemarks,
   with correct user statuses associated into message"
-  [message-groups messages message-statuses]
+  [message-groups messages message-statuses referenced-messages]
   (mapcat (fn [[datemark message-references]]
             (into (list {:value datemark
                          :type  :datemark})
@@ -148,7 +155,9 @@
                                           :timestamp-str timestamp-str
                                           :user-statuses (get message-statuses message-id))
                              (:response-to content) ;; quoted message reference
-                             (assoc-in [:content :response-to] (quoted-message-data (:response-to content) messages))))))
+                             (assoc-in [:content :response-to] (quoted-message-data (:response-to content)
+                                                                                    messages
+                                                                                    referenced-messages))))))
                   message-references))
           message-groups))
 
@@ -222,9 +231,10 @@
  :<- [:get-current-chat-messages]
  :<- [:get-current-chat-message-groups]
  :<- [:get-current-chat-message-statuses]
- (fn [[messages message-groups message-statuses]]
+ :<- [:get-current-chat-referenced-messages]
+ (fn [[messages message-groups message-statuses referenced-messages]]
    (-> (sort-message-groups message-groups messages)
-       (messages-with-datemarks-and-statuses messages message-statuses)
+       (messages-with-datemarks-and-statuses messages message-statuses referenced-messages)
        messages-stream)))
 
 (reg-sub

@@ -67,10 +67,19 @@
              {:db db}
              (:chats db)))
 
+(defn- get-referenced-ids
+  "Takes map of message-id->messages and returns set of message ids which are referenced by the original messages,
+  excluding any message id, which is already in the original map"
+  [message-id->messages]
+  (into #{}
+        (comp (keep (comp :response-to :content))
+              (filter #(not (contains? message-id->messages %))))
+        (vals message-id->messages)))
+
 (fx/defn initialize-chats
   "Initialize all persisted chats on startup"
   [{:keys [db default-dapps all-stored-chats get-stored-messages get-stored-user-statuses
-           get-stored-unviewed-messages stored-message-ids] :as cofx}]
+           get-stored-unviewed-messages get-referenced-messages stored-message-ids] :as cofx}]
   (let [stored-unviewed-messages (get-stored-unviewed-messages (:current-public-key db))
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (let [chat-messages (index-messages (get-stored-messages chat-id))
@@ -82,7 +91,11 @@
                                         :messages chat-messages
                                         :message-statuses (get-stored-user-statuses chat-id message-ids)
                                         :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
-                                                                                (set message-ids))))))
+                                                                                (set message-ids))
+                                        :referenced-messages (index-messages
+                                                              (get-referenced-messages
+                                                               chat-id
+                                                               (get-referenced-ids chat-messages)))))))
                       {}
                       all-stored-chats)]
     (fx/merge cofx
@@ -118,19 +131,25 @@
   "Loads more messages for current chat"
   [{{:keys [current-chat-id] :as db} :db
     get-stored-messages :get-stored-messages
-    get-stored-user-statuses :get-stored-user-statuses :as cofx}]
+    get-stored-user-statuses :get-stored-user-statuses
+    get-referenced-messages :get-referenced-messages :as cofx}]
   (when-not (get-in db [:chats current-chat-id :all-loaded?])
-    (let [loaded-count     (count (get-in db [:chats current-chat-id :messages]))
-          new-messages     (get-stored-messages current-chat-id loaded-count)
-          indexed-messages (index-messages new-messages)
-          new-message-ids  (keys indexed-messages)
-          new-statuses     (get-stored-user-statuses current-chat-id new-message-ids)]
+    (let [loaded-count        (count (get-in db [:chats current-chat-id :messages]))
+          new-messages        (get-stored-messages current-chat-id loaded-count)
+          indexed-messages    (index-messages new-messages)
+          referenced-messages (index-messages
+                               (get-referenced-messages current-chat-id
+                                                        (get-referenced-ids indexed-messages)))
+          new-message-ids     (keys indexed-messages)
+          new-statuses        (get-stored-user-statuses current-chat-id new-message-ids)]
       (fx/merge cofx
                 {:db (-> db
                          (update-in [:chats current-chat-id :messages] merge indexed-messages)
                          (update-in [:chats current-chat-id :message-statuses] merge new-statuses)
                          (update-in [:chats current-chat-id :not-loaded-message-ids]
                                     #(apply disj % new-message-ids))
+                         (update-in [:chats current-chat-id :referenced-messages]
+                                    #(into (apply dissoc % new-message-ids) referenced-messages))
                          (assoc-in [:chats current-chat-id :all-loaded?]
                                    (> constants/default-number-of-messages (count new-messages))))}
                 (group-chat-messages current-chat-id new-messages)

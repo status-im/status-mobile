@@ -337,3 +337,8 @@
                (case op
                  :and (and-query queries)
                  :or (or-query queries)))))
+
+(defn in-query
+  "Constructs IN query"
+  [field-name ids]
+  (string/join " or " (map #(str field-name "=\"" % "\"") ids)))

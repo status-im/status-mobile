@@ -20,6 +20,16 @@
                       (core/all-clj :message))]
      (map transform-message messages))))
 
+(defn- get-by-chat-and-messages-ids
+  [chat-id message-ids]
+  (when (seq message-ids)
+    (let [messages (-> @core/account-realm
+                       (.objects "message")
+                       (.filtered (str "chat-id=\"" chat-id "\""
+                                       (str " and (" (core/in-query "message-id" message-ids) ")")))
+                       (core/all-clj :message))]
+      (map transform-message messages))))
+
 (def default-values
   {:to             nil})
 
@@ -58,9 +68,12 @@
 (re-frame/reg-cofx
  :data-store/get-unviewed-messages
  (fn [cofx _]
-   (assoc cofx
-          :get-stored-unviewed-messages
-          get-unviewed-messages)))
+   (assoc cofx :get-stored-unviewed-messages get-unviewed-messages)))
+
+(re-frame/reg-cofx
+ :data-store/get-referenced-messages
+ (fn [cofx _]
+   (assoc cofx :get-referenced-messages get-by-chat-and-messages-ids)))
 
 (defn- prepare-content [content]
   (if (string? content)
