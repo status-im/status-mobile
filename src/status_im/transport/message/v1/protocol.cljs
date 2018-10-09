@@ -5,6 +5,7 @@
             [taoensso.timbre :as log]
             [status-im.utils.config :as config]
             [status-im.chat.core :as chat]
+            [status-im.utils.clocks :as utils.clocks]
             [status-im.transport.db :as transport.db]
             [status-im.transport.message.core :as message]
             [status-im.transport.message.v1.core :as transport]
@@ -110,8 +111,9 @@
              :from       signature
              :js-obj     (:js-obj cofx))]})
   (validate [this]
-    (when (spec/valid? :message/message this)
-      this)))
+    (if (spec/valid? :message/message this)
+      this
+      (log/warn "failed to validate Message" (spec/explain :message/message this)))))
 
 (defrecord MessagesSeen [message-ids]
   message/StatusMessage

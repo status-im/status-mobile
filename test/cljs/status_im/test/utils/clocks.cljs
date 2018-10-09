@@ -92,6 +92,12 @@
     (is (< (clocks/receive js/Number.MAX_SAFE_INTEGER 0)
            js/Number.MAX_SAFE_INTEGER))))
 
+(deftest safe-timestamp?-test
+  (testing "it returns false for a high number"
+    (is (not (clocks/safe-timestamp? js/Number.MAX_SAFE_INTEGER))))
+  (testing "it returns true for a normal timestamp number"
+    (is (clocks/safe-timestamp? (clocks/send 0)))))
+
   ;; Debugging
 ;;(println "******************************************")
 ;;(println "A's POV :foo" (format-thread (thread a :foo)))

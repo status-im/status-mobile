@@ -3,6 +3,7 @@
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
             status-im.ui.screens.contacts.db
+            [status-im.utils.clocks :as utils.clocks]
             [clojure.string :as s]))
 
 ;; required
@@ -60,7 +61,8 @@
 
 (spec/def ::content-type #{"text/plain" "command" "command-request"})
 (spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
-(spec/def ::clock-value (spec/nilable pos-int?))
+(spec/def ::clock-value (spec/and pos-int?
+                                  utils.clocks/safe-timestamp?))
 (spec/def ::timestamp (spec/nilable pos-int?))
 
 (spec/def :message/id string?)

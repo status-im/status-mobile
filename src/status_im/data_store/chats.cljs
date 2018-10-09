@@ -3,6 +3,7 @@
             [cljs.core.async :as async]
             [re-frame.core :as re-frame]
             [status-im.utils.ethereum.core :as utils.ethereum]
+            [status-im.utils.clocks :as utils.clocks]
             [status-im.data-store.realm.core :as core]))
 
 (defn remove-empty-vals
@@ -49,15 +50,16 @@
                          :message :chat-id chat-id)
       (core/sorted :clock-value :desc)
       (core/single-clj :message)
-      :clock-value))
+      :clock-value
+      (utils.clocks/safe-timestamp)))
 
 (defn- normalize-chat [{:keys [chat-id] :as chat}]
-  (let [last-clock-value (get-last-clock-value chat-id)]
-    (-> chat
-        (update :admins   #(into #{} %))
-        (update :contacts #(into #{} %))
-        (update :membership-updates  (partial unmarshal-membership-updates chat-id))
-        (assoc :last-clock-value (or last-clock-value 0)))))
+  (-> chat
+      (update :admins   #(into #{} %))
+      (update :contacts #(into #{} %))
+      (update :membership-updates  (partial unmarshal-membership-updates chat-id))
+      ;; We cap the clock value to a safe value in case the db has been polluted
+      (assoc :last-clock-value (get-last-clock-value chat-id))))
 
 (re-frame/reg-cofx
  :data-store/all-chats
