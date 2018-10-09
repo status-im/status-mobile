@@ -343,10 +343,7 @@
       (fn []
         (when-not @initial-view-id
           (reset! initial-view-id @view-id))
-        (when (and @initial-view-id
-                   (or
-                    js/goog.DEBUG
-                    (not @main-component)))
+        (when (and @initial-view-id (not @main-component))
           (reset! main-component (get-main-component2
                                   (if js/goog.DEBUG
                                     @initial-view-id
