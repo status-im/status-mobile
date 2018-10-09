@@ -19,7 +19,7 @@ android {
 dependencies {
     implementation 'com.facebook.react:react-native:+'
     implementation 'com.instabug.library:instabug:3+'
-    implementation 'status-im:function:0.0.1'
+    compile 'com.github.status-im:function:0.0.1'
 
     // WARNING: If you change this, make sure the GitHub release of the .aar exists.
     // WARNING: status-go is downloaded in Makefile and has a hardcoded version too.

@@ -59,6 +59,7 @@ $(STATUS_GO_IOS_ARCH):
 	cd $(RCTSTATUS_DIR) && curl -OL "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-ios-$(STATUS_GO_VER).zip"
 
 $(STATUS_GO_DRO_ARCH):
+	mkdir -p $(ANDROID_LIBS_DIR)
 	cd $(ANDROID_LIBS_DIR) && curl -OL "$(GITHUB_URL)/v$(STATUS_GO_VER)/status-go-$(STATUS_GO_VER).aar"
 
 prepare-ios: $(STATUS_GO_IOS_ARCH) _prepare-mobile ##@prepare Install and prepare iOS-specific dependencies
