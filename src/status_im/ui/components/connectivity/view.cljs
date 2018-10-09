@@ -19,7 +19,7 @@
                  :accessibility-label :connection-status-text}
      [react/text {:style    styles/text
                   :on-press (when mailserver-error?
-                              #(re-frame/dispatch [:inbox/reconnect]))}
+                              #(re-frame/dispatch [:inbox.ui/reconnect-mailserver-pressed]))}
       (i18n/label label)]]))
 
 (defview error-view [{:keys [top]}]

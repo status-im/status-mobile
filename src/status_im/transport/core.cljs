@@ -67,7 +67,5 @@
   to clean-up after logout. When logging out of account A and logging in account B, account B would receive
   account A messages without this."
   [{:keys [db]}]
-  (let [{:transport/keys [chats discovery-filter]} db
-        chat-filters                               (keep :filter (vals chats))
-        all-filters                                (conj chat-filters discovery-filter)]
-    {:shh/remove-filters all-filters}))
+  (let [{:transport/keys [filters]} db]
+    {:shh/remove-filters (vals filters)}))

@@ -127,28 +127,6 @@
                                        #(log/debug :shh/post-success))
                     :on-error        #(re-frame/dispatch [error-event %])}))))
 
-;; This event params contain a recipients key because it's a vector of map with public-key and topic keys.
-;; the :shh/post event has public-key and topic keys at the top level of the args map.
-;; This event is used to send messages to multiple recipients when you can't send it on a topic.
-;; It is used for renewing keys in a private group chat, because if someone leaves/join.
-;; We want to change the symmetric key but we can't do that in the group topic with the old key
-;; otherwise leavers can still eavesdrop / joiners can read past history."
-(re-frame/reg-fx
- :shh/multi-post
- (fn [{:keys [web3 message recipients success-event error-event]
-       :or {error-event :protocol/send-status-message-error}}]
-   (let [whisper-message (update message :payload (comp transport.utils/from-utf8
-                                                        transit/serialize))]
-     (doseq [{:keys [sym-key-id topic]} recipients]
-       (post-message {:web3            web3
-                      :whisper-message (assoc whisper-message
-                                              :topic topic
-                                              :symKeyID sym-key-id)
-                      :on-success      (if success-event
-                                         #(re-frame/dispatch success-event)
-                                         #(log/debug :shh/post-success))
-                      :on-error        #(re-frame/dispatch [error-event %])})))))
-
 (defn add-sym-key
   [{:keys [web3 sym-key on-success on-error]}]
   (.. web3

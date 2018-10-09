@@ -4,7 +4,9 @@
             [status-im.utils.handlers :as handlers]
             [status-im.transport.utils :as utils]
             [status-im.utils.config :as config]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.fx :as fx]
+            [status-im.transport.inbox :as inbox]))
 
 (defn remove-filter! [filter]
   (.stopWatching filter
@@ -14,47 +16,40 @@
                      (log/debug :removed-filter filter))))
   (log/debug :stop-watching filter))
 
-(defn add-shh-filter!
-  [web3 options callback]
-  (.newMessageFilter (utils/shh web3) (clj->js options)
-                     callback
-                     #(log/warn :add-filter-error (.stringify js/JSON (clj->js options)) %)))
-
 (defn add-filter!
-  [web3 {:keys [topics to] :as options} callback]
+  [web3 {:keys [topics to] :as options} callback chat-id]
   (let [options  (assoc options :allowP2P true)]
     (log/debug :add-filter options)
-    (add-shh-filter! web3 options callback)))
+    (when-let [filter (.newMessageFilter (utils/shh web3)
+                                         (clj->js options)
+                                         callback
+                                         #(log/warn :add-filter-error (.stringify js/JSON (clj->js options)) %))]
+      (re-frame/dispatch [:shh.callback/filter-added chat-id filter]))))
 
 (re-frame/reg-fx
  :shh/add-filter
  (fn [{:keys [web3 sym-key-id topic chat-id]}]
-   (when-let [filter (add-filter! web3
-                                  {:topics [topic]
-                                   :symKeyID sym-key-id}
-                                  (fn [js-error js-message]
-                                    (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id])))]
-     (re-frame/dispatch [::filter-added chat-id filter]))))
-
-(handlers/register-handler-fx
- ::filter-added
- (fn [{:keys [db]} [_ chat-id filter]]
-   {:db (assoc-in db [:transport/chats chat-id :filter] filter)}))
+   (let [params   {:topics [topic]
+                   :symKeyID sym-key-id}
+         callback (fn [js-error js-message]
+                    (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message chat-id]))]
+     (add-filter! web3 params callback chat-id))))
 
 (re-frame/reg-fx
  :shh/add-discovery-filter
  (fn [{:keys [web3 private-key-id topic]}]
-   (when-let [filter (add-filter! web3
-                                  {:topics [topic]
-                                   :privateKeyID private-key-id}
-                                  (fn [js-error js-message]
-                                    (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message])))]
-     (re-frame/dispatch [::discovery-filter-added filter]))))
+   (let [params   {:topics [topic]
+                   :privateKeyID private-key-id}
+         callback (fn [js-error js-message]
+                    (re-frame/dispatch [:protocol/receive-whisper-message js-error js-message]))]
+     (add-filter! web3 params callback :discovery-topic))))
 
 (handlers/register-handler-fx
- ::discovery-filter-added
- (fn [{:keys [db]} [_ filter]]
-   {:db (assoc db :transport/discovery-filter filter)}))
+ :shh.callback/filter-added
+ (fn [{:keys [db] :as cofx} [_ chat-id filter]]
+   (fx/merge cofx
+             {:db (assoc-in db [:transport/filters chat-id] filter)}
+             (inbox/request-messages chat-id))))
 
 (re-frame/reg-fx
  :shh/remove-filter

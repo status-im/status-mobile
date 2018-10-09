@@ -110,11 +110,6 @@
   {:db (assoc db :inbox/current-id
               (selected-or-random-id cofx))})
 
-(fx/defn set-initial-last-request
-  [{:keys [db now] :as cofx}]
-  {:db (update-in db [:account/account :last-request]
-                  (fnil identity (quot now 1000)))})
-
 (fx/defn add-custom-mailservers
   [{:keys [db]} mailservers]
   {:db (reduce (fn [db {:keys [id fleet] :as mailserver}]

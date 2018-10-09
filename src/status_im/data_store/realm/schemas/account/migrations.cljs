@@ -94,3 +94,6 @@
           (.filtered (str "content-type = \"command-request\""))
           (.map (fn [message _ _]
                   (aset message "content-type" "command")))))
+
+(defn v15 [old-realm new-realm]
+(log/debug "migrating v15 account database"))

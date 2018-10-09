@@ -6,25 +6,19 @@
             [status-im.transport.message.v1.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
             [status-im.utils.fx :as fx]
-            [cljs.spec.alpha :as spec]))
+            [cljs.spec.alpha :as spec]
+            [taoensso.timbre :as log]
+            [status-im.constants :as constants]))
 
 (defrecord ContactRequest [name profile-image address fcm-token]
   message/StatusMessage
   (send [this chat-id {:keys [db random-id-generator] :as cofx}]
-    (let [topic      (transport.utils/get-topic (random-id-generator))
-          on-success (fn [sym-key sym-key-id]
-                       (re-frame/dispatch [:contact/send-new-sym-key
-                                           {:sym-key-id sym-key-id
-                                            :sym-key    sym-key
-                                            :chat-id    chat-id
-                                            :topic      topic
-                                            :message    this}]))]
-      (fx/merge cofx
-                {:shh/get-new-sym-keys [{:web3       (:web3 db)
-                                         :on-success on-success}]}
-                (protocol/init-chat {:chat-id chat-id
-                                     :topic   topic
-                                     :resend? "contact-request"}))))
+    (fx/merge cofx
+              (protocol/init-chat {:chat-id chat-id
+                                   :resend? "contact-request"})
+              (protocol/send-with-pubkey {:chat-id chat-id
+                                          :payload this
+                                          :success-event [:transport/set-contact-message-envelope-hash chat-id]})))
   (validate [this]
     (when (spec/valid? :message/contact-request this)
       this)))
@@ -100,43 +94,11 @@
 
 (defrecord NewContactKey [sym-key topic message]
   message/StatusMessage
-  (send [this chat-id cofx]
-    (let [success-event [:transport/set-contact-message-envelope-hash chat-id]]
-      (protocol/send-with-pubkey cofx
-                                 {:chat-id       chat-id
-                                  :payload       this
-                                  :success-event success-event})))
-  (receive [this chat-id _ timestamp {:keys [db] :as cofx}]
-    (let [current-sym-key (get-in db [:transport/chats chat-id :sym-key])
-          ;; NOTE(yenda) to support concurrent contact request without additional
-          ;; interactions we don't save the new key if these conditions are met:
-          ;; - the message is a contact request
-          ;; - we already have a sym-key
-          ;; - this sym-key is first in alphabetical order compared to the new one
-          save-key?       (not (and (= ContactRequest (type message))
-                                    current-sym-key
-                                    (= current-sym-key
-                                       (first (sort [current-sym-key sym-key])))))]
-      (if save-key?
-        (let [on-success (fn [sym-key sym-key-id]
-                           (re-frame/dispatch [:contact/add-new-sym-key
-                                               {:sym-key-id sym-key-id
-                                                :timestamp  timestamp
-                                                :sym-key    sym-key
-                                                :chat-id    chat-id
-                                                :topic      topic
-                                                :message    message}]))]
-          (fx/merge cofx
-                    {:shh/add-new-sym-keys [{:web3       (:web3 db)
-                                             :sym-key    sym-key
-                                             :on-success on-success}]}
-                    (init-chat chat-id topic)
-                    ;; in case of concurrent contact request we want
-                    ;; to stop the filter for the previous key before
-                    ;; dereferrencing it
-                    (remove-chat-filter chat-id)))
-        ;; if we don't save the key, we read the message directly
-        (message/receive message chat-id chat-id timestamp cofx))))
+  (send "no-op, we don't send NewContactKey anymore"
+    [this chat-id cofx])
+  (receive "for compatibility with old clients, we only care about the message within "
+    [this chat-id _ timestamp {:keys [db] :as cofx}]
+    (message/receive message chat-id chat-id timestamp cofx))
   (validate [this]
     (when (spec/valid? :message/new-contact-key this)
       this)))

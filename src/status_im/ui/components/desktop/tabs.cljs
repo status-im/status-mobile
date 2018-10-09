@@ -41,9 +41,10 @@
   (fn [active? cnt]
     [react/view {:style tabs.styles/tab-container}
      (if emoji
-       [react/text {:style {:font-size 15
-                            :color (if active? colors/blue colors/gray-icon)}}
-        emoji]
+       [react/view {:style {:height 26}}
+        [react/text {:style {:font-size 17
+                             :color (if active? colors/blue colors/gray-icon)}}
+         emoji]]
        (let [icon (if active? icon-active icon-inactive)]
          [react/view
           [icons/icon icon {:style {:tint-color (if active? colors/blue colors/gray-icon)}}]]))
