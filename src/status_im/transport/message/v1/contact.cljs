@@ -106,7 +106,7 @@
                                  {:chat-id       chat-id
                                   :payload       this
                                   :success-event success-event})))
-  (receive [this chat-id _ timestamp {:keys [db] :as cofx}]
+  (receive [this chat-id _ raw-data timestamp {:keys [db] :as cofx}]
     (let [current-sym-key (get-in db [:transport/chats chat-id :sym-key])
           ;; NOTE(yenda) to support concurrent contact request without additional
           ;; interactions we don't save the new key if these conditions are met:
@@ -136,7 +136,7 @@
                     ;; dereferrencing it
                     (remove-chat-filter chat-id)))
         ;; if we don't save the key, we read the message directly
-        (message/receive message chat-id chat-id timestamp cofx))))
+        (message/receive message chat-id chat-id raw-data timestamp cofx))))
   (validate [this]
     (when (spec/valid? :message/new-contact-key this)
       this)))

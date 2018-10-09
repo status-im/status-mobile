@@ -23,14 +23,20 @@
 (fx/defn receive-message
   [cofx now-in-s chat-id js-message]
   (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
-        status-message (-> payload
-                           transport.utils/to-utf8
+        raw-message    (-> payload
+                           transport.utils/to-utf8)
+        status-message (-> raw-message
                            transit/deserialize)]
     (when (and sig status-message)
       (try
         (when-let [valid-message (message/validate status-message)]
           (fx/merge (assoc cofx :js-obj js-message)
-                    #(message/receive valid-message (or chat-id sig) sig timestamp %)
+                    #(message/receive valid-message
+                                      (or chat-id sig)
+                                      sig
+                                      raw-message
+                                      timestamp
+                                      %)
                     (update-last-received-from-inbox now-in-s timestamp ttl)))
         (catch :default e nil))))) ; ignore unknown message types
 
@@ -100,7 +106,7 @@
                                  :chat-id    chat-id}
                 :data-store/tx  [(transport-store/save-transport-tx {:chat-id chat-id
                                                                      :chat    chat-transport-info})]}
-               #(message/receive message chat-id chat-id timestamp %)))))
+               #(message/receive message chat-id chat-id "" timestamp %)))))
 
 (handlers/register-handler-fx
  :group/unsubscribe-from-chat

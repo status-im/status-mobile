@@ -72,11 +72,12 @@
   [message-datemark/chat-datemark value])
 
 (defmethod message-row :default
-  [{:keys [group-chat current-public-key modal? row]}]
+  [{:keys [group-chat current-public-key modal? row show-raw-payload?]}]
   [message/chat-message (assoc row
                                :group-chat group-chat
                                :modal? modal?
-                               :current-public-key current-public-key)])
+                               :current-public-key current-public-key)
+   show-raw-payload?]) ;; TODO: igorm setting here
 
 (defview messages-view-animation [message-view]
   ;; smooths out appearance of message-view
@@ -117,22 +118,25 @@
 (defview messages-view [group-chat modal?]
   (letsubs [messages           [:get-current-chat-messages-stream]
             chat               [:get-current-chat]
-            current-public-key [:get-current-public-key]]
+            current-public-key [:get-current-public-key]
+            current-account    [:get-current-account]]
     {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                            :input-focused? false}])}
     (if (empty? messages)
       [empty-chat-container chat]
-      [list/flat-list {:data                      messages
-                       :key-fn                    #(or (:message-id %) (:value %))
-                       :render-fn                 (fn [message]
-                                                    [message-row {:group-chat         group-chat
-                                                                  :modal?             modal?
-                                                                  :current-public-key current-public-key
-                                                                  :row                message}])
-                       :inverted                  true
-                       :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps :handled}])))
+      (let [show-raw-payload? (get-in current-account [:show-raw-payload?] false)]
+        [list/flat-list {:data                      messages
+                         :key-fn                    #(or (:message-id %) (:value %))
+                         :render-fn                 (fn [message]
+                                                      [message-row {:group-chat         group-chat
+                                                                    :modal?             modal?
+                                                                    :current-public-key current-public-key
+                                                                    :row                message
+                                                                    :show-raw-payload?  show-raw-payload?}])
+                         :inverted                  true
+                         :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
+                         :enableEmptySections       true
+                         :keyboardShouldPersistTaps :handled}]))))
 
 (defview chat-root [modal?]
   (letsubs [{:keys [group-chat public?]} [:get-current-chat]

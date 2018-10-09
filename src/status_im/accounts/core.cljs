@@ -49,6 +49,12 @@
            {:dev-server/start nil}
            {:dev-server/stop nil})))
 
+(fx/defn switch-raw-payload-display [{:keys [db] :as cofx} enabled?]
+  (let [settings (get-in db [:account/account :settings])]
+    (accounts.update/account-update cofx
+                                    {:show-raw-payload? enabled?}
+                                    {})))
+
 (fx/defn switch-web3-opt-in-mode [{:keys [db] :as cofx} opt-in]
   (let [settings (get-in db [:account/account :settings])]
     (accounts.update/update-settings cofx

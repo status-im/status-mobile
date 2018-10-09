@@ -198,3 +198,7 @@
 (def v11 (assoc-in v10
                    [:properties :installation-id]
                    {:type :string}))
+
+(def v12 (assoc-in v11
+                   [:properties :show-raw-payload?]
+                   {:type :bool :default false}))

@@ -121,6 +121,11 @@
    (accounts/switch-web3-opt-in-mode cofx opt-in)))
 
 (handlers/register-handler-fx
+ :accounts.ui/show-raw-payload-switched
+ (fn [cofx [_ enabled?]]
+   (accounts/switch-raw-payload-display cofx enabled?)))
+
+(handlers/register-handler-fx
  :accounts.ui/wallet-set-up-confirmed
  (fn [cofx [_ modal?]]
    (accounts/confirm-wallet-set-up cofx modal?)))

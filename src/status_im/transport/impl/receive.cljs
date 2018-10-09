@@ -8,20 +8,20 @@
 
 (extend-type transport.protocol/GroupMembershipUpdate
   message/StatusMessage
-  (receive [this _ signature _ cofx]
+  (receive [this _ signature _ _ cofx]
     (group-chats/handle-membership-update-received cofx this signature)))
 
 (extend-type transport.contact/ContactRequest
   message/StatusMessage
-  (receive [this _ signature timestamp cofx]
+  (receive [this _ signature _ timestamp cofx]
     (models.contact/receive-contact-request signature timestamp this cofx)))
 
 (extend-type transport.contact/ContactRequestConfirmed
   message/StatusMessage
-  (receive [this _ signature timestamp cofx]
+  (receive [this _ signature _ timestamp cofx]
     (models.contact/receive-contact-request-confirmation signature timestamp this cofx)))
 
 (extend-type transport.contact/ContactUpdate
   message/StatusMessage
-  (receive [this _ signature timestamp cofx]
+  (receive [this _ signature _ timestamp cofx]
     (models.contact/receive-contact-update signature timestamp this cofx)))

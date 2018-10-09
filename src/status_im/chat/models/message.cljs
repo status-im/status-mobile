@@ -117,7 +117,7 @@
 (fx/defn add-received-message
   [{:keys [db now] :as cofx}
    batch?
-   {:keys [from message-id chat-id content content-type clock-value js-obj] :as raw-message}]
+   {:keys [from message-id chat-id content content-type clock-value js-obj raw-data] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
         current-chat?                 (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
         {:keys [group-chat] :as chat} (get-in db [:chats chat-id])

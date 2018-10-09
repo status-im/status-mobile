@@ -133,7 +133,7 @@
                                           :hide-arrow?         true
                                           :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
-(defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show]
+(defview advanced-settings [{:keys [network networks dev-mode? show-raw-payload? settings]} on-show]
   {:component-did-mount on-show}
   [react/view
    (when (and config/extensions-enabled? dev-mode?)
@@ -174,6 +174,12 @@
       {:label-kw  :t/web3-opt-in
        :value     (:web3-opt-in? settings)
        :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}])
+   (when dev-mode?
+     [profile.components/settings-switch-item
+      {:label-kw  :t/show-raw-payload
+       :value     show-raw-payload?
+       :action-fn #(re-frame/dispatch [:accounts.ui/show-raw-payload-switched %])}])
+
    [profile.components/settings-item-separator]
    [profile.components/settings-switch-item
     {:label-kw  :t/dev-mode

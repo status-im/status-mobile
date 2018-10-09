@@ -102,13 +102,14 @@
            (:success-event params)
            this)
           (send-with-pubkey cofx params)))))
-  (receive [this chat-id signature _ cofx]
+  (receive [this chat-id signature raw-data _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)
              :message-id (transport.utils/message-id this)
              :show?      true
              :chat-id    chat-id
              :from       signature
+             :raw-data   raw-data
              :js-obj     (:js-obj cofx))]})
   (validate [this]
     (if (spec/valid? :message/message this)
@@ -125,7 +126,7 @@
                            this)
       (send cofx {:chat-id chat-id
                   :payload this})))
-  (receive [this chat-id signature _ cofx]
+  (receive [this chat-id signature _ _ cofx]
     (chat/receive-seen cofx chat-id signature this))
   (validate [this]
     (when (spec/valid? :message/message-seen this)

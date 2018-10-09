@@ -51,3 +51,7 @@
                                          :default 0}
                       :show?            {:type    :bool
                                          :default true}}})
+
+(def v8 (assoc-in v7
+                  [:properties :raw-data] {:type     :string
+                                           :optional true}))

@@ -39,6 +39,7 @@
 (spec/def :account/mnemonic (spec/nilable string?))
 (spec/def :account/sharing-usage-data? (spec/nilable boolean?))
 (spec/def :account/dev-mode? (spec/nilable boolean?))
+(spec/def :account/show-raw-payload? (spec/nilable boolean?))
 (spec/def :account/seed-backed-up? (spec/nilable boolean?))
 (spec/def :account/installation-id :global/not-empty-string)
 (spec/def :account/wallet-set-up-passed? (spec/nilable boolean?))
@@ -52,6 +53,7 @@
                                       :account/email :account/signed-up? :account/network
                                       :account/networks :account/settings :account/wnode
                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
+                                      :account/show-raw-payload?
                                       :account/seed-backed-up? :account/mnemonic
                                       :account/wallet-set-up-passed? :account/last-request
                                       :account/bootnodes :account/mainnet-warning-shown?]))

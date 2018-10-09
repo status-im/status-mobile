@@ -87,3 +87,6 @@
             installation-id     (random/guid)]
         (when (string/blank? old-installation-id)
           (aset account "installation-id" installation-id))))))
+
+(defn v12 [old-realm new-realm]
+  (log/debug "migrating accounts schema v12"))

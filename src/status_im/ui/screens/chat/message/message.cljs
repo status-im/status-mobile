@@ -323,30 +323,31 @@
      (chat-utils/format-author from (or username message-username))]))
 
 (defn message-body
-  [{:keys [last-in-group?
-           display-photo?
-           display-username?
-           from
-           outgoing
-           modal?
-           username] :as message} content]
-  [react/view (style/group-message-wrapper message)
-   [react/view (style/message-body message)
-    (when display-photo?
-      [react/view style/message-author
-       (when last-in-group?
-         [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
-          [react/view
-           [photos/member-photo from]]])])
-    [react/view (style/group-message-view outgoing)
-     (when display-username?
-       [message-author-name from username])
-     [react/view {:style (style/timestamp-content-wrapper message)}
-      content]]]
-   [react/view (style/delivery-status outgoing)
-    [message-delivery-status message]]])
+  [message content show-raw-payload?]
+  (let [{:keys [last-in-group?
+                display-photo? display-username?
+                from outgoing modal? username]} message]
+    [react/view (style/group-message-wrapper message)
+     [react/view (style/message-body message)
+      (when display-photo?
+        [react/view style/message-author
+         (when last-in-group?
+           [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
+            [react/view
+             [photos/member-photo from]]])])
 
-(defn chat-message [{:keys [message-id outgoing group-chat modal? current-public-key content-type content] :as message}]
+      [react/view (style/group-message-view outgoing)
+       (when display-username?
+         [message-author-name from username])
+       [react/view {:style (style/timestamp-content-wrapper message)}
+        content]]]
+     (when show-raw-payload?
+       [react/text {:font :monospace} (:raw-data message)])
+
+     [react/view (style/delivery-status outgoing)
+      [message-delivery-status message]]]))
+
+(defn chat-message [{:keys [message-id outgoing group-chat modal? current-public-key content-type content] :as message} show-raw-payload?]
   [react/view
    [react/touchable-highlight {:on-press      (fn [_]
                                                 (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true}])
@@ -355,8 +356,9 @@
                                                  (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))}
     [react/view {:accessibility-label :chat-item}
      (let [incoming-group (and group-chat (not outgoing))]
-       [message-content message-body (merge message
-                                            {:current-public-key current-public-key
-                                             :group-chat         group-chat
-                                             :modal?             modal?
-                                             :incoming-group     incoming-group})])]]])
+       [message-content
+        #(message-body %1 %2 show-raw-payload?)
+        (merge message {:current-public-key current-public-key
+                        :group-chat         group-chat
+                        :modal?             modal?
+                        :incoming-group     incoming-group})])]]])
