@@ -6,7 +6,7 @@ from views.sign_in_view import SignInView
 class TestLinksVerifications(SingleDeviceTestCase):
 
     @marks.testrail_id(5453)
-    @marks.critical
+    @marks.medium
     def test_privacy_policy_is_accessible(self):
         signin_view = SignInView(self.driver)
         no_link_found_error_msg = 'Could not find privacy policy link at'
