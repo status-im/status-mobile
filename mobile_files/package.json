@@ -61,7 +61,7 @@
     "react-native-tcp": "https://github.com/status-im/react-native-tcp.git#3.3.0-1",
     "react-native-testfairy": "https://github.com/status-im/react-native-testfairy.git#2.14.1-1",
     "react-native-udp": "https://github.com/status-im/react-native-udp.git#2.3.1-1",
-    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-2",
+    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-3",
     "react-navigation": "^2.12.1",
     "realm": "2.16.1",
     "rn-snoopy": "https://github.com/status-im/rn-snoopy.git",
