@@ -87,7 +87,9 @@ class PrivacyPolicyLink(BaseButton):
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
-        return BaseWebView(self.driver)
+        view = BaseWebView(self.driver)
+        view.open_in_webview()
+        return view
 
 
 class SignInView(BaseView):

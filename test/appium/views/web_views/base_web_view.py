@@ -46,7 +46,7 @@ class BrowserRefreshPageButton(BaseButton):
 class WebViewBrowserButton(BaseButton):
     def __init__(self, driver):
         super(WebViewBrowserButton, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('WebView Browser Tester')
+        self.locator = self.Locator.text_selector('WebView Browser Tester')
 
 
 class AlwaysButton(BaseButton):
@@ -73,7 +73,7 @@ class PolicySummary(BaseElement):
 
     def __init__(self, driver):
         super(PolicySummary, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Policy summary')
+        self.locator = self.Locator.text_selector('Policy summary')
 
 
 class BaseWebView(BaseView):
@@ -104,5 +104,6 @@ class BaseWebView(BaseView):
                 self.driver.fail("Page is not loaded during %s seconds" % wait_time)
 
     def open_in_webview(self):
-        self.web_view_browser.click()
-        self.always_button.click()
+        if self.web_view_browser.is_element_displayed():
+            self.web_view_browser.click()
+            self.always_button.click()
