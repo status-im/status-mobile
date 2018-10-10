@@ -119,6 +119,11 @@
   {:color (if outgoing colors/white colors/black)
    :font-size 14})
 
+(defn message-link [outgoing]
+  (assoc (message-text outgoing)
+         :color (if outgoing colors/white colors/blue)
+         :text-decoration-line :underline))
+
 (def message-container
   {:flex-direction :column
    :margin-right   16})
