@@ -191,7 +191,7 @@ def pytest_runtest_protocol(item, nextitem):
             return True  # no need to rerun
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=False)
 def faucet_for_senders():
     network_api = NetworkApi()
     for user in transaction_senders.values():
