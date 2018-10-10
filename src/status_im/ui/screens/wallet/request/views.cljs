@@ -20,7 +20,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.utils :as utils]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 ;; Request screen
 
@@ -56,7 +57,8 @@
         [bottom-buttons/bottom-buttons styles/bottom-buttons
          nil   ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
          [button/button {:disabled?           (or amount-error (not (and to amount)))
-                         :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount symbol decimals])
+                         :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount
+                                                                   (wallet.utils/display-symbol token) decimals])
                          :text-style          {:padding-horizontal 0}
                          :accessibility-label :sent-request-button}
           (i18n/label :t/send-request)

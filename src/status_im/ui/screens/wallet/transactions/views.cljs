@@ -13,7 +13,8 @@
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [status-im.utils.money :as money]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (defn history-action [filter?]
   (cond->
@@ -55,7 +56,7 @@
          address-accessibility-label] (if (inbound? type)
                                         [(i18n/label :t/from) from-contact from :sender-text :sender-address-text]
                                         [(i18n/label :t/to) to-contact to :recipient-name-text :recipient-address-text])
-        {:keys [decimals]}   (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+        {:keys [decimals] :as token}   (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
     [list/touchable-item #(when-not hide-details? (re-frame/dispatch [:show-transaction-details hash]))
      [react/view {:accessibility-label :transaction-item}
       [list/item
@@ -70,7 +71,7 @@
            (-> value  (money/internal->formatted symbol decimals) money/to-fixed str)]
           " "
           [react/text {:accessibility-label :currency-text}
-           (clojure.string/upper-case (name symbol))]]
+           (wallet.utils/display-symbol token)]]
          [react/text {:style styles/tx-time}
           time-formatted]]
         [react/view {:style styles/address-row}
@@ -162,18 +163,19 @@
       (-> amount (money/token->unit (:decimals token)) money/to-fixed str))
     "..."))
 
-(defn details-header [{:keys [value date type symbol token]}]
-  [react/view {:style styles/details-header}
-   [react/view {:style styles/details-header-icon}
-    [list/item-icon (transaction-type->icon type)]]
-   [react/view {:style styles/details-header-infos}
-    [react/text {:style styles/details-header-value}
-     [react/text {:accessibility-label :amount-text}
-      (pretty-print-asset symbol value token)]
-     " "
-     [react/text {:accessibility-label :currency-text}
-      (clojure.string/upper-case (name symbol))]]
-    [react/text {:style styles/details-header-date} date]]])
+(defn details-header [network {:keys [value date type symbol token]}]
+  (let [asset (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+    [react/view {:style styles/details-header}
+     [react/view {:style styles/details-header-icon}
+      [list/item-icon (transaction-type->icon type)]]
+     [react/view {:style styles/details-header-infos}
+      [react/text {:style styles/details-header-value}
+       [react/text {:accessibility-label :amount-text}
+        (pretty-print-asset symbol value token)]
+       " "
+       [react/text {:accessibility-label :currency-text}
+        (wallet.utils/display-symbol asset)]]
+      [react/text {:style styles/details-header-date} date]]]))
 
 (defn progress-bar [progress failed?]
   [react/view {:style styles/progress-bar}
@@ -242,7 +244,8 @@
 (defview transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations          [:wallet.transactions.details/confirmations]
-            confirmations-progress [:wallet.transactions.details/confirmations-progress]]
+            confirmations-progress [:wallet.transactions.details/confirmations-progress]
+            network                [:get-current-account-network]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
@@ -250,7 +253,7 @@
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
-      [details-header transaction]
+      [details-header network transaction]
       [details-confirmations confirmations confirmations-progress type]
       [react/view {:style styles/details-separator}]
       [details-list transaction]]]))

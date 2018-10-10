@@ -47,9 +47,6 @@
 
    :console            (js/require "./resources/images/contacts/console.png")})
 
-(def assets
-  {:ethereum (js/require "./resources/images/assets/ethereum.png")})
-
 (def ui
   {:empty-hashtags  (js/require "./resources/images/ui/empty-hashtags.png")
    :empty-recent    (js/require "./resources/images/ui/empty-recent.png")

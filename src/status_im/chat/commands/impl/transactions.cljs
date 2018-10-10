@@ -26,19 +26,21 @@
             [status-im.ui.screens.currency-settings.subs :as currency-settings.subs]
             [status-im.models.transactions :as wallet.transactions]
             [status-im.ui.screens.navigation :as navigation]
-            status-im.chat.commands.impl.transactions.subs))
+            status-im.chat.commands.impl.transactions.subs
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 ;; common `send/request` functionality
 
 (defn- render-asset [selected-event-creator]
   (fn [{:keys [name symbol amount decimals] :as asset}]
     [react/touchable-highlight
-     {:on-press #(re-frame/dispatch (selected-event-creator (clojure.core/name symbol)))}
+     {:on-press #(re-frame/dispatch (selected-event-creator (wallet.utils/display-symbol asset)))}
      [react/view transactions-styles/asset-container
       [react/view transactions-styles/asset-main
        [react/image {:source (-> asset :icon :source)
                      :style  transactions-styles/asset-icon}]
-       [react/text {:style transactions-styles/asset-symbol} symbol]
+       [react/text {:style transactions-styles/asset-symbol}
+        (wallet.utils/display-symbol asset)]
        [react/text {:style transactions-styles/asset-name} name]]
       ;;TODO(goranjovic) : temporarily disabled to fix https://github.com/status-im/status-react/issues/4963
       ;;until the resolution of https://github.com/status-im/status-react/issues/4972
@@ -85,10 +87,11 @@
 
 (defn personal-send-request-short-preview
   [label-key {:keys [content]}]
-  (let [{:keys [amount asset]} (:params content)]
+  (let [{:keys [amount asset network]} (:params content)
+        token (tokens/asset-for (keyword network) (keyword asset))]
     [chat-preview/text {}
      (i18n/label label-key {:amount (i18n/label-number amount)
-                            :asset  asset})]))
+                            :asset  (wallet.utils/display-symbol token)})]))
 
 (def personal-send-request-params
   [{:id          :asset
@@ -143,9 +146,10 @@
 ;; because balances are only fetched for them. Revisit this decision with regard to battery/network consequences
 ;; if we were to update all balances.
 (defn- allowed-assets [{:account/keys [account] :keys [chain]}]
-  (let [chain-keyword  (keyword chain)
-        visible-tokens (get-in account [:settings :wallet :visible-tokens chain-keyword])]
-    (into {"ETH" 18}
+  (let [chain-keyword                            (keyword chain)
+        {:keys [symbol symbol-display decimals]} (tokens/native-currency chain-keyword)
+        visible-tokens                           (get-in account [:settings :wallet :visible-tokens chain-keyword])]
+    (into {(name (or symbol-display symbol)) decimals}
           (comp (filter #(and (not (:nft? %))
                               (contains? visible-tokens (:symbol %))))
                 (map (juxt (comp name :symbol) :decimals)))
@@ -208,7 +212,8 @@
   (letsubs [network [:network-name]]
     (let [{{:keys [amount fiat-amount tx-hash asset currency] send-network :network} :params} content
           recipient-name (get-in content [:params :bot-db :public :recipient])
-          network-mismatch? (and (seq send-network) (not= network send-network))]
+          network-mismatch? (and (seq send-network) (not= network send-network))
+          token             (tokens/asset-for (keyword send-network) (keyword asset))]
       [react/view transactions-styles/command-send-message-view
        [react/view
         [react/view transactions-styles/command-send-amount-row
@@ -220,7 +225,7 @@
             "."]
            [react/text {:style (transactions-styles/command-send-currency-text outgoing)
                         :font  :default}
-            asset]]]]
+            (wallet.utils/display-symbol token)]]]]
         (when (and fiat-amount
                    platform/mobile?)
           [react/view transactions-styles/command-send-fiat-amount
@@ -297,12 +302,12 @@
     (let [recipient-contact     (get-in db [:contacts/contacts (:current-chat-id db)])
           sender-account        (:account/account db)
           chain                 (keyword (:chain db))
-          symbol                (keyword asset)
-          {:keys [decimals]}    (tokens/asset-for chain symbol)
-          {:keys [value error]} (wallet.db/parse-amount amount decimals)
-          next-view-id          (if (:wallet-set-up-passed? sender-account)
-                                  :wallet-send-transaction-modal
-                                  :wallet-onboarding-setup)]
+          symbol-param          (keyword asset)
+          {:keys [symbol decimals]} (tokens/asset-for chain symbol-param)
+          {:keys [value error]}     (wallet.db/parse-amount amount decimals)
+          next-view-id              (if (:wallet-set-up-passed? sender-account)
+                                      :wallet-send-transaction-modal
+                                      :wallet-onboarding-setup)]
       (fx/merge cofx
                 {:db (-> db
                          (update-in [:wallet :send-transaction]

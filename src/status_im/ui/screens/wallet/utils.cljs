@@ -6,3 +6,6 @@
       (or (money/bignumber 0))
       (money/token->unit decimals)
       money/to-fixed))
+
+(defn display-symbol [{:keys [symbol-display symbol]}]
+  (clojure.core/name (or symbol-display symbol)))

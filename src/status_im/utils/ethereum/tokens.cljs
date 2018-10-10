@@ -1,22 +1,40 @@
 (ns status-im.utils.ethereum.tokens
-  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons]])
+  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons] :as ethereum.macros])
   (:require [clojure.string :as string]
             [status-im.utils.config :as config]))
 
 (defn- asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})
 
-(def ethereum {:name     "Ether"
-               :symbol   :ETH
-               :decimals 18
-               :icon     {:source (js/require "./resources/images/assets/ethereum.png")
-                          ;; TODO(goranjovic) find a better place to set UI info
-                          ;; like colors. Removed the reference to component.styles to
-                          ;; avoid circular dependency between namespaces.
-                          :style  (asset-border "#628fe333")}})
+(def default-native-currency
+  {:name     "Native"
+   :symbol   :ETH
+   :decimals 18
+   :icon     {:source (js/require "./resources/images/tokens/default-native.png")}})
 
-(defn ethereum? [k]
-  (= k (:symbol ethereum)))
+(def all-native-currencies
+  (ethereum.macros/resolve-native-currency-icons
+   {:mainnet {:name     "Ether"
+              :symbol   :ETH
+              :decimals 18
+              :icon     {:style (asset-border "#628fe333")}}
+    :testnet {:name           "Ropsten Ether"
+              :symbol         :ETH
+              :symbol-display :ETHro
+              :decimals       18}
+    :rinkeby {:name           "Rinkeby Ether"
+              :symbol         :ETH
+              :symbol-display :ETHri
+              :decimals       18}}))
+
+(def native-currency-symbols
+  (set (map #(-> % val :symbol) all-native-currencies)))
+
+(defn native-currency [chain]
+  (-> (get all-native-currencies chain default-native-currency)))
+
+(defn ethereum? [symbol]
+  (native-currency-symbols symbol))
 
 ;; symbol are used as global identifier (per network) so they must be unique
 
@@ -466,10 +484,14 @@
                     :name    "KudosToken"
                     :address "0x93bB0AFbd0627Bbd3a6C72Bc318341D3A22e254a"}])
 
-   :custom []})
+   :custom  []})
 
 (defn tokens-for [chain]
   (get all chain))
+
+(defn all-assets-for [chain]
+  (concat [(native-currency chain)]
+          (tokens-for chain)))
 
 (defn nfts-for [chain]
   (filter :nft? (tokens-for chain)))
@@ -488,6 +510,8 @@
                   (string/lower-case (:address %))) %) (tokens-for chain)))
 
 (defn asset-for [chain symbol]
-  (if (= (:symbol ethereum) symbol)
-    ethereum
-    (symbol->token chain symbol)))
+  (let [native-coin (native-currency chain)]
+    (if (or (= (:symbol-display native-coin) symbol)
+            (= (:symbol native-coin) symbol))
+      native-coin
+      (symbol->token chain symbol))))

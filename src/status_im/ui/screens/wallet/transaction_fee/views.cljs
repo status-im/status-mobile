@@ -14,7 +14,8 @@
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.money :as money]
             [status-im.utils.ethereum.tokens :as tokens]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (defn- toolbar [title]
   [toolbar/toolbar {:style wallet.styles/toolbar}
@@ -28,9 +29,11 @@
              max-fee        :max-fee
              gas-price-edit :gas-price} [:wallet/edit]]
     (let [{:keys [amount symbol]} send-transaction
-          gas            (:value gas-edit)
-          gas-price      (:value gas-price-edit)
-          {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+          gas                (:value gas-edit)
+          gas-price          (:value gas-price-edit)
+          chain              (ethereum/network->chain-keyword network)
+          native-currency    (tokens/native-currency chain)
+          {:keys [decimals] :as token} (tokens/asset-for chain symbol)]
       [components/simple-screen {:status-bar-type :modal-wallet}
        [toolbar (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
@@ -77,12 +80,12 @@
           [react/view {:accessibility-label :amount-input}
            [components/cartouche-text-content
             (str (money/to-fixed (money/internal->formatted amount symbol decimals)))
-            (name symbol)]]]
+            (wallet.utils/display-symbol token)]]]
          [components/cartouche {:disabled? true}
           (i18n/label :t/wallet-transaction-total-fee)
           [react/view {:accessibility-label :total-fee-input}
            [components/cartouche-text-content
-            (str max-fee " " (i18n/label :t/eth))]]]]
+            (str max-fee " " (wallet.utils/display-symbol native-currency))]]]]
 
         [bottom-buttons/bottom-buttons styles/fee-buttons
          [button/button {:on-press            #(re-frame/dispatch [:wallet.send/reset-gas-default])

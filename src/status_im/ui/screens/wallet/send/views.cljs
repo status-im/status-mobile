@@ -28,7 +28,8 @@
             [status-im.transport.utils :as transport.utils]
             [taoensso.timbre :as log]
             [reagent.core :as reagent]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (defn- toolbar [modal? title]
   (let [action (if modal? actions/close-white actions/back-white)]
@@ -38,7 +39,7 @@
                                    #(actions/default-handler)))]
      [toolbar/content-title {:color :white} title]]))
 
-(defn- advanced-cartouche [{:keys [max-fee gas gas-price]}]
+(defn- advanced-cartouche [native-currency {:keys [max-fee gas gas-price]}]
   [react/view
    [wallet.components/cartouche {:on-press  #(do (re-frame/dispatch [:wallet.send/clear-gas])
                                                  (re-frame/dispatch [:navigate-to :wallet-transaction-fee]))}
@@ -46,11 +47,11 @@
     [react/view {:style               styles/advanced-options-text-wrapper
                  :accessibility-label :transaction-fee-button}
      [react/text {:style styles/advanced-fees-text}
-      (str max-fee  " " (i18n/label :t/eth))]
+      (str max-fee " " (wallet.utils/display-symbol native-currency))]
      [react/text {:style styles/advanced-fees-details-text}
       (str (money/to-fixed gas) " * " (money/to-fixed (money/wei-> :gwei gas-price)) (i18n/label :t/gwei))]]]])
 
-(defn- advanced-options [advanced? transaction scroll]
+(defn- advanced-options [advanced? native-currency transaction scroll]
   [react/view {:style styles/advanced-wrapper}
    [react/touchable-highlight {:on-press (fn []
                                            (re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])
@@ -63,7 +64,7 @@
                         :key   :wallet-advanced}]
       [vector-icons/icon (if advanced? :icons/up :icons/down) {:color :white}]]]]
    (when advanced?
-     [advanced-cartouche transaction])])
+     [advanced-cartouche native-currency transaction])])
 
 (defview password-input-panel [message-label spinning?]
   (letsubs [account         [:get-current-account]
@@ -140,7 +141,9 @@
 (defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
                 sufficient-gas? in-progress? from-chat? symbol]} transaction
-        {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
+        chain                        (ethereum/network->chain-keyword network)
+        native-currency              (tokens/native-currency chain)
+        {:keys [decimals] :as token} (tokens/asset-for chain symbol)
         online? (= :online network-status)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}
@@ -170,7 +173,7 @@
                                      :amount-text   amount-text
                                      :input-options {:on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount % symbol decimals])
                                                      :ref            (partial reset! amount-input)}} token]
-        [advanced-options advanced? transaction scroll]]]
+        [advanced-options advanced? native-currency transaction scroll]]]
       (if show-password-input?
         [enter-password-buttons in-progress?
          #(re-frame/dispatch [:wallet/cancel-entering-password])

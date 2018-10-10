@@ -116,7 +116,7 @@
     :request :wallet.request/set-symbol
     (throw (str "Unknown type: " k))))
 
-(defn- render-token [{:keys [symbol name icon decimals amount]} type]
+(defn- render-token [{:keys [symbol name icon decimals amount] :as token} type]
   [list/touchable-item  #(do (re-frame/dispatch [(type->handler type) symbol])
                              (re-frame/dispatch [:navigate-back]))
    [react/view
@@ -127,7 +127,7 @@
        [react/text {:style styles/text-list-primary-content}
         name]
        [react/text {:force-uppercase? true}
-        (clojure.core/name symbol)]]
+        (wallet.utils/display-symbol token)]]
       [list/item-secondary (wallet.utils/format-amount amount decimals)]]]]])
 
 (views/defview assets [type]
@@ -155,7 +155,7 @@
 (views/defview asset-selector [{:keys [disabled? type symbol error]}]
   (views/letsubs [balance  [:balance]
                   network  [:network]]
-    (let [{:keys [name icon decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+    (let [{:keys [name icon decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       (when name
         [react/view
          [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}
@@ -168,7 +168,7 @@
              [react/text {:style (merge styles/text-content styles/asset-label)}
               name]
              [react/text {:style styles/text-secondary-content}
-              (clojure.core/name symbol)]]
+              (wallet.utils/display-symbol token)]]
             [react/text {:style (merge styles/text-secondary-content styles/asset-label)}
              (str (wallet.utils/format-amount (get balance symbol) decimals))]]]]
          (when error
