@@ -74,7 +74,7 @@
        [react/view {:style styles/add-new}
         [icons/icon :icons/add {:style {:tint-color :white}}]]]]
      [react/view {:style styles/chat-list-separator}]
-     [react/scroll-view
+     [react/scroll-view {:enableArrayScrollingOptimization true}
       [react/view
        (for [[index chat] (map-indexed vector home-items)]
          ^{:key (first chat)}
