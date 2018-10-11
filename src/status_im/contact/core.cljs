@@ -1,9 +1,28 @@
-(ns status-im.models.contact
+(ns status-im.contact.core
   (:require [status-im.data-store.contacts :as contacts-store]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.contact :as message.contact]
             [status-im.utils.contacts :as utils.contacts]
+            [status-im.utils.fx :as fx]
+            [re-frame.core :as re-frame]
+            [status-im.chat.models :as chat.models]
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.js-resources :as js-res]
+            [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]))
+
+(re-frame/reg-cofx
+ :get-default-contacts
+ (fn [coeffects _]
+   (assoc coeffects :default-contacts js-res/default-contacts)))
+
+(fx/defn load-contacts
+  [{:keys [db all-contacts]}]
+  (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
+        contacts (into {} contacts-list)]
+    {:db (update db :contacts/contacts #(merge contacts %))}))
 
 (defn can-add-to-contacts? [{:keys [pending? dapp?]}]
   (and (not dapp?)
@@ -47,6 +66,20 @@
     (fx/merge cofx
               (add-new-contact contact)
               (send-contact-request contact))))
+
+(fx/defn add-contact-tag
+  "add a tag to the contact"
+  [{:keys [db] :as cofx} whisper-id tag]
+  (let [tags (conj (get-in db [:contacts/contacts whisper-id :tags] #{}) tag)]
+    {:db (assoc-in db [:contacts/contacts whisper-id :tags] tags)
+     :data-store/tx [(contacts-store/add-contact-tag-tx whisper-id tag)]}))
+
+(fx/defn remove-contact-tag
+  "remove a tag from the contact"
+  [{:keys [db] :as cofx} whisper-id tag]
+  (let [tags (disj (get-in db [:contacts/contacts whisper-id :tags] #{}) tag)]
+    {:db (assoc-in db [:contacts/contacts whisper-id :tags] tags)
+     :data-store/tx [(contacts-store/remove-contact-tag-tx whisper-id tag)]}))
 
 (defn handle-contact-update
   [public-key
@@ -92,3 +125,40 @@
 (def receive-contact-request handle-contact-update)
 (def receive-contact-request-confirmation handle-contact-update)
 (def receive-contact-update handle-contact-update)
+
+(fx/defn add-contact-and-open-chat
+  [cofx whisper-id]
+  (fx/merge cofx
+            (add-contact whisper-id)
+            (chat.models/start-chat whisper-id {:navigation-reset? true})))
+
+(fx/defn hide-contact
+  [{:keys [db]} whisper-id]
+  (when (get-in db [:contacts/contacts whisper-id])
+    {:db (assoc-in db [:contacts/contacts whisper-id :hide-contact?] true)}))
+
+(fx/defn handle-qr-code
+  [{:keys [db] :as cofx} contact-identity]
+  (let [current-account (:account/account db)
+        fx              {:db (assoc db :contacts/new-identity contact-identity)}
+        validation-result (new-chat.db/validate-pub-key db contact-identity)]
+    (if (some? validation-result)
+      {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
+                          :content validation-result
+                          :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
+      (fx/merge cofx
+                fx
+                (add-contact-and-open-chat contact-identity)))))
+
+(fx/defn open-contact-toggle-list
+  [{:keys [db :as cofx]}]
+  (fx/merge cofx
+            {:db (assoc db
+                        :group/selected-contacts #{}
+                        :new-chat-name "")}
+            (navigation/navigate-to-cofx :contact-toggle-list nil)))
+
+(fx/defn add-new-identity-to-contacts
+  [{{:contacts/keys [new-identity]} :db :as cofx}]
+  (when (seq new-identity)
+    (add-contact-and-open-chat cofx new-identity)))

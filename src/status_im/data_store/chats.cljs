@@ -57,6 +57,7 @@
   (-> chat
       (update :admins   #(into #{} %))
       (update :contacts #(into #{} %))
+      (update :tags #(into #{} %))
       (update :membership-updates  (partial unmarshal-membership-updates chat-id))
       ;; We cap the clock value to a safe value in case the db has been polluted
       (assoc :last-clock-value (get-last-clock-value chat-id))))
@@ -126,3 +127,23 @@
       (aset chat "contacts"
             (clj->js (remove (into #{} contacts)
                              (core/list->clj existing-contacts)))))))
+
+(defn add-chat-tag-tx
+  "Returns tx function for adding chat contacts"
+  [chat-id tag]
+  (fn [realm]
+    (let [chat              (get-chat-by-id chat-id realm)
+          existing-tags (object/get chat "tags")]
+      (aset chat "tags"
+            (clj->js (into #{} (concat tag
+                                       (core/list->clj existing-tags))))))))
+
+(defn remove-chat-tag-tx
+  "Returns tx function for removing chat contacts"
+  [chat-id tag]
+  (fn [realm]
+    (let [chat              (get-chat-by-id chat-id realm)
+          existing-tags (object/get chat "tags")]
+      (aset chat "tags"
+            (clj->js (remove (into #{} tag)
+                             (core/list->clj existing-tags)))))))

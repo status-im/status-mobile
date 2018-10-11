@@ -20,7 +20,7 @@
    [react/text {:style styles/new-contact-title-text
                 :font  :medium}
     (i18n/label :new-group-chat)]
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-contact-toggle-list])}
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/start-group-chat-pressed])}
     [react/view
      {:style (styles/add-contact-button nil)}
      [react/text
@@ -60,7 +60,7 @@
                                     (string/blank? new-contact-identity))
             show-error-tooltip? (and chat-error
                                      (not (string/blank? new-contact-identity)))
-            create-1to1-chat #(re-frame/dispatch [:add-contact-handler new-contact-identity])]
+            create-1to1-chat #(re-frame/dispatch [:contact.ui/contact-code-submitted new-contact-identity])]
         [react/view {:style styles/add-contact-edit-view}
          [react/view {:flex 1
                       :style (styles/add-contact-input show-error-tooltip?)}
@@ -90,7 +90,7 @@
            ^{:key (:whisper-identity c)}
            [react/touchable-highlight {:on-press #(do
                                                     (re-frame/dispatch [:set :contacts/new-identity (:whisper-identity c)])
-                                                    (re-frame/dispatch [:add-contact-handler (:whisper-identity c)]))}
+                                                    (re-frame/dispatch [:contact.ui/contact-code-submitted (:whisper-identity c)]))}
             [react/view {:style styles/suggested-contact-view}
              [react/image {:style  styles/suggested-contact-image
                            :source {:uri (:photo-path c)}}]

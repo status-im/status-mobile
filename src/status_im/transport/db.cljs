@@ -2,7 +2,7 @@
  status-im.transport.db
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as s]
-            status-im.ui.screens.contacts.db
+            status-im.contact.db
             [status-im.utils.clocks :as utils.clocks])
   (:require-macros [status-im.utils.db :refer [allowed-keys]]))
 

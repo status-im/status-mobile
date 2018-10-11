@@ -8,7 +8,7 @@
             [status-im.data-store.realm.core :as realm]
             [status-im.i18n :as i18n]
             [status-im.browser.core :as browser]
-            [status-im.models.contacts :as models.contacts]
+            [status-im.contact.core :as contact]
             [status-im.models.dev-server :as models.dev-server]
             [status-im.protocol.core :as protocol]
             [status-im.models.transactions :as transactions]
@@ -16,7 +16,6 @@
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
-            [status-im.ui.screens.contacts.events :as contacts]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
@@ -198,7 +197,7 @@
              :notifications/get-fcm-token nil}
             (initialize-account-db address)
             (protocol/initialize-protocol address)
-            (models.contacts/load-contacts)
+            (contact/load-contacts)
             #(when (dev-mode? %)
                (models.dev-server/start))
             (chat-loading/initialize-chats)

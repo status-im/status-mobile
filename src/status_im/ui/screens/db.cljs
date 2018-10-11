@@ -8,7 +8,7 @@
             pluto.registry
             status-im.transport.db
             status-im.accounts.db
-            status-im.ui.screens.contacts.db
+            status-im.contact.db
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs

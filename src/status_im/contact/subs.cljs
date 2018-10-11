@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.contacts.subs
+(ns status-im.contact.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.ethereum.core :as ethereum]

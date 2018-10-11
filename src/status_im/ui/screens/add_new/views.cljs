@@ -29,7 +29,7 @@
        :accessibility-label :start-group-chat-button
        :icon                :icons/contacts
        :icon-opts           {:color colors/blue}
-       :on-press            #(re-frame/dispatch [:open-contact-toggle-list])}])
+       :on-press            #(re-frame/dispatch [:contact.ui/start-group-chat-pressed])}])
    (when config/group-chats-enabled?
      [action-button/action-separator])
    [action-button/action-button

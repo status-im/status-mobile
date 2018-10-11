@@ -2,10 +2,10 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
+            status-im.contact.subs
             status-im.ui.screens.accounts.subs
             status-im.ui.screens.extensions.subs
             status-im.ui.screens.home.subs
-            status-im.ui.screens.contacts.subs
             status-im.ui.screens.group.subs
             status-im.ui.screens.wallet.subs
             status-im.ui.screens.wallet.collectibles.subs

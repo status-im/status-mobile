@@ -1,7 +1,7 @@
 (ns status-im.test.contacts.subs
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.identicon :as identicon]
-            [status-im.ui.screens.contacts.subs :as contacts-subs]))
+            [status-im.contact.subs :as contacts-subs]))
 
 (deftest contacts-subs
   (testing "get-all-contacts-in-group-chat"

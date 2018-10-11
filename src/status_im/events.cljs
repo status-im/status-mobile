@@ -14,6 +14,7 @@
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
+            [status-im.contact.core :as contact]
             [status-im.data-store.core :as data-store]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
@@ -1003,3 +1004,39 @@
  :transport/contact-message-sent
  (fn [cofx [_ chat-id envelope-hash]]
    (transport.message/set-contact-message-envelope-hash cofx chat-id envelope-hash)))
+
+;; contact module
+
+(handlers/register-handler-fx
+ :contact.ui/add-to-contact-pressed
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ whisper-id]]
+   (contact/add-contact cofx whisper-id)))
+
+(handlers/register-handler-fx
+ :contact.ui/close-contact-pressed
+ (fn [cofx [_ whisper-id]]
+   (contact/hide-contact cofx whisper-id)))
+
+(handlers/register-handler-fx
+ :contact/qr-code-scanned
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ _ contact-identity]]
+   (contact/handle-qr-code cofx contact-identity)))
+
+(handlers/register-handler-fx
+ :contact.ui/start-group-chat-pressed
+ (fn [{:keys [db] :as cofx} _]
+   (contact/open-contact-toggle-list cofx)))
+
+(handlers/register-handler-fx
+ :contact.ui/send-message-pressed
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ {:keys [whisper-identity]}]]
+   (contact/add-contact-and-open-chat cofx whisper-identity)))
+
+(handlers/register-handler-fx
+ :contact.ui/contact-code-submitted
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx _]
+   (contact/add-new-identity-to-contacts cofx)))

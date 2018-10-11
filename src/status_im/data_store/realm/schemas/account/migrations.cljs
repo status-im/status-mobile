@@ -100,3 +100,6 @@
 
 (defn v16 [old-realm new-realm]
   (log/debug "migrating v16 account database"))
+
+(defn v17 [old-realm new-realm]
+  (log/debug "migrating v17 account database"))

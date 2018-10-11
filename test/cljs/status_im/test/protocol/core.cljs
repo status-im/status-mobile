@@ -41,7 +41,7 @@
        (rf/reg-fx :data-store.transport/save (constantly nil))
        (rf/reg-fx :data-store/update-message (constantly nil))
 
-       (rf/dispatch [:open-chat-with-contact {:whisper-identity contact-whisper-identity}])
+       (rf/dispatch [:contact.ui/send-message-pressed {:whisper-identity contact-whisper-identity}])
        (rf-test/wait-for [::transport.contact/send-new-sym-key]
                          (rf/dispatch [:set-chat-input-text "test message"])
                          (rf/dispatch [:send-current-message])

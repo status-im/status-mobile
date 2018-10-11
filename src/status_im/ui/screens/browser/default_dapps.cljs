@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.browser.default-dapps
-  (:require [status-im.i18n :as i18n]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]))
 
 (def all
   [{:title (i18n/label :t/default-dapps-exchanges)
@@ -140,3 +141,8 @@
              :dapp-url    "https://status-im.github.io/dapp/"
              :description "Request test assets and test basic web3 functionality."
              :developer?  true}]}])
+
+(re-frame/reg-cofx
+ :get-default-dapps
+ (fn [coeffects _]
+   (assoc coeffects :default-dapps all)))

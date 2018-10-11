@@ -9,6 +9,7 @@
       (is (= {:last-clock-value 42
               :admins #{4}
               :contacts #{2}
+              :tags #{}
               :membership-updates []}
              (chats/normalize-chat {:admins [4]
                                     :contacts [2]})))))
