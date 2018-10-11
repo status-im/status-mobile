@@ -29,7 +29,7 @@
   (is (= 3 (group-chats/get-last-clock-value {:db {:chats {chat-id initial-message}}} chat-id))))
 
 (deftest handle-group-membership-update
-  (with-redefs [config/group-chats-enabled? true]
+  (with-redefs [config/group-chats-enabled? (constantly true)]
     (testing "a brand new chat"
       (let [actual   (->
                       (group-chats/handle-membership-update {:db {}} initial-message admin)
