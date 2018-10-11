@@ -339,7 +339,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction_button.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_transaction_button.click()
-        send_transaction.element_by_text('intrinsic gas too low').wait_for_visibility_of_element()
+        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element()
         send_transaction.ok_button.click()
 
         wallet_view.send_transaction_button.click()
