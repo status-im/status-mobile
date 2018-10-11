@@ -7,7 +7,7 @@
             [status-im.i18n :as i18n]))
 
 (defview error-label
-  [{:keys [view-id label mailserver-error?] :as opts}]
+  [{:keys [view-id label fetching? mailserver-error?] :as opts}]
 
   {:should-component-update
    (fn [_ [_ old-props] [_ new-props]]
@@ -20,7 +20,9 @@
      [react/text {:style    styles/text
                   :on-press (when mailserver-error?
                               #(re-frame/dispatch [:inbox.ui/reconnect-mailserver-pressed]))}
-      (i18n/label label)]]))
+      (if fetching?
+        (i18n/label :t/fetching-messages {:requests-left (str fetching?)})
+        (i18n/label label))]]))
 
 (defview error-view [{:keys [top]}]
   (letsubs [offline?             [:offline?]
@@ -43,4 +45,5 @@
           :window-width      window-width
           :pending?          pending?
           :label             label
+          :fetching?         fetching?
           :mailserver-error? mailserver-error?}]))))

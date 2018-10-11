@@ -70,4 +70,4 @@
   account A messages without this."
   [{:keys [db]}]
   (let [{:transport/keys [filters]} db]
-    {:shh/remove-filters (vals filters)}))
+    {:shh/remove-filters filters}))

@@ -986,11 +986,6 @@
    (log/error "Error on mark-trusted-peer: " error)
    (inbox/check-connection cofx)))
 
-(handlers/register-handler-fx
- :inbox.callback/request-messages-success
- (fn [cofx [_ request]]
-   (inbox/add-request cofx request)))
-
 ;; transport module
 
 (handlers/register-handler-fx

@@ -80,7 +80,8 @@
   "Stops the filter for the given chat-id"
   [{:keys [db]} chat-id]
   (when-let [filter (get-in db [:transport/filters chat-id])]
-    {:shh/remove-filter filter}))
+    {:shh/remove-filter {:chat-id chat-id
+                         :filter filter}}))
 
 (defrecord NewContactKey [sym-key topic message]
   protocol/StatusMessage

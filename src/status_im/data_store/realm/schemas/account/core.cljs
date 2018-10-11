@@ -181,6 +181,8 @@
           browser/v8
           dapp-permissions/v9])
 
+(def v18 v17)
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -232,4 +234,7 @@
                :migration     migrations/v16}
               {:schema        v17
                :schemaVersion 17
-               :migration     migrations/v17}])
+               :migration     migrations/v17}
+              {:schema        v18
+               :schemaVersion 18
+               :migration     migrations/v18}])

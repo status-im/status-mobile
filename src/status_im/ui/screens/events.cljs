@@ -107,7 +107,7 @@
 
 (fx/defn on-return-from-background [cofx]
   (fx/merge cofx
-            (inbox/request-messages nil)
+            (inbox/process-next-messages-request)
             (hardwallet/return-back-from-nfc-settings)))
 
 (defn app-state-change [state {:keys [db] :as cofx}]

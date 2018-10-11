@@ -7,12 +7,12 @@
             [status-im.utils.handlers :as handlers]
             [taoensso.timbre :as log]))
 
-(defn remove-filter! [filter]
+(defn remove-filter! [{:keys [chat-id filter]}]
   (.stopWatching filter
                  (fn [error _]
                    (if error
                      (log/warn :remove-filter-error filter error)
-                     (log/debug :removed-filter filter))))
+                     (re-frame/dispatch [:shh.callback/filter-removed chat-id]))))
   (log/debug :stop-watching filter))
 
 (defn add-filter!
@@ -43,21 +43,36 @@
                     (re-frame/dispatch [:transport/messages-received js-error js-message]))]
      (add-filter! web3 params callback :discovery-topic))))
 
+(defn all-filters-added?
+  [{:keys [db]}]
+  (let [filters (set (keys (get db :transport/filters)))
+        chats (into #{:discovery-topic}
+                    (keys (filter #(:topic (val %)) (get db :transport/chats))))]
+    (= chats filters)))
+
 (handlers/register-handler-fx
  :shh.callback/filter-added
  (fn [{:keys [db] :as cofx} [_ topic chat-id filter]]
    (fx/merge cofx
              {:db (assoc-in db [:transport/filters chat-id] filter)}
+             (inbox/reset-request-to)
              (inbox/upsert-inbox-topic {:topic topic
-                                        :chat-id chat-id}))))
+                                        :chat-id chat-id})
+             (inbox/process-next-messages-request))))
+
+(handlers/register-handler-fx
+ :shh.callback/filter-removed
+ (fn [{:keys [db]} [_ chat-id]]
+   {:db (update db :transport/filters dissoc chat-id)}))
 
 (re-frame/reg-fx
  :shh/remove-filter
- (fn [filter]
-   (when filter (remove-filter! filter))))
+ (fn [{:keys [filter] :as params}]
+   (when filter (remove-filter! params))))
 
 (re-frame/reg-fx
  :shh/remove-filters
  (fn [filters]
-   (doseq [filter filters]
-     (when filter (remove-filter! filter)))))
+   (doseq [[chat-id filter] filters]
+     (when filter (remove-filter! {:chat-id chat-id
+                                   :filter filter})))))

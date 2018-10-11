@@ -573,7 +573,7 @@
     "public-chat-user-count": "{{count}} people",
     "eth": "ETH",
     "transactions-history": "Transaction history",
-    "fetching-messages": "Fetching messages...",
+    "fetching-messages": "Fetching messages... ({{requests-left}} requests left)",
     "not-implemented": "!not implemented",
     "password_error1": "Passwords don't match.",
     "your-contact-code": "Granting access authorizes this DApp to retrieve your contact code",

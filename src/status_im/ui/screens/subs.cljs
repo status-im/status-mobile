@@ -48,7 +48,10 @@
 
 (reg-sub :fetching?
          (fn [db]
-           (pos-int? (count (get db :transport.inbox/requests)))))
+           (let [pending-requests (get db :transport.inbox/pending-requests)]
+             (when (and (pos-int? pending-requests)
+                        (:transport.inbox/current-request db))
+               pending-requests))))
 
 (reg-sub :offline?
          :<- [:network-status]
