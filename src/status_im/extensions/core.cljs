@@ -5,7 +5,9 @@
             [pluto.storages :as storages]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.impl.transactions :as transactions]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.fx :as fx]))
 
 (def components
   {'view           {:value react/view}
@@ -43,3 +45,8 @@
 (defn load-from [url f]
   (when-let [uri (url->uri url)]
     (storages/fetch uri f)))
+
+(fx/defn set-extension-url-from-qr
+  [cofx url]
+  (fx/merge (assoc-in cofx [:db :extension-url] url)
+            (navigation/navigate-back)))

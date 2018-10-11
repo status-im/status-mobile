@@ -2,10 +2,12 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
-            [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.text-input.view :as text-input]
@@ -55,6 +57,14 @@
          :disabled? (not (empty? errors))
          :on-press  #(re-frame/dispatch [:extension/install data])}]]]]))
 
+(def qr-code
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                                             {:toolbar-title (i18n/label :t/scan-qr)}
+                                                             :extensions.callback/qr-code-scanned])
+                              :style    styles/qr-code}
+   [react/view
+    [vector-icons/icon :icons/qr {:color colors/blue}]]])
+
 (views/defview add-extension []
   (views/letsubs [extension-url [:get-extension-url]]
     [react/view styles/screen
@@ -68,6 +78,8 @@
           :style           styles/input
           :container       styles/input-container
           :placeholder     (i18n/label :t/extension-url)
+          :content         qr-code
+          :default-value   extension-url
           :on-change-text  #(re-frame/dispatch [:extension/edit-address %])}]]]
       [react/view styles/bottom-container
        [react/view components.styles/flex]
