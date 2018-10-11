@@ -2,6 +2,7 @@ import random
 
 import pytest
 
+from support.utilities import get_merged_txs_list
 from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, wallet_users, transaction_recipients
@@ -362,6 +363,47 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.done_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
+
+    @marks.testrail_id(5314)
+    @marks.critical
+    def test_can_see_all_transactions_in_history(self):
+        address = transaction_senders['W']['address']
+        passphrase = transaction_senders['W']['passphrase']
+
+        ropsten_txs = self.network_api.get_transactions(address)
+        ropsten_tokens = self.network_api.get_token_transactions(address)
+        expected_txs_list = get_merged_txs_list(ropsten_txs, ropsten_tokens)
+
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.recover_access(passphrase=passphrase)
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        transaction_view = wallet_view.transaction_history_button.click()
+
+        status_tx_number = transaction_view.transactions_table.get_transactions_number()
+        actual_txs_list = []
+
+        for n in range(status_tx_number):
+            transactions_details = transaction_view.transactions_table.transaction_by_index(n).click()
+
+            status_tx = {
+                'hash': transactions_details.get_transaction_hash(),
+                'from': transactions_details.get_sender_address(),
+                'to': transactions_details.get_recipient_address(),
+            }
+            actual_txs_list.append(status_tx)
+            transactions_details.back_button.click()
+
+        if [tx['hash'] for tx in actual_txs_list] != [tx['hash'] for tx in expected_txs_list]:
+            self.errors.append('Transactions hashes do not match!')
+
+        if [tx['from'] for tx in actual_txs_list] != [tx['from'] for tx in expected_txs_list]:
+            self.errors.append('Transactions senders do not match!')
+
+        if [tx['to'] for tx in actual_txs_list] != [tx['to'] for tx in expected_txs_list]:
+            self.errors.append('Transactions recipients do not match!')
+
+        self.verify_no_errors()
 
 
 @marks.transaction

@@ -1,6 +1,4 @@
 import time
-
-import pytest
 from selenium.common.exceptions import NoSuchElementException
 from views.base_element import BaseElement, BaseButton, BaseText
 from views.base_view import BaseView
@@ -66,14 +64,19 @@ class TransactionTable(BaseElement):
                           self).__init__(driver)
                     self.locator = self.Locator.xpath_selector(locator)
 
+                def text(self):
+                    text = self.find_element().text
+                    self.driver.info('%s is %s' % (self.name, text))
+                    return text
+
             def get_transaction_hash(self) -> str:
-                return self.DetailsTextElement(driver=self.driver, locator=self.locators['transaction_hash']).text
+                return self.DetailsTextElement(driver=self.driver, locator=self.locators['transaction_hash']).text()
 
             def get_sender_address(self) -> str:
-                return self.DetailsTextElement(driver=self.driver, locator=self.locators['sender_address']).text
+                return self.DetailsTextElement(driver=self.driver, locator=self.locators['sender_address']).text()
 
             def get_recipient_address(self) -> str:
-                return self.DetailsTextElement(driver=self.driver, locator=self.locators['recipient_address']).text
+                return self.DetailsTextElement(driver=self.driver, locator=self.locators['recipient_address']).text()
 
         def navigate(self):
             return self.TransactionDetailsView(self.driver)

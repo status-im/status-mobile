@@ -1,3 +1,7 @@
+from operator import itemgetter
+from typing import List
+
+
 def fill_string_with_char(string: str, fillchar: str, amount: int, start: bool = False, end: bool = False) -> str:
     """
     :param string: input string to be formatted
@@ -23,3 +27,14 @@ def fill_string_with_char(string: str, fillchar: str, amount: int, start: bool =
     if end:
         string_revised = string_revised.ljust(len(string_revised)+len(fill_with), fillchar)
     return string_revised
+
+
+def get_merged_txs_list(normal_txs_list, token_events_list) -> List[dict]:
+    res = []
+    for i in normal_txs_list:
+        for j in token_events_list:
+            if i['hash'] == j['hash']:
+                normal_txs_list.remove(i)
+    res.extend(normal_txs_list)
+    res.extend(token_events_list)
+    return sorted(res, key=itemgetter('timeStamp'), reverse=True)

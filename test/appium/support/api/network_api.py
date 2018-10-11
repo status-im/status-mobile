@@ -1,22 +1,24 @@
 import logging
+from typing import List
+
 import pytest
 import requests
 import time
 from json import JSONDecodeError
 
 
-class NetworkApi:
+class NetworkApi(object):
 
     def __init__(self):
         self.network_url = 'http://api-%s.etherscan.io/api?' % pytest.config.getoption('network')
         self.faucet_url = 'http://51.15.45.169:3001/donate'
         self.chat_bot_url = 'http://offsite.chat:8099'
 
-    def get_transactions(self, address: str) -> dict:
+    def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
-    def get_token_transactions(self, address: str) -> dict:
+    def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 

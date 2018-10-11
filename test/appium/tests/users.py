@@ -181,6 +181,12 @@ transaction_senders['V']['username'] = "Handsome Breakable Trout"
 transaction_senders['V']['address'] = "785acde6058a670e674aa0f66ccbabe98bbce7b1"
 transaction_senders['V']['public_key'] = "0x04617c8001fd201c80095eb55ed483c1d3c8abb1f273215a694b3606bbde53460ea1909b"\
                                          "b2c58340afc8e55768fc1cb6a6a91592019bbdeefb75f5caab05c9ed11"
+transaction_senders['W'] = dict()
+transaction_senders['W']['passphrase'] = "setup portion luxury fatigue unhappy position pioneer sell angry trust hat magic"
+transaction_senders['W']['username'] = "Adorable Linen Oriole"
+transaction_senders['W']['address'] = "d5de9a58a3eab0643ecbd01729312215ef647a4d"
+transaction_senders['W']['public_key'] = "0x04fe5b77e1f0aa15b36090db04d830cd080a716982503d6b962a6ba2ed8f42bdbcc66bba8" \
+                                         "9dba8c35620313c50f7ac625c9c75199d2164b07253143717f6ef0834"
 
 transaction_recipients = dict()
 
@@ -218,3 +224,9 @@ transaction_recipients['E']['username'] = "Likely Darkgreen Iridescentshark"
 transaction_recipients['E']['address'] = "5c1d183ca67f651d864a2c88318c05dc0e32f188"
 transaction_recipients['E']['public_key'] = "0x043dd70b791b95afabab57e9c68bf94e706927d0907e7cc59e60d3c93e7eb061210" \
                                             "c3556b62bee28337db6636b99fbdfaf7cb3ea0ead63192deae6b4ba48ceeb39"
+transaction_recipients['F'] = dict()
+transaction_recipients['F']['passphrase'] = "gather please ritual cactus plunge cruel foil armor sock topic fence urge"
+transaction_recipients['F']['username'] = "Exhausted Yellowgreen Polecat"
+transaction_recipients['F']['address'] = "81e0b035fe73f4f1aefeb5c75537c7d9b423149f"
+transaction_recipients['F']['public_key'] = "0x04bf7da995d4e35a9fec3eec00f1b628d8c47fe931014111236cae617bd1dbd4743a49" \
+                                            "684d083b4552d86a37380c8b0d49688e2026e2c801b4b503a9a8383c533d"
