@@ -11,6 +11,7 @@
             [status-im.group-chats.core :as group-chats]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
+            [status-im.chat.models.message-content :as message-content]
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.money :as money]
@@ -23,16 +24,12 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(defn- emoji-only-content?
-  [content]
-  (and (string? content) (re-matches constants/regx-emoji content)))
-
 (defn- prepare-message
   [{:keys [content] :as message} chat-id current-chat?]
   ;; TODO janherich: enable the animations again once we can do them more efficiently
   (cond-> (assoc message :appearing? true)
     (not current-chat?) (assoc :appearing? false)
-    (emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
+    (message-content/emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
 
 (fx/defn re-index-message-groups
   "Relative datemarks of message groups can get obsolete with passing time,
