@@ -183,7 +183,7 @@
             (notifications/process-stored-event address)))
 
 (defn dev-mode? [cofx]
-  (get-in [:db :account/account :dev-mode?] cofx))
+  (get-in cofx [:db :account/account :dev-mode?]))
 
 (defn creating-account? [cofx]
   (= (get-in cofx [:db :view-id])
