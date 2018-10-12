@@ -101,6 +101,12 @@ def uploadArtifact(path) {
   if (getBuildType() == 'pr') {
     bucket = 'status-im-prs'
   }
+  /* WARNING: s3cmd can't guess APK MIME content-type */
+  def customOpts = ''
+  if (path.endsWith('apk')) {
+    customOpts += "--mime-type='application/vnd.android.package-archive'"
+  }
+  /* We also need credentials for the upload */
   withCredentials([usernamePassword(
     credentialsId: 'digital-ocean-access-keys',
     usernameVariable: 'DO_ACCESS_KEY',
@@ -109,6 +115,7 @@ def uploadArtifact(path) {
     sh """
       s3cmd \\
         --acl-public \\
+        ${customOpts} \\
         --host='${domain}' \\
         --host-bucket='%(bucket)s.${domain}' \\
         --access_key=${DO_ACCESS_KEY} \\
