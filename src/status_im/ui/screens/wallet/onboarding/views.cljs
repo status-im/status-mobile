@@ -119,7 +119,7 @@
        (partial display-confirmation #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed true])))]]))
 
 (defn onboarding []
-  [react/view styles/root
+  [react/view {:style styles/root}
    [react/view {:style styles/onboarding-image-container}
     [react/image {:source (:wallet-welcome resources/ui)
                   :style  styles/onboarding-image}]]

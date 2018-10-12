@@ -3,7 +3,8 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def item
-  {:flex-direction     :row
+  {:flex               1
+   :flex-direction     :row
    :justify-content    :center
    :padding-horizontal 16})
 

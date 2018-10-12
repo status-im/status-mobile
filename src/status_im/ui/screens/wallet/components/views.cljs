@@ -64,7 +64,7 @@
 (defn simple-screen
   ([toolbar content] (simple-screen nil toolbar content))
   ([{:keys [avoid-keyboard? status-bar-type]} toolbar content]
-   [(top-view avoid-keyboard?) {:flex 1 :background-color colors/blue}
+   [(top-view avoid-keyboard?) {:style {:flex 1 :background-color colors/blue}}
     [status-bar/status-bar {:type (or status-bar-type :wallet)}]
     toolbar
     content]))
@@ -254,14 +254,15 @@
 
 (defn- on-choose-recipient [contact-only?]
   (list-selection/show {:title   (i18n/label :t/wallet-choose-recipient)
-                        :options (concat
-                                  [{:label  (i18n/label :t/recent-recipients)
-                                    :action #(re-frame/dispatch [:navigate-to :recent-recipients])}]
+                        :options (vector
+                                  {:label  (i18n/label :t/recent-recipients)
+                                   :action #(re-frame/dispatch [:navigate-to :recent-recipients])}
+                                  (when-not (or contact-only? platform/desktop?)
+                                    {:label  (i18n/label :t/scan-qr)
+                                     :action request-camera-permissions})
                                   (when-not contact-only?
-                                    [{:label  (i18n/label :t/scan-qr)
-                                      :action request-camera-permissions}
-                                     {:label  (i18n/label :t/recipient-code)
-                                      :action #(re-frame/dispatch [:navigate-to :contact-code])}]))}))
+                                    {:label  (i18n/label :t/recipient-code)
+                                     :action #(re-frame/dispatch [:navigate-to :contact-code])}))}))
 
 (defn recipient-selector [{:keys [name address disabled? contact-only? request? modal?]}]
   [cartouche {:on-press  #(on-choose-recipient contact-only?)

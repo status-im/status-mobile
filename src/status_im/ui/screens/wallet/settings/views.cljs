@@ -11,7 +11,8 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.ethereum.core :as ethereum]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ui.components.colors :as colors]))
 
 (def hook
   "Hook for extensions"
@@ -40,7 +41,7 @@
   (letsubs [network        [:network]
             visible-tokens [:wallet/visible-tokens-symbols]
             all-tokens     [:wallet/all-tokens]]
-    [react/view (merge components.styles/flex {:background-color :white})
+    [react/view {:style {:flex 1 :background-color colors/white}}
      [status-bar/status-bar {:type :modal-wallet}]
      [toolbar/toolbar {:style wallet.styles/toolbar}
       [toolbar/nav-text {:handler             #(do (re-frame/dispatch [:update-wallet])

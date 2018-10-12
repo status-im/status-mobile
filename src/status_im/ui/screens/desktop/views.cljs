@@ -3,7 +3,7 @@
   (:require [status-im.ui.screens.desktop.main.views :as main.views]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.intro.views :as intro.views]
-            [status-im.ui.screens.group.add-contacts.views :refer [contact-toggle-list]]
+            [status-im.ui.screens.group.add-contacts.views :as add-contacts.views]
             [status-im.ui.screens.group.views :refer [new-group]]
             [status-im.ui.screens.profile.group-chat.views :refer [group-chat-profile]]
             [status-im.ui.screens.group.add-contacts.views :refer [add-participants-toggle-list]]
@@ -22,7 +22,7 @@
                       :recover recover.views/recover
                       :create-account create.views/create-account
                       :new-group  new-group
-                      :contact-toggle-list contact-toggle-list
+                      :contact-toggle-list add-contacts.views/contact-toggle-list
                       :group-chat-profile group-chat-profile
                       :add-participants-toggle-list add-participants-toggle-list
 
@@ -32,7 +32,21 @@
                        :home
                        :qr-code
                        :chat-profile
-                       :backup-recovery-phrase) main.views/main-views
+                       :backup-recovery-phrase
+                       :wallet
+                       :wallet-settings-assets
+                       :wallet-onboarding-setup
+                       :wallet-send-transaction
+                       :recent-recipients
+                       :contact-code
+                       :wallet-transaction-sent
+                       :wallet-transaction-details
+                       :wallet-send-assets
+                       :wallet-transaction-fee
+                       :wallet-request-transaction
+                       :wallet-send-transaction-request
+                       :wallet-request-assets
+                       :transactions-history) main.views/main-views
                       :login login.views/login
                       react/view)]
       [react/view {:style {:flex 1}}

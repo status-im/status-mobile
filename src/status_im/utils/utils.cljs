@@ -1,13 +1,17 @@
 (ns status-im.utils.utils
   (:require [status-im.i18n :as i18n]
-            [status-im.react-native.js-dependencies :as rn-dependencies]
-            [re-frame.core :as re-frame]))
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
+            [clojure.set :as set]))
+
+(def alert (.-Alert js-dependencies/react-native))
 
 (defn show-popup
   ([title content]
    (show-popup title content nil))
   ([title content on-dismiss]
-   (.alert (.-Alert rn-dependencies/react-native)
+   (.alert alert
            title
            content
            (clj->js
@@ -25,7 +29,7 @@
 
 (defn show-confirmation
   [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text]}]
-  (.alert (.-Alert rn-dependencies/react-native)
+  (.alert alert
           title
           content
           ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
@@ -44,7 +48,7 @@
   ([title content on-accept]
    (show-question title content on-accept nil))
   ([title content on-accept on-cancel]
-   (.alert (.-Alert rn-dependencies/react-native)
+   (.alert alert
            title
            content
            (clj->js
@@ -55,10 +59,18 @@
                      :onPress             on-accept
                      :accessibility-label :yes-button})))))
 
+(defn show-options-dialog
+  [{:keys [title options]}]
+  (.alert alert
+          title
+          ""
+          (clj->js
+           (vec (map #(set/rename-keys % {:label :text, :action :onPress}) options)))))
+
 ;; background-timer
 
 (defn set-timeout [cb ms]
-  (.setTimeout rn-dependencies/background-timer cb ms))
+  (.setTimeout js-dependencies/background-timer cb ms))
 
 ;; same as re-frame dispatch-later but using background timer for long
 ;; running timeouts
@@ -69,10 +81,10 @@
      (set-timeout #(re-frame/dispatch dispatch) ms))))
 
 (defn clear-timeout [id]
-  (.clearTimeout rn-dependencies/background-timer id))
+  (.clearTimeout js-dependencies/background-timer id))
 
 (defn set-interval [cb ms]
-  (.setInterval rn-dependencies/background-timer cb ms))
+  (.setInterval js-dependencies/background-timer cb ms))
 
 (defn clear-interval [id]
-  (.clearInterval rn-dependencies/background-timer id))
+  (.clearInterval js-dependencies/background-timer id))

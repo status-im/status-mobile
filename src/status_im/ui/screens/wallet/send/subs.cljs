@@ -4,6 +4,10 @@
             [status-im.models.wallet :as models.wallet]))
 
 (re-frame/reg-sub
+ :get-wallet-unread-messages-number
+ (constantly 0))
+
+(re-frame/reg-sub
  ::send-transaction
  :<- [:wallet]
  (fn [wallet]

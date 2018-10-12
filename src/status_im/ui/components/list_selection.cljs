@@ -5,7 +5,8 @@
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            [status-im.utils.http :as http]))
+            [status-im.utils.http :as http]
+            [status-im.utils.utils :as utils]))
 
 (defn open-share [content]
   (when (or (:message content)
@@ -21,9 +22,9 @@
     :action #(open-share {:message text})}])
 
 (defn show [options]
-  (if platform/ios?
-    (action-sheet/show options)
-    (dialog/show options)))
+  (cond platform/ios? (action-sheet/show options)
+        platform/android? (dialog/show options)
+        :else (utils/show-options-dialog options)))
 
 (defn chat-message [message-id text dialog-title]
   (show {:title       dialog-title

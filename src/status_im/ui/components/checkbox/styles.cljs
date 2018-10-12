@@ -1,4 +1,5 @@
 (ns status-im.ui.components.checkbox.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def wrapper
@@ -18,9 +19,11 @@
           :width         26
           :height        26}))
 
-(def check-icon
-  {:width  12
-   :height 12})
+(defstyle check-icon
+  {:width   12
+   :height  12
+   ;;TODO(goranjovic) - this is a quickfix because checkboxes are invisible on desktop
+   :desktop {:background-color colors/blue}})
 
 (def plain-check-icon
   (merge check-icon

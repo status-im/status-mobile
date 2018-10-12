@@ -18,7 +18,8 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.platform :as platform]))
 
 ;;;; FX
 
@@ -264,10 +265,15 @@
              cofx)
             :dispatch [:wallet/update-gas-price true]))))
 
+(fx/defn navigate-after-transaction [{:keys [db] :as cofx}]
+  (if platform/desktop?
+    (navigation/navigate-to-cofx cofx :wallet {})
+    (navigation/navigate-back cofx)))
+
 (handlers/register-handler-fx
  :close-transaction-sent-screen
  (fn [cofx [_ chat-id]]
    (fx/merge cofx
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
-             (navigation/navigate-back))))
+             (navigate-after-transaction))))
 

@@ -178,7 +178,7 @@
            (= view-id :create-account)
            (assoc-in [:accounts/create :step] :enter-name))}))
 
-(defn initialize-wallet [cofx]
+(fx/defn initialize-wallet [cofx]
   (fx/merge cofx
             (models.wallet/initialize-tokens)
             (models.wallet/update-wallet)
@@ -216,8 +216,7 @@
             (browser/initialize-browsers)
             (browser/initialize-dapp-permissions)
             (extensions.registry/initialize)
-            #(when-not platform/desktop?
-               (initialize-wallet %))
+            (initialize-wallet)
             (accounts.update/update-sign-in-time)
             #(when-not (creating-account? %)
                (login-only-events % address))))

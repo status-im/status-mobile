@@ -16,6 +16,7 @@
    :justify-content  :space-between
    :background-color (or background-color toolbar-background)
    :elevation        (if flat? 0 2)
+   :desktop          {:height 55}
    :android          {:height 55}
    :ios              {:height 56}})
 
@@ -68,7 +69,8 @@
 (defstyle item
   {:ios     {:padding-horizontal 12
              :padding-vertical   16}
-   :android {:padding 16}})
+   :android {:padding 16}
+   :desktop {:padding 16}})
 
 (def item-text
   {:color     colors/blue
@@ -85,9 +87,20 @@
 
 (def item-text-white-background {:color colors/blue})
 
-;;TODO(goranjovic) - Breaks the toolbar title into new line on smaller screens
-;;e.g. see Discover > Popular hashtags on iPhone 5s
-(def ios-content-item {:position :absolute :right 40 :left 40})
+;;TODO(goranjovic) - This doesn't work at all on desktop. Review why we even need absolute position hacks
+;; hiding it as a temporary fix.
+(defstyle ios-content-item
+  {:desktop {:position :absolute
+             :right    40
+             :left     40
+             :width    0
+             :height   0}
+   :android {:position :absolute
+             :right    40
+             :left     40}
+   :ios     {:position :absolute
+             :right    40
+             :left     40}})
 
 (def counter-container
   {:top 3})
