@@ -487,6 +487,7 @@
     "currency-display-name-isk": "Iceland Krona",
     "connect-wnode-content": "Connect to {{name}}?",
     "view-cryptostrikers": "View in CryptoStrikers",
+    "view-gitcoin": "View in Gitcoin",
     "view-superrare": "View in SuperRare",
     "add-network": "Add network",
     "unknown-status-go-error": "Unknown status-go error",

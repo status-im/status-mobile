@@ -6,7 +6,7 @@
 
 (def superrare :SUPR)
 
-(defmethod collectibles/load-collectible-fx superrare [_ ids]
+(defmethod collectibles/load-collectible-fx superrare [_ _ ids]
   {:http-get-n (mapv (fn [id]
                        {:url id
                         :success-event-creator (fn [o]
@@ -29,7 +29,7 @@
               imageUri
             }}}}"))
 
-(defmethod collectibles/load-collectibles-fx superrare [_ _ _ address]
+(defmethod collectibles/load-collectibles-fx superrare [_ _ _ address _]
   {:http-post {:url                   graphql-url
                :data                  (types/clj->json {:query (graphql-query (ethereum/naked-address address))})
                :opts                  {:headers {"Content-Type" "application/json"}}

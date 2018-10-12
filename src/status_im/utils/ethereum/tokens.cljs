@@ -422,7 +422,11 @@
                    {:symbol  :SUPR
                     :nft?    true
                     :name    "SuperRare"
-                    :address "0x41a322b28d0ff354040e2cbc676f0320d8c8850d"}])
+                    :address "0x41a322b28d0ff354040e2cbc676f0320d8c8850d"}
+                   {:symbol  :KUDOS
+                    :nft?    true
+                    :name    "KudosToken"
+                    :address "0x56c72cda0b04fc39a25d0b6a64fa258fad46d664"}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
@@ -456,7 +460,11 @@
                   [{:name     "Moksha Coin"
                     :symbol   :MOKSHA
                     :decimals 18
-                    :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}])
+                    :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}
+                   {:symbol  :KUDOS
+                    :nft?    true
+                    :name    "KudosToken"
+                    :address "0x93bB0AFbd0627Bbd3a6C72Bc318341D3A22e254a"}])
 
    :custom []})
 

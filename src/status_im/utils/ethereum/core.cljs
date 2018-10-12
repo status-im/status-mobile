@@ -60,7 +60,15 @@
 
 (defn hex->string [s]
   (when s
-    (.toAscii dependencies/Web3.prototype s)))
+    (let [hex (.toString s)]
+      (loop [res "" i (if (string/starts-with? hex hex-prefix) 2 0)]
+        (if (and (< i (.-length hex)))
+          (recur
+           (if (= (.substr hex i 2) "00")
+             res
+             (str res (.fromCharCode js/String (js/parseInt (.substr hex i 2) 16))))
+           (+ i 2))
+          res)))))
 
 (defn hex->boolean [s]
   (= s "0x0"))

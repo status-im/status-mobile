@@ -17,6 +17,7 @@
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
             status-im.ui.screens.wallet.collectibles.superrare.views
+            status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
             [status-im.ui.screens.wallet.transactions.views :as transactions.views]
             [status-im.ui.components.colors :as colors]))
