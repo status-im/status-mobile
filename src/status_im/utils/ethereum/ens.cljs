@@ -15,6 +15,8 @@
    :rinkeby "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"})
 
 (def default-namehash "0000000000000000000000000000000000000000000000000000000000000000")
+(def default-address "0x0000000000000000000000000000000000000000")
+(def default-key "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 
 (defn namehash [s]
   (ethereum/normalized-address (if (string/blank? s)
@@ -33,7 +35,9 @@
                  (ethereum/call-params registry
                                        "resolver(bytes32)"
                                        (namehash ens-name))
-                 (fn [_ address] (cb  (ethereum/hex->address address)))))
+                 (fn [_ address] (let [address (ethereum/hex->address address)]
+                                   (when (and address (not= address default-address))
+                                     (cb address))))))
 
 (defn owner [web3 registry ens-name cb]
   (ethereum/call web3
@@ -79,19 +83,22 @@
 (def pubkey-hash "0xc8690233")
 
 (defn add-uncompressed-public-key-prefix [key]
-  (when key
+  (when (and key
+             (not= "0x" key)
+             (not= default-key key))
     (str "0x04" (subs key 2))))
+
+(defn is-valid-eth-name? [ens-name]
+  (and ens-name
+       (string/ends-with? ens-name ".eth")))
 
 (defn pubkey [web3 resolver ens-name cb]
   (ethereum/call web3
                  (ethereum/call-params resolver
                                        "pubkey(bytes32)"
                                        (namehash ens-name))
-                 (fn [_ key] (cb (add-uncompressed-public-key-prefix key)))))
-
-(defn is-valid-eth-name? [ens-name]
-  (and ens-name
-       (string/ends-with? ens-name ".eth")))
+                 (fn [_ key] (when-let [public-key (add-uncompressed-public-key-prefix key)]
+                               (cb public-key)))))
 
 (defn get-addr [web3 registry ens-name cb]
   {:pre [(is-valid-eth-name? ens-name)]}
