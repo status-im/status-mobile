@@ -80,7 +80,7 @@
 
 (defn command-amount-currency-separator [outgoing]
   {:opacity 0
-   :color   colors/white})
+   :color   (if outgoing colors/blue colors/white)})
 
 (defn command-send-currency-text [outgoing]
   {:font-size      22
