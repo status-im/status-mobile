@@ -49,7 +49,7 @@
   [view-my-wallet
    (share-chat chat-id)
    (clear-history)
-   (delete-chat chat-id true)])
+   (delete-chat chat-id false)])
 
 (defn actions [group-chat? chat-id public?]
   (cond
