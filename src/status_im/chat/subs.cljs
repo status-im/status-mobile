@@ -136,8 +136,8 @@
 (defn quoted-message-data
   "Selects certain data from quoted message which must be available in the view"
   [message-id messages referenced-messages]
-  (let [{:keys [from content]} (get messages message-id
-                                    (get referenced-messages message-id))]
+  (when-let [{:keys [from content]} (get messages message-id
+                                         (get referenced-messages message-id))]
     {:from from
      :text (:text content)}))
 
@@ -149,15 +149,16 @@
             (into (list {:value datemark
                          :type  :datemark})
                   (map (fn [{:keys [message-id timestamp-str]}]
-                         (let [{:keys [content] :as message} (get messages message-id)]
-                           (cond-> (assoc message
-                                          :datemark      datemark
-                                          :timestamp-str timestamp-str
-                                          :user-statuses (get message-statuses message-id))
-                             (:response-to content) ;; quoted message reference
-                             (assoc-in [:content :response-to] (quoted-message-data (:response-to content)
-                                                                                    messages
-                                                                                    referenced-messages))))))
+                         (let [{:keys [content] :as message} (get messages message-id)
+                               quote (some-> (:response-to content)
+                                             (quoted-message-data messages referenced-messages))]
+                           (cond-> (-> message
+                                       (update :content dissoc :response-to)
+                                       (assoc :datemark      datemark
+                                              :timestamp-str timestamp-str
+                                              :user-statuses (get message-statuses message-id)))
+                             quote ;; quoted message reference
+                             (assoc-in [:content :response-to] quote)))))
                   message-references))
           message-groups))
 
