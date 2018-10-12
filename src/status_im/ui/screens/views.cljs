@@ -47,7 +47,7 @@
             [status-im.ui.screens.fleet-settings.views :refer [fleet-settings]]
             [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :refer [edit-mailserver]]
-            [status-im.ui.screens.extensions.add.views :refer [add-extension show-extension]]
+            [status-im.ui.screens.extensions.add.views :refer [edit-extension show-extension]]
             [status-im.ui.screens.bootnodes-settings.views :refer [bootnodes-settings]]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :refer [edit-bootnode]]
             [status-im.ui.screens.currency-settings.views :refer [currency-settings]]
@@ -273,7 +273,7 @@
                    :edit-mailserver                  edit-mailserver
                    :help-center                      help-center
                    :extensions-settings              extensions-settings
-                   :add-extension                    add-extension
+                   :edit-extension                   edit-extension
                    :show-extension                   show-extension
                    :network-settings                 network-settings
                    :network-details                  network-details

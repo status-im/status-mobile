@@ -2,6 +2,7 @@
   (:require [status-im.data-store.realm.schemas.base.network :as network]
             [status-im.data-store.realm.schemas.base.account :as account]
             [status-im.data-store.realm.schemas.base.bootnode :as bootnode]
+            [status-im.data-store.realm.schemas.base.extension :as extension]
             [status-im.data-store.realm.schemas.base.migrations :as migrations]))
 
 (def v1 [network/v1
@@ -41,6 +42,11 @@
           bootnode/v4
           account/v11])
 
+(def v12 [network/v1
+          bootnode/v4
+          extension/v12
+          account/v12])
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1
                :schemaVersion 1
@@ -74,4 +80,7 @@
                :migration     migrations/v10}
               {:schema        v11
                :schemaVersion 11
-               :migration     migrations/v11}])
+               :migration     migrations/v11}
+              {:schema        v12
+               :schemaVersion 12
+               :migration     migrations/v12}])

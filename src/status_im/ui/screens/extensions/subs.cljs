@@ -3,6 +3,8 @@
             status-im.ui.screens.extensions.add.subs))
 
 (re-frame/reg-sub
- :get-extensions
- (fn [db]
-   (seq (:registry db))))
+ :extensions/all-extensions
+ :<- [:get :account/account]
+ (fn [account]
+   (get account :extensions)))
+

@@ -6,12 +6,10 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.screens.extensions.add.styles :as styles]))
@@ -69,7 +67,7 @@
           {:forward?  true
            :label     (i18n/label :t/install)
            :disabled? (not (empty? errors))
-           :on-press  #(re-frame/dispatch [:extension/install data])}]]]]
+           :on-press  #(re-frame/dispatch [:extensions.ui/install-button-pressed data])}]]]]
       [react/view styles/screen
        [status-bar/status-bar]
        [react/view {:flex 1}
@@ -85,26 +83,27 @@
    [react/view
     [vector-icons/icon :icons/qr {:color colors/blue}]]])
 
-(views/defview add-extension []
-  (views/letsubs [extension-url [:get-extension-url]]
-    [react/view styles/screen
-     [status-bar/status-bar]
-     [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar (i18n/label :t/extension-find)]
-      [react/scroll-view {:keyboard-should-persist-taps :handled}
-       [react/view styles/wrapper
-        [text-input/text-input-with-label
-         {:label           (i18n/label :t/extension-address)
-          :style           styles/input
-          :container       styles/input-container
-          :placeholder     (i18n/label :t/extension-url)
-          :content         qr-code
-          :default-value   extension-url
-          :on-change-text  #(re-frame/dispatch [:extension/edit-address %])}]]]
-      [react/view styles/bottom-container
-       [react/view components.styles/flex]
-       [components.common/bottom-button
-        {:forward?  true
-         :label     (i18n/label :t/find)
-         :disabled? (not (extensions/valid-uri? extension-url))
-         :on-press  #(re-frame/dispatch [:extension/show (string/trim extension-url)])}]]]]))
+(views/defview edit-extension []
+  (views/letsubs [manage-extension [:get-manage-extension]]
+    (let [url (get-in manage-extension [:url :value])]
+      [react/view styles/screen
+       [status-bar/status-bar]
+       [react/keyboard-avoiding-view components.styles/flex
+        [toolbar/simple-toolbar (i18n/label :t/extension-find)]
+        [react/scroll-view {:keyboard-should-persist-taps :handled}
+         [react/view styles/wrapper
+          [text-input/text-input-with-label
+           {:label          (i18n/label :t/extension-address)
+            :style          styles/input
+            :container      styles/input-container
+            :content        qr-code
+            :default-value  url
+            :placeholder    (i18n/label :t/extension-url)
+            :on-change-text #(re-frame/dispatch [:extensions.ui/input-changed :url %])}]]]
+        [react/view styles/bottom-container
+         [react/view components.styles/flex]
+         [components.common/bottom-button
+          {:forward?  true
+           :label     (i18n/label :t/find)
+           :disabled? (not (extensions/valid-uri? url))
+           :on-press  #(re-frame/dispatch [:extensions.ui/show-button-pressed (string/trim url)])}]]]])))

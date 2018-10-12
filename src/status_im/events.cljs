@@ -416,6 +416,32 @@
  (fn [cofx [_ _ url]]
    (extensions/set-extension-url-from-qr cofx url)))
 
+(handlers/register-handler-fx
+ :extensions.ui/add-extension-pressed
+ (fn [cofx [_ extension-id]]
+   (extensions/edit cofx extension-id)))
+
+(handlers/register-handler-fx
+ :extensions.ui/input-changed
+ (fn [cofx [_ input-key value]]
+   (extensions/set-input cofx input-key value)))
+
+(handlers/register-handler-fx
+ :extensions.ui/activation-checkbox-pressed
+ (fn [cofx [_ id state]]
+   (extensions/toggle-activation cofx id state)))
+
+(handlers/register-handler-fx
+ :extensions.ui/show-button-pressed
+ (fn [_ [_ uri]]
+   {:extension/load [uri :extension/stage]}))
+
+(handlers/register-handler-fx
+ :extensions.ui/install-button-pressed
+ [(re-frame/inject-cofx :random-id-generator)]
+ (fn [cofx [_ data]]
+   (extensions/install cofx data)))
+
 ;; log-level module
 
 (handlers/register-handler-fx

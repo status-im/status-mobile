@@ -2,9 +2,9 @@
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
- :get-extension-url
+ :get-manage-extension
  (fn [db]
-   (:extension-url db)))
+   (:extensions/manage db)))
 
 (re-frame/reg-sub
  :get-staged-extension

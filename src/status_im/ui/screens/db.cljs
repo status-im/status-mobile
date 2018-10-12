@@ -217,6 +217,7 @@
                  :networks/manage
                  :mailservers/manage
                  :bootnodes/manage
+                 :extensions/manage
                  :inbox/wnodes
                  :inbox/current-id
                  :node/status
@@ -314,7 +315,6 @@
                  ::device-UUID
                  ::collectible
                  ::collectibles
-                 ::extension-url
                  ::staged-extension
                  ::extensions-store
                  :registry/registry]))

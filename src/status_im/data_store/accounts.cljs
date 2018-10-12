@@ -17,20 +17,52 @@
    {}
    bootnodes))
 
+(defn- deserialize-networks [networks]
+  (reduce-kv
+   (fn [acc network-id props]
+     (assoc acc network-id (update props :config types/json->clj)))
+   {}
+   networks))
+
+(defn- deserialize-extensions [extensions]
+  (reduce-kv
+   (fn [acc _ {:keys [id] :as extension}]
+     (assoc acc id extension))
+   {}
+   extensions))
+
+(defn- deserialize-account [account]
+  (-> account
+      (update :settings core/deserialize)
+      (update :extensions deserialize-extensions)
+      (update :bootnodes deserialize-bootnodes)
+      (update :networks deserialize-networks)))
+
 (defn- serialize-bootnodes [bootnodes]
   (->> bootnodes
        vals
        (mapcat vals)))
 
-(defn- deserialize-account [account]
+(defn- serialize-networks [networks]
+  (map (fn [[_ props]]
+         (update props :config types/clj->json))
+       networks))
+
+(defn- serialize-extensions [extensions]
+  (or (vals extensions) '()))
+
+(defn- serialize-account [account]
   (-> account
-      (update :settings core/deserialize)
-      (update :bootnodes deserialize-bootnodes)
-      (update :networks (partial reduce-kv
-                                 (fn [acc network-id props]
-                                   (assoc acc network-id
-                                          (update props :config types/json->clj)))
-                                 {}))))
+      (update :settings core/serialize)
+      (update :extensions serialize-extensions)
+      (update :bootnodes serialize-bootnodes)
+      (update :networks serialize-networks)))
+
+(defn save-account-tx
+  "Returns tx function for saving account"
+  [account]
+  (fn [realm]
+    (core/create realm :account (serialize-account account) true)))
 
 (re-frame/reg-cofx
  :data-store/get-all-accounts
@@ -40,16 +72,3 @@
                                       (core/all-clj :account)
                                       (as-> accounts
                                             (map deserialize-account accounts))))))
-
-(defn- serialize-account [account]
-  (-> account
-      (update :settings core/serialize)
-      (update :bootnodes serialize-bootnodes)
-      (update :networks (partial map (fn [[_ props]]
-                                       (update props :config types/clj->json))))))
-
-(defn save-account-tx
-  "Returns tx function for saving account"
-  [account]
-  (fn [realm]
-    (core/create realm :account (serialize-account account) true)))

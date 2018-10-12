@@ -14,32 +14,29 @@
   [react/view (styles/wnode-icon true)
    [vector-icons/icon :icons/wnode {:color :white}]])
 
-(defn navigate-to-add-extension [wnode-id]
-  (re-frame/dispatch [:navigate-to :add-extension wnode-id]))
-
-(defn- render-extension [[id {:keys [state]}]]
+(defn- render-extension [{:keys [id name url active?]}]
   [list/list-item-with-checkbox
-   {:checked?        (= :active state)
-    :on-value-change #(re-frame/dispatch [:extension/toggle-activation id %])}
+   {:checked?        active?
+    :on-value-change #(re-frame/dispatch [:extensions.ui/activation-checkbox-pressed id %])}
    [list/item
     wnode-icon
     [list/item-content
-     [list/item-primary id]
-     [list/item-secondary id]]]])
+     [list/item-primary name]
+     [list/item-secondary url]]]])
 
 (views/defview extensions-settings []
-  (views/letsubs [extensions [:get-extensions]]
+  (views/letsubs [extensions [:extensions/all-extensions]]
     [react/view {:flex 1}
      [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/extensions)]
       [toolbar/actions
-       [(toolbar.actions/add false (partial navigate-to-add-extension nil))]]]
+       [(toolbar.actions/add false #(re-frame/dispatch [:extensions.ui/add-extension-pressed]))]]]
      [react/view styles/wrapper
-      [list/flat-list {:data                    extensions
+      [list/flat-list {:data                    (vals extensions)
                        :default-separator?      false
-                       :key-fn                  first
+                       :key-fn                  :id
                        :render-fn               render-extension
                        :content-container-style (merge (when (zero? (count extensions)) {:flex-grow 1}) {:justify-content :center})
                        :empty-component         [react/text {:style styles/empty-list}
