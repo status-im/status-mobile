@@ -8,7 +8,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
-            [status-im.models.transactions :as transactions]))
+            [status-im.models.transactions :as transactions]
+            [clojure.set :as clojure.set]))
 
 (reg-sub :get-chats :chats)
 
@@ -75,11 +76,19 @@
      platform/ios? kb-height
      :default 0)))
 
-(defn active-chats [chats]
-  (into {} (filter (comp :is-active second) chats)))
+(defn active-chats [[contacts chats]]
+  (reduce (fn [acc [chat-id {:keys [is-active] :as chat}]]
+            (if is-active
+              (assoc acc chat-id (if-let [contact (get contacts chat-id)]
+                                   (update chat :tags clojure.set/union (:tags contact))
+                                   chat))
+              acc))
+          {}
+          chats))
 
 (reg-sub
  :get-active-chats
+ :<- [:get-contacts]
  :<- [:get-chats]
  active-chats)
 

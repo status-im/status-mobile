@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
-
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.desktop.main.tabs.home.styles :as styles]
             [clojure.string :as string]
             [status-im.ui.screens.home.views.inner-item :as chat-item]
@@ -65,17 +65,51 @@
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
    [chat-list-item-inner-view (assoc chat :chat-id chat-id)]])
 
+(defn tag-view [tag {:keys [on-press]}]
+  [react/touchable-highlight {:style {:border-radius 5
+                                      :margin 2
+                                      :padding 4
+                                      :height 23
+                                      :background-color (if (= tag "clear filter")
+                                                          colors/red
+                                                          colors/blue)
+                                      :justify-content :center
+                                      :align-items :center
+                                      :align-content :center}
+                              :on-press on-press}
+   [react/text {:style {:font-size 9
+                        :color colors/white}
+                :font :medium} tag]])
+
+(defn search-input [search-filter]
+  [react/view {:style {:flex 1
+                       :flex-direction :row}}
+   [react/text-input {:placeholder "Type here to search chats..."
+                      :auto-focus             true
+                      :blur-on-submit         true
+                      :style {:flex 1
+                              :color :black
+                              :height            30
+                              :margin-left       20
+                              :margin-right      22}
+                      :default-value search-filter
+                      :on-change (fn [e]
+                                   (let [native-event (.-nativeEvent e)
+                                         text         (.-text native-event)]
+                                     (re-frame/dispatch [:search/filter-changed text])))}]])
+
 (views/defview chat-list-view []
-  (views/letsubs [home-items [:home-items]]
+  (views/letsubs [search-filter       [:search/filter]
+                  filtered-home-items [:search/filtered-home-items]]
     [react/view {:style styles/chat-list-view}
      [react/view {:style styles/chat-list-header}
-      [react/view {:style {:flex 1}}]
+      [search-input search-filter]
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :new-contact])}
        [react/view {:style styles/add-new}
         [icons/icon :icons/add {:style {:tint-color :white}}]]]]
      [react/view {:style styles/chat-list-separator}]
      [react/scroll-view {:enableArrayScrollingOptimization true}
       [react/view
-       (for [[index chat] (map-indexed vector home-items)]
+       (for [[index chat] (map-indexed vector filtered-home-items)]
          ^{:key (first chat)}
          [chat-list-item chat])]]]))

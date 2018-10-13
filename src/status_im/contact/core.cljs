@@ -67,14 +67,16 @@
               (add-new-contact contact)
               (send-contact-request contact))))
 
-(fx/defn add-contact-tag
+(fx/defn add-tag
   "add a tag to the contact"
-  [{:keys [db] :as cofx} whisper-id tag]
-  (let [tags (conj (get-in db [:contacts/contacts whisper-id :tags] #{}) tag)]
+  [{:keys [db] :as cofx}]
+  (let [tag (get-in db [:ui/contact :contact/new-tag])
+        whisper-id (get-in db [:current-chat-id])
+        tags (conj (get-in db [:contacts/contacts whisper-id :tags] #{}) tag)]
     {:db (assoc-in db [:contacts/contacts whisper-id :tags] tags)
      :data-store/tx [(contacts-store/add-contact-tag-tx whisper-id tag)]}))
 
-(fx/defn remove-contact-tag
+(fx/defn remove-tag
   "remove a tag from the contact"
   [{:keys [db] :as cofx} whisper-id tag]
   (let [tags (disj (get-in db [:contacts/contacts whisper-id :tags] #{}) tag)]

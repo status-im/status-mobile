@@ -30,6 +30,7 @@
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.protocol.core :as protocol]
             [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.search.core :as search]
             [status-im.signals.core :as signals]
             [status-im.transport.inbox :as inbox]
             [status-im.transport.message.core :as transport.message]
@@ -1073,3 +1074,20 @@
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx _]
    (contact/add-new-identity-to-contacts cofx)))
+
+(handlers/register-handler-fx
+ :contact.ui/add-tag
+ (fn [cofx _]
+   (contact/add-tag cofx)))
+
+(handlers/register-handler-fx
+ :contact.ui/set-tag-input-field
+ (fn [cofx [_ text]]
+   {:db (assoc-in (:db cofx) [:ui/contact :contact/new-tag] text)}))
+
+;; search module
+
+(handlers/register-handler-fx
+ :search/filter-changed
+ (fn [cofx [_ search-filter]]
+   (search/filter-changed cofx search-filter)))

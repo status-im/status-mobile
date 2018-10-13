@@ -243,8 +243,10 @@
                  :transport.inbox/request-to
                  :desktop/desktop
                  :dimensions/window
-                 :dapps/permissions]
-
+                 :dapps/permissions
+                 :ui/contact
+                 :ui/search
+                 :ui/chat]
                 :opt-un
                 [::current-public-key
                  ::modal

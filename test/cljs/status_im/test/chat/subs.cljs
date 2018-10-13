@@ -118,4 +118,4 @@
     (testing "it returns only chats with is-active"
       (is (= {1 active-chat-1
               2 active-chat-2}
-             (s/active-chats chats))))))
+             (s/active-chats [{} chats]))))))
