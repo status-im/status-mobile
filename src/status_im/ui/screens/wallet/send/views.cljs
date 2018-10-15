@@ -10,7 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.actions :as act]
+            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]
@@ -31,11 +31,11 @@
             [status-im.ui.components.colors :as colors]))
 
 (defn- toolbar [modal? title]
-  (let [action (if modal? act/close-white act/back-white)]
+  (let [action (if modal? actions/close-white actions/back-white)]
     [toolbar/toolbar {:style wallet.styles/toolbar}
      [toolbar/nav-button (action (if modal?
                                    #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
-                                   #(act/default-handler)))]
+                                   #(actions/default-handler)))]
      [toolbar/content-title {:color :white} title]]))
 
 (defn- advanced-cartouche [{:keys [max-fee gas gas-price]}]

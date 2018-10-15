@@ -261,17 +261,12 @@
              cofx)
             :dispatch [:wallet/update-gas-price true]))))
 
-(fx/defn navigate-after-transaction [{:keys [db] :as cofx} chat-id]
-  (if (= :wallet-send-transaction-modal (second (:navigation-stack db)))
-    (chat.models/navigate-to-chat cofx chat-id {})
-    (navigation/navigate-back cofx)))
-
 (handlers/register-handler-fx
  :close-transaction-sent-screen
  (fn [cofx [_ chat-id]]
    (fx/merge cofx
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
-             (navigate-after-transaction chat-id))))
+             (navigation/navigate-back))))
 
 (handlers/register-handler-fx
  :sync-wallet-transactions

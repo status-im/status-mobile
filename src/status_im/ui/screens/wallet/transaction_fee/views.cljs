@@ -16,16 +16,9 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.ethereum.core :as ethereum]))
 
-(defn return-to-transaction [modal?]
-  (if modal?
-    ;;TODO(andrey) artificial navigation stack for modals (should be reworked)
-    ;; ^ probably will be fixed with react-navigation
-    (re-frame/dispatch [:navigate-to-clean :wallet-send-transaction-modal])
-    (act/default-handler)))
-
-(defn- toolbar [modal? title]
+(defn- toolbar [title]
   [toolbar/toolbar {:style wallet.styles/toolbar}
-   [toolbar/nav-button (act/close-white #(return-to-transaction modal?))]
+   [toolbar/nav-button (act/close-white act/default-handler)]
    [toolbar/content-title {:color :white} title]])
 
 (defview transaction-fee []
@@ -34,13 +27,12 @@
             {gas-edit       :gas
              max-fee        :max-fee
              gas-price-edit :gas-price} [:wallet/edit]]
-    (let [modal?         (:id send-transaction)
-          {:keys [amount symbol]} send-transaction
+    (let [{:keys [amount symbol]} send-transaction
           gas            (:value gas-edit)
           gas-price      (:value gas-price-edit)
           {:keys [decimals]} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [components/simple-screen {:status-bar-type :modal-wallet}
-       [toolbar modal? (i18n/label :t/wallet-transaction-fee)]
+       [toolbar (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex
         [react/view {:flex-direction :row}
 
@@ -99,7 +91,7 @@
          [button/button {:on-press            #(do (re-frame/dispatch [:wallet.send/set-gas-details
                                                                        (:value-number gas-edit)
                                                                        (:value-number gas-price-edit)])
-                                                   (return-to-transaction modal?))
+                                                   (act/default-handler))
                          :accessibility-label :done-button
                          :disabled?           (or (:invalid? gas-edit)
                                                   (:invalid? gas-price-edit))}
