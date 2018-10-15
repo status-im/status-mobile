@@ -128,28 +128,32 @@
                   {:network-id network-id :reason reason}
                   nil))
 
-(fx/defn connect [{:keys [db]} {:keys [network-id on-success on-failure]}]
+(fx/defn connect [{:keys [db] :as cofx} {:keys [network-id on-success on-failure]}]
   (if-let [config (get-in db [:account/account :networks network-id :config])]
-    {:http-post {:url                   (get-in config [:UpstreamConfig :URL])
-                 :data                  (types/clj->json {:jsonrpc "2.0"
-                                                          :method  "web3_clientVersion"
-                                                          :id      1})
-                 :opts                  {:headers {"Content-Type" "application/json"}}
-                 :success-event-creator (fn [{:keys [response-body]}]
-                                          (if-let [client-version (:result (http/parse-payload response-body))]
-                                            [::connect-success {:network-id     network-id
-                                                                :on-success     on-success
-                                                                :client-version client-version}]
-                                            [::connect-failure {:network-id network-id
-                                                                :on-failure on-failure
-                                                                :reason     (i18n/label :t/network-invalid-url)}]))
-                 :failure-event-creator (fn [{:keys [response-body status-code]}]
-                                          (let [reason (if status-code
-                                                         (i18n/label :t/network-invalid-status-code {:code status-code})
-                                                         (str response-body))]
-                                            [::connect-failure {:network-id network-id
-                                                                :on-failure on-failure
-                                                                :reason     reason}]))}}
+    (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
+      {:http-post {:url                   upstream-url
+                   :data                  (types/clj->json {:jsonrpc "2.0"
+                                                            :method  "web3_clientVersion"
+                                                            :id      1})
+                   :opts                  {:headers {"Content-Type" "application/json"}}
+                   :success-event-creator (fn [{:keys [response-body]}]
+                                            (if-let [client-version (:result (http/parse-payload response-body))]
+                                              [::connect-success {:network-id     network-id
+                                                                  :on-success     on-success
+                                                                  :client-version client-version}]
+                                              [::connect-failure {:network-id network-id
+                                                                  :on-failure on-failure
+                                                                  :reason     (i18n/label :t/network-invalid-url)}]))
+                   :failure-event-creator (fn [{:keys [response-body status-code]}]
+                                            (let [reason (if status-code
+                                                           (i18n/label :t/network-invalid-status-code {:code status-code})
+                                                           (str response-body))]
+                                              [::connect-failure {:network-id network-id
+                                                                  :on-failure on-failure
+                                                                  :reason     reason}]))}}
+      (connect-success cofx {:network-id     network-id
+                             :on-success     on-success
+                             :client-version ""}))
     (connect-failure {:network-id network-id
                       :on-failure on-failure
                       :reason     "A network with the specified id doesn't exist"})))

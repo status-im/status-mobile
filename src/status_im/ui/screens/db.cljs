@@ -95,6 +95,10 @@
 (spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
 
+;; contents of eth_syncing or `nil` if the node isn't syncing now
+(spec/def :node/chain-sync-state (spec/nilable map?))
+(spec/def :node/latest-block-number (spec/nilable number?))
+
 ;;;;NAVIGATION
 
 ;;current view
@@ -212,6 +216,8 @@
                                 :node/status
                                 :node/restart?
                                 :node/address
+                                :node/chain-sync-state
+                                :node/latest-block-number
                                 :universal-links/url
                                 :push-notifications/stored
                                 :browser/browsers

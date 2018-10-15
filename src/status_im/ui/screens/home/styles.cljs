@@ -5,6 +5,11 @@
 (defn toolbar []
   {:background-color colors/white})
 
+(defstyle sync-wrapper
+  {:flex-direction :row})
+
+(defstyle sync-info {:margin-horizontal 15})
+
 (defstyle chat-container
   {:flex-direction   :row
    :background-color colors/white

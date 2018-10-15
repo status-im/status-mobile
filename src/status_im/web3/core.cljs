@@ -1,9 +1,10 @@
 (ns status-im.web3.core
   (:require [re-frame.core :as re-frame]
+            [status-im.utils.fx :as fx]
             [status-im.js-dependencies :as dependencies]
-
             [status-im.utils.ethereum.core :as ethereum]
-
+            [status-im.node.core :as node]
+            [status-im.protocol.core :as protocol]
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]))
 
@@ -25,6 +26,11 @@
   (let [web3 (make-internal-web3)]
     (assoc cofx :web3 web3)))
 
+(fx/defn update-syncing-progress [cofx error sync]
+  (fx/merge cofx
+            (protocol/update-sync-state error sync)
+            (node/update-sync-state error sync)))
+
 ;;; FX
 (defn get-syncing [web3]
   (when web3
@@ -32,6 +38,13 @@
      (.-eth web3)
      (fn [error sync]
        (re-frame/dispatch [:web3.callback/get-syncing-success error sync])))))
+
+(defn get-block-number-fx [web3]
+  (when web3
+    (.getBlockNumber
+     (.-eth web3)
+     (fn [error block-number]
+       (re-frame/dispatch [:web3.callback/get-block-number error block-number])))))
 
 (defn set-default-account
   [web3 address]

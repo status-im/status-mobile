@@ -2,9 +2,14 @@
     "fleets": {
         "les.dev.ropsten": {
             "boot": {
-                "node-01.do-ams3.les-rops.misc": "enode://a6ccec097ec4a82ff6e9fd9d0fbc51bf93b0ee963ff2878a667b5f58dfbc53d918c87c8b08a6fe02a016dcef5181eef1fe6bfaf955e23cfbdf1d6222666ab82e@104.248.199.52:30303",
-                "node-02.do-ams3.les-rops.misc": "enode://696cdb3532189d8d7333383c9b019a1f81570852a7cf61bbb90c38e09aefb4f06930babdaa65d4f1fc351f6cd8b07c3301f934b3da6116b7f2fcd14119228fd9@104.248.199.213:30303",
-                "node-03.do-ams3.les-rops.misc": "enode://710831f965fdc8c6a6d8dc04e40e4b75690babafd9cf60d1a7706726716d03df713200d8da788384fdf28461072517c87977c7daf5709751f78cbc74db9d1638@104.248.199.160:30303"
+                "node-01.do-ams3.les-rops.misc": "enode://bc827e035cf3a42c249374be7ddc9c2fb819765c440116cf01aa6a8d70d03043d29ccd42b32a283f5ab08294467eb3b92fc40111e9af1770c84bc116edae89c0@104.248.199.52:30303",
+                "node-02.do-ams3.les-rops.misc": "enode://52018eb510f8d3321e68e003de14b151ed31c76b98d760f48d4de6b5d3a1ce39d18e4685b87001cebf582eb0cf9debc3c35b84509e476f00324f4c10347a33ab@104.248.199.213:30303",
+                "node-03.do-ams3.les-rops.misc": "enode://690c93ac2f6e6f711a175cc6a73a3cf3b649eea83c458ce34364c69d1b557bb408693f06bdf6fc31538a744d5c231fdd904cce5665d04ce165032c0fc009a208@104.248.199.160:30303"
+            }, 
+            "static": {
+                "node-01.do-ams3.les-rops.misc": "enode://bc827e035cf3a42c249374be7ddc9c2fb819765c440116cf01aa6a8d70d03043d29ccd42b32a283f5ab08294467eb3b92fc40111e9af1770c84bc116edae89c0@104.248.199.52:30303",
+                "node-02.do-ams3.les-rops.misc": "enode://52018eb510f8d3321e68e003de14b151ed31c76b98d760f48d4de6b5d3a1ce39d18e4685b87001cebf582eb0cf9debc3c35b84509e476f00324f4c10347a33ab@104.248.199.213:30303",
+                "node-03.do-ams3.les-rops.misc": "enode://690c93ac2f6e6f711a175cc6a73a3cf3b649eea83c458ce34364c69d1b557bb408693f06bdf6fc31538a744d5c231fdd904cce5665d04ce165032c0fc009a208@104.248.199.160:30303"
             }, 
             "mail": {
                 "mail-01.ac-cn-hongkong-c.eth.beta": "enode://da61e9eff86a56633b635f887d8b91e0ff5236bbc05b8169834292e92afb92929dcf6efdbf373a37903da8fe0384d5a0a8247e83f1ce211aa429200b6d28c548@47.91.156.93:30504", 
