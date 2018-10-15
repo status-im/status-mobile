@@ -108,7 +108,7 @@
   "reset last request to 1 to fetch 7 past days of history"
   [old-realm new-realm]
   (log/debug "migrating v18 account database")
-  (some-> old-realm
+  (some-> new-realm
           (.objects "transport-inbox-topic")
           (.map (fn [inbox-topic _ _]
                   (aset inbox-topic "last-request" 1)))))
