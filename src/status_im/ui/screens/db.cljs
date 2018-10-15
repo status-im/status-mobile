@@ -160,6 +160,7 @@
 
 (spec/def ::extension-url (spec/nilable string?))
 (spec/def ::staged-extension (spec/nilable any?))
+(spec/def ::extensions-store (spec/nilable any?))
 
 ;;;;NODE
 
@@ -235,6 +236,7 @@
                  :desktop/desktop
                  :dimensions/window
                  :dapps/permissions]
+
                 :opt-un
                 [::current-public-key
                  ::modal
@@ -308,4 +310,5 @@
                  ::collectibles
                  ::extension-url
                  ::staged-extension
+                 ::extensions-store
                  :registry/registry]))

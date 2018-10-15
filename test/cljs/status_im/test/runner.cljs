@@ -3,6 +3,7 @@
             [status-im.test.contacts.subs]
             [status-im.test.data-store.chats]
             [status-im.test.data-store.realm.core]
+            [status-im.test.extensions.core]
             [status-im.test.browser.core]
             [status-im.test.browser.permissions]
             [status-im.test.wallet.subs]
@@ -72,6 +73,7 @@
  'status-im.test.init.core
  'status-im.test.data-store.chats
  'status-im.test.data-store.realm.core
+ 'status-im.test.extensions.core
  'status-im.test.mailserver.core
  'status-im.test.group-chats.core
  'status-im.test.node.core

@@ -131,7 +131,7 @@
 (defn choose-nft-token-suggestion [selected-event-creator]
   [choose-nft-token selected-event-creator])
 
-(defview nft-token [{:keys [name image_url] :as token}]
+(defview nft-token [{{:keys [name image_url]} :token}]
   [react/view {:flex-direction :column
                :align-items    :center}
    [svgimage/svgimage {:style  {:width  100
@@ -199,6 +199,9 @@
                       confirmed? :status-confirmed
                       tx-exists? :status-pending
                       :else :status-tx-not-found))]]]]))
+
+(defn transaction-status [{:keys [tx-hash outgoing]}]
+  [send-status tx-hash outgoing])
 
 (defview send-preview
   [{:keys [content timestamp-str outgoing group-chat]}]

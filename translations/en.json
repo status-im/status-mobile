@@ -385,6 +385,7 @@
     "enter-dapp-url": "Enter a ÐApp URL",
     "wallet-transaction-total-fee": "Total Fee",
     "extension": "Extension",
+    "invalid-extension": "Invalid extension URI",
     "datetime-day": {
         "one": "day",
         "other": "days"

@@ -33,7 +33,7 @@
     "Function which can provide any extra effects to be produced in addition to
     normal message effects which happen whenever message is sent")
   (on-receive [this command-message cofx]
-    "Function which can provide any extre effects to be produced in addition to
+    "Function which can provide any extra effects to be produced in addition to
     normal message effects which happen when particular command message is received")
   (short-preview [this command-message]
     "Function rendering the short-preview of the command message, used when

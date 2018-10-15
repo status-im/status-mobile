@@ -38,7 +38,7 @@
 
 (defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
   (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   #(re-frame/dispatch (failure-event-creator %))
+        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
         opts       {:valid-response? response-validator
                     :timeout-ms      timeout-ms}]
     (http/get url on-success on-error opts)))

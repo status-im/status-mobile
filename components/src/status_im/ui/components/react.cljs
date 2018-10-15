@@ -88,9 +88,9 @@
         (dissoc :font)
         (assoc style-key (merge style font)))))
 
-(defn transform-to-uppercase [{:keys [uppercase? force-uppercase?] :as opts} ts]
+(defn transform-to-uppercase [{:keys [uppercase? force-uppercase?]} ts]
   (if (or force-uppercase? (and uppercase? platform/android?))
-    (vec (map string/upper-case ts))
+    (vec (map #(when % (string/upper-case %)) ts))
     ts))
 
 (defn text

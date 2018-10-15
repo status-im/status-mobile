@@ -2,8 +2,11 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
+            [status-im.extensions.core :as extensions]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
@@ -13,49 +16,66 @@
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.screens.extensions.add.styles :as styles]))
 
-(defn cartouche [{:keys [header]}  content]
+(defn cartouche [{:keys [header]} content]
   [react/view {:style styles/cartouche-container}
    [react/text {:style styles/cartouche-header}
     header]
    [react/view {:style styles/cartouche-content-wrapper}
     [react/view {:flex 1}
-     [react/text {:style styles/text}
-      content]]]])
+     content]]])
 
 (defn hooks [{:keys [hooks]}]
   (mapcat (fn [[hook-id values]]
             (map (fn [[id]]
-                   (symbol "hook" (str (name hook-id) "." (name id))))
+                   (str (name hook-id) "." (name id)))
                  values))
           hooks))
 
 (views/defview show-extension []
   (views/letsubs [{:keys [data errors]} [:get-staged-extension]]
-    [react/view styles/screen
-     [status-bar/status-bar]
-     [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar (i18n/label :t/extension)]
-      [react/scroll-view {:keyboard-should-persist-taps :handled}
-       [react/view styles/wrapper
-        [cartouche {:header (i18n/label :t/identifier)}
-         (str (get-in data ['meta :name]))]
-        [cartouche {:header (i18n/label :t/name)}
-         (str (get-in data ['meta :name]))]
-        [cartouche {:header (i18n/label :t/description)}
-         (str (get-in data ['meta :description]))]
-        [cartouche {:header (i18n/label :t/hooks)}
-         (string/join " " (hooks data))]
-        [cartouche {:header (i18n/label :t/permissions)}
-         (i18n/label :t/none)]
-        [cartouche {:header (i18n/label :t/errors)}
-         (i18n/label :t/none)]]]
-      [react/view styles/bottom-container
-       [react/view components.styles/flex]
-       [components.common/bottom-button
-        {:forward?  true
-         :label     (i18n/label :t/install)
-         :disabled? (not (empty? errors))
-         :on-press  #(re-frame/dispatch [:extension/install data])}]]]]))
+    (if data
+      [react/view styles/screen
+       [status-bar/status-bar]
+       [react/keyboard-avoiding-view components.styles/flex
+        [toolbar/simple-toolbar (i18n/label :t/extension)]
+        [react/scroll-view {:keyboard-should-persist-taps :handled}
+         [react/view styles/wrapper
+          [cartouche {:header (i18n/label :t/identifier)}
+           [react/text {:style styles/text}
+            (str (get-in data ['meta :name]))]]
+          [cartouche {:header (i18n/label :t/name)}
+           [react/text {:style styles/text}
+            (str (get-in data ['meta :name]))]]
+          [cartouche {:header (i18n/label :t/description)}
+           [react/text {:style styles/text}
+            (str (get-in data ['meta :description]))]]
+          [cartouche {:header (i18n/label :t/hooks)}
+           (into [react/view] (for [hook (hooks data)]
+                                [react/text {:style styles/text}
+                                 (str hook)]))]
+          [cartouche {:header (i18n/label :t/permissions)}
+           [react/text {:style styles/text}
+            (i18n/label :t/none)]]
+          [cartouche {:header (i18n/label :t/errors)}
+           (if errors
+             (into [react/view] (for [error errors]
+                                  [react/text {:style styles/text}
+                                   (str (name (:pluto.reader.errors/type error)) " " (str (:pluto.reader.errors/value error)))]))
+             [react/text {:style styles/text}
+              (i18n/label :t/none)])]]]
+        [react/view styles/bottom-container
+         [react/view components.styles/flex]
+         [components.common/bottom-button
+          {:forward?  true
+           :label     (i18n/label :t/install)
+           :disabled? (not (empty? errors))
+           :on-press  #(re-frame/dispatch [:extension/install data])}]]]]
+      [react/view styles/screen
+       [status-bar/status-bar]
+       [react/view {:flex 1}
+        [toolbar/simple-toolbar (i18n/label :t/extension)]
+        [react/view {:style {:flex 1 :justify-content :center :align-items :center}}
+         [react/text (i18n/label :t/invalid-extension)]]]])))
 
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
@@ -86,5 +106,5 @@
        [components.common/bottom-button
         {:forward?  true
          :label     (i18n/label :t/find)
-         :disabled? (string/blank? extension-url)
-         :on-press  #(re-frame/dispatch [:extension/show extension-url])}]]]]))
+         :disabled? (not (extensions/valid-uri? extension-url))
+         :on-press  #(re-frame/dispatch [:extension/show (string/trim extension-url)])}]]]]))

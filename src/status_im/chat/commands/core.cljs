@@ -130,24 +130,27 @@
 (def command-hook
   "Hook for extensions"
   {:properties
-   {:scope         #{:personal-chats :public-chats}
+   {:description?  :string
+    :scope         #{:personal-chats :public-chats}
     :short-preview :view
     :preview       :view
+    :on-send?      :event
+    :on-receive?   :event
     :parameters    [{:id           :keyword
                      :type         {:one-of #{:text :phone :password :number}}
                      :placeholder  :string
                      :suggestions  :view}]}
    :hook
    (reify hooks/Hook
-     (hook-in [_ id {:keys [description scope parameters preview short-preview]} cofx]
+     (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive]} cofx]
        (let [new-command (reify protocol/Command
                            (id [_] (name id))
                            (scope [_] scope)
                            (description [_] description)
                            (parameters [_] parameters)
                            (validate [_ _ _])
-                           (on-send [_ _ _])
-                           (on-receive [_ _ _])
+                           (on-send [_ _ _] {:dispatch on-send})
+                           (on-receive [_ _ _] {:dispatch on-receive})
                            (short-preview [_ props] (short-preview props))
                            (preview [_ props] (preview props)))]
          (load-commands cofx [new-command])))

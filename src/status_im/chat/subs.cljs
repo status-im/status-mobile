@@ -286,7 +286,7 @@
  :chat-parameter-box
  :<- [:get-current-chat]
  :<- [:selected-chat-command]
- (fn [[current-chat {:keys [current-param-position params]}]]
+ (fn [[_ {:keys [current-param-position params]}]]
    (when (and params current-param-position)
      (get-in params [current-param-position :suggestions]))))
 
