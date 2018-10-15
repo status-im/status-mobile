@@ -91,10 +91,6 @@ def pytest_addoption(parser):
                      help='Running time in seconds')
 
 
-def get_rerun_count():
-    return int(pytest.config.getoption('rerun_count'))
-
-
 def is_master(config):
     return not hasattr(config, 'slaveinput')
 
@@ -154,7 +150,7 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
     if report.when == 'call':
-        is_sauce_env = pytest.config.getoption('env') == 'sauce'
+        is_sauce_env = item.config.getoption('env') == 'sauce'
         current_test = test_suite_data.current_test
         if report.failed:
             error = report.longreprtext
@@ -172,8 +168,9 @@ def update_sauce_jobs(test_name, job_ids, passed):
 
 
 def get_testrail_case_id(obj):
-    if 'testrail_id' in obj.keywords._markers:
-        return obj.keywords._markers['testrail_id'].args[0]
+    testrail_id = obj.get_marker('testrail_id')
+    if testrail_id:
+        return testrail_id.args[0]
 
 
 def pytest_runtest_setup(item):
@@ -182,7 +179,8 @@ def pytest_runtest_setup(item):
 
 
 def pytest_runtest_protocol(item, nextitem):
-    for i in range(get_rerun_count()):
+    rerun_count = item.config.getoption('rerun_count')
+    for i in range(rerun_count):
         reports = runtestprotocol(item, nextitem=nextitem)
         for report in reports:
             if report.failed and should_rerun_test(report.longreprtext):
@@ -199,25 +197,25 @@ def faucet_for_senders():
 
 
 @pytest.fixture
-def messages_number():
-    return int(pytest.config.getoption('messages_number'))
+def messages_number(request):
+    return int(request.config.getoption('messages_number'))
 
 
 @pytest.fixture
-def message_wait_time():
-    return int(pytest.config.getoption('message_wait_time'))
+def message_wait_time(request):
+    return int(request.config.getoption('message_wait_time'))
 
 
 @pytest.fixture
-def participants_number():
-    return int(pytest.config.getoption('participants_number'))
+def participants_number(request):
+    return int(request.config.getoption('participants_number'))
 
 
 @pytest.fixture
-def chat_name():
-    return pytest.config.getoption('chat_name')
+def chat_name(request):
+    return request.config.getoption('chat_name')
 
 
 @pytest.fixture
-def user_public_key():
-    return pytest.config.getoption('user_public_key')
+def user_public_key(request):
+    return request.config.getoption('user_public_key')
