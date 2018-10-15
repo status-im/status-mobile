@@ -8,10 +8,10 @@
    :monospace     {:font-family "RobotoMono-Medium"}})
 
 (def fonts-linux
-  {:default       {:font-family "Arial" :font-weight 400}
-   :medium        {:font-family "Arial" :font-weight 800}
+  {:default       {:font-family "Arial" :font-weight "400"}
+   :medium        {:font-family "Arial" :font-weight "800"}
 
-   :toolbar-title {:font-family  "Arial" :font-weight 400}
+   :toolbar-title {:font-family  "Arial" :font-weight "400"}
    :monospace     {:font-family "RobotoMono-Medium"}})
 
 ;; Structure to be exported
