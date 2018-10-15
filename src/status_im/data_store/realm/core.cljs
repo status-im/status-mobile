@@ -202,8 +202,9 @@
          (encrypted-realm-version file-name new-key)
          (log/info "try to encrypt with password success")
          (on-success))
-       (catch :default _
+       (catch :default e
          (do
+           (log/warn "failed checking db encryption with" e)
            (log/info "try to encrypt with old key")
            (encrypted-realm-version file-name old-key)
            (log/info "try to encrypt with old key success")
