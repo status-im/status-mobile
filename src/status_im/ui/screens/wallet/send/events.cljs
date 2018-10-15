@@ -262,7 +262,9 @@
             :dispatch [:wallet/update-gas-price true]))))
 
 (fx/defn navigate-after-transaction [{:keys [db] :as cofx} chat-id]
-  (if (= :wallet-send-transaction-modal (second (:navigation-stack db)))
+  (if (and chat-id
+           (= :wallet-send-transaction-modal (second (:navigation-stack db)))
+           (= :chat (first (filter #{:browser :chat} (:navigation-stack db)))))
     (chat.models/navigate-to-chat cofx chat-id {})
     (navigation/navigate-back cofx)))
 
