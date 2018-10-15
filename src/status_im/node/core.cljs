@@ -6,6 +6,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.types :as types]
             [status-im.utils.platform :as utils.platform]
+            [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]))
 
@@ -90,7 +91,7 @@
                              :Fleet              (name current-fleet-key)
                              :BootNodes          (pick-nodes 4 (vals (:boot current-fleet)))
                              :TrustedMailServers (pick-nodes 6 (vals (:mail current-fleet)))
-                             :StaticNodes        (pick-nodes 2 (vals (:whisper current-fleet)))})
+                             :StaticNodes        (into (pick-nodes 2 (vals (:whisper current-fleet))) (vals (:static current-fleet)))})
 
       :always
       (assoc :WhisperConfig         {:Enabled true
@@ -120,6 +121,18 @@
       (assoc :PFSEnabled false
              :NoDiscovery true)
       (add-log-level config/log-level-status-go)))
+
+(fx/defn update-sync-state
+  [{:keys [db]} error sync-state]
+  {:db (assoc db :node/chain-sync-state
+              (if error
+                {:error error}
+                (when sync-state (js->clj sync-state :keywordize-keys true))))})
+
+(fx/defn update-block-number
+  [{:keys [db]} error block-number]
+  (when-not error
+    {:db (assoc db :node/latest-block-number block-number)}))
 
 (fx/defn start
   [{:keys [db]} address]
@@ -162,3 +175,26 @@
  :node/stop
  (fn []
    (status/stop-node)))
+
+(re-frame/reg-fx
+ :node/les-show-debug-info
+ (fn [[web3 account chain-sync-state]]
+   (.getBalance
+    (.-eth web3)
+    (:address account)
+    (fn [error-balance balance]
+      (.getBlockNumber
+       (.-eth web3)
+       (fn
+         [error-block block]
+         (utils/show-popup
+          "LES sync status"
+          (str
+           "* account="        (:address account) "\n"
+           "* latest block="   (or error-block block) "\n"
+           "* balance="        (or error-balance balance) "\n"
+           "* eth_getSyncing=" (or chain-sync-state "false")))))))))
+
+(defn display-les-debug-info [{{:keys [web3] :account/keys [account] :node/keys [chain-sync-state]} :db}]
+  {:node/les-show-debug-info [web3 account]})
+

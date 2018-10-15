@@ -13,13 +13,24 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]))
 
-(defn- toolbar [show-welcome?]
+(defn- toolbar [show-welcome? show-sync-state sync-state latest-block-number]
   (when-not (and show-welcome?
                  platform/android?)
     [toolbar/toolbar nil nil
      (when-not show-welcome?
-       [toolbar/content-wrapper
-        [components.common/logo styles/toolbar-logo]])
+       (if show-sync-state
+         [react/view {:style styles/sync-wrapper}
+          [components.common/logo styles/toolbar-logo]
+
+          [react/touchable-highlight {:accessibility-label :new-chat-button
+                                      :on-press            #(re-frame/dispatch [:home.ui/sync-info-pressed])}
+           [react/text {:style styles/sync-info}
+            (str "LES: 'latest' #" latest-block-number "\n"
+                 (if sync-state
+                   (str "syncing " (:currentBlock sync-state) " of " (:highestBlock sync-state) " blocks...")
+                   (str "not syncing")))]]]
+         [toolbar/content-wrapper
+          [components.common/logo styles/toolbar-logo]]))
      [toolbar/actions
       (when platform/ios?
         [(-> (toolbar.actions/add true #(re-frame/dispatch [:navigate-to :new]))
@@ -66,9 +77,12 @@
 (views/defview home []
   (views/letsubs [home-items [:home-items]
                   show-welcome? [:get-in [:accounts/create :show-welcome?]]
-                  view-id [:get :view-id]]
+                  view-id [:get :view-id]
+                  sync-state [:chain-sync-state]
+                  latest-block-number [:latest-block-number]
+                  rpc-network? [:current-network-uses-rpc?]]
     [react/view styles/container
-     [toolbar show-welcome?]
+     [toolbar show-welcome? (not rpc-network?) sync-state latest-block-number]
      (cond show-welcome?
            [welcome view-id]
            (empty? home-items)
