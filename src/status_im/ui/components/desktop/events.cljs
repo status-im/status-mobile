@@ -1,5 +1,6 @@
 (ns status-im.ui.components.desktop.events
-  (:require [status-im.utils.handlers :as handlers]))
+  (:require [status-im.utils.handlers :as handlers]
+            [status-im.utils.platform :as platform]))
 
 (handlers/register-handler-fx
  :show-desktop-tab
@@ -8,7 +9,8 @@
            :dispatch [:navigate-to (if (and (= tab-name :home) (:current-chat-id db))
                                      :chat
                                      :home)]}
-          (when (= tab-name :profile)
+          (when (and platform/isMacOs?
+                     (= tab-name :profile))
             {:http-get
              {:url
               "https://raw.githubusercontent.com/status-im/status-im.github.io/develop/env.sh"
