@@ -15,51 +15,12 @@
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import "RNSplashScreen.h"
-#import "TestFairy.h"
 #import "RCTLinkingManager.h"
 #import <Firebase.h>
 #import "RNFirebaseNotifications.h"
 #import "RNFirebaseMessaging.h"
 
 @implementation AppDelegate
-
-/* Modified version of RCTDefaultLogFunction that also directs all app logs to TestFairy. */
-RCTLogFunction RCTTestFairyLogFunction = ^(
-  RCTLogLevel level,
-  __unused RCTLogSource source,
-  NSString *fileName,
-  NSNumber *lineNumber,
-  NSString *message
-  )
-{
-  NSString *log = RCTFormatLog([NSDate date], level, fileName, lineNumber, message);
-  fprintf(stderr, "%s\n", log.UTF8String);
-  fflush(stderr);
-
-  /* Only custom part */
-  TFLog(log);
-
-  int aslLevel;
-  switch(level) {
-  case RCTLogLevelTrace:
-    aslLevel = ASL_LEVEL_DEBUG;
-    break;
-  case RCTLogLevelInfo:
-    aslLevel = ASL_LEVEL_NOTICE;
-    break;
-  case RCTLogLevelWarning:
-    aslLevel = ASL_LEVEL_WARNING;
-    break;
-  case RCTLogLevelError:
-    aslLevel = ASL_LEVEL_ERR;
-    break;
-  case RCTLogLevelFatal:
-    aslLevel = ASL_LEVEL_CRIT;
-    break;
-  }
-  asl_log(NULL, NULL, aslLevel, "%s", message.UTF8String);
-
-};
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -84,7 +45,6 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   }
   else if([logLevel isEqualToString:@"debug"]){
     RCTSetLogThreshold(RCTLogLevelTrace);
-    RCTSetLogFunction(RCTTestFairyLogFunction);
   }
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];

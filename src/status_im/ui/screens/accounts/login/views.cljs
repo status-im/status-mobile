@@ -68,7 +68,7 @@
          {:label             (i18n/label :t/password)
           :placeholder       (i18n/label :t/password)
           :ref               #(reset! password-text-input %)
-          :auto-focus        can-navigate-back? ;;this needed because keyboard overlays testfairy alert
+          :auto-focus        true
           :on-submit-editing #(login-account @password-text-input)
           :on-change-text    #(do
                                 (re-frame/dispatch [:set-in [:accounts/login :password] %])

@@ -41,7 +41,6 @@
 		925C1F4C1F7B73B20063DFA0 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925C1F451F7B73B20063DFA0 /* nanopb.framework */; };
 		92A0DF7D1F4DE3A4002051BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 92A0DF491F4DE3A0002051BC /* GoogleService-Info.plist */; };
 		983F077E2119C9D2004133ED /* message.wav in Resources */ = {isa = PBXBuildFile; fileRef = 983F07442119C9D2004133ED /* message.wav */; };
-		98482A6F2065257B00263651 /* libReactNativeTestFairy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9880471C20650CBC00CEBFE0 /* libReactNativeTestFairy.a */; };
 		9E3AB6D01D87DB2B008846B4 /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3AB6C61D87DA2B008846B4 /* libReact-Native-Webview-Bridge.a */; };
 		9EE89E271E03FCB7007D3C25 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7F21DE718EF00D694FF /* libSplashScreen.a */; };
 		9EE89E2D1E03FD9F007D3C25 /* libimageCropPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20A5C9531D927137002C4965 /* libimageCropPicker.a */; };
@@ -614,7 +613,6 @@
 			files = (
 				475D202F20B7450D00879A77 /* libRNFirebase.a in Frameworks */,
 				4CA4DA1B206D105D006A98B0 /* libRNInstabug.a in Frameworks */,
-				98482A6F2065257B00263651 /* libReactNativeTestFairy.a in Frameworks */,
 				C93242561FE1C68C00FE7099 /* libRCTAnimation.a in Frameworks */,
 				4C16DE0C1F89508700AA10DB /* JavaScriptCore.framework in Frameworks */,
 				B2DEA0D01E49E33300FA28D6 /* libRCTHttpServer.a in Frameworks */,

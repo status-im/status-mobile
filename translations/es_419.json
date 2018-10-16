@@ -594,8 +594,6 @@
     "sync-in-progress": "Sincronizando...",
     "sync-synced": "Sincronizado",
     "test-networks": "Redes de prueba",
-    "testfairy-message": "Estás usando una aplicación instalada desde una compilación nocturna. Si estás conectado a WiFi, tus interacciones con la aplicación se guardarán como vídeo y registros. Estas grabaciones no guardan tus contraseñas. Estos son utilizados por nuestro equipo de desarrollo para investigar posibles problemas y sólo se producen si la aplicación está instalada desde una compilación nocturna. No se registra nada si la aplicación se instala desde PlayStore o TestFlight.",
-    "testfairy-title": "¡Advertencia!",
     "testnet-text": "Estás en {{testnet}} Testnet. No envíes ETH o SNT reales a tu dirección",
     "text-input-disabled": "Por favor, espere un momento...",
     "to": "Para",

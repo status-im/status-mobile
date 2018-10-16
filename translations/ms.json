@@ -618,8 +618,6 @@
     "sync-in-progress": "sedang disegerakan...",
     "sync-synced": "Dalam penyegeraan",
     "test-networks": "Rangkaian ujian",
-    "testfairy-message": "Anda menggunakan aplikasi yang dipasang dari sumber binamalam. Jika anda disambungkan ke WiFi, interaksi anda dengan aplikasi akan disimpan sebagai video dan log. Rekod ini tidak menyimpan kata laluan anda. Ia digunakan oleh pasukan pembangunan kami untuk menyiasat masalah yang mungkin dan hanya berlaku jika aplikasi dipasang dari sumber binamalam. Tiada apa-apa yang direkodkan jika aplikasi dipasang dari PlayStore atau TestFlight.",
-    "testfairy-title": "Amaran!",
     "testnet-text": "Anda berada di {{testnet}} Testnet. Jangan hantar ETH atau SNT sebenar ke alamat anda",
     "text-input-disabled": "Sila tunggu sebentar...",
     "to": "Ke",

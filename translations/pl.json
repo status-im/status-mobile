@@ -578,8 +578,6 @@
     "sync-in-progress": "Synchronizacja...",
     "sync-synced": "W synchronizacji",
     "test-networks": "Sieci testowe",
-    "testfairy-message": "Używasz aplikacji zainstalowanej z nocnej wersji. Jeśli masz połączenie z Wi-Fi, Twoje interakcje z aplikacją zostaną zapisane jako wideo i logi. Te nagrania nie zapisują twoich haseł. Są one używane przez nasz zespół  do zbadania możliwych problemów i występują tylko wtedy, gdy aplikacja jest instalowana z nocnej wersji. Nic nie jest nagrywane, jeśli aplikacja jest zainstalowana z PlayStore lub TestFlight.",
-    "testfairy-title": "Ostrzeżenie!",
     "testnet-text": "Jesteś na {{testnet}} Testnet. Nie wysyłaj prawdziwych ETH lub SNT na twój adres",
     "text-input-disabled": "Proszę poczekać chwilę…",
     "to": "Do",

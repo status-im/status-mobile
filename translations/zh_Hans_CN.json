@@ -618,8 +618,6 @@
     "sync-in-progress": "正在同步...",
     "sync-synced": "已同步",
     "test-networks": "测试网络",
-    "testfairy-message": "你正在使用一个从 nightly build 上安装的应用。为了测试目的，在使用 WIFI 连接情况下，本构建包含了会话记录，即和本应用交互的所有记录（如视频和日志）将被保存，并且可能被我们的开发团队用于调查可能存在的问题。保存的视频、日志不包含你的密码。只有从 nightly build 下载安装本应用时，才会进行记录。如果本应用是从 PlayStore 或者 TestFlight 上下载安装，则不会记录。",
-    "testfairy-title": "警告！",
     "testnet-text": "你正在使用{{testnet}}测试网络，请不要向你的地址发送真实的 ETH 或者 SNT。",
     "text-input-disabled": "请稍候...",
     "to": "到",

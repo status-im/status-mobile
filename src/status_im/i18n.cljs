@@ -107,7 +107,7 @@
     :add-network :unknown-status-go-error :contacts-group-new-chat :and-you
     :wallets :clear-history :wallet-choose-from-contacts
     :signing-phrase-description :no-contacts :here-is-your-signing-phrase
-    :soon :close-app-content :status-sent :status-prompt :testfairy-title
+    :soon :close-app-content :status-sent :status-prompt
     :delete-contact-confirmation :datetime-today :add-a-status
     :web-view-error :notifications-title :error :transactions-sign-transaction
     :edit-contacts :more :cancel :no-statuses-found :can-not-add-yourself
@@ -118,7 +118,7 @@
     :new-contact :datetime-second :status-failed :is-typing :recover
     :suggestions-commands :nonce :new-network :contact-already-added :datetime-minute
     :browsing-open-in-web-browser :delete-group-prompt :wallet-total-value
-    :wallet-insufficient-funds :edit-profile :active-unknown :testfairy-message
+    :wallet-insufficient-funds :edit-profile :active-unknown
     :search-tags :transaction-failed :public-key :error-processing-json
     :status-seen :transactions-filter-tokens :status-delivered :profile
     :wallet-choose-recipient :no-statuses-discovered :none :removed :empty-topic

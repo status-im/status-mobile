@@ -26,7 +26,6 @@ import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import im.status.ethereum.module.StatusPackage;
 import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
-import com.testfairy.react.TestFairyPackage;
 import com.oblador.keychain.KeychainPackage;
 
 import java.util.ArrayList;
@@ -75,7 +74,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new TestFairyPackage(),
                     new WebViewBridgePackage(webViewDebugEnabled, callRPC),
                     new ReactNativeConfigPackage(),
                     new KeychainPackage(),

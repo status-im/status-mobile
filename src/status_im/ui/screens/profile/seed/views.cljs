@@ -64,8 +64,6 @@
 (defview twelve-words [{:keys [mnemonic]}]
   (letsubs [mnemonic-vec (vec (map-indexed vector (clojure.string/split mnemonic #" ")))
             ref (reagent/atom nil)]
-    {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @ref)))}
     [react/view {:style styles/twelve-words-container}
      [react/text {:style styles/twelve-words-label}
       (i18n/label :t/your-recovery-phrase)]
@@ -84,8 +82,6 @@
 
 (defview input [error next-handler]
   (letsubs [ref (reagent/atom nil)]
-    {:component-did-mount (fn [_] (when config/testfairy-enabled?
-                                    (.hideView js-dependencies/testfairy @ref)))}
     [text-input/text-input-with-label
      {:placeholder       (i18n/label :t/enter-word)
       :ref               (partial reset! ref)

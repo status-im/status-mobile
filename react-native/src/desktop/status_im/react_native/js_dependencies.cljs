@@ -27,5 +27,4 @@
 (def snoopy-bars            #js {})
 (def snoopy-buffer          #js {})
 (def background-timer       #js {:setTimeout (fn [cb ms] (js/setTimeout cb ms))})
-(def testfairy              #js {})
 (def react-navigation       #js {:NavigationActions #js {}})

@@ -23,7 +23,6 @@ import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
-import com.testfairy.TestFairy;
 import com.instabug.library.Instabug;
 
 import java.util.Properties;
@@ -117,9 +116,6 @@ public class MainActivity extends ReactActivity
         super.onCreate(savedInstanceState);
 
         Instabug.setIntroMessageEnabled(false);
-        if(BuildConfig.TESTFAIRY_ENABLED == "1") {
-            TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
-        }
 
         if (!shouldShowRootedNotification()) {
             configureStatus();

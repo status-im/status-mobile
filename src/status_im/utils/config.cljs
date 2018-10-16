@@ -14,11 +14,6 @@
 
 ;; NOTE(oskarth): Feature flag deprecation lifecycles. We want to make sure
 ;; flags stay up to date and are removed once behavior introduced is stable.
-;;
-;; TESTFAIRY_ENABLED - indefinite
-
-;; CONFIG FLAGS
-(def testfairy-enabled? (when-not platform/desktop? (enabled? (get-config :TESTFAIRY_ENABLED))))
 
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
@@ -42,8 +37,6 @@
       string/upper-case))
 (def fleet (get-config :FLEET "eth.beta"))
 (def default-network (get-config :DEFAULT_NETWORK))
-;; the default value should be a string for `enabled?` to work correctly.
-(def testfairy-token (get-config :TESTFAIRY_TOKEN))
 (def instabug-token (get-config :INSTABUG_TOKEN))
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.002")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))

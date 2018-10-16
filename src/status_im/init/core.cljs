@@ -37,12 +37,6 @@
                (log/warn "Could not decrypt database" error)
                (re-frame/dispatch [:init.callback/init-store-error encryption-key])))))
 
-(defn testfairy-alert! []
-  (when config/testfairy-enabled?
-    (utils/show-popup
-     (i18n/label :testfairy-title)
-     (i18n/label :testfairy-message))))
-
 ;; TODO (yenda) move keychain functions to dedicated namespace
 (defn reset-keychain! []
   (.. (keychain/reset)
@@ -82,7 +76,6 @@
             {:init/get-device-UUID                           nil
              :init/init-store                                encryption-key
              :ui/listen-to-window-dimensions-change          nil
-             :init/testfairy-alert                           nil
              :notifications/handle-initial-push-notification nil
              :network/listen-to-network-status               nil
              :network/listen-to-connection-status            nil
@@ -219,10 +212,6 @@
 (re-frame/reg-fx
  :init/status-module-initialized
  status/module-initialized!)
-
-(re-frame/reg-fx
- :init/testfairy-alert
- testfairy-alert!)
 
 (re-frame/reg-fx
  :init/get-device-UUID
