@@ -8,7 +8,7 @@
             [status-im.constants :as constants]
             [status-im.utils.ethereum.core :as ethereum]))
 
-(def kudos :KUDOS)
+(def kudos :KDO)
 
 (defmethod collectibles/load-collectible-fx kudos [{db :db} symbol id]
   (let [chain-id (get-in constants/default-networks [(:network db) :config :NetworkId])]

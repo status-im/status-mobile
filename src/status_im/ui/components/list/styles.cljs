@@ -22,8 +22,7 @@
    :color       colors/black})
 
 (def primary-text
-  (merge primary-text-base
-         {:padding-top 12}))
+  primary-text-base)
 
 (def primary-text-only
   (merge primary-text-base

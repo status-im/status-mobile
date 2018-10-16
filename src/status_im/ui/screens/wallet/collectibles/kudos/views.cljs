@@ -8,7 +8,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]))
 
-(defmethod collectibles/render-collectible :KUDOS [_ {:keys [external_url description name image]}]
+(defmethod collectibles/render-collectible :KDO [_ {:keys [external_url description name image]}]
   [react/view {:style styles/details}
    [react/view {:style styles/details-text}
     [svgimage/svgimage {:style  styles/details-image
