@@ -26,6 +26,7 @@
               :internal "status-im:/"})
 
 (def links {:public-chat "%s/chat/public/%s"
+            :user        "%s/user/%s"
             :browse      "%s/browse/%s"})
 
 (defn generate-link [link-type domain-type param]

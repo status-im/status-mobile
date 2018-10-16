@@ -23,7 +23,8 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.common.common :as components.common]
             [status-im.utils.identicon :as identicon]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.universal-links.core :as universal-links]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {}
@@ -86,7 +87,7 @@
      [qr-code-viewer/qr-code-viewer
       {:style         styles/qr-code
        :footer-button qr-code-share-button
-       :value         value
+       :value         (universal-links/generate-link :user :external value)
        :hint          (i18n/label :t/qr-code-public-key-hint)
        :legend        (str value)}]]))
 

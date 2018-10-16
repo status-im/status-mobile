@@ -6,7 +6,8 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.screens.profile.models :as profile.models]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.identicon :as identicon]))
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.universal-links.core :as universal-links]))
 
 (re-frame/reg-fx
  :open-image-picker
@@ -89,7 +90,8 @@
 (re-frame/reg-fx
  :profile/share-profile-link
  (fn [contact-code]
-   (list-selection/open-share {:message contact-code})))
+   (let [link (universal-links/generate-link :user :external contact-code)]
+     (list-selection/open-share {:message link}))))
 
 (handlers/register-handler-fx
  :profile/share-profile-link
