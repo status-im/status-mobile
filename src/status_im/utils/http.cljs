@@ -31,19 +31,23 @@
                                 ok?' (if valid-response?
                                        (and ok? (valid-response? response))
                                        ok?)]
-                            [response-body ok?']))))))
-       (.then (fn [[response ok?]]
+                            {:response-body response-body
+                             :ok?           ok?'
+                             :status-text   (.-statusText response)
+                             :status-code   (.-status response)}))))))
+       (.then (fn [{:keys [ok?] :as data}]
                 (cond
                   (and on-success ok?)
-                  (on-success response)
+                  (on-success data)
 
                   (and on-error (not ok?))
-                  (on-error response)
+                  (on-error data)
 
                   :else false)))
-       (.catch (or on-error
-                   (fn [error]
-                     (utils/show-popup "Error" (str error))))))))
+       (.catch (fn [error]
+                 (if on-error
+                   (on-error {:response-body error})
+                   (utils/show-popup "Error" (str error))))))))
 
 (defn- headers [response]
   (let [entries (es6-iterator-seq (.entries (.-headers response)))]

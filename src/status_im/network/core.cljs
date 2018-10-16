@@ -9,7 +9,10 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.fleet.core :as fleet-core]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.http :as http]
+            [status-im.utils.types :as types]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -26,6 +29,11 @@
   {:value value
    :error (string/blank? value)})
 
+(defn validate-network-id [{:keys [value]}]
+  {:value value
+   :error (and (not (string/blank? value))
+               (= (int value) 0))})
+
 (defn validate-url [{:keys [value]}]
   {:value value
    :error (not (valid-rpc-url? value))})
@@ -34,7 +42,8 @@
   (-> manage
       (update :url validate-url)
       (update :name validate-string)
-      (update :chain validate-string)))
+      (update :chain validate-string)
+      (update :network-id validate-network-id)))
 
 (defn valid-manage? [manage]
   (->> (validate-manage manage)
@@ -97,24 +106,60 @@
   {:db       (assoc db :networks/manage (validate-manage default-manage))
    :dispatch [:navigate-to :edit-network]})
 
-(fx/defn connect [{:keys [db now] :as cofx} {:keys [network on-success on-failure]}]
-  (if (get-in db [:account/account :networks network])
-    (let [current-network (get-in db [:account/account :networks (:network db)])]
-      (if (ethereum/network-with-upstream-rpc? current-network)
-        (fx/merge cofx
-                  #(action-handler on-success network %)
-                  (accounts.update/account-update
-                   {:network      network
-                    :last-updated now}
-                   {:success-event [:accounts.update.callback/save-settings-success]}))
-        (fx/merge cofx
-                  {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
-                                          :content             (i18n/label :t/close-app-content)
-                                          :confirm-button-text (i18n/label :t/close-app-button)
-                                          :on-accept           #(re-frame/dispatch [:network.ui/save-non-rpc-network-pressed network])
-                                          :on-cancel           nil}}
-                  #(action-handler on-success network %))))
-    (action-handler on-failure)))
+(fx/defn connect-success [{:keys [db now] :as cofx} {:keys [network-id on-success client-version]}]
+  (let [current-network (get-in db [:account/account :networks (:network db)])]
+    (if (ethereum/network-with-upstream-rpc? current-network)
+      (fx/merge cofx
+                #(action-handler on-success {:network-id network-id :client-version client-version} %)
+                (accounts.update/account-update
+                 {:network      network-id
+                  :last-updated now}
+                 {}))
+      (fx/merge cofx
+                {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
+                                        :content             (i18n/label :t/close-app-content)
+                                        :confirm-button-text (i18n/label :t/close-app-button)
+                                        :on-accept           #(re-frame/dispatch [:network.ui/save-non-rpc-network-pressed network-id])
+                                        :on-cancel           nil}}
+                #(action-handler on-success {:network-id network-id :client-version client-version} %)))))
+
+(defn connect-failure [{:keys [network-id on-failure reason]}]
+  (action-handler on-failure
+                  {:network-id network-id :reason reason}
+                  nil))
+
+(fx/defn connect [{:keys [db]} {:keys [network-id on-success on-failure]}]
+  (if-let [config (get-in db [:account/account :networks network-id :config])]
+    {:http-post {:url                   (get-in config [:UpstreamConfig :URL])
+                 :data                  (types/clj->json {:jsonrpc "2.0"
+                                                          :method  "web3_clientVersion"
+                                                          :id      1})
+                 :opts                  {:headers {"Content-Type" "application/json"}}
+                 :success-event-creator (fn [{:keys [response-body]}]
+                                          (let [client-version (:result (http/parse-payload response-body))]
+                                            [::connect-success {:network-id     network-id
+                                                                :on-success     on-success
+                                                                :client-version client-version}]))
+                 :failure-event-creator (fn [{:keys [response-body status-code]}]
+                                          (let [reason (if status-code
+                                                         (str "Got a wrong status code: " status-code)
+                                                         (str response-body))]
+                                            [::connect-failure {:network-id network-id
+                                                                :on-failure on-failure
+                                                                :reason     reason}]))}}
+    (connect-failure {:network-id network-id
+                      :on-failure on-failure
+                      :reason     "A network with the specified id doesn't exist"})))
+
+(handlers/register-handler-fx
+ ::connect-success
+ (fn [cofx [_ data]]
+   (connect-success cofx data)))
+
+(handlers/register-handler-fx
+ ::connect-failure
+ (fn [_ [_ data]]
+   (connect-failure data)))
 
 (fx/defn delete
   [{{:account/keys [account]} :db :as cofx} {:keys [network on-success on-failure]}]

@@ -80,12 +80,14 @@
 
 (deftest set-input-test
   (testing "it updates and validate a field"
-    (is (= {:db {:networks/manage {:url   {:value "http://valid.com"
-                                           :error false}
-                                   :name  {:value ""
-                                           :error true}
-                                   :chain {:value "mainnet"
-                                           :error false}}}}
+    (is (= {:db {:networks/manage {:url        {:value "http://valid.com"
+                                                :error false}
+                                   :name       {:value ""
+                                                :error true}
+                                   :chain      {:value "mainnet"
+                                                :error false}
+                                   :network-id {:value nil
+                                                :error false}}}}
            (model/set-input {:db {:networks/manage {:url   {:value "something"
                                                             :error true}
                                                     :name  {:value ""

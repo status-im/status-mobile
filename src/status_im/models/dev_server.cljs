@@ -40,12 +40,15 @@
   [{:keys [cofx data]}]
   (network/connect
    cofx
-   {:network    (:id data)
-    :on-success (fn [network _]
-                  {:dev-server/respond [200 {:message    "Network has been connected."
-                                             :network-id network}]})
-    :on-failure (fn [_ _]
-                  {:dev-server/respond [400 {:message "The network id you provided doesn't exist."}]})}))
+   {:network-id (:id data)
+    :on-success (fn [{:keys [network-id client-version]} _]
+                  {:dev-server/respond [200 {:message        "Network has been connected."
+                                             :network-id     network-id
+                                             :client-version client-version}]})
+    :on-failure (fn [{:keys [network-id reason]} _]
+                  {:dev-server/respond [400 {:message    "Cannot connect the network."
+                                             :network-id network-id
+                                             :reason     reason}]})}))
 
 (defmethod process-request! [:DELETE "network" nil]
   [{:keys [cofx data]}]

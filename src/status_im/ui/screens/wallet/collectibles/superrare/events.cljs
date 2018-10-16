@@ -33,9 +33,9 @@
   {:http-post {:url                   graphql-url
                :data                  (types/clj->json {:query (graphql-query (ethereum/naked-address address))})
                :opts                  {:headers {"Content-Type" "application/json"}}
-               :success-event-creator (fn [o]
+               :success-event-creator (fn [{:keys [response-body]}]
                                         [:store-collectibles superrare
-                                         (get-in (http/parse-payload o) [:data :collectiblesByOwner :collectibles])])
-               :failure-event-creator (fn [o]
-                                        [:load-collectibles-failure (http/parse-payload o)])
+                                         (get-in (http/parse-payload response-body) [:data :collectiblesByOwner :collectibles])])
+               :failure-event-creator (fn [{:keys [response-body]}]
+                                        [:load-collectibles-failure (http/parse-payload response-body)])
                :timeout-ms            10000}})

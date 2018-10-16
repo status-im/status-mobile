@@ -39,6 +39,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
 ;; init module
@@ -336,8 +337,10 @@
 
 (handlers/register-handler-fx
  :network.ui/connect-network-pressed
- (fn [cofx [_ network]]
-   (network/connect cofx {:network network})))
+ (fn [cofx [_ network-id]]
+   (network/connect cofx {:network-id network-id
+                          :on-failure (fn [{:keys [reason]} _]
+                                        (utils/show-popup "Error" (str reason)))})))
 
 (handlers/register-handler-fx
  :network.ui/delete-network-pressed
