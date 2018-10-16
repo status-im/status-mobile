@@ -34,6 +34,8 @@
 (defrecord Notification [])
 (def react-native-firebase  #js {:default #js {:notifications #js {:Notification Notification}}})
 
+(def desktop-linking #js {:addEventListener (fn [])})
+
 (def snoopy                  #js {:default #js {}})
 (def snoopy-filter           #js {:default #js {}})
 (def snoopy-bars             #js {:default #js {}})

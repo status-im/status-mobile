@@ -8,11 +8,13 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.public-chat :as public-chat]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.desktop.events :as desktop.events]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.platform :as platform]))
 
 (defn multi-user-chat? [cofx chat-id]
   (get-in cofx [:db :chats chat-id :group-chat]))
@@ -200,7 +202,9 @@
             (add-public-chat topic)
             (navigate-to-chat topic {:modal?              modal?
                                      :navigation-reset? true})
-            (public-chat/join-public-chat topic)))
+            (public-chat/join-public-chat topic)
+            (when platform/desktop?
+              (desktop.events/change-tab :home))))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

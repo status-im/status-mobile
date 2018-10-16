@@ -8,10 +8,12 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.ui.screens.desktop.main.chat.events :as desktop.events]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as platform]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -63,7 +65,9 @@
   (log/info "universal-links: handling view profile" profile-id)
   (if (new-chat.db/own-whisper-identity? db profile-id)
     (navigation/navigate-to-cofx cofx :my-profile nil)
-    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] profile-id) :profile nil)))
+    (if platform/desktop?
+      (desktop.events/show-profile-desktop profile-id cofx)
+      (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] profile-id) :profile nil))))
 
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)
