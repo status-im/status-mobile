@@ -20,7 +20,7 @@
      [react/text {:style    styles/text
                   :on-press (when mailserver-error?
                               #(re-frame/dispatch [:inbox.ui/reconnect-mailserver-pressed]))}
-      (if fetching?
+      (if (and (not mailserver-error?) fetching?)
         (i18n/label :t/fetching-messages {:requests-left (str fetching?)})
         (i18n/label label))]]))
 

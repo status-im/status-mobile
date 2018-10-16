@@ -15,6 +15,7 @@
 
 ;; optional
 (spec/def ::topic (spec/nilable string?))
+(spec/def ::topics (spec/coll-of ::topic :min-count 1))
 (spec/def ::sym-key-id (spec/nilable string?))
 ;;TODO (yenda) remove once go implements persistence
 (spec/def ::sym-key (spec/nilable string?))
@@ -25,8 +26,6 @@
 (spec/def :request/to pos-int?)
 (spec/def :request/attemps int?)
 (spec/def :request/cursor :global/not-empty-string)
-(spec/def :transport.inbox/request (spec/keys :req-un [:request/from :request/to ::topic]
-                                              :opt-un [:request/attemps]))
 
 (spec/def :transport.inbox.topic/last-request pos-int?)
 (spec/def :transport.inbox.topic/started-at pos-int?)
@@ -36,18 +35,18 @@
                                                         :kind set?
                                                         :min-count 1))
 
-(spec/def :transport.inbox/topic (allowed-keys :req-un [:transport.inbox.topic/last-request
-                                                        :transport.inbox.topic/chat-ids]
-                                               :opt-un [:transport.inbox.topic/started-at]))
-(spec/def :transport/chat (allowed-keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
-                                        :opt-un [::sym-key-id ::sym-key ::resend?]))
+(spec/def :transport.inbox/topic (spec/keys :req-un [:transport.inbox.topic/last-request
+                                                     :transport.inbox.topic/chat-ids]))
+(spec/def :transport/chat (spec/keys :req-un [::ack ::seen ::pending-ack ::pending-send ::topic]
+                                     :opt-un [::sym-key-id ::sym-key ::resend?]))
 
 (spec/def :transport.inbox/request-to :request/to)
 (spec/def :transport/chats (spec/map-of :global/not-empty-string :transport/chat))
 (spec/def :transport/filters (spec/map-of :transport/filter-id :transport/filter))
 (spec/def :transport.inbox/connection-checks pos-int?)
 (spec/def :transport.inbox/topics (spec/map-of :global/not-empty-string :transport.inbox/topic))
-(spec/def :transport.inbox/current-request :transport.inbox/request)
+(spec/def :transport.inbox/current-request (spec/keys :req-un [:request/from :request/to ::topics]
+                                                      :opt-un [:request/attemps]))
 (spec/def :transport.inbox/pending-requests integer?)
 
 (defn create-chat

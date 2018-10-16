@@ -170,13 +170,13 @@
         mailserver-removed?
         (connect-to-mailserver cofx)))))
 
-(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topic to from]}]
+(defn request-messages! [web3 {:keys [sym-key-id address]} {:keys [topics to from]}]
   (log/info "offline inbox: request-messages for: "
-            " topic " topic
+            " topics " topics
             " from " from
             " to   " to)
   (.requestMessages (transport.utils/shh web3)
-                    (clj->js {:topic          topic
+                    (clj->js {:topics         topics
                               :mailServerPeer address
                               :symKeyID       sym-key-id
                               :timeout        request-timeout
@@ -184,8 +184,8 @@
                               :to             to})
                     (fn [error request-id]
                       (if-not error
-                        (log/info "offline inbox: messages request success for topic " topic "from" from "to" to)
-                        (log/error "offline inbox: messages request error for topic " topic ": " error)))))
+                        (log/info "offline inbox: messages request success for topic " topics "from" from "to" to)
+                        (log/error "offline inbox: messages request error for topic " topics ": " error)))))
 
 (re-frame/reg-fx
  :transport.inbox/request-messages
@@ -205,7 +205,7 @@
   "NOTE: currently the mailserver is only accepting requests for a span
   of 24 hours, so we split requests per 24h spans if the last request was
   done more than 24h ago"
-  [now-in-s [topic {:keys [last-request]}]]
+  [now-in-s [last-request topics]]
   (let [days        (conj
                      (into [] (range (max last-request
                                           (- now-in-s one-day))
@@ -214,7 +214,7 @@
                      now-in-s)
         day-ranges  (map vector days (rest days))]
     (for [[from to] day-ranges]
-      {:topic topic
+      {:topics topics
        :from  from
        :to    to})))
 
@@ -223,7 +223,10 @@
   (let [web3     (:web3 db)]
     (remove nil?
             (mapcat (partial split-request-per-day request-to)
-                    (:transport.inbox/topics db)))))
+                    (reduce (fn [acc [topic {:keys [last-request]}]]
+                              (update acc last-request conj topic))
+                            {}
+                            (:transport.inbox/topics db))))))
 
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
@@ -325,29 +328,38 @@
                         {:topic topic
                          :inbox-topic inbox-topic})]})))
 
-(fx/defn update-inbox-topic
+(defn get-updated-inbox-topics [db topics last-request]
+  (reduce (fn [acc topic]
+            (if-let [inbox-topic (some-> (get-in db [:transport.inbox/topics topic])
+                                         (assoc :last-request last-request))]
+              (assoc acc topic inbox-topic)
+              acc))
+          {}
+          topics))
+
+(fx/defn update-inbox-topics
   "TODO: add support for cursors
   if there is a cursor, do not update `last-request`"
-  [{:keys [db now] :as cofx} {:keys [request-id cursor]}]
+  [{:keys [db now] :as cofx} {:keys [request-id]}]
   (when-let [request (get db :transport.inbox/current-request)]
-    (let [{:keys [from to topic]} request
-          inbox-topic (some-> (get-in db [:transport.inbox/topics topic])
-                              (assoc :last-request to))]
+    (let [{:keys [from to topics]} request
+          inbox-topics (get-updated-inbox-topics db topics to)]
       (log/info "offline inbox: message request " request-id
-                "completed for inbox topic" topic "from" from "to" to)
-      (if inbox-topic
-        (fx/merge cofx
-                  (if inbox-topic
-                    {:db (-> db
-                             (dissoc :transport.inbox/current-request)
-                             (assoc-in [:transport.inbox/topics topic] inbox-topic))
-                     :data-store/tx [(transport-store/save-transport-inbox-topic-tx
-                                      {:topic topic
-                                       :inbox-topic inbox-topic})]})
-                  (process-next-messages-request))
-        ;; when the topic was deleted (filter was removed while request was pending)
+                "completed for inbox topics" topics "from" from "to" to)
+      (if (empty? inbox-topics)
+        ;; when topics were deleted (filter was removed while request was pending)
         (fx/merge cofx
                   {:db (dissoc db :transport.inbox/current-request)}
+                  (process-next-messages-request))
+        (fx/merge cofx
+                  {:db (-> db
+                           (dissoc :transport.inbox/current-request)
+                           (update :transport.inbox/topics merge inbox-topics))
+                   :data-store/tx (mapv (fn [[topic inbox-topic]]
+                                          (transport-store/save-transport-inbox-topic-tx
+                                           {:topic topic
+                                            :inbox-topic inbox-topic}))
+                                        inbox-topics)}
                   (process-next-messages-request))))))
 
 (fx/defn upsert-inbox-topic
@@ -378,9 +390,9 @@
               {:db (update db :transport.inbox/current-request dissoc :attemps)}
               (change-mailserver))
     (when-let [wnode (get-wnode-when-ready cofx)]
-      (let [{:keys [topic from to] :as request} (get db :transport.inbox/current-request)
+      (let [{:keys [topics from to] :as request} (get db :transport.inbox/current-request)
             web3 (:web3 db)]
-        (log/info "offline inbox: message request " request-id "expired for inbox topic" topic "from" from "to" to)
+        (log/info "offline inbox: message request " request-id "expired for inbox topic" topics "from" from "to" to)
         {:db (update-in db [:transport.inbox/current-request :attemps] inc)
          :transport.inbox/request-messages {:web3    web3
                                             :wnode   wnode
