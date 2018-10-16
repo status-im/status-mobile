@@ -245,12 +245,10 @@
        [react/view styles/send-transaction-form
         [wallet.components/cartouche {:disabled? true}
          (i18n/label :t/message)
-         [components/amount-input
-          {:disabled?     true
-           :input-options {:multiline true
-                           :height    100}
-           :amount-text   data}
-          nil]]]]
+         [react/text
+          {:style styles/sign-message-text
+           :selectable true}
+          data]]]]
       [enter-password-buttons false
        #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
        #(re-frame/dispatch [:wallet/sign-message])

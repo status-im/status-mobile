@@ -139,6 +139,11 @@
    :selection-color        colors/white
    :style                  wallet.components.styles/text-input})
 
+(def sign-message-text
+  {:color            colors/white
+   :font-size        14
+   :padding-vertical 8})
+
 (def sign-buttons
   {:background-color colors/blue
    :padding-vertical 8})
