@@ -28,7 +28,7 @@
 
 (def one-day (* 24 3600))
 (def seven-days (* 7 one-day))
-(def maximum-number-of-attemps 2)
+(def maximum-number-of-attempts 2)
 (def request-timeout 30)
 
 (def connection-timeout
@@ -208,7 +208,7 @@
   [now-in-s [topic {:keys [last-request]}]]
   (let [days        (conj
                      (into [] (range (max last-request
-                                          (- now-in-s seven-days))
+                                          (- now-in-s one-day))
                                      now-in-s
                                      one-day))
                      now-in-s)
@@ -372,7 +372,7 @@
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
-  (if (<= maximum-number-of-attemps
+  (if (<= maximum-number-of-attempts
           (get-in db [:transport.inbox/current-request :attemps]))
     (fx/merge cofx
               {:db (update db :transport.inbox/current-request dissoc :attemps)}
