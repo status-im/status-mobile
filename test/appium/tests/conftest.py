@@ -180,7 +180,7 @@ def pytest_runtest_setup(item):
 
 def pytest_runtest_protocol(item, nextitem):
     rerun_count = item.config.getoption('rerun_count')
-    for i in range(rerun_count):
+    for i in range(int(rerun_count)):
         reports = runtestprotocol(item, nextitem=nextitem)
         for report in reports:
             if report.failed and should_rerun_test(report.longreprtext):
