@@ -5,7 +5,8 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            status-im.ui.screens.extensions.add.navigation))
 
 (re-frame/reg-fx
  :extension/load
