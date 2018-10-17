@@ -81,7 +81,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         public_key_2 = home_2.get_public_key()
         profile_2 = home_2.get_profile_view()
         profile_2.switch_network('Mainnet with upstream RPC')
-        sign_in_2.sign_in()
 
         chat_1 = home_1.add_contact(public_key_2)
         message = 'test message'

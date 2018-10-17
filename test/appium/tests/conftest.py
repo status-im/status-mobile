@@ -190,10 +190,26 @@ def pytest_runtest_protocol(item, nextitem):
 
 
 @pytest.fixture(scope="session", autouse=False)
-def faucet_for_senders():
-    network_api = NetworkApi()
+def faucet_for_senders(request):
+    network = request.config.getoption('network')
+    network_api = NetworkApi(network)
     for user in transaction_senders.values():
         network_api.faucet(address=user['address'])
+
+
+@pytest.fixture(autouse=True)
+def set_network(request):
+    network = request.config.getoption('network')
+    request.instance.network_api = NetworkApi(network=network)
+    if network == 'ropsten':
+        request.instance.network = 'Ropsten with upstream RPC'
+        request.instance.crypto_currency = 'ETHro'
+    elif network == 'rinkeby':
+        request.instance.network = 'Rinkeby with upstream RPC'
+        request.instance.crypto_currency = 'ETHri'
+    else:
+        request.instance.network = 'Mainnet with upstream RPC'
+        request.instance.crypto_currency = 'ETH'
 
 
 @pytest.fixture

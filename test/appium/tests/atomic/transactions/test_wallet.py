@@ -11,7 +11,6 @@ from views.sign_in_view import SignInView
 
 @marks.transaction
 class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
-
     @marks.testrail_id(5307)
     @marks.critical
     def test_send_eth_from_wallet_to_contact(self):
@@ -44,6 +43,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sender = transaction_senders['P']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'])
+        profile = home_view.profile_button.click()
+        profile.switch_network(self.network)
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         send_transaction = wallet_view.send_transaction_button.click()

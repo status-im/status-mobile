@@ -66,6 +66,10 @@ class NetworkSettingsButton(BaseButton):
             super(NetworkSettingsButton.ConnectButton, self).__init__(driver)
             self.locator = self.Locator.accessibility_id('network-connect-button')
 
+        def click(self):
+            self.scroll_to_element()
+            self.navigate()
+
 
 class LogoutButton(BaseButton):
 
@@ -469,13 +473,18 @@ class ProfileView(BaseView):
     def switch_network(self, network):
         self.advanced_button.click()
         self.debug_mode_toggle.click()
-        self.network_settings_button.scroll_to_element()
-        self.network_settings_button.click()
-        network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
-        network_button.click()
-        self.connect_button.click()
-        from views.sign_in_view import SignInView
-        return SignInView(self.driver)
+        self.active_network_name.scroll_to_element()
+        if self.active_network_name.text != network.upper():
+            self.network_settings_button.scroll_to_element()
+            self.network_settings_button.click()
+            network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
+            network_button.click()
+            elm = self.connect_button.wait_for_element()
+            elm.click()
+            from views.sign_in_view import SignInView
+            signin_view = SignInView(self.driver)
+            signin_view.sign_in()
+            # return SignInView(self.driver)
 
     def add_custom_network(self):
         self.advanced_button.click()
@@ -543,5 +552,7 @@ class ProfileView(BaseView):
     @property
     def current_active_network(self):
         self.advanced_button.click()
+        self.debug_mode_toggle.click()
+        self.active_network_name.scroll_to_element()
         self.active_network_name.scroll_to_element()
         return self.active_network_name.text
