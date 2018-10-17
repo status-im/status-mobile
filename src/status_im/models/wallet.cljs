@@ -8,7 +8,8 @@
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -233,8 +234,12 @@
                             :chain         chain
                             :success-event :update-token-balance-success
                             :error-event   :update-token-balance-fail}
-       :get-prices         {:from          (if mainnet? (conj tokens "ETH") ["ETH"])
+       :get-prices         {:from          (if mainnet?
+                                             (conj tokens "ETH")
+                                             [(-> (tokens/native-currency chain)
+                                                  (wallet.utils/exchange-symbol))])
                             :to            [(:code currency)]
+                            :mainnet?      mainnet?
                             :success-event :update-prices-success
                             :error-event   :update-prices-fail}
        :db                 (-> db

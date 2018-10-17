@@ -25,7 +25,16 @@
     :rinkeby {:name           "Rinkeby Ether"
               :symbol         :ETH
               :symbol-display :ETHri
-              :decimals       18}}))
+              :decimals       18}
+    :poa     {:name           "POA"
+              :symbol         :ETH
+              :symbol-display :POA
+              :decimals       18}
+    :xdai    {:name            "xDAI"
+              :symbol          :ETH
+              :symbol-display  :xDAI
+              :symbol-exchange :DAI
+              :decimals        18}}))
 
 (def native-currency-symbols
   (set (map #(-> % val :symbol) all-native-currencies)))

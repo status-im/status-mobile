@@ -6,7 +6,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [status-im.utils.semaphores :as semaphores]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.i18n :as i18n]))
 
 (fx/defn update-sync-state
   [{{:keys [sync-state sync-data] :as db} :db} error sync]
@@ -73,6 +74,8 @@
                     (when (and (not error) ; error most probably means we are offline
                                (not= network-id fetched-network-id))
                       (utils/show-popup
-                       "Ethereum node started incorrectly"
-                       "Ethereum node was started with incorrect configuration, application will be stopped to recover from that condition."
+                       (i18n/label :t/ethereum-node-started-incorrectly-title)
+                       (i18n/label :t/ethereum-node-started-incorrectly-description
+                                   {:network-id         network-id
+                                    :fetched-network-id fetched-network-id})
                        #(re-frame/dispatch [:protocol.ui/close-app-confirmed]))))))))

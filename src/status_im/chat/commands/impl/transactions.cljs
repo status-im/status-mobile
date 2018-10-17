@@ -88,7 +88,8 @@
 (defn personal-send-request-short-preview
   [label-key {:keys [content]}]
   (let [{:keys [amount asset network]} (:params content)
-        token (tokens/asset-for (keyword network) (keyword asset))]
+        token (when (and network asset)
+                (tokens/asset-for (keyword network) (keyword asset)))]
     [chat-preview/text {}
      (i18n/label label-key {:amount (i18n/label-number amount)
                             :asset  (wallet.utils/display-symbol token)})]))
@@ -227,7 +228,10 @@
                         :font  :default}
             (wallet.utils/display-symbol token)]]]]
         (when (and fiat-amount
-                   platform/mobile?)
+                   platform/mobile?
+                   ;;NOTE(goranjovic) - have to hide cross network asset fiat value until we can support
+                   ;; multiple chain prices simultaneously
+                   (not network-mismatch?))
           [react/view transactions-styles/command-send-fiat-amount
            [react/text {:style (transactions-styles/command-send-fiat-amount-text outgoing)}
             (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])
@@ -412,7 +416,10 @@
                                [react/text {:style (transactions-styles/command-request-currency-text outgoing)
                                             :font  :default}
                                 asset]]]
-                             (when platform/mobile?
+                             (when (and platform/mobile?
+                                        ;;NOTE(goranjovic) - have to hide cross network asset fiat value until we can support
+                                        ;; multiple chain prices simultaneously
+                                        (not network-mismatch?))
                                [react/view transactions-styles/command-request-fiat-amount-row
                                 [react/text {:style (transactions-styles/command-request-fiat-amount-text outgoing)}
                                  (str "~ " fiat-amount " " (or currency (i18n/label :usd-currency)))]])

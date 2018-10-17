@@ -10,7 +10,9 @@
 (def chains
   {:mainnet {:id 1 :name "Mainnet"}
    :testnet {:id 3 :name "Ropsten"}
-   :rinkeby {:id 4 :name "Rinkeby"}})
+   :rinkeby {:id 4 :name "Rinkeby"}
+   :xdai    {:id 100 :name "xDai"}
+   :poa     {:id 99 :name "POA"}})
 
 (defn chain-id->chain-keyword [i]
   (or (some #(when (= i (:id (val %))) (key %)) chains)
@@ -20,7 +22,12 @@
   (get-in chains [k :id]))
 
 (defn testnet? [id]
-  (contains? #{(chain-keyword->chain-id :testnet) (chain-keyword->chain-id :rinkeby)} id))
+  (contains? #{(chain-keyword->chain-id :testnet)
+               (chain-keyword->chain-id :rinkeby)} id))
+
+(defn sidechain? [id]
+  (contains? #{(chain-keyword->chain-id :xdai)
+               (chain-keyword->chain-id :poa)} id))
 
 (defn network-with-upstream-rpc? [network]
   (get-in network [:config :UpstreamConfig :Enabled]))
