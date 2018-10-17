@@ -48,6 +48,20 @@
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
 
+(def sidechain-networks
+  {"xdai_rpc" {:id     "xdai_rpc",
+               :name   "xDai Chain",
+               :config {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
+                        :DataDir        "/ethereum/xdai_rpc"
+                        :UpstreamConfig {:Enabled true
+                                         :URL     "https://dai.poa.network"}}}
+   "poa_rpc"  {:id     "poa_rpc",
+               :name   "POA Network",
+               :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
+                        :DataDir        "/ethereum/poa_rpc"
+                        :UpstreamConfig {:Enabled true
+                                         :URL     "https://poa.infura.io"}}}})
+
 (def testnet-networks
   {"testnet"     {:id     "testnet",
                   :name   "Ropsten",
@@ -84,12 +98,14 @@
 
 (def default-networks
   (into {} (filter network-enabled?
-                   (merge testnet-networks mainnet-networks))))
+                   (merge testnet-networks mainnet-networks sidechain-networks))))
 
 (defn default-account-settings []
   {:wallet {:visible-tokens {:testnet #{:STT :HND}
                              :mainnet #{:SNT}
-                             :rinkeby #{:MOKSHA :KDO}}}})
+                             :rinkeby #{:MOKSHA :KDO}
+                             :xdai    #{}
+                             :poa     #{}}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

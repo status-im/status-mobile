@@ -3,6 +3,9 @@
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
+(def etherscan-supported?
+  #{:testnet :mainnet :rinkeby})
+
 (defn- get-network-subdomain [chain]
   (case chain
     (:testnet) "ropsten"
@@ -10,8 +13,9 @@
     (:rinkeby) "rinkeby"))
 
 (defn get-transaction-details-url [chain hash]
-  (let [network-subdomain (get-network-subdomain chain)]
-    (str "https://" (when network-subdomain (str network-subdomain ".")) "etherscan.io/tx/" hash)))
+  (when (etherscan-supported? chain)
+    (let [network-subdomain (get-network-subdomain chain)]
+      (str "https://" (when network-subdomain (str network-subdomain ".")) "etherscan.io/tx/" hash))))
 
 (def etherscan-api-key "DMSI4UAAKUBVGCDMVP3H2STAMSAUV7BYFI")
 
@@ -56,8 +60,10 @@
                {})))
 
 (defn get-transactions [chain account on-success on-error]
-  (let [url (get-transaction-url chain account)]
-    (log/debug "HTTP GET" url)
-    (http/get url
-              #(on-success (format-transactions-response % account))
-              on-error)))
+  (if (etherscan-supported? chain)
+    (let [url (get-transaction-url chain account)]
+      (log/debug "HTTP GET" url)
+      (http/get url
+                #(on-success (format-transactions-response % account))
+                on-error))
+    (log/info "Etherscan not supported for " chain)))

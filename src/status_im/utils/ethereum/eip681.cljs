@@ -18,8 +18,9 @@
 (def parameter-separator "&")
 (def key-value-separator "=")
 
+;;TODO(goranjovic) - rewrite all of these with something more readable than regex
 (def uri-pattern (re-pattern (str scheme scheme-separator "([^" query-separator "]*)(?:\\" query-separator "(.*))?")))
-(def authority-path-pattern (re-pattern (str "^([^" chain-id-separator function-name-separator "]*)(?:" chain-id-separator "(\\d))?(?:" function-name-separator "(\\w*))?")))
+(def authority-path-pattern (re-pattern (str "^([^" chain-id-separator function-name-separator "]*)(?:" chain-id-separator "(\\d+))?(?:" function-name-separator "(\\w*))?")))
 (def key-value-format (str "([^" parameter-separator key-value-separator "]+)"))
 (def query-pattern (re-pattern (str key-value-format key-value-separator key-value-format)))
 

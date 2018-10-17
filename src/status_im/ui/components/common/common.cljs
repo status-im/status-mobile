@@ -53,9 +53,14 @@
       [react/view styles/network-icon
        [vector-icons/icon :icons/network {:color :white}]]
       [react/text {:style (styles/network-text text-color)}
-       (if (ethereum/testnet? network-id)
-         (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
-         (i18n/label :t/mainnet-text))]]]))
+       (cond (ethereum/testnet? network-id)
+             (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
+
+             (ethereum/sidechain? network-id)
+             (i18n/label :t/sidechain-text {:sidechain (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
+
+             :else
+             (i18n/label :t/mainnet-text))]]]))
 
 (defn logo
   ([] (logo nil))
