@@ -1,5 +1,5 @@
 import pytest
-from tests import marks, common_password, get_current_time, test_fairy_warning_text, unique_password
+from tests import marks, common_password, get_current_time, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -12,8 +12,6 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.critical
     def test_create_account(self):
         sign_in = SignInView(self.driver, skip_popups=False)
-        if not sign_in.element_by_text_part(test_fairy_warning_text).is_element_displayed():
-            self.errors.append('TestFairy warning is not shown')
         sign_in.accept_agreements()
         if not sign_in.i_have_account_button.is_element_displayed():
             self.errors.append("'I have an account' button is not displayed")
