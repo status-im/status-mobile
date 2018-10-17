@@ -27,15 +27,15 @@
                       :input-placeholder (i18n/label :t/name-placeholder)
                       :input-description (i18n/label :t/name-description)}})
 
-(defview input [{:keys [step error password password-confirm]}]
+(defview input [next-enabled? {:keys [step error password password-confirm]}]
   [text-input/text-input-with-label
-   {:label             (get-in steps [step :input-label])
-    :placeholder       (get-in steps [step :input-placeholder])
-    :on-change-text    #(re-frame/dispatch [:accounts.create.ui/input-text-changed (get-in steps [step :input-key]) %])
-    :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
-    :auto-focus        true
-    :on-submit-editing #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])
-    :error             error}])
+   (cond-> {:label             (get-in steps [step :input-label])
+            :placeholder       (get-in steps [step :input-placeholder])
+            :on-change-text    #(re-frame/dispatch [:accounts.create.ui/input-text-changed (get-in steps [step :input-key]) %])
+            :secure-text-entry (boolean (#{:enter-password :confirm-password} step))
+            :auto-focus        true
+            :error             error}
+     next-enabled? (assoc :on-submit-editing #(re-frame/dispatch [:accounts.create.ui/next-step-pressed step password password-confirm])))])
 
 (defview create-account []
   (letsubs [step [:get-in [:accounts/create :step]]
@@ -63,10 +63,11 @@
         [react/view components.styles/flex
          [react/view {:style                       styles/input-container
                       :important-for-accessibility :no-hide-descendants}
-          [input {:step             step
-                  :error            error
-                  :password         password
-                  :password-confirm password-confirm}]
+          [input next-enabled?
+           {:step             step
+            :error            error
+            :password         password
+            :password-confirm password-confirm}]
           [react/text {:style styles/input-description}
            (get-in steps [step :input-description])]]
          [react/view {:style components.styles/flex}]

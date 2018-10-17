@@ -2,6 +2,7 @@
   (:require status-im.utils.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.bootnodes-settings.db
+            [clojure.string :as string]
             [cljs.spec.alpha :as spec]
             [status-im.constants :as const])
   (:require-macros [status-im.utils.db :refer [allowed-keys]]))
@@ -15,6 +16,11 @@
 
 (defn valid-length? [password]
   (>= (count password) const/min-password-length))
+
+(defn account-creation-next-enabled? [{:keys [step password password-confirm name]}]
+  (or (and password (= :enter-password step) (spec/valid? ::password password))
+      (and password-confirm (= :confirm-password step) (spec/valid? ::password password-confirm))
+      (and name (= :enter-name step) (not (string/blank? name)))))
 
 (spec/def ::password  (spec/and :global/not-empty-string valid-length?))
 
