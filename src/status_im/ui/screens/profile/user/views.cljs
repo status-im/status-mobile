@@ -73,11 +73,13 @@
    [toolbar/content-title label]])
 
 (defn qr-code-share-button [value]
-  [button/button-with-icon {:on-press            #(list-selection/open-share {:message value})
-                            :label               (i18n/label :t/share-link)
-                            :icon                :icons/share
-                            :accessibility-label :share-my-contact-code-button
-                            :style               styles/share-link-button}])
+  (let [link (universal-links/generate-link :user :external value)]
+    [button/button-with-icon
+     {:on-press            #(list-selection/open-share {:message link})
+      :label               (i18n/label :t/share-link)
+      :icon                :icons/share
+      :accessibility-label :share-my-contact-code-button
+      :style               styles/share-link-button}]))
 
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
@@ -87,7 +89,7 @@
      [qr-code-viewer/qr-code-viewer
       {:style         styles/qr-code
        :footer-button qr-code-share-button
-       :value         (universal-links/generate-link :user :external value)
+       :value         value
        :hint          (i18n/label :t/qr-code-public-key-hint)
        :legend        (str value)}]]))
 
