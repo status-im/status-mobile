@@ -1,7 +1,6 @@
 (ns status-im.contact.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.identicon :as identicon]))
 
 (reg-sub :get-current-contact-identity :contacts/identity)
@@ -149,19 +148,10 @@
                :else
                (identicon/identicon chat-id)))))
 
-(defn- address= [{:keys [address] :as contact} s]
-  (when (and address (= (ethereum/normalized-address s)
-                        (ethereum/normalized-address address)))
-    contact))
-
-(defn- contact-by-address [[_ contact] s]
-  (when (address= contact s)
-    contact))
-
 (reg-sub :get-contact-by-address
          :<- [:get-contacts]
          (fn [contacts [_ address]]
-           (some #(contact-by-address % address) contacts)))
+           (utils.contacts/find-contact-by-address contacts address)))
 
 (reg-sub :get-contacts-by-address
          :<- [:get-contacts]

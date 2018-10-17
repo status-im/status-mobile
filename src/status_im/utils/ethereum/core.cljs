@@ -171,3 +171,8 @@
                                                 (if-not error
                                                   (cb (js->clj result :keywordize-keys true))
                                                   (handle-error error)))))
+
+(defn address= [address1 address2]
+  (and address1 address2
+       (= (normalized-address address1)
+          (normalized-address address2))))

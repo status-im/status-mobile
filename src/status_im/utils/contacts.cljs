@@ -1,7 +1,8 @@
 (ns status-im.utils.contacts
   (:require [status-im.js-dependencies :as js-dependencies]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.gfycat.core :as gfycat]))
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.ethereum.core :as ethereum]))
 
 (defn whisper-id->new-contact [whisper-id]
   {:name             (gfycat/generate-gfy whisper-id)
@@ -17,3 +18,10 @@
                          nil)]
     (when normalized-key
       (subs (.sha3 js-dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+
+(defn- contact-by-address [[_ contact] address]
+  (when (ethereum/address= (:address contact) address)
+    contact))
+
+(defn find-contact-by-address [contacts address]
+  (some #(contact-by-address % address) contacts))
