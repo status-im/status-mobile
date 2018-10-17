@@ -88,30 +88,47 @@
          (fn [wallet]
            (:current-transaction wallet)))
 
+(defn- value->fiat [value symbol {:keys [code]} prices precision]
+  (let [fiat-price (get-in prices [symbol (keyword code) :price])
+        value-ether (money/wei->ether value)
+        value-fiat (money/crypto->fiat value-ether fiat-price)]
+    (-> value-fiat (money/with-precision precision) (money/to-fixed))))
+
+(defn- cost-fiat [gas-used gas-price symbol currency prices]
+  (let [value (money/fee-value gas-used gas-price)
+        amount (value->fiat value symbol currency prices 4)]
+    (str amount " " (:code currency))))
+
 (reg-sub :wallet.transactions/transaction-details
          :<- [:wallet.transactions/transactions]
          :<- [:wallet.transactions/current-transaction]
          :<- [:network]
-         (fn [[transactions current-transaction network]]
-           (let [{:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)
+         :<- [:wallet/currency]
+         :<- [:prices]
+         (fn [[transactions current-transaction network currency prices]]
+           (let [{:keys [gas-used gas-price hash symbol timestamp type value] :as transaction} (get transactions current-transaction)
                  chain           (ethereum/network->chain-keyword network)
                  native-currency (tokens/native-currency chain)
                  display-unit    (wallet.utils/display-symbol native-currency)]
              (when transaction
                (merge transaction
-                      {:gas-price-eth  (if gas-price (money/wei->str :eth gas-price display-unit) "-")
+                      {:date           (datetime/timestamp->long-date timestamp)
+                       :gas-price-eth  (if gas-price (money/wei->str :eth gas-price display-unit) "-")
                        :gas-price-gwei (if gas-price (money/wei->str :gwei gas-price) "-")
-                       :date           (datetime/timestamp->long-date timestamp)}
+                       :symbol-fiat    (:id currency)
+                       :value-fiat     (value->fiat value symbol currency prices 2)}
                       (if (= type :unsigned)
                         {:block     (i18n/label :not-applicable)
                          :cost      (i18n/label :not-applicable)
+                         :cost-fiat (i18n/label :not-applicable)
                          :gas-limit (i18n/label :not-applicable)
                          :gas-used  (i18n/label :not-applicable)
                          :nonce     (i18n/label :not-applicable)
                          :hash      (i18n/label :not-applicable)}
-                        {:cost (when gas-used
-                                 (money/wei->str :eth (money/fee-value gas-used gas-price) display-unit))
-                         :url  (transactions/get-transaction-details-url chain hash)}))))))
+                        {:cost      (when gas-used
+                                      (money/wei->str :eth (money/fee-value gas-used gas-price) display-unit))
+                         :cost-fiat (cost-fiat gas-used gas-price symbol currency prices)
+                         :url       (transactions/get-transaction-details-url chain hash)}))))))
 
 (reg-sub :wallet.transactions.details/confirmations
          :<- [:wallet.transactions/transaction-details]
