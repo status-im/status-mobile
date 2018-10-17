@@ -215,13 +215,6 @@
 			remoteGlobalIDString = 0CF68AC11AF0540F00FF9E5C;
 			remoteInfo = RNSVG;
 		};
-		9880471B20650CBC00CEBFE0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9880471720650CBC00CEBFE0 /* ReactNativeTestFairy.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 42959838203B471F00E34882;
-			remoteInfo = ReactNativeTestFairy;
-		};
 		9E3AB6C51D87DA2B008846B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9E3AB6B21D87DA2A008846B4 /* React-Native-Webview-Bridge.xcodeproj */;
@@ -568,7 +561,6 @@
 		925C1F7F1F7B73C00063DFA0 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMessaging.framework; sourceTree = "<group>"; };
 		92A0DF491F4DE3A0002051BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		983F07442119C9D2004133ED /* message.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = message.wav; path = ../android/app/src/main/res/raw/message.wav; sourceTree = "<group>"; };
-		9880471720650CBC00CEBFE0 /* ReactNativeTestFairy.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeTestFairy.xcodeproj; path = "../node_modules/react-native-testfairy/ios/ReactNativeTestFairy.xcodeproj"; sourceTree = "<group>"; };
 		9E0B01A01DDC5DA7002B0359 /* SF-UI-Text-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Light.otf"; sourceTree = "<group>"; };
 		9E3AB6B21D87DA2A008846B4 /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../node_modules/react-native-webview-bridge/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; };
 		9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWKWebView.xcodeproj; path = "../node_modules/react-native-wkwebview-reborn/ios/RCTWKWebView.xcodeproj"; sourceTree = "<group>"; };
@@ -889,7 +881,6 @@
 			isa = PBXGroup;
 			children = (
 				475D1F8D20B7413500879A77 /* RNFirebase.xcodeproj */,
-				9880471720650CBC00CEBFE0 /* ReactNativeTestFairy.xcodeproj */,
 				9EF083381F3B538A00876A8F /* ReactNativeConfig.xcodeproj */,
 				B2DEA0A41E49E32000FA28D6 /* RCTHttpServer.xcodeproj */,
 				9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */,
@@ -964,14 +955,6 @@
 			children = (
 				92925B681F571DE600203EEB /* libRNSVG.a */,
 				C90048231FC47AF50002B8EA /* libRNSVG-tvOS.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		9880471820650CBC00CEBFE0 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9880471C20650CBC00CEBFE0 /* libReactNativeTestFairy.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1267,10 +1250,6 @@
 					ProjectRef = 9EF083381F3B538A00876A8F /* ReactNativeConfig.xcodeproj */;
 				},
 				{
-					ProductGroup = 9880471820650CBC00CEBFE0 /* Products */;
-					ProjectRef = 9880471720650CBC00CEBFE0 /* ReactNativeTestFairy.xcodeproj */;
-				},
-				{
 					ProductGroup = 20B7D1251D3F74CD00B70F14 /* Products */;
 					ProjectRef = F090E261B9854867A728CE4F /* RealmReact.xcodeproj */;
 				},
@@ -1461,13 +1440,6 @@
 			fileType = archive.ar;
 			path = libRNSVG.a;
 			remoteRef = 92925B671F571DE600203EEB /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9880471C20650CBC00CEBFE0 /* libReactNativeTestFairy.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libReactNativeTestFairy.a;
-			remoteRef = 9880471B20650CBC00CEBFE0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9E3AB6C61D87DA2B008846B4 /* libReact-Native-Webview-Bridge.a */ = {
@@ -1993,7 +1965,6 @@
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-testfairy/ios",
 					"$(SRCROOT)/../node_modules/react-native-securerandom/ios",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase",
@@ -2061,7 +2032,6 @@
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-testfairy/ios",
 					"$(SRCROOT)/../node_modules/react-native-securerandom/ios",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase",

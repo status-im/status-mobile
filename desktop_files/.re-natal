@@ -9,8 +9,7 @@
         "react-native-camera",
         "instabug-reactnative",
         "nfc-react-native",
-        "react-native-background-timer",
-        "react-native-testfairy"
+        "react-native-background-timer"
       ]
     },
     "android": {
@@ -20,8 +19,7 @@
         "react-native-camera",
         "instabug-reactnative",
         "nfc-react-native",
-        "react-native-background-timer",
-        "react-native-testfairy"
+        "react-native-background-timer"
       ]
     },
     "desktop": {

@@ -42,7 +42,6 @@
 (def snoopy-buffer           #js {:default #js {}})
 (def EventEmmiter            #js {})
 (def fetch                   #js {})
-(def testfairy               #js {})
 
 (def background-timer       #js {:setTimeout js/setTimeout
                                  :setInterval js/setInterval
