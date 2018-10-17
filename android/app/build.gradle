@@ -224,13 +224,12 @@ dependencies {
     implementation project(':react-native-svg')
     implementation 'com.android.support:multidex:1.0.2'
     implementation project(':react-native-http-bridge')
-    implementation project(':instabug-reactnative')
     implementation project(':react-native-splash-screen')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-dialogs')
     implementation project(':realm')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:26.1.0"
+    implementation "com.android.support:appcompat-v7:27.1.0"
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
@@ -253,7 +252,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.3' //this decides your firebase SDK version
     implementation 'com.google.firebase:firebase-messaging:17.1.0'
     implementation project(':react-native-keychain')
-    implementation project(':instabug-reactnative')
 
     compile 'com.github.status-im:function:0.0.1'
     implementation fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])

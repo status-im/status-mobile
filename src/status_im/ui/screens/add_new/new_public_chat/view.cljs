@@ -27,7 +27,7 @@
       {:container           styles/input-container
        :on-change-text      #(re-frame/dispatch [:set :public-group-topic %])
        :on-submit-editing   #(when (db/valid-topic? topic)
-                               (re-frame/dispatch [:chat.ui/start-public-chat topic]))
+                               (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}]))
        :auto-capitalize     :none
        :auto-focus          false
        :accessibility-label :chat-name-input
@@ -44,7 +44,9 @@
     (first topic)]])
 
 (defn- render-topic [topic]
-  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/start-public-chat topic])
+  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/start-public-chat
+                                                                        topic
+                                                                        {:navigation-reset? true}])
                               :accessibility-label :chat-item}
    [react/view
     [list/item

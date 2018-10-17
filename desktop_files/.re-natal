@@ -7,7 +7,6 @@
       "modules": [
         "react-native-image-resizer",
         "react-native-camera",
-        "instabug-reactnative",
         "nfc-react-native",
         "react-native-background-timer"
       ]
@@ -17,7 +16,6 @@
       "modules": [
         "react-native-image-resizer",
         "react-native-camera",
-        "instabug-reactnative",
         "nfc-react-native",
         "react-native-background-timer"
       ]

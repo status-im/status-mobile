@@ -292,13 +292,6 @@ class HelpButton(BaseButton):
         self.locator = self.Locator.accessibility_id("help-button")
 
 
-class RequestFeatureButton(BaseButton):
-
-    def __init__(self, driver):
-        super(RequestFeatureButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("request-feature-button")
-
-
 class SubmitBugButton(BaseButton):
 
     def __init__(self, driver):
@@ -452,7 +445,6 @@ class ProfileView(BaseView):
         self.capture_button = CaptureButton(self.driver)
 
         self.help_button = HelpButton(self.driver)
-        self.request_feature_button = RequestFeatureButton(self.driver)
         self.submit_bug_button = SubmitBugButton(self.driver)
         self.faq_button = FaqButton(self.driver)
 

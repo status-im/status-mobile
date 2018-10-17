@@ -30,7 +30,6 @@ import java.util.concurrent.Executors;
 
 import org.json.JSONObject;
 import org.json.JSONException;
-import com.instabug.library.Instabug;
 
 import javax.annotation.Nullable;
 
@@ -133,12 +132,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             logFile.setWritable(true);
             Log.d(TAG, "Can write " + logFile.canWrite());
             Uri gethLogUri = Uri.fromFile(logFile);
-            try {
-                Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
-                Instabug.setFileAttachment(gethLogUri, gethLogFileName);
-            } catch (NullPointerException e) {
-                Log.d(TAG, "Instabug is not initialized!");
-            }
 
             String gethLogFilePath = logFile.getAbsolutePath();
             Log.d(TAG, gethLogFilePath);

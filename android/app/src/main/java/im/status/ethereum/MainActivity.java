@@ -23,7 +23,6 @@ import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
-import com.instabug.library.Instabug;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
@@ -114,8 +113,6 @@ public class MainActivity extends ReactActivity
 
         SplashScreen.show(this, true);
         super.onCreate(savedInstanceState);
-
-        Instabug.setIntroMessageEnabled(false);
 
         if (!shouldShowRootedNotification()) {
             configureStatus();

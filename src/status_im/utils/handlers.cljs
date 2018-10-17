@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.utils.instabug :as instabug]
             [status-im.accounts.db :as accounts.db]
             [cljs.core.async :as async]
             [taoensso.timbre :as log]))

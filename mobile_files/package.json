@@ -25,7 +25,6 @@
     "events": "1.1.1",
     "homoglyph-finder": "1.1.1",
     "identicon.js": "https://github.com/status-im/identicon.js.git",
-    "instabug-reactnative": "2.12.0",
     "js-sha3": "^0.8.0",
     "level-filesystem": "1.2.0",
     "process": "0.11.10",

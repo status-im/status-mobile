@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		206C9F3E1D474E910063E3E6 /* RCTStatus.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 206C9F3D1D474E910063E3E6 /* RCTStatus.h */; };
 		206C9F401D474E910063E3E6 /* RCTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 206C9F3F1D474E910063E3E6 /* RCTStatus.m */; };
-		9806BE77206D044D00548CC4 /* Instabug.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9806BE76206D044D00548CC4 /* Instabug.framework */; };
 		CE4E31B11D86951A0033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B01D86951A0033ED64 /* Statusgo.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 		206C9F3A1D474E910063E3E6 /* libRCTStatus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTStatus.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		206C9F3D1D474E910063E3E6 /* RCTStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTStatus.h; sourceTree = "<group>"; };
 		206C9F3F1D474E910063E3E6 /* RCTStatus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTStatus.m; sourceTree = "<group>"; };
-		9806BE76206D044D00548CC4 /* Instabug.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Instabug.framework; path = "../../../../node_modules/instabug-reactnative/ios/Instabug.framework"; sourceTree = "<group>"; };
 		CE4E31B01D86951A0033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Statusgo.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -41,7 +39,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE4E31B11D86951A0033ED64 /* Statusgo.framework in Frameworks */,
-				9806BE77206D044D00548CC4 /* Instabug.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,14 +70,6 @@
 				206C9F3F1D474E910063E3E6 /* RCTStatus.m */,
 			);
 			name = Status;
-			sourceTree = "<group>";
-		};
-		9E3F8AF11ED2CCBD0016D874 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				9806BE76206D044D00548CC4 /* Instabug.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,7 +227,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/../../../../ios/Pods/Instabug",
 				);
 				FRAMEWORK_VERSION = A;
 				HEADER_SEARCH_PATHS = (
@@ -267,7 +255,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/../../../../ios/Pods/Instabug",
 				);
 				FRAMEWORK_VERSION = A;
 				HEADER_SEARCH_PATHS = (

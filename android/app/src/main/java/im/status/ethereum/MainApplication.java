@@ -9,7 +9,6 @@ import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
-import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.horcrux.svg.SvgPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
@@ -76,14 +75,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new PickerPackage(),
                     new WebViewBridgePackage(webViewDebugEnabled, callRPC),
                     new ReactNativeConfigPackage(),
-                    new KeychainPackage(),
-                    new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN,MainApplication.this)
-                            .setInvocationEvent("shake")
-                            .setPrimaryColor("#1D82DC")
-                            .setFloatingEdge("left")
-                            .setFloatingButtonOffsetFromTop(250)
-                            .build()
-                                                                                    ));
+                    new KeychainPackage()));
 
             return packages;
         }

@@ -60,15 +60,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera access is required to be able to scan QR codes.</string>
+	<string>Please allow Status to use your phone camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need to access your contacts</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access is required for Instabug and Audio Messages</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photos access it required to give you ability to choose custom profile pictures.</string>
 	<key>UIBackgroundModes</key>
@@ -97,10 +95,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/> 
+	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>
-	<key>NSCameraUsageDescription</key>
-    <string>Please allow Status to use your phone camera</string>
 </dict>
 </plist>

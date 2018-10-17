@@ -17,7 +17,6 @@
 (def dismiss-keyboard       (js/require "dismissKeyboard"))
 (def image-crop-picker      (js/require "react-native-image-crop-picker"))
 (def image-resizer          (js/require "react-native-image-resizer"))
-(def instabug               (js/require "instabug-reactnative"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-firebase  (js/require "react-native-firebase"))
 (def nfc-manager            (js/require "react-native-nfc-manager"))

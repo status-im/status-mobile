@@ -129,7 +129,7 @@
   [react/touchable-highlight {:style {}
                               :on-press #(case link-tag
                                            :link (.openURL react/linking (http/normalize-url link))
-                                           :tag (re-frame/dispatch [:chat.ui/start-public-chat (subs link 1)]))}
+                                           :tag (re-frame/dispatch [:chat.ui/start-public-chat (subs link 1) {:navigation-reset? true}]))}
    [react/text {:style {:font-size 14
                         :text-decoration-line :underline
                         :color (if outgoing colors/white colors/blue)

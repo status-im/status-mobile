@@ -555,8 +555,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/start-public-chat
- (fn [cofx [_ topic modal?]]
-   (chat/start-public-chat cofx topic modal?)))
+ (fn [cofx [_ topic opts]]
+   (chat/start-public-chat cofx topic opts)))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat

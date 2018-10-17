@@ -59,7 +59,7 @@
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat " public-chat)
-  (chat/start-public-chat cofx public-chat false))
+  (chat/start-public-chat cofx public-chat {:navigation-reset? true}))
 
 (fx/defn handle-view-profile [{:keys [db] :as cofx} profile-id]
   (log/info "universal-links: handling view profile" profile-id)

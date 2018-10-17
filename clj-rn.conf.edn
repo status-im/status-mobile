@@ -24,7 +24,6 @@
               "web3"
               "web3-utils"
               "chance"
-              "instabug-reactnative"
               "react-native-http-bridge"
               "emojilib"
               "eth-phishing-detect"

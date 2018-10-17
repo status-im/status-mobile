@@ -11,7 +11,6 @@
 (def i18n                   #js {:locale "en"})
 (def image-crop-picker      #js {})
 (def image-resizer          #js {})
-(def instabug               #js {})
 (def linear-gradient        #js {})
 (def nfc                    #js {})
 (def orientation            #js {})

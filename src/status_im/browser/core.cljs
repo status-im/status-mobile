@@ -311,7 +311,7 @@
 (fx/defn open-chat-from-browser
   [cofx host]
   (let [topic (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash host)))]
-    {:dispatch [:chat.ui/start-public-chat topic true]}))
+    {:dispatch [:chat.ui/start-public-chat topic {:modal? true :navigation-reset? true}]}))
 
 (re-frame/reg-fx
  :browser/resolve-ens-multihash

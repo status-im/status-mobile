@@ -21,7 +21,6 @@
 (def dismiss-keyboard       #js {})
 (def image-crop-picker      #js {})
 (def image-resizer          #js {})
-(def instabug               #js {:IBGLog ( fn [])})
 (def nfc                    #js {})
 (def svg                    #js {})
 (def snoopy                 #js {})
