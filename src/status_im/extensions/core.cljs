@@ -1,4 +1,5 @@
 (ns status-im.extensions.core
+  (:refer-clojure :exclude [list])
   (:require [clojure.string :as string]
             [pluto.reader :as reader]
             [pluto.registry :as registry]
@@ -13,6 +14,10 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]))
+; TODO add list, links, radio buttons
+; wallet/balance
+; wallet/tokens
+; http/ post, put, delete
 
 (re-frame/reg-fx
  ::alert
@@ -56,25 +61,39 @@
  (fn [{:keys [db]} [_ {:keys [key]}]]
    {:db (update-in db [:extensions-store :collectible] dissoc key)}))
 
+(defn- json? [res]
+  (string/starts-with? (get-in res [:headers "content-type"]) "application/json"))
+
 (re-frame/reg-event-fx
  :http/get
  (fn [_ [_ {:keys [url on-success on-failure timeout]}]]
-   {:http-get (merge {:url url
-                      :success-event-creator (fn [o] (into on-success (vector o)))}
-                     (when on-failure
-                       {:failure-event-creator (fn [o] (into on-failure (vector o)))})
-                     (when timeout
-                       {:timeout-ms timeout}))}))
+   {:http-raw-get (merge {:url url
+                          :success-event-creator
+                          (fn [o]
+                            (let [res (if (json? o) (update o :body #(js->clj (js/JSON.parse %) :keywordize-keys true) o))]
+                              (on-success res)))}
+                         (when on-failure
+                           {:failure-event-creator on-failure})
+                         (when timeout
+                           {:timeout-ms timeout}))}))
 
 (defn button [{:keys [on-click]} label]
-  [button/secondary-button {:on-press #(re-frame/dispatch on-click)} label])
+  [button/secondary-button {:on-press #(re-frame/dispatch (on-click {}))} label])
 
 (defn input [{:keys [on-change placeholder]}]
-  [react/text-input {:on-change-text #(re-frame/dispatch on-change) :placeholder placeholder}])
+  [react/text-input {:on-change-text #(re-frame/dispatch (on-change {})) :placeholder placeholder}])
+
+(defn touchable-opacity [{:keys [on-press]}]
+  [react/touchable-opacity {:on-press #(re-frame/dispatch (on-press {}))}])
+
+(defn image [{:keys [uri]}]
+  [react/image {:source {:uri uri}}])
 
 (def capacities
   {:components {'view               {:value react/view}
                 'text               {:value react/text}
+                'touchable-opacity  {:value touchable-opacity :properties {:on-press :event}}
+                'image              {:value image :properties {:uri :string}}
                 'input              {:value input :properties {:on-change :event :placeholder :string}}
                 'button             {:value button :properties {:on-click :event}}
                 'nft-token-viewer   {:value transactions/nft-token :properties {:token :string}}
@@ -82,7 +101,7 @@
                 'asset-selector     {:value transactions/choose-nft-asset-suggestion}
                 'token-selector     {:value transactions/choose-nft-token-suggestion}}
    :queries    {'store/get {:value :store/get :arguments {:key :string}}
-                'get-collectible-token {:value :get-collectible-token :arguments {:token :string :symbol :string}}}
+                'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}}
    :events     {'alert
                 {:permissions [:read]
                  :value       :alert

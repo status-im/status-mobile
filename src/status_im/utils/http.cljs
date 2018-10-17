@@ -45,6 +45,32 @@
                    (fn [error]
                      (utils/show-popup "Error" (str error))))))))
 
+(defn- headers [response]
+  (let [entries (es6-iterator-seq (.entries (.-headers response)))]
+    (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2))) {} entries)))
+
+(defn raw-get
+  "Performs an HTTP GET request and returns raw results :status :headers :body."
+  ([url] (raw-get url nil))
+  ([url on-success] (raw-get url on-success nil))
+  ([url on-success on-error]
+   (raw-get url on-success on-error nil))
+  ([url on-success on-error {:keys [timeout-ms]}]
+   (-> (rn-dependencies/fetch url
+                              (clj->js {:method  "GET"
+                                        :headers {"Cache-Control" "no-cache"}
+                                        :timeout (or timeout-ms http-request-default-timeout-ms)}))
+       (.then (fn [response]
+                (->
+                 (.text response)
+                 (.then (fn [body]
+                          (on-success {:status  (.-status response)
+                                       :headers (headers response)
+                                       :body    body}))))))
+       (.catch (or on-error
+                   (fn [error]
+                     (utils/show-popup "Error" (str error))))))))
+
 (defn get
   "Performs an HTTP GET request"
   ([url] (get url nil))
