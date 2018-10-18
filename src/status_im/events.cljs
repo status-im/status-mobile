@@ -588,6 +588,11 @@
    (chat.message/delete-message cofx chat-id message-id)))
 
 (handlers/register-handler-fx
+ :chat.ui/message-expand-toggled
+ (fn [cofx [_ chat-id message-id]]
+   (chat.message/toggle-expand-message cofx chat-id message-id)))
+
+(handlers/register-handler-fx
  :chat.ui/show-profile
  (fn [cofx [_ identity]]
    (navigation/navigate-to-cofx

@@ -27,7 +27,6 @@
             [status-im.test.chat.models.message]
             [status-im.test.chat.models.message-content]
             [status-im.test.chat.subs]
-            [status-im.test.chat.views.message]
             [status-im.test.chat.views.photos]
             [status-im.test.chat.commands.core]
             [status-im.test.chat.commands.input]
@@ -93,7 +92,6 @@
  'status-im.test.chat.models.input
  'status-im.test.chat.models.message
  'status-im.test.chat.models.message-content
- 'status-im.test.chat.views.message
  'status-im.test.chat.views.photos
  'status-im.test.chat.commands.core
  'status-im.test.chat.commands.input

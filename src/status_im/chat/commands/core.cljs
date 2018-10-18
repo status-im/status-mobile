@@ -3,7 +3,7 @@
             [clojure.set :as set]
             [pluto.reader.hooks :as hooks]
             [status-im.constants :as constants]
-            [status-im.chat.constants :as chat-constants]
+            [status-im.chat.constants :as chat.constants]
             [status-im.chat.commands.protocol :as protocol]
             [status-im.chat.commands.impl.transactions :as transactions]
             [status-im.utils.handlers :as handlers]
@@ -22,7 +22,7 @@
   "Given the command instance, returns command name as displayed in chat input,
   with leading `/` character."
   [type]
-  (str chat-constants/command-char (protocol/id type)))
+  (str chat.constants/command-char (protocol/id type)))
 
 (defn command-description
   "Returns description for the command."

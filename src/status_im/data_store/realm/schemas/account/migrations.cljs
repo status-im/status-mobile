@@ -1,6 +1,7 @@
 (ns status-im.data-store.realm.schemas.account.migrations
   (:require [taoensso.timbre :as log]
-            [cljs.reader :as reader]))
+            [cljs.reader :as reader]
+            [status-im.chat.models.message-content :as message-content]))
 
 (defn v1 [old-realm new-realm]
   (log/debug "migrating v1 account database: " old-realm new-realm))
@@ -116,3 +117,14 @@
 
 (defn v19 [old-realm new-realm]
   (log/debug "migrating v19 account database"))
+
+(defn v20 [old-realm new-realm]
+  (log/debug "migrating v19 account database")
+  (some-> new-realm
+          (.objects "message")
+          (.filtered (str "content-type = \"text/plain\""))
+          (.map (fn [message _ _]
+                  (let [content     (reader/read-string (aget message "content"))
+                        new-content (message-content/enrich-content content)]
+                    (aset message "content" (pr-str new-content)))))))
+

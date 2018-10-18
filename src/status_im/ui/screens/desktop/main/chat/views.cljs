@@ -23,8 +23,7 @@
             [status-im.utils.contacts :as utils.contacts]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.desktop.main.chat.events :as chat.events]
-            [status-im.ui.screens.chat.message.message :as chat.message]
-            [status-im.utils.http :as http]))
+            [status-im.ui.screens.chat.message.message :as chat.message]))
 
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
@@ -109,31 +108,11 @@
                   :number-of-lines 5}
       text]]))
 
-;; Include both URLs and channel links in regexp
-(def regx-url #"(?i)((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}|#[a-z0-9\-]+)")
-
-(defn link-elem [link]
-  [react/text {:style    (styles/message-link false)
-               :on-press #(if (string/starts-with? link "#")
-                            (re-frame/dispatch [:chat.ui/start-public-chat (subs link 1)])
-                            (.openURL react/linking (http/normalize-url link)))}
-   link])
-
-(defn process-message-links [text]
-  ;; JS and hence CLJS string/split will include delimiters 
-  ;; (urls and channel links in our case)
-  ;; in the result array if they are inside a group
-  (->> (string/split text regx-url)
-       (remove nil?)
-       (map #(if (re-matches regx-url %1)
-               (link-elem %1)
-               %1))))
-
 (defn- message-sent? [user-statuses current-public-key]
   (not= (get-in user-statuses [current-public-key :status]) :not-sent))
 
 (views/defview message-without-timestamp
-  [text {:keys [message-id content current-public-key user-statuses]} style]
+  [text {:keys [message-id content current-public-key user-statuses] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
    [react/touchable-highlight {:on-press #(if (= "right" (.-button (.-nativeEvent %)))
                                             (do (utils/show-popup "" "Message copied to clipboard")
@@ -143,10 +122,12 @@
     [react/view {:style styles/message-container}
      (when (:response-to content)
        [quoted-message (:response-to content) false current-public-key])
-     (into [react/text {:style           (styles/message-text false)
-                        :selectable      true
-                        :selection-color colors/blue-light}]
-           (process-message-links text))]]])
+     [react/text {:style           (styles/message-text false)
+                  :selectable      true
+                  :selection-color colors/blue-light}
+      (if-let [render-recipe (:render-recipe content)]
+        (chat-utils/render-chunks render-recipe message)
+        (:text content))]]]])
 
 (views/defview photo-placeholder []
   [react/view {:style {:width             40

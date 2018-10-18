@@ -20,11 +20,11 @@
         @unviewed-messages-count]])))
 
 (views/defview chat-list-item-inner-view [{:keys [chat-id name group-chat color public? public-key] :as chat-item}]
-  (letsubs [photo-path              [:get-chat-photo chat-id]
-            unviewed-messages-count [:unviewed-messages-count chat-id]
-            chat-name               [:get-chat-name chat-id]
-            current-chat-id         [:get-current-chat-id]
-            last-message            [:get-last-message chat-id]]
+  (letsubs [photo-path                         [:get-chat-photo chat-id]
+            unviewed-messages-count            [:unviewed-messages-count chat-id]
+            chat-name                          [:get-chat-name chat-id]
+            current-chat-id                    [:get-current-chat-id]
+            {:keys [content] :as last-message} [:get-last-message chat-id]]
     (let [name (or chat-name
                    (gfycat/generate-gfy public-key))
           [unviewed-messages-label large?] (if (< 9 unviewed-messages-count)
@@ -57,7 +57,8 @@
                      :style           styles/chat-last-message}
          (if (= constants/content-type-command (:content-type last-message))
            [chat-item/command-short-preview last-message]
-           (or (get-in last-message [:content :text]) (i18n/label :no-messages-yet)))]]
+           (or (:text content)
+               (i18n/label :no-messages-yet)))]]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]]])))
 

@@ -36,11 +36,18 @@
       :message              message})))
 
 (defn- prepare-message
-  [{:keys [content] :as message} chat-id current-chat?]
-  ;; TODO janherich: enable the animations again once we can do them more efficiently
-  (cond-> (assoc message :appearing? true)
-    (not current-chat?) (assoc :appearing? false)
-    (message-content/emoji-only-content? content) (assoc :content-type constants/content-type-emoji)))
+  [{:keys [content content-type] :as message} chat-id current-chat?]
+  (let [emoji? (message-content/emoji-only-content? content)]
+    ;; TODO janherich: enable the animations again once we can do them more efficiently
+    (cond-> (assoc message :appearing? true)
+      (not current-chat?)
+      (assoc :appearing? false)
+
+      emoji?
+      (assoc :content-type constants/content-type-emoji)
+
+      (and (= constants/content-type-text content-type) (not emoji?))
+      (update :content message-content/enrich-content))))
 
 (fx/defn re-index-message-groups
   "Relative datemarks of message groups can get obsolete with passing time,
@@ -325,6 +332,10 @@
                                                                      last-clock-value))
                                                 (add-message-type chat))]
     (upsert-and-send cofx message-data)))
+
+(fx/defn toggle-expand-message
+  [{:keys [db]} chat-id message-id]
+  {:db (update-in db [:chats chat-id :messages message-id :expanded?] not)})
 
 ;; effects
 

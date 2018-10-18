@@ -58,7 +58,7 @@
   {:color         colors/gray
    :font-size     12
    :opacity       0.7
-   :margin-bottom 1})
+   :margin-bottom 20})
 
 (def selected-message
   {:margin-top  18

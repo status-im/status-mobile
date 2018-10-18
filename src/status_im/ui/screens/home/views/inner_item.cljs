@@ -7,6 +7,7 @@
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
+            [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.components.styles :as component.styles]
             [status-im.utils.core :as utils]
             [status-im.i18n :as i18n]
@@ -34,7 +35,10 @@
                   :accessibility-label :no-messages-text}
       (i18n/label :t/no-messages)]
 
-     (str/blank? content)
+     (= constants/content-type-command content-type)
+     [command-short-preview message]
+
+     (str/blank? (:text content))
      [react/text {:style styles/last-message-text}
       ""]
 
@@ -42,10 +46,9 @@
      [react/text {:style               styles/last-message-text
                   :number-of-lines     1
                   :accessibility-label :chat-message-text}
+      #_(if-let [render-recipe (:render-recipe content)]
+          (chat.utils/render-chunks render-recipe message))
       (:text content)]
-
-     (= constants/content-type-command content-type)
-     [command-short-preview message]
 
      :else
      [react/text {:style               styles/last-message-text

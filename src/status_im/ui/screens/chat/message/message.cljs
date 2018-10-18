@@ -14,7 +14,7 @@
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.utils.core :as utils]
-            [status-im.ui.screens.chat.utils :as chat-utils]
+            [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
@@ -29,17 +29,9 @@
       (commands/generate-preview command command-message)
       [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))
 
-(def rtl-characters-regex #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
-
-(defn right-to-left-text? [content]
-  (when-not (empty? content)
-    (let [char (first content)]
-      (re-matches rtl-characters-regex char))))
-
 (defview message-timestamp [t justify-timestamp? outgoing command? content]
   (when-not command?
-    (let [rtl? (right-to-left-text? (:text content))]
-      [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing rtl?)} t])))
+    [react/text {:style (style/message-timestamp-text justify-timestamp? outgoing (:rtl? content))} t]))
 
 (defn message-view
   [{:keys [timestamp-str outgoing content] :as message} message-content {:keys [justify-timestamp?]}]
@@ -49,103 +41,11 @@
                                                                     (get content :command-ref))
     content]])
 
-(def replacements
-  {"\\*[^*]+\\*" {:font-weight :bold}
-   "~[^~]+~"     {:font-style :italic}})
-
-(def regx-styled (re-pattern (string/join "|" (map first replacements))))
-
-(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
-
-(defn- parse-str-regx [string regx matched-fn unmatched-fn]
-  (if (string? string)
-    (let [unmatched-text (as-> (->> (string/split string regx)
-                                    (remove nil?)
-                                    vec) $
-                           (if (zero? (count $))
-                             [nil]
-                             (unmatched-fn $)))
-          matched-text   (as-> (->> string
-                                    (re-seq regx)
-                                    matched-fn
-                                    vec) $
-                           (if (> (count unmatched-text)
-                                  (count $))
-                             (conj $ nil)
-                             $))]
-      (mapcat vector unmatched-text matched-text))
-    (str string)))
-
-(defn parse-url [string]
-  (parse-str-regx string
-                  regx-url
-                  (fn [text-seq]
-                    (map (fn [[text]] {:text text :url? true}) text-seq))
-                  (fn [text-seq]
-                    (map (fn [text] {:text text :url? false}) text-seq))))
-
-(defn- autolink [string event-on-press outgoing]
-  (->> (parse-url string)
-       (map-indexed (fn [idx {:keys [text url?]}]
-                      (if url?
-                        (let [[url _ _ _ text] (re-matches #"(?i)^((\w+://)?(www\d{0,3}[.])?)?(.*)$" text)]
-                          [react/text
-                           {:key      idx
-                            :style    {:color                (if outgoing colors/white colors/blue)
-                                       :text-decoration-line :underline}
-                            :on-press #(re-frame/dispatch [event-on-press url])}
-                           url])
-                        text)))
-       vec))
-
-(defn get-style [string]
-  (->> replacements
-       (into [] (comp (map first)
-                      (map #(vector % (re-pattern %)))
-                      (drop-while (fn [[_ regx]] (not (re-matches regx string))))
-                      (take 1)))
-       ffirst
-       replacements))
-
-;; todo rewrite this, naive implementation
-(defn- parse-text [string event-on-press outgoing]
-  (parse-str-regx string
-                  regx-styled
-                  (fn [text-seq]
-                    (map-indexed (fn [idx string]
-                                   (let [style (get-style string)]
-                                     [react/text
-                                      {:key   (str idx "_" string)
-                                       :style style}
-                                      (subs string 1 (dec (count string)))]))
-                                 text-seq))
-                  (fn [text-seq]
-                    (map-indexed (fn [idx string]
-                                   (apply react/text
-                                          {:key (str idx "_" string)}
-                                          (autolink string event-on-press outgoing)))
-                                 text-seq))))
-
 ; We can't use CSS as nested Text element don't accept margins nor padding
 ; so we pad the invisible placeholder with some spaces to avoid having too
 ; close to the text.
 (defn timestamp-with-padding [t]
   (str "   " t))
-
-(def cached-parse-text (memoize parse-text))
-
-(def ^:private ^:const number-of-lines 20)
-(def ^:private ^:const number-of-chars 600)
-
-(defn- should-collapse? [text group-chat?]
-  (and group-chat?
-       (or (<= number-of-chars (count text))
-           (<= number-of-lines (count (re-seq #"\n" text))))))
-
-(defn- expand-button [collapsed? on-press]
-  [react/text {:style    style/message-expand-button
-               :on-press on-press}
-   (i18n/label (if @collapsed? :show-more :show-less))])
 
 (defview quoted-message [{:keys [from text]} outgoing current-public-key]
   (letsubs [username [:get-contact-name-by-identity from]]
@@ -153,7 +53,7 @@
      [react/view {:style style/quoted-message-author-container}
       [vector-icons/icon :icons/reply {:color (if outgoing colors/wild-blue-yonder colors/gray)}]
       [react/text {:style (style/quoted-message-author outgoing)}
-       (chat-utils/format-reply-author from username current-public-key)]]
+       (chat.utils/format-reply-author from username current-public-key)]]
      [react/text {:style           (style/quoted-message-text outgoing)
                   :number-of-lines 5}
       text]]))
@@ -162,32 +62,30 @@
   [react/view style/status-container
    [react/text {:style style/status-text
                 :font  :default}
-    (cached-parse-text (:text content) nil false)]])
+    (:text content)]])
+
+(defn- expand-button [expanded? chat-id message-id]
+  [react/text {:style    style/message-expand-button
+               :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
+   (i18n/label (if expanded? :show-less :show-more))])
 
 (defn text-message
-  [{:keys [content timestamp-str group-chat outgoing current-public-key] :as message}]
+  [{:keys [chat-id message-id content timestamp-str group-chat outgoing current-public-key expanded?] :as message}]
   [message-view message
-   (let [parsed-text (cached-parse-text (:text content) :browser.ui/message-link-pressed outgoing)
-         ref (reagent/atom nil)
-         collapsible? (should-collapse? (:text content) group-chat)
-         collapsed? (reagent/atom collapsible?)
-         on-press (when collapsible?
-                    #(do
-                       (.setNativeProps @ref
-                                        (clj->js {:numberOfLines
-                                                  (when-not @collapsed?
-                                                    number-of-lines)}))
-                       (reset! collapsed? (not @collapsed?))))]
+   (let [collapsible? (and (:should-collapse? content) group-chat)]
      [react/view
       (when (:response-to content)
         [quoted-message (:response-to content) outgoing current-public-key])
-      [react/text {:style           (style/text-message collapsible? outgoing)
-                   :number-of-lines (when collapsible? number-of-lines)
-                   :ref             (partial reset! ref)}
-       parsed-text
-       [react/text {:style (style/message-timestamp-placeholder-text outgoing)} (timestamp-with-padding timestamp-str)]]
+      [react/text (cond-> {:style           (style/text-message collapsible? outgoing)}
+                    (and collapsible? (not expanded?))
+                    (assoc :number-of-lines constants/lines-collapse-threshold))
+       (if-let [render-recipe (:render-recipe content)]
+         (chat.utils/render-chunks render-recipe message)
+         (:text content))
+       [react/text {:style (style/message-timestamp-placeholder-text outgoing)}
+        (timestamp-with-padding timestamp-str)]]
       (when collapsible?
-        [expand-button collapsed? on-press])])
+        [expand-button expanded? chat-id message-id])])
    {:justify-timestamp? true}])
 
 (defn emoji-message
@@ -314,7 +212,7 @@
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
     [react/text {:style style/message-author-name}
-     (chat-utils/format-author from (or username message-username))]))
+     (chat.utils/format-author from (or username message-username))]))
 
 (defn message-body
   [{:keys [last-in-group?
