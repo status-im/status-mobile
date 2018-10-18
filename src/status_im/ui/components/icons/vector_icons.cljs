@@ -180,17 +180,34 @@
     (if platform/ios? :icons/dots-horizontal :icons/dots-vertical)
     n))
 
+(defn- match-color [color]
+  (cond
+    (keyword? color)
+    (case color
+      :dark colors/black
+      :gray colors/gray
+      :blue colors/blue
+      :active colors/blue
+      :white colors/white
+      :red colors/red
+      colors/black)
+    (string? color)
+    color
+    :else
+    colors/black))
+
 (defn desktop-icon
   [name {:keys [color container-style style accessibility-label width height]
          :or   {accessibility-label :icon}}]
   (let [default-viewbox {:width 24 :height 24}
-        icon-style      (if width
-                          (assoc default-viewbox :width width :height height)
-                          default-viewbox)]
+        icon-style (if width
+                     (assoc default-viewbox :width width :height height)
+                     default-viewbox)
+        color-style {:tint-color (match-color color)}]
     [react/view {:style               container-style
                  :accessibility-label accessibility-label}
      [react/image {:source (get icons (normalize-property-name name))
-                   :style  (merge icon-style style)}]]))
+                   :style  (merge icon-style color-style style)}]]))
 
 (defn mobile-icon
   [name {:keys [color container-style accessibility-label width height]
@@ -199,21 +216,7 @@
   [react/animated-view {:style               container-style
                         :accessibility-label accessibility-label}
    (if-let [icon-fn (get icons (normalize-property-name name))]
-     (let [icon-vec (icon-fn
-                     (cond
-                       (keyword? color)
-                       (case color
-                         :dark colors/black
-                         :gray colors/gray
-                         :blue colors/blue
-                         :active colors/blue
-                         :white colors/white
-                         :red colors/red
-                         colors/black)
-                       (string? color)
-                       color
-                       :else
-                       colors/black))]
+     (let [icon-vec (icon-fn (match-color color))]
        (if width
          (update icon-vec 1 assoc :width width :height height)
          icon-vec))
