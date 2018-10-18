@@ -26,8 +26,8 @@
 
 (defn- deserialize-extensions [extensions]
   (reduce-kv
-   (fn [acc _ {:keys [id] :as extension}]
-     (assoc acc id extension))
+   (fn [acc _ {:keys [name] :as extension}]
+     (assoc acc name extension))
    {}
    extensions))
 
