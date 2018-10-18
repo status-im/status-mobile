@@ -42,12 +42,12 @@
     [vector-icons/icon :icons/qr {:color colors/blue}]]])
 
 (views/defview edit-mailserver []
-  (views/letsubs [manage-mailserver [:get-manage-mailserver]
-                  connected?        [:get-connected-mailserver]
-                  is-valid?         [:manage-mailserver-valid?]]
-    (let [url  (get-in manage-mailserver [:url :value])
-          id   (get-in manage-mailserver [:id :value])
-          name (get-in manage-mailserver [:name :value])]
+  (views/letsubs [mailserver [:mailserver.edit/mailserver]
+                  connected?        [:mailserver.edit/connected?]
+                  is-valid?         [:mailserver.edit/valid?]]
+    (let [url  (get-in mailserver [:url :value])
+          id   (get-in mailserver [:id :value])
+          name (get-in mailserver [:name :value])]
       [react/view components.styles/flex
        [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex

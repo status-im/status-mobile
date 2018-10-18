@@ -20,7 +20,6 @@
             [status-im.test.models.wallet]
             [status-im.test.search.core]
             [status-im.test.transport.core]
-            [status-im.test.transport.inbox]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
             [status-im.test.chat.models.loading]
@@ -32,7 +31,6 @@
             [status-im.test.chat.commands.input]
             [status-im.test.chat.commands.impl.transactions]
             [status-im.test.i18n]
-            [status-im.test.protocol.web3.inbox]
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
             [status-im.test.utils.clocks]
@@ -99,8 +97,6 @@
  'status-im.test.i18n
  'status-im.test.search.core
  'status-im.test.transport.core
- 'status-im.test.transport.inbox
- 'status-im.test.protocol.web3.inbox
  'status-im.test.utils.utils
  'status-im.test.utils.money
  'status-im.test.utils.clocks

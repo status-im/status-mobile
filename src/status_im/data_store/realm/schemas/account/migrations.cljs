@@ -130,3 +130,6 @@
 
 (defn v21 [old-realm new-realm]
   (log/debug "migrating v21 account database"))
+
+(defn v22 [old-realm new-realm]
+  (log/debug "migrating v22 account database"))

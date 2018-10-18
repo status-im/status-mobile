@@ -33,7 +33,6 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.search.core :as search]
             [status-im.signals.core :as signals]
-            [status-im.transport.inbox :as inbox]
             [status-im.transport.message.core :as transport.message]
             [status-im.ui.screens.currency-settings.models
              :as
@@ -99,7 +98,7 @@
   (re-frame/inject-cofx :data-store/get-all-installations)
   (re-frame/inject-cofx :data-store/get-all-mailservers)
   (re-frame/inject-cofx :data-store/transport)
-  (re-frame/inject-cofx :data-store/transport-inbox-topics)
+  (re-frame/inject-cofx :data-store/mailserver-topics)
   (re-frame/inject-cofx :data-store/all-browsers)
   (re-frame/inject-cofx :data-store/all-dapp-permissions)]
  (fn [cofx [_ address]]
@@ -289,7 +288,7 @@
 (handlers/register-handler-fx
  :mailserver.ui/delete-confirmed
  (fn [cofx [_ mailserver-id]]
-   (mailserver/delete mailserver-id cofx)))
+   (mailserver/delete cofx mailserver-id)))
 
 (handlers/register-handler-fx
  :mailserver.ui/delete-pressed
@@ -310,6 +309,32 @@
  :mailserver.ui/connect-confirmed
  (fn [cofx [_ current-fleet mailserver-id]]
    (mailserver/save-settings cofx current-fleet mailserver-id)))
+
+(handlers/register-handler-fx
+ :mailserver.ui/reconnect-mailserver-pressed
+ (fn [cofx [_ args]]
+   (mailserver/connect-to-mailserver cofx)))
+
+(handlers/register-handler-fx
+ :mailserver/check-connection-timeout
+ (fn [cofx _]
+   (mailserver/check-connection cofx)))
+
+(handlers/register-handler-fx
+ :mailserver.callback/generate-mailserver-symkey-success
+ (fn [cofx [_ mailserver sym-key-id]]
+   (mailserver/add-mailserver-sym-key cofx mailserver sym-key-id)))
+
+(handlers/register-handler-fx
+ :mailserver.callback/mark-trusted-peer-success
+ (fn [cofx _]
+   (mailserver/add-mailserver-trusted cofx)))
+
+(handlers/register-handler-fx
+ :mailserver.callback/mark-trusted-peer-error
+ (fn [cofx [_ error]]
+   (log/error "Error on mark-trusted-peer: " error)
+   (mailserver/check-connection cofx)))
 
 ;; network module
 
@@ -995,34 +1020,6 @@
  :profile.ui/ens-names-button-pressed
  (fn [cofx]
    (browser/open-url cofx "names.statusnet.eth")))
-
-;; inbox module
-
-(handlers/register-handler-fx
- :inbox.ui/reconnect-mailserver-pressed
- (fn [cofx [_ args]]
-   (inbox/connect-to-mailserver cofx)))
-
-(handlers/register-handler-fx
- :inbox/check-connection-timeout
- (fn [cofx _]
-   (inbox/check-connection cofx)))
-
-(handlers/register-handler-fx
- :inbox.callback/generate-mailserver-symkey-success
- (fn [cofx [_ wnode sym-key-id]]
-   (inbox/add-mailserver-sym-key cofx wnode sym-key-id)))
-
-(handlers/register-handler-fx
- :inbox.callback/mark-trusted-peer-success
- (fn [cofx _]
-   (inbox/add-mailserver-trusted cofx)))
-
-(handlers/register-handler-fx
- :inbox.callback/mark-trusted-peer-error
- (fn [cofx [_ error]]
-   (log/error "Error on mark-trusted-peer: " error)
-   (inbox/check-connection cofx)))
 
 ;; transport module
 

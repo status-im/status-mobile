@@ -93,3 +93,18 @@
 
 (defn v13 [old-realm new-realm]
   (log/debug "migrating base database v13: " old-realm new-realm))
+
+(defn v14
+  "Rename wnode to mailserver in account settings"
+  [old-realm new-realm]
+  (log/debug "migrating accounts schema v14")
+  (let [accounts (.objects new-realm "account")]
+    (dotimes [i (.-length accounts)]
+      (let [account      (aget accounts i)
+            {:keys [wnode] :as old-settings} (deserialize (aget account "settings"))
+            new-settings (when wnode
+                           (-> old-settings
+                               (dissoc :wnode)
+                               (assoc :mailserver wnode)))
+            updated      (serialize new-settings)]
+        (aset account "settings" updated)))))

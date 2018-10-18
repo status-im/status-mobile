@@ -1,6 +1,6 @@
 (ns status-im.transport.chat.core
   (:require [status-im.data-store.transport :as transport-store]
-            [status-im.transport.inbox :as inbox]
+            [status-im.mailserver.core :as mailserver]
             [status-im.utils.fx :as fx]))
 
 (fx/defn remove-transport-chat
@@ -14,5 +14,5 @@
   "Unsubscribe from chat on transport layer"
   [cofx chat-id]
   (fx/merge cofx
-            (inbox/remove-chat-from-inbox-topic chat-id)
+            (mailserver/remove-chat-from-mailserver-topic chat-id)
             (remove-transport-chat chat-id)))

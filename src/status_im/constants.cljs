@@ -22,7 +22,7 @@
 (def blocks-per-hour 120)
 (def one-earth-day 86400)
 
-(def inbox-password "status-offline-inbox")
+(def mailserver-password "status-offline-inbox")
 
 (def default-network config/default-network)
 

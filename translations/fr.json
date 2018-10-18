@@ -247,7 +247,7 @@
     "edit-contacts": "Modifier contacts",
     "more": "plus",
     "cancel": "Annuler",
-    "existing-wnodes": "Serveurs de mail existants",
+    "existing-mailservers": "Serveurs de mail existants",
     "no-statuses-found": "Aucun statut trouvé",
     "can-not-add-yourself": "Vous ne pouvez pas vous ajouter vous-même",
     "transaction-description": "Veuillez attendre au moins 12 confirmations pour être sûr que votre transaction a bien été définitivement validée",

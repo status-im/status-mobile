@@ -32,24 +32,24 @@
                              :name "name-3"
                              :address "address-3"
                              :password "password-3"}
-            expected-wnodes {:eth.beta {"1" (-> ms-1
-                                                (dissoc :fleet)
-                                                (assoc :user-defined true))
-                                        "2" (-> ms-2
-                                                (dissoc ms-2 :fleet)
-                                                (assoc :user-defined true))}
-                             :eth.test {"3" (-> ms-3
-                                                (dissoc :fleet)
-                                                (assoc :user-defined true))}}
+            expected-mailservers {:eth.beta {"1" (-> ms-1
+                                                     (dissoc :fleet)
+                                                     (assoc :user-defined true))
+                                             "2" (-> ms-2
+                                                     (dissoc ms-2 :fleet)
+                                                     (assoc :user-defined true))}
+                                  :eth.test {"3" (-> ms-3
+                                                     (dissoc :fleet)
+                                                     (assoc :user-defined true))}}
             cofx-with-ms    (assoc cofx
                                    :data-store/mailservers
                                    [ms-1
                                     ms-2
                                     ms-3])]
-        (is (= expected-wnodes
+        (is (= expected-mailservers
                (-> (get-in
                     (protocol/initialize-protocol cofx-with-ms "user-address")
-                    [:db :inbox/wnodes])
+                    [:db :mailserver/mailservers])
                    (update-in [:eth.beta "1"] dissoc :generating-sym-key?)
                    (update-in [:eth.beta "2"] dissoc :generating-sym-key?)
                    (update-in [:eth.test "3"] dissoc :generating-sym-key?))))))))

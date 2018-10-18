@@ -296,7 +296,7 @@
 (views/defview chat-text-input [chat-id input-text]
   (views/letsubs [inp-ref (atom nil)
                   network-status [:network-status]
-                  mailserver-connected? [:mailserver-connected?]]
+                  mailserver-connected? [:mailserver/connected?]]
     {:component-will-update
      (fn [e [_ new-chat-id new-input-text]]
        (let [[_ old-chat-id] (.. e -props -argv)]

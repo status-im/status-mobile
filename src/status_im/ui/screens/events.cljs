@@ -26,7 +26,7 @@
             [re-frame.core :as re-frame]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.native-module.core :as status]
-            [status-im.transport.inbox :as inbox]
+            [status-im.mailserver.core :as mailserver]
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.dimensions :as dimensions]
             [status-im.utils.handlers :as handlers]
@@ -118,7 +118,7 @@
 
 (fx/defn on-return-from-background [cofx]
   (fx/merge cofx
-            (inbox/process-next-messages-request)
+            (mailserver/process-next-messages-request)
             (hardwallet/return-back-from-nfc-settings)))
 
 (defn app-state-change [state {:keys [db] :as cofx}]

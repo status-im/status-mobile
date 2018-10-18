@@ -25,7 +25,7 @@
              :line-height    20}
    :android {:font-size 16}})
 
-(defn wnode-icon [connected?]
+(defn mailserver-icon [connected?]
   {:width            40
    :height           40
    :border-radius    20
@@ -38,4 +38,3 @@
 (def empty-list
   {:color      colors/black
    :text-align :center})
-

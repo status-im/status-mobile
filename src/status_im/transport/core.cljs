@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.transport :as transport-store]
-            [status-im.transport.inbox :as inbox]
+            [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.core :as message]
             [status-im.transport.shh :as shh]
             [status-im.transport.utils :as transport.utils]
@@ -16,7 +16,7 @@
   "Initialises whisper protocol by:
   - adding fixed shh discovery filter
   - restoring existing symetric keys along with their unique filters
-  - (optionally) initializing offline inboxing"
+  - (optionally) initializing mailserver"
   [{:keys [db web3] :as cofx} current-account-id]
   (log/debug :init-whisper)
   (when-let [public-key (get-in db [:account/account :public-key])]
@@ -33,7 +33,7 @@
                  :shh/restore-sym-keys {:web3       web3
                                         :transport  (filter (comp :topic second) (:transport/chats db))
                                         :on-success sym-key-added-callback}}
-                (inbox/connect-to-mailserver)
+                (mailserver/connect-to-mailserver)
                 (message/resend-contact-messages [])))))
 
 ;;TODO (yenda) remove once go implements persistence

@@ -25,7 +25,7 @@
   (letsubs [{:keys [command-completion]}            [:selected-chat-command]
             {:keys [input-text seq-arg-input-text]} [:get-current-chat]
             network-status                          [:network-status]
-            mailserver-connected?                   [:mailserver-connected?]
+            mailserver-connected?                   [:mailserver/connected?]
             spin-value                              (animation/create-value 1)]
     {:component-did-update (send-button-view-on-update {:spin-value         spin-value
                                                         :command-completion command-completion})}

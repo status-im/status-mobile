@@ -14,7 +14,7 @@
             status-im.chat.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.network-settings.db
-            status-im.ui.screens.offline-messaging-settings.db
+            status-im.mailserver.db
             status-im.browser.db
             status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db))
@@ -47,13 +47,13 @@
              :semaphores                         #{}
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
-             :inbox/wnodes                       fleet/default-wnodes
              :my-profile/editing?                false
              :transport/chats                    {}
              :transport/filters                  {}
              :transport/message-envelopes        {}
-             :transport.inbox/topics             {}
-             :transport.inbox/pending-requests   0
+             :mailserver/mailservers             fleet/default-mailservers
+             :mailserver/topics                  {}
+             :mailserver/pending-requests        0
              :chat/cooldowns                     0
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
@@ -92,8 +92,6 @@
 (spec/def ::tab-bar-visible? (spec/nilable boolean?))
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
-
-(spec/def ::mailserver-status (spec/nilable #{:disconnected :connecting :added :connected :error}))
 
 (spec/def ::app-state string?)
 
@@ -156,7 +154,6 @@
 (spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
-(spec/def :inbox/current-id (spec/nilable keyword?))
 
 (spec/def ::collectible (spec/nilable map?))
 (spec/def ::collectibles (spec/nilable map?))
@@ -217,11 +214,8 @@
                  :networks/selected-network
                  :networks/networks
                  :networks/manage
-                 :mailservers/manage
                  :bootnodes/manage
                  :extensions/manage
-                 :inbox/wnodes
-                 :inbox/current-id
                  :node/status
                  :node/restart?
                  :node/address
@@ -238,11 +232,15 @@
                  :transport/message-envelopes
                  :transport/chats
                  :transport/filters
-                 :transport.inbox/topics
-                 :transport.inbox/pending-requests
-                 :transport.inbox/current-request
-                 :transport.inbox/connection-checks
-                 :transport.inbox/request-to
+                 :mailserver.edit/mailserver
+                 :mailserver/mailservers
+                 :mailserver/current-id
+                 :mailserver/state
+                 :mailserver/topics
+                 :mailserver/pending-requests
+                 :mailserver/current-request
+                 :mailserver/connection-checks
+                 :mailserver/request-to
                  :desktop/desktop
                  :dimensions/window
                  :dapps/permissions
@@ -263,7 +261,6 @@
                  ::keyboard-max-height
                  ::tab-bar-visible?
                  ::network-status
-                 ::mailserver-status
                  ::peers-count
                  ::peers-summary
                  ::sync-state

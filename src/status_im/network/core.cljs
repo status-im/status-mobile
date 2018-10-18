@@ -5,7 +5,7 @@
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as net-info]
-            [status-im.transport.inbox :as inbox]
+            [status-im.mailserver.core :as mailserver]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.fleet.core :as fleet-core]
@@ -205,7 +205,7 @@
   [{:keys [db] :as cofx} is-connected?]
   (fx/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
-            (inbox/network-connection-status-changed is-connected?)))
+            (mailserver/network-connection-status-changed is-connected?)))
 
 (defn- navigate-to-network-details
   [cofx network show-warning?]

@@ -1,7 +1,7 @@
 (ns ^{:doc "API for whisper filters"}
  status-im.transport.filters
   (:require [re-frame.core :as re-frame]
-            [status-im.transport.inbox :as inbox]
+            [status-im.mailserver.core :as mailserver]
             [status-im.transport.utils :as utils]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
@@ -55,10 +55,10 @@
  (fn [{:keys [db] :as cofx} [_ topic chat-id filter]]
    (fx/merge cofx
              {:db (assoc-in db [:transport/filters chat-id] filter)}
-             (inbox/reset-request-to)
-             (inbox/upsert-inbox-topic {:topic topic
-                                        :chat-id chat-id})
-             (inbox/process-next-messages-request))))
+             (mailserver/reset-request-to)
+             (mailserver/upsert-mailserver-topic {:topic topic
+                                                  :chat-id chat-id})
+             (mailserver/process-next-messages-request))))
 
 (handlers/register-handler-fx
  :shh.callback/filter-removed

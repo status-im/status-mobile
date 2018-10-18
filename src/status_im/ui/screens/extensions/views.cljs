@@ -10,16 +10,16 @@
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.screens.extensions.styles :as styles]))
 
-(def wnode-icon
-  [react/view (styles/wnode-icon true)
-   [vector-icons/icon :icons/wnode {:color :white}]])
+(def mailserver-icon
+  [react/view (styles/mailserver-icon true)
+   [vector-icons/icon :icons/mailserver {:color :white}]])
 
 (defn- render-extension [{:keys [id name url active?]}]
   [list/list-item-with-checkbox
    {:checked?        active?
     :on-value-change #(re-frame/dispatch [:extensions.ui/activation-checkbox-pressed id %])}
    [list/item
-    wnode-icon
+    mailserver-icon
     [list/item-content
      [list/item-primary name]
      [list/item-secondary url]]]])

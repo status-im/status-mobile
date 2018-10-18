@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.transport.core :as transport]
-            [status-im.transport.inbox :as transport.inbox]
+            [status-im.mailserver.core :as mailserver]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [status-im.utils.semaphores :as semaphores]
@@ -45,7 +45,7 @@
               (semaphores/lock :check-sync-state?))))
 
 (fx/defn initialize-protocol
-  [{:data-store/keys [transport transport-inbox-topics mailservers]
+  [{:data-store/keys [transport mailserver-topics mailservers]
     :keys [db web3] :as cofx} address]
   (let [network (get-in db [:account/account :network])
         network-id (str (get-in db [:account/account :networks network :config :NetworkId]))]
@@ -53,11 +53,11 @@
               {:db                              (assoc db
                                                        :rpc-url constants/ethereum-rpc-url
                                                        :transport/chats transport
-                                                       :transport.inbox/topics transport-inbox-topics)
+                                                       :mailserver/topics mailserver-topics)
                :protocol/assert-correct-network {:web3 web3
                                                  :network-id network-id}}
               (start-check-sync-state)
-              (transport.inbox/initialize-offline-inbox mailservers)
+              (mailserver/initialize-mailserver mailservers)
               (transport/init-whisper address))))
 
 (fx/defn handle-close-app-confirmed

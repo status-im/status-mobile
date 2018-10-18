@@ -41,7 +41,7 @@
 (spec/def :account/networks (spec/nilable :networks/networks))
 (spec/def :account/bootnodes (spec/nilable :bootnodes/bootnodes))
 (spec/def :account/extensions (spec/nilable :extensions/extensions))
-(spec/def :account/wnode (spec/nilable string?))
+(spec/def :account/mailserver (spec/nilable string?))
 (spec/def :account/settings (spec/nilable (spec/map-of keyword? any?)))
 (spec/def :account/signing-phrase :global/not-empty-string)
 (spec/def :account/mnemonic (spec/nilable string?))
@@ -59,7 +59,7 @@
                                       :account/installation-id]
                              :opt-un [:account/debug? :account/status :account/last-updated
                                       :account/email :account/signed-up? :account/network
-                                      :account/networks :account/settings :account/wnode
+                                      :account/networks :account/settings :account/mailserver
                                       :account/last-sign-in :account/sharing-usage-data? :account/dev-mode?
                                       :account/seed-backed-up? :account/mnemonic :account/desktop-notifications?
                                       :account/wallet-set-up-passed? :account/last-request

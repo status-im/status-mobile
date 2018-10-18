@@ -28,23 +28,23 @@
                      [(slurp "resources/config/fleets.json")
                       (slurp "resources/config/fleets-les.json")])))
 
-(defn format-wnode
-  [wnode address]
-  {:id wnode
-   :name (name wnode)
-   :password constants/inbox-password
+(defn format-mailserver
+  [mailserver address]
+  {:id mailserver
+   :name (name mailserver)
+   :password constants/mailserver-password
    :address address})
 
-(defn format-wnodes
-  [wnodes]
-  (reduce (fn [acc [wnode address]]
-            (assoc acc wnode (format-wnode wnode address)))
+(defn format-mailservers
+  [mailservers]
+  (reduce (fn [acc [mailserver address]]
+            (assoc acc mailserver (format-mailserver mailserver address)))
           {}
-          wnodes))
+          mailservers))
 
-(def default-wnodes
+(def default-mailservers
   (reduce (fn [acc [fleet node-by-type]]
-            (assoc acc fleet (format-wnodes (:mail node-by-type))))
+            (assoc acc fleet (format-mailservers (:mail node-by-type))))
           {}
           fleets))
 
