@@ -21,6 +21,9 @@ class AssetsButton(BaseButton):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
 
+    def click(self):
+        self.click_until_presence_of_element(self.RequestSTTButton(self.driver))
+
 
 class TransactionsButton(BaseButton):
 

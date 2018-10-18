@@ -396,6 +396,10 @@ class AboutButton(BaseButton):
         from views.about_view import AboutView
         return AboutView(self.driver)
 
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
+
 
 class ProfileView(BaseView):
 

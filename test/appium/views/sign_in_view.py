@@ -136,7 +136,7 @@ class SignInView(BaseView):
         recover_access_view.send_as_keyevent(passphrase)
         recover_access_view.password_input.click()
         recover_access_view.send_as_keyevent(password)
-        recover_access_view.sign_in_button.click()
+        recover_access_view.sign_in_button.click_until_presence_of_element(recover_access_view.home_button)
         return self.get_home_view()
 
     def open_status_test_dapp(self):

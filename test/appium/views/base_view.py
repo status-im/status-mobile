@@ -275,8 +275,6 @@ class BaseView(object):
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
 
-        self.test_fairy_warning = TestFairyWarning(self.driver)
-
         self.wallet_modal_button = WalletModalButton(self.driver)
 
         self.element_types = {

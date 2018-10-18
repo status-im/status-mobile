@@ -164,7 +164,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append("Message with text '%s' was not received" % message)
-        device_2_chat.reconnect()
+        device_2_chat.connection_status.wait_for_invisibility_of_element(60)
         device_2_chat.add_to_contacts.click()
 
         device_2_chat.get_back_to_home_view()
@@ -234,13 +234,13 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         sign_in.driver.set_network_connection(1)  # airplane mode
 
-        if home_view.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in home screen')
-
         chat = home_view.add_contact(transaction_senders['C']['public_key'])
         if chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()
+
+        if home_view.connection_status.text != 'Offline':
+            self.errors.append('Offline status is not shown in home screen')
 
         public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
         if public_chat.connection_status.text != 'Offline':
