@@ -224,6 +224,12 @@
   [wrapper message
    [message-view message [message-content-command message]]])
 
+;; Todo remove after couple of releases
+(defmethod message-content constants/content-type-command-request
+  [wrapper message]
+  [wrapper message
+   [message-view message [message-content-command message]]])
+
 (defmethod message-content constants/content-type-emoji
   [wrapper message]
   [wrapper message [emoji-message message]])
