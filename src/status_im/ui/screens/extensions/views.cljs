@@ -14,10 +14,10 @@
   [react/view (styles/wnode-icon true)
    [vector-icons/icon :icons/wnode {:color :white}]])
 
-(defn- render-extension [{:keys [id name url active?]}]
+(defn- render-extension [{:keys [name url active?]}]
   [list/list-item-with-checkbox
    {:checked?        active?
-    :on-value-change #(re-frame/dispatch [:extensions.ui/activation-checkbox-pressed id %])}
+    :on-value-change #(re-frame/dispatch [:extensions.ui/activation-checkbox-pressed name %])}
    [list/item
     wnode-icon
     [list/item-content

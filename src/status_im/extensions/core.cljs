@@ -230,7 +230,7 @@
 (defn valid-uri? [s]
   (boolean
    (when s
-     (re-matches (re-pattern (str "^" uri-prefix "\\w+@\\w+")) (string/trim s)))))
+     (re-matches (re-pattern (str "^" uri-prefix "\\w+@.+")) (string/trim s)))))
 
 (defn url->uri [s]
   (when s
@@ -250,12 +250,12 @@
   [{:keys [db]} input-key value]
   {:db (update db :extensions/manage assoc input-key {:value value})})
 
-(fx/defn fetch [cofx id]
-  (get-in cofx [:db :account/account :extensions id]))
+(fx/defn fetch [cofx name]
+  (get-in cofx [:db :account/account :extensions name]))
 
 (fx/defn edit
-  [cofx id]
-  (let [{:keys [url]} (fetch cofx id)]
+  [cofx name]
+  (let [{:keys [url]} (fetch cofx name)]
     (fx/merge (set-input cofx :url (str url))
               (navigation/navigate-to-cofx :edit-extension nil))))
 
@@ -279,7 +279,7 @@
                         :name    (str extension-key)
                         :url     (:value url)
                         :active? true}
-        new-extensions (assoc (:extensions account) (:id extension) extension)]
+        new-extensions (assoc (:extensions account) (:name extension) extension)]
     (fx/merge cofx
               {:ui/show-confirmation {:title     (i18n/label :t/success)
                                       :content   (i18n/label :t/extension-installed)
@@ -289,19 +289,31 @@
               (add extension-data true))))
 
 (fx/defn toggle-activation
-  [cofx id state]
+  [cofx name state]
   (let [toggle-fn      (get {true  registry/activate
                              false registry/deactivate}
                             state)
         extensions     (get-in cofx [:db :account/account :extensions])
-        new-extensions (assoc-in extensions [id :active?] state)
-        extension-key  (get-in extensions [id :name])]
+        new-extensions (assoc-in extensions [name :active?] state)]
     (fx/merge cofx
               (accounts.update/account-update {:extensions new-extensions} {:success-event nil})
-              #(toggle-fn extension-key %))))
+              #(toggle-fn name %))))
 
-(defn load-active-extensions
-  [{:keys [db]}]
-  (let [extensions (vals (get-in db [:account/account :extensions]))]
-    (doseq [{:keys [url active?]} extensions]
-      (load-from url #(re-frame/dispatch [:extension/add (-> % read-extension parse :data) active?])))))
+(fx/defn load
+  [cofx url]
+  (if (->> (get-in cofx [:db :account/account :extensions])
+           vals
+           (filter #(= (:url %) (string/trim url)))
+           first)
+    {:utils/show-popup {:title   (i18n/label :t/error)
+                        :content (i18n/label :t/extension-is-already-added)}}
+    {:extensions/load {:extensions [{:url     (string/trim url)
+                                     :active? true}]
+                       :follow-up  :extensions/stage}}))
+
+(fx/defn activate-extensions
+  [{{:account/keys [account]} :db}]
+  (let [{:keys [extensions dev-mode?]} account]
+    (when dev-mode?
+      {:extensions/load {:extensions (vals extensions)
+                         :follow-up  :extensions/add}})))

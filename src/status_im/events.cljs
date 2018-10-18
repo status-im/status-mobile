@@ -421,8 +421,8 @@
 
 (handlers/register-handler-fx
  :extensions.ui/add-extension-pressed
- (fn [cofx [_ extension-id]]
-   (extensions/edit cofx extension-id)))
+ (fn [cofx [_ name]]
+   (extensions/edit cofx name)))
 
 (handlers/register-handler-fx
  :extensions.ui/input-changed
@@ -431,13 +431,13 @@
 
 (handlers/register-handler-fx
  :extensions.ui/activation-checkbox-pressed
- (fn [cofx [_ id state]]
-   (extensions/toggle-activation cofx id state)))
+ (fn [cofx [_ name state]]
+   (extensions/toggle-activation cofx name state)))
 
 (handlers/register-handler-fx
  :extensions.ui/show-button-pressed
- (fn [_ [_ uri]]
-   {:extension/load [uri :extension/stage]}))
+ (fn [cofx [_ url]]
+   (extensions/load cofx url)))
 
 (handlers/register-handler-fx
  :extensions.ui/install-button-pressed
