@@ -2,12 +2,37 @@
   (:require [status-im.utils.utils :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [taoensso.timbre :as log]
-            [goog.Uri :as uri]
             [clojure.string :as string])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms
 (def http-request-default-timeout-ms 3000)
+
+(defn- headers [response]
+  (let [entries (es6-iterator-seq (.entries (.-headers response)))]
+    (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2))) {} entries)))
+
+(defn raw-post
+  "Performs an HTTP POST request and returns raw results :status :headers :body."
+  ([url body on-success] (raw-post url body on-success nil))
+  ([url body on-success on-error]
+   (raw-post url body on-success on-error nil))
+  ([url body on-success on-error {:keys [timeout-ms]}]
+   (-> (rn-dependencies/fetch url
+                              (clj->js {:method  "POST"
+                                        :headers {"Cache-Control" "no-cache"}
+                                        :body    body
+                                        :timeout (or timeout-ms http-request-default-timeout-ms)}))
+       (.then (fn [response]
+                (->
+                 (.text response)
+                 (.then (fn [body]
+                          (on-success {:status  (.-status response)
+                                       :headers (headers response)
+                                       :body    body}))))))
+       (.catch (or on-error
+                   (fn [error]
+                     (utils/show-popup "Error" (str error))))))))
 
 (defn post
   "Performs an HTTP POST request"
@@ -48,10 +73,6 @@
                  (if on-error
                    (on-error {:response-body error})
                    (utils/show-popup "Error" (str error))))))))
-
-(defn- headers [response]
-  (let [entries (es6-iterator-seq (.entries (.-headers response)))]
-    (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2))) {} entries)))
 
 (defn raw-get
   "Performs an HTTP GET request and returns raw results :status :headers :body."

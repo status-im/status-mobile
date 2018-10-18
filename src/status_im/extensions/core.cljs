@@ -8,16 +8,15 @@
             [status-im.accounts.update.core :as accounts.update]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.commands.impl.transactions :as transactions]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]))
-; TODO add list, links, radio buttons
-; wallet/balance
-; wallet/tokens
-; http/ post, put, delete
 
 (re-frame/reg-fx
  ::alert
@@ -64,30 +63,76 @@
 (defn- json? [res]
   (string/starts-with? (get-in res [:headers "content-type"]) "application/json"))
 
+(defn- parse-body [o]
+  (js->clj (js/JSON.parse o) :keywordize-keys true))
+
 (re-frame/reg-event-fx
  :http/get
  (fn [_ [_ {:keys [url on-success on-failure timeout]}]]
    {:http-raw-get (merge {:url url
                           :success-event-creator
                           (fn [o]
-                            (let [res (if (json? o) (update o :body #(js->clj (js/JSON.parse %) :keywordize-keys true) o))]
+                            (let [res (if (json? o) (update o :body parse-body o))]
                               (on-success res)))}
                          (when on-failure
                            {:failure-event-creator on-failure})
                          (when timeout
                            {:timeout-ms timeout}))}))
 
+(re-frame/reg-event-fx
+ :ipfs/cat
+ (fn [_ [_ {:keys [hash on-success on-failure]}]]
+   {:http-raw-get (merge {:url (str "https://ipfs.infura.io/ipfs/" hash)
+                          :success-event-creator
+                          (fn [o]
+                            (let [res (if (json? o) (update o :body parse-body o))]
+                              (on-success res)))}
+                         (when on-failure
+                           {:failure-event-creator on-failure})
+                         {:timeout-ms 5000})}))
+
+(re-frame/reg-event-fx
+ :http/post
+ (fn [_ [_ {:keys [url body on-success on-failure timeout]}]]
+   {:http-raw-post (merge {:url  url
+                           :body body
+                           :success-event-creator
+                           (fn [o]
+                             (let [res (if (json? o) (update o :body parse-body o))]
+                               (on-success res)))}
+                          (when on-failure
+                            {:failure-event-creator on-failure})
+                          (when timeout
+                            {:timeout-ms timeout}))}))
+
 (defn button [{:keys [on-click]} label]
   [button/secondary-button {:on-press #(re-frame/dispatch (on-click {}))} label])
 
 (defn input [{:keys [on-change placeholder]}]
-  [react/text-input {:on-change-text #(re-frame/dispatch (on-change {})) :placeholder placeholder}])
+  [react/text-input {:placeholder placeholder
+                     :style {:width "100%"}
+                     :on-change-text #(re-frame/dispatch (on-change {:value %}))}])
 
-(defn touchable-opacity [{:keys [on-press]}]
-  [react/touchable-opacity {:on-press #(re-frame/dispatch (on-press {}))}])
+(defn touchable-opacity [{:keys [on-press]} & children]
+  (into [react/touchable-opacity {:on-press #(re-frame/dispatch (on-press {}))}] children))
 
-(defn image [{:keys [uri]}]
-  [react/image {:source {:uri uri}}])
+(defn image [{:keys [uri style]}]
+  [react/image (merge {:style (merge {:width 100 :height 100} style)} (when uri {:source {:uri uri}}))])
+
+(defn link [{:keys [uri]}]
+  [react/text
+   {:style    {:color                colors/white
+               :text-decoration-line :underline}
+    :on-press #(re-frame/dispatch [:browser.ui/message-link-pressed uri])}
+   uri])
+
+(defn list [{:keys [data item-view]}]
+  [list/flat-list {:data data :key-fn (fn [_ i] (str i)) :render-fn item-view}])
+
+(defn checkbox [{:keys [on-change checked]}]
+  [react/view {:style {:background-color colors/white}}
+   [checkbox/checkbox (merge {:checked checked :style {:padding 0}}
+                             (when on-change {:on-value-change #(re-frame/dispatch (on-change {:value %}))}))]])
 
 (def capacities
   {:components {'view               {:value react/view}
@@ -96,6 +141,9 @@
                 'image              {:value image :properties {:uri :string}}
                 'input              {:value input :properties {:on-change :event :placeholder :string}}
                 'button             {:value button :properties {:on-click :event}}
+                'link               {:value link :properties {:uri :string}}
+                'list               {:value list :properties {:data :vector :item-view :view}}
+                'checkbox           {:value checkbox :properties {:on-change :event :checked :boolean}}
                 'nft-token-viewer   {:value transactions/nft-token :properties {:token :string}}
                 'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}
                 'asset-selector     {:value transactions/choose-nft-asset-suggestion}
@@ -129,27 +177,29 @@
                                :timeout?    :string
                                :on-success  :event
                                :on-failure? :event}}
-                'browser/open {:value  :browser/open :arguments {:url :string}}
-                'chat/open {:value  :chat/open :arguments {:url :string}}
+                'http/post
+                {:permissions [:read]
+                 :value       :http/post
+                 :arguments   {:url         :string
+                               :body        :string
+                               :timeout?    :string
+                               :on-success  :event
+                               :on-failure? :event}}
+                'ipfs/cat
+                {:permissions [:read]
+                 :value       :ipfs/cat
+                 :arguments   {:hash        :string
+                               :on-success  :event
+                               :on-failure? :event}}
                 'ethereum/sign
                 {:arguments
                  {:account   :string
                   :message   :string
                   :on-result :event}}
-                'ethereum/send-raw-transaction
-                {:arguments {:data :string}}
                 'ethereum/send-transaction
                 {:arguments
                  {:from       :string
                   :to         :string
-                  :gas?       :string
-                  :gas-price? :string
-                  :value?     :string
-                  :data?      :string
-                  :nonce?     :string}}
-                'ethereum/new-contract
-                {:arguments
-                 {:from       :string
                   :gas?       :string
                   :gas-price? :string
                   :value?     :string
@@ -163,14 +213,7 @@
                   :gas-price? :string
                   :value?     :string
                   :data?      :string
-                  :block      :string}}
-                'ethereum/logs
-                {:arguments
-                 {:from?     :string
-                  :to        :string
-                  :address   :string
-                  :topics    :string
-                  :blockhash :string}}}
+                  :block      :string}}}
    :hooks {:commands commands/command-hook}})
 
 (defn read-extension [{:keys [value]}]

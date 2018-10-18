@@ -149,8 +149,8 @@
                            (description [_] description)
                            (parameters [_] parameters)
                            (validate [_ _ _])
-                           (on-send [_ _ _] {:dispatch on-send})
-                           (on-receive [_ _ _] {:dispatch on-receive})
+                           (on-send [_ _ _] (when on-send {:dispatch on-send}))
+                           (on-receive [_ _ _] (when on-receive {:dispatch on-receive}))
                            (short-preview [_ props] (short-preview props))
                            (preview [_ props] (preview props)))]
          (load-commands cofx [new-command])))
