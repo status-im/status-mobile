@@ -22,6 +22,7 @@
    :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")
    :erc-dex            (js/require "./resources/images/contacts/erc-dex.png")
    :cent               (js/require "./resources/images/contacts/cent.png")
+   :kickback           (js/require "./resources/images/contacts/kickback.png")
    :hexel              (js/require "./resources/images/contacts/hexel.png")
    :peepeth            (js/require "./resources/images/contacts/peepeth.png")
    :etherbots          (js/require "./resources/images/contacts/etherbots.png")

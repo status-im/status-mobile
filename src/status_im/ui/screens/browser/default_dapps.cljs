@@ -103,6 +103,10 @@
              :dapp-url    "https://beta.cent.co/"
              :photo-path  "contacts://cent"
              :description "Get wisdom, get money"}
+            {:name        "Kickback"
+             :dapp-url    "https://kickback.events/"
+             :photo-path  "contacts://kickback"
+             :description "Event no shows? No problem. Kickback asks event attendees to put skin in the game with Ethereum."}
             {:name        "Peepeth"
              :dapp-url    "https://peepeth.com/"
              :photo-path  "contacts://peepeth"
