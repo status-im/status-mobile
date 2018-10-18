@@ -365,7 +365,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
     @marks.testrail_id(5314)
-    @marks.critical
     def test_can_see_all_transactions_in_history(self):
         address = transaction_senders['W']['address']
         passphrase = transaction_senders['W']['passphrase']
