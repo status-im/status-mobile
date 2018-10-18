@@ -246,7 +246,8 @@
 
 (fx/defn set-extension-url-from-qr
   [cofx url]
-  (fx/merge (assoc-in cofx [:db :extension-url] url)
+  (fx/merge (assoc-in cofx [:db :extensions/manage :url] {:value url
+                                                          :error false})
             (navigation/navigate-back)))
 
 (fx/defn set-input
