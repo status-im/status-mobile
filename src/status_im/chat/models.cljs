@@ -14,6 +14,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.utils :as utils]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]))
 
 (defn multi-user-chat? [cofx chat-id]
@@ -130,6 +132,23 @@
   (when (not (get-in db [:chats chat-id :group-chat]))
     (protocol/send (protocol/map->MessagesSeen {:message-ids message-ids}) chat-id cofx)))
 
+(defn- unread-messages-number [chats]
+  (apply + (map (comp count :unviewed-messages) chats)))
+
+(fx/defn update-dock-badge-label
+  [cofx]
+  (let [chats (get-in cofx [:db :chats])
+        active-chats (filter :is-active (vals chats))
+        private-chats (filter (complement :public?) active-chats)
+        public-chats (filter :public? active-chats)
+        private-chats-unread-count (unread-messages-number private-chats)
+        public-chats-unread-count (unread-messages-number public-chats)
+        label (cond
+                (pos? private-chats-unread-count) private-chats-unread-count
+                (pos? public-chats-unread-count) "•"
+                :else nil)]
+    {:set-dock-badge-label label}))
+
 ;; TODO (janherich) - ressurect `constants/system` messages for group chats in the future
 (fx/defn mark-messages-seen
   "Marks all unviewed loaded messages as seen in particular chat"
@@ -154,7 +173,9 @@
                            (update-in [:chats chat-id :unviewed-messages]
                                       #(apply disj % loaded-unviewed-ids)))
                    :data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]}
-                  (send-messages-seen chat-id loaded-unviewed-ids))))))
+                  (send-messages-seen chat-id loaded-unviewed-ids)
+                  (when platform/desktop?
+                    (update-dock-badge-label)))))))
 
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
@@ -217,3 +238,12 @@
    (utils/show-popup nil
                      (i18n/label :cooldown/warning-message)
                      #())))
+
+(defn set-dock-badge-label [label]
+  "Sets dock badge label (OSX only for now).
+   Label must be a string. Pass nil or empty string to clear the label."
+  (.setDockBadgeLabel react/desktop-notification label))
+
+(re-frame/reg-fx
+ :set-dock-badge-label
+ set-dock-badge-label)

@@ -115,3 +115,7 @@ void DesktopNotification::sendNotification(QString text) {
       text, Snore::Icon::defaultIcon());
   Snore::SnoreCore::instance().broadcastNotification(notification);
 }
+
+void DesktopNotification::setDockBadgeLabel(const QString label) {
+  Snore::SnoreCore::instance().setDockBadgeLabel(label);
+}

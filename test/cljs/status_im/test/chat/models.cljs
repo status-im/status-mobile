@@ -253,3 +253,29 @@
     (is (= #{"4" "5" "6"}
            (set (get-in (chat/mark-messages-seen {:db test-db} "1-1")
                         [:shh/post 0 :message :payload :message-ids]))))))
+
+(deftest update-dock-badge-label
+  (testing "When user has unseen private messages"
+    (is (= {:set-dock-badge-label 3}
+           (chat/update-dock-badge-label {:db {:chats {"0x0"    {:is-active         true
+                                                                 :public?           false
+                                                                 :unviewed-messages #{1 2 3}}
+                                                       "status" {:is-active         true
+                                                                 :public?           true
+                                                                 :unviewed-messages #{1 2}}}}}))))
+  (testing "When user has unseen public messages and no unseen private messages"
+    (is (= {:set-dock-badge-label "•"}
+           (chat/update-dock-badge-label {:db {:chats {"0x0"    {:is-active         true
+                                                                 :public?           false
+                                                                 :unviewed-messages #{}}
+                                                       "status" {:is-active         true
+                                                                 :public?           true
+                                                                 :unviewed-messages #{1 2}}}}}))))
+  (testing "When user has no unseen messages"
+    (is (= {:set-dock-badge-label nil}
+           (chat/update-dock-badge-label {:db {:chats {"0x0"    {:is-active         true
+                                                                 :public?           false
+                                                                 :unviewed-messages #{}}
+                                                       "status" {:is-active         true
+                                                                 :public?           true
+                                                                 :unviewed-messages #{}}}}})))))

@@ -27,7 +27,8 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.chat.models :as chat-model]))
 
 (defn init-store!
   "Try to decrypt the database, move on if successful otherwise go back to
@@ -188,7 +189,9 @@
             {:notifications/request-notifications-permissions nil}
             (navigation/navigate-to-cofx :home nil)
             (universal-links/process-stored-event)
-            (notifications/process-stored-event address)))
+            (notifications/process-stored-event address)
+            (when platform/desktop?
+              (chat-model/update-dock-badge-label))))
 
 (defn dev-mode? [cofx]
   (get-in cofx [:db :account/account :dev-mode?]))
