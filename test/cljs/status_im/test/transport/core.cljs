@@ -1,15 +1,21 @@
 (ns status-im.test.transport.core
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.protocol.core :as protocol]
+            [status-im.transport.core :as transport]
             [status-im.transport.message.core :as message]))
 
 (deftest init-whisper
   (let [cofx {:db {:account/account {:public-key "1"}
+                   :transport/chats {"1" {:topic "topic-1"}
+                                     "2" {}
+                                     "3" {:topic "topic-3"}}
                    :semaphores #{}}}]
     (testing "it adds the discover filter"
-      (is (= (:shh/add-discovery-filter (protocol/initialize-protocol cofx "user-address")))))
+      (is (= {:web3 nil :private-key-id "1" :topic "0xf8946aac"}
+             (:shh/add-discovery-filter (transport/init-whisper cofx "user-address")))))
     (testing "it restores the sym-keys"
-      (is (= (:shh/restore-sym-keys (protocol/initialize-protocol cofx  "user-address")))))
+      (is (= [["1" {:topic "topic-1"}] ["3" {:topic "topic-3"}]]
+             (-> (transport/init-whisper cofx  "user-address") :shh/restore-sym-keys :transport))))
     (testing "custom mailservers"
       (let [ms-1            {:id "1"
                              :fleet :eth.beta
