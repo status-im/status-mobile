@@ -9,7 +9,8 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.i18n :as i18n]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.colors :as colors]))
 
 (defview transaction-sent [& [modal?]]
   (letsubs [chat-id [:get-current-chat-id]]
@@ -17,7 +18,7 @@
      [status-bar/status-bar {:type (if modal? :modal-wallet :transparent)}]
      [react/view styles/transaction-sent-container
       [react/view styles/ok-icon-container
-       [vi/icon :icons/ok {:color components.styles/color-blue4}]]
+       [vi/icon :icons/ok {:color colors/blue}]]
       [react/text {:style               styles/transaction-sent
                    :font                (if platform/android? :medium :default)
                    :accessibility-label :transaction-sent-text}

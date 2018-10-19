@@ -11,17 +11,17 @@
     "Scope of the command, defined as set of values representing contexts
      where in which command is available, together with `id` it forms unique
      identifier for each command.
-     Available values for the set are: 
+     Available values for the set are:
      `id-of-the-any-chat` - command if available only for the specified chat
      `:personal-chats` - command is available for any personal 1-1 chat
      `:group-chats` - command is available for any group chat
      `:public-chats` - command is available for any public chat ")
   (description [this] "Description of the command")
   (parameters [this]
-    "Ordered sequence of command parameter templates, where each parameter 
-     is defined as map consisting of mandatory `:id`, `:title` and `:type` keys, 
+    "Ordered sequence of command parameter templates, where each parameter
+     is defined as map consisting of mandatory `:id`, `:title` and `:type` keys,
      and optional `:suggestions` field.
-     When used, `:suggestions` containes reference to any generic helper component
+     When used, `:suggestions` contains reference to any generic helper component
      rendering suggestions for the argument (input code will handle when and where
      to render it)")
   (validate [this parameters cofx]
@@ -30,10 +30,10 @@
     found and command send workflow can proceed, or one/more errors to display.
     Each error is represented by the map containing `:title` and `:description` keys.")
   (on-send [this command-message cofx]
-    "Function which can provide any extra effects to be produced in addition to 
+    "Function which can provide any extra effects to be produced in addition to
     normal message effects which happen whenever message is sent")
   (on-receive [this command-message cofx]
-    "Function which can provide any extre effects to be produced in addition to
+    "Function which can provide any extra effects to be produced in addition to
     normal message effects which happen when particular command message is received")
   (short-preview [this command-message]
     "Function rendering the short-preview of the command message, used when
@@ -54,11 +54,17 @@
 (defprotocol EnhancedParameters
   "Protocol for command messages which wish to modify/inject additional data into parameters,
   other then those collected from the chat input.
-  Good example would be the `/send` and `/receive` commands - we would like to indicate
+  Good example would be the `/send` and `/request` commands - we would like to indicate
   network selected in sender's device, but we of course don't want to force user to type
   it in when it could be effortlessly looked up from context.
   Another usage would be for example command where one of the input parameters will be
   hashed after validation and we would want to avoid the original unhashed parameter
-  to be ever saved on the sender device, nor to be sent over the wire."
-  (enhance-parameters [this parameters cofx]
+  to be ever saved on the sender device, nor to be sent over the wire.
+  For maximal flexibility, parameters can be enhanced both on the sending side and receiving
+  side, as sometimes thing needs to be added/enhanced in parameters map which are depending
+  on the receiver context - as for example calculated fiat price values for the `/request`
+  command"
+  (enhance-send-parameters [this parameters cofx]
+    "Function which takes original parameters + cofx map and returns new map of parameters")
+  (enhance-receive-parameters [this parameters cofx]
     "Function which takes original parameters + cofx map and returns new map of parameters"))

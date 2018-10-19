@@ -30,6 +30,7 @@
                       :qr-code      profile.views/qr-code
                       :advanced-settings profile.views/advanced-settings
                       :chat-profile chat.views/chat-profile
+                      :backup-recovery-phrase profile.views/backup-recovery-phrase
                       status-view)]
       [react/view {:style {:flex 1}}
        [component]])))

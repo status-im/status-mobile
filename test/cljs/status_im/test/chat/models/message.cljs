@@ -1,6 +1,6 @@
 (ns status-im.test.chat.models.message
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.transport.message.v1.protocol :as protocol]
+            [status-im.transport.message.protocol :as protocol]
             [status-im.chat.models.message :as message]
             [status-im.utils.datetime :as time]))
 
@@ -48,13 +48,13 @@
             :current-chat-id "chat-id"
             :chats {"chat-id" {:messages {}}}}]
     (testing "a message coming from you!"
-      (let [actual (message/receive
-                    {:from "me"
-                     :message-id "id"
-                     :chat-id "chat-id"
-                     :content "b"
-                     :clock-value 1}
-                    {:db db})
+      (let [actual (message/receive-many {:db db}
+                                         [{:from "me"
+                                           :message-type :user-message
+                                           :message-id "id"
+                                           :chat-id "chat-id"
+                                           :content "b"
+                                           :clock-value 1}])
             message (get-in actual [:db :chats "chat-id" :messages "id"])
             status  (get-in actual [:db :chats "chat-id" :message-statuses "id" "me" :status])]
         (testing "it adds the message"
@@ -62,7 +62,7 @@
         (testing "it marks the message as outgoing"
           (is (= true (:outgoing message))))
         (testing "it confirm the message as processed"
-          (is (:confirm-messages-processed actual)))
+          (is (:transport/confirm-messages-processed actual)))
         (testing "it stores the message"
           (is (:data-store/tx actual)))
         (testing "it does not send a seen confirmation"
@@ -70,76 +70,119 @@
         (testing "it marks it as sent"
           (is (= :sent status)))))))
 
+(deftest receive-group-chats
+  (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}}}
+                                   :account/account {:public-key "a"}
+                                   :current-chat-id "chat-id"
+                                   :view-id :chat}}
+        valid-message        {:chat-id     "chat-id"
+                              :from        "present"
+                              :message-type :group-user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}
+        bad-chat-id-message  {:chat-id     "bad-chat-id"
+                              :from        "present"
+                              :message-type :group-user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}
+        bad-from-message     {:chat-id     "chat-id"
+                              :from        "not-present"
+                              :message-type :group-user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}]
+    (testing "a valid message"
+      (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "chat-id" :messages "1"])))
+    (testing "a message from someone not in the list of participants"
+      (is (= cofx (message/receive-many cofx [bad-from-message]))))
+    (testing "a message with non existing chat-id"
+      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
+
+(deftest receive-public-chats
+  (let [cofx                 {:db {:chats {"chat-id" {:public? true}}
+                                   :account/account {:public-key "a"}
+                                   :current-chat-id "chat-id"
+                                   :view-id :chat}}
+        valid-message        {:chat-id     "chat-id"
+                              :from        "anyone"
+                              :message-type :public-group-user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}
+        bad-chat-id-message  {:chat-id     "bad-chat-id"
+                              :from        "present"
+                              :message-type :public-group-user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}]
+    (testing "a valid message"
+      (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "chat-id" :messages "1"])))
+    (testing "a message with non existing chat-id"
+      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
+
+(deftest receive-one-to-one
+  (let [cofx                 {:db {:chats {"matching" {}}
+                                   :account/account {:public-key "a"}
+                                   :current-public-key "me"
+                                   :current-chat-id "chat-id"
+                                   :view-id :chat}}
+        valid-message        {:chat-id     "matching"
+                              :from        "matching"
+                              :message-type :user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}
+        own-message          {:chat-id     "matching"
+                              :from        "me"
+                              :message-type :user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}
+
+        bad-chat-id-message  {:chat-id     "bad-chat-id"
+                              :from        "not-matching"
+                              :message-type :user-message
+                              :message-id  "1"
+                              :clock-value 1
+                              :timestamp   0}]
+    (testing "a valid message"
+      (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "matching" :messages "1"])))
+    (testing "our own message"
+      (is (get-in (message/receive-many cofx [own-message]) [:db :chats "matching" :messages "1"])))
+    (testing "a message with non matching chat-id"
+      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
+
 (deftest receive-send-seen
-  (let [db           {:db {:chats {"chat-id" {}}
+  (let [cofx         {:db {:chats {"chat-id" {}}
                            :account/account {:public-key "a"}
                            :current-chat-id "chat-id"
                            :view-id :chat}}
         message      {:chat-id     "chat-id"
-                      :from        "a"
+                      :message-type :user-message
+                      :from        "chat-id"
                       :message-id  "1"
-                      :clock-value 0
+                      :clock-value 1
                       :timestamp   0}
         extract-seen (comp :payload :message first :shh/post)]
     (testing "it send a seen message when the chat is 1-to-1 and is open"
       (is (instance? protocol/MessagesSeen
-                     (extract-seen (message/receive message db))))
-      (is (= #{"1"} (:message-ids (extract-seen (message/receive message db))))))
-    (testing "it does not send any when the chat is public"
+                     (extract-seen (message/receive-many cofx [message]))))
+      (is (= #{"1"} (:message-ids (extract-seen (message/receive-many cofx [message]))))))
+    (testing "it does not send any when the chat is a group-chat"
       (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :chats "chat-id" :public?] true))))))
+                 (message/receive-many
+                  (assoc-in cofx [:db :chats "chat-id" :group-chat] true)
+                  [message])))))
     (testing "it does not send any when we are in a different chat"
       (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :current-chat-id] :different))))))
+                 (message/receive-many (assoc-in cofx [:db :current-chat-id] :different)
+                                       [message])))))
     (testing "it does not send any when we are not in a chat view"
       (is (nil? (extract-seen
-                 (message/receive
-                  message
-                  (assoc-in db [:db :view-id] :home))))))))
-
-(deftest group-messages
-  (let [cofx         {:db {:chats {"chat-id" {:messages {0 {:message-id  0
-                                                            :content     "a"
-                                                            :clock-value 0
-                                                            :timestamp   0}
-                                                         1 {:message-id  1
-                                                            :content     "b"
-                                                            :clock-value 1
-                                                            :timestamp   1}
-                                                         2 {:message-id  2
-                                                            :content     "c"
-                                                            :clock-value 2
-                                                            :timestamp   2}
-                                                         3 {:message-id  3
-                                                            :content     "d"
-                                                            :clock-value 3
-                                                            :timestamp   3}}}}}}
-        new-messages [{:message-id  1
-                       :content     "b"
-                       :clock-value 1
-                       :timestamp   1
-                       :show?       false}
-                      {:message-id  2
-                       :content     "c"
-                       :clock-value 2
-                       :timestamp   2
-                       :show?       true}
-                      {:message-id  3
-                       :content     "d"
-                       :clock-value 3
-                       :timestamp   3
-                       :show?       true}]]
-    (testing "New messages are grouped/sorted correctly, hidden messages are not grouped"
-      (is (= '(2 3)
-             (map :message-id
-                  (-> (get-in (message/group-messages "chat-id" new-messages cofx)
-                              [:db :chats "chat-id" :message-groups])
-                      first
-                      second)))))))
+                 (message/receive-many (assoc-in cofx [:db :view-id] :home)
+                                       [message])))))))
 
 (deftest delete-message
   (let [timestamp (time/now)
@@ -158,8 +201,8 @@
                                                               :clock-value 0
                                                               :timestamp   timestamp}}
                                            :message-groups {"datetime-today" '({:message-id 0})}}}}}
-        fx1       (message/delete-message "chat-id" 1 cofx1)
-        fx2       (message/delete-message "chat-id" 0 cofx2)]
+        fx1       (message/delete-message cofx1 "chat-id" 1)
+        fx2       (message/delete-message cofx2 "chat-id" 0)]
     (testing "Deleting message deletes it along with all references"
       (is (= '(0)
              (keys (get-in fx1 [:db :chats "chat-id" :messages]))))

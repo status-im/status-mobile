@@ -18,7 +18,7 @@
 (def sign-you-in
   {:margin-top     16
    :font-size      13
-   :color          colors/text-light-gray})
+   :color          colors/black})
 
 (def bottom-button-container
   {:flex-direction    :row
@@ -33,8 +33,22 @@
 
 (def login-badge-name
   {:font-size  15
-   :color      colors/text-light-gray
+   :color      colors/black
    :margin-top 8})
 
 (def password-container
-  {:margin-top 24})
+  {:margin-top 24
+   :android    {:margin-top  11
+                :padding-top 13}})
+
+(def save-password-checkbox-container
+  {:margin-top 0
+   :flex-direction :row
+   :align-items :center})
+
+(def save-password-unavailable
+  {:margin-top 8
+   :width "100%"
+   :text-align :center
+   :flex-direction :row
+   :align-items :center})

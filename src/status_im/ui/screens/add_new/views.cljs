@@ -29,8 +29,9 @@
        :accessibility-label :start-group-chat-button
        :icon                :icons/contacts
        :icon-opts           {:color colors/blue}
-       :on-press            #(re-frame/dispatch [:open-contact-toggle-list])}])
-   [action-button/action-separator]
+       :on-press            #(re-frame/dispatch [:contact.ui/start-group-chat-pressed])}])
+   (when config/group-chats-enabled?
+     [action-button/action-separator])
    [action-button/action-button
     {:label               (i18n/label :t/new-public-group-chat)
      :accessibility-label :join-public-chat-button
@@ -50,7 +51,16 @@
      :accessibility-label :invite-friends-button
      :icon                :icons/share
      :icon-opts           {:color colors/blue}
-     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}]])
+     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}]
+   [action-button/action-separator]
+   [action-button/action-button
+    {:label               (i18n/label :t/scan-qr)
+     :accessibility-label :scan-qr-code-button
+     :icon                :icons/qr
+     :icon-opts           {:color colors/blue}
+     :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                               {:toolbar-title (i18n/label :t/scan-qr)}
+                                               :handle-qr-code])}]])
 
 (views/defview add-new []
   (views/letsubs [account     [:get-current-account]

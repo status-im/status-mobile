@@ -3,7 +3,10 @@ import pytest
 pr = pytest.mark.pr
 testrail_case_id = pytest.mark.testrail_case_id
 testrail_id = pytest.mark.testrail_id  # atomic tests
-smoke_1 = pytest.mark.smoke_1
+critical = pytest.mark.critical
+high = pytest.mark.high
+medium = pytest.mark.medium
+low = pytest.mark.low
 
 account = pytest.mark.account
 all = pytest.mark.all

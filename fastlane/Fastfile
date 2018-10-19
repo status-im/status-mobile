@@ -9,6 +9,8 @@
 # There are a few env variables defined in the .env file in
 # this directory (fastlane/.env)
 
+# Fastlane is updated quite frequently with security patches
+update_fastlane
 
 # unlocks keychain if KEYCHAIN_PASSWORD variable is present
 # (to be used on CI machines)
@@ -59,8 +61,6 @@ def build_ios_adhoc
         keychain_name: "login.keychain"
     )
 
-    workaround_realm_core_sync_issues
-
     build_ios_app(
         scheme: "StatusIm",
         workspace: "ios/StatusIm.xcworkspace",
@@ -72,56 +72,15 @@ def build_ios_adhoc
 end
 
 
-def notify_about_new_build(source, url)
-    branch_name = ENV["BRANCH_NAME"]
-    branch_name = "develop" if branch_name.nil?
-
-    msg = "Branch: " + branch_name + ", "
-
-    if source.end_with? ".ipa"
-        msg = msg + "iOS build uploaded to diawi: " + url
-    else
-        msg = msg + "Android build uploaded to diawi: " + url
-    end
-
-    slack(
-        message: msg,
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
-
-    change_id = ENV["CHANGE_ID"]
-
-    unless change_id.nil?
-
-        github_api(
-            server_url: "https://api.github.com",
-            api_token: ENV["GITHUB_TOKEN"],
-            http_method: "POST",
-            path: "/repos/status-im/status-react/issues/" + change_id + "/comments",
-            body: {
-               "body": msg
-            }
-        )
-
-    end
-
-end
-
-
-def upload_to_diawi_and_notify(source)
+def upload_to_diawi(source)
     diawi(
         token: ENV["DIAWI_TOKEN"],
         file: source
     )
 
     File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
-
-    notify_about_new_build(
-        source,
-        lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI]
-    )
 end
+
 
 platform :ios do
   desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
@@ -133,42 +92,16 @@ platform :ios do
     build_ios_adhoc
   end
 
-  desc "`fastlane ios nightly` - makes a new nightly in TestFlight"
-  desc "This lane builds a new nightly and uploads it to TestFlight"
-  desc "It also leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  desc "`fastlane ios pr` - makes a new pr build"
+  desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  lane :pr do
+    adhoc
+  end
+
+  desc "`fastlane ios nightly` - makes a new nightly"
+  desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
-    unlock_keychain_if_needed
-
-    match(
-        type: "appstore",
-        force_for_new_devices: true,
-        readonly: true,
-        keychain_name: "login.keychain"
-    )
-
-    workaround_realm_core_sync_issues
-
-    build_ios_app(
-        scheme: "StatusIm",
-        workspace: "ios/StatusIm.xcworkspace",
-        configuration: "Release",
-        clean: true,
-        export_method: "app-store",
-        output_directory: "status_appstore"
-    )
-    upload_to_testflight(
-        ipa: "status_appstore/StatusIm.ipa"
-    )
-
-    slack(
-        message: "New nightly build uploaded to TestFlight",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
-
-    # additional .ipa is for diawi
-    # we have to re-build it because it uses different config
-    build_ios_adhoc
+    adhoc
   end
 
   desc "`fastlane ios release` builds a release & uploads it to TestFlight"
@@ -179,8 +112,6 @@ platform :ios do
         readonly: true,
         keychain_name: "login.keychain"
     )
-
-    workaround_realm_core_sync_issues
 
     build_ios_app(
         scheme: "StatusIm",
@@ -222,25 +153,13 @@ platform :ios do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi_and_notify(
-        "status-adhoc/StatusIm.ipa"
-    )
+    upload_to_diawi("status-adhoc/StatusIm.ipa")
   end
 
-
-  desc "This fastlane step is a workaround!"
-  desc "every now and then Realm fails on iOS on the 'Download Core` step"
-  desc "the issue is because multiple downloads use the same temp dir"
-  desc "now we are replacing the original download script with another"
-  desc "that generates a random folder for each run"
-  lane :workaround_realm_core_sync_issues do
-      FileUtils.cp_r(
-          '../ci/download-realm.js',
-          '../node_modules/realm/scripts',
-          remove_destination: true
-      )
+  desc "This fastlane step cleans up XCode DerivedData folder"
+  lane :cleanup do
+    clear_derived_data
   end
-
 end
 
 
@@ -285,9 +204,7 @@ platform :android do
   desc "---"
   desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
   lane :upload_diawi do
-    upload_to_diawi_and_notify(
-        "android/app/build/outputs/apk/release/app-release.apk"
-    )
+    upload_to_diawi("android/app/build/outputs/apk/release/app-release.apk")
   end
 
   desc "`fastlane android saucelabs` - upload .apk to sauce labs"

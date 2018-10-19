@@ -4,16 +4,18 @@
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.dimensions :as dimensions]
+            [status-im.fleet.core :as fleet]
+            pluto.registry
             status-im.transport.db
-            status-im.ui.screens.accounts.db
-            status-im.ui.screens.contacts.db
+            status-im.accounts.db
+            status-im.contact.db
             status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.network-settings.db
             status-im.ui.screens.offline-messaging-settings.db
-            status-im.ui.screens.browser.db
+            status-im.browser.db
             status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db))
 
@@ -41,12 +43,16 @@
              :peers-count                        0
              :peers-summary                      []
              :notifications                      {}
+             :semaphores                         #{}
              :network                            constants/default-network
              :networks/networks                  constants/default-networks
-             :inbox/wnodes                       constants/default-wnodes
+             :inbox/wnodes                       fleet/default-wnodes
              :my-profile/editing?                false
              :transport/chats                    {}
+             :transport/filters                  {}
              :transport/message-envelopes        {}
+             :transport.inbox/topics             {}
+             :transport.inbox/pending-requests   0
              :chat/cooldowns                     0
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
@@ -55,7 +61,12 @@
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
              :push-notifications/stored          {}
-             :push-notifications/initial?        false})
+             :registry                           {}
+             :hardwallet                         {:nfc-supported? false
+                                                  :nfc-enabled?   false
+                                                  :pin            {:original     []
+                                                                   :confirmation []
+                                                                   :enter-step   :original}}})
 
 ;;;;GLOBAL
 
@@ -70,7 +81,10 @@
 ;;object?
 (spec/def ::webview-bridge (spec/nilable any?))
 (spec/def ::status-module-initialized? (spec/nilable boolean?))
-(spec/def ::status-node-started? (spec/nilable boolean?))
+(spec/def :node/status (spec/nilable #{:stopped :starting :started :stopping}))
+(spec/def :node/node-restart? (spec/nilable boolean?))
+(spec/def :node/address (spec/nilable string?))
+
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
@@ -78,13 +92,12 @@
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
 
-(spec/def ::mailserver-status (spec/nilable keyword?))
+(spec/def ::mailserver-status (spec/nilable #{:disconnected :connecting :added :connected :error}))
 
 (spec/def ::app-state string?)
 
 ;;;;NODE
 
-(spec/def ::sync-listening-started (spec/nilable boolean?))
 (spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
 
@@ -100,7 +113,7 @@
 (spec/def :navigation/prev-view-id (spec/nilable keyword?))
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (allowed-keys :req [:networks/selected-network]))
-(spec/def :navigation.screen-params/browser (spec/nilable string?))
+(spec/def :navigation.screen-params/browser (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/contact (spec/nilable map?))
 (spec/def :navigation.screen-params.profile-qr-viewer/source (spec/nilable keyword?))
 (spec/def :navigation.screen-params.profile-qr-viewer/value (spec/nilable string?))
@@ -121,6 +134,8 @@
 
 (spec/def :navigation.screen-params/collectibles-list map?)
 
+(spec/def :navigation.screen-params/show-extension map?)
+
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
                                                                          :navigation.screen-params/profile-qr-viewer
@@ -128,7 +143,8 @@
                                                                          :navigation.screen-params/group-contacts
                                                                          :navigation.screen-params/edit-contact-group
                                                                          :navigation.screen-params/dapp-description
-                                                                         :navigation.screen-params/collectibles-list])))
+                                                                         :navigation.screen-params/collectibles-list
+                                                                         :navigation.screen-params/show-extension])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 (spec/def ::tooltips (spec/nilable any?))
@@ -139,16 +155,16 @@
 (spec/def ::chain (spec/nilable string?))
 (spec/def ::peers-count (spec/nilable integer?))
 (spec/def ::peers-summary (spec/nilable vector?))
-(spec/def :inbox/fetching? (spec/nilable boolean?))
-(spec/def :inbox/current-id (spec/nilable string?))
+(spec/def :inbox/current-id (spec/nilable keyword?))
 
 (spec/def ::collectible (spec/nilable map?))
 (spec/def ::collectibles (spec/nilable map?))
 
-;;;;NODE
+(spec/def ::extension-url (spec/nilable string?))
+(spec/def ::staged-extension (spec/nilable any?))
+(spec/def ::extensions-store (spec/nilable any?))
 
-(spec/def :node/after-start (spec/nilable vector?))
-(spec/def :node/after-stop (spec/nilable vector?))
+;;;;NODE
 
 (spec/def ::message-envelopes (spec/nilable map?))
 
@@ -164,10 +180,11 @@
 (spec/def :dimensions/window map?)
 
 ;; PUSH NOTIFICATIONS
-
 (spec/def :push-notifications/stored (spec/nilable map?))
-; Shows that push notification used to start the application is processed
-(spec/def :push-notifications/initial? (spec/nilable boolean?))
+
+(spec/def ::semaphores set?)
+
+(spec/def ::hardwallet map?)
 
 (spec/def ::db (allowed-keys
                 :opt
@@ -200,15 +217,14 @@
                  :networks/manage
                  :mailservers/manage
                  :bootnodes/manage
-                 :node/after-start
-                 :node/after-stop
+                 :extensions/manage
                  :inbox/wnodes
-                 :inbox/last-received
                  :inbox/current-id
-                 :inbox/fetching?
+                 :node/status
+                 :node/restart?
+                 :node/address
                  :universal-links/url
                  :push-notifications/stored
-                 :push-notifications/initial?
                  :browser/browsers
                  :browser/options
                  :new/open-dapp
@@ -219,10 +235,16 @@
                  :chat/spam-messages-frequency
                  :transport/message-envelopes
                  :transport/chats
-                 :transport/discovery-filter
+                 :transport/filters
+                 :transport.inbox/topics
+                 :transport.inbox/pending-requests
+                 :transport.inbox/current-request
+                 :transport.inbox/connection-checks
+                 :transport.inbox/request-to
                  :desktop/desktop
                  :dimensions/window
                  :dapps/permissions]
+
                 :opt-un
                 [::current-public-key
                  ::modal
@@ -233,7 +255,6 @@
                  ::web3-node-version
                  ::webview-bridge
                  ::status-module-initialized?
-                 ::status-node-started?
                  ::keyboard-height
                  ::keyboard-max-height
                  ::tab-bar-visible?
@@ -241,12 +262,13 @@
                  ::mailserver-status
                  ::peers-count
                  ::peers-summary
-                 ::sync-listening-started
                  ::sync-state
                  ::sync-data
                  ::network
                  ::chain
                  ::app-state
+                 ::semaphores
+                 ::hardwallet
                  :navigation/view-id
                  :navigation/navigation-stack
                  :navigation/prev-tab-view-id
@@ -266,13 +288,13 @@
                  :chat/message-data
                  :chat/message-status
                  :chat/selected-participants
-                 :chat/chat-loaded-callbacks
                  :chat/public-group-topic
                  :chat/public-group-topic-error
                  :chat/messages
                  :chat/message-groups
                  :chat/message-statuses
                  :chat/not-loaded-message-ids
+                 :chat/referenced-messages
                  :chat/last-clock-value
                  :chat/loaded-chats
                  :chat/bot-db
@@ -292,4 +314,7 @@
                  :notifications/notifications
                  ::device-UUID
                  ::collectible
-                 ::collectibles]))
+                 ::collectibles
+                 ::staged-extension
+                 ::extensions-store
+                 :registry/registry]))

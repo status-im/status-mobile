@@ -21,8 +21,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- these permissions should be removed -->
-    <!-- RECORD_AUDIO is pulled in by instabug-reactnative, not needed for status-react -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
     <!-- React Native unnecessary permissions (https://github.com/facebook/react-native/issues/5886) -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove"/>
 

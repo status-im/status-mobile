@@ -1,17 +1,16 @@
 (ns status-im.ui.components.chat-icon.screen
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.styles :as styles]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.chat.views.photos :as photos]
-            [status-im.react-native.resources :as resources]))
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.colors :as colors]))
 
 (defn default-chat-icon [name styles]
-  [react/view (:default-chat-icon styles)
-   [react/text {:style (:default-chat-icon-text styles)}
-    (string/capitalize (first name))]])
+  (when-not (string/blank? name)
+    [react/view (:default-chat-icon styles)
+     [react/text {:style (:default-chat-icon-text styles)}
+      (string/capitalize (first name))]]))
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [react/view online-view-wrapper
@@ -80,7 +79,7 @@
     :online-dot-right       styles/online-dot-right
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list components.styles/default-chat-color)
+    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn chat-icon-view-menu-item [chat-id group-chat name color online]
@@ -134,7 +133,7 @@
     :online-dot-right       styles/online-dot-right
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list components.styles/default-chat-color)
+    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn dapp-icon-browser [contact size]
@@ -146,7 +145,19 @@
     :online-dot-right       styles/online-dot-right
     :size                   size
     :chat-icon              (styles/custom-size-icon size)
-    :default-chat-icon      (styles/default-chat-icon-chat-list components.styles/default-chat-color)
+    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
+    :default-chat-icon-text styles/default-chat-icon-text}])
+
+(defn dapp-icon-permission [contact size]
+  [contact-icon-view contact
+   {:container              {:width size :height size}
+    :online-view-wrapper    styles/online-view-wrapper
+    :online-view            styles/online-view
+    :online-dot-left        styles/online-dot-left
+    :online-dot-right       styles/online-dot-right
+    :size                   size
+    :chat-icon              (styles/custom-size-icon size)
+    :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn profile-icon-view [photo-path name color edit? size]
@@ -170,6 +181,6 @@
 
 (defn my-profile-icon [{{:keys [photo-path name]} :account
                         edit?                     :edit?}]
-  (let [color components.styles/default-chat-color
+  (let [color colors/default-chat-color
         size  56]
     [profile-icon-view photo-path name color edit? size]))

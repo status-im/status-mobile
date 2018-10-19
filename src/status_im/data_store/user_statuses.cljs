@@ -1,11 +1,7 @@
 (ns status-im.data-store.user-statuses
   (:require [clojure.string :as string]
-            [cljs.reader :as reader]
             [re-frame.core :as re-frame]
             [status-im.data-store.realm.core :as core]))
-
-(defn- in-query [message-ids]
-  (string/join " or " (map #(str "message-id=\"" % "\"") message-ids)))
 
 (defn- prepare-statuses [statuses]
   (reduce (fn [acc {:keys [message-id whisper-identity] :as user-status}]
@@ -23,7 +19,7 @@
       (.objects "user-status")
       (.filtered (str "chat-id=\"" chat-id "\""
                       (when (seq message-ids)
-                        (str " and (" (in-query message-ids) ")"))))
+                        (str " and (" (core/in-query "message-id" message-ids) ")"))))
       (core/all-clj :user-status)
       prepare-statuses))
 

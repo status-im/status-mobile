@@ -1,15 +1,14 @@
 (ns status-im.chat.subs
   (:require [clojure.string :as string]
             [re-frame.core :refer [reg-sub subscribe]]
-            [status-im.chat.constants :as chat-constants]
-            [status-im.chat.models.input :as input-model]
+            [status-im.chat.constants :as chat.constants]
             [status-im.chat.commands.core :as commands]
+            [status-im.chat.commands.input :as commands.input]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.i18n :as i18n]
-            [status-im.constants :as const]
-            [status-im.wallet.transactions :as transactions]))
+            [status-im.models.transactions :as transactions]))
 
 (reg-sub :get-chats :chats)
 
@@ -76,12 +75,8 @@
      platform/ios? kb-height
      :default 0)))
 
-(defn- active-chat? [[_ chat]]
-  (and (:is-active chat)
-       (not= const/console-chat-id (:chat-id chat))))
-
 (defn active-chats [chats]
-  (into {} (filter active-chat? chats)))
+  (into {} (filter (comp :is-active second) chats)))
 
 (reg-sub
  :get-active-chats
@@ -125,25 +120,45 @@
  (fn [{:keys [message-statuses]}]
    (or message-statuses {})))
 
+(reg-sub
+ :get-current-chat-referenced-messages
+ :<- [:get-current-chat]
+ (fn [{:keys [referenced-messages]}]
+   (or referenced-messages {})))
+
 (defn sort-message-groups
-  "Sorts message groups according to timestamp of first message in group "
+  "Sorts message groups according to timestamp of first message in group"
   [message-groups messages]
   (sort-by
    (comp unchecked-negate :timestamp (partial get messages) :message-id first second)
    message-groups))
 
+(defn quoted-message-data
+  "Selects certain data from quoted message which must be available in the view"
+  [message-id messages referenced-messages]
+  (when-let [{:keys [from content]} (get messages message-id
+                                         (get referenced-messages message-id))]
+    {:from from
+     :text (:text content)}))
+
 (defn messages-with-datemarks-and-statuses
   "Converts message groups into sequence of messages interspersed with datemarks,
   with correct user statuses associated into message"
-  [message-groups messages message-statuses]
+  [message-groups messages message-statuses referenced-messages]
   (mapcat (fn [[datemark message-references]]
             (into (list {:value datemark
                          :type  :datemark})
                   (map (fn [{:keys [message-id timestamp-str]}]
-                         (assoc (get messages message-id)
-                                :datemark      datemark
-                                :timestamp-str timestamp-str
-                                :user-statuses (get message-statuses message-id))))
+                         (let [{:keys [content] :as message} (get messages message-id)
+                               quote (some-> (:response-to content)
+                                             (quoted-message-data messages referenced-messages))]
+                           (cond-> (-> message
+                                       (update :content dissoc :response-to)
+                                       (assoc :datemark      datemark
+                                              :timestamp-str timestamp-str
+                                              :user-statuses (get message-statuses message-id)))
+                             quote ;; quoted message reference
+                             (assoc-in [:content :response-to] quote)))))
                   message-references))
           message-groups))
 
@@ -217,9 +232,10 @@
  :<- [:get-current-chat-messages]
  :<- [:get-current-chat-message-groups]
  :<- [:get-current-chat-message-statuses]
- (fn [[messages message-groups message-statuses]]
+ :<- [:get-current-chat-referenced-messages]
+ (fn [[messages message-groups message-statuses referenced-messages]]
    (-> (sort-message-groups message-groups messages)
-       (messages-with-datemarks-and-statuses messages message-statuses)
+       (messages-with-datemarks-and-statuses messages message-statuses referenced-messages)
        messages-stream)))
 
 (reg-sub
@@ -236,7 +252,7 @@
   (->> commands
        map->sorted-seq
        (filter (fn [{:keys [type]}]
-                 (when (input-model/starts-as-command? input-text)
+                 (when (commands.input/starts-as-command? input-text)
                    (string/includes? (commands/command-name type) input-text))))))
 
 (reg-sub
@@ -257,21 +273,21 @@
  :<- [:get-current-chat-ui-prop :selection]
  :<- [:get-commands-for-chat]
  (fn [[{:keys [input-text]} selection commands]]
-   (commands/selected-chat-command input-text selection commands)))
+   (commands.input/selected-chat-command input-text selection commands)))
 
 (reg-sub
  :chat-input-placeholder
  :<- [:get-current-chat]
  :<- [:selected-chat-command]
  (fn [[{:keys [input-text]} {:keys [params current-param-position]}]]
-   (when (string/ends-with? (or input-text "") chat-constants/spacing-char)
+   (when (string/ends-with? (or input-text "") chat.constants/spacing-char)
      (get-in params [current-param-position :placeholder]))))
 
 (reg-sub
  :chat-parameter-box
  :<- [:get-current-chat]
  :<- [:selected-chat-command]
- (fn [[current-chat {:keys [current-param-position params]}]]
+ (fn [[_ {:keys [current-param-position params]}]]
    (when (and params current-param-position)
      (get-in params [current-param-position :suggestions]))))
 
@@ -280,10 +296,12 @@
  :<- [:chat-parameter-box]
  :<- [:show-suggestions?]
  :<- [:validation-messages]
- (fn [[chat-parameter-box show-suggestions? validation-messages]]
+ :<- [:selected-chat-command]
+ (fn [[chat-parameter-box show-suggestions? validation-messages {:keys [command-completion]}]]
    (and chat-parameter-box
         (not validation-messages)
-        (not show-suggestions?))))
+        (not show-suggestions?)
+        (not (= :complete command-completion)))))
 
 (reg-sub
  :show-suggestions-view?
@@ -292,7 +310,7 @@
  :<- [:get-all-available-commands]
  (fn [[show-suggestions? {:keys [input-text]} commands]]
    (and (or show-suggestions?
-            (input-model/starts-as-command? (string/trim (or input-text ""))))
+            (commands.input/starts-as-command? (string/trim (or input-text ""))))
         (seq commands))))
 
 (reg-sub
@@ -301,12 +319,6 @@
  :<- [:selected-chat-command]
  (fn [[show-suggestions-box? selected-command]]
    (and show-suggestions-box? (not selected-command))))
-
-(reg-sub
- :is-request-answered?
- :<- [:get-current-chat]
- (fn [{:keys [requests]} [_ message-id]]
-   (not= "open" (get-in requests [message-id :status]))))
 
 (reg-sub
  :unviewed-messages-count
@@ -318,8 +330,11 @@
 (reg-sub
  :get-photo-path
  :<- [:get-contacts]
- (fn [contacts [_ id]]
-   (:photo-path (contacts id))))
+ :<- [:get-current-account]
+ (fn [[contacts account] [_ id]]
+   (or (:photo-path (contacts id))
+       (when (= id (:public-key account))
+         (:photo-path account)))))
 
 (reg-sub
  :get-last-message
@@ -369,3 +384,9 @@
  (fn [[{:keys [public?]} cooldown-enabled?]]
    (and public?
         cooldown-enabled?)))
+
+(reg-sub
+ :get-reply-message
+ :<- [:get-current-chat]
+ (fn [{:keys [metadata messages]}]
+   (get messages (:responding-to-message metadata))))

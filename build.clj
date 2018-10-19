@@ -204,12 +204,20 @@
 
 ;;; :watch task
 
-(defn hawk-handler
+(defn hawk-handler-resources
   [ctx e]
   (let [path "src/status_im/utils/js_resources.cljs"
         js-resourced (slurp path)]
     (spit path (str js-resourced " ;;"))
     (spit path js-resourced))
+  ctx)
+
+(defn hawk-handler-translations
+  [ctx e]
+  (let [path "src/status_im/i18n.cljs"
+        i18n (slurp path)]
+    (spit path (str i18n " ;;"))
+    (spit path i18n))
   ctx)
 
 (defmethod task "watch" [[_ & args]]
@@ -221,7 +229,8 @@
     (let [options (main/parse-cli-options args main/watch-task-options)]
       (clj-rn/watch (assoc options :start-cljs-repl false))
       (rfs/-main)
-      (hawk/watch! [{:paths ["resources"] :handler hawk-handler}])
+      (hawk/watch! [{:paths ["resources"] :handler hawk-handler-resources}
+                    {:paths ["translations"] :handler hawk-handler-translations}])
       (when (:start-cljs-repl options) (ra/cljs-repl)))))
 
 ;;; Help

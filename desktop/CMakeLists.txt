@@ -9,16 +9,34 @@
 cmake_minimum_required(VERSION 2.8.11)
 
 set(APP_NAME StatusIm)
+set(JS_APP_NAME StatusIm)
 set(REACT_BUILD_STATIC_LIB ON)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
 
 message(STATUS "EXTERNAL_MODULES_DIR: ${EXTERNAL_MODULES_DIR}")
 
+string(REGEX MATCH "BUILD_FOR_BUNDLE" BUILD_FOR_BUNDLE "${CMAKE_CXX_FLAGS}")
+
+# It is important to distinguish between directory hierarchies
+# in release and dev builds. Release contains .env
+# in the root dir of the build, while dev build's current dir
+# is status-react/desktop/bin, hence the need
+# to jump two levels up.
+# This is required by react-native-config library which references ENVFILE
+# from its own CMakeLists.txt file, so it will read the value set here
+if(${BUILD_FOR_BUNDLE} MATCHES "BUILD_FOR_BUNDLE")
+  set(ENVFILE "/.env")
+else()
+  set(ENVFILE "/../../.env")
+endif()
+
 foreach(external_module ${EXTERNAL_MODULES_DIR})
   message(STATUS "external_module: ${external_module}")
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../${external_module} ${CMAKE_CURRENT_BINARY_DIR}/${external_module})
 endforeach(external_module)
+
+add_subdirectory(reportApp)
 
 # APPLICATION_MAIN_CPP_PATH contains absolute path to generated template copy of main.cpp for application executable
 get_filename_component(APPLICATION_MAIN_CPP_PATH main.cpp ABSOLUTE)

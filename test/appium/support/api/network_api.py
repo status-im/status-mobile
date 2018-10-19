@@ -1,21 +1,24 @@
+import logging
+from typing import List
+
 import pytest
 import requests
 import time
-from tests import info
+from json import JSONDecodeError
 
 
-class NetworkApi:
+class NetworkApi(object):
 
     def __init__(self):
         self.network_url = 'http://api-%s.etherscan.io/api?' % pytest.config.getoption('network')
         self.faucet_url = 'http://51.15.45.169:3001/donate'
         self.chat_bot_url = 'http://offsite.chat:8099'
 
-    def get_transactions(self, address: str) -> dict:
+    def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
-    def get_token_transaction(self, address: str) -> dict:
+    def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
         return requests.request('GET', url=method).json()['result']
 
@@ -39,7 +42,7 @@ class NetworkApi:
         transactions = self.get_transactions(address=address)
         for transaction in transactions:
             if transaction['hash'] == transaction_hash:
-                info('Transaction is found in Ropsten network')
+                logging.info('Transaction is found in Ropsten network')
                 return
         pytest.fail('Transaction is not found in Ropsten network')
 
@@ -53,26 +56,30 @@ class NetworkApi:
             else:
                 counter += 10
                 time.sleep(10)
-                if token:
-                    transactions = self.get_token_transaction(address=address)
-                else:
-                    transactions = self.get_transactions(address=address)
-                info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
-                     (amount, address))
+                try:
+                    if token:
+                        transactions = self.get_token_transactions(address)
+                    else:
+                        transactions = self.get_transactions(address)
+                except JSONDecodeError:
+                    continue
+                logging.info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
+                             (amount, address))
                 for transaction in transactions:
                     if float(int(transaction['value']) / 10 ** decimals) == float(amount):
-                        info('Transaction with unique amount %s is found in list of transactions, address is %s' %
-                             (amount, address))
+                        logging.info(
+                            'Transaction with unique amount %s is found in list of transactions, address is %s' %
+                            (amount, address))
                         return transaction
 
     def wait_for_confirmation_of_transaction(self, address, amount):
         start_time = time.time()
         while round(time.time() - start_time, ndigits=2) < 900:  # should be < idleTimeout capability
             transaction = self.find_transaction_by_unique_amount(address, amount)
-            if int(transaction['confirmations']) > 1:
+            if int(transaction['confirmations']) >= 12:
                 return
             time.sleep(10)
-            pytest.fail('Transaction with amount %s was not confirmed, address is %s' % (amount, address))
+        pytest.fail('Transaction with amount %s was not confirmed, address is %s' % (amount, address))
 
     def verify_balance_is_updated(self, initial_balance, recipient_address, wait_time=360):
         counter = 0
@@ -82,9 +89,9 @@ class NetworkApi:
             elif initial_balance == self.get_balance(recipient_address):
                 counter += 10
                 time.sleep(10)
-                info('Waiting %s seconds for funds' % counter)
+                logging.info('Waiting %s seconds for funds' % counter)
             else:
-                info('Transaction is received')
+                logging.info('Transaction is received')
                 return
 
     def verify_balance_is(self, expected_balance: int, recipient_address: str, errors: list):
@@ -106,9 +113,9 @@ class NetworkApi:
                 elif self.get_balance(address) == initial_balance:
                     counter += 10
                     time.sleep(10)
-                    info('Waiting %s seconds for donation' % counter)
+                    logging.info('Waiting %s seconds for donation' % counter)
                 else:
-                    info('Got %s for %s' % (response["amount_eth"], address))
+                    logging.info('Got %s for %s' % (response["amount_eth"], address))
                     return
 
     def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:

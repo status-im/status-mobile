@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.accounts.create.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def create-account-view
@@ -42,9 +43,11 @@
   {:size      82
    :icon-size 34})
 
-(def input-container
+(defstyle input-container
   {:margin-horizontal 16
-   :margin-top        105})
+   :margin-top        105
+   :android           {:padding-top 13
+                       :margin-top  92}})
 
 (def input-description
   {:font-size      14

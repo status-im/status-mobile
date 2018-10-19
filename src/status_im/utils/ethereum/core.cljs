@@ -25,28 +25,6 @@
 (defn network-with-upstream-rpc? [network]
   (get-in network [:config :UpstreamConfig :Enabled]))
 
-(defn passphrase->words [s]
-  (when s
-    (-> (string/trim s)
-        (string/replace-all #"\s+" " ")
-        (string/split #" "))))
-
-(defn words->passphrase [v]
-  (string/join " " v))
-
-(def valid-word-counts #{12 15 18 21 24})
-
-(defn valid-word-counts? [v]
-  (boolean (valid-word-counts (count v))))
-
-(defn- valid-word? [s]
-  (re-matches #"^[A-z]+$" s))
-
-(defn valid-words? [v]
-  (and
-   (valid-word-counts? v)
-   (every? valid-word? v)))
-
 (def hex-prefix "0x")
 
 (defn normalized-address [address]
@@ -54,6 +32,10 @@
     (if (string/starts-with? address hex-prefix)
       address
       (str hex-prefix address))))
+
+(defn naked-address [s]
+  (when s
+    (string/replace s hex-prefix "")))
 
 (defn address? [s]
   (when s
@@ -78,7 +60,15 @@
 
 (defn hex->string [s]
   (when s
-    (.toAscii dependencies/Web3.prototype s)))
+    (let [hex (.toString s)]
+      (loop [res "" i (if (string/starts-with? hex hex-prefix) 2 0)]
+        (if (and (< i (.-length hex)))
+          (recur
+           (if (= (.substr hex i 2) "00")
+             res
+             (str res (.fromCharCode js/String (js/parseInt (.substr hex i 2) 16))))
+           (+ i 2))
+          res)))))
 
 (defn hex->boolean [s]
   (= s "0x0"))

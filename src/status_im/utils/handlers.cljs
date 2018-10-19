@@ -3,8 +3,7 @@
             [clojure.string :as string]
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.utils.instabug :as instabug]
-            [status-im.models.account :as models.account]
+            [status-im.accounts.db :as accounts.db]
             [cljs.core.async :as async]
             [taoensso.timbre :as log]))
 
@@ -43,7 +42,7 @@
    :id     :logged-in
    :before (fn logged-in-before
              [context]
-             (when (models.account/logged-in? (:coeffects context))
+             (when (accounts.db/logged-in? (:coeffects context))
                context))))
 
 (defn- check-spec-msg-path-problem [problem]
@@ -101,11 +100,6 @@
   [debug-handlers-names
    (when js/goog.DEBUG check-spec)
    (re-frame/inject-cofx :now)])
-
-(defn register-handler-db
-  ([name handler] (register-handler-db name nil handler))
-  ([name interceptors handler]
-   (reg-event-db name [default-interceptors interceptors] handler)))
 
 (defn register-handler-fx
   ([name handler] (register-handler-fx name nil handler))

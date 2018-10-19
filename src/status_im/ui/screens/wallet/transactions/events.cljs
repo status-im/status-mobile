@@ -10,12 +10,12 @@
 (defn- update-filters [db f]
   (update-in db [:wallet.transactions :filters] f))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :wallet.transactions/filter
- (fn [db [_ path checked?]]
-   (update-filters db #(mark-checked % path checked?))))
+ (fn [{:keys [db]} [_ path checked?]]
+   {:db (update-filters db #(mark-checked % path checked?))}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :wallet.transactions/filter-all
- (fn [db]
-   (update-filters db mark-all-checked)))
+ (fn [{:keys [db]} _]
+   {:db (update-filters db mark-all-checked)}))

@@ -3,7 +3,6 @@ from support.base_test_report import BaseTestReport
 
 
 class GithubHtmlReport(BaseTestReport):
-
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self, sauce_username, sauce_access_key):
@@ -53,7 +52,7 @@ class GithubHtmlReport(BaseTestReport):
         return html
 
     def build_test_row_html(self, index, test):
-        html = "<tr><td><b>%d. %s</b></td></tr>" % (index+1, test.name)
+        html = "<tr><td><b>%d. %s</b></td></tr>" % (index + 1, test.name)
         html += "<tr><td>"
         test_steps_html = list()
         last_testrun = test.testruns[-1]
@@ -67,18 +66,23 @@ class GithubHtmlReport(BaseTestReport):
                 html += "%s" % ''.join(test_steps_html[-2:])
                 html += "</blockquote>"
                 html += "</p>"
-            html += "<code>%s</code>" % last_testrun.error
+            html += "<code>%s</code>" % last_testrun.error[:255]
             html += "<br/><br/>"
         if last_testrun.jobs:
-            html += self.build_device_sessions_html(last_testrun.jobs)
+            html += self.build_device_sessions_html(last_testrun.jobs, last_testrun)
         html += "</td></tr>"
         return html
 
-    def build_device_sessions_html(self, jobs):
-        html = "<ins>Device sessions:</ins>"
+    def build_device_sessions_html(self, jobs, test_run):
+        html = "<ins>Device sessions</ins>"
         html += "<p><ul>"
-        for i, job_id in enumerate(jobs):
-            html += "<li><a href=\"%s\">Device %d</a></li>" % (self.get_sauce_job_url(job_id), i+1)
+        for job_id, i in jobs.items():
+            html += "<p>"
+            html += "Device %d:" % i
+            html += "<ul>"
+            html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id)
+            if test_run.error:
+                html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
+            html += "</ul></p>"
         html += "</ul></p>"
         return html
-

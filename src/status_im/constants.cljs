@@ -6,25 +6,20 @@
 
 (def ethereum-rpc-url "http://localhost:8545")
 
-(def text-content-type "text/plain")
-(def content-type-log-message "log-message")
+(def content-type-text "text/plain")
 (def content-type-command "command")
 (def content-type-command-request "command-request")
 (def content-type-status "status")
-(def content-type-placeholder "placeholder")
 (def content-type-emoji "emoji")
 
-(def command-send "send")
-(def command-request "request")
-(def command-send-status-update-interval-ms 60000)
+(def desktop-content-types
+  #{content-type-text content-type-emoji})
 
 (def min-password-length 6)
 (def max-chat-name-length 20)
 (def response-suggesstion-resize-duration 100)
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)
-
-(def console-chat-id "console")
 
 (def inbox-password "status-offline-inbox")
 
@@ -42,8 +37,9 @@
 (def mainnet-networks
   {"mainnet"     {:id     "mainnet",
                   :name   "Mainnet",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir   "/ethereum/mainnet"}}
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+                           :DataDir        "/ethereum/mainnet"
+                           :LightEthConfig {:Enabled true}}}
    "mainnet_rpc" {:id     "mainnet_rpc",
                   :name   "Mainnet with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
@@ -54,8 +50,9 @@
 (def testnet-networks
   {"testnet"     {:id     "testnet",
                   :name   "Ropsten",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :testnet)
-                           :DataDir   "/ethereum/testnet"}}
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                           :DataDir        "/ethereum/testnet"
+                           :LightEthConfig {:Enabled true}}}
    "testnet_rpc" {:id     "testnet_rpc",
                   :name   "Ropsten with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
@@ -64,8 +61,9 @@
                                             :URL     "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4"}}}
    "rinkeby"     {:id     "rinkeby",
                   :name   "Rinkeby",
-                  :config {:NetworkId (ethereum/chain-keyword->chain-id :rinkeby)
-                           :DataDir   "/ethereum/rinkeby"}}
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
+                           :DataDir        "/ethereum/rinkeby"
+                           :LightEthConfig {:Enabled true}}}
    "rinkeby_rpc" {:id     "rinkeby_rpc",
                   :name   "Rinkeby with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
@@ -74,95 +72,23 @@
                                             :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}}})
 
 (defn network-enabled? [network]
-  (if config/rpc-networks-only?
-    (get-in (val network) [:config :UpstreamConfig :Enabled])
-    true))
+  (let [rpc-network? (get-in (val network) [:config :UpstreamConfig :Enabled])
+        ropsten?     (= (ethereum/chain-keyword->chain-id :testnet)
+                        (get-in (val network) [:config :NetworkId]))]
+    (if rpc-network?
+      true
+      (if config/rpc-networks-only?
+        false
+        ropsten?)))) ;; limit LES networks to Ropsten for now.
 
 (def default-networks
   (into {} (filter network-enabled?
                    (merge testnet-networks mainnet-networks))))
 
-(def default-wnodes-without-custom
-  {:testnet {"mailserver-a" {:id      "mailserver-a" ;mail-01.do-ams3.eth.beta
-                             :name    "Status mailserver A"
-                             :password inbox-password
-                             :address "enode://c42f368a23fa98ee546fd247220759062323249ef657d26d357a777443aec04db1b29a3a22ef3e7c548e18493ddaf51a31b0aed6079bd6ebe5ae838fcfaf3a49@206.189.243.162:30504"}
-             "mailserver-b" {:id      "mailserver-b" ;mail-02.do-ams3.eth.beta
-                             :name    "Status mailserver B"
-                             :password inbox-password
-                             :address "enode://7aa648d6e855950b2e3d3bf220c496e0cae4adfddef3e1e6062e6b177aec93bc6cdcf1282cb40d1656932ebfdd565729da440368d7c4da7dbd4d004b1ac02bf8@206.189.243.169:30504"}
-             "mailserver-c" {:id      "mailserver-c" ;mail-03.do-ams3.eth.beta
-                             :name    "Status mailserver C"
-                             :password inbox-password
-                             :address "enode://8a64b3c349a2e0ef4a32ea49609ed6eb3364be1110253c20adc17a3cebbc39a219e5d3e13b151c0eee5d8e0f9a8ba2cd026014e67b41a4ab7d1d5dd67ca27427@206.189.243.168:30504"}
-             "mailserver-d" {:id      "mailserver-d" ;mail-01.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver D"
-                             :password inbox-password
-                             :address "enode://7de99e4cb1b3523bd26ca212369540646607c721ad4f3e5c821ed9148150ce6ce2e72631723002210fac1fd52dfa8bbdf3555e05379af79515e1179da37cc3db@35.188.19.210:30504"}
-             "mailserver-e" {:id      "mailserver-e" ;mail-02.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver E"
-                             :password inbox-password
-                             :address "enode://015e22f6cd2b44c8a51bd7a23555e271e0759c7d7f52432719665a74966f2da456d28e154e836bee6092b4d686fe67e331655586c57b718be3997c1629d24167@35.226.21.19:30504"}
-             "mailserver-f" {:id      "mailserver-f" ;mail-03.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver F"
-                             :password inbox-password
-                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}
-   :mainnet {"mailserver-a" {:id      "mailserver-a" ;mail-01.do-ams3.eth.beta
-                             :name    "Status mailserver A"
-                             :password inbox-password
-                             :address "enode://c42f368a23fa98ee546fd247220759062323249ef657d26d357a777443aec04db1b29a3a22ef3e7c548e18493ddaf51a31b0aed6079bd6ebe5ae838fcfaf3a49@206.189.243.162:30504"}
-             "mailserver-b" {:id      "mailserver-b" ;mail-02.do-ams3.eth.beta
-                             :name    "Status mailserver B"
-                             :password inbox-password
-                             :address "enode://7aa648d6e855950b2e3d3bf220c496e0cae4adfddef3e1e6062e6b177aec93bc6cdcf1282cb40d1656932ebfdd565729da440368d7c4da7dbd4d004b1ac02bf8@206.189.243.169:30504"}
-             "mailserver-c" {:id      "mailserver-c" ;mail-03.do-ams3.eth.beta
-                             :name    "Status mailserver C"
-                             :password inbox-password
-                             :address "enode://8a64b3c349a2e0ef4a32ea49609ed6eb3364be1110253c20adc17a3cebbc39a219e5d3e13b151c0eee5d8e0f9a8ba2cd026014e67b41a4ab7d1d5dd67ca27427@206.189.243.168:30504"}
-             "mailserver-d" {:id      "mailserver-d" ;mail-01.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver D"
-                             :password inbox-password
-                             :address "enode://7de99e4cb1b3523bd26ca212369540646607c721ad4f3e5c821ed9148150ce6ce2e72631723002210fac1fd52dfa8bbdf3555e05379af79515e1179da37cc3db@35.188.19.210:30504"}
-             "mailserver-e" {:id      "mailserver-e" ;mail-02.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver E"
-                             :password inbox-password
-                             :address "enode://015e22f6cd2b44c8a51bd7a23555e271e0759c7d7f52432719665a74966f2da456d28e154e836bee6092b4d686fe67e331655586c57b718be3997c1629d24167@35.226.21.19:30504"}
-             "mailserver-f" {:id      "mailserver-f" ;mail-03.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver F"
-                             :password inbox-password
-                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}
-   :rinkeby {"mailserver-a" {:id      "mailserver-a" ;mail-01.do-ams3.eth.beta
-                             :name    "Status mailserver A"
-                             :password inbox-password
-                             :address "enode://c42f368a23fa98ee546fd247220759062323249ef657d26d357a777443aec04db1b29a3a22ef3e7c548e18493ddaf51a31b0aed6079bd6ebe5ae838fcfaf3a49@206.189.243.162:30504"}
-             "mailserver-b" {:id      "mailserver-b" ;mail-02.do-ams3.eth.beta
-                             :name    "Status mailserver B"
-                             :password inbox-password
-                             :address "enode://7aa648d6e855950b2e3d3bf220c496e0cae4adfddef3e1e6062e6b177aec93bc6cdcf1282cb40d1656932ebfdd565729da440368d7c4da7dbd4d004b1ac02bf8@206.189.243.169:30504"}
-             "mailserver-c" {:id      "mailserver-c" ;mail-03.do-ams3.eth.beta
-                             :name    "Status mailserver C"
-                             :password inbox-password
-                             :address "enode://8a64b3c349a2e0ef4a32ea49609ed6eb3364be1110253c20adc17a3cebbc39a219e5d3e13b151c0eee5d8e0f9a8ba2cd026014e67b41a4ab7d1d5dd67ca27427@206.189.243.168:30504"}
-             "mailserver-d" {:id      "mailserver-d" ;mail-01.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver D"
-                             :password inbox-password
-                             :address "enode://7de99e4cb1b3523bd26ca212369540646607c721ad4f3e5c821ed9148150ce6ce2e72631723002210fac1fd52dfa8bbdf3555e05379af79515e1179da37cc3db@35.188.19.210:30504"}
-             "mailserver-e" {:id      "mailserver-e" ;mail-02.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver E"
-                             :password inbox-password
-                             :address "enode://015e22f6cd2b44c8a51bd7a23555e271e0759c7d7f52432719665a74966f2da456d28e154e836bee6092b4d686fe67e331655586c57b718be3997c1629d24167@35.226.21.19:30504"}
-             "mailserver-f" {:id      "mailserver-f" ;mail-03.gc-us-central1-a.eth.beta
-                             :name    "Status mailserver F"
-                             :password inbox-password
-                             :address "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eabfb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6@35.225.227.79:30504"}}})
-
-(def default-wnodes
-  (assoc default-wnodes-without-custom :custom (:testnet default-wnodes-without-custom)))
-
 (defn default-account-settings []
   {:wallet {:visible-tokens {:testnet #{:STT :HND}
                              :mainnet #{:SNT}
-                             :rinkeby #{:MOKSHA}}}})
+                             :rinkeby #{:MOKSHA :KDO}}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}
@@ -250,9 +176,9 @@
 
 (def ^:const send-transaction-failed-parse-response 1)
 (def ^:const send-transaction-failed-parse-params   2)
-(def ^:const send-transaction-no-account-selected  3)
-(def ^:const send-transaction-invalid-tx-sender    4)
-(def ^:const send-transaction-err-decrypt          5)
+(def ^:const send-transaction-no-account-selected   3)
+(def ^:const send-transaction-invalid-tx-sender     4)
+(def ^:const send-transaction-err-decrypt           5)
 
 (def ^:const web3-send-transaction "eth_sendTransaction")
 (def ^:const web3-personal-sign "personal_sign")
@@ -262,10 +188,21 @@
   (ethereum/sha3 "Transfer(address,address,uint256)"))
 
 (def regx-emoji #"^((?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC69\uDC6E\uDC70-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD26\uDD30-\uDD39\uDD3D\uDD3E\uDDD1-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])?|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDEEB\uDEEC\uDEF4-\uDEF8]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD4C\uDD50-\uDD6B\uDD80-\uDD97\uDDC0\uDDD0-\uDDE6])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u2660\u2663\u2665\u2666\u2668\u267B\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEF8]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD4C\uDD50-\uDD6B\uDD80-\uDD97\uDDC0\uDDD0-\uDDE6])\uFE0F|[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF])+$")
+(def regx-rtl-characters #"[^\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]*?[\u0591-\u06EF\u06FA-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]")
+(def regx-url #"(?i)(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9\-]+[.][a-z]{1,4}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]){0,}")
+(def regx-tag #"#[a-z0-9\-]+")
+(def regx-mention #"@[a-z0-9\-]+")
+(def regx-bold #"\*[^*]+\*")
+(def regx-italic #"~[^~]+~")
 
-(def ^:const dapp-permission-contact-code "CONTACT_CODE")
-(def ^:const status-api-success "status-api-success")
-(def ^:const status-api-request "status-api-request")
+(def ^:const dapp-permission-contact-code "contact-code")
+(def ^:const dapp-permission-web3 "web3")
+(def ^:const dapp-permission-qr-code "qr-code")
+(def ^:const api-response "api-response")
+(def ^:const api-request "api-request")
 (def ^:const history-state-changed "history-state-changed")
 (def ^:const web3-send-async "web3-send-async")
+(def ^:const web3-send-async-read-only "web3-send-async-read-only")
 (def ^:const web3-send-async-callback "web3-send-async-callback")
+(def ^:const scan-qr-code "scan-qr-code")
+(def ^:const scan-qr-code-callback "scan-qr-code-callback")

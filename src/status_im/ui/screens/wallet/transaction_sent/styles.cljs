@@ -28,15 +28,6 @@
    :text-align         :center
    :padding-horizontal 16})
 
-(def transaction-details-container
-  {:height            42
-   :background-color  colors/black-darker-transparent
-   :margin-horizontal 16
-   :opacity           0.2
-   :align-items       :center
-   :justify-content   :center
-   :border-radius     8})
-
 (def transaction-details
   {:color     :white
    :font-size 15})

@@ -10,8 +10,7 @@
             status-im.data-store.browser
             status-im.data-store.accounts
             status-im.data-store.local-storage
-            status-im.data-store.mailservers
-            status-im.data-store.requests))
+            status-im.data-store.mailservers))
 
 (defn init [encryption-key]
   (if @data-source/base-realm
@@ -25,9 +24,9 @@
               (log/error "Could not move realms" error)))
      (then #(data-source/open-base-realm encryption-key)))))
 
-(defn change-account [address encryption-key]
+(defn change-account [address password encryption-key]
   (log/debug "changing account to: " address)
-  (data-source/change-account address encryption-key))
+  (data-source/change-account address password encryption-key))
 
 (defn- perform-transactions [raw-transactions realm]
   (let [success-events (keep :success-event raw-transactions)

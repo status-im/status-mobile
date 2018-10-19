@@ -20,7 +20,8 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.utils :as utils]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 ;; Request screen
 
@@ -29,6 +30,7 @@
   (views/letsubs [network                                           [:get-current-account-network]
                   {:keys [to to-name whisper-identity]}             [:wallet.send/transaction]
                   {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
+                  network-status [:network-status]
                   scroll (atom nil)]
     (let [{:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
       [wallet.components/simple-screen {:avoid-keyboard? true}
@@ -46,6 +48,7 @@
                                       :type      :request
                                       :symbol    symbol}]
           [components/amount-selector {:error         amount-error
+                                       :disabled?     (= :offline network-status)
                                        :amount        amount
                                        :amount-text   amount-text
                                        :input-options {:on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
@@ -54,7 +57,8 @@
         [bottom-buttons/bottom-buttons styles/bottom-buttons
          nil   ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
          [button/button {:disabled?           (or amount-error (not (and to amount)))
-                         :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount symbol decimals])
+                         :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount
+                                                                   (wallet.utils/display-symbol token) decimals])
                          :text-style          {:padding-horizontal 0}
                          :accessibility-label :sent-request-button}
           (i18n/label :t/send-request)
@@ -62,15 +66,15 @@
 
 ;; Main screen
 
-(defn- qr-code [address chain-id]
-  [qr-code-viewer/qr-code-viewer {:hint-style styles/hint :footer-style styles/footer}
-   (eip681/generate-uri address {:chain-id chain-id})
-   (i18n/label :t/request-qr-legend)
-   address])
+(defn send-transaction-request-button [value]
+  [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
+                          :style               styles/send-request
+                          :accessibility-label :sent-transaction-request-button}
+   (i18n/label :t/send-transaction-request)])
 
 (views/defview request-transaction []
-  (views/letsubs [address-hex       [:get-current-account-hex]
-                  chain-id          [:get-network-id]]
+  (views/letsubs [address-hex [:get-current-account-hex]
+                  chain-id    [:get-network-id]]
     [wallet.components/simple-screen
      [wallet.components/toolbar {}
       wallet.components/default-action
@@ -81,9 +85,10 @@
                          :handler   #(list-selection/open-share {:message address-hex})}]]]
      [react/view {:flex 1}
       [common/network-info {:text-color :white}]
-      [react/scroll-view styles/request-wrapper
-       [qr-code address-hex chain-id]
-       [button/primary-button {:on-press            #(re-frame/dispatch [:navigate-to :wallet-send-transaction-request])
-                               :style               styles/send-request
-                               :accessibility-label :sent-transaction-request-button}
-        (i18n/label :t/send-transaction-request)]]]]))
+      [qr-code-viewer/qr-code-viewer
+       {:hint-style    styles/hint
+        :footer-style  styles/footer
+        :footer-button send-transaction-request-button
+        :value         (eip681/generate-uri address-hex {:chain-id chain-id})
+        :hint          (i18n/label :t/request-qr-legend)
+        :legend        address-hex}]]]))

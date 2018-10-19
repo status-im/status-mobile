@@ -36,7 +36,9 @@
   {:color          colors/black
    :letter-spacing -0.2
    :font-size      17
-   :ios            {:text-align     :center}
+   :ios            {:text-align     :center
+                    :margin-left    15
+                    :margin-right   15}
    :android        {:text-align     :left
                     :margin-left    22}})
 
@@ -89,3 +91,20 @@
 
 (def counter-container
   {:top 3})
+
+(def icon-add
+  {:width           24
+   :height          24
+   :color           colors/blue})
+
+(def icon-add-illuminated
+  {:width           24
+   :height          24
+   :color           colors/blue
+   :container-style {:background-color (colors/alpha colors/blue 0.12)
+                     :border-radius    32
+                     :width            32
+                     :height           32
+                     :display          :flex
+                     :justify-content  :center
+                     :align-items      :center}})

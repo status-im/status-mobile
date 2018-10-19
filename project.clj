@@ -10,7 +10,10 @@
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
-                 [com.cognitect/transit-cljs "0.8.248"]]
+                 [com.cognitect/transit-cljs "0.8.248"]
+                 [status-im/pluto "iteration-3-SNAPSHOT"]
+                 [mvxcvi/alphabase "1.0.0"]
+                 [rasom/cljs-react-navigation "0.1.4"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]
             [lein-cljfmt "0.5.7"]
@@ -37,7 +40,7 @@
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
             "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
-  :profiles {:dev      {:dependencies [[com.cemerick/piggieback "0.2.2"]]
+  :profiles {:dev      {:dependencies [[cider/piggieback "0.3.9"]]
                         :cljsbuild    {:builds
                                        {:ios
                                         {:source-paths ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src"]
@@ -58,7 +61,7 @@
                                                         :main          "env.desktop.main"
                                                         :output-dir    "target/desktop"
                                                         :optimizations :none}}}}
-                        :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
+                        :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
                         {:dependencies [[figwheel-sidecar "0.5.16-SNAPSHOT"]

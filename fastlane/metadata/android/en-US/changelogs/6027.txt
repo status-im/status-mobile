@@ -1,0 +1,1 @@
+Dozens of updates and bug fixes, including updates to our chat performance and reliability, improvements to our DApp browsing experience and increased wallet functionality. Also, Mainnet has been enabled as an opt-in so you can help us test prior to a full Beta release!

@@ -29,9 +29,7 @@
      [components/separator]
      [react/view add-new.styles/input-container
       [react/text-input {:on-change-text      #(reset! url-text %)
-                         :on-submit-editing   #(do
-                                                 (re-frame/dispatch [:navigate-to-clean :home])
-                                                 (re-frame/dispatch [:open-url-in-browser @url-text]))
+                         :on-submit-editing   #(re-frame/dispatch [:browser.ui/dapp-url-submitted @url-text])
                          :placeholder         (i18n/label :t/enter-url)
                          :auto-capitalize     :none
                          :auto-correct        false
@@ -62,9 +60,7 @@
                                     :icon                :icons/address
                                     :icon-opts           {:color colors/blue}
                                     :accessibility-label :open-dapp-button
-                                    :on-press            #(do
-                                                            (re-frame/dispatch [:navigate-to-clean :home])
-                                                            (re-frame/dispatch [:open-url-in-browser dapp-url]))}]
+                                    :on-press            #(re-frame/dispatch [:browser.ui/open-dapp-button-pressed dapp-url])}]
       [components/separator {:margin-left 72}]]
      [react/view styles/description-container
       [react/i18n-text {:style styles/gray-label :key :description}]

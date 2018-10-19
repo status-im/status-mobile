@@ -1,16 +1,15 @@
 (ns status-im.ui.screens.profile.contact.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.screens.profile.contact.styles :as styles]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
-            [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.components.status-bar.view :as status-bar]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [re-frame.core :as re-frame]
             [status-im.utils.contacts :as utils.contacts]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.text :as text]))
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.screens.profile.contact.styles :as styles]
+            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
+            [status-im.ui.screens.profile.components.views :as profile.components]))
 
 (defn profile-contact-toolbar []
   [toolbar/toolbar {}
@@ -21,7 +20,7 @@
   (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :icons/add-contact
-              :action              #(re-frame/dispatch [:add-contact whisper-identity])
+              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed whisper-identity])
               :accessibility-label :add-to-contacts-button}]
             [{:label               (i18n/label :t/in-contacts)
               :icon                :icons/in-contacts
@@ -29,13 +28,17 @@
               :accessibility-label :in-contacts-button}])
           [{:label               (i18n/label :t/send-message)
             :icon                :icons/chats
-            :action              #(re-frame/dispatch [:open-chat-with-contact {:whisper-identity whisper-identity}])
+            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:whisper-identity whisper-identity}])
             :accessibility-label :start-conversation-button}]
           (when-not dapp?
             [{:label               (i18n/label :t/send-transaction)
               :icon                :icons/arrow-right
               :action              #(re-frame/dispatch [:profile/send-transaction whisper-identity])
-              :accessibility-label :send-transaction-button}])))
+              :accessibility-label :send-transaction-button}])
+          [{:label               (i18n/label :t/share-profile-link)
+            :icon                :icons/share
+            :action              #(re-frame/dispatch [:profile/share-profile-link whisper-identity])
+            :accessibility-label :share-profile-link}]))
 
 (defn profile-info-item [{:keys [label value options accessibility-label]}]
   [react/view styles/profile-info-item
@@ -43,8 +46,10 @@
     [react/text {:style styles/profile-info-title}
      label]
     [react/view styles/profile-setting-spacing]
-    [text/selectable-text {:value value
-                           :style styles/profile-setting-text}]]])
+    [react/text {:style               styles/profile-setting-text
+                 :accessibility-label accessibility-label
+                 :selectable          true}
+     value]]])
 
 (defn profile-info-contact-code-item [whisper-identity]
   [profile-info-item

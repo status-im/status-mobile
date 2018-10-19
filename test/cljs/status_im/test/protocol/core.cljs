@@ -8,7 +8,7 @@
             [status-im.transport.utils :as transport.utils]
             [day8.re-frame.test :refer-macros [run-test-async run-test-sync] :as rf-test]
             [status-im.test.protocol.node :as node]
-            [status-im.transport.message.v1.contact :as transport.contact]
+            [status-im.transport.message.contact :as transport.contact]
             [status-im.test.protocol.utils :as utils]))
 
 ;; NOTE(oskarth): All these tests are evaluated in NodeJS
@@ -41,11 +41,11 @@
        (rf/reg-fx :data-store.transport/save (constantly nil))
        (rf/reg-fx :data-store/update-message (constantly nil))
 
-       (rf/dispatch [:open-chat-with-contact {:whisper-identity contact-whisper-identity}])
+       (rf/dispatch [:contact.ui/send-message-pressed {:whisper-identity contact-whisper-identity}])
        (rf-test/wait-for [::transport.contact/send-new-sym-key]
                          (rf/dispatch [:set-chat-input-text "test message"])
                          (rf/dispatch [:send-current-message])
-                         (rf-test/wait-for [:update-message-status :protocol/send-status-message-error]
+                         (rf-test/wait-for [:update-message-status :transport/send-status-message-error]
                                            (is true)))))))
 
 (deftest test-whisper-version!

@@ -39,11 +39,6 @@ install_cocoapods
 ####
 echo && setup_header "Installing dependencies..."
 
-dependency_setup npm install
-
-dependency_setup \
-  "mvn -f modules/react-native-status/ios/RCTStatus/pom.xml dependency:unpack"
-
-using_cocoapods && dependency_setup "pushd ios && pod install && popd"
+dependency_setup make prepare-mobile
 
 setup_complete

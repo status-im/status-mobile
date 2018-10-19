@@ -5,7 +5,9 @@
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
             [status-im.utils.transactions :as transactions]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]))
 
 (reg-sub :wallet.transactions/transactions-loading?
          :<- [:wallet]
@@ -92,10 +94,12 @@
          :<- [:network]
          (fn [[transactions current-transaction network]]
            (let [{:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)
-                 chain (ethereum/network->chain-keyword network)]
+                 chain           (ethereum/network->chain-keyword network)
+                 native-currency (tokens/native-currency chain)
+                 display-unit    (wallet.utils/display-symbol native-currency)]
              (when transaction
                (merge transaction
-                      {:gas-price-eth  (if gas-price (money/wei->str :eth gas-price) "-")
+                      {:gas-price-eth  (if gas-price (money/wei->str :eth gas-price display-unit) "-")
                        :gas-price-gwei (if gas-price (money/wei->str :gwei gas-price) "-")
                        :date           (datetime/timestamp->long-date timestamp)}
                       (if (= type :unsigned)
@@ -106,7 +110,7 @@
                          :nonce     (i18n/label :not-applicable)
                          :hash      (i18n/label :not-applicable)}
                         {:cost (when gas-used
-                                 (money/wei->str :eth (money/fee-value gas-used gas-price)))
+                                 (money/wei->str :eth (money/fee-value gas-used gas-price) display-unit))
                          :url  (transactions/get-transaction-details-url chain hash)}))))))
 
 (reg-sub :wallet.transactions.details/confirmations

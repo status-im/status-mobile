@@ -6,6 +6,24 @@
             [status-im.ui.components.connectivity.styles :as styles]
             [status-im.i18n :as i18n]))
 
+(defview error-label
+  [{:keys [view-id label fetching? mailserver-error?] :as opts}]
+
+  {:should-component-update
+   (fn [_ [_ old-props] [_ new-props]]
+     ;; prevents flickering on navigation
+     (= (:view-id old-props) (:view-id new-props)))}
+  (let [wrapper-style (styles/text-wrapper
+                       (assoc opts :modal? (= view-id :chat-modal)))]
+    [react/view {:style               wrapper-style
+                 :accessibility-label :connection-status-text}
+     [react/text {:style    styles/text
+                  :on-press (when mailserver-error?
+                              #(re-frame/dispatch [:inbox.ui/reconnect-mailserver-pressed]))}
+      (if (and (not mailserver-error?) fetching?)
+        (i18n/label :t/fetching-messages {:requests-left (str fetching?)})
+        (i18n/label label))]]))
+
 (defview error-view [{:keys [top]}]
   (letsubs [offline?             [:offline?]
             disconnected?        [:disconnected?]
@@ -21,9 +39,11 @@
                        fetching? :t/fetching-messages
                        :else nil)]
       (let [pending? (and (:pending current-chat-contact) (= :chat view-id))]
-        [react/view {:style               (styles/text-wrapper top 1.0 window-width pending?)
-                     :accessibility-label :connection-status-text}
-         [react/text {:style    styles/text
-                      :on-press (when mailserver-error?
-                                  #(re-frame/dispatch [:inbox/reconnect]))}
-          (i18n/label label)]]))))
+        [error-label
+         {:view-id           view-id
+          :top               top
+          :window-width      window-width
+          :pending?          pending?
+          :label             label
+          :fetching?         fetching?
+          :mailserver-error? mailserver-error?}]))))

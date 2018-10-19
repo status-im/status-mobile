@@ -16,8 +16,9 @@
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
+            status-im.ui.screens.wallet.collectibles.superrare.views
+            status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.status-bar.view :as status-bar.view]
-            [status-im.ui.components.text :as text]
             [status-im.ui.screens.wallet.transactions.views :as transactions.views]
             [status-im.ui.components.colors :as colors]))
 
@@ -30,7 +31,7 @@
       :icon-opts {:color               :white
                   :accessibility-label :options-menu-button}
       :options   [{:label  (i18n/label :t/wallet-manage-assets)
-                   :action #(re-frame/dispatch [:navigate-to-modal :wallet-settings-assets])}]}]]])
+                   :action #(re-frame/dispatch [:navigate-to :wallet-settings-assets])}]}]]])
 
 (defn toolbar-modal [modal-history?]
   [react/view
@@ -50,6 +51,11 @@
     [react/view {:style styles/total-balance}
      [react/text {:style               styles/total-balance-value
                   :accessibility-label :total-amount-value-text}
+      (when (and
+             (not= "0" value)
+             (not= "..." value))
+        [react/text {:style styles/total-balance-tilde}
+         "~"])
       value]
      [react/text {:style               styles/total-balance-currency
                   :accessibility-label :total-amount-currency-text}
@@ -83,7 +89,7 @@
     :action              #(re-frame/dispatch [:navigate-to :transactions-history])}])
 
 (defn- render-asset [currency]
-  (fn [{:keys [symbol icon decimals amount]}]
+  (fn [{:keys [symbol symbol-display icon decimals amount] :as token}]
     (let [asset-value (re-frame/subscribe [:asset-value symbol decimals (-> currency :code keyword)])]
       [react/view {:style styles/asset-item-container}
        [list/item
@@ -97,7 +103,7 @@
          [react/text {:style           styles/asset-item-currency
                       :uppercase?      true
                       :number-of-lines 1}
-          (clojure.core/name symbol)]]
+          (wallet.utils/display-symbol token)]]
         [react/text {:style           styles/asset-item-price
                      :uppercase?      true
                      :number-of-lines 1}
@@ -170,7 +176,7 @@
         [transactions.views/history-list true]]
        [react/scroll-view {:refresh-control
                            (reagent/as-element
-                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:update-wallet])
+                            [react/refresh-control {:on-refresh #(re-frame/dispatch [:wallet.ui/pull-to-refresh])
                                                     :tint-color :white
                                                     :refreshing false}])}
         (if error-message
@@ -184,7 +190,10 @@
           [backup-seed-phrase])
         (if modal?
           [react/view styles/address-section
-           [text/selectable-text {:value address-hex :style styles/wallet-address}]]
+           [react/text {:style               styles/wallet-address
+                        :accessibility-label :address-text
+                        :selectable          true}
+            address-hex]]
           [list/action-list actions
            {:container-style styles/action-section}])
         [asset-section assets currency address-hex modal?]

@@ -8,9 +8,8 @@
             status-im.data-store.core
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
-            [status-im.utils.notifications :as notifications]
+            [status-im.notifications.core :as notifications]
             [status-im.core :as core]
-            [status-im.utils.instabug :as instabug]
             [status-im.utils.snoopy :as snoopy]))
 
 (defn app-state-change-handler [state]
@@ -46,5 +45,4 @@
 
 (defn init []
   (core/init app-root)
-  (snoopy/subscribe!)
-  (instabug/init))
+  (snoopy/subscribe!))

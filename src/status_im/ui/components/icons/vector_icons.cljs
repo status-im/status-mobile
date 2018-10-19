@@ -5,7 +5,8 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.styles :as styles]
-            [status-im.react-native.js-dependencies :as js-dependencies])
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.ui.components.colors :as colors])
   (:refer-clojure :exclude [use]))
 
 (when-not platform/desktop?
@@ -83,13 +84,23 @@
      :icons/open                (js/require "./resources/icons/open.svg")
      :icons/network             (js/require "./resources/icons/network.svg")
      :icons/wnode               (js/require "./resources/icons/wnode.svg")
+     :icons/log-level           (js/require "./resources/icons/wnode.svg")
+     :icons/fleet               (js/require "./resources/icons/wnode.svg")
      :icons/refresh             (js/require "./resources/icons/refresh.svg")
      :icons/newchat             (js/require "./resources/icons/newchat.svg")
      :icons/logo                (js/require "./resources/icons/logo.svg")
      :icons/camera              (js/require "./resources/icons/camera.svg")
      :icons/check               (js/require "./resources/icons/check.svg")
      :icons/dots                (js/require "./resources/icons/dots.svg")
-     :icons/warning             (js/require "./resources/icons/warning.svg")}
+     :icons/warning             (js/require "./resources/icons/warning.svg")
+     :icons/info                (js/require "./resources/icons/info.svg")
+     :icons/hardwallet          (js/require "./resources/icons/hardwallet.svg")
+     :icons/password            (js/require "./resources/icons/password.svg")
+     :icons/nfc                 (js/require "./resources/icons/nfc.svg")
+     :icons/reply               (js/require "./resources/icons/reply.svg")
+     :icons/indicator-big       (js/require "./resources/icons/indicator-big.svg")
+     :icons/indicator-middle    (js/require "./resources/icons/indicator-middle.svg")
+     :icons/indicator-small     (js/require "./resources/icons/indicator-small.svg")}
     {:icons/discover            (components.svg/slurp-svg "./resources/icons/bottom/discover_gray.svg")
      :icons/contacts            (components.svg/slurp-svg "./resources/icons/bottom/contacts_gray.svg")
      :icons/home                (components.svg/slurp-svg "./resources/icons/bottom/home_gray.svg")
@@ -145,13 +156,24 @@
      :icons/open                (components.svg/slurp-svg "./resources/icons/open.svg")
      :icons/network             (components.svg/slurp-svg "./resources/icons/network.svg")
      :icons/wnode               (components.svg/slurp-svg "./resources/icons/wnode.svg")
+     :icons/log-level           (components.svg/slurp-svg "./resources/icons/wnode.svg")
+     :icons/fleet               (components.svg/slurp-svg "./resources/icons/wnode.svg")
      :icons/refresh             (components.svg/slurp-svg "./resources/icons/refresh.svg")
      :icons/newchat             (components.svg/slurp-svg "./resources/icons/newchat.svg")
      :icons/logo                (components.svg/slurp-svg "./resources/icons/logo.svg")
      :icons/camera              (components.svg/slurp-svg "./resources/icons/camera.svg")
      :icons/check               (components.svg/slurp-svg "./resources/icons/check.svg")
      :icons/dots                (components.svg/slurp-svg "./resources/icons/dots.svg")
-     :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")}))
+     :icons/warning             (components.svg/slurp-svg "./resources/icons/warning.svg")
+     :icons/settings            (components.svg/slurp-svg "./resources/icons/settings.svg")
+     :icons/info                (components.svg/slurp-svg "./resources/icons/info.svg")
+     :icons/hardwallet          (components.svg/slurp-svg "./resources/icons/hardwallet.svg")
+     :icons/password            (components.svg/slurp-svg "./resources/icons/password.svg")
+     :icons/nfc                 (components.svg/slurp-svg "./resources/icons/nfc.svg")
+     :icons/reply               (components.svg/slurp-svg "./resources/icons/reply.svg")
+     :icons/indicator-big       (components.svg/slurp-svg "./resources/icons/indicator-big.svg")
+     :icons/indicator-middle    (components.svg/slurp-svg "./resources/icons/indicator-middle.svg")
+     :icons/indicator-small     (components.svg/slurp-svg "./resources/icons/indicator-small.svg")}))
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)
@@ -171,27 +193,27 @@
                    :style  (merge icon-style style)}]]))
 
 (defn mobile-icon
-  [name {:keys [color container-style style accessibility-label width height]
+  [name {:keys [color container-style accessibility-label width height]
          :or   {accessibility-label :icon}}]
   ^{:key name}
-  [react/view {:style               container-style
-               :accessibility-label accessibility-label}
+  [react/animated-view {:style               container-style
+                        :accessibility-label accessibility-label}
    (if-let [icon-fn (get icons (normalize-property-name name))]
      (let [icon-vec (icon-fn
                      (cond
                        (keyword? color)
                        (case color
-                         :dark styles/icon-dark-color
-                         :gray styles/icon-gray-color
-                         :blue styles/color-light-blue
-                         :active styles/color-blue4
-                         :white styles/color-white
-                         :red styles/icon-red-color
-                         styles/icon-dark-color)
+                         :dark colors/black
+                         :gray colors/gray
+                         :blue colors/blue
+                         :active colors/blue
+                         :white colors/white
+                         :red colors/red
+                         colors/black)
                        (string? color)
                        color
                        :else
-                       styles/icon-dark-color))]
+                       colors/black))]
        (if width
          (update icon-vec 1 assoc :width width :height height)
          icon-vec))

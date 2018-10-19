@@ -22,6 +22,7 @@
    :oasis-direct       (js/require "./resources/images/contacts/oasis-direct.png")
    :erc-dex            (js/require "./resources/images/contacts/erc-dex.png")
    :cent               (js/require "./resources/images/contacts/cent.png")
+   :kickback           (js/require "./resources/images/contacts/kickback.png")
    :hexel              (js/require "./resources/images/contacts/hexel.png")
    :peepeth            (js/require "./resources/images/contacts/peepeth.png")
    :etherbots          (js/require "./resources/images/contacts/etherbots.png")
@@ -39,15 +40,13 @@
    :cryptopurr         (js/require "./resources/images/contacts/cryptopurr.png")
    :ethlend            (js/require "./resources/images/contacts/ethlend.png")
    :smartz             (js/require "./resources/images/contacts/smartz.png")
+   :superrare          (js/require "./resources/images/contacts/superrare.png")
 
    :ddex               (js/require "./resources/images/contacts/ddex.png")
    :emoon              (js/require "./resources/images/contacts/emoon.png")
    :livepeer           (js/require "./resources/images/contacts/livepeer.png")
 
    :console            (js/require "./resources/images/contacts/console.png")})
-
-(def assets
-  {:ethereum (js/require "./resources/images/assets/ethereum.png")})
 
 (def ui
   {:empty-hashtags  (js/require "./resources/images/ui/empty-hashtags.png")
@@ -58,4 +57,6 @@
                      :width  993
                      :height 933}
    :wallet-welcome  (js/require "./resources/images/ui/wallet-welcome.png")
-   :wallet-setup    (js/require "./resources/images/ui/wallet-setup.png")})
+   :wallet-setup    (js/require "./resources/images/ui/wallet-setup.png")
+   :hardwallet-card (js/require "./resources/images/ui/hardwallet-card.png")
+   :phone-nfc       (js/require "./resources/images/ui/phone-nfc.png")})

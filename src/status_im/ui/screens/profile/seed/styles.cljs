@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.seed.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as common.styles]))
 
 (def intro-container
   {:flex              1
@@ -36,7 +37,7 @@
   {:flex-direction :row})
 
 (def six-word-num
-  {:width          20
+  {:width          25
    :text-align     :right
    :opacity        0.4
    :font-size      15
@@ -77,11 +78,11 @@
    :border-radius    8
    :background-color colors/white
    :border-width     1
-   :border-color     colors/gray-border})
+   :border-color     colors/gray-lighter})
 
 (def twelve-words-columns-separator
   {:width            1
-   :background-color colors/gray-border})
+   :background-color colors/gray-lighter})
 
 (def enter-word-container
   {:flex    1
@@ -153,3 +154,8 @@
    :font-size  14
    :text-align :center
    :color      colors/gray})
+
+(def backup-seed-container
+  (merge
+   common.styles/flex
+   {:background-color colors/white}))

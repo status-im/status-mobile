@@ -5,7 +5,8 @@
    [status-im.ui.components.action-button.styles :as st]
    [status-im.ui.components.styles :as common]
    [status-im.ui.components.checkbox.styles :as checkbox.styles]
-   [status-im.ui.components.react :as react]))
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.colors :as colors]))
 
 (defn checkbox [{:keys [on-value-change checked?]}]
   [react/touchable-highlight {:style checkbox.styles/wrapper :on-press #(do (when on-value-change (on-value-change (not checked?))))}
@@ -33,10 +34,10 @@
    :height           52
    :justify-content  :center
    :align-items      :center
-   :background-color common/color-light-blue})
+   :background-color colors/blue})
 
 (def sticky-button-label-style
-  {:color          common/color-white
+  {:color          colors/white
    :font-size      17
    :line-height    20
    :letter-spacing -0.2})

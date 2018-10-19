@@ -33,7 +33,7 @@
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/group-chat)]
    (when save-btn-enabled?
-     (let [handler #(re-frame/dispatch [:create-new-group-chat-and-open group-name])]
+     (let [handler #(re-frame/dispatch [:group-chats.ui/create-pressed group-name])]
        (if platform/android?
          [toolbar/actions [{:icon      :icons/ok
                             :icon-opts {:color               :blue

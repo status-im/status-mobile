@@ -52,7 +52,7 @@
 (when-not @listener-initialized
   (reset! listener-initialized true)
   (.addListener r/device-event-emitter "gethEvent"
-                #(re-frame/dispatch [:signal-event (.-jsonEvent %)])))
+                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))
 
 (defn stop-node []
   (when status
@@ -133,6 +133,14 @@
      status
      (fn [UUID]
        (callback (string/upper-case UUID))))))
+
+(defn extract-group-membership-signatures [signature-pairs callback]
+  (when status
+    (call-module #(.extractGroupMembershipSignatures status signature-pairs callback))))
+
+(defn sign-group-membership [content callback]
+  (when status
+    (call-module #(.signGroupMembership status content callback))))
 
 (defn is24Hour []
   (when status

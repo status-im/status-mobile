@@ -1,0 +1,24 @@
+Status est une appli open source basée sur Ethereum qui vous donne le pouvoir de discuter, de réaliser des transactions et d'accéder à un monde révolutionnaire de dApps à partir de votre appareil Android.
+
+<b>Important :</b> Status est actuellement en test bêta. Il y a des risques associés à l'essai d'un produit bêta, donc en vous engageant vous serez invité à lire et à reconnaître que vous comprenez et acceptez ces risques.
+
+Bien que ce soit encore un travail en cours, nous espérons que cette version bêta présente les débuts d’une expérience amicale et intuitive pour Ethereum, et qu'elle sera le début d’un excellent client pour le réseau Ethereum.
+
+<b>Status, qu'est-ce que c'est ?</b>
+C'est un nouveau type d'outil pour un nouveau type d'Internet. Parcourez, discutez et effectuez des opérations, le tout sur une seule appli. 
+
+Nous voulons voir un monde dans lequel les gens ont plus de contrôle sur la valeur qu'ils créent, qu'ils organisent et à laquelle ils contribuent dans le cadre des grands réseaux. Pour ce faire, nous développons des outils qui facilitent la participation à de nouveaux types d'interactions humaines et d'activités économiques, et qui permettent d'en tirer plus facilement profit.
+
+<b>Fonctionnalités bêta :</b>
+
+■ Client léger — Status exécute une implémentation complète de Go Ethereum, avec le client léger et protocoles Whisper activés.
+
+■ Messagerie chiffrée — construite sur le protocole Whisper, ce qui permet une décentralisation des conversations de groupe un-à-un, et des paiements sociaux.
+
+■ Parcourir dApps — Interaction transparente avec l'écosystème émergeant de dApps en utilisant le navigateur Web 3.0 de Status.
+
+■ Portefeuille Ether — un portefeuille « par défaut », pour fournir un stockage ETH, envoyer/ recevoir des transactions, un lecteur QR et des journaux de transactions.
+
+
+<b>Impliquez-vous</b>
+En tant que projet open source, la meilleure façon de participer au développement est de télécharger et de tester Status. Notre mission est de faciliter la transition vers un Internet et un système financier plus ouverts à travers le nouveau paradigme que représente Ethereum. Avec les objectifs de haut niveau de la préservation de notre droit collectif en tant qu'êtres humains à la vie privée, atténuant le risque de censure et encourageant le commerce économique de manière transparente et ouverte, Status construit une communauté que tout le monde est invité à rejoindre et où chacun peut contribuer à la cause. Nous aimerions recevoir de vos nouvelles. Rejoignez-nous sur : https://chat.status.im/

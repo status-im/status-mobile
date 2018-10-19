@@ -16,7 +16,7 @@
    :height           40
    :align-items      :center
    :justify-content  :center
-   :background-color (or circle-color styles/color-light-blue-transparent)})
+   :background-color (or circle-color colors/blue-light)})
 
 (def action-button-label-container
   {:padding-left 16})
@@ -27,13 +27,13 @@
    :font-size      16})
 
 (defstyle actions-list
-  {:background-color styles/color-white
+  {:background-color colors/white
    :android          {:padding-top    8
                       :padding-bottom 8}})
 
 (def action-button-label-disabled
   (merge action-button-label
-         {:color styles/color-gray4}))
+         {:color colors/gray}))
 
 (defstyle action-button-icon-container-disabled
   {:border-radius    50
@@ -41,5 +41,5 @@
    :height           40
    :align-items      :center
    :justify-content  :center
-   :background-color styles/color-light-gray})
+   :background-color colors/gray-lighter})
 

@@ -12,3 +12,12 @@
                   (ethereum/normalized-address address)
                   (ethereum/int->hex index))
                  #(cb %1 (ethereum/hex->bignumber %2))))
+
+(defn token-uri [web3 contract tokenId cb]
+  (ethereum/call web3
+                 (ethereum/call-params
+                  contract
+                  "tokenURI(uint256)"
+                  (ethereum/int->hex tokenId))
+                 (fn [v1 v2]
+                   (cb v1 (ethereum/hex->string v2)))))

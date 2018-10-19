@@ -2,15 +2,6 @@
   (:require [cljs.test :refer-macros [deftest is]]
             [status-im.utils.core :as u]))
 
-(deftest wrap-as-call-once-test
-  (let [count (atom 0)]
-    (letfn [(inc-count [] (swap! count inc))]
-      (let [f (u/wrap-call-once! inc-count)]
-        (is (nil? (f)))
-        (is (= 1 @count))
-        (is (nil? (f)))
-        (is (= 1 @count))))))
-
 (deftest truncate-str-test
   (is (= (u/truncate-str "Long string" 7) "Long...")) ; threshold is less then string length
   (is (= (u/truncate-str "Long string" 7 true) "Lo...ng")) ; threshold is less then string length (truncate middle)

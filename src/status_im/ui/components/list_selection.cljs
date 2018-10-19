@@ -12,8 +12,10 @@
             (:url content))
     (.share react/sharing (clj->js content))))
 
-(defn share-options [text]
-  [{:label  (i18n/label :t/sharing-copy-to-clipboard)
+(defn- message-options [message-id text]
+  [{:label  (i18n/label :t/message-reply)
+    :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
+   {:label  (i18n/label :t/sharing-copy-to-clipboard)
     :action #(react/copy-to-clipboard text)}
    {:label  (i18n/label :t/sharing-share)
     :action #(open-share {:message text})}])
@@ -23,15 +25,15 @@
     (action-sheet/show options)
     (dialog/show options)))
 
-(defn share [text dialog-title]
+(defn chat-message [message-id text dialog-title]
   (show {:title       dialog-title
-         :options     (share-options text)
-         :cancel-text (i18n/label :t/sharing-cancel)}))
+         :options     (message-options message-id text)
+         :cancel-text (i18n/label :t/message-options-cancel)}))
 
 (defn browse [link]
   (show {:title       (i18n/label :t/browsing-title)
          :options     [{:label  (i18n/label :t/browsing-open-in-status)
-                        :action #(re-frame/dispatch [:open-url-in-browser link])}
+                        :action #(re-frame/dispatch [:browser.ui/open-in-status-option-selected link])}
                        {:label  (i18n/label :t/browsing-open-in-web-browser)
                         :action #(.openURL react/linking (http/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
@@ -39,5 +41,5 @@
 (defn browse-dapp [link]
   (show {:title       (i18n/label :t/browsing-title)
          :options     [{:label  (i18n/label :t/browsing-open-in-status)
-                        :action #(re-frame/dispatch [:open-url-in-browser link])}]
+                        :action #(re-frame/dispatch [:browser.ui/open-in-status-option-selected link])}]
          :cancel-text (i18n/label :t/browsing-cancel)}))

@@ -9,7 +9,8 @@
             [status-im.ui.screens.home.views.inner-item :as chat-item]
             [taoensso.timbre :as log]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.constants :as constants]))
 
 (views/defview unviewed-indicator [chat-id]
   (let [unviewed-messages-count (re-frame/subscribe [:unviewed-messages-count chat-id])]
@@ -48,17 +49,20 @@
            [icons/icon :icons/public-chat])
          [react/text {:ellipsize-mode  :tail
                       :number-of-lines 1
-                      :style           (styles/chat-name (= current-chat-id chat-id))}
+                      :style           styles/chat-name
+                      :font            (if (= current-chat-id chat-id) :medium :default)}
           name]]
         [react/text {:ellipsize-mode  :tail
                      :number-of-lines 1
                      :style           styles/chat-last-message}
-         (or (:content last-message) (i18n/label :no-messages-yet))]]
+         (if (= constants/content-type-command (:content-type last-message))
+           [chat-item/command-short-preview last-message]
+           (or (get-in last-message [:content :text]) (i18n/label :no-messages-yet)))]]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]]])))
 
 (defn chat-list-item [[chat-id chat]]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])}
    [chat-list-item-inner-view (assoc chat :chat-id chat-id)]])
 
 (views/defview chat-list-view []
@@ -70,7 +74,7 @@
        [react/view {:style styles/add-new}
         [icons/icon :icons/add {:style {:tint-color :white}}]]]]
      [react/view {:style styles/chat-list-separator}]
-     [react/scroll-view
+     [react/scroll-view {:enableArrayScrollingOptimization true}
       [react/view
        (for [[index chat] (map-indexed vector home-items)]
          ^{:key (first chat)}

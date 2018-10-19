@@ -1,5 +1,4 @@
 import time
-from tests import info
 from tests.base_test_case import AbstractTestCase
 from views.base_element import BaseText, BaseButton, BaseEditBox, BaseElement
 from views.base_view import BaseView
@@ -11,18 +10,17 @@ class PublicKeyText(BaseText):
         super(PublicKeyText, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('address-text')
 
+
+class ProfileAddressText(BaseText):
+    def __init__(self, driver):
+        super(ProfileAddressText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('profile-public-key')
+
     @property
     def text(self):
         text = self.scroll_to_element().text
-        info('%s is %s' % (self.name, text))
+        self.driver.info('%s is %s' % (self.name, text))
         return text
-
-
-class ProfileAddressText(BaseText):
-
-    def __init__(self, driver):
-        super(ProfileAddressText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('profile-address')
 
 
 class OptionsButton(BaseButton):
@@ -77,7 +75,7 @@ class LogoutButton(BaseButton):
 
     def click(self):
         self.scroll_to_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -103,18 +101,25 @@ class ConfirmLogoutButton(BaseButton):
         self.locator = self.Locator.text_selector('LOG OUT')
 
 
-class UserNameText(BaseText):
+class UserNameSetByUserText(BaseText):
     def __init__(self, driver):
-        super(UserNameText, self).__init__(driver)
+        super(UserNameSetByUserText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView[1]')
 
 
-class ShareMyContactKeyButton(BaseButton):
+class DefaultUserNameText(BaseText):
+    def __init__(self, driver):
+        super(DefaultUserNameText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../../android.widget.TextView[2]')
+
+
+class ShareMyProfileButton(BaseButton):
 
     def __init__(self, driver):
-        super(ShareMyContactKeyButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-my-contact-code-button')
+        super(ShareMyProfileButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('share-my-profile-button')
 
 
 class EditButton(BaseButton):
@@ -155,7 +160,7 @@ class ShareButton(BaseButton):
 
     def __init__(self, driver):
         super(ShareButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-code-button')
+        self.locator = self.Locator.accessibility_id('share-my-contact-code-button')
 
 
 class AdvancedButton(BaseButton):
@@ -166,7 +171,7 @@ class AdvancedButton(BaseButton):
 
     def click(self):
         self.scroll_to_element().click()
-        info('Tap on %s' % self.name)
+        self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
@@ -189,7 +194,7 @@ class RecoveryPhraseTable(BaseText):
     def __init__(self, driver):
         super(RecoveryPhraseTable, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.widget.FrameLayout/android.view.ViewGroup[3]/android.widget.TextView')
+            "//*[@text='Your recovery phrase']/following-sibling::android.view.ViewGroup[1]/android.widget.TextView")
 
 
 class RecoveryPhraseWordNumberText(BaseText):
@@ -287,13 +292,6 @@ class HelpButton(BaseButton):
         self.locator = self.Locator.accessibility_id("help-button")
 
 
-class RequestFeatureButton(BaseButton):
-
-    def __init__(self, driver):
-        super(RequestFeatureButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("request-feature-button")
-
-
 class SubmitBugButton(BaseButton):
 
     def __init__(self, driver):
@@ -375,6 +373,27 @@ class MailServerConnectButton(BaseButton):
         self.locator = self.Locator.accessibility_id('mailserver-connect-button')
 
 
+class ActiveNetworkName(BaseText):
+
+    def __init__(self, driver):
+        super(ActiveNetworkName, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('WITH UPSTREAM RPC')
+
+
+class AboutButton(BaseButton):
+    def __init__(self, driver):
+        super(AboutButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('about-button')
+
+    def navigate(self):
+        from views.about_view import AboutView
+        return AboutView(self.driver)
+
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
+
+
 class ProfileView(BaseView):
 
     def __init__(self, driver):
@@ -387,8 +406,10 @@ class ProfileView(BaseView):
         self.user_status_input = OptionsButton.UserStatusInput(self.driver)
         self.public_key_text = PublicKeyText(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
+        self.about_button = AboutButton(self.driver)
 
         self.network_settings_button = NetworkSettingsButton(self.driver)
+        self.active_network_name = ActiveNetworkName(self.driver)
         self.plus_button = PlusButton(self.driver)
         self.ropsten_chain_button = RopstenChainButton(self.driver)
         self.custom_network_url = CustomNetworkURL(self.driver)
@@ -400,8 +421,9 @@ class ProfileView(BaseView):
 
         self.main_currency_button = MainCurrencyButton(self.driver)
 
-        self.username_text = UserNameText(self.driver)
-        self.share_my_contact_key_button = ShareMyContactKeyButton(self.driver)
+        self.username_set_by_user_text = UserNameSetByUserText(self.driver)
+        self.default_username_text = DefaultUserNameText(self.driver)
+        self.share_my_profile_button = ShareMyProfileButton(self.driver)
         self.edit_button = EditButton(self.driver)
         self.profile_picture = ProfilePictureElement(self.driver)
         self.edit_picture_button = EditPictureButton(self.driver)
@@ -423,7 +445,6 @@ class ProfileView(BaseView):
         self.capture_button = CaptureButton(self.driver)
 
         self.help_button = HelpButton(self.driver)
-        self.request_feature_button = RequestFeatureButton(self.driver)
         self.submit_bug_button = SubmitBugButton(self.driver)
         self.faq_button = FaqButton(self.driver)
 
@@ -461,10 +482,6 @@ class ProfileView(BaseView):
         self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
         return self.get_sign_in_view()
-
-    def get_address(self):
-        profile_view = self.profile_button.click()
-        return profile_view.profile_address_text.text
 
     def get_recovery_phrase(self):
         text = [i.text for i in self.recovery_phrase_table.find_elements()]
@@ -514,3 +531,9 @@ class ProfileView(BaseView):
 
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)
+
+    @property
+    def current_active_network(self):
+        self.advanced_button.click()
+        self.active_network_name.scroll_to_element()
+        return self.active_network_name.text

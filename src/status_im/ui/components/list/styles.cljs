@@ -22,8 +22,7 @@
    :color       colors/black})
 
 (def primary-text
-  (merge primary-text-base
-         {:padding-top 12}))
+  primary-text-base)
 
 (def primary-text-only
   (merge primary-text-base
@@ -98,7 +97,7 @@
   {:background-color colors/blue})
 
 (def action
-  {:background-color colors/white-transparent
+  {:background-color colors/white-light-transparent
    :border-radius    50})
 
 (def action-disabled

@@ -6,7 +6,7 @@
   {:font-size      17
    :padding-bottom 0
    :letter-spacing -0.2
-   :color          colors/text})
+   :color          colors/black})
 
 (def topic-hash
   (merge group-chat-name-input
@@ -14,7 +14,8 @@
 
 (def group-container
   {:flex           1
-   :flex-direction :column})
+   :flex-direction :column
+   :background-color colors/white})
 
 (def chat-name-container
   {:margin-top 10})

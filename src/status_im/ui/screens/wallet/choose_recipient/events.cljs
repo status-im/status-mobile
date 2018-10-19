@@ -4,14 +4,16 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.utils.ethereum.ens :as ens]
+            [re-frame.core :as re-frame]))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :wallet/toggle-flashlight
- (fn [db]
+ (fn [{:keys [db]}]
    (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
          toggled-state (if (= :on flashlight-state) :off :on)]
-     (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
+     {:db (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state)})))
 
 (defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity from-chat?]}]
   {:pre [(not (nil? address))]}
@@ -57,6 +59,27 @@
   (assoc-in fx [:db :wallet :send-transaction :gas]
             ethereum/default-transaction-gas))
 
+(re-frame/reg-fx
+ :resolve-address
+ (fn [{:keys [web3 registry ens-name cb]}]
+   (ens/get-addr web3 registry ens-name cb)))
+
+(handlers/register-handler-fx
+ :wallet.send/set-recipient
+ (fn [{:keys [db]} [_ recipient]]
+   (let [{:keys [web3 network]} db
+         network-info (get-in db [:account/account :networks network])
+         chain (ethereum/network->chain-keyword network-info)]
+     (if (ens/is-valid-eth-name? recipient)
+       {:resolve-address {:web3     web3
+                          :registry (get ens/ens-registries chain)
+                          :ens-name recipient
+                          :cb       #(re-frame/dispatch [:wallet.send/set-recipient %])}}
+       (if (ethereum/address? recipient)
+         {:db       (assoc-in db [:wallet :send-transaction :to] recipient)
+          :dispatch [:navigate-back]}
+         {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))))
+
 (handlers/register-handler-fx
  :wallet/fill-request-from-url
  (fn [{{:keys [network] :as db} :db} [_ data origin]]
@@ -81,8 +104,8 @@
        ;; We need to check if address is defined so that we wouldn't trigger this behavior when invalid QR is scanned
        ;; (e.g. whisper-id)
        (and address (= origin :qr) (not new-gas) symbol-changed?) (use-default-eth-gas)
-       (not address) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))
-       (and address (not valid-network?)) (assoc :show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
+       (not address) (assoc :ui/show-error (i18n/label :t/wallet-invalid-address {:data data}))
+       (and address (not valid-network?)) (assoc :ui/show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
 
 (handlers/register-handler-fx
  :wallet/fill-request-from-contact

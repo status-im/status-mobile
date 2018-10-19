@@ -2,22 +2,22 @@
   (:require [status-im.utils.handlers :as handlers]
             [status-im.ui.screens.group.navigation]))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :deselect-contact
- (fn [db [_ id]]
-   (update db :group/selected-contacts disj id)))
+ (fn [{:keys [db]} [_ id]]
+   {:db (update db :group/selected-contacts disj id)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :select-contact
- (fn [db [_ id]]
-   (update db :group/selected-contacts conj id)))
+ (fn [{:keys [db]} [_ id]]
+   {:db (update db :group/selected-contacts conj id)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :deselect-participant
- (fn [db [_ id]]
-   (update db :selected-participants disj id)))
+ (fn [{:keys [db]} [_ id]]
+   {:db (update db :selected-participants disj id)}))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
  :select-participant
- (fn [db [_ id]]
-   (update db :selected-participants conj id)))
+ (fn [{:keys [db]} [_ id]]
+   {:db (update db :selected-participants conj id)}))

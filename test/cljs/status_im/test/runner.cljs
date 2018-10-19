@@ -1,16 +1,17 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
-            [status-im.test.chat.events]
-            [status-im.test.contacts.events]
             [status-im.test.contacts.subs]
-            [status-im.test.accounts.events]
+            [status-im.test.data-store.chats]
             [status-im.test.data-store.realm.core]
-            [status-im.test.browser.events]
+            [status-im.test.extensions.core]
+            [status-im.test.browser.core]
+            [status-im.test.browser.permissions]
             [status-im.test.wallet.subs]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
-            [status-im.test.profile.events]
-            [status-im.test.models.mailserver]
+            [status-im.test.mailserver.core]
+            [status-im.test.group-chats.core]
+            [status-im.test.node.core]
             [status-im.test.models.bootnode]
             [status-im.test.models.account]
             [status-im.test.models.contact]
@@ -18,24 +19,27 @@
             [status-im.test.models.wallet]
             [status-im.test.transport.core]
             [status-im.test.transport.inbox]
-            [status-im.test.transport.handlers]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
+            [status-im.test.chat.models.loading]
             [status-im.test.chat.models.message]
+            [status-im.test.chat.models.message-content]
             [status-im.test.chat.subs]
             [status-im.test.chat.views.message]
             [status-im.test.chat.views.photos]
             [status-im.test.chat.commands.core]
+            [status-im.test.chat.commands.input]
             [status-im.test.chat.commands.impl.transactions]
             [status-im.test.i18n]
             [status-im.test.protocol.web3.inbox]
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
-            [status-im.test.utils.handlers-macro]
             [status-im.test.utils.clocks]
             [status-im.test.utils.ethereum.eip681]
             [status-im.test.utils.ethereum.core]
+            [status-im.test.utils.ethereum.abi-spec]
             [status-im.test.utils.ethereum.ens]
+            [status-im.test.utils.ethereum.mnemonic]
             [status-im.test.utils.random]
             [status-im.test.utils.gfycat.core]
             [status-im.test.utils.signing-phrase.core]
@@ -46,8 +50,12 @@
             [status-im.test.utils.keychain.core]
             [status-im.test.utils.universal-links.core]
             [status-im.test.utils.http]
-            [status-im.test.ui.screens.events]
-            [status-im.test.ui.screens.accounts.login.events]
+            [status-im.test.init.core]
+            [status-im.test.ui.screens.add-new.models]
+            [status-im.test.utils.fx]
+            [status-im.test.accounts.recover.core]
+            [status-im.test.hardwallet.core]
+            [status-im.test.ui.screens.currency-settings.models]
             [status-im.test.ui.screens.wallet.db]))
 
 (enable-console-print!)
@@ -60,15 +68,16 @@
 
 (doo-tests
  'status-im.test.utils.async
- 'status-im.test.chat.events
  'status-im.test.chat.subs
  'status-im.test.chat.models
- 'status-im.test.accounts.events
- 'status-im.test.contacts.events
  'status-im.test.contacts.subs
- 'status-im.test.profile.events
+ 'status-im.test.init.core
+ 'status-im.test.data-store.chats
  'status-im.test.data-store.realm.core
- 'status-im.test.models.mailserver
+ 'status-im.test.extensions.core
+ 'status-im.test.mailserver.core
+ 'status-im.test.group-chats.core
+ 'status-im.test.node.core
  'status-im.test.models.bootnode
  'status-im.test.models.account
  'status-im.test.models.contact
@@ -77,23 +86,26 @@
  'status-im.test.wallet.subs
  'status-im.test.wallet.transactions.subs
  'status-im.test.wallet.transactions.views
+ 'status-im.test.chat.models.loading
  'status-im.test.chat.models.input
  'status-im.test.chat.models.message
+ 'status-im.test.chat.models.message-content
  'status-im.test.chat.views.message
  'status-im.test.chat.views.photos
  'status-im.test.chat.commands.core
+ 'status-im.test.chat.commands.input
  'status-im.test.chat.commands.impl.transactions
  'status-im.test.i18n
  'status-im.test.transport.core
  'status-im.test.transport.inbox
- 'status-im.test.transport.handlers
  'status-im.test.protocol.web3.inbox
  'status-im.test.utils.utils
- 'status-im.test.utils.handlers-macro
  'status-im.test.utils.money
  'status-im.test.utils.clocks
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
+ 'status-im.test.utils.ethereum.mnemonic
+ 'status-im.test.utils.ethereum.abi-spec
  'status-im.test.utils.ethereum.ens
  'status-im.test.utils.random
  'status-im.test.utils.gfycat.core
@@ -104,7 +116,11 @@
  'status-im.test.utils.keychain.core
  'status-im.test.utils.universal-links.core
  'status-im.test.utils.http
- 'status-im.test.ui.screens.events
- 'status-im.test.ui.screens.accounts.login.events
+ 'status-im.test.utils.fx
+ 'status-im.test.ui.screens.add-new.models
+ 'status-im.test.accounts.recover.core
+ 'status-im.test.hardwallet.core
+ 'status-im.test.ui.screens.currency-settings.models
  'status-im.test.ui.screens.wallet.db
- 'status-im.test.browser.events)
+ 'status-im.test.browser.core
+ 'status-im.test.browser.permissions)

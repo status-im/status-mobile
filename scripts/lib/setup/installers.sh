@@ -2,6 +2,14 @@
 
 _localPropertiesPath=./android/local.properties
 
+function downloadUrl() {
+  if program_exists "aria2c"; then
+    aria2c --max-connection-per-server=16 --split=16 --dir="$1" -o "$2" "$3"
+  else
+    wget --show-progress --output-document="$1/$2" "$3"
+  fi
+}
+
 function install_node() {
   if nvm_installed; then
     install_node_via_nvm
@@ -41,7 +49,7 @@ function install_wget() {
   if is_macos; then
     brew_install wget
   fi
-  // it's installed on ubuntu/debian by default
+  # it's installed on ubuntu/debian by default
 }
 
 function needs_java8_linux() {
@@ -320,16 +328,21 @@ function use_android_sdk() {
 
 function install_android_ndk() {
   if grep -Fq "ndk.dir" $_localPropertiesPath; then
-    dependency_setup \
-      "pushd android && ./gradlew react-native-android:installArchives && popd"
+    cecho "@green[[Android NDK already declared.]]"
   else
     local _ndkParentDir=~/Android/Sdk
     mkdir -p $_ndkParentDir
     cecho "@cyan[[Downloading Android NDK.]]"
-    wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip && \
+
+    PLATFORM="linux"
+    if [ "$(uname)" == "Darwin" ]; then # we run osx
+        PLATFORM="darwin"
+    fi
+
+    downloadUrl . android-ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-$PLATFORM-x86_64.zip && \
       cecho "@cyan[[Extracting Android NDK to $_ndkParentDir.]]" && \
-      unzip -q -o android-ndk.zip -d "$_ndkParentDir" && \
-      rm -f android-ndk.zip && \
+      unzip -q -o ./android-ndk.zip -d "$_ndkParentDir" && \
+      rm -f ./android-ndk.zip && \
       _ndkTargetDir="$_ndkParentDir/$(ls $_ndkParentDir | head -n 1)" && \
       echo "ndk.dir=$_ndkTargetDir" | tee -a $_localPropertiesPath && \
       cecho "@blue[[Android NDK installation completed in $_ndkTargetDir.]]"

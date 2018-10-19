@@ -1,14 +1,15 @@
 import pytest
-from tests import marks, basic_user
+from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
+from tests.users import basic_user
 from views.sign_in_view import SignInView
 
 
 @pytest.mark.all
 class TestDApps(SingleDeviceTestCase):
 
-    @marks.testrail_id(3782)
-    @marks.smoke_1
+    @marks.testrail_id(5353)
+    @marks.critical
     def test_filters_from_daap(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -20,19 +21,20 @@ class TestDApps(SingleDeviceTestCase):
             if element.is_element_displayed(10):
                 pytest.fail("'Test filters' button produced an error")
 
-    @marks.testrail_id(3789)
+    @marks.testrail_id(5397)
+    @marks.high
     def test_request_public_key_status_test_daap(self):
         user = basic_user
         sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=user['passphrase'], password=user['password'])
+        sign_in_view.recover_access(passphrase=user['passphrase'])
         status_test_dapp = sign_in_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.status_api_button.click()
         status_test_dapp.request_contact_code_button.click()
-        status_test_dapp.do_not_allow_button.click()
+        status_test_dapp.deny_button.click()
         if status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is returned but access was not allowed')
         status_test_dapp.request_contact_code_button.click()
-        status_test_dapp.ok_button.click()
+        status_test_dapp.allow_button.click()
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is not returned')

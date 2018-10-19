@@ -21,17 +21,26 @@
    :ios              {:letter-spacing -0.2}
    :android          {:color colors/black}})
 
+(defstyle profile-three-words
+  {:font-size        12
+   :text-align       :center
+   :ios              {:letter-spacing -0.2}
+   :android          {:color colors/black}})
+
 (defstyle profile-name-input-text
-  {:font-size  15
-   :text-align :center
-   :flex       1
-   :ios        {:letter-spacing      -0.2
-                :height              46
-                :border-bottom-width 1
-                :border-bottom-color colors/gray-light}
-   :android    {:color               colors/black
-                :border-bottom-width 2
-                :border-bottom-color colors/blue}})
+  {:font-size   15
+   :text-align  :center
+   :flex        1
+   :desktop     {:height 20
+                 :width 200}
+   :ios         {:letter-spacing      -0.2
+                 :margin-top          1
+                 :height              45
+                 :border-bottom-width 1
+                 :border-bottom-color colors/gray-light}
+   :android     {:color               colors/black
+                 :border-bottom-width 2
+                 :border-bottom-color colors/blue}})
 
 (def profile-header-name-container
   {:flex            1
@@ -90,4 +99,5 @@
 
 (def profile-form
   {:background-color colors/white
-   :padding          16})
+   :padding-top      16
+   :padding-bottom   8})

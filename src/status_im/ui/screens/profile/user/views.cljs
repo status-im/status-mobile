@@ -4,6 +4,7 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-button.styles :as action-button.styles]
+            [status-im.ui.components.button.view :as button]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.styles :as common.styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -22,7 +23,8 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.common.common :as components.common]
             [status-im.utils.identicon :as identicon]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.universal-links.core :as universal-links]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {}
@@ -65,48 +67,44 @@
                               :action #(re-frame/dispatch [:my-profile/remove-current-photo])}))
 
 (defn qr-viewer-toolbar [label value]
-  [toolbar/toolbar {}
+  [toolbar/toolbar {:style styles/qr-toolbar}
    [toolbar/default-done {:icon-opts           {:color colors/black}
                           :accessibility-label :done-button}]
-   [toolbar/content-title label]
-   [toolbar/actions [{:icon      :icons/share
-                      :icon-opts {:color               :black
-                                  :accessibility-label :share-code-button}
-                      :handler   #(list-selection/open-share {:message value})}]]])
+   [toolbar/content-title label]])
+
+(defn qr-code-share-button [value]
+  (let [link (universal-links/generate-link :user :external value)]
+    [button/button-with-icon
+     {:on-press            #(list-selection/open-share {:message link})
+      :label               (i18n/label :t/share-link)
+      :icon                :icons/share
+      :accessibility-label :share-my-contact-code-button
+      :style               styles/share-link-button}]))
 
 (defview qr-viewer []
   (letsubs [{:keys [value contact]} [:get :qr-modal]]
     [react/view styles/qr-code-viewer
      [status-bar/status-bar {:type :modal-white}]
      [qr-viewer-toolbar (:name contact) value]
-     [qr-code-viewer/qr-code-viewer {:style styles/qr-code}
-      value (i18n/label :t/qr-code-public-key-hint) (str value)]]))
+     [qr-code-viewer/qr-code-viewer
+      {:style         styles/qr-code
+       :footer-button qr-code-share-button
+       :value         value
+       :hint          (i18n/label :t/qr-code-public-key-hint)
+       :legend        (str value)}]]))
 
 (defn- show-qr [contact source value]
-  #(re-frame/dispatch [:navigate-to-modal :profile-qr-viewer {:contact contact
-                                                              :source  source
-                                                              :value   value}]))
-
-(defn share-contact-code [current-account public-key]
-  [react/touchable-highlight {:on-press (show-qr current-account :public-key public-key)}
-   [react/view styles/share-contact-code
-    [react/view styles/share-contact-code-text-container
-     [react/text {:style      styles/share-contact-code-text
-                  :uppercase? true}
-      (i18n/label :t/share-contact-code)]]
-    [react/view {:style               styles/share-contact-icon-container
-                 :accessibility-label :share-my-contact-code-button}
-     [vector-icons/icon :icons/qr {:color colors/blue}]]]])
-
-(defn- handle-logout []
-  (utils/show-confirmation (i18n/label :t/logout-title)
-                           (i18n/label :t/logout-are-you-sure)
-                           (i18n/label :t/logout) #(re-frame/dispatch [:logout])))
+  #(re-frame/dispatch [:navigate-to :profile-qr-viewer {:contact contact
+                                                        :source  source
+                                                        :value   value}]))
 
 (defn- my-profile-settings [{:keys [seed-backed-up? mnemonic]} currency]
   (let [show-backup-seed? (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
     [react/view
      [profile.components/settings-title (i18n/label :t/settings)]
+     [profile.components/settings-item {:label-kw            :t/ens-names
+                                        :action-fn           #(re-frame/dispatch [:profile.ui/ens-names-button-pressed])
+                                        :accessibility-label :ens-names-button}]
      [profile.components/settings-item {:label-kw            :t/main-currency
                                         :value               (:code currency)
                                         :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
@@ -139,37 +137,54 @@
                                           :accessibility-label :log-out-button
                                           :destructive?        true
                                           :hide-arrow?         true
-                                          :action-fn           #(handle-logout)}]]]]))
+                                          :action-fn           #(re-frame/dispatch [:accounts.logout.ui/logout-pressed])}]]]]))
 
-(defview advanced-settings [{:keys [network networks dev-mode?]} on-show]
-  (letsubs [{:keys [sharing-usage-data?]} [:get-current-account]]
-    {:component-did-mount on-show}
-    [react/view
-     (when dev-mode?
-       [profile.components/settings-item
-        {:label-kw            :t/network
-         :value               (get-in networks [network :name])
-         :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
-         :accessibility-label :network-button}])
-     (when config/offline-inbox-enabled?
-       [profile.components/settings-item-separator])
-     (when config/offline-inbox-enabled?
-       [profile.components/settings-item
-        {:label-kw            :t/offline-messaging
-         :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
-         :accessibility-label :offline-messages-settings-button}])
-     (when config/bootnodes-settings-enabled?
-       [profile.components/settings-item-separator])
-     (when config/bootnodes-settings-enabled?
-       [profile.components/settings-item
-        {:label-kw            :t/bootnodes
-         :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
-         :accessibility-label :bootnodes-settings-button}])
-     [profile.components/settings-item-separator]
+(defview advanced-settings [{:keys [network networks dev-mode? settings]} on-show]
+  {:component-did-mount on-show}
+  [react/view
+   (when (and config/extensions-enabled? dev-mode?)
+     [profile.components/settings-item
+      {:label-kw            :t/extensions
+       :action-fn           #(re-frame/dispatch [:navigate-to :extensions-settings])
+       :accessibility-label :extensions-button}])
+   (when dev-mode?
+     [profile.components/settings-item
+      {:label-kw            :t/network
+       :value               (get-in networks [network :name])
+       :action-fn           #(re-frame/dispatch [:navigate-to :network-settings])
+       :accessibility-label :network-button}])
+   [profile.components/settings-item-separator]
+   [profile.components/settings-item
+    {:label-kw            :t/offline-messaging
+     :action-fn           #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+     :accessibility-label :offline-messages-settings-button}]
+   [profile.components/settings-item-separator]
+   [profile.components/settings-item
+    {:label-kw            :t/log-level
+     :action-fn           #(re-frame/dispatch [:navigate-to :log-level-settings])
+     :accessibility-label :log-level-settings-button}]
+   [profile.components/settings-item-separator]
+   [profile.components/settings-item
+    {:label-kw            :t/fleet
+     :action-fn           #(re-frame/dispatch [:navigate-to :fleet-settings])
+     :accessibility-label :fleet-settings-button}]
+   (when config/bootnodes-settings-enabled?
+     [profile.components/settings-item-separator])
+   (when config/bootnodes-settings-enabled?
+     [profile.components/settings-item
+      {:label-kw            :t/bootnodes
+       :action-fn           #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+       :accessibility-label :bootnodes-settings-button}])
+   (when dev-mode?
      [profile.components/settings-switch-item
-      {:label-kw  :t/dev-mode
-       :value     dev-mode?
-       :action-fn #(re-frame/dispatch [:switch-dev-mode %])}]]))
+      {:label-kw  :t/web3-opt-in
+       :value     (:web3-opt-in? settings)
+       :action-fn #(re-frame/dispatch [:accounts.ui/web3-opt-in-mode-switched %])}])
+   [profile.components/settings-item-separator]
+   [profile.components/settings-switch-item
+    {:label-kw  :t/dev-mode
+     :value     dev-mode?
+     :action-fn #(re-frame/dispatch [:accounts.ui/dev-mode-switched %])}]])
 
 (defview advanced [params on-show]
   (letsubs [advanced? [:get :my-profile/advanced?]]
@@ -219,8 +234,15 @@
                                    (profile-icon-options-ext)
                                    profile-icon-options)
            :on-change-text-event :my-profile/update-name}]]
-        [react/view action-button.styles/actions-list
-         [share-contact-code current-account public-key]]
+        [react/view (merge action-button.styles/actions-list
+                           styles/share-contact-code-container)
+         [button/secondary-button {:on-press            #(re-frame/dispatch [:navigate-to :profile-qr-viewer
+                                                                             {:contact current-account
+                                                                              :source  :public-key
+                                                                              :value   public-key}])
+                                   :style styles/share-contact-code-button
+                                   :accessibility-label :share-my-profile-button}
+          (i18n/label :t/share-my-profile)]]
         [react/view styles/my-profile-info-container
          [my-profile-settings current-account currency]]
         [advanced shown-account on-show-advanced]]])))

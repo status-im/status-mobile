@@ -1,22 +1,40 @@
 (ns status-im.utils.ethereum.tokens
-  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons]])
+  (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons] :as ethereum.macros])
   (:require [clojure.string :as string]
             [status-im.utils.config :as config]))
 
 (defn- asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})
 
-(def ethereum {:name     "Ether"
-               :symbol   :ETH
-               :decimals 18
-               :icon     {:source (js/require "./resources/images/assets/ethereum.png")
-                          ;; TODO(goranjovic) find a better place to set UI info
-                          ;; like colors. Removed the reference to component.styles to
-                          ;; avoid circular dependency between namespaces.
-                          :style  (asset-border "#628fe333")}})
+(def default-native-currency
+  {:name     "Native"
+   :symbol   :ETH
+   :decimals 18
+   :icon     {:source (js/require "./resources/images/tokens/default-native.png")}})
 
-(defn ethereum? [k]
-  (= k (:symbol ethereum)))
+(def all-native-currencies
+  (ethereum.macros/resolve-native-currency-icons
+   {:mainnet {:name     "Ether"
+              :symbol   :ETH
+              :decimals 18
+              :icon     {:style (asset-border "#628fe333")}}
+    :testnet {:name           "Ropsten Ether"
+              :symbol         :ETH
+              :symbol-display :ETHro
+              :decimals       18}
+    :rinkeby {:name           "Rinkeby Ether"
+              :symbol         :ETH
+              :symbol-display :ETHri
+              :decimals       18}}))
+
+(def native-currency-symbols
+  (set (map #(-> % val :symbol) all-native-currencies)))
+
+(defn native-currency [chain]
+  (-> (get all-native-currencies chain default-native-currency)))
+
+(defn ethereum? [symbol]
+  (native-currency-symbols symbol))
 
 ;; symbol are used as global identifier (per network) so they must be unique
 
@@ -26,6 +44,10 @@
                   [{:symbol   :DAI
                     :name     "DAI"
                     :address  "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
+                    :decimals 18}
+                   {:symbol   :MKR
+                    :name     "MKR"
+                    :address  "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
                     :decimals 18}
                    {:symbol   :EOS
                     :name     "EOS"
@@ -371,6 +393,18 @@
                     :name     "SPANK"
                     :address  "0x42d6622deCe394b54999Fbd73D108123806f6a18"
                     :decimals 18}
+                   {:symbol   :BRLN
+                    :name     "Berlin Coin"
+                    :address  "0x80046305aaab08f6033b56a360c184391165dc2d"
+                    :decimals 18}
+                   {:symbol   :USDC
+                    :name     "USD//C"
+                    :address  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+                    :decimals 6}
+                   {:symbol   :LPT
+                    :name     "Livepeer Token"
+                    :address  "0x58b6a8a3302369daec383334672404ee733ab239"
+                    :decimals 18}
                    ;; NOTE(goranjovic) : the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
@@ -402,7 +436,15 @@
                    {:symbol  :STRK
                     :nft?    true
                     :name    "CryptoStrikers"
-                    :address "0xdcaad9fd9a74144d226dbf94ce6162ca9f09ed7e"}])
+                    :address "0xdcaad9fd9a74144d226dbf94ce6162ca9f09ed7e"}
+                   {:symbol  :SUPR
+                    :nft?    true
+                    :name    "SuperRare"
+                    :address "0x41a322b28d0ff354040e2cbc676f0320d8c8850d"}
+                   {:symbol  :KDO
+                    :nft?    true
+                    :name    "KudosToken"
+                    :address "0x56c72cda0b04fc39a25d0b6a64fa258fad46d664"}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
@@ -436,12 +478,20 @@
                   [{:name     "Moksha Coin"
                     :symbol   :MOKSHA
                     :decimals 18
-                    :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}])
+                    :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}
+                   {:symbol  :KDO
+                    :nft?    true
+                    :name    "KudosToken"
+                    :address "0x93bB0AFbd0627Bbd3a6C72Bc318341D3A22e254a"}])
 
-   :custom []})
+   :custom  []})
 
 (defn tokens-for [chain]
   (get all chain))
+
+(defn all-assets-for [chain]
+  (concat [(native-currency chain)]
+          (tokens-for chain)))
 
 (defn nfts-for [chain]
   (filter :nft? (tokens-for chain)))
@@ -460,6 +510,8 @@
                   (string/lower-case (:address %))) %) (tokens-for chain)))
 
 (defn asset-for [chain symbol]
-  (if (= (:symbol ethereum) symbol)
-    ethereum
-    (symbol->token chain symbol)))
+  (let [native-coin (native-currency chain)]
+    (if (or (= (:symbol-display native-coin) symbol)
+            (= (:symbol native-coin) symbol))
+      native-coin
+      (symbol->token chain symbol))))

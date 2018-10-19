@@ -80,8 +80,10 @@
   (when bn
     (.toNumber bn)))
 
-(defn wei->str [unit n]
-  (str (to-fixed (wei-> unit n)) " " (string/upper-case (name unit))))
+(defn wei->str
+  ([unit n display-unit]
+   (str (to-fixed (wei-> unit n)) " " display-unit))
+  ([unit n] (wei->str unit n (string/upper-case (name unit)))))
 
 (defn wei->ether [n]
   (wei-> :eth n))

@@ -1,17 +1,23 @@
 (ns status-im.desktop.platform)
 
-(def fonts
-  {:light         {:font-family "Roboto-Light"}
-   :default       {:font-family "Roboto-Regular"}
-   :medium        {:font-family "Roboto-Medium"}
+(def fonts-macos
+  {:default       {:font-family "SFProText-Regular"}
+   :medium        {:font-family "SFProText-Medium"}
 
-   :toolbar-title {:font-family "Roboto-Regular"}
-   :roboto-mono   {:font-family "RobotoMono-Medium"}})
+   :toolbar-title {:font-family "SFProText-Regular"}
+   :monospace     {:font-family "RobotoMono-Medium"}})
+
+(def fonts-linux
+  {:default       {:font-family "Arial" :font-weight "400"}
+   :medium        {:font-family "Arial" :font-weight "800"}
+
+   :toolbar-title {:font-family  "Arial" :font-weight "400"}
+   :monospace     {:font-family "RobotoMono-Medium"}})
 
 ;; Structure to be exported
 
-(def platform-specific
-  {:fonts                        fonts
+(defn platform-specific [macos]
+  {:fonts                        (if macos fonts-macos fonts-linux)
    :tabs                         {:tab-shadows? true}
    :chats                        {:action-button?       true
                                   :new-chat-in-toolbar? false

@@ -18,10 +18,12 @@
    :align-items        :center
    :background-color   (if active? colors/gray-lighter colors/white)})
 
-(defn profile-row-text [color active?]
+(defn profile-row-text [color]
   {:color       color
-   :font-weight (if active? "600" :normal)
    :font-size   16})
+
+(defn profile-row-font [selected?]
+  (if selected? :medium :default))
 
 (def adv-settings
   {:justify-content :space-between
@@ -29,14 +31,28 @@
    :align-items     :center
    :flex            1})
 
+(def profile-edit
+  {:margin-top         24
+   :padding-horizontal 24
+   :align-items        :flex-end})
+
 (def profile-photo
   {:border-radius 100
    :width         100
    :height        100})
 
 (def profile-user-name
-  {:font-weight :bold
-   :font-size   18})
+  {:font-size   18})
+
+(def profile-three-words
+  {:font-size   14})
+
+(def profile-editing-user-name
+  (merge profile-user-name
+         {:height           20
+          :width            80
+          :background-color colors/gray-lighter
+          :align-items      :flex-end}))
 
 (def share-contact-code
   {:flex-direction    :row
@@ -83,17 +99,16 @@
 (def close-icon
   {:height       24
    :width        24
-   :tint-color   colors/gray-icon})
+   :tint-color   colors/black})
 
 (def check-icon
   {:height       16
    :width        16
    :margin-right 8
-   :tint-color   colors/tooltip-green-text})
+   :tint-color   colors/green})
 
 (def qr-code-title
   {:font-size     20
-   :font-weight   "600"
    :margin-bottom 32})
 
 (def qr-code
@@ -146,8 +161,7 @@
 
 (def advanced-settings-title
   {:margin        24
-   :font-size     20
-   :font-weight   "600"})
+   :font-size     20})
 
 (def title-separator
   {:height            1

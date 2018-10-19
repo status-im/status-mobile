@@ -1,8 +1,12 @@
 (ns status-im.utils.random
-  (:require [status-im.js-dependencies :as dependencies]
+  (:require [re-frame.core :as re-frame]
+            [status-im.js-dependencies :as dependencies]
             [status-im.utils.datetime :as datetime]))
 
 (def chance (dependencies/Chance.))
+
+(defn guid []
+  (.guid chance))
 
 (defn id []
   (str (datetime/timestamp) "-" (.guid chance)))
@@ -17,3 +21,13 @@
 (defn seeded-rand-nth
   [gen coll]
   (nth coll (seeded-rand-int gen (count coll))))
+
+(re-frame/reg-cofx
+ :random-guid-generator
+ (fn [coeffects _]
+   (assoc coeffects :random-guid-generator guid)))
+
+(re-frame/reg-cofx
+ :random-id-generator
+ (fn [coeffects _]
+   (assoc coeffects :random-id-generator id)))

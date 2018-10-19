@@ -8,4 +8,5 @@
  :<- [:collectibles]
  :<- [:get-screen-params]
  (fn [[collectibles {:keys [symbol]}]]
-   (mapv #(assoc (second %) :id (first %)) (get collectibles symbol))))
+   (when-let [v (get collectibles symbol)]
+     (mapv #(assoc (second %) :id (first %)) v))))

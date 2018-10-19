@@ -12,7 +12,7 @@
 (spec/def ::gas-price (spec/nilable money/valid?))
 ; dapp transaction
 (spec/def ::data (spec/nilable string?))
-(spec/def ::nonce (spec/nilable money/valid?))
+(spec/def ::nonce (spec/nilable string?))
 
 (spec/def ::to-name (spec/nilable string?))
 (spec/def ::amount-error (spec/nilable string?))
@@ -32,11 +32,12 @@
 (spec/def ::whisper-identity (spec/nilable string?))
 (spec/def ::method (spec/nilable string?))
 (spec/def ::tx-hash (spec/nilable string?))
-(spec/def ::dapp-transaction (spec/nilable any?))
+(spec/def ::on-result (spec/nilable any?))
+(spec/def ::on-error (spec/nilable any?))
 
 (spec/def :wallet/send-transaction (allowed-keys
                                     :opt-un [::amount ::to ::to-name ::amount-error ::asset-error ::amount-text
-                                             ::password ::show-password-input? ::id ::from ::data
-                                             ::camera-flashlight ::in-progress? ::dapp-transaction
+                                             ::password ::show-password-input? ::id ::from ::data ::nonce
+                                             ::camera-flashlight ::in-progress? ::on-result ::on-error
                                              ::wrong-password? ::from-chat? ::symbol ::advanced?
                                              ::gas ::gas-price ::whisper-identity ::method ::tx-hash]))

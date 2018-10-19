@@ -2,7 +2,7 @@
 
 (def action-button          #js {:default #js {:Item #js {}}})
 (def config                 #js {:default #js {}})
-(def camera                 #js {:constants #js {}})
+(def camera                 #js {:default #js {:constants #js {}}})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})
 (def emoji-picker           #js {:default #js {}})
@@ -11,12 +11,12 @@
 (def i18n                   #js {:locale "en"})
 (def image-crop-picker      #js {})
 (def image-resizer          #js {})
-(def instabug               #js {})
 (def linear-gradient        #js {})
 (def nfc                    #js {})
 (def orientation            #js {})
 (def popup-menu             #js {})
 (def qr-code                #js {})
+(def nfc-manager            #js {:default #js {}})
 (def react-native
   #js {:NativeModules      #js {}
        :Animated           #js {:View #js {}
@@ -33,13 +33,14 @@
 (defrecord Notification [])
 (def react-native-firebase  #js {:default #js {:notifications #js {:Notification Notification}}})
 
+(def desktop-linking #js {:addEventListener (fn [])})
+
 (def snoopy                  #js {:default #js {}})
 (def snoopy-filter           #js {:default #js {}})
 (def snoopy-bars             #js {:default #js {}})
 (def snoopy-buffer           #js {:default #js {}})
 (def EventEmmiter            #js {})
 (def fetch                   #js {})
-(def testfairy               #js {})
 
 (def background-timer       #js {:setTimeout js/setTimeout
                                  :setInterval js/setInterval
@@ -48,3 +49,4 @@
 
 (def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))})
 (def secure-random #(.resolve js/Promise (clj->js (range 0 %))))
+(def react-navigation #js {:NavigationActions #js {}})

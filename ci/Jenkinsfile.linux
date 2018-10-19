@@ -1,0 +1,81 @@
+pipeline {
+  agent {
+    /* privileged mode is necessary for fuse */
+    docker {
+      label 'linux-new'
+      image 'statusteam/linux-desktop-ubuntu:qt-5.11.2'
+      args (
+        "--privileged "+
+        "-v /dev/fuse:/dev/fuse "+
+        "-v /var/tmp/lein:/var/tmp/lein:rw "+
+        "-v /var/tmp/npm:/var/tmp/npm:rw "+
+        "-v /opt/StatusImAppImage.zip:/opt/StatusImAppImage.zip:ro"
+      )
+    }
+  }
+
+  options {
+    buildDiscarder(logRotator(
+      numToKeepStr: '30',
+      daysToKeepStr: '30',
+      artifactNumToKeepStr: '30',
+    ))
+  }
+
+  /**
+   * WARNING: Jenkins ignores PATH changes in Docker
+   * https://issues.jenkins-ci.org/browse/JENKINS-49076
+   **/
+  environment {
+    BUILD_PLATFORM = 'linux'
+    LANG = 'en_US.UTF-8'
+    LANGUAGE = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
+    NPM_CONFIG_CACHE = '/var/tmp/npm'
+    LEIN_HOME = '/var/tmp/lein'
+    QT_PATH = '/opt/qt'
+    STATUSIM_APPIMAGE = '/opt/StatusImAppImage.zip'
+  }
+
+  stages {
+    stage('Prep') {
+      steps {
+        script {
+          /* Necessary to load methods */
+          desktop = load 'ci/desktop.groovy'
+          cmn     = load 'ci/common.groovy'
+          sh 'env'
+          desktop.prepDeps()
+        }
+      }
+    }
+    stage('Lint') {
+      steps {
+        script { cmn.runLint() }
+      }
+    }
+    stage('Tests') {
+      steps {
+        script { cmn.runTests() }
+      }
+    }
+    stage('Build') {
+      steps {
+        script { desktop.buildClojureScript() }
+      }
+    }
+    stage('Compile') {
+      steps {
+        script { desktop.compile() }
+      }
+    }
+    stage('Bundle') {
+      steps {
+        script { app = desktop.bundleLinux(cmn.getBuildType()) }
+      }
+    }
+    stage('Archive') {
+      steps { archiveArtifacts app }
+    }
+  }
+}

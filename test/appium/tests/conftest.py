@@ -8,8 +8,10 @@ from datetime import datetime
 from os import environ
 from io import BytesIO
 from sauceclient import SauceClient
+from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport
+from tests.users import transaction_senders
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
@@ -51,6 +53,7 @@ def pytest_addoption(parser):
                      help='string; ropsten or rinkeby')
 
     # message reliability
+
     parser.addoption('--rerun_count',
                      action='store',
                      default=0,
@@ -76,9 +79,16 @@ def pytest_addoption(parser):
                      default=None,
                      help='Public key of user for 1-1 chat')
 
+    # chat bot
 
-def get_rerun_count():
-    return int(pytest.config.getoption('rerun_count'))
+    parser.addoption('--public_keys',
+                     action='store',
+                     default='',
+                     help='List of public keys for one-to-one chats')
+    parser.addoption('--running_time',
+                     action='store',
+                     default=600,
+                     help='Running time in seconds')
 
 
 def is_master(config):
@@ -140,26 +150,27 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
     if report.when == 'call':
-        is_sauce_env = pytest.config.getoption('env') == 'sauce'
+        is_sauce_env = item.config.getoption('env') == 'sauce'
         current_test = test_suite_data.current_test
         if report.failed:
             error = report.longreprtext
-            exception = re.findall('E.*:', error)
+            exception = re.findall('E.*Message:|E.*Error:|E.*Failed:', error)
             if exception:
-                error = error.replace(re.findall('E.*:', report.longreprtext)[0], '')
+                error = error.replace(re.findall('E.*Message:|E.*Error:|E.*Failed:', report.longreprtext)[0], '')
             current_test.testruns[-1].error = error
         if is_sauce_env:
             update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
 
 
 def update_sauce_jobs(test_name, job_ids, passed):
-    for job_id in job_ids:
+    for job_id in job_ids.keys():
         sauce.jobs.update_job(job_id, name=test_name, passed=passed)
 
 
 def get_testrail_case_id(obj):
-    if 'testrail_id' in obj.keywords._markers:
-        return obj.keywords._markers['testrail_id'].args[0]
+    testrail_id = obj.get_marker('testrail_id')
+    if testrail_id:
+        return testrail_id.args[0]
 
 
 def pytest_runtest_setup(item):
@@ -168,7 +179,8 @@ def pytest_runtest_setup(item):
 
 
 def pytest_runtest_protocol(item, nextitem):
-    for i in range(get_rerun_count()):
+    rerun_count = int(item.config.getoption('rerun_count'))
+    for i in range(rerun_count):
         reports = runtestprotocol(item, nextitem=nextitem)
         for report in reports:
             if report.failed and should_rerun_test(report.longreprtext):
@@ -177,26 +189,33 @@ def pytest_runtest_protocol(item, nextitem):
             return True  # no need to rerun
 
 
-@pytest.fixture
-def messages_number():
-    return int(pytest.config.getoption('messages_number'))
+@pytest.fixture(scope="session", autouse=False)
+def faucet_for_senders():
+    network_api = NetworkApi()
+    for user in transaction_senders.values():
+        network_api.faucet(address=user['address'])
 
 
 @pytest.fixture
-def message_wait_time():
-    return int(pytest.config.getoption('message_wait_time'))
+def messages_number(request):
+    return int(request.config.getoption('messages_number'))
 
 
 @pytest.fixture
-def participants_number():
-    return int(pytest.config.getoption('participants_number'))
+def message_wait_time(request):
+    return int(request.config.getoption('message_wait_time'))
 
 
 @pytest.fixture
-def chat_name():
-    return pytest.config.getoption('chat_name')
+def participants_number(request):
+    return int(request.config.getoption('participants_number'))
 
 
 @pytest.fixture
-def user_public_key():
-    return pytest.config.getoption('user_public_key')
+def chat_name(request):
+    return request.config.getoption('chat_name')
+
+
+@pytest.fixture
+def user_public_key(request):
+    return request.config.getoption('user_public_key')

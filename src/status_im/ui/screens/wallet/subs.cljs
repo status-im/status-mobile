@@ -65,11 +65,12 @@
                                                      (or currency-code
                                                          (-> currency :code keyword))
                                                      token->decimals)]
-                        (-> balance-total-value
-                            (money/with-precision 2)
-                            str
-                            (i18n/format-currency (:code currency) false)
-                            (->> (str "~"))))
+                        (if (pos? balance-total-value)
+                          (-> balance-total-value
+                              (money/with-precision 2)
+                              str
+                              (i18n/format-currency (:code currency) false))
+                          "0"))
                       "...")))
 
 (re-frame/reg-sub :prices-loading?
@@ -102,9 +103,10 @@
                   :<- [:network]
                   :<- [:wallet/visible-tokens-symbols]
                   (fn [[network visible-tokens-symbols]]
-                    (conj (filter #(contains? visible-tokens-symbols (:symbol %))
-                                  (tokens/sorted-tokens-for (ethereum/network->chain-keyword network)))
-                          tokens/ethereum)))
+                    (let [chain (ethereum/network->chain-keyword network)]
+                      (conj (filter #(contains? visible-tokens-symbols (:symbol %))
+                                    (tokens/sorted-tokens-for (ethereum/network->chain-keyword network)))
+                            (tokens/native-currency chain)))))
 
 (re-frame/reg-sub :wallet/visible-assets-with-amount
                   :<- [:balance]

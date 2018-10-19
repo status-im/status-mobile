@@ -7,9 +7,8 @@
                   (fn [db _]
                     (:inbox/current-id db)))
 
-(re-frame/reg-sub :settings/network-wnodes
-                  :<- [:network]
+(re-frame/reg-sub :settings/fleet-wnodes
+                  :<- [:settings/current-fleet]
                   :<- [:get :inbox/wnodes]
-                  (fn [[network wnodes]]
-                    (let [chain (ethereum/network->chain-keyword network)]
-                      (chain wnodes))))
+                  (fn [[current-fleet wnodes]]
+                    (current-fleet wnodes)))

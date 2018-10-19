@@ -31,6 +31,8 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleBuildUrl</key>
+	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -58,36 +60,15 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>We need to access your camera</string>
+	<string>Please allow Status to use your phone camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need to access your contacts</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Need microphone access for Instabug and Audio Messages</string>
+	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need to access your photo storage to give you an ability to select photos</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>RobotoMono-Medium.ttf</string>
-		<string>SF-UI-Text-Semibold.otf</string>
-		<string>SF-UI-Text-Bold.otf</string>
-		<string>SF-UI-Text-Regular.otf</string>
-		<string>SF-UI-Text-Medium.otf</string>
-		<string>SF-UI-Text-Light.otf</string>
-		<string>SF-UI-Display-Medium.otf</string>
-		<string>SF-UI-Display-Regular.otf</string>
-		<string>SF-UI-Display-Semibold.otf</string>
-		<string>SF-UI-Display-Thin.otf</string>
-		<string>Entypo.ttf</string>
-		<string>EvilIcons.ttf</string>
-		<string>FontAwesome.ttf</string>
-		<string>Foundation.ttf</string>
-		<string>Ionicons.ttf</string>
-		<string>MaterialIcons.ttf</string>
-		<string>Octicons.ttf</string>
-		<string>Zocial.ttf</string>
-	</array>
+	<string>Photos access it required to give you ability to choose custom profile pictures.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -114,8 +95,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/> 
+	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
-	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string> 
+	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>
 </dict>
 </plist>

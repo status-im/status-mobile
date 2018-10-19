@@ -2,24 +2,24 @@
   (:require [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def fonts
-  {:light            {:font-family "SFUIText-Light"}
-   :default          {:font-family "SFUIText-Regular"}
-   :medium           {:font-family "SFUIText-Medium"}
-   :bold             {:font-family "SFUIText-Bold"}
-
-   :toolbar-title    {:font-family "SFUIText-Semibold"}
-   :toolbar-subtitle {:font-family "SFUIText-Regular"}
-   :roboto-mono      {:font-family "RobotoMono-Medium"}})
+  {:default          {:font-weight "normal"}
+   :medium           {:font-weight "500"
+                      :letter-spacing 1}
+   :bold             {:font-weight "bold"}
+   :toolbar-title    {:font-weight "bold"}
+   :toolbar-subtitle {:font-weight "normal"}
+   :monospace        {:font-family "Menlo"
+                      :font-weight "bold"}})
 
 ;; iPhone X dimensions
-(def x-width 375)
 (def x-height 812)
+(def xs-height 896)
 
 (defn iphone-x-dimensions? []
   (let [{:keys [width height]} (-> (.-Dimensions rn-dependencies/react-native)
                                    (.get "window")
                                    (js->clj :keywordize-keys true))]
-    (and (= width x-width) (= height x-height))))
+    (or (= height x-height) (= height xs-height))))
 
 (def platform-specific
   {:fonts                        fonts

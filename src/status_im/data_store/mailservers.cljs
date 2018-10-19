@@ -5,9 +5,12 @@
 (re-frame/reg-cofx
  :data-store/get-all-mailservers
  (fn [cofx _]
-   (assoc cofx :data-store/mailservers (-> @core/account-realm
-                                           (core/get-all :mailserver)
-                                           (core/all-clj :mailserver)))))
+   (assoc cofx :data-store/mailservers (mapv #(-> %
+                                                  (update :id keyword)
+                                                  (update :fleet keyword))
+                                             (-> @core/account-realm
+                                                 (core/get-all :mailserver)
+                                                 (core/all-clj :mailserver))))))
 
 (defn save-tx
   "Returns tx function for saving a mailserver"

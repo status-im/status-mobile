@@ -1,7 +1,12 @@
 apply plugin: 'com.android.library'
 
+def getStatusGoVersion = { ->
+    version = new File('../STATUS_GO_VERSION').text
+    return version.replaceAll("\\s","")
+}
+
 android {
-    compileSdkVersion 24
+    compileSdkVersion 26
 
     defaultConfig {
         minSdkVersion 18
@@ -13,10 +18,11 @@ android {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    implementation 'com.instabug.library:instabug:3+'
-    implementation 'status-im:function:0.0.1'
+    compile 'com.github.status-im:function:0.0.1'
 
-    String statusGoVersion = 'tags-v0.11.0^0-g4afd9e6c-302'
+    // WARNING: If you change this, make sure the GitHub release of the .aar exists.
+    // WARNING: status-go is downloaded in Makefile and has a hardcoded version too.
+    String statusGoVersion = getStatusGoVersion()
     final String statusGoGroup = 'status-im', statusGoName = 'status-go'
 
     // Check if the local status-go jar exists, and compile against that if it does

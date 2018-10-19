@@ -1,6 +1,5 @@
 (ns status-im.ui.components.chat-icon.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :refer [online-color]]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (defn default-chat-icon [color]
   {:margin           0
@@ -112,7 +111,7 @@
    :width            13
    :height           13
    :border-radius    9
-   :background-color online-color})
+   :background-color colors/blue})
 
 (def online-view-menu-item
   (merge online-view
@@ -218,7 +217,7 @@
    :justify-content  :center})
 
 (def pending-outer-circle
-  {:background-color online-color
+  {:background-color colors/blue
    :width            8
    :height           8
    :border-radius    4

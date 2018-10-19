@@ -1,11 +1,11 @@
 import time
 
-import pytest
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from tests import info
+
+from tests import common_password
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView, ProgressBar
-from views.profile_view import ProfilePictureElement, PublicKeyText
+from views.profile_view import ProfilePictureElement, ProfileAddressText
 
 
 class ChatMessageInput(BaseEditBox):
@@ -38,11 +38,21 @@ class SendCommand(BaseButton):
         super(SendCommand, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('send-button')
 
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('request-button')
+
+    def click(self):
+        self.wait_for_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
 
 
 class AssetCommand(BaseButton):
@@ -178,7 +188,7 @@ class ChatElementByText(BaseText):
             "//*[starts-with(@text,'%s')]/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % text)
 
     def find_element(self):
-        info("Looking for message with text '%s'" % self.message_text)
+        self.driver.info("Looking for message with text '%s'" % self.message_text)
         for _ in range(2):
             try:
                 return super(ChatElementByText, self).find_element()
@@ -269,14 +279,14 @@ class ChatView(BaseView):
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
-        self.public_key_text = PublicKeyText(self.driver)
+        self.profile_address_text = ProfileAddressText(self.driver)
 
     def wait_for_syncing_complete(self):
-        info('Waiting for syncing complete:')
+        self.driver.info('Waiting for syncing complete:')
         while True:
             try:
                 sync = self.find_text_part('Syncing', 10)
-                info(sync.text)
+                self.driver.info(sync.text)
             except TimeoutException:
                 break
 
@@ -303,7 +313,7 @@ class ChatView(BaseView):
             errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
                 [i for i in list(set(expected_messages) - set(received_messages))])))
 
-    def send_funds_to_request(self, amount, sender_password, wallet_set_up=False):
+    def send_funds_to_request(self, amount, sender_password=common_password, wallet_set_up=False):
         gas_popup = self.element_by_text_part('Specify amount')
         send_request_button = self.chat_element_by_text(amount).send_request_button
         send_request_button.click_until_presence_of_element(gas_popup)
@@ -327,7 +337,7 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
 
-    def send_transaction_in_1_1_chat(self, asset, amount, password, wallet_set_up=False):
+    def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False):
         self.commands_button.click()
         self.send_command.click()
         self.asset_by_name(asset).click()
@@ -345,7 +355,7 @@ class ChatView(BaseView):
         chat_elem.wait_for_visibility_of_element()
         chat_elem.progress_bar.wait_for_invisibility_of_element(20)
         if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
-            pytest.fail('Sent transaction message was not sent')
+            self.driver.fail('Sent transaction message was not sent')
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()
@@ -368,7 +378,7 @@ class ChatView(BaseView):
         self.send_message_button.click()
 
     def chat_element_by_text(self, text):
-        info("Looking for a message by text: '%s'" % text)
+        self.driver.info("Looking for a message by text: '%s'" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
@@ -380,8 +390,3 @@ class ChatView(BaseView):
         today_height = today_text_element.size['height']
         if message_location < today_location + today_height:
             errors.append("Message '%s' is not under 'Today' text" % text)
-
-    def asset_by_name(self, asset_name):
-        element = BaseButton(self.driver)
-        element.locator = element.Locator.text_selector(asset_name)
-        return element

@@ -15,7 +15,7 @@
   (fn [{:keys [id code display-name] :as currency}]
     (let [selected? (= id current-currency-id)]
       [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:wallet.settings/set-currency id])
+       {:on-press            #(re-frame/dispatch [:wallet.settings.ui/currency-selected id])
         :accessibility-label :currency-item}
        [react/view styles/currency-item
         [react/text {:style styles/currency-name-text}

@@ -15,8 +15,8 @@ class TestrailReport(BaseTestReport):
         self.user = environ.get('TESTRAIL_USER')
 
         self.run_id = None
-        self.suite_id = 15
-        self.project_id = 9
+        self.suite_id = 48
+        self.project_id = 14
 
         self.outcomes = {
             'passed': 1,
@@ -75,14 +75,13 @@ class TestrailReport(BaseTestReport):
 
     def get_regression_cases(self, is_pr=False):
         test_cases = dict()
-        test_cases['smoke_phase_1'] = 157
-        test_cases['smoke_phase_2'] = 308
-        test_cases['upgrade'] = 309
-        test_cases['error_handling'] = 458
-        test_cases['logcat_verifications'] = 718
+        test_cases['critical'] = 734
+        test_cases['high'] = 735
+        test_cases['medium'] = 736
+        test_cases['low'] = 737
         case_ids = list()
         if is_pr:
-            case_ids = [case['id'] for case in self.get_cases(test_cases['smoke_phase_1'])]
+            case_ids = [case['id'] for case in self.get_cases(test_cases['critical'])]
         else:
             for phase in test_cases:
                 for case in self.get_cases(test_cases[phase]):

@@ -52,10 +52,10 @@
 
 (defstyle form-title
   {:flex-shrink 1
-   :ios         {:color          styles/text1-color
+   :ios         {:color          colors/text
                  :letter-spacing -0.2
                  :font-size      16}
-   :android     {:color     styles/text4-color
+   :android     {:color     colors/text-gray
                  :font-size 14}})
 
 (def form-title-count
@@ -64,11 +64,7 @@
           :opacity       0.6
           :padding-left  8
           :padding-right 5
-          :color         styles/text4-color}))
-
-(defstyle form-spacer
-  {:ios     {:height 16}
-   :android {:height 11}})
+          :color         colors/text-gray}))
 
 (defstyle list-header-footer-spacing
   {:android {:background-color colors/white
@@ -91,7 +87,7 @@
   {:width            40
    :height           40
    :border-radius    (/ 40 2)
-   :background-color styles/color-green-4
+   :background-color colors/green
    :align-items      :center
    :justify-content  :center})
 

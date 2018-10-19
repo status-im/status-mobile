@@ -26,7 +26,7 @@
    :align-items      :center
    :border-radius    8
    :margin           16
-   :background-color colors/black-darker-transparent
+   :background-color colors/black-transparent
    :padding-top      10
    :padding-bottom   10
    :padding-left     14
@@ -42,7 +42,7 @@
 
 (def backup-seed-phrase-description
   {:line-height 20
-   :color       colors/white-lighter-transparent})
+   :color       colors/white-transparent})
 
 (def total-balance-container
   {:align-items     :center
@@ -58,15 +58,18 @@
 (def total-value
   {:color colors/white-transparent})
 
+(def total-balance-tilde
+  {:color colors/white-transparent})
+
 (defstyle total-balance-currency
   {:font-size   37
    :margin-left 9
-   :color       colors/white-lighter-transparent
+   :color       colors/white-transparent
    :android     {:letter-spacing 1.5}
    :ios         {:letter-spacing 1.16}})
 
 (def snackbar-container
-  {:background-color colors/gray-notifications})
+  {:background-color colors/gray})
 
 (def snackbar-text
   {:color             colors/white

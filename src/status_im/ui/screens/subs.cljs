@@ -2,9 +2,10 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.ethereum.core :as ethereum]
             status-im.chat.subs
+            status-im.contact.subs
             status-im.ui.screens.accounts.subs
+            status-im.ui.screens.extensions.subs
             status-im.ui.screens.home.subs
-            status-im.ui.screens.contacts.subs
             status-im.ui.screens.group.subs
             status-im.ui.screens.wallet.subs
             status-im.ui.screens.wallet.collectibles.subs
@@ -12,13 +13,18 @@
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.transactions.subs
             status-im.ui.screens.network-settings.subs
+            status-im.ui.screens.log-level-settings.subs
+            status-im.ui.screens.fleet-settings.subs
             status-im.ui.screens.offline-messaging-settings.subs
             status-im.ui.screens.bootnodes-settings.subs
             status-im.ui.screens.currency-settings.subs
             status-im.ui.screens.browser.subs
             status-im.ui.screens.add-new.new-chat.subs
             status-im.ui.screens.add-new.new-public-chat.subs
-            status-im.ui.screens.profile.subs))
+            status-im.ui.screens.profile.subs
+            status-im.ui.screens.hardwallet.connect.subs
+            status-im.ui.screens.hardwallet.pin.subs
+            status-im.ui.screens.hardwallet.setup.subs))
 
 (reg-sub :get
          (fn [db [_ k]]
@@ -42,7 +48,10 @@
 
 (reg-sub :fetching?
          (fn [db]
-           (get db :inbox/fetching?)))
+           (let [pending-requests (get db :transport.inbox/pending-requests)]
+             (when (and (pos-int? pending-requests)
+                        (:transport.inbox/current-request db))
+               pending-requests))))
 
 (reg-sub :offline?
          :<- [:network-status]

@@ -1,0 +1,16 @@
+atomicwrites==1.2.1
+attrs==18.2.0
+certifi==2018.8.24
+chardet==3.0.4
+funcsigs==1.0.2
+idna==2.7
+jip==0.9.13
+more-itertools==4.3.0
+pathlib2==2.3.2
+pluggy==0.7.1
+py==1.6.0
+pytest==2.7.2
+requests==2.19.1
+scandir==1.9.0
+six==1.11.0
+urllib3==1.23

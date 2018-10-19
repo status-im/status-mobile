@@ -9,30 +9,10 @@
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
             [status-im.native-module.core :as status]
-            [status-im.utils.notifications :as notifications]
+            [status-im.notifications.core :as notifications]
             [status-im.core :as core]
-            [status-im.utils.snoopy :as snoopy]))
-
-(defn init-back-button-handler! []
-  (let [new-listener (fn []
-                       ;; todo: it might be better always return false from
-                       ;; this listener and handle application's closing
-                       ;; in handlers
-                       (let [stack      (subscribe [:get :navigation-stack])
-                             result-box (subscribe [:get-current-chat-ui-prop :result-box])
-                             webview    (subscribe [:get :webview-bridge])
-                             view-id    (subscribe [:get :view-id])
-                             chat-id    (subscribe [:get-current-chat-id])]
-                         (cond
-
-                           (and @webview (:can-go-back? @result-box))
-                           (do (.goBack @webview) true)
-
-                           (< 1 (count @stack))
-                           (do (dispatch [:navigate-back]) true)
-
-                           :else false)))]
-    (.addEventListener react/back-handler "hardwareBackPress" new-listener)))
+            [status-im.utils.snoopy :as snoopy]
+            [taoensso.timbre :as log]))
 
 (defn app-state-change-handler [state]
   (dispatch [:app-state-change state]))
@@ -71,6 +51,5 @@
 
 (defn init []
   (status/set-soft-input-mode status/adjust-resize)
-  (init-back-button-handler!)
   (core/init app-root)
   (snoopy/subscribe!))

@@ -30,13 +30,14 @@ import java.util.concurrent.Executors;
 
 import org.json.JSONObject;
 import org.json.JSONException;
-import com.instabug.library.Instabug;
 
 import javax.annotation.Nullable;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
     private static final String TAG = "StatusModule";
+
+    private final static int TESTNET_NETWORK_ID = 3;
 
     private HashMap<String, Callback> callbacks = new HashMap<>();
 
@@ -45,17 +46,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ExecutorService executor = null;
     private boolean debug;
     private boolean devCluster;
-    private String logLevel;
     private ReactApplicationContext reactContext;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, String logLevel) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
         this.debug = debug;
         this.devCluster = devCluster;
-        this.logLevel = logLevel;
         this.reactContext = reactContext;
         reactContext.addLifecycleEventListener(this);
     }
@@ -115,7 +114,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
     }
 
-    private String prepareLogsFile() {
+    private static String prepareLogsFile() {
         String gethLogFileName = "geth.log";
         File pubDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File logFile = new File(pubDirectory, gethLogFileName);
@@ -133,12 +132,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             logFile.setWritable(true);
             Log.d(TAG, "Can write " + logFile.canWrite());
             Uri gethLogUri = Uri.fromFile(logFile);
-            try {
-                Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
-                Instabug.setFileAttachment(gethLogUri, gethLogFileName);
-            } catch (NullPointerException e) {
-                Log.d(TAG, "Instabug is not initialized!");
-            }
 
             String gethLogFilePath = logFile.getAbsolutePath();
             Log.d(TAG, gethLogFilePath);
@@ -151,12 +144,52 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return null;
     }
 
-    private void doStartNode(final String defaultConfig) {
+    private String updateConfig(final String jsonConfigString, final String absRootDirPath, final String absKeystoreDirPath) throws JSONException {
+        final JSONObject jsonConfig = new JSONObject(jsonConfigString);
+        // retrieve parameters from app config, that will be applied onto the Go-side config later on
+        final String absDataDirPath = pathCombine(absRootDirPath, jsonConfig.getString("DataDir"));
+        final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
+        final String gethLogFilePath = logEnabled ? prepareLogsFile() : null;
+
+        jsonConfig.put("DataDir", absDataDirPath);
+        jsonConfig.put("KeyStoreDir", absKeystoreDirPath);
+        jsonConfig.put("LogFile", gethLogFilePath);
+
+        return jsonConfig.toString();
+    }
+
+    private static void prettyPrintConfig(final String config) {
+        Log.d(TAG, "startNode() with config (see below)");
+        String configOutput = config;
+        final int maxOutputLen = 4000;
+        Log.d(TAG, "********************** NODE CONFIG ****************************");
+        while (!configOutput.isEmpty()) {
+            Log.d(TAG, "Node config:" + configOutput.substring(0, Math.min(maxOutputLen, configOutput.length())));
+            if (configOutput.length() > maxOutputLen) {
+                configOutput = configOutput.substring(maxOutputLen);
+            } else {
+                break;
+            }
+        }
+        Log.d(TAG, "******************* ENDOF NODE CONFIG *************************");
+    }
+
+    private String getTestnetDataDir(final String absRootDirPath) {
+        return pathCombine(absRootDirPath, "ethereum/testnet");
+    }
+
+    private String pathCombine(final String path1, final String path2) {
+        // Replace this logic with Paths.get(path1, path2) once API level 26+ becomes the minimum supported API level
+        final File file = new File(path1, path2);
+        return file.getAbsolutePath();
+    }
+
+    private void doStartNode(final String jsonConfigString) {
 
         Activity currentActivity = getCurrentActivity();
 
-        String root = currentActivity.getApplicationInfo().dataDir;
-        String dataFolder = root + "/ethereum/testnet";
+        final String absRootDirPath = currentActivity.getApplicationInfo().dataDir;
+        final String dataFolder = this.getTestnetDataDir(absRootDirPath);
         Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
         try {
@@ -167,11 +200,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.e(TAG, "error making folder: " + dataFolder, e);
         }
 
-        final String ropstenFlagPath = root + "/ropsten_flag";
+        final String ropstenFlagPath = pathCombine(absRootDirPath, "ropsten_flag");
         final File ropstenFlag = new File(ropstenFlagPath);
         if (!ropstenFlag.exists()) {
             try {
-                final String chaindDataFolderPath = dataFolder + "/StatusIM/lightchaindata";
+                final String chaindDataFolderPath = pathCombine(dataFolder, "StatusIM/lightchaindata");
                 final File lightChainFolder = new File(chaindDataFolderPath);
                 if (lightChainFolder.isDirectory()) {
                     String[] children = lightChainFolder.list();
@@ -186,11 +219,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
 
-
-        int testnetNetworkId = 3;
-        String testnetDataDir = root + "/ethereum/testnet";
-        String oldKeystoreDir = testnetDataDir + "/keystore";
-        String newKeystoreDir = root + "/keystore";
+        String testnetDataDir = dataFolder;
+        String oldKeystoreDir = pathCombine(testnetDataDir, "keystore");
+        String newKeystoreDir = pathCombine(absRootDirPath, "keystore");
         final File oldKeystore = new File(oldKeystoreDir);
         if (oldKeystore.exists()) {
             try {
@@ -209,93 +240,34 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
 
-        String config;
         try {
-            JSONObject customConfig = new JSONObject(defaultConfig);
+            final String updatedJsonConfigString = this.updateConfig(jsonConfigString, absRootDirPath, newKeystoreDir);
 
-            String dataDir = root + customConfig.get("DataDir");
+            prettyPrintConfig(updatedJsonConfigString);
 
-            config = Statusgo.GenerateConfig(dataDir, customConfig.getInt("NetworkId"));
-
-            JSONObject jsonConfig = new JSONObject(config);
-
-            String gethLogFilePath = TextUtils.isEmpty(this.logLevel) ? null : prepareLogsFile();
-            boolean logsEnabled = (gethLogFilePath != null);
-
-            jsonConfig.put("LogEnabled", logsEnabled);
-            jsonConfig.put("LogFile", gethLogFilePath);
-            jsonConfig.put("LogLevel", TextUtils.isEmpty(this.logLevel) ? "ERROR" : this.logLevel.toUpperCase());
-            jsonConfig.put("DataDir", dataDir);
-            jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
-            try {
-                Object upstreamConfig = customConfig.get("UpstreamConfig");
-                if (upstreamConfig != null) {
-                    Log.d(TAG, "UpstreamConfig is not null");
-                    jsonConfig.put("UpstreamConfig", upstreamConfig);
-                }
-            } catch (Exception e) {
-
+            String res = Statusgo.StartNode(updatedJsonConfigString);
+            if (res.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "StartNode result: " + res);
+                Log.d(TAG, "Geth node started");
             }
-            try {
-                JSONObject whisperConfig = (JSONObject) jsonConfig.get("WhisperConfig");
-                if (whisperConfig == null) {
-                    whisperConfig = new JSONObject();
-                }
-                whisperConfig.put("LightClient", true);
-                jsonConfig.put("WhisperConfig", whisperConfig);
-            } catch (Exception e) {
-
+            else {
+                Log.e(TAG, "StartNode failed: " + res);
             }
-            try {
-                Object clusterConfig = customConfig.get("ClusterConfig");
-                if (clusterConfig != null) {
-                    Log.d(TAG, "ClusterConfig is not null");
-                    jsonConfig.put("ClusterConfig", clusterConfig);
-                }
-            } catch (Exception e) {
-              Log.w(TAG, "Something went wrong parsing cluster config" + e.getMessage());
-            }
-
-
-            jsonConfig.put("KeyStoreDir", newKeystoreDir);
-
-            config = jsonConfig.toString();
+            status.sendMessage();
         } catch (JSONException e) {
-            config = Statusgo.GenerateConfig(testnetDataDir, testnetNetworkId);
-            Log.d(TAG, "Something went wrong " + e.getMessage());
-            Log.d(TAG, "Default configuration will be used");
+            Log.e(TAG, "updateConfig failed: " + e.getMessage());
+            System.exit(1);
         }
-
-        String configOutput = config;
-        final int maxOutputLen = 4000;
-        while (!configOutput.isEmpty()) {
-            Log.d(TAG, "Node config:" + configOutput.substring(0, Math.min(maxOutputLen, configOutput.length())));
-            if (configOutput.length() > maxOutputLen) {
-                configOutput = configOutput.substring(maxOutputLen);
-            } else {
-                break;
-            }
-        }
-
-        String res = Statusgo.StartNode(config);
-        if (res.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "StartNode result: " + res);
-        }
-        else {
-            Log.e(TAG, "StartNode failed: " + res);
-        }
-        Log.d(TAG, "Geth node started");
-	status.sendMessage();
     }
 
     private String getOldExternalDir() {
         File extStore = Environment.getExternalStorageDirectory();
-        return extStore.exists() ? extStore.getAbsolutePath() + "/ethereum/testnet" : getNewInternalDir();
+        return extStore.exists() ? pathCombine(extStore.getAbsolutePath(), "ethereum/testnet") : getNewInternalDir();
     }
 
     private String getNewInternalDir() {
         Activity currentActivity = getCurrentActivity();
-        return currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
+        return pathCombine(currentActivity.getApplicationInfo().dataDir, "ethereum/testnet");
     }
 
     private void deleteDirectory(File folder) {
@@ -712,6 +684,47 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
   private Boolean is24Hour() {
     return android.text.format.DateFormat.is24HourFormat(this.reactContext.getApplicationContext());
+  }
+
+  @ReactMethod
+  public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
+    Log.d(TAG, "extractGroupMembershipSignatures");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String result = Statusgo.ExtractGroupMembershipSignatures(signaturePairs);
+
+        callback.invoke(result);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
+
+  @ReactMethod
+  public void signGroupMembership(final String content, final Callback callback) {
+    Log.d(TAG, "signGroupMembership");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String result = Statusgo.SignGroupMembership(content);
+
+        callback.invoke(result);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
   }
 
   @Override
