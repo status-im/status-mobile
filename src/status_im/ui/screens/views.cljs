@@ -164,7 +164,8 @@
           :new-public-chat              new-public-chat
           :open-dapp                    open-dapp
           :dapp-description             dapp-description
-          :browser                      browser}
+          :browser                      browser
+          :login                        login}
          :config
          {:headerMode       "none"
           :initialRouteName "home"}}
@@ -237,7 +238,8 @@
                                           :config  {:headerMode "none"}}
            :unsigned-transactions        wallet-transactions/transactions
            :transactions-history         wallet-transactions/transactions
-           :wallet-transaction-details   wallet-transactions/transaction-details})
+           :wallet-transaction-details   wallet-transactions/transaction-details
+           :login                        login})
          {:headerMode       "none"
           :initialRouteName "wallet"})}
        :wallet-settings-assets

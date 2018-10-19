@@ -114,7 +114,7 @@
                 (accounts.update/account-update
                  {:network      network-id
                   :last-updated now}
-                 {}))
+                 {:success-event [:accounts.update.callback/save-settings-success]}))
       (fx/merge cofx
                 {:ui/show-confirmation {:title               (i18n/label :t/close-app-title)
                                         :content             (i18n/label :t/close-app-content)
@@ -136,13 +136,16 @@
                                                           :id      1})
                  :opts                  {:headers {"Content-Type" "application/json"}}
                  :success-event-creator (fn [{:keys [response-body]}]
-                                          (let [client-version (:result (http/parse-payload response-body))]
+                                          (if-let [client-version (:result (http/parse-payload response-body))]
                                             [::connect-success {:network-id     network-id
                                                                 :on-success     on-success
-                                                                :client-version client-version}]))
+                                                                :client-version client-version}]
+                                            [::connect-failure {:network-id network-id
+                                                                :on-failure on-failure
+                                                                :reason     (i18n/label :t/network-invalid-url)}]))
                  :failure-event-creator (fn [{:keys [response-body status-code]}]
                                           (let [reason (if status-code
-                                                         (str "Got a wrong status code: " status-code)
+                                                         (i18n/label :t/network-invalid-status-code {:code status-code})
                                                          (str response-body))]
                                             [::connect-failure {:network-id network-id
                                                                 :on-failure on-failure
