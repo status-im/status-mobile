@@ -426,8 +426,8 @@
 
 (handlers/register-handler-fx
  :extensions.ui/add-extension-pressed
- (fn [cofx [_ name]]
-   (extensions/edit cofx name)))
+ (fn [cofx [_ id]]
+   (extensions/edit cofx id)))
 
 (handlers/register-handler-fx
  :extensions.ui/input-changed
@@ -436,8 +436,8 @@
 
 (handlers/register-handler-fx
  :extensions.ui/activation-checkbox-pressed
- (fn [cofx [_ name state]]
-   (extensions/toggle-activation cofx name state)))
+ (fn [cofx [_ id state]]
+   (extensions/toggle-activation cofx id state)))
 
 (handlers/register-handler-fx
  :extensions.ui/show-button-pressed

@@ -27,6 +27,6 @@
 (handlers/register-handler-fx
  :extensions/deactivate-all
  (fn [cofx [_ extensions]]
-   (apply fx/merge cofx (map (fn [{:keys [name]}]
-                               (partial registry/deactivate name))
+   (apply fx/merge cofx (map (fn [{:keys [id]}]
+                               (partial registry/deactivate id))
                              extensions))))
