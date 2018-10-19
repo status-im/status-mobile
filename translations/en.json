@@ -387,6 +387,7 @@
     "wallet-transaction-total-fee": "Total Fee",
     "extension": "Extension",
     "invalid-extension": "Invalid extension URI",
+    "extensions-disclaimer":  "This extension is from a third party and not built by Status. Please be sure you trust the developer before installing",
     "datetime-day": {
         "one": "day",
         "other": "days"

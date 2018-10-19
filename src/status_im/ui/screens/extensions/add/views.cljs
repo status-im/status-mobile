@@ -38,6 +38,9 @@
         [toolbar/simple-toolbar (i18n/label :t/extension)]
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/wrapper
+          [react/view {:style {:border-radius 8 :margin 10 :padding 8 :background-color colors/red}}
+           [react/text {:style {:color colors/white}}
+            (i18n/label :t/extensions-disclaimer)]]
           [cartouche {:header (i18n/label :t/identifier)}
            [react/text {:style styles/text}
             (str (get-in data ['meta :name]))]]
