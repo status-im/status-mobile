@@ -31,7 +31,7 @@
                                             :private-key-id public-key
                                             :topic topic}
                  :shh/restore-sym-keys {:web3       web3
-                                        :transport  (:transport/chats db)
+                                        :transport  (filter (comp :topic second) (:transport/chats db))
                                         :on-success sym-key-added-callback}}
                 (inbox/connect-to-mailserver)
                 (message/resend-contact-messages [])))))
