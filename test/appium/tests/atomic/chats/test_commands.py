@@ -30,7 +30,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         device_1_chat = device_1_home.add_contact(public_key)
         amount_1 = device_1_chat.get_unique_amount()
-        device_1_chat.send_transaction_in_1_1_chat('ETH', amount_1, wallet_set_up=True)
+        device_1_chat.send_transaction_in_1_1_chat('ETHro', amount_1, wallet_set_up=True)
         device_1_chat.chat_element_by_text(amount_1).progress_bar.wait_for_invisibility_of_element()
         status_text_1 = device_1_chat.chat_element_by_text(amount_1).status.text
         if status_text_1 != 'Sent':
@@ -50,7 +50,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_2_chat.get_back_to_home_view()
 
         amount_2 = device_1_chat.get_unique_amount()
-        device_1_chat.request_transaction_in_1_1_chat('ETH', amount_2)
+        device_1_chat.request_transaction_in_1_1_chat('ETHro', amount_2)
         status_text_2 = device_1_chat.chat_element_by_text(amount_2).status.text
         if status_text_2 != 'Sent':
             self.errors.append("Request funds message has status '%s' instead of 'Sent'" % status_text_2)
@@ -90,7 +90,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = chat_1.get_unique_amount()
         chat_1.commands_button.click()
         chat_1.send_command.click()
-        chat_1.asset_by_name('ETH').click()
+        chat_1.asset_by_name('ETHro').click()
         chat_1.send_as_keyevent(amount)
         send_transaction_view = chat_1.get_send_transaction_view()
         chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
@@ -117,7 +117,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction_view.gas_price_input.clear()
         send_transaction_view.gas_price_input.set_value(gas_price)
         send_transaction_view.total_fee_input.click()
-        if send_transaction_view.total_fee_input.text != '%s ETH' % (d(gas_limit) * d(gas_price) / d(1000000000)):
+        if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
             self.errors.append('Gas limit and/or gas price fields were not edited')
         send_transaction_view.done_button.click()
         send_transaction_view.sign_transaction()
@@ -155,7 +155,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         chat_2 = home_2.add_contact(sender['public_key'])
         amount = chat_2.get_unique_amount()
-        chat_2.request_transaction_in_1_1_chat('ETH', amount)
+        chat_2.request_transaction_in_1_1_chat('ETHro', amount)
 
         chat_1 = home_1.get_chat_with_user(recipient['username']).click()
         chat_1.send_funds_to_request(amount=amount)
@@ -236,7 +236,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_view.view_profile_button.click()
         chat_view.profile_send_transaction.click()
         chat_view.chat_message_input.click()
-        chat_view.asset_by_name('ETH').click()
+        chat_view.asset_by_name('ETHro').click()
         amount = chat_view.get_unique_amount()
         chat_view.send_as_keyevent(amount)
         chat_view.send_message_button.click()
@@ -325,7 +325,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         chat_1 = home_1.add_contact(recipient['public_key'])
         amount = chat_1.get_unique_amount()
-        chat_1.send_transaction_in_1_1_chat('ETH', amount)
+        chat_1.send_transaction_in_1_1_chat('ETHro', amount)
 
         chat_2 = home_2.get_chat_with_user(sender['username']).click()
         self.network_api.wait_for_confirmation_of_transaction(recipient['address'], amount)
@@ -366,7 +366,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         wallet.home_button.click()
         chat = home.add_contact(basic_user['public_key'])
         amount = chat.get_unique_amount()
-        chat.send_transaction_in_1_1_chat('ETH', amount, unique_password)
+        chat.send_transaction_in_1_1_chat('ETHro', amount, unique_password)
         chat.check_no_values_in_logcat(password=unique_password)
 
     @marks.testrail_id(5347)
@@ -384,7 +384,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         amount = chat.get_unique_amount()
         chat.commands_button.click()
         chat.send_command.click()
-        chat.asset_by_name('ETH').click()
+        chat.asset_by_name('ETHro').click()
         chat.send_as_keyevent(amount)
         send_transaction_view = chat.get_send_transaction_view()
         chat.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
@@ -393,8 +393,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append('Recipient name is not shown')
         if not send_transaction_view.element_by_text('0x' + recipient['address']).is_element_displayed():
             self.errors.append('Recipient address is not shown')
-        if not send_transaction_view.element_by_text('ETH').is_element_displayed():
-            self.errors.append("Asset field doesn't contain 'ETH' text")
+        if not send_transaction_view.element_by_text('ETHro').is_element_displayed():
+            self.errors.append("Asset field doesn't contain 'ETHro' text")
         if not send_transaction_view.element_by_text(amount).is_element_displayed():
             self.errors.append('Amount is not visible')
         self.verify_no_errors()
@@ -410,7 +410,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         wallet.home_button.click()
         chat = home.add_contact(basic_user['public_key'])
         amount = chat.get_unique_amount()
-        chat.send_transaction_in_1_1_chat('ETH', amount)
+        chat.send_transaction_in_1_1_chat('ETHro', amount)
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         if not chat.chat_element_by_text(amount).contains_text('Confirmed', wait_time=90):
             pytest.fail('Status "Confirmed" is not shown under transaction for the sender')
@@ -426,7 +426,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat_view = home_view.add_contact(basic_user['public_key'])
         chat_view.commands_button.click()
         chat_view.send_command.click()
-        chat_view.asset_by_name('ETH').click()
+        chat_view.asset_by_name('ETHro').click()
         chat_view.send_as_keyevent('1')
         chat_view.send_message_button.click()
         send_transaction = chat_view.get_send_transaction_view()
@@ -459,14 +459,14 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat_view = home_view.add_contact(basic_user['public_key'])
         chat_view.commands_button.click()
         chat_view.send_command.click()
-        chat_view.asset_by_name('ETH').click()
+        chat_view.asset_by_name('ETHro').click()
         chat_view.send_as_keyevent(str(round(eth_value + 1)))
         chat_view.send_message_button.click()
         send_transaction = chat_view.get_send_transaction_view()
         error_text = send_transaction.element_by_text('Insufficient funds')
         if not error_text.is_element_displayed():
             self.errors.append(
-                "'Insufficient funds' error is now shown when sending %s ETH from chat with balance %s" % (
+                "'Insufficient funds' error is now shown when sending %s ETHro from chat with balance %s" % (
                     round(eth_value + 1), eth_value))
         send_transaction.cross_icon.click()
         chat_view.commands_button.click()
