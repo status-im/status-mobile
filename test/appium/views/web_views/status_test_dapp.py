@@ -5,24 +5,21 @@ class AssetsButton(BaseButton):
 
     def __init__(self, driver):
         super(AssetsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Assets')
+        self.locator = self.Locator.webview_selector('Assets')
 
     class RequestETHButton(BaseButton):
         def __init__(self, driver):
             super(AssetsButton.RequestETHButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Request Ropsten ETH')
+            self.locator = self.Locator.webview_selector('Ropsten ETH')
 
     class RequestSTTButton(BaseButton):
         def __init__(self, driver):
             super(AssetsButton.RequestSTTButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Request STT')
+            self.locator = self.Locator.webview_selector('Request STT')
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
-
-    def click(self):
-        self.click_until_presence_of_element(self.RequestSTTButton(self.driver))
 
 
 class TransactionsButton(BaseButton):

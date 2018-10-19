@@ -41,6 +41,11 @@ class BaseElement(object):
         def id(locator, value):
             return locator(MobileBy.ID, value)
 
+        @classmethod
+        def webview_selector(cls, value):
+            xpath_expression = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(value, desc=value)
+            return cls(MobileBy.XPATH, xpath_expression)
+
         def __str__(self, *args, **kwargs):
             return "%s:%s" % (self.by, self.value)
 
