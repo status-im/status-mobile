@@ -53,6 +53,7 @@
 (handlers/register-handler-fx
  :shh.callback/filter-added
  (fn [{:keys [db] :as cofx} [_ topic chat-id filter]]
+   (log/info :debug-filter :topic topic :chat-id chat-id)
    (fx/merge cofx
              {:db (assoc-in db [:transport/filters chat-id] filter)}
              (inbox/reset-request-to)

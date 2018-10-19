@@ -46,6 +46,7 @@
  (fn [{:keys [db]} [_ {:keys [chat-id sym-key sym-key-id]}]]
    (let [web3 (:web3 db)
          {:keys [topic] :as chat} (get-in db [:transport/chats chat-id])]
+     (log/info :debug-chat (pr-str chat))
      {:db (assoc-in db [:transport/chats chat-id :sym-key-id] sym-key-id)
       :data-store/tx   [(transport-store/save-transport-tx {:chat-id chat-id
                                                             :chat    (assoc chat :sym-key-id sym-key-id)})]
