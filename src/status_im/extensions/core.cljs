@@ -16,13 +16,14 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            status-im.extensions.ethereum))
 
 (re-frame/reg-fx
  ::alert
  (fn [value] (js/alert value)))
 
-(re-frame/reg-event-fx
+(handlers/register-handler-fx
  :alert
  (fn [_ [_ {:keys [value]}]]
    {::alert value}))
@@ -31,7 +32,7 @@
  ::log
  (fn [value] (js/console.log value)))
 
-(re-frame/reg-event-fx
+(handlers/register-handler-fx
  :log
  (fn [_ [_ {:keys [value]}]]
    {::log value}))
@@ -148,7 +149,7 @@
                 'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}
                 'asset-selector     {:value transactions/choose-nft-asset-suggestion}
                 'token-selector     {:value transactions/choose-nft-token-suggestion}}
-   :queries    {'store/get {:value :store/get :arguments {:key :string}}
+   :queries    {'store/get           {:value :store/get :arguments {:key :string}}
                 'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}}
    :events     {'alert
                 {:permissions [:read]
@@ -191,30 +192,25 @@
                  :arguments   {:hash        :string
                                :on-success  :event
                                :on-failure? :event}}
-                'ethereum/sign
-                {:arguments
-                 {:account   :string
-                  :message   :string
-                  :on-result :event}}
                 'ethereum/send-transaction
-                {:arguments
-                 {:from       :string
-                  :to         :string
-                  :gas?       :string
-                  :gas-price? :string
-                  :value?     :string
-                  :data?      :string
-                  :nonce?     :string}}
+                {:permissions [:read]
+                 :value       :extensions/ethereum-send-transaction
+                 :arguments   {:to         :string
+                               :gas?       :string
+                               :gas-price? :string
+                               :value?     :string
+                               :method?    :string
+                               :params?    :vector
+                               :nonce?     :string
+                               :on-result? :event}}
                 'ethereum/call
-                {:arguments
-                 {:from?      :string
-                  :to         :string
-                  :gas?       :string
-                  :gas-price? :string
-                  :value?     :string
-                  :data?      :string
-                  :block      :string}}}
-   :hooks {:commands commands/command-hook}})
+                {:permissions [:read]
+                 :value       :extensions/ethereum-call
+                 :arguments   {:to         :string
+                               :method     :string
+                               :params?    :vector
+                               :on-result? :event}}}
+   :hooks      {:commands commands/command-hook}})
 
 (defn read-extension [{:keys [value]}]
   (when (seq value)

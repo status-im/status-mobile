@@ -83,7 +83,7 @@
 (handlers/register-handler-fx
  ::transaction-completed
  (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
-   (let [{:keys [id method whisper-identity to symbol amount-text dapp-transaction]} (get-in db [:wallet :send-transaction])
+   (let [{:keys [id method whisper-identity to symbol amount-text on-result]} (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
        ;; ERROR
@@ -96,10 +96,8 @@
                (assoc-in [:wallet :transactions result]
                          (models.wallet/prepare-unconfirmed-transaction db now result)))}
 
-        (if dapp-transaction
-          (let [{:keys [message-id]} dapp-transaction
-                webview (:webview-bridge db)]
-            (models.wallet/dapp-complete-transaction (int id) result method message-id webview))
+        (if on-result
+          {:dispatch (conj on-result id result method)}
           {:dispatch [:send-transaction-message whisper-identity {:address to
                                                                   :asset   (name symbol)
                                                                   :amount  amount-text
@@ -110,6 +108,17 @@
  :wallet/discard-transaction
  (fn [cofx _]
    (models.wallet/discard-transaction cofx)))
+
+(handlers/register-handler-fx
+ :wallet.dapp/transaction-on-result
+ (fn [{db :db} [_ message-id id result method]]
+   (let [webview (:webview-bridge db)]
+     (models.wallet/dapp-complete-transaction (int id) result method message-id webview))))
+
+(handlers/register-handler-fx
+ :wallet.dapp/transaction-on-error
+ (fn [{db :db} [_ message-id message]]
+   (models.wallet/web3-error-callback {} db message-id message)))
 
 ;; DAPP TRANSACTIONS QUEUE
 ;; NOTE(andrey) We need this queue because dapp can send several transactions in a row, this is bad behaviour
@@ -126,19 +135,8 @@
 
          ;;SEND TRANSACTION
          (= method constants/web3-send-transaction)
-         (let [{:keys [gas gas-price] :as transaction} (models.wallet/prepare-dapp-transaction
-                                                        queued-transaction (:contacts/contacts db))
-               {:keys [wallet-set-up-passed?]} (:account/account db)]
-           {:db         (assoc-in db' [:wallet :send-transaction] transaction)
-            :dispatch-n [[:update-wallet]
-                         (when-not gas
-                           [:wallet/update-estimated-gas (first params)])
-                         (when-not gas-price
-                           [:wallet/update-gas-price])
-                         [:navigate-to
-                          (if wallet-set-up-passed?
-                            :wallet-send-modal-stack
-                            :wallet-send-modal-stack-with-onboarding)]]})
+         (let [transaction (models.wallet/prepare-dapp-transaction queued-transaction (:contacts/contacts db))]
+           (models.wallet/open-modal-wallet-for-transaction db' transaction (first params)))
 
          ;;SIGN MESSAGE
          (= method constants/web3-personal-sign)
@@ -148,7 +146,8 @@
                                   {:id               (str (or id message-id))
                                    :from             address
                                    :data             data
-                                   :dapp-transaction queued-transaction
+                                   :on-result        [:wallet.dapp/transaction-on-result message-id]
+                                   :on-error         [:wallet.dapp/transaction-on-error message-id]
                                    :method           method})]
                (navigation/navigate-to-cofx {:db db''} :wallet-sign-message-modal nil))
              {:db db'})))))))
@@ -181,9 +180,9 @@
 (handlers/register-handler-fx
  :wallet/discard-transaction-navigate-back
  (fn [cofx _]
-   (-> cofx
-       models.wallet/discard-transaction
-       (assoc :dispatch [:navigate-back]))))
+   (fx/merge cofx
+             (navigation/navigate-back)
+             (models.wallet/discard-transaction))))
 
 (defn update-gas-price
   ([db edit? success-event]

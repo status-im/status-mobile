@@ -63,7 +63,7 @@
   {:db (update-in db [:wallet :edit] build-edit key value)})
 
 ;; DAPP TRANSACTION -> SEND TRANSACTION
-(defn prepare-dapp-transaction [{{:keys [id method params]} :payload :as queued-transaction} contacts]
+(defn prepare-dapp-transaction [{{:keys [id method params]} :payload message-id :message-id} contacts]
   (let [{:keys [to value data gas gasPrice nonce]} (first params)
         contact (get contacts (utils.hex/normalize-hex to))]
     (cond-> {:id               (str id)
@@ -72,7 +72,6 @@
                                    contact)
              :symbol           :ETH
              :method           method
-             :dapp-transaction queued-transaction
              :to               to
              :amount           (money/bignumber (or value 0))
              :gas              (cond
@@ -82,7 +81,34 @@
                                  (money/bignumber 21000))
              :gas-price        (when gasPrice
                                  (money/bignumber gasPrice))
-             :data             data}
+             :data             data
+             :on-result        [:wallet.dapp/transaction-on-result message-id]
+             :on-error         [:wallet.dapp/transaction-on-error message-id]}
+      nonce
+      (assoc :nonce nonce))))
+
+;; EXTENSION TRANSACTION -> SEND TRANSACTION
+(defn  prepare-extension-transaction [params contacts on-result]
+  (let [{:keys [to value data gas gasPrice nonce]} params
+        contact (get contacts (utils.hex/normalize-hex to))]
+    (cond-> {:id               "extension-id"
+             :to-name          (or (when (nil? to)
+                                     (i18n/label :t/new-contract))
+                                   contact)
+             :symbol           :ETH
+             :method           constants/web3-send-transaction
+             :to               to
+             :amount           (money/bignumber (or value 0))
+             :gas              (cond
+                                 gas
+                                 (money/bignumber gas)
+                                 (and value (empty? data))
+                                 (money/bignumber 21000))
+             :gas-price        (when gasPrice
+                                 (money/bignumber gasPrice))
+             :data             data
+             :on-result        [:extensions/transaction-on-result on-result]
+             :on-error         [:extensions/transaction-on-error on-result]}
       nonce
       (assoc :nonce nonce))))
 
@@ -110,7 +136,7 @@
         [first_param second_param]
         [second_param first_param]))))
 
-(defn web3-error-callback [fx {:keys [webview-bridge]} {:keys [message-id]} message]
+(defn web3-error-callback [fx {:keys [webview-bridge]} message-id message]
   (assoc fx :browser/send-to-bridge {:message {:type      constants/web3-send-async-callback
                                                :messageId message-id
                                                :error     message}
@@ -131,15 +157,15 @@
     (= method constants/web3-send-transaction)
     (assoc :dispatch [:navigate-to-clean :wallet-transaction-sent])))
 
-(defn discard-transaction
+(fx/defn discard-transaction
   [{:keys [db]}]
-  (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
-    (cond-> {:db (update db :wallet
-                         assoc
-                         :send-transaction {}
-                         :transactions-queue nil)}
-      dapp-transaction
-      (web3-error-callback db dapp-transaction "discarded"))))
+  (let [{:keys [on-error]} (get-in db [:wallet :send-transaction])]
+    (merge {:db (update db :wallet
+                        assoc
+                        :send-transaction {}
+                        :transactions-queue nil)}
+           (when on-error
+             {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
 (defn prepare-unconfirmed-transaction [db now hash]
   (let [transaction (get-in db [:wallet :send-transaction])]
@@ -157,7 +183,7 @@
           (dissoc :message-id :id :gas)))))
 
 (defn handle-transaction-error [{:keys [db]} {:keys [code message]}]
-  (let [{:keys [dapp-transaction]} (get-in db [:wallet :send-transaction])]
+  (let [{:keys [on-error]} (get-in db [:wallet :send-transaction])]
     (case code
 
       ;;WRONG PASSWORD
@@ -165,16 +191,16 @@
       {:db (-> db
                (assoc-in [:wallet :send-transaction :wrong-password?] true))}
 
-      (cond-> (let [cofx {:db
-                          (-> db
-                              (assoc-in [:wallet :transactions-queue] nil)
-                              (assoc-in [:wallet :send-transaction] {}))
-                          :wallet/show-transaction-error
-                          message}]
-                (navigation/navigate-back cofx))
+      (merge (let [cofx {:db
+                         (-> db
+                             (assoc-in [:wallet :transactions-queue] nil)
+                             (assoc-in [:wallet :send-transaction] {}))
+                         :wallet/show-transaction-error
+                         message}]
+               (navigation/navigate-back cofx))
 
-        dapp-transaction
-        (web3-error-callback db dapp-transaction message)))))
+             (when on-error
+               {:dispatch (conj on-error message)})))))
 
 (defn transform-data-for-message [{:keys [method] :as transaction}]
   (cond-> transaction
@@ -216,3 +242,17 @@
                                (clear-error-message :balance-update)
                                (assoc-in [:wallet :balance-loading?] true)
                                (assoc :prices-loading? true))})))
+
+(defn open-modal-wallet-for-transaction [db transaction tx-object]
+  (let [{:keys [gas gas-price]} transaction
+        {:keys [wallet-set-up-passed?]} (:account/account db)]
+    {:db         (assoc-in db [:wallet :send-transaction] transaction)
+     :dispatch-n [[:update-wallet]
+                  (when-not gas
+                    [:wallet/update-estimated-gas tx-object])
+                  (when-not gas-price
+                    [:wallet/update-gas-price])
+                  [:navigate-to
+                   (if wallet-set-up-passed?
+                     :wallet-send-modal-stack
+                     :wallet-send-modal-stack-with-onboarding)]]}))
