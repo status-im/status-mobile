@@ -139,7 +139,7 @@
     :parameters    [{:id           :keyword
                      :type         {:one-of #{:text :phone :password :number}}
                      :placeholder  :string
-                     :suggestions  :view}]}
+                     :suggestions? :view}]}
    :hook
    (reify hooks/Hook
      (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive]} cofx]
