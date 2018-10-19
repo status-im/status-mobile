@@ -143,7 +143,7 @@
                 'input              {:value input :properties {:on-change :event :placeholder :string}}
                 'button             {:value button :properties {:on-click :event}}
                 'link               {:value link :properties {:uri :string}}
-                'list               {:value list :properties {:data :vector :item-view :view}}
+                ;'list               {:value list :properties {:data :vector :item-view :view}}
                 'checkbox           {:value checkbox :properties {:on-change :event :checked :boolean}}
                 'nft-token-viewer   {:value transactions/nft-token :properties {:token :string}}
                 'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}
