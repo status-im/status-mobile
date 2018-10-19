@@ -129,11 +129,6 @@ platform :ios do
     upload_to_testflight(
         ipa: "status_appstore/StatusIm.ipa"
     )
-    slack(
-        message: "New release build uploaded to TestFlight",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
   end
 
   desc "`fastlane ios clean` - remove inactive TestFlight users"
@@ -172,12 +167,6 @@ platform :android do
       apk: "android/app/build/outputs/apk/release/app-release.apk",
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
     )
-
-    slack(
-        message: "New nightly build uploaded to Google Play",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
-    )
   end
   lane :release do
     desc "Deploy a new alpha (public) build to Google Play"
@@ -186,11 +175,6 @@ platform :android do
       track: "alpha",
       apk: "android/app/build/outputs/apk/release/app-release.apk",
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
-    )
-    slack(
-        message: "New release build uploaded to Google Play",
-        slack_url: ENV["SLACK_URL"],
-        default_payloads: []
     )
   end
 
