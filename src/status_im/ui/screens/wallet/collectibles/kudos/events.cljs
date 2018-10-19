@@ -6,7 +6,8 @@
             [re-frame.core :as re-frame]
             [status-im.utils.handlers :as handlers]
             [status-im.constants :as constants]
-            [status-im.utils.ethereum.core :as ethereum]))
+            [status-im.utils.ethereum.core :as ethereum]
+            [clojure.string :as string]))
 
 (def kudos :KDO)
 
@@ -23,14 +24,20 @@
                        #(re-frame/dispatch [:token-uri-success
                                             tokenId
                                             (when %2
-                                              ;;TODO extra chars in rinkeby
-                                              (subs %2 (.indexOf %2 "http")))])))))
+                                              (subs %2 (.indexOf %2 "http")))]))))) ;; extra chars in rinkeby
 
 (handlers/register-handler-fx
  :token-uri-success
  (fn [_ [_ tokenId token-uri]]
-   {:http-get {:url                    token-uri
-               :success-event-creator (fn [o]
-                                        [:load-collectible-success kudos {tokenId (http/parse-payload o)}])
-               :failure-event-creator (fn [o]
-                                        [:load-collectible-failure kudos {tokenId (http/parse-payload o)}])}}))
+   {:http-get {:url
+               token-uri
+               :success-event-creator
+               (fn [o]
+                 [:load-collectible-success kudos {tokenId (update (http/parse-payload o)
+                                                                   :image
+                                                                   string/replace
+                                                                   #"http:"
+                                                                   "https:")}]) ;; http in mainnet
+               :failure-event-creator
+               (fn [o]
+                 [:load-collectible-failure kudos {tokenId (http/parse-payload o)}])}}))
