@@ -62,6 +62,11 @@
             (accounts.update/account-update {:dev-mode? dev-mode?}
                                             {})))
 
+(fx/defn enable-notifications [cofx desktop-notifications?]
+  (accounts.update/account-update cofx
+                                  {:desktop-notifications? desktop-notifications?}
+                                  {}))
+
 (fx/defn switch-web3-opt-in-mode [{:keys [db] :as cofx} opt-in]
   (let [settings (get-in db [:account/account :settings])]
     (accounts.update/update-settings cofx

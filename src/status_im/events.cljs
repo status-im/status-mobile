@@ -124,6 +124,11 @@
    (accounts/switch-dev-mode cofx dev-mode?)))
 
 (handlers/register-handler-fx
+ :accounts.ui/notifications-enabled
+ (fn [cofx [_ desktop-notifications?]]
+   (accounts/enable-notifications cofx desktop-notifications?)))
+
+(handlers/register-handler-fx
  :accounts.ui/web3-opt-in-mode-switched
  (fn [cofx [_ opt-in]]
    (accounts/switch-web3-opt-in-mode cofx opt-in)))

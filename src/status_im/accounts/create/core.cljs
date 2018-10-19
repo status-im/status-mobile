@@ -56,17 +56,18 @@
            db] :as cofx}
    {:keys [pubkey address mnemonic]} password seed-backed-up]
   (let [normalized-address (utils.hex/normalize-hex address)
-        account            {:public-key      pubkey
-                            :installation-id (random-guid-generator)
-                            :address         normalized-address
-                            :name            (gfycat/generate-gfy pubkey)
-                            :status          status
-                            :signed-up?      true
-                            :photo-path      (identicon/identicon pubkey)
-                            :signing-phrase  signing-phrase
-                            :seed-backed-up? seed-backed-up
-                            :mnemonic        mnemonic
-                            :settings        (constants/default-account-settings)}]
+        account            {:public-key             pubkey
+                            :installation-id        (random-guid-generator)
+                            :address                normalized-address
+                            :name                   (gfycat/generate-gfy pubkey)
+                            :status                 status
+                            :signed-up?             true
+                            :desktop-notifications? false
+                            :photo-path             (identicon/identicon pubkey)
+                            :signing-phrase         signing-phrase
+                            :seed-backed-up?        seed-backed-up
+                            :mnemonic               mnemonic
+                            :settings               (constants/default-account-settings)}]
     (log/debug "account-created")
     (when-not (string/blank? pubkey)
       (fx/merge cofx

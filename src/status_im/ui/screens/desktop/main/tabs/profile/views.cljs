@@ -110,6 +110,7 @@
     (let [{:keys [url commit]}         nightly-version
           adv-settings-open?           (= current-view-id :advanced-settings)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
+          notifications?               (get-in user [:desktop-notifications?])
           show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
       [react/view
        [react/view {:style styles/profile-edit}
@@ -121,6 +122,11 @@
        [react/view styles/profile-view
         [profile-badge user editing?]
         [share-contact-code]
+        [react/view {:style (styles/profile-row false)}
+         [react/text {:style (styles/profile-row-text colors/black)} (i18n/label :notifications)]
+         [react/switch {:on-tint-color   colors/blue
+                        :value           notifications?
+                        :on-value-change #(re-frame/dispatch [:accounts.ui/notifications-enabled (not notifications?)])}]]
         [react/touchable-highlight {:style  (styles/profile-row adv-settings-open?)
                                     :on-press #(re-frame/dispatch [:navigate-to (if adv-settings-open? :home :advanced-settings)])}
          [react/view {:style styles/adv-settings}

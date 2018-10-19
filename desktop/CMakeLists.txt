@@ -8,7 +8,7 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
-set(APP_NAME StatusIm)
+set(APP_NAME Status)
 set(JS_APP_NAME StatusIm)
 set(REACT_BUILD_STATIC_LIB ON)
 

@@ -66,7 +66,7 @@ def bundleLinux(type = 'nightly') {
   sh './scripts/build-desktop.sh bundle'
   dir(packageFolder) {
     pkg = common.pkgFilename(type, 'AppImage')
-    sh "mv ../StatusIm-x86_64.AppImage ${pkg}"
+    sh "mv ../Status-x86_64.AppImage ${pkg}"
   }
   return "${packageFolder}/${pkg}".drop(2)
 }

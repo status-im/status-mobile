@@ -105,7 +105,7 @@ else
 fi
 
 echo -e "\n### Verifying signature..."
-codesign --verify --strict=all --deep --verbose "$OBJECT"
+codesign --verify --strict=all --deep --verbose=4 "$OBJECT"
 
 echo -e "\n### Assessing Gatekeeper validation..."
 if [ -d "$OBJECT" ]; then
