@@ -18,7 +18,7 @@ pipeline {
         /* load common lib */
         cmn = load('ci/common.groovy')
         /* just for a shorter access */
-        btype = cmn.getBuildType() 
+        btype = cmn.getBuildType()
         /* to avoid missing build tag parallel builds */
         print "Build Number: ${cmn.tagBuild(true)}"
       } }
@@ -107,10 +107,6 @@ pipeline {
           message = message + ", <${appUrl}|AppImage>"
         }
 
-        slackSend(
-          message: message,
-          color: 'good'
-        )
         if (env.CHANGE_ID != null) {
           cmn.githubNotify(
             apkUrl, e2eUrl, ipaUrl, dmgUrl, appUrl,

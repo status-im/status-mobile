@@ -28,8 +28,6 @@ timeout(90) {
 
       try {
         stage('Git & Dependencies') {
-          slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
-
           if (!BRANCH_NAME.startsWith("release/")){
             error "Wrong branch name format: " + BRANCH_NAME + ", but it should be `release/version`"
           }
@@ -85,7 +83,6 @@ timeout(90) {
         }
 
       stage('Slack Notification') {
-        slackSend color: 'good', message: 'Release build ' + version + ' succesfully aploade to iTunes Connect'
       }
     }
 }
