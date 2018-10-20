@@ -17,3 +17,8 @@
 ;; Returns a MaskedData instance that stores the piece of data.
 (defn mask-data [data]
   (MaskedData. data))
+
+(defn safe-unmask-data [data]
+  (if (instance? MaskedData data)
+    (unmask data)
+    data))

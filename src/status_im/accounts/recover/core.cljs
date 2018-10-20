@@ -26,7 +26,7 @@
 
 (defn recover-account! [masked-passphrase password]
   (status/recover-account
-   (mnemonic/sanitize-passphrase (security/unmask masked-passphrase))
+   (mnemonic/sanitize-passphrase (security/safe-unmask-data masked-passphrase))
    password
    (fn [result]
      ;; here we deserialize result, dissoc mnemonic and serialize the result again
@@ -39,7 +39,7 @@
 
 (fx/defn set-phrase
   [{:keys [db]} masked-recovery-phrase]
-  (let [recovery-phrase (security/unmask masked-recovery-phrase)]
+  (let [recovery-phrase (security/safe-unmask-data masked-recovery-phrase)]
     {:db (update db :accounts/recover assoc
                  :passphrase (string/lower-case recovery-phrase)
                  :passphrase-valid? (not (check-phrase-errors recovery-phrase)))}))
@@ -53,7 +53,7 @@
 
 (fx/defn set-password
   [{:keys [db]} masked-password]
-  (let [password (security/unmask masked-password)]
+  (let [password (security/safe-unmask-data masked-password)]
     {:db (update db :accounts/recover assoc
                  :password password
                  :password-valid? (not (check-password-errors password)))}))

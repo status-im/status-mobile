@@ -50,7 +50,7 @@
                                    {:from     from
                                     :gas      gas
                                     :gasPrice gas-price}))
-                           (security/unmask masked-password)
+                           (security/safe-unmask-data masked-password)
                            on-completed))
 
 (defn transfer-from [web3 contract from-address to-address value cb]

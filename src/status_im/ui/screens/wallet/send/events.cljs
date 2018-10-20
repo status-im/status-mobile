@@ -24,7 +24,7 @@
 
 (defn- send-ethers [params on-completed masked-password]
   (status/send-transaction (types/clj->json params)
-                           (security/unmask masked-password)
+                           (security/safe-unmask-data masked-password)
                            on-completed))
 
 (defn- send-tokens [symbol chain {:keys [from to value gas gasPrice]} on-completed masked-password]
@@ -75,7 +75,7 @@
    (let [{:keys [data from password]} (get-in db [:wallet :send-transaction])]
      {:db            (assoc-in db [:wallet :send-transaction :in-progress?] true)
       ::sign-message {:params       {:data     data
-                                     :password (security/unmask password)
+                                     :password (security/safe-unmask-data password)
                                      :account  from}
                       :on-completed #(re-frame/dispatch [::transaction-completed (types/json->clj %)])}})))
 

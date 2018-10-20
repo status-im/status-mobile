@@ -8,7 +8,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.security :as security]))
 
 ;; login flow:
 ;;
@@ -84,7 +85,7 @@
 (re-frame/reg-fx
  :accounts.login/login
  (fn [[address password save-password?]]
-   (login! address password save-password?)))
+   (login! address (security/safe-unmask-data password) save-password?)))
 
 (re-frame/reg-fx
  :accounts.login/clear-web-data
@@ -93,4 +94,4 @@
 (re-frame/reg-fx
  :data-store/change-account
  (fn [[address password]]
-   (change-account! address password)))
+   (change-account! address (security/safe-unmask-data password))))

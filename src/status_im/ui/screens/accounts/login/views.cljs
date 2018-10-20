@@ -17,7 +17,8 @@
             [re-frame.core :as re-frame]
             [cljs.spec.alpha :as spec]
             [status-im.utils.platform :as platform]
-            [status-im.accounts.db :as db]))
+            [status-im.accounts.db :as db]
+            [status-im.utils.security :as security]))
 
 (defn login-toolbar [can-navigate-back?]
   [toolbar/toolbar
@@ -71,7 +72,8 @@
           :auto-focus        true
           :on-submit-editing #(login-account @password-text-input)
           :on-change-text    #(do
-                                (re-frame/dispatch [:set-in [:accounts/login :password] %])
+                                (re-frame/dispatch [:set-in [:accounts/login :password]
+                                                    (security/mask-data %)])
                                 (re-frame/dispatch [:set-in [:accounts/login :error] ""]))
           :secure-text-entry true
           :error             (when (not-empty error) (i18n/label (error-key error)))}]]
@@ -98,5 +100,5 @@
         [components.common/bottom-button
          {:forward?  true
           :label     (i18n/label :t/sign-in)
-          :disabled? (not (spec/valid? ::db/password password))
+          :disabled? (not (spec/valid? ::db/password (security/safe-unmask-data password)))
           :on-press  #(login-account @password-text-input)}]])]))

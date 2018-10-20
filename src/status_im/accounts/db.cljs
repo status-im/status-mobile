@@ -5,7 +5,8 @@
             status-im.ui.screens.extensions.db
             [clojure.string :as string]
             [cljs.spec.alpha :as spec]
-            [status-im.constants :as const])
+            [status-im.constants :as const]
+            [status-im.utils.security :as security])
   (:require-macros [status-im.utils.db :refer [allowed-keys]]))
 
 (defn logged-in? [cofx]
@@ -19,7 +20,7 @@
   (>= (count password) const/min-password-length))
 
 (defn account-creation-next-enabled? [{:keys [step password password-confirm name]}]
-  (or (and password (= :enter-password step) (spec/valid? ::password password))
+  (or (and password (= :enter-password step) (spec/valid? ::password (security/safe-unmask-data password)))
       (and password-confirm (= :confirm-password step) (spec/valid? ::password password-confirm))
       (and name (= :enter-name step) (not (string/blank? name)))))
 

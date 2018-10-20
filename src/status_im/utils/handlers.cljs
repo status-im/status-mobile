@@ -21,9 +21,7 @@
 
 (defn- pretty-print-event [ctx]
   (let [[first second] (get-coeffect ctx :event)]
-    (if (or (string? second) (keyword? second) (boolean? second))
-      (str first " " second)
-      first)))
+    first))
 
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
