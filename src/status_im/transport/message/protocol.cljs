@@ -105,8 +105,15 @@
            this)
           (send-with-pubkey cofx params)))))
   (receive [this chat-id signature _ cofx]
-    (let [old-message (Message. (:text content) content-type message-type
-                                clock-value timestamp)]
+    (let [old-content      (if (or (= content-type constants/content-type-command)
+                                   (= content-type constants/content-type-command-request))
+                             (dissoc content :command-path)
+                             (:text content))
+          old-content-type (if (= ["request" #{:personal-chats}] (:command-path content))
+                             constants/content-type-command-request
+                             content-type)
+          old-message      (Message. old-content old-content-type message-type
+                                     clock-value timestamp)]
       {:chat-received-message/add-fx
        [(assoc (into {} this)
                :message-id (transport.utils/message-id this)
