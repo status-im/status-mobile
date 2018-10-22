@@ -19,7 +19,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         chat_name = sign_in_view.get_public_chat_name()
         sign_in_view.send_as_keyevent('https://get.status.im/chat/public/%s' % chat_name)
         sign_in_view.confirm()
-        open_button = sign_in_view.element_by_text('Open in Status')
+        open_button = sign_in_view.element_by_xpath('//*[@text="Open in Status"] | //*[@content-desc="Open in Status"]')
         open_button.wait_for_visibility_of_element()
         open_button.click()
         sign_in_view.sign_in()
