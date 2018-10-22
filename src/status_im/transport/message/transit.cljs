@@ -138,9 +138,11 @@
                                      (contact/ContactRequestConfirmed. name profile-image address fcm-token))
                               "c4" (fn [[legacy-content content-type message-type clock-value timestamp content]]
                                      (let [[new-content new-content-type] (legacy->new-message-data (or content legacy-content) content-type)]
-                                       (protocol/Message. new-content new-content-type message-type clock-value timestamp)))
+                                       (protocol/Message. new-content new-content-type message-type clock-value timestamp
+                                                          {:content legacy-content
+                                                           :content-type content-type})))
                               "c7" (fn [[content content-type message-type clock-value timestamp]]
-                                     (protocol/Message. content content-type message-type clock-value timestamp))
+                                     (protocol/Message. content content-type message-type clock-value timestamp nil))
                               "c5" (fn [message-ids]
                                      (protocol/MessagesSeen. message-ids))
                               "c6" (fn [[name profile-image address fcm-token]]

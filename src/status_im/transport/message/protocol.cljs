@@ -77,7 +77,7 @@
                                         :topic   (transport.utils/get-topic constants/contact-discovery)}
                                        whisper-opts)}]}))
 
-(defrecord Message [content content-type message-type clock-value timestamp]
+(defrecord Message [content content-type message-type clock-value timestamp legacy-data]
   StatusMessage
   (send [this chat-id cofx]
     (let [params     {:chat-id       chat-id
@@ -105,14 +105,15 @@
            this)
           (send-with-pubkey cofx params)))))
   (receive [this chat-id signature _ cofx]
-    (let [old-message (Message. (:text content) content-type message-type
-                                clock-value timestamp)]
+    (let [old-message (when-let [{:keys [content content-type]} legacy-data]
+                        (Message. content content-type
+                                  message-type clock-value timestamp nil))]
       {:chat-received-message/add-fx
        [(assoc (into {} this)
                :message-id (transport.utils/message-id this)
                ;; TODO(rasom): remove this condition
                ;; on when 0.9.29 will not be available for users
-               :message-id-old-format (transport.utils/message-id-old-format old-message)
+               :message-id-old-format (when old-message (transport.utils/message-id-old-format old-message))
                :show? true
                :chat-id chat-id
                :from signature
