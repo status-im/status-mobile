@@ -509,3 +509,15 @@ class BaseView(object):
 
     def asset_by_name(self, asset_name):
         return AssetButton(self.driver, asset_name)
+
+    def toggle_airplane_mode(self):
+        # opening android settings
+        self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')
+        more_button = self.element_by_text('More')
+        more_button.wait_for_visibility_of_element()
+        more_button.click()
+        airplane_toggle = self.element_by_xpath('//*[@resource-id="android:id/switch_widget"]')
+        airplane_toggle.wait_for_visibility_of_element()
+        airplane_toggle.click()
+        # opening Status app
+        self.driver.start_activity(app_package='im.status.ethereum', app_activity='.MainActivity')
