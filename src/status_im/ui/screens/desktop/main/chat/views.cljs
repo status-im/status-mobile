@@ -251,16 +251,20 @@
                     :current-public-key current-public-key)]))]]
        [connectivity/error-view]])))
 
-(views/defview send-button [inp-ref]
+(views/defview send-button [inp-ref network-status mailserver-connected?]
   (views/letsubs [{:keys [input-text]} [:get-current-chat]]
-    (let [empty? (= "" input-text)]
+    (let [empty? (= "" input-text)
+          offline? (= :offline network-status)
+          inactive? (or empty? offline? (not mailserver-connected?))]
       [react/touchable-highlight {:style    styles/send-button
+                                  :disabled inactive?
                                   :on-press (fn []
-                                              (.clear @inp-ref)
-                                              (.focus @inp-ref)
-                                              (re-frame/dispatch [:chat.ui/send-current-message]))}
-       [react/view {:style (styles/send-icon empty?)}
-        [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow empty?)}]]])))
+                                              (when-not inactive?
+                                                (.clear @inp-ref)
+                                                (.focus @inp-ref)
+                                                (re-frame/dispatch [:chat.ui/send-current-message])))}
+       [react/view {:style (styles/send-icon inactive?)}
+        [icons/icon :icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
 
 (views/defview reply-message [from message-text]
   (views/letsubs [username           [:get-contact-name-by-identity from]
@@ -292,7 +296,9 @@
          [icons/icon :icons/close {:style styles/reply-close-icon}]]]])))
 
 (views/defview chat-text-input [chat-id input-text]
-  (views/letsubs [inp-ref (atom nil)]
+  (views/letsubs [inp-ref (atom nil)
+                  network-status [:network-status]
+                  mailserver-connected? [:mailserver-connected?]]
     {:component-will-update
      (fn [e [_ new-chat-id new-input-text]]
        (let [[_ old-chat-id] (.. e -props -argv)]
@@ -313,14 +319,16 @@
                           :default-value          input-text
                           :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent %))))
                           :submit-shortcut        {:key "Enter"}
-                          :on-submit-editing      #(do (.clear @inp-ref)
-                                                       (.focus @inp-ref)
-                                                       (re-frame/dispatch [:chat.ui/send-current-message]))
+                          :on-submit-editing      #(when (and (= :online network-status)
+                                                              mailserver-connected?)
+                                                     (.clear @inp-ref)
+                                                     (.focus @inp-ref)
+                                                     (re-frame/dispatch [:chat.ui/send-current-message]))
                           :on-change              (fn [e]
                                                     (let [native-event (.-nativeEvent e)
                                                           text         (.-text native-event)]
                                                       (re-frame/dispatch [:chat.ui/set-chat-input-text text])))}]
-       [send-button inp-ref]])))
+       [send-button inp-ref network-status mailserver-connected?]])))
 
 (views/defview chat-view []
   (views/letsubs [{:keys [input-text chat-id] :as current-chat} [:get-current-chat]]

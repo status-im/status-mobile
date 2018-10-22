@@ -14,20 +14,22 @@
        (animation/timing spin-value {:toValue  to-spin-value
                                      :duration 300})))))
 
-(defn sendable? [input-text network-status]
+(defn sendable? [input-text network-status mailserver-connected?]
   (let [trimmed (string/trim input-text)]
     (not (or (string/blank? trimmed)
              (= trimmed "/")
-             (= :offline network-status)))))
+             (= :offline network-status)
+             (not mailserver-connected?)))))
 
 (defview send-button-view []
   (letsubs [{:keys [command-completion]}            [:selected-chat-command]
             {:keys [input-text seq-arg-input-text]} [:get-current-chat]
             network-status                          [:network-status]
+            mailserver-connected?                   [:mailserver-connected?]
             spin-value                              (animation/create-value 1)]
     {:component-did-update (send-button-view-on-update {:spin-value         spin-value
                                                         :command-completion command-completion})}
-    (when (and (sendable? input-text network-status)
+    (when (and (sendable? input-text network-status mailserver-connected?)
                (or (not command-completion)
                    (#{:complete :less-than-needed} command-completion)))
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/send-current-message])}
