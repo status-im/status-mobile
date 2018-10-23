@@ -46,11 +46,6 @@ prepare-desktop: ##@prepare Install desktop platform dependencies and prepare wo
 	scripts/prepare-for-platform.sh desktop
 	npm install
 
-dev-desktop: prepare-desktop
-	ln -sf './node_modules/re-natal/index.js' './re-natal'
-	./re-natal use-figwheel
-	./re-natal enable-source-maps
-
 _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh mobile
 	npm install
@@ -127,11 +122,17 @@ watch-android-avd: ##@watch Start development for Android AVD
 watch-android-genymotion: ##@watch Start development for Android Genymotion
 	clj -R:dev build.clj watch --platform android --android-device genymotion
 
+watch-desktop: ##@watch Start development for Desktop
+	clj -R:dev build.clj watch --platform desktop
+
 #--------------
 # Run
 # -------------
 run-android: ##@run Run Android build
 	react-native run-android --appIdSuffix debug
+
+run-desktop: ##@run Run Android build
+	react-native run-desktop
 
 SIMULATOR=
 run-ios: ##@run Run iOS build

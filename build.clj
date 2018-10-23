@@ -22,6 +22,14 @@
                         :output-dir    "target/android"
                         :npm-deps false
                         :optimizations :none}
+     :warning-handlers '[status-im.utils.build/warning-handler]}
+    :desktop
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src"]
+     :compiler         {:output-to     "target/desktop/app.js"
+                        :main          "env.desktop.main"
+                        :output-dir    "target/desktop"
+                        :npm-deps false
+                        :optimizations :none}
      :warning-handlers '[status-im.utils.build/warning-handler]}}
 
    :prod
@@ -41,6 +49,18 @@
     {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod"]
      :compiler         {:output-to          "index.android.js"
                         :output-dir         "target/android-prod"
+                        :static-fns         true
+                        :optimize-constants true
+                        :optimizations      :simple
+                        :closure-defines    {"goog.DEBUG" false}
+                        :parallel-build     false
+                        :elide-asserts      true
+                        :language-in        :ecmascript5}
+     :warning-handlers '[status-im.utils.build/warning-handler]}
+    :desktop
+    {:source-paths     ["components/src" "react-native/src/cljsjs" "react-native/src/desktop" "src" "env/prod"]
+     :compiler         {:output-to          "index.desktop.js"
+                        :output-dir         "target/desktop-prod"
                         :static-fns         true
                         :optimize-constants true
                         :optimizations      :simple
