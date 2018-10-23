@@ -18,12 +18,12 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
+        google()
         jcenter()
         maven { url "$rootDir/../node_modules/react-native/android" }
         maven { url "$rootDir/../modules/react-native-status/android/libs" }
         // for geth, function, and status-go
         flatDir { dirs "libs", "${rootDir}/app/libs" }
         maven { url "https://jitpack.io" }
-        google()
     }
 }
