@@ -145,14 +145,13 @@
             (chat-loading/group-chat-messages chat-id (get chat->message chat-id))))
 
 (defn- add-to-chat?
-  [{:keys [db]} {:keys [chat-id clock-value message-id message-id-old-format] :as message}]
-  (let [{:keys [deleted-at-clock-value messages not-loaded-message-ids]}
+  [{:keys [db]} {:keys [chat-id clock-value message-id from] :as message}]
+  (let [deduplication-id (messages-store/deduplication-id from chat-id clock-value)
+        {:keys [deleted-at-clock-value messages not-loaded-message-ids deduplication-ids]}
         (get-in db [:chats chat-id])]
     (not (or (get messages message-id)
-             ;; TODO(rasom): remove this condition
-             ;; on when 0.9.29 will not be available for users
-             (and message-id-old-format (get messages message-id-old-format))
              (get not-loaded-message-ids message-id)
+             (get deduplication-ids deduplication-id)
              (>= deleted-at-clock-value clock-value)))))
 
 (defn- filter-messages [cofx messages]

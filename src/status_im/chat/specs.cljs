@@ -18,6 +18,7 @@
 (s/def :chat/message-statuses (s/nilable map?))                   ; message/user statuses indexed by two level index
 (s/def :chat/not-loaded-message-ids (s/nilable set?))             ; set of message-ids not yet fully loaded from persisted state
 (s/def :chat/referenced-messages (s/nilable map?))                ; map of messages indexed by message-id which are not displayed directly, but referenced by other messages
+(s/def :chat/deduplication-ids (s/nilable set?))                  ; set of helper deduplication ids
 (s/def :chat/last-clock-value (s/nilable number?))                ; last logical clock value of messages in chat
 (s/def :chat/loaded-chats (s/nilable seq?))
 (s/def :chat/bot-db (s/nilable map?))

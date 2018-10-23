@@ -22,15 +22,6 @@
   [message]
   (sha3 (pr-str message)))
 
-(defn message-id-old-format
-  "Get an old format message-id.
-   To be removed on 8th day after 0.9.30"
-  [message]
-  (-> message
-      pr-str
-      (clojure.string/replace "message.protocol" "message.v1.protocol")
-      sha3))
-
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"
   [chat-id]

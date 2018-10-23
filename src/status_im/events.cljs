@@ -91,6 +91,7 @@
   (re-frame/inject-cofx :data-store/get-unviewed-messages)
   (re-frame/inject-cofx :data-store/get-referenced-messages)
   (re-frame/inject-cofx :data-store/message-ids)
+  (re-frame/inject-cofx :data-store/deduplication-ids)
   (re-frame/inject-cofx :data-store/get-local-storage-data)
   (re-frame/inject-cofx :data-store/get-all-contacts)
   (re-frame/inject-cofx :data-store/get-all-mailservers)
