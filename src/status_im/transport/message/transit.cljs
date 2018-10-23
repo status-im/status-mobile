@@ -101,32 +101,6 @@
 ;; Reader handlers
 ;;
 
-(def ^:private legacy-ref->new-path
-  {["transactor" :command 83 "send"]    ["send" #{:personal-chats}]
-   ["transactor" :command 83 "request"] ["request" #{:personal-chats}]})
-
-(defn- legacy->new-command-content [{:keys [command-path command-ref] :as content}]
-  (if command-path
-    ;; `:command-path` set, message produced by newer app version, nothing to do
-    content
-    ;; we have to look up `:command-path` based on legacy `:command-ref` value (`release/0.9.25` and older) and assoc it to content
-    (assoc content :command-path (get legacy-ref->new-path command-ref))))
-
-(defn- legacy->new-message-data [content content-type]
-  ;; handling only the text content case
-  (cond
-    (= content-type constants/content-type-text)
-    (if (and (map? content) (string? (:text content)))
-      ;; correctly formatted map
-      [content content-type]
-      ;; create safe `{:text string-content}` value from anything else
-      [{:text (str content)} content-type])
-    (or (= content-type constants/content-type-command)
-        (= content-type constants/content-type-command-request))
-    [(legacy->new-command-content content) constants/content-type-command]
-    :else
-    [content content-type]))
-
 ;; Here we only need to call the record with the arguments parsed from the clojure datastructures
 (def reader (transit/reader :json
                             {:handlers

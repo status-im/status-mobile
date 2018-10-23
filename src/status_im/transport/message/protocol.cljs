@@ -77,6 +77,32 @@
                                         :topic   (transport.utils/get-topic constants/contact-discovery)}
                                        whisper-opts)}]}))
 
+(def ^:private legacy-ref->new-path
+  {["transactor" :command 83 "send"]    ["send" #{:personal-chats}]
+   ["transactor" :command 83 "request"] ["request" #{:personal-chats}]})
+
+(defn- legacy->new-command-content [{:keys [command-path command-ref] :as content}]
+  (if command-path
+    ;; `:command-path` set, message produced by newer app version, nothing to do
+    content
+    ;; we have to look up `:command-path` based on legacy `:command-ref` value (`release/0.9.25` and older) and assoc it to content
+    (assoc content :command-path (get legacy-ref->new-path command-ref))))
+
+(defn- legacy->new-message-data [content content-type]
+  ;; handling only the text content case
+  (cond
+    (= content-type constants/content-type-text)
+    (if (and (map? content) (string? (:text content)))
+      ;; correctly formatted map
+      [content content-type]
+      ;; create safe `{:text string-content}` value from anything else
+      [{:text (str content)} content-type])
+    (or (= content-type constants/content-type-command)
+        (= content-type constants/content-type-command-request))
+    [(legacy->new-command-content content) constants/content-type-command]
+    :else
+    [content content-type]))
+
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
   (send [this chat-id cofx]
@@ -105,22 +131,25 @@
            this)
           (send-with-pubkey cofx params)))))
   (receive [this chat-id signature _ cofx]
-    (let [old-message (Message. (:text content) content-type message-type
-                                clock-value timestamp)]
+    (let [[new-content new-content-type] (legacy->new-message-data content
+                                                                   content-type)
+          new-message (assoc this
+                             :content new-content
+                             :content-type new-content-type)]
       {:chat-received-message/add-fx
-       [(assoc (into {} this)
+       [(assoc (into {} new-message)
                :message-id (transport.utils/message-id this)
                ;; TODO(rasom): remove this condition
                ;; on when 0.9.29 will not be available for users
-               :message-id-old-format (transport.utils/message-id-old-format old-message)
+               :message-id-old-format (transport.utils/message-id-old-format this)
                :show? true
                :chat-id chat-id
                :from signature
                :js-obj (:js-obj cofx))]}))
   (validate [this]
-    (if (spec/valid? :message/message this)
-      this
-      (log/warn "failed to validate Message" (spec/explain :message/message this)))))
+    (if (spec/valid? :message/message new-message)
+      new-message
+      (log/warn "failed to validate Message" (spec/explain :message/message new-message)))))
 
 (defrecord MessagesSeen [message-ids]
   StatusMessage
