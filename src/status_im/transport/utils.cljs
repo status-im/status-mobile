@@ -20,16 +20,17 @@
 (defn message-id
   "Get a message-id"
   [message]
-  (sha3 (pr-str message)))
+  (sha3
+   (str "#status-im.transport.message.protocol.Message"
+        (pr-str (dissoc (into {} message) :legacy-data)))))
 
 (defn message-id-old-format
   "Get an old format message-id.
    To be removed on 8th day after 0.9.30"
   [message]
-  (-> message
-      pr-str
-      (clojure.string/replace "message.protocol" "message.v1.protocol")
-      sha3))
+  (sha3
+   (str "#status-im.transport.message.v1.protocol.Message"
+        (pr-str (dissoc (into {} message) :legacy-data)))))
 
 (defn get-topic
   "Get the topic of a group chat or public chat from the chat-id"
