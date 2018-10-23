@@ -44,7 +44,8 @@
 
 (def v12 [network/v1
           bootnode/v4
-          extension/v12])
+          extension/v12
+          account/v12])
 
 (def v13 [network/v1
           bootnode/v4
