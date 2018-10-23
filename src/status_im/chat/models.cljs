@@ -122,7 +122,9 @@
             #(when (public-chat? % chat-id)
                (transport.chat/unsubscribe-from-chat % chat-id))
             (deactivate-chat chat-id)
-            (clear-history chat-id)
+            #(if-not (public-chat? % chat-id)
+               (clear-history % chat-id)
+               {:data-store/tx [(messages-store/delete-messages-tx chat-id)]})
             (navigation/navigate-to-cofx :home {})))
 
 (fx/defn send-messages-seen

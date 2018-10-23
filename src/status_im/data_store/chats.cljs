@@ -81,12 +81,11 @@
      (update chat :membership-updates marshal-membership-updates)
      true)))
 
-;; Only used in debug mode
 (defn delete-chat-tx
   "Returns tx function for hard deleting the chat"
   [chat-id]
   (fn [realm]
-    (core/delete realm (core/get-by-field realm :chat :chat chat-id))))
+    (core/delete realm (core/get-by-field realm :chat :chat-id chat-id))))
 
 (defn- get-chat-by-id [chat-id realm]
   (core/single (core/get-by-field realm :chat :chat-id chat-id)))

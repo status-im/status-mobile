@@ -148,15 +148,6 @@
     (testing "it sets the chat as inactive"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= false (get-in actual [:db :chats chat-id :is-active])))))
-    (testing "it removes it from transport if it's a public chat"
-      (let [actual (chat/remove-chat (update-in
-                                      cofx
-                                      [:db :chats chat-id]
-                                      assoc
-                                      :group-chat true
-                                      :public? true)
-                                     chat-id)]
-        (is (not (get-in actual [:db :transport/chats chat-id])))))
     #_(testing "it sends a leave group request if it's a group-chat"
         (let [actual (chat/remove-chat (assoc-in
                                         cofx
@@ -173,6 +164,26 @@
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (:data-store/tx actual))
         (is (= 3 (count (:data-store/tx actual))))))))
+
+(deftest remove-public-chat []
+  (let [chat-id "1"
+        cofx    {:db {:transport/chats {chat-id {}}
+                      :chats {chat-id {:public? true
+                                       :messages {"1" {:clock-value 1}
+                                                  "2" {:clock-value 10}
+                                                  "3" {:clock-value 2}}}}}}]
+    (testing "it does not delete all the messages"
+      (let [actual (chat/remove-chat cofx chat-id)]
+        (is (= 3 (count  (get-in actual [:db :chats chat-id :messages]))))))
+    (testing "it leaves deleted-at-clock-value unchanged"
+      (let [actual (chat/remove-chat cofx chat-id)]
+        (is (nil? (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
+    (testing "it sets the chat as inactive"
+      (let [actual (chat/remove-chat cofx chat-id)]
+        (is (= false (get-in actual [:db :chats chat-id :is-active])))))
+    (testing "it removes it from transport if it's a public chat"
+      (let [actual (chat/remove-chat cofx chat-id)]
+        (is (not (get-in actual [:db :transport/chats chat-id])))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]
