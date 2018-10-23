@@ -79,7 +79,8 @@
 (fx/defn initialize-chats
   "Initialize all persisted chats on startup"
   [{:keys [db default-dapps all-stored-chats get-stored-messages get-stored-user-statuses
-           get-stored-unviewed-messages get-referenced-messages stored-message-ids] :as cofx}]
+           get-stored-unviewed-messages get-referenced-messages stored-message-ids
+           stored-deduplication-ids] :as cofx}]
   (let [stored-unviewed-messages (get-stored-unviewed-messages (:current-public-key db))
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (let [chat-messages (index-messages (get-stored-messages chat-id))
@@ -90,6 +91,7 @@
                                         :unviewed-messages unviewed-ids
                                         :messages chat-messages
                                         :message-statuses (get-stored-user-statuses chat-id message-ids)
+                                        :deduplication-ids (get stored-deduplication-ids chat-id)
                                         :not-loaded-message-ids (set/difference (get stored-message-ids chat-id)
                                                                                 (set message-ids))
                                         :referenced-messages (index-messages
