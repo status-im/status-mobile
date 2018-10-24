@@ -1,7 +1,8 @@
 (ns status-im.utils.ethereum.abi-spec
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.js-dependencies :as dependencies]
+            [clojure.string :as str]))
 
 ;; Utility functions for encoding
 
@@ -32,6 +33,12 @@
 
 (defn number-to-hex [x]
   (subs (.numberToHex utils x) 2))
+
+(defn hex-to-utf8 [x]
+  (.hexToUtf8 utils (str "0x" x)))
+
+(defn hex-to-number [x]
+  (.hexToNumber utils (str "0x" x)))
 
 (defn sha3 [s]
   (.sha3 utils (str s)))
@@ -267,3 +274,116 @@
                       params)]
       (str method-id (enc {:type  :tuple
                            :value params})))))
+
+;; ======= decode
+
+(defn substr [val s l]
+  (subs val s (+ s l)))
+
+;; "[]" -> 0 , "[1]" -> 1
+(defn arr-size [val]
+  (int (apply str (rest (butlast val)))))
+
+;; [2] -> 2 , [1] -> 1 ,  [] - > 1
+(defn nested-size [val]
+  (let [num (arr-size val)]
+    (if (zero? num) 1 num)))
+
+;; '("[1]" "[]") or nil
+(defn list-of-nested-types [type]
+  (when-let [res (re-seq #"(\[[0-9]*\])" type)]
+    (map first res)))
+
+(defn nested-name [type]
+  (let [ntypes (list-of-nested-types type)]
+    (if ntypes
+      (subs type 0 (- (count type) (count (last ntypes))))
+      type)))
+
+(defn is-arr? [type]
+  (boolean (list-of-nested-types type)))
+
+(defn is-dynamic-arr? [type]
+  (let [ntypes (list-of-nested-types type)]
+    (and ntypes (zero? (arr-size (last ntypes))))))
+
+(defn static-arr-len [type]
+  (let [ntypes (list-of-nested-types type)]
+    (if ntypes
+      (nested-size (last ntypes))
+      1)))
+
+(defn static-part-length [type]
+  (apply * (conj (map nested-size (or (list-of-nested-types type) '("1"))) 32)))
+
+(defn offset-reducer [{:keys [cnt coll]} val]
+  (let [cnt' (+ cnt val)]
+    {:cnt  cnt'
+     :coll (conj coll cnt')}))
+
+(defn get-offsets [types]
+  (let [lengths (map static-part-length types)]
+    (conj (butlast (:coll (reduce offset-reducer {:cnt 0 :coll []} lengths))) 0)))
+
+(defn hex-to-bytes [hex]
+  (let [len (* (.toNumber (.toBN utils (subs hex 0 64))) 2)]
+    (substr hex 64 len)))
+
+(defn dyn-hex-to-value [hex type]
+  (cond
+    (str/starts-with? type "bytes")
+    (str "0x" (hex-to-bytes hex))
+
+    (str/starts-with? type "string")
+    (hex-to-utf8 (hex-to-bytes hex))))
+
+(defn hex-to-bytesM [hex type]
+  (let [size (int (second (re-matches #"^bytes([0-9]*)" type)))]
+    (subs hex 0 (* 2 size))))
+
+(defn hex-to-value [hex type]
+  (cond
+    (= "bool" type) (= hex "0000000000000000000000000000000000000000000000000000000000000001")
+    (str/starts-with? type "uint") (hex-to-number hex)
+    (str/starts-with? type "int") (hex-to-number hex)
+    (str/starts-with? type "address") (str "0x" (subs hex (- (count hex) 40)))
+    (str/starts-with? type "bytes") (hex-to-bytesM hex type)))
+
+(defn dec-type [bytes]
+  (fn [offset type]
+    (cond
+      (is-arr? type)
+
+      (let [dyn-arr? (is-dynamic-arr? type)
+            arr-off (js/parseInt (str "0x" (substr bytes (* offset 2) 64)))
+            len (if dyn-arr?
+                  (js/parseInt (str "0x" (substr bytes (* arr-off 2) 64)))
+                  (static-arr-len type))
+            arr-start (if dyn-arr? (+ arr-off 32) offset)
+
+            nname (nested-name type)
+            nstatpartlen (static-part-length nname)
+            rnstatpartlen (* (js/Math.floor (/ (+ nstatpartlen 31) 32)) 32)]
+        (loop [res [] i 0]
+          (if (>= i (* len rnstatpartlen))
+            res
+            (recur (conj res ((dec-type bytes) (+ arr-start i) nname))  (+ i rnstatpartlen)))))
+
+      (or (re-matches #"^bytes(\[([0-9]*)\])*$" type)
+          (str/starts-with? type "string"))
+
+      (let [dyn-off (js/parseInt (str "0x" (substr bytes (* offset 2) 64)))
+            len (js/parseInt (str "0x" (substr bytes (* dyn-off 2) 64)))
+            rlen (js/Math.floor (/ (+ len 31) 32))
+            val (substr bytes (* dyn-off 2) (* (+ rlen 1) 64))]
+        (dyn-hex-to-value val type))
+
+      :else
+
+      (let [len (static-part-length type)
+            val (substr bytes (* offset 2) (* len 2))]
+        (hex-to-value val type)))))
+
+(defn decode [bytes types]
+  (let [offsets (get-offsets types)]
+    (map (dec-type bytes) offsets types)))

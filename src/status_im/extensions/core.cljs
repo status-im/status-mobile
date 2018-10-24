@@ -264,6 +264,7 @@
                  :arguments   {:to         :string
                                :method     :string
                                :params?    :vector
+                               :outputs?   :vector
                                :on-result? :event}}}
    :hooks      {:commands commands/command-hook}})
 

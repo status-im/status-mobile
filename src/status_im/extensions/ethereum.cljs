@@ -4,7 +4,8 @@
             [status-im.models.wallet :as models.wallet]
             [status-im.utils.ethereum.abi-spec :as abi-spec]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [clojure.string :as string]))
 
 (handlers/register-handler-fx
  :extensions/transaction-on-result
@@ -29,11 +30,15 @@
 
 (handlers/register-handler-fx
  :extensions/ethereum-call
- (fn [_ [_ {:keys [to method params on-result]}]]
+ (fn [_ [_ {:keys [to method params outputs on-result]}]]
    (let [tx-object {:to to :data (when method (abi-spec/encode method params))}]
      {:browser/call-rpc [{"jsonrpc" "2.0"
                           "method"  "eth_call"
                           "params"  [tx-object "latest"]}
                          #(when on-result
-                            (re-frame/dispatch (on-result {:error %1 :result (when %2
-                                                                               (get (js->clj %2) "result"))})))]})))
+                            (let [result-str (when %2
+                                               (get (js->clj %2) "result"))
+                                  result     (if (and outputs result-str)
+                                               (abi-spec/decode (string/replace result-str #"0x" "")  outputs)
+                                               result-str)]
+                              (re-frame/dispatch (on-result {:error %1 :result result}))))]})))
