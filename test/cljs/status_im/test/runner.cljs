@@ -17,6 +17,7 @@
             [status-im.test.models.contact]
             [status-im.test.models.network]
             [status-im.test.models.wallet]
+            [status-im.test.search.core]
             [status-im.test.transport.core]
             [status-im.test.transport.inbox]
             [status-im.test.chat.models]
@@ -96,6 +97,7 @@
  'status-im.test.chat.commands.input
  'status-im.test.chat.commands.impl.transactions
  'status-im.test.i18n
+ 'status-im.test.search.core
  'status-im.test.transport.core
  'status-im.test.transport.inbox
  'status-im.test.protocol.web3.inbox

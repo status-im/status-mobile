@@ -7,19 +7,25 @@
  (fn [db]
    (get-in db [:ui/search :filter] "")))
 
+(defn filter-chats
+  [[chats search-filter]]
+  (if (empty? search-filter)
+    chats
+    (let [search-filter (string/lower-case search-filter)]
+      (keep #(let [{:keys [name random-name tags]} (val %)]
+               (when (some (fn [s]
+                             (when s
+                               (string/includes? (string/lower-case s)
+                                                 search-filter)))
+                           (into [name random-name] tags))
+                 %))
+            chats))))
+
 (re-frame/reg-sub
  :search/filtered-active-chats
  :<- [:get-active-chats]
  :<- [:search/filter]
- (fn [[chats tag-filter]]
-   (if (empty? tag-filter)
-     chats
-     (keep #(when (some (fn [tag]
-                          (string/includes? (string/lower-case tag)
-                                            (string/lower-case tag-filter)))
-                        (into [(:name (val %))] (:tags (val %))))
-              %)
-           chats))))
+ filter-chats)
 
 (re-frame/reg-sub
  :search/filtered-home-items

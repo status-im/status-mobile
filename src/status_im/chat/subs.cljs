@@ -80,7 +80,10 @@
   (reduce (fn [acc [chat-id {:keys [is-active] :as chat}]]
             (if is-active
               (assoc acc chat-id (if-let [contact (get contacts chat-id)]
-                                   (update chat :tags clojure.set/union (:tags contact))
+                                   (-> chat
+                                       (assoc :name (:name contact))
+                                       (assoc :random-name (gfycat/generate-gfy (:whisper-identity contact)))
+                                       (update :tags clojure.set/union (:tags contact)))
                                    chat))
               acc))
           {}
