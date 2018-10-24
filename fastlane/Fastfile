@@ -53,11 +53,14 @@ end
 
 # builds an ios app with ad-hoc configuration and put it
 # to "status-adhoc" output folder
-def build_ios_adhoc
+# `readonly`:
+#    if true  - only fetch existing certificates and profiles, don't upgrade from AppStoreConnect
+#    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
+def build_ios_adhoc(readonly)
     match(
         type: "adhoc",
         force_for_new_devices: true,
-        readonly: true,
+        readonly: readonly,
         keychain_name: "login.keychain"
     )
 
@@ -133,7 +136,7 @@ platform :ios do
   desc "This .ipa is ready to be distibuted through diawi.com"
   lane :adhoc do
     unlock_keychain_if_needed
-    build_ios_adhoc
+    build_ios_adhoc(true)
   end
 
   desc "`fastlane ios e2e` - e2e lane for iOS."
@@ -147,20 +150,21 @@ platform :ios do
   desc "`fastlane ios pr` - makes a new pr build"
   desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :pr do
-    adhoc
+    unlock_keychain_if_needed
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios nightly` - makes a new nightly"
   desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
   lane :nightly do
-    adhoc
+    unlock_keychain_if_needed
+    build_ios_adhoc(false)
   end
 
   desc "`fastlane ios release` builds a release & uploads it to TestFlight"
   lane :release do
     match(
         type: "appstore",
-        force_for_new_devices: true,
         readonly: true,
         keychain_name: "login.keychain"
     )
