@@ -24,6 +24,22 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not profile_view.profile_picture.is_element_image_equals_template():
             pytest.fail('Profile picture was not updated')
 
+    @marks.testrail_id(5454)
+    @marks.critical
+    def test_user_can_remove_profile_picture(self):
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.create_user()
+        profile_view = home_view.profile_button.click()
+        profile_view.edit_profile_picture('sauce_logo.png')
+        profile_view.swipe_down()
+        if not profile_view.profile_picture.is_element_image_equals_template():
+            self.driver.fail('Profile picture was not updated')
+
+        profile_view.remove_profile_picture()
+        profile_view.swipe_down()
+        if profile_view.profile_picture.is_element_image_equals_template():
+            self.driver.fail('Profile picture was not deleted')
+
     @marks.testrail_id(5323)
     @marks.critical
     def test_share_contact_code_and_wallet_address(self):
