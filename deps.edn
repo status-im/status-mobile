@@ -18,7 +18,7 @@
  :aliases
  {:dev {:extra-deps
         {clj-rn {:git/url "https://github.com/status-im/clj-rn"
-                 :sha "d19290a6c908e1cab291c21dfe04c2a67316744b"}
+                 :sha "144eeecfb389edd9b5d4d94507acf828c5265b97"}
 
          ;; Figwheel ClojureScript REPL
          cider/piggieback        {:mvn/version "0.3.9"
