@@ -75,24 +75,17 @@
        [react/text {:style styles/author :font :medium} name]])))
 
 (views/defview member-photo [from]
-  (views/letsubs [photo-path [:get-photo-path from]]
+  (views/letsubs [current-public-key [:get-current-public-key]
+                  photo-path [:get-photo-path from]]
     [react/view {:style {:width 40 :margin-horizontal 16}}
      [react/view {:style {:position :absolute}}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-profile-desktop from])}
+      [react/touchable-highlight {:on-press #(when-not (= current-public-key from)
+                                               (re-frame/dispatch [:show-profile-desktop from]))}
        [react/view {:style styles/member-photo-container}
         [react/image {:source {:uri (if (string/blank? photo-path)
                                       (identicon/identicon from)
                                       photo-path)}
                       :style  styles/photo-style}]]]]]))
-
-(views/defview my-photo [from]
-  (views/letsubs [account [:get-current-account]]
-    (let [{:keys [photo-path]} account]
-      [react/view
-       [react/image {:source {:uri (if (string/blank? photo-path)
-                                     (identicon/identicon from)
-                                     photo-path)}
-                     :style  styles/photo-style}]])))
 
 (views/defview quoted-message [{:keys [from text]} outgoing current-public-key]
   (views/letsubs [username [:get-contact-name-by-identity from]]
