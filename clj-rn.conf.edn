@@ -52,7 +52,7 @@
 
  :builds [{:id           :desktop
            :source-paths ["react-native/src/desktop" "src" "env/dev"]
-           :compiler     {:output-to     "target/ios/desktop.js"
+           :compiler     {:output-to     "target/desktop/desktop.js"
                           :main          "env.desktop.main"
                           :output-dir    "target/desktop"
                           :npm-deps      false
