@@ -31,4 +31,4 @@
  :search/filtered-home-items
  :<- [:search/filtered-active-chats]
  (fn [active-chats]
-   active-chats))
+   (sort-by #(-> % second :timestamp) > active-chats)))
