@@ -16,12 +16,12 @@ class CreateAccountButton(BaseElement):
     def __init__(self):
         super(CreateAccountButton, self).__init__(IMAGES_PATH + '/create_account.png')
 
-    def find_element(self):
+    def find_element(self, log=False):
         try:
-            super(CreateAccountButton, self).find_element()
+            super(CreateAccountButton, self).find_element(log=log)
         except Failed:
             self.screenshot = IMAGES_PATH + '/create_new_account.png'
-            super(CreateAccountButton, self).find_element()
+            super(CreateAccountButton, self).find_element(log=log)
 
 
 class SignInView(BaseView):
@@ -53,8 +53,8 @@ class SignInView(BaseView):
 
     def recover_access(self, passphrase):
         self.i_have_account_button.click()
-        self.recovery_phrase_input.send_as_key_event(passphrase)
-        self.recover_password_input.send_as_key_event('123456')
+        self.recovery_phrase_input.send_keys(passphrase)
+        self.recover_password_input.send_keys('123456')
         self.sign_in_button.click()
         self.home_button.find_element()
         return HomeView()

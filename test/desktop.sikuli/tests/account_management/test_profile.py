@@ -22,5 +22,5 @@ class TestProfile(BaseTestCase):
         profile = sign_in.profile_button.click()
         profile.element_by_text('Advanced settings').click()
         s_names = profile.get_mail_servers_list()
-        profile.aa(s_names[0]).is_active()
+        profile.get_mail_server(s_names[0]).is_active()
 

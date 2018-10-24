@@ -18,7 +18,9 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    pass
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
 
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item, call):

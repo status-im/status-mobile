@@ -1,3 +1,4 @@
+import logging
 import org.sikuli.script.SikulixForJython
 from sikuli import *
 import os
@@ -12,8 +13,8 @@ class ProfileButton(BaseElement):
     def __init__(self):
         super(ProfileButton, self).__init__(IMAGES_PATH + '/profile_button.png')
 
-    def click(self):
-        super(ProfileButton, self).click()
+    def click(self, log=True):
+        super(ProfileButton, self).click(log=log)
         from views.profile_view import ProfileView
         return ProfileView()
 
@@ -27,6 +28,7 @@ class BaseView(object):
         self.back_button = BaseElement(IMAGES_PATH + '/back_button.png')
 
     def find_text(self, expected_text):
+        logging.info("Find text '%s'" % expected_text)
         for _ in range(3):
             current_text = text().encode('ascii', 'ignore').replace('\n', ' ')
             if expected_text in current_text:
@@ -38,3 +40,11 @@ class BaseView(object):
 
     def element_by_text(self, text):
         return TextElement(text)
+
+    def press_enter(self):
+        logging.info('Press Enter button')
+        type(Key.ENTER)
+
+    def press_tab(self):
+        logging.info('Press Tab button')
+        type(Key.TAB)
