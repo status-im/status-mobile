@@ -327,15 +327,10 @@
                           :ref                    #(reset! inp-ref %)
                           :default-value          input-text
                           :on-content-size-change #(set-container-height-fn (.-height (.-contentSize (.-nativeEvent %))))
-                          :on-key-press           (fn [e]
-                                                    (let [native-event (.-nativeEvent e)
-                                                          key          (.-key native-event)
-                                                          modifiers    (js->clj (.-modifiers native-event))
-                                                          should-send  (and (= key "Enter") (not (contains? (set modifiers) "shift")))]
-                                                      (when should-send
-                                                        (.clear @inp-ref)
-                                                        (.focus @inp-ref)
-                                                        (re-frame/dispatch [:chat.ui/send-current-message]))))
+                          :submit-shortcut        {:key "Enter"}
+                          :on-submit-editing      #(do (.clear @inp-ref)
+                                                       (.focus @inp-ref)
+                                                       (re-frame/dispatch [:chat.ui/send-current-message]))
                           :on-change              (fn [e]
                                                     (let [native-event (.-nativeEvent e)
                                                           text         (.-text native-event)]
