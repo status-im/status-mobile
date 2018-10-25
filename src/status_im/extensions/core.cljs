@@ -356,16 +356,10 @@
               #(toggle-fn id %))))
 
 (fx/defn load
-  [cofx url]
-  (if (->> (get-in cofx [:db :account/account :extensions])
-           vals
-           (filter #(= (:url %) (string/trim url)))
-           first)
-    {:utils/show-popup {:title   (i18n/label :t/error)
-                        :content (i18n/label :t/extension-is-already-added)}}
-    {:extensions/load {:extensions [{:url     (string/trim url)
-                                     :active? true}]
-                       :follow-up  :extensions/stage}}))
+  [_ url]
+  {:extensions/load {:extensions [{:url     (string/trim url)
+                                   :active? true}]
+                     :follow-up  :extensions/stage}})
 
 (fx/defn activate-extensions
   [{{:account/keys [account]} :db}]
