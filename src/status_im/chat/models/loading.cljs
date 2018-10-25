@@ -7,6 +7,7 @@
             [status-im.data-store.user-statuses :as user-statuses-store]
             [status-im.utils.contacts :as utils.contacts]
             [status-im.utils.datetime :as time]
+            [status-im.utils.platform :as platform]
             [status-im.utils.fx :as fx]))
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
@@ -76,6 +77,10 @@
               (filter #(not (contains? message-id->messages %))))
         (vals message-id->messages)))
 
+(fx/defn load-chat-ui-props [{:keys [db]}]
+  (when-not platform/desktop?
+    {:init/load-chat-ui-props db}))
+
 (fx/defn initialize-chats
   "Initialize all persisted chats on startup"
   [{:keys [db default-dapps all-stored-chats get-stored-messages get-stored-user-statuses
@@ -106,7 +111,8 @@
                           :contacts/dapps default-dapps)}
               (group-messages)
               (add-default-contacts)
-              (commands/load-commands commands/register))))
+              (commands/load-commands commands/register)
+              (load-chat-ui-props))))
 
 (fx/defn initialize-pending-messages
   "Change status of own messages which are still in `sending` status to `not-sent`

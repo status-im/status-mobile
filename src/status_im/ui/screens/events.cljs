@@ -24,6 +24,7 @@
             status-im.ui.screens.wallet.collectibles.kudos.events
             status-im.utils.keychain.events
             [re-frame.core :as re-frame]
+            [status-im.chat.core :as chat]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.native-module.core :as status]
             [status-im.transport.inbox :as inbox]
@@ -127,7 +128,9 @@
               {::app-state-change-fx state
                :db                   (assoc db :app-state state)}
               #(when app-coming-from-background?
-                 (on-return-from-background %)))))
+                 (on-return-from-background %))
+              (when (#{"background" "inactive"} state)
+                (chat/persist-chat-ui-props)))))
 
 (handlers/register-handler-fx
  :app-state-change

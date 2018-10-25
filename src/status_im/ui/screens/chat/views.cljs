@@ -114,12 +114,34 @@
            [react/text {:style style/empty-chat-text-name} (:name contact)]]
           (i18n/label :t/empty-chat-description))]])))
 
-(defview messages-view [group-chat modal?]
+(defview scroll-to-bottom-button [chat-id list-ref]
+  (letsubs [unread-count [:unviewed-messages-count chat-id]
+            offset [:get-current-chat-ui-prop :offset]]
+    (let [have-unreads? (pos? unread-count)
+          many-messages? (< 99 unread-count)]
+      (when (or have-unreads?
+                (< 100 offset))
+        [react/view (style/scroll-to-bottom-button have-unreads? many-messages?)
+         [react/touchable-highlight
+          {:on-press            (fn []
+                                  (when @list-ref
+                                    (.scrollToOffset @list-ref #js {:offset 0 :animated false})
+                                    (re-frame/dispatch [:chat.ui/scroll-to-end])))
+           :accessibility-label :scroll-to-bottom-button}
+          [react/view style/scroll-to-bottom-button-inner
+           (when have-unreads?
+             [react/text {:style style/scroll-to-bottom-button-text}
+              (if many-messages? "100+" unread-count)])
+           [vector-icons/icon :icons/dropdown-down {:container-style (style/scroll-to-bottom-button-icon have-unreads?)
+                                                    :color           colors/white}]]]]))))
+(defview messages-view [group-chat modal? list-ref]
   (letsubs [messages           [:get-current-chat-messages-stream]
             chat               [:get-current-chat]
-            current-public-key [:get-current-public-key]]
-    {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                           :input-focused? false}])}
+            current-public-key [:get-current-public-key]
+            offset [:get-current-chat-ui-prop :offset]]
+    {:should-component-update (constantly false)
+     :component-did-mount     #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                               :input-focused? false}])}
     (if (empty? messages)
       [empty-chat-container chat]
       [list/flat-list {:data                      messages
@@ -129,16 +151,29 @@
                                                                   :modal?             modal?
                                                                   :current-public-key current-public-key
                                                                   :row                message}])
+                       :ref                       #(reset! list-ref %)
                        :inverted                  true
+                       :contentOffset             {:x 0 :y (or offset 0)}
+                       :onScrollEndDrag           (fn [e]
+                                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
+                                                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:offset (max offset 0)}])
+                                                      (when (zero? offset)
+                                                        (re-frame/dispatch [:chat.ui/scroll-to-end]))))
+                       :onMomentumScrollEnd       (fn [e]
+                                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
+                                                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:offset (max offset 0)}])
+                                                      (when (zero? offset)
+                                                        (re-frame/dispatch [:chat.ui/scroll-to-end]))))
                        :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps :handled}])))
 
 (defview chat-root [modal?]
-  (letsubs [{:keys [group-chat public?]} [:get-current-chat]
+  (letsubs [{:keys [group-chat public? chat-id]} [:get-current-chat]
             show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
             show-message-options? [:get-current-chat-ui-prop :show-message-options?]
-            current-view      [:get :view-id]]
+            current-view      [:get :view-id]
+            list-ref (atom nil)]
     ;; this scroll-view is a hack that allows us to use on-blur and on-focus on Android
     ;; more details here: https://github.com/facebook/react-native/issues/11071
     [react/scroll-view {:scroll-enabled               false
@@ -151,14 +186,15 @@
       [chat-toolbar public? modal?]
       (if (or (= :chat current-view) modal?)
         [messages-view-animation
-         [messages-view group-chat modal?]]
+         [messages-view group-chat modal? list-ref]]
         [react/view style/message-view-preview])
       [input/container]
       (when show-bottom-info?
         [bottom-info/bottom-info-view])
       (when show-message-options?
         [message-options/view])
-      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]]]))
+      [connectivity/error-view {:top (get platform/platform-specific :status-bar-default-height)}]
+      [scroll-to-bottom-button chat-id list-ref]]]))
 
 (defview chat []
   [chat-root false])

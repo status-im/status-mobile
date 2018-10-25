@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
+            [status-im.chat.core :as chat]
             [status-im.transport.core :as transport]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]))
@@ -14,7 +15,8 @@
                :dev-server/stop              nil}
               (navigation/navigate-to-clean :login {})
               (transport/stop-whisper)
-              (init/initialize-keychain))))
+              (init/initialize-keychain)
+              (chat/persist-chat-ui-props))))
 
 (fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation

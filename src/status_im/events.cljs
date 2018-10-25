@@ -627,6 +627,18 @@
    (chat.input/send-current-message cofx)))
 
 (handlers/register-handler-fx
+ :chat.ui/scroll-to-end
+ (fn [{{:keys [current-chat-id] :as db} :db} _]
+   {:db (-> db
+            (assoc-in [:chat-ui-props current-chat-id :offset] 0)
+            (assoc-in [:chats current-chat-id :unviewed-messages] nil))}))
+
+(handlers/register-handler-fx
+ :chat/init-chat-ui-props
+ (fn [{:keys [db]} [_ props]]
+   {:db (assoc db :chat-ui-props props)}))
+
+(handlers/register-handler-fx
  :chat/disable-cooldown
  (fn [cofx _]
    (chat/disable-chat-cooldown cofx)))

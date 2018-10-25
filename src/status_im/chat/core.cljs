@@ -23,3 +23,7 @@
                                      db
                                      statuses)
               :data-store/tx [(user-statuses-store/save-statuses-tx statuses)]}))))
+
+(fx/defn persist-chat-ui-props
+  [cofx]
+  {:chat/persist-chat-ui-props cofx})

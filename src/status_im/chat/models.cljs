@@ -10,6 +10,8 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.desktop.events :as desktop.events]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
@@ -217,3 +219,20 @@
    (utils/show-popup nil
                      (i18n/label :cooldown/warning-message)
                      #())))
+
+(re-frame/reg-fx
+ :chat/persist-chat-ui-props
+ (fn [{{:keys [chat-ui-props current-public-key]} :db}]
+   (->> chat-ui-props
+        (reduce-kv
+         (fn [acc k v] (assoc acc k (select-keys v [:input-height
+                                                    :messages-focused?
+                                                    :input-focused?
+                                                    :offset])))
+         {})
+        clj->js
+        js/JSON.stringify
+        (.setItem js-dependencies/async-storage
+                  (str "@StatusIm:"
+                       (ethereum/sha3 current-public-key)
+                       ":chat-ui-props")))))
