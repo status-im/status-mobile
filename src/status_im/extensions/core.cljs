@@ -42,6 +42,9 @@
  (fn [db [_ {:keys [key]}]]
    (get-in db [:extensions-store :collectible key])))
 
+(re-frame/reg-sub :identity
+                  (fn [_ [_ {:keys [value]}]] value))
+
 (handlers/register-handler-fx
  :store/put
  (fn [{:keys [db]} [_ {:keys [key value]}]]
@@ -64,8 +67,26 @@
 (defn- json? [res]
   (string/starts-with? (get-in res [:headers "content-type"]) "application/json"))
 
-(defn- parse-body [o]
+(defn- parse-json [o]
   (js->clj (js/JSON.parse o) :keywordize-keys true))
+
+(re-frame/reg-fx
+ ::json-parse
+ (fn [value on-result] (re-frame/dispatch (on-result {:value (parse-json value)}))))
+
+(handlers/register-handler-fx
+ :extensions/json-parse
+ (fn [_ [_ {:keys [value]}]]
+   {::json-parse value}))
+
+(re-frame/reg-fx
+ ::json-stringify
+ (fn [value on-result] (re-frame/dispatch (on-result {:value (js/JSON.stringify (clj->js value))}))))
+
+(handlers/register-handler-fx
+ :extensions/json-stringify
+ (fn [_ [_ {:keys [value]}]]
+   {::json-stringify value}))
 
 (re-frame/reg-event-fx
  :http/get
@@ -73,7 +94,7 @@
    {:http-raw-get (merge {:url url
                           :success-event-creator
                           (fn [o]
-                            (let [res (if (json? o) (update o :body parse-body o))]
+                            (let [res (if (json? o) (update o :body parse-json o))]
                               (on-success res)))}
                          (when on-failure
                            {:failure-event-creator on-failure})
@@ -86,7 +107,7 @@
    {:http-raw-get (merge {:url (str "https://ipfs.infura.io/ipfs/" hash)
                           :success-event-creator
                           (fn [o]
-                            (let [res (if (json? o) (update o :body parse-body o))]
+                            (let [res (if (json? o) (update o :body parse-json o))]
                               (on-success res)))}
                          (when on-failure
                            {:failure-event-creator on-failure})
@@ -99,12 +120,29 @@
                            :body body
                            :success-event-creator
                            (fn [o]
-                             (let [res (if (json? o) (update o :body parse-body o))]
+                             (let [res (if (json? o) (update o :body parse-json o))]
                                (on-success res)))}
                           (when on-failure
                             {:failure-event-creator on-failure})
                           (when timeout
                             {:timeout-ms timeout}))}))
+
+(defn operation->fn [k]
+  (case k
+    :plus   +
+    :minus  -
+    :times  *
+    :divide /))
+
+(re-frame/reg-fx
+ ::arithmetic
+ (fn [{:keys [operation values on-result]}]
+   (re-frame/dispatch (on-result {:value (apply (operation->fn operation) values)}))))
+
+(handlers/register-handler-fx
+ :extensions/arithmetic
+ (fn [_ [_ m]]
+   {::arithmetic m}))
 
 (defn button [{:keys [on-click]} label]
   [button/secondary-button {:on-press #(re-frame/dispatch (on-click {}))} label])
@@ -149,7 +187,8 @@
                 'transaction-status {:value transactions/transaction-status :properties {:outgoing :string :tx-hash :string}}
                 'asset-selector     {:value transactions/choose-nft-asset-suggestion}
                 'token-selector     {:value transactions/choose-nft-token-suggestion}}
-   :queries    {'store/get           {:value :store/get :arguments {:key :string}}
+   :queries    {'identity            {:value :extensions/identity :arguments {:value :map}}
+                'store/get           {:value :store/get :arguments {:key :string}}
                 'wallet/collectibles {:value :get-collectible-token :arguments {:token :string :symbol :string}}}
    :events     {'alert
                 {:permissions [:read]
@@ -159,6 +198,22 @@
                 {:permissions [:read]
                  :value       :log
                  :arguments   {:value :string}}
+                'arithmetic
+                {:permissions [:read]
+                 :value       :extensions/arithmetic
+                 :arguments   {:values    #{:plus :minus :times :divide}
+                               :operation :keyword
+                               :on-result :event}}
+                'json/parse
+                {:permissions [:read]
+                 :value       :extensions/json-parse
+                 :arguments   {:value     :string
+                               :on-result :event}}
+                'json/stringify
+                {:permissions [:read]
+                 :value       :extensions/json-stringify
+                 :arguments   {:value     :string
+                               :on-result :event}}
                 'store/put
                 {:permissions [:read]
                  :value       :store/put
