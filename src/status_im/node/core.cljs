@@ -77,6 +77,16 @@
       (if utils.platform/desktop? ""
           config/log-level-status-go)))
 
+(defn- ulc-network? [config]
+  (get-in config [:LightEthConfig :ULC] false))
+
+(defn- add-ulc-trusted-nodes [config trusted-nodes]
+  (if (ulc-network? config)
+    (-> config
+        (assoc-in [:LightEthConfig :TrustedNodes] trusted-nodes)
+        (assoc-in [:LightEthConfig :MinTrustedFraction] 50))
+    config))
+
 (defn- get-account-node-config [db address]
   (let [accounts (get db :accounts/accounts)
         current-fleet-key (fleet/current-fleet db address)
@@ -120,6 +130,9 @@
        config/bootnodes-settings-enabled?
        use-custom-bootnodes)
       (add-custom-bootnodes network bootnodes)
+
+      :always
+      (add-ulc-trusted-nodes (vals (:static current-fleet)))
 
       :always
       (add-log-level log-level))))

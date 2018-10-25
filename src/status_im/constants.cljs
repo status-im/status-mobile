@@ -70,6 +70,11 @@
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                            :DataDir        "/ethereum/testnet"
                            :LightEthConfig {:Enabled true}}}
+   "testnet_ulc" {:id     "testnet_ulc",
+                  :name   "Ropsten ULC",
+                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                           :DataDir        "/ethereum/testnet_ulc"
+                           :LightEthConfig {:Enabled true :ULC true}}}
    "testnet_rpc" {:id     "testnet_rpc",
                   :name   "Ropsten with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
