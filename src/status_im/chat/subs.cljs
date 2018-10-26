@@ -37,11 +37,8 @@
   (cond
     public?    (str "#" name)
     group-chat name
-    :else      (i18n/get-contact-translated
-                chat-id
-                :name
-                (or contact-name
-                    (gfycat/generate-gfy chat-id)))))
+    :else      (or contact-name
+                   (gfycat/generate-gfy chat-id))))
 (reg-sub
  :get-current-chat-name
  :<- [:get-current-chat-contact]

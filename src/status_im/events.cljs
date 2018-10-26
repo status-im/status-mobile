@@ -84,7 +84,6 @@
 (handlers/register-handler-fx
  :init.callback/account-change-success
  [(re-frame/inject-cofx :web3/get-web3)
-  (re-frame/inject-cofx :get-default-contacts)
   (re-frame/inject-cofx :get-default-dapps)
   (re-frame/inject-cofx :data-store/all-chats)
   (re-frame/inject-cofx :data-store/get-messages)

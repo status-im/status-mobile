@@ -11,30 +11,6 @@
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
 
-(fx/defn add-default-contacts
-  [{:keys [db default-contacts] :as cofx}]
-  (let [new-contacts      (-> {}
-                              (into (map (fn [[id props]]
-                                           (let [contact-id (name id)]
-                                             [contact-id {:whisper-identity contact-id
-                                                          :address          (utils.contacts/public-key->address contact-id)
-                                                          :name             (-> props :name :en)
-                                                          :photo-path       (:photo-path props)
-                                                          :public-key       (:public-key props)
-                                                          :unremovable?     (-> props :unremovable? boolean)
-                                                          :hide-contact?    (-> props :hide-contact? boolean)
-                                                          :pending?         (-> props :pending? boolean)
-                                                          :dapp?            (:dapp? props)
-                                                          :dapp-url         (-> props :dapp-url :en)
-                                                          :bot-url          (:bot-url props)
-                                                          :description      (:description props)}])))
-                                    default-contacts))
-        existing-contacts (:contacts/contacts db)
-        contacts-to-add   (select-keys new-contacts (set/difference (set (keys new-contacts))
-                                                                    (set (keys existing-contacts))))]
-    {:db            (update db :contacts/contacts merge contacts-to-add)
-     :data-store/tx [(contacts-store/save-contacts-tx (vals contacts-to-add))]}))
-
 (defn- sort-references
   "Sorts message-references sequence primary by clock value,
   breaking ties by `:message-id`"
@@ -104,7 +80,6 @@
                           :chats          chats
                           :contacts/dapps default-dapps)}
               (group-messages)
-              (add-default-contacts)
               (commands/load-commands commands/register))))
 
 (fx/defn initialize-pending-messages

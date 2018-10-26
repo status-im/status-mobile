@@ -3,7 +3,6 @@
   (:require
    [cljs.spec.alpha :as spec]
    [status-im.react-native.js-dependencies :as rn-dependencies]
-   [status-im.utils.js-resources :refer [default-contacts]]
    [clojure.string :as string]
    [clojure.set :as set]
    [status-im.utils.types :as types]))
@@ -278,12 +277,6 @@
 
 (def locale
   (.-locale rn-dependencies/i18n))
-
-(defn get-contact-translated [contact-id key fallback]
-  (let [translation #(get-in default-contacts [(keyword contact-id) key (keyword %)])]
-    (or (translation locale)
-        (translation (subs locale 0 2))
-        fallback)))
 
 (defn format-currency
   ([value currency-code]

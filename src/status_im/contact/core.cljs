@@ -13,11 +13,6 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]))
 
-(re-frame/reg-cofx
- :get-default-contacts
- (fn [coeffects _]
-   (assoc coeffects :default-contacts js-res/default-contacts)))
-
 (fx/defn load-contacts
   [{:keys [db all-contacts]}]
   (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)

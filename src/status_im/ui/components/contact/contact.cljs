@@ -29,10 +29,9 @@
                          :number-of-lines 1}
                         (when dapp? {:accessibility-label :dapp-name})
                         props)
-      (if (pos? (count name))
-        (i18n/get-contact-translated whisper-identity :name name)
-        ;;TODO is this correct behaviour?
-        (gfycat/generate-gfy whisper-identity))]
+      (if (string/blank? name)
+        (gfycat/generate-gfy whisper-identity)
+        (or name (i18n/label :t/chat-name)))]
      (when info
        [react/text {:style styles/info-text}
         info])]]))

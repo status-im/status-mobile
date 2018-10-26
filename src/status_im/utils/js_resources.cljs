@@ -8,8 +8,6 @@
 (defn local-resource? [url]
   (and (string? url) (s/starts-with? url local-protocol)))
 
-(def default-contacts (json->clj (slurp "resources/default_contacts.json")))
-
 (def webview-js (slurp "resources/js/webview.js"))
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "node_modules/web3/dist/web3.min.js")
