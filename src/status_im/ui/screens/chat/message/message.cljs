@@ -22,26 +22,6 @@
             [status-im.ui.components.colors :as colors]
             [clojure.string :as string]))
 
-(defview message-content-status []
-  (letsubs [{:keys [chat-id group-id name color public-key]} [:get-current-chat]
-            members                                          [:get-current-chat-contacts]]
-    (let [{:keys [status]} (if group-id
-                             {:status nil}
-                             (first members))]
-      [react/view style/status-container
-       [chat-icon.screen/chat-icon-message-status chat-id group-id name color false]
-       [react/text {:style           style/status-from
-                    :font            :default
-                    :number-of-lines 1}
-        (if (string/blank? name)
-          (gfycat/generate-gfy public-key)
-          (or (i18n/get-contact-translated chat-id :name name)
-              (i18n/label :t/chat-name)))]
-       (when status
-         [react/text {:style style/status-text
-                      :font  :default}
-          status])])))
-
 (defview message-content-command
   [command-message]
   (letsubs [id->command [:get-id->command]]
@@ -178,6 +158,12 @@
                   :number-of-lines 5}
       text]]))
 
+(defview message-content-status [{:keys [content]}]
+  [react/view style/status-container
+   [react/text {:style style/status-text
+                :font  :default}
+    (cached-parse-text (:text content) nil false)]])
+
 (defn text-message
   [{:keys [content timestamp-str group-chat outgoing current-public-key] :as message}]
   [message-view message
@@ -216,8 +202,8 @@
   [wrapper message [text-message message]])
 
 (defmethod message-content constants/content-type-status
-  [_ _]
-  [message-content-status])
+  [wrapper message]
+  [wrapper message [message-content-status message]])
 
 (defmethod message-content constants/content-type-command
   [wrapper message]
@@ -312,17 +298,18 @@
   (let [outgoing-status (or (get-in user-statuses [current-public-key :status]) :not-sent)
         delivery-status (get-in user-statuses [chat-id :status])
         status          (or delivery-status outgoing-status)]
-    (case status
-      :sending  [message-activity-indicator]
-      :not-sent [message-not-sent-text chat-id message-id]
-      (if (and (not outgoing)
-               (:command content))
-        [command-status content]
-        (when last-outgoing?
-          (if (= message-type :group-user-message)
-            [group-message-delivery-status message]
-            (if outgoing
-              [text-status status])))))))
+    (when (not= :system-message message-type)
+      (case status
+        :sending  [message-activity-indicator]
+        :not-sent [message-not-sent-text chat-id message-id]
+        (if (and (not outgoing)
+                 (:command content))
+          [command-status content]
+          (when last-outgoing?
+            (if (= message-type :group-user-message)
+              [group-message-delivery-status message]
+              (if outgoing
+                [text-status status]))))))))
 
 (defview message-author-name [from message-username]
   (letsubs [username [:get-contact-name-by-identity from]]
@@ -333,6 +320,7 @@
   [{:keys [last-in-group?
            display-photo?
            display-username?
+           message-type
            from
            outgoing
            modal?
@@ -345,7 +333,7 @@
          [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
           [react/view
            [photos/member-photo from]]])])
-    [react/view (style/group-message-view outgoing)
+    [react/view (style/group-message-view outgoing message-type)
      (when display-username?
        [message-author-name from username])
      [react/view {:style (style/timestamp-content-wrapper message)}

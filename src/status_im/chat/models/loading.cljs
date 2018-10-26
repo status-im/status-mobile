@@ -57,8 +57,7 @@
                                    (into (or message-references '()))
                                    (sort-references (get-in db [:chats chat-id :messages]))))))
                db
-               (group-by (comp time/day-relative :timestamp)
-                         (filter :show? messages)))})
+               (group-by (comp time/day-relative :timestamp) messages))})
 
 (fx/defn group-messages
   [{:keys [db]}]

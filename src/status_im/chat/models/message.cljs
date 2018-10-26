@@ -8,7 +8,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.datetime :as time]
-            [status-im.group-chats.core :as group-chats]
+            [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message-content :as message-content]
@@ -25,6 +25,15 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
+
+(defn- wrap-group-message
+  "Wrap a group message in a membership update"
+  [cofx chat-id message]
+  (when-let [chat (get-in cofx [:db :chats chat-id])]
+    (message.group-chat/map->GroupMembershipUpdate.
+     {:chat-id              chat-id
+      :membership-updates   (:membership-updates chat)
+      :message              message})))
 
 (defn- prepare-message
   [{:keys [content] :as message} chat-id current-chat?]
@@ -66,8 +75,11 @@
                               status)
      :data-store/tx [(user-statuses-store/save-status-tx status)]}))
 
-(defn add-outgoing-status [{:keys [from] :as message} {:keys [db]}]
-  (assoc message :outgoing (= from (:current-public-key db))))
+(defn add-outgoing-status [{:keys [from message-type] :as message} {:keys [db]}]
+  (assoc message
+         :outgoing
+         (and (= from (:current-public-key db))
+              (not= :system-message message-type))))
 
 (fx/defn add-message
   [{:keys [db] :as cofx} batch? {:keys [chat-id message-id clock-value timestamp content from] :as message} current-chat?]
@@ -197,15 +209,17 @@
         groups-fx-fns   (map #(update-group-messages chat->message %) chat-ids)]
     (apply fx/merge cofx (concat chats-fx-fns messages-fx-fns groups-fx-fns))))
 
-(defn system-message [chat-id message-id timestamp content]
-  {:message-id   message-id
-   :chat-id      chat-id
-   :from         constants/system
-   :username     constants/system
-   :timestamp    timestamp
-   :show?        true
-   :content      content
-   :content-type constants/content-type-text})
+(defn system-message [{:keys [now] :as cofx} {:keys [clock-value chat-id content from]}]
+  (let [{:keys [last-clock-value]} (get-in cofx [:db :chats chat-id])
+        message {:chat-id      chat-id
+                 :from         from
+                 :timestamp    now
+                 :clock-value  (or clock-value
+                                   (utils.clocks/send last-clock-value))
+                 :content      content
+                 :message-type :system-message
+                 :content-type constants/content-type-status}]
+    (assoc message :message-id (transport.utils/message-id message))))
 
 (defn group-message? [{:keys [message-type]}]
   (#{:group-user-message :public-group-user-message} message-type))
@@ -218,7 +232,7 @@
     {:dispatch-later [{:ms       10000
                        :dispatch [:message/update-message-status chat-id message-id :not-sent]}]}
     (let [wrapped-record (if (= (:message-type send-record) :group-user-message)
-                           (group-chats/wrap-group-message cofx chat-id send-record)
+                           (wrap-group-message cofx chat-id send-record)
                            send-record)]
 
       (protocol/send wrapped-record chat-id cofx))))
@@ -296,6 +310,10 @@
              :data-store/tx [(messages-store/delete-message-tx message-id)]}
             (remove-message-from-group chat-id (get-in db [:chats chat-id :messages message-id]))))
 
+(fx/defn add-system-messages [cofx messages]
+  (let [messages-fx (map #(add-message false (system-message cofx %) true) messages)]
+    (apply fx/merge cofx messages-fx)))
+
 (fx/defn send-message
   [{:keys [db now] :as cofx} {:keys [chat-id] :as message}]
   (let [{:keys [current-public-key chats]}  db
@@ -304,8 +322,7 @@
                                                 (assoc :from        current-public-key
                                                        :timestamp   now
                                                        :clock-value (utils.clocks/send
-                                                                     last-clock-value)
-                                                       :show?       true)
+                                                                     last-clock-value))
                                                 (add-message-type chat))]
     (upsert-and-send cofx message-data)))
 

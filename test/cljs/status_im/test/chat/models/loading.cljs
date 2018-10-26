@@ -22,20 +22,17 @@
         new-messages [{:message-id  1
                        :content     "b"
                        :clock-value 1
-                       :timestamp   1
-                       :show?       false}
+                       :timestamp   1}
                       {:message-id  2
                        :content     "c"
                        :clock-value 2
-                       :timestamp   2
-                       :show?       true}
+                       :timestamp   2}
                       {:message-id  3
                        :content     "d"
                        :clock-value 3
-                       :timestamp   3
-                       :show?       true}]]
-    (testing "New messages are grouped/sorted correctly, hidden messages are not grouped"
-      (is (= '(2 3)
+                       :timestamp   3}]]
+    (testing "New messages are grouped/sorted correctly"
+      (is (= '(1 2 3)
              (map :message-id
                   (-> (get-in (loading/group-chat-messages cofx "chat-id" new-messages)
                               [:db :chats "chat-id" :message-groups])

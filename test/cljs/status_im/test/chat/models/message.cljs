@@ -51,6 +51,7 @@
       (let [actual (message/receive-many {:db db}
                                          [{:from "me"
                                            :message-type :user-message
+                                           :timestamp 0
                                            :message-id "id"
                                            :chat-id "chat-id"
                                            :content "b"

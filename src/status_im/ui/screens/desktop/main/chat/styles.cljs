@@ -124,6 +124,11 @@
          :color (if outgoing colors/white colors/blue)
          :text-decoration-line :underline))
 
+(def system-message-text
+  {:color colors/black
+   :margin-top -5
+   :font-size 14})
+
 (def message-container
   {:flex-direction :column
    :margin-right   16})
