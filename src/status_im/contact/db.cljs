@@ -29,8 +29,6 @@
 (spec/def :contact/bot-url (spec/nilable string?))
 (spec/def :contact/command (spec/nilable (spec/map-of int? map?)))
 (spec/def :contact/response (spec/nilable (spec/map-of int? map?)))
-(spec/def :contact/jail-loaded? (spec/nilable boolean?))
-(spec/def :contact/jail-loaded-events (spec/nilable seq?))
 (spec/def :contact/subscriptions (spec/nilable map?))
 ;;true when contact added using status-dev-cli
 (spec/def :contact/debug? boolean?)
@@ -51,8 +49,6 @@
                                                 :contact/dapp-url
                                                 :contact/dapp-hash
                                                 :contact/bot-url
-                                                :contact/jail-loaded?
-                                                :contact/jail-loaded-events
                                                 :contact/command
                                                 :contact/response
                                                 :contact/debug?

@@ -21,7 +21,7 @@
   (fn [realm]
     (core/create realm
                  :contact
-                 (dissoc contact :command :response :subscriptions :jail-loaded-events)
+                 (dissoc contact :command :response :subscriptions)
                  true)))
 
 (defn save-contacts-tx

@@ -15,7 +15,6 @@
                                :hide-contact?    false,
                                :address          nil,
                                :name             "Demo bot",
-                               :jail-loaded?     true,
                                :fcm-token        nil,
                                :dapp-url         nil,
                                :dapp-hash        nil,
