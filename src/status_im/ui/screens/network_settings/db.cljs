@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.network-settings.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]))
 
 (spec/def :networks/id string?)

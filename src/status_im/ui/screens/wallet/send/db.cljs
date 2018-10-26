@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.wallet.send.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]))
@@ -35,9 +34,8 @@
 (spec/def ::on-result (spec/nilable any?))
 (spec/def ::on-error (spec/nilable any?))
 
-(spec/def :wallet/send-transaction (allowed-keys
-                                    :opt-un [::amount ::to ::to-name ::amount-error ::asset-error ::amount-text
-                                             ::password ::show-password-input? ::id ::from ::data ::nonce
-                                             ::camera-flashlight ::in-progress? ::on-result ::on-error
-                                             ::wrong-password? ::from-chat? ::symbol ::advanced?
-                                             ::gas ::gas-price ::whisper-identity ::method ::tx-hash]))
+(spec/def :wallet/send-transaction (spec/keys :opt-un [::amount ::to ::to-name ::amount-error ::asset-error ::amount-text
+                                                       ::password ::show-password-input? ::id ::from ::data ::nonce
+                                                       ::camera-flashlight ::in-progress? ::on-result ::on-error
+                                                       ::wrong-password? ::from-chat? ::symbol ::advanced?
+                                                       ::gas ::gas-price ::whisper-identity ::method ::tx-hash]))

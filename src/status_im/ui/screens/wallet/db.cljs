@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.wallet.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
             [status-im.i18n :as i18n]
             status-im.ui.screens.wallet.request.db
@@ -8,7 +7,7 @@
 
 (spec/def :wallet.send/recipient string?)
 
-(spec/def :wallet/send (allowed-keys :req-un [:wallet.send/recipient]))
+(spec/def :wallet/send (spec/keys :req-un [:wallet.send/recipient]))
 
 (spec/def :wallet/balance-loading? (spec/nilable boolean?))
 (spec/def :wallet/transactions-loading? (spec/nilable boolean?))
@@ -26,18 +25,18 @@
 (spec/def :wallet/currency (spec/nilable any?))
 (spec/def :wallet/balance (spec/nilable any?))
 
-(spec/def :wallet/wallet (allowed-keys :opt-un [:wallet/send-transaction :wallet/request-transaction
-                                                :wallet/transactions-queue
-                                                :wallet/balance-loading? :wallet/errors :wallet/transactions-loading?
-                                                :wallet/transactions-last-updated-at :wallet/chat-transactions
-                                                :wallet/transactions-sync-started? :wallet/transactions
-                                                :wallet/edit
-                                                :wallet/current-tab
-                                                :wallet/current-transaction
-                                                :wallet/modal-history?
-                                                :wallet/visible-tokens
-                                                :wallet/currency
-                                                :wallet/balance]))
+(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction :wallet/request-transaction
+                                             :wallet/transactions-queue
+                                             :wallet/balance-loading? :wallet/errors :wallet/transactions-loading?
+                                             :wallet/transactions-last-updated-at :wallet/chat-transactions
+                                             :wallet/transactions-sync-started? :wallet/transactions
+                                             :wallet/edit
+                                             :wallet/current-tab
+                                             :wallet/current-transaction
+                                             :wallet/modal-history?
+                                             :wallet/visible-tokens
+                                             :wallet/currency
+                                             :wallet/balance]))
 
 (defn- too-precise-amount?
   "Checks if number has any extra digit beyond the allowed number of decimals.

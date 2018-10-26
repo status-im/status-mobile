@@ -1,5 +1,4 @@
 (ns status-im.contact.db
-  (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
             status-im.utils.db))
 
@@ -69,8 +68,8 @@
 (spec/def :contacts/new-identity-error (spec/nilable string?))
 ;;on showing this contact's profile (andrey: better to move into profile ns)
 (spec/def :contacts/identity (spec/nilable :global/not-empty-string))
-(spec/def :contacts/list-ui-props (spec/nilable (allowed-keys :opt-un [:contact-list-ui/edit?])))
-(spec/def :contacts/ui-props (spec/nilable (allowed-keys :opt-un [:contacts-ui/edit?])))
+(spec/def :contacts/list-ui-props (spec/nilable (spec/keys :opt-un [:contact-list-ui/edit?])))
+(spec/def :contacts/ui-props (spec/nilable (spec/keys :opt-un [:contacts-ui/edit?])))
 ;;used in modal list (for example for wallet)
 (spec/def :contacts/click-handler (spec/nilable fn?))
 ;;used in modal list (for example for wallet)
