@@ -26,13 +26,13 @@
                                                       :members [member-2 member-3]}]}]})
 
 (deftest get-last-clock-value-test
-  (is (= 3 (group-chats/get-last-clock-value {:db {:chats {chat-id initial-message}}} chat-id))))
+  (is (= 3 (group-chats/get-last-clock-value {:db {:chats {chat-id {:last-clock-value 3}}}} chat-id))))
 
-(deftest handle-group-membership-update
+(deftest handle-group-membership-update-test
   (with-redefs [config/group-chats-enabled? (constantly true)]
     (testing "a brand new chat"
       (let [actual   (->
-                      (group-chats/handle-membership-update {:db {}} initial-message admin)
+                      (group-chats/handle-membership-update {:now 0 :db {}} initial-message admin)
                       :db
                       :chats
                       (get chat-id))]
@@ -52,12 +52,19 @@
                  (:membership-updates actual))))
         (testing "it sets the right admins"
           (is (= #{admin}
-                 (:admins actual))))))
+                 (:admins actual))))
+        (testing "it adds a system message"
+          (is (= 3 (count (:messages actual)))))
+        (testing "it adds the right text"
+          (is (= ["group-chat-created"
+                  "group-chat-member-added"
+                  "group-chat-member-added"]
+                 (map (comp :text :content) (sort-by :clock-value (vals (:messages actual)))))))))
     (testing "a chat with the wrong id"
       (let [bad-chat-id (str random-id member-2)
             actual      (->
                          (group-chats/handle-membership-update
-                          {:db {}}
+                          {:now 0 :db {}}
                           (assoc initial-message :chat-id bad-chat-id)
                           admin)
                          :db
@@ -66,18 +73,15 @@
         (testing "it does not create a chat"
           (is (not actual)))))
     (testing "an already existing chat"
-      (let [cofx {:db {:chats {chat-id {:admins #{admin}
-                                        :name "chat-name"
-                                        :chat-id chat-id
-                                        :is-active true
-                                        :group-chat true
-                                        :contacts #{member-1 member-2 member-3}
-                                        :membership-updates (:membership-updates initial-message)}}}}]
+      (let [cofx (assoc
+                  (group-chats/handle-membership-update {:now 0 :db {}} initial-message admin)
+                  :now 0)]
         (testing "the message has already been received"
           (let [actual (group-chats/handle-membership-update cofx initial-message admin)]
             (testing "it noops"
-              (is (= (get-in actual [:db :chats chat-id])
-                     (get-in cofx [:db :chats chat-id]))))))
+              (is (=
+                   (get-in cofx [:db :chats chat-id])
+                   (get-in actual [:db :chats chat-id]))))))
         (testing "a new message comes in"
           (let [actual (group-chats/handle-membership-update cofx
                                                              {:chat-id chat-id
@@ -105,7 +109,16 @@
             (testing "admins are updated"
               (is (= #{member-2} (:admins actual-chat))))
             (testing "members are updated"
-              (is (= #{member-1 member-2 member-4} (:contacts actual-chat))))))))))
+              (is (= #{member-1 member-2 member-4} (:contacts actual-chat))))
+            (testing "it adds a system message"
+              (is (= 5 (count (:messages actual-chat)))))
+            (testing "it sets the right text"
+              (is (= ["group-chat-created"
+                      "group-chat-member-added"
+                      "group-chat-member-added"
+                      "group-chat-member-added"
+                      "group-chat-member-removed"]
+                     (map (comp :text :content) (sort-by :clock-value (vals (:messages actual-chat)))))))))))))
 
 (deftest build-group-test
   (testing "only adds"
@@ -126,6 +139,10 @@
                    :from    "2"
                    :members  ["3"]}]
           expected {:name   "chat-name"
+                    :created-at 0
+                    "2" {:added 1
+                         :admin-added 2}
+                    "3" {:added 3}
                     :admins #{"1" "2"}
                     :contacts #{"1" "2" "3"}}]
       (is (= expected (group-chats/build-group events)))))
@@ -151,6 +168,11 @@
                    :from   "2"
                    :member "2"}]
           expected {:name "chat-name"
+                    :created-at 0
+                    "2" {:added 1
+                         :admin-added 2
+                         :admin-removed 3
+                         :removed 4}
                     :admins #{"1"}
                     :contacts #{"1"}}]
       (is (= expected (group-chats/build-group events)))))
@@ -172,6 +194,10 @@
                    :from    "2"
                    :name  "new-name"}]
           expected {:name "new-name"
+                    :created-at 0
+                    :name-changed-at 3
+                    "2" {:added 1
+                         :admin-added 2}
                     :admins #{"1" "2"}
                     :contacts #{"1" "2"}}]
       (is (= expected (group-chats/build-group events)))))
@@ -205,6 +231,10 @@
                    :from    "1"
                    :member  "2"}]
           expected {:name "chat-name"
+                    :created-at 0
+                    "2" {:added 2
+                         :admin-added 3}
+                    "3" {:added 4}
                     :admins #{"1" "2"}
                     :contacts #{"1" "2" "3"}}]
       (is (= expected (group-chats/build-group events)))))
@@ -226,6 +256,10 @@
                    :from    "2"
                    :members  ["3"]}]
           expected {:name "chat-name"
+                    :created-at 0
+                    "2" {:added 1
+                         :admin-added 2}
+                    "3" {:added 3}
                     :admins #{"1" "2"}
                     :contacts #{"1" "2" "3"}}]
       (is (= expected (group-chats/build-group events))))))
@@ -343,6 +377,7 @@
     (let [cofx {:db {:chats {chat-id {:admins #{admin}
                                       :name "chat-name"
                                       :chat-id chat-id
+                                      :last-clock-value 3
                                       :is-active true
                                       :group-chat true
                                       :contacts #{member-1 member-2 member-3}
@@ -367,7 +402,8 @@
       (let [cofx {:db {:current-chat-id chat-id
                        :selected-participants ["new-member"]
                        :current-public-key "me"
-                       :chats {chat-id {:membership-updates [{:events [{:clock-value 1}]}]}}}}]
+                       :chats {chat-id {:last-clock-value   1
+                                        :membership-updates [{:events [{:clock-value 1}]}]}}}}]
         (is (= {:chat-id chat-id
                 :from "me"
                 :events [{:type "members-added"
@@ -380,6 +416,7 @@
     (testing "remove-member"
       (let [cofx {:db {:current-public-key "me"
                        :chats {chat-id {:admins #{"me"}
+                                        :last-clock-value 1
                                         :contacts #{"member"}
                                         :membership-updates [{:events [{:clock-value 1}]}]}}}}]
         (is (= {:chat-id chat-id

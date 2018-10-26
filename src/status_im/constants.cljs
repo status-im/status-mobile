@@ -13,7 +13,7 @@
 (def content-type-emoji "emoji")
 
 (def desktop-content-types
-  #{content-type-text content-type-emoji})
+  #{content-type-text content-type-emoji content-type-status})
 
 (def min-password-length 6)
 (def max-chat-name-length 20)
