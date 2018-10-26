@@ -15,17 +15,17 @@
 (handlers/register-handler-fx
  :new-chat/set-new-identity
  (fn [{{:keys [web3 network network-status] :as db} :db} [_ new-identity]]
-   (let [new-identity-error (db/validate-pub-key db new-identity)]
-     (if (and (string? new-identity)
-              (string/starts-with? new-identity "0x"))
-       {:db (assoc db
-                   :contacts/new-identity       new-identity
-                   :contacts/new-identity-error new-identity-error)}
-       (let [network (get-in db [:account/account :networks network])
-             chain   (ethereum/network->chain-keyword network)]
-         {:resolve-whisper-identity {:web3 web3
-                                     :registry (get ens/ens-registries chain)
-                                     :ens-name (if (ens/is-valid-eth-name? new-identity)
-                                                 new-identity
-                                                 (str new-identity ".stateofus.eth"))
-                                     :cb #(re-frame/dispatch [:new-chat/set-new-identity %])}})))))
+   (let [is-public-key? (and (string? new-identity)
+                             (string/starts-with? new-identity "0x"))]
+     (merge {:db (assoc db
+                        :contacts/new-identity       new-identity
+                        :contacts/new-identity-error (db/validate-pub-key db new-identity))}
+            (when-not is-public-key?
+              (let [network (get-in db [:account/account :networks network])
+                    chain   (ethereum/network->chain-keyword network)]
+                {:resolve-whisper-identity {:web3 web3
+                                            :registry (get ens/ens-registries chain)
+                                            :ens-name (if (ens/is-valid-eth-name? new-identity)
+                                                        new-identity
+                                                        (str new-identity ".stateofus.eth"))
+                                            :cb #(re-frame/dispatch [:new-chat/set-new-identity %])}}))))))
