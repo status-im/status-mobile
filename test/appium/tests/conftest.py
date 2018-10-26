@@ -18,8 +18,8 @@ sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 github_token = environ.get('GIT_HUB_TOKEN')
 
 sauce = SauceClient(sauce_username, sauce_access_key)
-github_report = GithubHtmlReport(sauce_username, sauce_access_key)
-testrail_report = TestrailReport(sauce_username, sauce_access_key)
+github_report = GithubHtmlReport()
+testrail_report = TestrailReport()
 
 
 def pytest_addoption(parser):
@@ -136,13 +136,13 @@ def pytest_configure(config):
 
 def pytest_unconfigure(config):
     if is_master(config):
+        if config.getoption('testrail_report'):
+            testrail_report.add_results()
         if config.getoption('pr_number'):
             from github import Github
             repo = Github(github_token).get_user('status-im').get_repo('status-react')
             pull = repo.get_pull(int(config.getoption('pr_number')))
-            pull.create_issue_comment(github_report.build_html_report())
-        if config.getoption('testrail_report'):
-            testrail_report.add_results()
+            pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
 
 
 @pytest.mark.hookwrapper

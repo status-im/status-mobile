@@ -112,7 +112,7 @@ class AbstractTestCase:
     errors = []
 
     network_api = NetworkApi()
-    github_report = GithubHtmlReport(sauce_username, sauce_access_key)
+    github_report = GithubHtmlReport()
 
     def verify_no_errors(self):
         if self.errors:

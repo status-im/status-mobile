@@ -1,14 +1,15 @@
 import os
 from support.base_test_report import BaseTestReport
+from support.testrail_report import TestrailReport
 
 
 class GithubHtmlReport(BaseTestReport):
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
-    def __init__(self, sauce_username, sauce_access_key):
-        super(GithubHtmlReport, self).__init__(sauce_username, sauce_access_key)
+    def __init__(self):
+        super(GithubHtmlReport, self).__init__()
 
-    def build_html_report(self):
+    def build_html_report(self, run_id):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
@@ -23,14 +24,14 @@ class GithubHtmlReport(BaseTestReport):
             failed_tests_html = str()
             passed_tests_html = str()
             if failed_tests:
-                failed_tests_html = self.build_tests_table_html(failed_tests, failed_tests=True)
+                failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
             if passed_tests:
-                passed_tests_html = self.build_tests_table_html(passed_tests, failed_tests=False)
+                passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
             return title_html + summary_html + failed_tests_html + passed_tests_html
         else:
             return None
 
-    def build_tests_table_html(self, tests, failed_tests=False):
+    def build_tests_table_html(self, tests, run_id, failed_tests=False):
         tests_type = "Failed tests" if failed_tests else "Passed tests"
         html = "<h3>%s (%d)</h3>" % (tests_type, len(tests))
         html += "<details>"
@@ -45,14 +46,18 @@ class GithubHtmlReport(BaseTestReport):
         html += "<tr>"
         html += "</tr>"
         for i, test in enumerate(tests):
-            html += self.build_test_row_html(i, test)
+            html += self.build_test_row_html(i, test, run_id)
         html += "</tbody>"
         html += "</table>"
         html += "</details>"
         return html
 
-    def build_test_row_html(self, index, test):
-        html = "<tr><td><b>%d. %s</b></td></tr>" % (index + 1, test.name)
+    def build_test_row_html(self, index, test, run_id):
+        test_rail_link = TestrailReport().get_test_result_link(run_id, test.testrail_case_id)
+        if test_rail_link:
+            html = "<tr><td><b>%s. <a href=\"%s\">%s</a></b></td></tr>" % (index + 1, test_rail_link, test.name)
+        else:
+            html = "<tr><td><b>%d. %s</b> (TestRail link is not found)</td></tr>" % (index + 1, test.name)
         html += "<tr><td>"
         test_steps_html = list()
         last_testrun = test.testruns[-1]

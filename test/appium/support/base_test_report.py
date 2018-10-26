@@ -11,9 +11,9 @@ from support.test_data import SingleTestData
 class BaseTestReport:
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
-    def __init__(self, sauce_username, sauce_access_key):
-        self.sauce_username = sauce_username
-        self.sauce_access_key = sauce_access_key
+    def __init__(self):
+        self.sauce_username = os.environ.get('SAUCE_USERNAME')
+        self.sauce_access_key = os.environ.get('SAUCE_ACCESS_KEY')
         self.init_report()
 
     def init_report(self):
