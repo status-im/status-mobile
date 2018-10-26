@@ -107,7 +107,18 @@
         (is (:last-in-group? actual-m1))
         (is (:last-in-group? actual-m2))
         (is (:last-in-group? actual-m3))
-        (is (not (:last-in-group? actual-m4)))))))
+        (is (not (:last-in-group? actual-m4))))))
+  (testing "system-messages"
+    (let [m1 {:from "system"
+              :message-type :system-message
+              :datemark "a"
+              :outgoing false}
+          messages [m1]
+          [actual-m1] (s/messages-stream messages)]
+      (testing "it does display the photo"
+        (is (:display-photo? actual-m1))
+        (testing "it does not display the username"
+          (is (not (:display-username? actual-m1))))))))
 
 (deftest active-chats-test
   (let [active-chat-1 {:is-active true :chat-id 1}

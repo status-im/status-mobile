@@ -50,12 +50,6 @@
              public?
              [react/text {:style styles/public-chat-text}
               (i18n/label :t/public-chat)])]]
-     #_[react/view
-        [react/popup-menu
-         [react/popup-menu-trigger {:text "Popup test"}]
-         [react/popup-menu-options
-          [react/popup-menu-option {:text "First"}]
-          [react/popup-menu-option {:text "Second"}]]]]
      [react/view
       (when (and (not group-chat) (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
@@ -69,7 +63,10 @@
                    :on-press #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
        (i18n/label :t/clear-history)]
       [react/text {:style (styles/profile-actions-text colors/black)
-                   :on-press #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}
+                   :on-press #(re-frame/dispatch [(if (and group-chat (not public?))
+                                                    :group-chats.ui/remove-chat-pressed
+                                                    :chat.ui/remove-chat-pressed)
+                                                  chat-id])}
        (i18n/label :t/delete-chat)]]]))
 
 (views/defview message-author-name [{:keys [from]}]
@@ -155,6 +152,18 @@
   [react/view {:style {:width             40
                        :margin-horizontal 16}}])
 
+(views/defview system-message [text {:keys [content from first-in-group? timestamp] :as message}]
+  [react/view
+   [react/view {:style {:flex-direction :row :margin-top 24}}
+    [member-photo from]
+    [react/view {:style {:flex 1}}]
+    [react/text {:style styles/message-timestamp}
+     (time/timestamp->time timestamp)]]
+   [react/view {:style styles/not-first-in-group-wrapper}
+    [photo-placeholder]
+    [react/text {:style styles/system-message-text}
+     text]]])
+
 (views/defview message-with-name-and-avatar [text {:keys [from first-in-group? timestamp] :as message}]
   [react/view
    (when first-in-group?
@@ -180,6 +189,14 @@
     [photo-placeholder]
     [react/view {:style styles/message-command-container}
      [message/message-content-command message]]]])
+
+(views/defview message-content-status [text message]
+  [react/view
+   [system-message text message]])
+
+(defmethod message constants/content-type-status
+  [text _ message]
+  [message-content-status text message])
 
 (defmethod message :default
   [text me? {:keys [message-id chat-id message-status user-statuses from

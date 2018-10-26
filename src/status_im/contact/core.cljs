@@ -30,10 +30,14 @@
            ;; it's not in the contact list at all
            (nil? pending?))))
 
-(defn- build-contact [whisper-id {{:keys [chats] :contacts/keys [contacts]} :db}]
-  (assoc (or (get contacts whisper-id)
-             (utils.contacts/whisper-id->new-contact whisper-id))
-         :address (utils.contacts/public-key->address whisper-id)))
+(defn build-contact [{{:keys [chats current-public-key]
+                       :account/keys [account]
+                       :contacts/keys [contacts]} :db} whisper-id]
+  (cond-> (assoc (or (get contacts whisper-id)
+                     (utils.contacts/whisper-id->new-contact whisper-id))
+                 :address (utils.contacts/public-key->address whisper-id))
+
+    (= whisper-id current-public-key) (assoc :name (:name account))))
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:account/account db)
@@ -62,10 +66,11 @@
       (protocol/send (message.contact/map->ContactRequest (own-info db)) whisper-identity cofx))))
 
 (fx/defn add-contact [{:keys [db] :as cofx} whisper-id]
-  (let [contact (build-contact whisper-id cofx)]
-    (fx/merge cofx
-              (add-new-contact contact)
-              (send-contact-request contact))))
+  (when (not= (get-in db [:account/account :public-key]) whisper-id)
+    (let [contact (build-contact cofx whisper-id)]
+      (fx/merge cofx
+                (add-new-contact contact)
+                (send-contact-request contact)))))
 
 (fx/defn add-tag
   "add a tag to the contact"

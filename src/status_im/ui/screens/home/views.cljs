@@ -40,7 +40,10 @@
 (views/defview home-list-item [[home-item-id home-item]]
   (views/letsubs [swiped? [:delete-swipe-position home-item-id]]
     (let [delete-action (if (:chat-id home-item)
-                          :chat.ui/remove-chat
+                          (if (and (:group-chat home-item)
+                                   (not (:public? home-item)))
+                            :group-chats.ui/remove-chat-pressed
+                            :chat.ui/remove-chat)
                           :browser.ui/remove-browser-pressed)
           inner-item-view (if (:chat-id home-item)
                             inner-item/home-list-chat-item-inner-view

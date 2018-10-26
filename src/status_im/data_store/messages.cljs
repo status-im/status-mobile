@@ -136,11 +136,3 @@
   (fn [realm]
     (core/delete realm (core/get-by-field realm :message :chat-id chat-id))
     (core/delete realm (core/get-by-field realm :user-status :chat-id chat-id))))
-
-(defn hide-messages-tx
-  "Returns tx function for hiding messages for given chat-id"
-  [chat-id]
-  (fn [realm]
-    (.map (core/get-by-field realm :message :chat-id chat-id)
-          (fn [msg _ _]
-            (aset msg "show?" false)))))

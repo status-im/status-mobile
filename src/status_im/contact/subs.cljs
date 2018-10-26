@@ -105,7 +105,9 @@
 (reg-sub :get-all-contacts-not-in-current-chat
          :<- [:query-current-chat-contacts remove]
          (fn [contacts]
-           (remove :dapp? contacts)))
+           (->> contacts
+                (remove :dapp?)
+                (sort-by (comp clojure.string/lower-case :name)))))
 
 (defn get-all-contacts-in-group-chat [members contacts current-account]
   (let [current-account-contact (-> current-account

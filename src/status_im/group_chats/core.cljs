@@ -7,6 +7,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.utils.clocks :as utils.clocks]
+            [status-im.chat.models.message :as models.message]
+            [status-im.contact.core :as models.contact]
             [status-im.native-module.core :as native-module]
             [status-im.transport.utils :as transport.utils]
             [status-im.transport.db :as transport.db]
@@ -39,11 +41,7 @@
 (defn get-last-clock-value
   "Given a chat id get the last clock value of an event"
   [cofx chat-id]
-  (->> (get-in cofx [:db :chats chat-id :membership-updates])
-       (mapcat :events)
-       (map :clock-value)
-       sort
-       last))
+  (->> (get-in cofx [:db :chats chat-id :last-clock-value])))
 
 (defn- parse-response [response-js]
   (-> response-js
@@ -99,15 +97,6 @@
                            (= from member)
                            (not= #{from} admins))
       false)))
-
-(defn wrap-group-message
-  "Wrap a group message in a membership update"
-  [cofx chat-id message]
-  (when-let [chat (get-in cofx [:db :chats chat-id])]
-    (message.group-chat/map->GroupMembershipUpdate.
-     {:chat-id              chat-id
-      :membership-updates   (:membership-updates chat)
-      :message              message})))
 
 (defn send-membership-update
   "Send a membership update to all participants but the sender"
@@ -236,6 +225,15 @@
            (assoc-in [:group-chat-profile/profile :valid-name?] (valid-name? name))
            (assoc-in [:group-chat-profile/profile :name] name))})
 
+(defn extract-creator
+  "Takes a chat as an input, returns the creator"
+  [{:keys [membership-updates]}]
+  (->> membership-updates
+       (filter (fn [{:keys [events]}]
+                 (some #(= "chat-created" (:type %)) events)))
+       first
+       :from))
+
 (fx/defn handle-name-changed
   "Store name in profile scratchpad"
   [cofx new-chat-name]
@@ -244,27 +242,47 @@
 (fx/defn save
   "Save chat from edited profile"
   [{:keys [db] :as cofx}]
-  (let [current-chat-id (get-in cofx [:db :current-chat-id])
-        new-name (get-in cofx [:db :group-chat-profile/profile :name])]
+  (let [current-chat-id    (get-in cofx [:db :current-chat-id])
+        my-public-key      (get-in db [:account/account :public-key])
+        last-clock-value   (get-last-clock-value cofx current-chat-id)
+        new-name           (get-in cofx [:db :group-chat-profile/profile :name])
+        name-changed-event {:type        "name-changed"
+                            :name        new-name
+                            :clock-value (utils.clocks/send last-clock-value)}]
     (when (valid-name? new-name)
       (fx/merge cofx
-                {:db (assoc db :group-chat-profile/editing? false)}
-                (models.chat/upsert-chat {:chat-id current-chat-id
-                                          :name new-name})))))
+                {:db                          (assoc db
+                                                     :group-chat-profile/editing?
+                                                     false)
+                 :group-chats/sign-membership {:chat-id current-chat-id
+                                               :from    my-public-key
+                                               :events  [name-changed-event]}}))))
 
 (defn process-event
-  "Add/remove an event to a group"
-  [group {:keys [type member members chat-id from name] :as event}]
+  "Add/remove an event to a group, carrying the clock-value at which it happened"
+  [group {:keys [type member members chat-id clock-value from name] :as event}]
   (if (valid-event? group event)
     (case type
-      "chat-created"   {:name     name
-                        :admins   #{from}
-                        :contacts #{from}}
-      "name-changed"   (assoc group :name name)
-      "members-added"  (update group :contacts clojure.set/union (into #{} members))
-      "admins-added"   (update group :admins clojure.set/union (into #{} members))
-      "member-removed" (update group :contacts disj member)
-      "admin-removed"  (update group :admins disj member))
+      "chat-created"   {:name       name
+                        :created-at clock-value
+                        :admins     #{from}
+                        :contacts   #{from}}
+      "name-changed"   (assoc group
+                              :name name
+                              :name-changed-by from
+                              :name-changed-at clock-value)
+      "members-added"  (as-> group $
+                         (update $ :contacts clojure.set/union (set members))
+                         (reduce (fn [acc member] (assoc-in acc [member :added] clock-value)) $ members))
+      "admins-added"   (as-> group $
+                         (update $ :admins clojure.set/union (set members))
+                         (reduce (fn [acc member] (assoc-in acc [member :admin-added] clock-value)) $ members))
+      "member-removed" (-> group
+                           (update :contacts disj member)
+                           (assoc-in [member :removed] clock-value))
+      "admin-removed"  (-> group
+                           (update :admins disj member)
+                           (assoc-in [member :admin-removed] clock-value)))
     group))
 
 (defn build-group
@@ -277,24 +295,78 @@
         {:admins #{}
          :contacts #{}})))
 
-(fx/defn update-membership
-  "Upsert chat when version is greater or not existing"
-  [cofx previous-chat {:keys [chat-id] :as new-chat}]
-  (let [all-updates        (clojure.set/union (into #{} (:membership-updates previous-chat))
-                                              (into #{} (:membership-updates new-chat)))
-        unwrapped-events   (mapcat
-                            (fn [{:keys [events from]}]
-                              (map #(assoc % :from from) events))
-                            all-updates)
-        new-group          (build-group unwrapped-events)]
-    (models.chat/upsert-chat cofx
-                             {:chat-id              chat-id
-                              :name                 (:name new-group)
-                              :is-active            (get previous-chat :is-active true)
-                              :group-chat           true
-                              :membership-updates   (into [] all-updates)
-                              :admins               (:admins new-group)
-                              :contacts              (:contacts new-group)})))
+(defn membership-changes->system-messages [cofx
+                                           clock-values
+                                           {:keys [chat-id
+                                                   chat-name
+                                                   creator
+                                                   members-added
+                                                   name-changed?
+                                                   members-removed]}]
+  (let [get-contact         (partial models.contact/build-contact cofx)
+        format-message      (fn [contact text clock-value]
+                              {:chat-id     chat-id
+                               :content     {:text text}
+                               :clock-value clock-value
+                               :from        (:whisper-identity contact)})
+        creator-contact     (when creator (get-contact creator))
+        name-changed-author (when name-changed? (get-contact (:name-changed-by clock-values)))
+        contacts-added      (map
+                             get-contact
+                             (disj members-added creator))
+        contacts-removed    (map
+                             get-contact
+                             members-removed)]
+    (cond-> []
+      creator-contact (conj (format-message creator-contact
+                                            (i18n/label :t/group-chat-created
+                                                        {:name   chat-name
+                                                         :member (:name creator-contact)})
+                                            (:created-at clock-values)))
+      name-changed?  (conj (format-message name-changed-author
+                                           (i18n/label :t/group-chat-name-changed
+                                                       {:name   chat-name
+                                                        :member (:name name-changed-author)})
+                                           (:name-changed-at clock-values)))
+      (seq members-added) (concat (map #(format-message
+                                         %
+                                         (i18n/label :t/group-chat-member-added {:member (:name %)})
+                                         (get-in clock-values [(:whisper-identity %) :added]))
+                                       contacts-added))
+      (seq members-removed) (concat (map #(format-message
+                                           %
+                                           (i18n/label :t/group-chat-member-removed {:member (:name %)})
+                                           (get-in clock-values [(:whisper-identity %) :removed]))
+                                         contacts-removed)))))
+
+(fx/defn add-system-messages [cofx chat-id previous-chat clock-values]
+  (let [current-chat (get-in cofx [:db :chats chat-id])
+        current-public-key (get-in cofx [:db :current-public-key])
+        name-changed?  (and (seq previous-chat)
+                            (not= (:name previous-chat) (:name current-chat)))
+        members-added (clojure.set/difference (:contacts current-chat) (:contacts previous-chat))
+        members-removed (clojure.set/difference (:contacts previous-chat) (:contacts current-chat))
+        membership-changes (cond-> {:chat-id         chat-id
+                                    :name-changed?   name-changed?
+                                    :chat-name       (:name current-chat)
+                                    :members-added   members-added
+                                    :members-removed members-removed}
+                             (nil? previous-chat)
+                             (assoc :creator (extract-creator current-chat)))]
+    (when (or name-changed?
+              (seq members-added)
+              (seq members-removed))
+      (->> membership-changes
+           (membership-changes->system-messages cofx clock-values)
+           (models.message/add-system-messages cofx)))))
+
+(defn- unwrap-events
+  "Flatten all events, denormalizing from field"
+  [all-updates]
+  (mapcat
+   (fn [{:keys [events from]}]
+     (map #(assoc % :from from) events))
+   all-updates))
 
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
@@ -306,10 +378,21 @@
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :account/account :dev-mode?])]
     (when (and (config/group-chats-enabled? dev-mode?)
-               (valid-chat-id? chat-id (-> membership-updates first :from)))
-      (let [previous-chat (get-in cofx [:db :chats chat-id])]
+               (valid-chat-id? chat-id (extract-creator membership-update)))
+      (let [previous-chat (get-in cofx [:db :chats chat-id])
+            all-updates (clojure.set/union (set (:membership-updates previous-chat))
+                                           (set (:membership-updates membership-update)))
+            unwrapped-events (unwrap-events all-updates)
+            new-group (build-group unwrapped-events)]
         (fx/merge cofx
-                  (update-membership previous-chat membership-update)
+                  (models.chat/upsert-chat {:chat-id            chat-id
+                                            :name               (:name new-group)
+                                            :is-active          (get previous-chat :is-active true)
+                                            :group-chat         true
+                                            :membership-updates (into [] all-updates)
+                                            :admins             (:admins new-group)
+                                            :contacts           (:contacts new-group)})
+                  (add-system-messages chat-id previous-chat new-group)
                   #(when (and message
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)

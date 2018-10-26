@@ -181,14 +181,16 @@
           message-groups))
 
 (defn- set-previous-message-info [stream]
-  (let [{:keys [display-photo?] :as previous-message} (peek stream)]
+  (let [{:keys [display-photo? message-type] :as previous-message} (peek stream)]
     (conj (pop stream) (assoc previous-message
-                              :display-username? display-photo?
+                              :display-username? (and display-photo?
+                                                      (not= :system-message message-type))
                               :first-in-group?   true))))
 
 (defn display-photo? [{:keys [outgoing message-type]}]
-  (and (not outgoing)
-       (not= message-type :user-message)))
+  (or (= :system-message message-type)
+      (and (not outgoing)
+           (not (= :user-message message-type)))))
 
 ; any message that comes after this amount of ms will be grouped separately
 (def ^:private group-ms 60000)
@@ -201,7 +203,8 @@
   (let [previous-message         (peek stream)
         ; Was the previous message from a different author or this message
         ; comes after x ms
-        last-in-group?           (or (not= from (:from previous-message))
+        last-in-group?           (or (= :system-message message-type)
+                                     (not= from (:from previous-message))
                                      (> (- (:timestamp previous-message) timestamp) group-ms))
         same-direction?          (= outgoing (:outgoing previous-message))
         ; Have we seen an outgoing message already?
