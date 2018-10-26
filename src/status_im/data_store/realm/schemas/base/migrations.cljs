@@ -111,3 +111,6 @@
 
 (defn v15 [old-realm new-realm]
   (log/debug "migrating base database v15: " old-realm new-realm))
+
+(defn v16 [old-realm new-realm]
+  (log/debug "migrating base database v16: " old-realm new-realm))

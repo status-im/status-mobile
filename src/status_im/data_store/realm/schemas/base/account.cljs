@@ -211,3 +211,5 @@
 (def v14 (assoc-in v13
                    [:properties :desktop-alpha-release-warning-shown?]
                    {:type :bool :default false}))
+
+(def v15 (update v14 :properties dissoc :email))

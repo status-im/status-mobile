@@ -67,7 +67,6 @@
                                :public-key       nil}}
             current-account  {:last-updated        0,
                               :address             "f23d28f538fd8cd4a90c2d96ca89f5bccca5383f",
-                              :email               nil,
                               :signed-up?          true,
                               :sharing-usage-data? false,
                               :name                "User A",
