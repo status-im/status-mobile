@@ -95,10 +95,10 @@
         updated-statuses (map #(assoc % :status :not-sent) pending-statuses)]
     {:data-store/tx [(user-statuses-store/save-statuses-tx updated-statuses)]
      :db            (reduce
-                     (fn [acc {:keys [chat-id message-id status whisper-identity]}]
+                     (fn [acc {:keys [chat-id message-id status public-key]}]
                        (assoc-in acc
                                  [:chats chat-id :message-status message-id
-                                  whisper-identity :status]
+                                  public-key :status]
                                  status))
                      db
                      updated-statuses)}))

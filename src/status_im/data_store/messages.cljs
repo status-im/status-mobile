@@ -89,8 +89,8 @@
                   (-> @core/account-realm
                       (core/get-by-fields
                        :user-status
-                       :and {:whisper-identity public-key
-                             :status           "received"})
+                       :and {:public-key public-key
+                             :status     "received"})
                       (core/all-clj :user-status)))))
 
 (re-frame/reg-cofx

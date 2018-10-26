@@ -1053,13 +1053,13 @@
 (handlers/register-handler-fx
  :contact.ui/add-to-contact-pressed
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ whisper-id]]
-   (contact/add-contact cofx whisper-id)))
+ (fn [cofx [_ public-key]]
+   (contact/add-contact cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/close-contact-pressed
- (fn [cofx [_ whisper-id]]
-   (contact/hide-contact cofx whisper-id)))
+ (fn [cofx [_ public-key]]
+   (contact/hide-contact cofx public-key)))
 
 (handlers/register-handler-fx
  :contact/qr-code-scanned
@@ -1075,8 +1075,8 @@
 (handlers/register-handler-fx
  :contact.ui/send-message-pressed
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ {:keys [whisper-identity]}]]
-   (contact/add-contact-and-open-chat cofx whisper-identity)))
+ (fn [cofx [_ {:keys [public-key]}]]
+   (contact/add-contact-and-open-chat cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted

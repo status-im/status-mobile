@@ -15,7 +15,7 @@
 
 (nodejs/enable-util-print!)
 
-(def contact-whisper-identity "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
+(def contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74")
 (def rpc-url (aget nodejs/process.env "WNODE_ADDRESS"))
 
 (def Web3 (js/require "web3"))
@@ -41,7 +41,7 @@
        (rf/reg-fx :data-store.transport/save (constantly nil))
        (rf/reg-fx :data-store/update-message (constantly nil))
 
-       (rf/dispatch [:contact.ui/send-message-pressed {:whisper-identity contact-whisper-identity}])
+       (rf/dispatch [:contact.ui/send-message-pressed {:public-key contact-public-key}])
        (rf-test/wait-for [::transport.contact/send-new-sym-key]
                          (rf/dispatch [:set-chat-input-text "test message"])
                          (rf/dispatch [:send-current-message])

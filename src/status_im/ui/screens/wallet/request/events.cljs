@@ -10,12 +10,12 @@
 
 (handlers/register-handler-fx
  :wallet-send-request
- (fn [{:keys [db] :as cofx} [_ whisper-identity amount symbol decimals]]
-   (assert whisper-identity)
+ (fn [{:keys [db] :as cofx} [_ public-key amount symbol decimals]]
+   (assert public-key)
    (let [request-command (get-in db [:id->command ["request" #{:personal-chats}]])]
      (fx/merge cofx
-               (chat-model/start-chat whisper-identity nil)
-               (commands-sending/send whisper-identity
+               (chat-model/start-chat public-key nil)
+               (commands-sending/send public-key
                                       request-command
                                       {:asset  (name symbol)
                                        :amount (str (money/internal->formatted amount symbol decimals))})))))

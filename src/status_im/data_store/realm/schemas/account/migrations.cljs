@@ -133,3 +133,23 @@
 
 (defn v22 [old-realm new-realm]
   (log/debug "migrating v22 account database"))
+
+(defn v23
+  "the primary key for contact was whisper-identity
+  change to public-key and remove whisper-identity field"
+  [old-realm new-realm]
+  (log/debug "migrating v20 account database")
+  (let [old-contacts (.objects old-realm "contact")
+        new-contacts (.objects new-realm "contact")]
+    (dotimes [i (.-length old-contacts)]
+      (let [old-contact (aget old-contacts i)
+            new-contact (aget new-contacts i)
+            whisper-identity (aget old-contact "whisper-identity")]
+        (aset new-contact "public-key" whisper-identity))))
+  (let [old-user-statuses (.objects old-realm "user-status")
+        new-user-statuses (.objects new-realm "user-status")]
+    (dotimes [i (.-length old-user-statuses)]
+      (let [old-user-status (aget old-user-statuses i)
+            new-user-status (aget new-user-statuses i)
+            whisper-identity (aget old-user-status "whisper-identity")]
+        (aset new-user-status "public-key" whisper-identity)))))

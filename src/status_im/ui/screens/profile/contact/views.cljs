@@ -16,11 +16,11 @@
    toolbar/default-nav-back
    [toolbar/content-title ""]])
 
-(defn actions [{:keys [pending? whisper-identity dapp?]}]
+(defn actions [{:keys [pending? public-key dapp?]}]
   (concat (if (or (nil? pending?) pending?)
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :icons/add-contact
-              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed whisper-identity])
+              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
               :accessibility-label :add-to-contacts-button}]
             [{:label               (i18n/label :t/in-contacts)
               :icon                :icons/in-contacts
@@ -28,16 +28,16 @@
               :accessibility-label :in-contacts-button}])
           [{:label               (i18n/label :t/send-message)
             :icon                :icons/chats
-            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:whisper-identity whisper-identity}])
+            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
             :accessibility-label :start-conversation-button}]
           (when-not dapp?
             [{:label               (i18n/label :t/send-transaction)
               :icon                :icons/arrow-right
-              :action              #(re-frame/dispatch [:profile/send-transaction whisper-identity])
+              :action              #(re-frame/dispatch [:profile/send-transaction public-key])
               :accessibility-label :send-transaction-button}])
           [{:label               (i18n/label :t/share-profile-link)
             :icon                :icons/share
-            :action              #(re-frame/dispatch [:profile/share-profile-link whisper-identity])
+            :action              #(re-frame/dispatch [:profile/share-profile-link public-key])
             :accessibility-label :share-profile-link}]))
 
 (defn profile-info-item [{:keys [label value options accessibility-label]}]
@@ -51,20 +51,20 @@
                  :selectable          true}
      value]]])
 
-(defn profile-info-contact-code-item [whisper-identity]
+(defn profile-info-contact-code-item [public-key]
   [profile-info-item
    {:label               (i18n/label :t/contact-code)
     :accessibility-label :profile-public-key
-    :value               whisper-identity}])
+    :value               public-key}])
 
-(defn profile-info [{:keys [whisper-identity]}]
+(defn profile-info [{:keys [public-key]}]
   [react/view
-   [profile-info-contact-code-item whisper-identity]])
+   [profile-info-contact-code-item public-key]])
 
 (defview profile []
   (letsubs [identity        [:get-current-contact-identity]
             maybe-contact   [:get-current-contact]]
-    (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))]
+    (let [contact (or maybe-contact (utils.contacts/public-key->new-contact identity))]
       [react/view profile.components.styles/profile
        [status-bar/status-bar]
        [profile-contact-toolbar]

@@ -53,23 +53,23 @@
      :accessibility-label :delete-chat-button}]))
 
 (defn member-actions [chat-id member]
-  [{:action #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) (:whisper-identity member)])
+  [{:action #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) (:public-key member)])
     :label  (i18n/label :t/view-profile)}
-   {:action #(re-frame/dispatch [:group-chats.ui/remove-member-pressed chat-id (:whisper-identity member)])
+   {:action #(re-frame/dispatch [:group-chats.ui/remove-member-pressed chat-id (:public-key member)])
     :label  (i18n/label :t/remove-from-chat)}])
 
-(defn render-member [chat-id {:keys [name whisper-identity] :as member} admin? current-user-identity]
+(defn render-member [chat-id {:keys [name public-key] :as member} admin? current-user-identity]
   [react/view
    [contact/contact-view
     {:contact             member
      :extend-options      (member-actions chat-id member)
      :extend-title        name
      :extended?           (and admin?
-                               (not= whisper-identity current-user-identity))
+                               (not= public-key current-user-identity))
      :accessibility-label :member-item
      :inner-props         {:accessibility-label :member-name-text}
-     :on-press            (when (not= whisper-identity current-user-identity)
-                            #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) whisper-identity]))}]])
+     :on-press            (when (not= public-key current-user-identity)
+                            #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) public-key]))}]])
 
 (defview chat-group-members-view [chat-id admin? current-user-identity]
   (letsubs [members [:get-current-chat-contacts]]

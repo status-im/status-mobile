@@ -84,7 +84,7 @@
               (assoc acc chat-id (if-let [contact (get contacts chat-id)]
                                    (-> chat
                                        (assoc :name (:name contact))
-                                       (assoc :random-name (gfycat/generate-gfy (:whisper-identity contact)))
+                                       (assoc :random-name (gfycat/generate-gfy (:public-key contact)))
                                        (update :tags clojure.set/union (:tags contact)))
                                    chat))
               acc))

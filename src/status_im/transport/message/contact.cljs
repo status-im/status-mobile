@@ -58,12 +58,8 @@
 (defrecord ContactUpdate [name profile-image address fcm-token]
   protocol/StatusMessage
   (send [this _ {:keys [db] :as cofx}]
-    ;;TODO: here we look for contact which have a :public-key to differentiate
-    ;;actual contacts from dapps
-    ;;This is not an ideal solution and we should think about a more reliable way
-    ;;to do this when we refactor app-db
-    (let [contact-public-keys (reduce (fn [acc [_ {:keys [public-key pending?]}]]
-                                        (if (and public-key
+    (let [contact-public-keys (reduce (fn [acc [_ {:keys [public-key dapp? pending?]}]]
+                                        (if (and (not dapp?)
                                                  (not pending?))
                                           (conj acc public-key)
                                           acc))

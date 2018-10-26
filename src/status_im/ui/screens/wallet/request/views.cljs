@@ -28,7 +28,7 @@
 (views/defview send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
   (views/letsubs [network                                           [:get-current-account-network]
-                  {:keys [to to-name whisper-identity]}             [:wallet.send/transaction]
+                  {:keys [to to-name public-key]}                   [:wallet.send/transaction]
                   {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
                   network-status [:network-status]
                   scroll (atom nil)]
@@ -57,7 +57,7 @@
         [bottom-buttons/bottom-buttons styles/bottom-buttons
          nil   ;; Force a phantom button to ensure consistency with other transaction screens which define 2 buttons
          [button/button {:disabled?           (or amount-error (not (and to amount)))
-                         :on-press            #(re-frame/dispatch [:wallet-send-request whisper-identity amount
+                         :on-press            #(re-frame/dispatch [:wallet-send-request public-key amount
                                                                    (wallet.utils/display-symbol token) decimals])
                          :text-style          {:padding-horizontal 0}
                          :accessibility-label :sent-request-button}

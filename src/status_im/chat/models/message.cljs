@@ -75,7 +75,7 @@
   (let [me     (:current-public-key db)
         status {:chat-id          chat-id
                 :message-id       message-id
-                :whisper-identity me
+                :public-key       me
                 :status           status}]
     {:db            (assoc-in db
                               [:chats chat-id :message-statuses message-id me]

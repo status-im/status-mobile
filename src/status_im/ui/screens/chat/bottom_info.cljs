@@ -40,24 +40,24 @@
         [react/animated-view {:style (styles/bottom-info-container height)}
          (into [react/view] children)])})))
 
-(defn- message-status-row [{:keys [photo-path name]} {:keys [whisper-identity status]}]
+(defn- message-status-row [{:keys [photo-path name]} {:keys [public-key status]}]
   [react/view styles/bottom-info-row
    [photos/photo
-    (or photo-path (identicon/identicon whisper-identity))
+    (or photo-path (identicon/identicon public-key))
     styles/bottom-info-row-photo-size]
    [react/view styles/bottom-info-row-text-container
     [react/text {:style           styles/bottom-info-row-text1
                  :number-of-lines 1}
      (utils/truncate-str (if-not (string/blank? name)
                            name
-                           whisper-identity) 30)]
+                           public-key) 30)]
     [react/text {:style           styles/bottom-info-row-text2
                  :number-of-lines 1}
      (i18n/message-status-label (or status :sending))]]])
 
 (defn- render-status [contacts]
-  (fn [{:keys [whisper-identity] :as row} _ _]
-    (let [contact (get contacts whisper-identity)]
+  (fn [{:keys [public-key] :as row} _ _]
+    (let [contact (get contacts public-key)]
       [message-status-row contact row])))
 
 (defn bottom-info-view []
@@ -70,8 +70,8 @@
         (let [{:keys [user-statuses message-status participants]} @bottom-info
               participants (->> participants
                                 (map (fn [{:keys [identity]}]
-                                       [identity {:whisper-identity identity
-                                                  :status           message-status}]))
+                                       [identity {:public-key identity
+                                                  :status     message-status}]))
                                 (into {}))
               statuses     (vals (merge participants user-statuses))]
           [overlay {:on-click-outside #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-bottom-info? false}])}

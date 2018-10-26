@@ -32,28 +32,3 @@
                {:identity "Ethlance"}
                {:identity "Commiteth"}]
    :pending?  false})
-
-(def demo-bot-contact
-  {:address          nil
-   :name             "Demo bot"
-   :description      nil
-   :hide-contact?    false
-   :dapp-hash        nil
-   :photo-path       nil
-   :dapp-url         nil
-   :bot-url          "local://demo-bot"
-   :whisper-identity "demo-bot"
-   :dapp?            true
-   :pending?         false
-   :unremovable?     false
-   :public-key       nil})
-
-(def console-contact
-  {:whisper-identity "console"
-   :name             "status-console"
-   :photo-path       "contacts://console"
-   :dapp?            true
-   :unremovable?     true
-   :bot-url          "local://console-bot"
-   :status           "intro-status"
-   :pending?         false})

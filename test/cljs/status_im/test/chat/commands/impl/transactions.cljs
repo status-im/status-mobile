@@ -10,7 +10,7 @@
                 :current-chat-id   "recipient"
                 :contacts/contacts {"recipient" {:name             "Recipient"
                                                  :address          "0xAA"
-                                                 :whisper-identity "0xBB"}}}})
+                                                 :public-key "0xBB"}}}})
 
 ;; testing the `/send` command
 

@@ -84,10 +84,10 @@
        [react/view {:style styles/suggested-contacts}
         (doall
          (for [c contacts]
-           ^{:key (:whisper-identity c)}
+           ^{:key (:public-key c)}
            [react/touchable-highlight {:on-press #(do
-                                                    (re-frame/dispatch [:set :contacts/new-identity (:whisper-identity c)])
-                                                    (re-frame/dispatch [:contact.ui/contact-code-submitted (:whisper-identity c)]))}
+                                                    (re-frame/dispatch [:set :contacts/new-identity (:public-key c)])
+                                                    (re-frame/dispatch [:contact.ui/contact-code-submitted (:public-key c)]))}
             [react/view {:style styles/suggested-contact-view}
              [react/image {:style  styles/suggested-contact-image
                            :source {:uri (:photo-path c)}}]

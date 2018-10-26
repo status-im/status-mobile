@@ -250,7 +250,7 @@
 ;; TODO(goranjovic) - update to include tokens in https://github.com/status-im/status-react/issues/3233
 (defn- transaction-details [contact symbol]
   (-> contact
-      (select-keys [:name :address :whisper-identity])
+      (select-keys [:name :address :public-key])
       (assoc :symbol symbol
              :gas (ethereum/estimate-gas symbol)
              :from-chat? true)))

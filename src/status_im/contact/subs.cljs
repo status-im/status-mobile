@@ -25,8 +25,8 @@
 
 (defn sort-contacts [contacts]
   (sort (fn [c1 c2]
-          (let [name1 (or (:name c1) (:address c1) (:whisper-identity c1))
-                name2 (or (:name c2) (:address c2) (:whisper-identity c2))]
+          (let [name1 (or (:name c1) (:address c1) (:public-key c1))
+                name2 (or (:name c2) (:address c2) (:public-key c2))]
             (compare (clojure.string/lower-case name1)
                      (clojure.string/lower-case name2))))
         (vals contacts)))
@@ -60,7 +60,7 @@
 
 (defn filter-group-contacts [group-contacts contacts]
   (let [group-contacts' (into #{} group-contacts)]
-    (filter #(group-contacts' (:whisper-identity %)) contacts)))
+    (filter #(group-contacts' (:public-key %)) contacts)))
 
 (reg-sub :get-contact-by-identity
          :<- [:get-contacts]
@@ -69,7 +69,7 @@
            (let [identity' (or identity (first contacts))]
              (or
               (get all-contacts identity')
-              (utils.contacts/whisper-id->new-contact identity')))))
+              (utils.contacts/public-key->new-contact identity')))))
 
 (reg-sub :contacts/dapps-by-name
          :<- [:all-dapps]
@@ -94,7 +94,7 @@
 
 (defn query-chat-contacts [[{:keys [contacts]} all-contacts] [_ query-fn]]
   (let [participant-set (into #{} (filter identity) contacts)]
-    (query-fn (comp participant-set :whisper-identity) (vals all-contacts))))
+    (query-fn (comp participant-set :public-key) (vals all-contacts))))
 
 (reg-sub :query-current-chat-contacts
          :<- [:get-current-chat]
@@ -110,12 +110,11 @@
 
 (defn get-all-contacts-in-group-chat [members contacts current-account]
   (let [current-account-contact (-> current-account
-                                    (select-keys [:name :photo-path :public-key])
-                                    (clojure.set/rename-keys {:public-key :whisper-identity}))
-        all-contacts            (assoc contacts (:whisper-identity current-account-contact) current-account-contact)]
+                                    (select-keys [:name :photo-path :public-key]))
+        all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
     (->> members
          (map #(or (get all-contacts %)
-                   (utils.contacts/whisper-id->new-contact %)))
+                   (utils.contacts/public-key->new-contact %)))
          (remove :dapp?)
          (sort-by (comp clojure.string/lower-case :name)))))
 

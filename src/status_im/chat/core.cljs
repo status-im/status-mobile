@@ -13,7 +13,7 @@
            (let [statuses (map (fn [message-id]
                                  {:chat-id          chat-id
                                   :message-id       message-id
-                                  :whisper-identity sender
+                                  :public-key       sender
                                   :status           :seen})
                                seen-messages-ids)]
              {:db            (reduce (fn [acc {:keys [message-id] :as status}]

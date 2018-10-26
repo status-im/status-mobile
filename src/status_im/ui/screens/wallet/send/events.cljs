@@ -83,12 +83,12 @@
 (handlers/register-handler-fx
  ::transaction-completed
  (fn [{:keys [db now] :as cofx} [_ {:keys [result error]}]]
-   (let [{:keys [id method whisper-identity to symbol amount-text on-result]} (get-in db [:wallet :send-transaction])
+   (let [{:keys [id method public-key to symbol amount-text on-result]} (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
      (if error
-       ;; ERROR
+        ;; ERROR
        (models.wallet/handle-transaction-error (assoc cofx :db db') error)
-       ;; RESULT
+        ;; RESULT
        (merge
         {:db (cond-> (assoc-in db' [:wallet :send-transaction] {})
 
@@ -98,10 +98,10 @@
 
         (if on-result
           {:dispatch (conj on-result id result method)}
-          {:dispatch [:send-transaction-message whisper-identity {:address to
-                                                                  :asset   (name symbol)
-                                                                  :amount  amount-text
-                                                                  :tx-hash result}]}))))))
+          {:dispatch [:send-transaction-message public-key {:address to
+                                                            :asset   (name symbol)
+                                                            :amount  amount-text
+                                                            :tx-hash result}]}))))))
 
 ;; DISCARD TRANSACTION
 (handlers/register-handler-fx

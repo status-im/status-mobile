@@ -9,13 +9,13 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.group.styles :as styles]))
 
-(defn- on-toggle [checked? whisper-identity]
+(defn- on-toggle [checked? public-key]
   (let [action (if checked? :deselect-contact :select-contact)]
-    (re-frame/dispatch [action whisper-identity])))
+    (re-frame/dispatch [action public-key])))
 
-(defn- on-toggle-participant [checked? whisper-identity]
+(defn- on-toggle-participant [checked? public-key]
   (let [action (if checked? :deselect-participant :select-participant)]
-    (re-frame/dispatch [action whisper-identity])))
+    (re-frame/dispatch [action public-key])))
 
 (defn- group-toggle-contact [contact]
   [toogle-contact-view contact :is-contact-selected? on-toggle])

@@ -27,7 +27,7 @@
    (count selected-participants)))
 
 (defn filter-contacts [selected-contacts added-contacts]
-  (filter #(selected-contacts (:whisper-identity %)) added-contacts))
+  (filter #(selected-contacts (:public-key %)) added-contacts))
 
 (reg-sub
  :selected-group-contacts

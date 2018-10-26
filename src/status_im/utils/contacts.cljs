@@ -4,10 +4,10 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.ethereum.core :as ethereum]))
 
-(defn whisper-id->new-contact [whisper-id]
-  {:name             (gfycat/generate-gfy whisper-id)
-   :photo-path       (identicon/identicon whisper-id)
-   :whisper-identity whisper-id})
+(defn public-key->new-contact [public-key]
+  {:name       (gfycat/generate-gfy public-key)
+   :photo-path (identicon/identicon public-key)
+   :public-key public-key})
 
 (defn public-key->address [public-key]
   (let [length (count public-key)

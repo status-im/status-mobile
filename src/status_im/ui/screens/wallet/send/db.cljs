@@ -28,7 +28,7 @@
 (spec/def ::from-chat? (spec/nilable boolean?))
 (spec/def ::symbol (spec/nilable keyword?))
 (spec/def ::advanced? boolean?)
-(spec/def ::whisper-identity (spec/nilable string?))
+(spec/def ::public-key (spec/nilable string?))
 (spec/def ::method (spec/nilable string?))
 (spec/def ::tx-hash (spec/nilable string?))
 (spec/def ::on-result (spec/nilable any?))
@@ -38,4 +38,4 @@
                                                        ::password ::show-password-input? ::id ::from ::data ::nonce
                                                        ::camera-flashlight ::in-progress? ::on-result ::on-error
                                                        ::wrong-password? ::from-chat? ::symbol ::advanced?
-                                                       ::gas ::gas-price ::whisper-identity ::method ::tx-hash]))
+                                                       ::gas ::gas-price ::public-key ::method ::tx-hash]))

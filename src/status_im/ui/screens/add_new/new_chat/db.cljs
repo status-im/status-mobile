@@ -5,15 +5,15 @@
             [cljs.spec.alpha :as spec]
             [clojure.string :as string]))
 
-(defn own-whisper-identity?
-  [{{:keys [public-key]} :account/account} whisper-identity]
-  (= whisper-identity public-key))
+(defn own-public-key?
+  [{:account/keys [account]} public-key]
+  (= (:public-key account) public-key))
 
-(defn validate-pub-key [db whisper-identity]
+(defn validate-pub-key [db public-key]
   (cond
-    (not (spec/valid? :global/public-key whisper-identity))
+    (not (spec/valid? :global/public-key public-key))
     (i18n/label (if platform/desktop?
                   :t/use-valid-contact-code-desktop
                   :t/use-valid-contact-code))
-    (own-whisper-identity? db whisper-identity)
+    (own-public-key? db public-key)
     (i18n/label :t/can-not-add-yourself)))

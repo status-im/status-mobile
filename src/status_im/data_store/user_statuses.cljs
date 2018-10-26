@@ -4,9 +4,9 @@
             [status-im.data-store.realm.core :as core]))
 
 (defn- prepare-statuses [statuses]
-  (reduce (fn [acc {:keys [message-id whisper-identity] :as user-status}]
+  (reduce (fn [acc {:keys [message-id public-key] :as user-status}]
             (assoc-in acc
-                      [message-id whisper-identity]
+                      [message-id public-key]
                       (-> user-status
                           (update :status keyword)
                           (dissoc :status-id))))
@@ -28,8 +28,8 @@
  (fn [cofx _]
    (assoc cofx :get-stored-user-statuses get-by-chat-and-messages-ids)))
 
-(defn- compute-status-id [{:keys [message-id whisper-identity]}]
-  (str message-id "-" whisper-identity))
+(defn- compute-status-id [{:keys [message-id public-key]}]
+  (str message-id "-" public-key))
 
 (defn save-status-tx
   "Returns tx function for saving message user status"

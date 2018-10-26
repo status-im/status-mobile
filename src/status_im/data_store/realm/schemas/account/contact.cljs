@@ -52,3 +52,28 @@
                       :debug?           {:type    :bool
                                          :default false}
                       :tags             {:type     "string[]"}}})
+
+(def v3 {:name       :contact
+         :primaryKey :public-key
+         :properties {:address          {:type :string :optional true}
+                      :name             {:type :string :optional true}
+                      :photo-path       {:type :string :optional true}
+                      :last-updated     {:type :int :default 0}
+                      :last-online      {:type :int :default 0}
+                      :pending?         {:type :bool :default false}
+                      :hide-contact?    {:type :bool :default false}
+                      :status           {:type :string :optional true}
+                      :fcm-token        {:type :string :optional true}
+                      :description      {:type :string :optional true}
+                      :public-key       :string
+                      :dapp?            {:type    :bool
+                                         :default false}
+                      :dapp-url         {:type     :string
+                                         :optional true}
+                      :bot-url          {:type     :string
+                                         :optional true}
+                      :dapp-hash        {:type     :int
+                                         :optional true}
+                      :debug?           {:type    :bool
+                                         :default false}
+                      :tags             {:type     "string[]"}}})

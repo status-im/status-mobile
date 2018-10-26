@@ -62,13 +62,13 @@
   (log/info "universal-links: handling public chat " public-chat)
   (chat/start-public-chat cofx public-chat {:navigation-reset? true}))
 
-(fx/defn handle-view-profile [{:keys [db] :as cofx} profile-id]
-  (log/info "universal-links: handling view profile" profile-id)
-  (if (new-chat.db/own-whisper-identity? db profile-id)
+(fx/defn handle-view-profile [{:keys [db] :as cofx} public-key]
+  (log/info "universal-links: handling view profile" public-key)
+  (if (new-chat.db/own-public-key? db public-key)
     (navigation/navigate-to-cofx cofx :my-profile nil)
     (if platform/desktop?
-      (desktop.events/show-profile-desktop profile-id cofx)
-      (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] profile-id) :profile nil))))
+      (desktop.events/show-profile-desktop public-key cofx)
+      (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil))))
 
 (fx/defn handle-extension [cofx url]
   (log/info "universal-links: handling url profile" url)

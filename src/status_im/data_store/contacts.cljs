@@ -17,7 +17,7 @@
 
 (defn save-contact-tx
   "Returns tx function for saving contact"
-  [{:keys [whisper-identity] :as contact}]
+  [{:keys [public-key] :as contact}]
   (fn [realm]
     (core/create realm
                  :contact
@@ -31,20 +31,20 @@
     (doseq [contact contacts]
       ((save-contact-tx contact) realm))))
 
-(defn- get-contact-by-id [whisper-identity realm]
-  (core/single (core/get-by-field realm :contact :whisper-identity whisper-identity)))
+(defn- get-contact-by-id [public-key realm]
+  (core/single (core/get-by-field realm :contact :public-key public-key)))
 
 (defn delete-contact-tx
   "Returns tx function for deleting contact"
-  [whisper-identity]
+  [public-key]
   (fn [realm]
-    (core/delete realm (get-contact-by-id whisper-identity realm))))
+    (core/delete realm (get-contact-by-id public-key realm))))
 
 (defn add-contact-tag-tx
   "Returns tx function for adding chat contacts"
-  [whisper-identity tag]
+  [public-key tag]
   (fn [realm]
-    (let [contact       (get-contact-by-id whisper-identity realm)
+    (let [contact       (get-contact-by-id public-key realm)
           existing-tags (object/get contact "tags")]
       (aset contact "tags"
             (clj->js (into #{} (concat tag
@@ -52,9 +52,9 @@
 
 (defn remove-contact-tag-tx
   "Returns tx function for removing chat contacts"
-  [whisper-identity tag]
+  [public-key tag]
   (fn [realm]
-    (let [contact       (get-contact-by-id whisper-identity realm)
+    (let [contact       (get-contact-by-id public-key realm)
           existing-tags (object/get contact "tags")]
       (aset contact "tags"
             (clj->js (remove (into #{} tag)

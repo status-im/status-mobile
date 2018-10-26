@@ -28,7 +28,7 @@
 (views/defview toolbar-chat-view [{:keys [chat-id color public-key public? group-chat]
                                    :as current-chat}]
   (views/letsubs [chat-name         [:get-current-chat-name]
-                  {:keys [pending? whisper-identity photo-path]} [:get-current-chat-contact]]
+                  {:keys [pending? public-key photo-path]} [:get-current-chat-contact]]
     [react/view {:style styles/toolbar-chat-view}
      [react/view {:style {:flex-direction :row
                           :flex 1}}
@@ -44,7 +44,7 @@
         chat-name]
        (cond pending?
              [react/text {:style styles/add-contact-text
-                          :on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed whisper-identity])}
+                          :on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
               (i18n/label :t/add-to-contacts)]
              public?
              [react/text {:style styles/public-chat-text}
@@ -52,7 +52,7 @@
      [react/view
       (when (and (not group-chat) (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
-                     :on-press #(re-frame/dispatch [:show-profile-desktop whisper-identity])}
+                     :on-press #(re-frame/dispatch [:show-profile-desktop public-key])}
          (i18n/label :t/view-profile)])
       (when (and group-chat (not public?))
         [react/text {:style (styles/profile-actions-text colors/black)
@@ -332,14 +332,14 @@
 (views/defview chat-profile []
   (views/letsubs [identity        [:get-current-contact-identity]
                   maybe-contact   [:get-current-contact]]
-    (let [contact (or maybe-contact (utils.contacts/whisper-id->new-contact identity))
-          {:keys [pending? whisper-identity]} contact]
+    (let [contact (or maybe-contact (utils.contacts/public-key->new-contact identity))
+          {:keys [pending? public-key]} contact]
       [react/view {:style styles/chat-profile-body}
        [profile.views/profile-badge contact]
        ;; for private chat, public key will be chat-id
        [react/view
         (if (or (nil? pending?) pending?)
-          [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed whisper-identity])}
+          [react/touchable-highlight {:on-press #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}
            [react/view {:style styles/chat-profile-row}
             [react/view {:style styles/chat-profile-icon-container
                          :accessibility-label :add-contact-link}
@@ -352,7 +352,7 @@
            [react/text {:style (styles/contact-card-text colors/gray)} (i18n/label :t/in-contacts)]])
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch
-                      [:contact.ui/send-message-pressed {:whisper-identity whisper-identity}])}
+                      [:contact.ui/send-message-pressed {:public-key public-key}])}
          [react/view {:style styles/chat-profile-row}
           [react/view {:style styles/chat-profile-icon-container
                        :accessibility-label :send-message-link}
@@ -362,4 +362,4 @@
         [react/text {:style styles/chat-profile-contact-code} (i18n/label :t/contact-code)]
         [react/text {:style           {:font-size 14}
                      :selectable      true
-                     :selection-color colors/blue} whisper-identity]]])))
+                     :selection-color colors/blue} public-key]]])))

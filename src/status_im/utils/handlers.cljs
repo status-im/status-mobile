@@ -115,4 +115,4 @@
   (->> (map second contacts)
        (remove (fn [{:keys [dapp? pending?]}]
                  (or pending? dapp?)))
-       (map :whisper-identity)))
+       (map :public-key)))

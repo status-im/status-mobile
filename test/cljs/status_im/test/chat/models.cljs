@@ -205,33 +205,33 @@
                      :unviewed-messages #{"6" "5" "4" "3" "2" "1"}
                      :message-statuses {"6" {"me" {:message-id "6"
                                                    :chat-id "status"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :received}}
                                         "5" {"me" {:message-id "5"
                                                    :chat-id "status"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :received}}
                                         "4" {"me" {:message-id "4"
                                                    :chat-id "status"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :received}}}}
            "opened" {:unviewed-messages #{}
                      :message-statuses {"1" {"me" {:message-id "1"
                                                    :chat-id "opened"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :seen}}}}
            "1-1"    {:unviewed-messages #{"6" "5" "4" "3" "2" "1"}
                      :message-statuses {"6" {"me" {:message-id "6"
                                                    :chat-id "status"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :received}}
                                         "5" {"me" {:message-id "5"
                                                    :chat-id "status"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :received}}
                                         "4" {"me" {:message-id "4"
                                                    :chat-id "status"
-                                                   :whisper-identity "me"
+                                                   :public-key "me"
                                                    :status :received}}}}}})
 
 (deftest mark-messages-seen

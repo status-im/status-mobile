@@ -308,7 +308,7 @@
                               {:chat-id     chat-id
                                :content     {:text text}
                                :clock-value clock-value
-                               :from        (:whisper-identity contact)})
+                               :from        (:public-key contact)})
         creator-contact     (when creator (get-contact creator))
         name-changed-author (when name-changed? (get-contact (:name-changed-by clock-values)))
         contacts-added      (map
@@ -331,12 +331,12 @@
       (seq members-added) (concat (map #(format-message
                                          %
                                          (i18n/label :t/group-chat-member-added {:member (:name %)})
-                                         (get-in clock-values [(:whisper-identity %) :added]))
+                                         (get-in clock-values [(:public-key %) :added]))
                                        contacts-added))
       (seq members-removed) (concat (map #(format-message
                                            %
                                            (i18n/label :t/group-chat-member-removed {:member (:name %)})
-                                           (get-in clock-values [(:whisper-identity %) :removed]))
+                                           (get-in clock-values [(:public-key %) :removed]))
                                          contacts-removed)))))
 
 (fx/defn add-system-messages [cofx chat-id previous-chat clock-values]

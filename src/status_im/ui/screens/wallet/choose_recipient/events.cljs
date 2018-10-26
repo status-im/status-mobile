@@ -19,14 +19,14 @@
 (defn- find-address-name [db address]
   (:name (utils.contacts/find-contact-by-address (:contacts/contacts db) address)))
 
-(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice whisper-identity from-chat?]}]
+(defn- fill-request-details [db {:keys [address name value symbol gas gasPrice public-key from-chat?]}]
   {:pre [(not (nil? address))]}
   (let [name (or name (find-address-name db address))]
     (update-in
      db [:wallet :send-transaction]
      (fn [{old-symbol :symbol :as old-transaction}]
        (let [symbol-changed? (not= old-symbol symbol)]
-         (cond-> (assoc old-transaction :to address :to-name name :whisper-identity whisper-identity)
+         (cond-> (assoc old-transaction :to address :to-name name :public-key public-key)
            value (assoc :amount value)
            symbol (assoc :symbol symbol)
            (and gas symbol-changed?) (assoc :gas (money/bignumber gas))
@@ -103,17 +103,17 @@
        (and address valid-network?) (update :db #(fill-request-details % details))
        symbol-changed? (changed-asset old-symbol new-symbol)
        (and old-amount new-amount (not= old-amount new-amount)) (changed-amount-warning old-amount new-amount)
-       ;; NOTE(goranjovic) - the next line is there is because QR code scanning switches the amount to ETH
-       ;; automatically, so we need to update the gas limit accordingly. The check for origin screen is there
-       ;; so that we wouldn't also switch gas limit to ETH specific if the user pastes address as text.
-       ;; We need to check if address is defined so that we wouldn't trigger this behavior when invalid QR is scanned
-       ;; (e.g. whisper-id)
+        ;; NOTE(goranjovic) - the next line is there is because QR code scanning switches the amount to ETH
+        ;; automatically, so we need to update the gas limit accordingly. The check for origin screen is there
+        ;; so that we wouldn't also switch gas limit to ETH specific if the user pastes address as text.
+        ;; We need to check if address is defined so that we wouldn't trigger this behavior when invalid QR is scanned
+        ;; (e.g. public-key)
        (and address (= origin :qr) (not new-gas) symbol-changed?) (use-default-eth-gas)
        (not address) (assoc :ui/show-error (i18n/label :t/wallet-invalid-address {:data data}))
        (and address (not valid-network?)) (assoc :ui/show-error (i18n/label :t/wallet-invalid-chain-id {:data data :chain current-chain-id}))))))
 
 (handlers/register-handler-fx
  :wallet/fill-request-from-contact
- (fn [{db :db} [_ {:keys [address name whisper-identity]}]]
-   {:db         (fill-request-details db {:address address :name name :whisper-identity whisper-identity})
+ (fn [{db :db} [_ {:keys [address name public-key]}]]
+   {:db         (fill-request-details db {:address address :name name :public-key public-key})
     :dispatch   [:navigate-back]}))

@@ -146,10 +146,10 @@
                                                                         :user-statuses  delivery-statuses
                                                                         :participants   participants}])}
          [react/view style/delivery-view
-          (for [[whisper-identity] (take 3 delivery-statuses)]
-            ^{:key whisper-identity}
-            [react/image {:source {:uri (or (get-in contacts [whisper-identity :photo-path])
-                                            (identicon/identicon whisper-identity))}
+          (for [[public-key] (take 3 delivery-statuses)]
+            ^{:key public-key}
+            [react/image {:source {:uri (or (get-in contacts [public-key :photo-path])
+                                            (identicon/identicon public-key))}
                           :style  {:width         16
                                    :height        16
                                    :border-radius 8}}])

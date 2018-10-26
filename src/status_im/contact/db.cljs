@@ -6,11 +6,10 @@
 
 ;;Contact
 
-;;we can't validate public key, because for dapps whisper-identity is just string
-(spec/def :contact/whisper-identity :global/not-empty-string)
+;;we can't validate public key, because for dapps public-key is just string
+(spec/def :contact/public-key :global/not-empty-string)
 (spec/def :contact/name :global/not-empty-string)
 (spec/def :contact/address (spec/nilable :global/address))
-(spec/def :contact/public-key (spec/nilable string?))
 (spec/def :contact/photo-path (spec/nilable string?))
 (spec/def :contact/status (spec/nilable string?))
 (spec/def :contact/fcm-token (spec/nilable string?))
@@ -34,9 +33,8 @@
 (spec/def :contact/tags (spec/coll-of string? :kind set?))
 
 (spec/def :contact/contact (spec/keys  :req-un [:contact/name]
-                                       :opt-un [:contact/whisper-identity
+                                       :opt-un [:contact/public-key
                                                 :contact/address
-                                                :contact/public-key
                                                 :contact/photo-path
                                                 :contact/status
                                                 :contact/last-updated

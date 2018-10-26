@@ -34,8 +34,7 @@
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
       (testing "it adds a new contact with pending? true"
-        (is (=  {:whisper-identity public-key
-                 :public-key       public-key
+        (is (=  {:public-key       public-key
                  :photo-path       "image"
                  :name             "name"
                  :last-updated     1000
@@ -52,8 +51,7 @@
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
-                          {public-key {:whisper-identity public-key
-                                       :public-key       public-key
+                          {public-key {:public-key       public-key
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     0
@@ -64,8 +62,7 @@
         (testing "it stores the contact in the database"
           (is (:data-store/tx actual)))
         (testing "it updates the contact leaving pending unchanged"
-          (is (=  {:whisper-identity public-key
-                   :public-key       public-key
+          (is (=  {:public-key       public-key
                    :photo-path       "new-image"
                    :name             "new-name"
                    :last-updated     1000
@@ -81,8 +78,7 @@
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
-                          {public-key {:whisper-identity public-key
-                                       :public-key       public-key
+                          {public-key {:public-key       public-key
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     1000
@@ -101,8 +97,7 @@
                      :address "new-address"
                      :fcm-token "new-token"}
                     {:db {:contacts/contacts
-                          {public-key {:whisper-identity public-key
-                                       :public-key       public-key
+                          {public-key {:public-key       public-key
                                        :photo-path       "old-image"
                                        :name             "old-name"
                                        :last-updated     1000
@@ -119,8 +114,7 @@
                   {:name "new-name"
                    :profile-image "new-image"}
                   {:db {:contacts/contacts
-                        {public-key {:whisper-identity public-key
-                                     :public-key       public-key
+                        {public-key {:public-key       public-key
                                      :photo-path       "old-image"
                                      :name             "old-name"
                                      :last-updated     0
@@ -129,8 +123,7 @@
       (testing "it stores the contact in the database"
         (is (:data-store/tx actual)))
       (testing "it updates the contact leaving pending unchanged"
-        (is (=  {:whisper-identity public-key
-                 :public-key       public-key
+        (is (=  {:public-key       public-key
                  :photo-path       "new-image"
                  :name             "new-name"
                  :last-updated     1000

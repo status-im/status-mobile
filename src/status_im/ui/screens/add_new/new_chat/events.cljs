@@ -8,7 +8,7 @@
             [clojure.string :as string]))
 
 (re-frame/reg-fx
- :resolve-whisper-identity
+ :resolve-public-key
  (fn [{:keys [web3 registry ens-name cb]}]
    (resolver/pubkey web3 registry ens-name cb)))
 
@@ -23,9 +23,9 @@
             (when-not is-public-key?
               (let [network (get-in db [:account/account :networks network])
                     chain   (ethereum/network->chain-keyword network)]
-                {:resolve-whisper-identity {:web3 web3
-                                            :registry (get ens/ens-registries chain)
-                                            :ens-name (if (ens/is-valid-eth-name? new-identity)
-                                                        new-identity
-                                                        (str new-identity ".stateofus.eth"))
-                                            :cb #(re-frame/dispatch [:new-chat/set-new-identity %])}}))))))
+                {:resolve-public-key {:web3 web3
+                                      :registry (get ens/ens-registries chain)
+                                      :ens-name (if (ens/is-valid-eth-name? new-identity)
+                                                  new-identity
+                                                  (str new-identity ".stateofus.eth"))
+                                      :cb #(re-frame/dispatch [:new-chat/set-new-identity %])}}))))))

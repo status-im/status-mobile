@@ -34,7 +34,7 @@
         (assoc :photo-path
                (or (:photo-path new-contact)
                    (:photo-path old-contact)
-                   (identicon/identicon (:whisper-identity local))))
+                   (identicon/identicon (:public-key local))))
         (assoc :pending? (boolean
                           (and (:pending? local true)
                                (:pending? remote true)))))))
