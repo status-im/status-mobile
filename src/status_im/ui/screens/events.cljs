@@ -130,7 +130,7 @@
               #(when app-coming-from-background?
                  (on-return-from-background %))
               (when (#{"background" "inactive"} state)
-                (chat/persist-chat-ui-props)))))
+                (chat/persist-offset)))))
 
 (handlers/register-handler-fx
  :app-state-change

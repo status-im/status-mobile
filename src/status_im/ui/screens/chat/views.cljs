@@ -116,7 +116,7 @@
 
 (defview scroll-to-bottom-button [chat-id list-ref]
   (letsubs [unread-count [:unviewed-messages-count chat-id]
-            offset [:get-current-chat-ui-prop :offset]]
+            offset [:get-current-chat-offset]]
     (let [have-unreads? (pos? unread-count)
           many-messages? (< 99 unread-count)]
       (when (or have-unreads?
@@ -135,10 +135,9 @@
            [vector-icons/icon :icons/dropdown-down {:container-style (style/scroll-to-bottom-button-icon have-unreads?)
                                                     :color           colors/white}]]]]))))
 (defview messages-view [group-chat modal? list-ref]
-  (letsubs [messages           [:get-current-chat-messages-stream]
-            chat               [:get-current-chat]
-            current-public-key [:get-current-public-key]
-            offset [:get-current-chat-ui-prop :offset]]
+  (letsubs [messages                  [:get-current-chat-messages-stream]
+            {:keys [offset] :as chat} [:get-current-chat]
+            current-public-key        [:get-current-public-key]]
     {:should-component-update (constantly false)
      :component-did-mount     #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                                :input-focused? false}])}
@@ -156,12 +155,12 @@
                        :contentOffset             {:x 0 :y (or offset 0)}
                        :onScrollEndDrag           (fn [e]
                                                     (let [offset (.. e -nativeEvent -contentOffset -y)]
-                                                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:offset (max offset 0)}])
+                                                      (re-frame/dispatch [:chat.ui/on-scroll-end {:offset (max offset 0)}])
                                                       (when (zero? offset)
                                                         (re-frame/dispatch [:chat.ui/scroll-to-end]))))
                        :onMomentumScrollEnd       (fn [e]
                                                     (let [offset (.. e -nativeEvent -contentOffset -y)]
-                                                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:offset (max offset 0)}])
+                                                      (re-frame/dispatch [:chat.ui/on-scroll-end {:offset (max offset 0)}])
                                                       (when (zero? offset)
                                                         (re-frame/dispatch [:chat.ui/scroll-to-end]))))
                        :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])

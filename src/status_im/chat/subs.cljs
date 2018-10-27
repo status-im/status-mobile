@@ -138,6 +138,12 @@
  (fn [{:keys [referenced-messages]}]
    (or referenced-messages {})))
 
+(reg-sub
+ :get-current-chat-offset
+ :<- [:get-current-chat]
+ (fn [{:keys [offset]}]
+   (or offset 0)))
+
 (defn sort-message-groups
   "Sorts message groups according to timestamp of first message in group"
   [message-groups messages]

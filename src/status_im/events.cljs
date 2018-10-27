@@ -630,8 +630,13 @@
  :chat.ui/scroll-to-end
  (fn [{{:keys [current-chat-id] :as db} :db} _]
    {:db (-> db
-            (assoc-in [:chat-ui-props current-chat-id :offset] 0)
+            (assoc-in [:chats current-chat-id :offset] 0)
             (assoc-in [:chats current-chat-id :unviewed-messages] nil))}))
+
+(handlers/register-handler-fx
+ :chat.ui/on-scroll-end
+ (fn [{{:keys [current-chat-id] :as db} :db} [_ {:keys [offset]}]]
+   {:db (assoc-in db [:chats current-chat-id :offset] offset)}))
 
 (handlers/register-handler-fx
  :chat/init-chat-ui-props

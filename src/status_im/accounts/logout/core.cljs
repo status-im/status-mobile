@@ -16,7 +16,7 @@
               (navigation/navigate-to-clean :login {})
               (transport/stop-whisper)
               (init/initialize-keychain)
-              (chat/persist-chat-ui-props))))
+              (chat/persist-offset))))
 
 (fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation

@@ -25,7 +25,6 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
-            [status-im.react-native.js-dependencies :as js-dependencies]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]))
 
@@ -236,18 +235,3 @@
 (re-frame/reg-fx
  :init/reset-data
  reset-data!)
-
-(re-frame/reg-fx
- :init/load-chat-ui-props
- (fn [{:keys [current-public-key]}]
-   (.. js-dependencies/async-storage
-       (getItem (str "@StatusIm:"
-                     (ethereum/sha3 current-public-key)
-                     ":chat-ui-props"))
-       (then (fn [result]
-               (when result
-                 (let [props (reduce-kv
-                              (fn [m k v] (assoc m (name k) v))
-                              {}
-                              (-> result js/JSON.parse (js->clj :keywordize-keys true)))]
-                   (re-frame/dispatch [:chat/init-chat-ui-props props]))))))))

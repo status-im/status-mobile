@@ -77,10 +77,6 @@
               (filter #(not (contains? message-id->messages %))))
         (vals message-id->messages)))
 
-(fx/defn load-chat-ui-props [{:keys [db]}]
-  (when-not platform/desktop?
-    {:init/load-chat-ui-props db}))
-
 (fx/defn initialize-chats
   "Initialize all persisted chats on startup"
   [{:keys [db default-dapps all-stored-chats get-stored-messages get-stored-user-statuses
@@ -111,8 +107,7 @@
                           :contacts/dapps default-dapps)}
               (group-messages)
               (add-default-contacts)
-              (commands/load-commands commands/register)
-              (load-chat-ui-props))))
+              (commands/load-commands commands/register))))
 
 (fx/defn initialize-pending-messages
   "Change status of own messages which are still in `sending` status to `not-sent`
