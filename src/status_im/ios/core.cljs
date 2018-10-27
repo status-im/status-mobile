@@ -15,7 +15,7 @@
 (defn app-state-change-handler [state]
   (dispatch [:app-state-change state]))
 
-(defn app-root []
+(defn app-root [props]
   (let [keyboard-height (subscribe [:get :keyboard-height])]
     (reagent/create-class
      {:component-will-mount
@@ -34,7 +34,8 @@
         (.hide react/splash-screen)
         (.addEventListener react/app-state "change" app-state-change-handler))
       :component-did-mount
-      (fn []
+      (fn [this]
+        (dispatch [:set-initial-props (reagent/props this)])
         (notifications/init))
       :component-will-unmount
       (fn []

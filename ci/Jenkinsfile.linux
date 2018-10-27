@@ -9,7 +9,7 @@ pipeline {
         "-v /dev/fuse:/dev/fuse "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "+
-        "-v /opt/StatusImAppImage.zip:/opt/StatusImAppImage.zip:ro"
+        "-v /opt/StatusImAppImage_20181113.zip:/opt/StatusImAppImage.zip:ro"
       )
     }
   }

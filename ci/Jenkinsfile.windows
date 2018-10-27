@@ -9,7 +9,7 @@ pipeline {
         "-v /dev/fuse:/dev/fuse "+
         "-v /var/tmp/lein:/var/tmp/lein:rw "+
         "-v /var/tmp/npm:/var/tmp/npm:rw "+
-        "-v /opt/StatusIm-Windows-base-image.zip:/opt/StatusIm-Windows-base-image.zip:ro"
+        "-v /opt/StatusIm-Windows-base-image_20181113.zip:/opt/StatusIm-Windows-base-image.zip:ro"
       )
     }
   }

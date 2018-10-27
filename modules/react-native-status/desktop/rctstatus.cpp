@@ -92,7 +92,15 @@ void RCTStatus::startNode(QString configString) {
     if (!relativeDataDirPath.startsWith("/"))
         relativeDataDirPath.prepend("/");
 
-    QString rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    QString statusDataDir = qgetenv("STATUS_DATA_DIR");
+    QString rootDirPath;
+    if (!statusDataDir.isEmpty()) {
+      rootDirPath = statusDataDir;
+    }
+    else {
+      rootDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    }
+
     QDir rootDir(rootDirPath);
     QString absDataDirPath = rootDirPath + relativeDataDirPath;
     QDir dataDir(absDataDirPath);

@@ -119,9 +119,9 @@ if (process.argv.indexOf('--pipe') != -1) {
   rnUbuntuServer(process.stdin, process.stdout);
 } else {
   var port = process.env['REACT_SERVER_PORT'] || 5000;
-  process.argv.forEach((val) => {
-    if (val.indexOf('--port') != -1) {
-      port = val.substring(7);
+  process.argv.forEach((val, index) => {
+    if (val == '--port') {
+      port = process.argv[++index];
     }
   });
 

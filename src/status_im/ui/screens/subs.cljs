@@ -91,3 +91,7 @@
 (reg-sub :dimensions/window-width
          :<- [:dimensions/window]
          :width)
+
+(reg-sub :initial-props
+         (fn [db _]
+           (get db :initial-props)))

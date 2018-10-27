@@ -67,6 +67,8 @@ class ReactNativeProperties : public QObject {
       QString pluginsPath READ pluginsPath WRITE setPluginsPath NOTIFY pluginsPathChanged)
   Q_PROPERTY(
       QString executor READ executor WRITE setExecutor NOTIFY executorChanged)
+  Q_PROPERTY(
+      QVariantMap initialProps READ initialProps WRITE setInitialProps NOTIFY initialPropsChanged)
 public:
   ReactNativeProperties(QObject *parent = nullptr) : QObject(parent) {
     m_codeLocation = m_packagerTemplate.arg(m_packagerHost).arg(m_packagerPort);
@@ -99,6 +101,14 @@ public:
     m_executor = executor;
     Q_EMIT executorChanged();
   }
+  QVariantMap initialProps() const { return m_initialProps; }
+  void setInitialProps(const QVariantMap &initialProps) {
+    if (m_initialProps == initialProps)
+      return;
+    m_initialProps = initialProps;
+    Q_EMIT initialPropsChanged();
+  }
+
   QString packagerHost() const { return m_packagerHost; }
   void setPackagerHost(const QString &packagerHost) {
     if (m_packagerHost == packagerHost)
@@ -130,11 +140,13 @@ public:
       setLiveReload(false);
     }
   }
+
 Q_SIGNALS:
   void liveReloadChanged();
   void codeLocationChanged();
   void pluginsPathChanged();
   void executorChanged();
+  void initialPropsChanged();
 
 private:
   bool m_liveReload = false;
@@ -150,6 +162,7 @@ private:
 #else
   QString m_executor = "LocalServerConnection";
 #endif
+  QVariantMap m_initialProps;
 };
 
 void saveMessage(QtMsgType type, const QMessageLogContext &context,
@@ -197,14 +210,35 @@ bool redirectLogIntoFile() {
 }
 
 QString getDataStoragePath() {
-  QString dataStoragePath =
-      QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+  QString statusDataDir = qgetenv("STATUS_DATA_DIR");
+  QString dataStoragePath;
+  if (!statusDataDir.isEmpty()) {
+    dataStoragePath = statusDataDir;
+  }
+  else {
+    dataStoragePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+  }
   QDir dir(dataStoragePath);
   if (!dir.exists()) {
     dir.mkpath(".");
   }
   return dataStoragePath;
 }
+
+void renameRealmDirs() {
+  QDir dataDir(getDataStoragePath());
+  qCDebug(STATUS) << "### path: " << getDataStoragePath();
+
+  if (dataDir.exists("default.realmaccounts")) {
+    dataDir.mkdir("default.realm");
+    dataDir.rename("default.realmaccounts", "default.realm/accounts");
+    dataDir.rename("default.realmdefault.realm", "default.realm/default.realm");
+    dataDir.rename("default.realmdefault.realm.lock", "default.realm/default.realm.lock");
+    dataDir.rename("default.realmdefault.realm.management", "default.realm/default.realm.management");
+    dataDir.rename("default.realmdefault.realm.note", "default.realm/default.realm.note");
+  }
+}
+
 
 int main(int argc, char **argv) {
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -215,12 +249,15 @@ int main(int argc, char **argv) {
   QString appPath = QCoreApplication::applicationDirPath();
   QString dataStoragePath = getDataStoragePath();
 #ifdef BUILD_FOR_BUNDLE
-  killZombieJsServer();
+  if (qgetenv("STATUS_DATA_DIR").isEmpty()) {
+    killZombieJsServer();
+  }
 #else
   appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
   dataStoragePath = "";
 #endif
 
+  renameRealmDirs();
   ExceptionGlobalHandler exceptionHandler(
       appPath + QDir::separator() + CRASH_REPORT_EXECUTABLE,
       exceptionPostHandledCallback, dataStoragePath);
@@ -251,6 +288,19 @@ int main(int argc, char **argv) {
 
   QQuickView view;
   ReactNativeProperties *rnp = new ReactNativeProperties(&view);
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  QVariantMap initialProps;
+  QString statusNodePort = env.value("STATUS_NODE_PORT");
+  QString statusDataDir = env.value("STATUS_DATA_DIR");
+  if (!statusNodePort.isEmpty()) {
+    initialProps["STATUS_NODE_PORT"] = statusNodePort;
+  }
+  if (!statusDataDir.isEmpty()) {
+    initialProps["STATUS_DATA_DIR"] = statusDataDir;
+  }
+
+  rnp->setInitialProps(initialProps);
+
 #ifdef BUILD_FOR_BUNDLE
   rnp->setCodeLocation("file:" + QGuiApplication::applicationDirPath() +
                        "/assets");
@@ -386,6 +436,11 @@ bool runNodeJsServer() {
   g_nodeJsServerProcess = new QProcess();
   g_nodeJsServerProcess->setWorkingDirectory(getDataStoragePath());
   g_nodeJsServerProcess->setProgram(QGuiApplication::applicationDirPath() + QDir::separator() + NODEJS_SERVER_NAME);
+  QString port = qgetenv("REACT_SERVER_PORT");
+  if (!port.isEmpty()) {
+      QStringList arguments = (QStringList() << "--port" << port);
+      g_nodeJsServerProcess->setArguments(arguments);
+  }
   QObject::connect(g_nodeJsServerProcess, &QProcess::errorOccurred,
                    [=](QProcess::ProcessError) {
                      qCWarning(JSSERVER) << "process name: "
