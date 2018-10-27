@@ -108,7 +108,7 @@
    [react/view styles/chat-container
     [react/view styles/chat-icon-container
      (if dapp
-       [chat-icon.screen/dapp-icon-browser dapp 36]
+       [chat-icon.screen/dapp-icon-browser dapp 40]
        [react/view styles/browser-icon-container
         [vector-icons/icon :icons/discover {:color colors/gray}]])]
     [react/view styles/chat-info-container

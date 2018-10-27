@@ -18,14 +18,14 @@
   {:padding-vertical 14
    :font-size        15
    :text-align       :center
-   :ios              {:letter-spacing -0.2}
-   :android          {:color colors/black}})
+   :font-weight      :bold
+   :color            colors/black})
 
 (defstyle profile-three-words
-  {:font-size        12
-   :text-align       :center
-   :ios              {:letter-spacing -0.2}
-   :android          {:color colors/black}})
+  {:font-size   12
+   :text-align  :center
+   :font-weight :bold
+   :color       colors/gray})
 
 (defstyle profile-name-input-text
   {:font-size   15
@@ -99,5 +99,4 @@
 
 (def profile-form
   {:background-color colors/white
-   :padding-top      16
-   :padding-bottom   8})
+   :padding-vertical 16})

@@ -17,14 +17,10 @@
    :icon-size 46})
 
 (defstyle intro-text
-  {:text-align :center
-   :color      colors/black
-   :ios        {:line-height    28
-                :font-size      22
-                :font-weight    :bold
-                :letter-spacing -0.3}
-   :android    {:font-size   24
-                :line-height 30}})
+  {:text-align  :center
+   :color       colors/black
+   :font-weight :bold
+   :font-size   24})
 
 (def intro-text-description
   {:line-height    21

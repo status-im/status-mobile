@@ -104,9 +104,9 @@
 
 (defstyle datetime-text
   {:color   colors/text-gray
-   :android {:font-size 14}
+   :android {:font-size 12}
    :desktop {:font-size 14}
-   :ios     {:font-size 15}})
+   :ios     {:font-size 12}})
 
 (defstyle new-messages-text
   {:left       0

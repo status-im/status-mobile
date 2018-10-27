@@ -76,7 +76,7 @@
 (def separator
   (merge
    base-separator
-   {:margin-left 70}))
+   {:margin-left 64}))
 
 (defstyle list-header-footer-spacing
   {:android {:background-color colors/white
@@ -112,7 +112,7 @@
 (def action-separator
   {:height           1
    :background-color colors/white-light-transparent
-   :margin-left      70})
+   :margin-left      64})
 
 (def list-with-label-wrapper
   {:margin-top        26

@@ -117,8 +117,7 @@
 
 (defn i18n-text
   [{:keys [style key]}]
-  (let [default-style {:letter-spacing -0.2
-                       :font-size      14}]
+  (let [default-style {:font-size 14}]
     [text {:style (merge default-style style)} (i18n/label key)]))
 
 (defn icon

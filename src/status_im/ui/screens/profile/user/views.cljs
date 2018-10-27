@@ -105,6 +105,7 @@
      [profile.components/settings-item {:label-kw            :t/ens-names
                                         :action-fn           #(re-frame/dispatch [:profile.ui/ens-names-button-pressed])
                                         :accessibility-label :ens-names-button}]
+     [profile.components/settings-item-separator]
      [profile.components/settings-item {:label-kw            :t/main-currency
                                         :value               (:code currency)
                                         :action-fn           #(re-frame/dispatch [:navigate-to :currency-settings])
