@@ -50,6 +50,17 @@
                                              :network-id network-id
                                              :reason     reason}]})}))
 
+(defmethod process-request! [:GET "networks" nil]
+  [{:keys [cofx]}]
+  (let [{:keys [networks network]} (get-in cofx [:db :account/account])
+        networks (->> networks
+                      (map (fn [[id m]]
+                             [id (-> m
+                                     (select-keys [:id :name :config])
+                                     (assoc :active? (= id network)))]))
+                      (into {}))]
+    {:dev-server/respond [200 {:networks networks}]}))
+
 (defmethod process-request! [:DELETE "network" nil]
   [{:keys [cofx data]}]
   (network/delete
