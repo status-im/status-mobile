@@ -1,7 +1,7 @@
 (ns status-im.utils.handlers
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
+            [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.accounts.db :as accounts.db]
             [cljs.core.async :as async]
@@ -89,30 +89,14 @@
          (throw (ex-info (check-spec-msg event-id new-db) {})))
        context))))
 
-(defn register-handler
-  ([name handler] (register-handler name nil handler))
-  ([name middleware handler]
-   (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
-
 (def default-interceptors
   [debug-handlers-names
-   (when js/goog.DEBUG check-spec)
+   (when js/goog.DEBUG
+     check-spec)
    (re-frame/inject-cofx :now)])
 
 (defn register-handler-fx
-  ([name handler] (register-handler-fx name nil handler))
+  ([name handler]
+   (register-handler-fx name nil handler))
   ([name interceptors handler]
-   (reg-event-fx name [default-interceptors interceptors] handler)))
-
-(defn get-hashtags [status]
-  (if status
-    (let [hashtags (map #(keyword (string/lower-case (subs % 1)))
-                        (re-seq #"#[^ !?,;:.]+" status))]
-      (set (or hashtags [])))
-    #{}))
-
-(defn identities [contacts]
-  (->> (map second contacts)
-       (remove (fn [{:keys [dapp? pending?]}]
-                 (or pending? dapp?)))
-       (map :public-key)))
+   (re-frame/reg-event-fx name [default-interceptors interceptors] handler)))

@@ -26,7 +26,7 @@
            ;; it's not in the contact list at all
            (nil? pending?))))
 
-(defn build-contact [{{:keys [chats]:account/keys [account]
+(defn build-contact [{{:keys [chats] :account/keys [account]
                        :contacts/keys [contacts]} :db} public-key]
   (cond-> (assoc (or (get contacts public-key)
                      (utils.contacts/public-key->new-contact public-key))
