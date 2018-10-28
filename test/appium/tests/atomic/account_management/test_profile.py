@@ -194,7 +194,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.help_button.click()
         base_web_view = profile_view.faq_button.click()
         base_web_view.open_in_webview()
-        base_web_view.find_text_part('Questions around beta')
+        base_web_view.find_text_part('Build Status')
         base_web_view.click_system_back_button()
         profile_view.submit_bug_button.click()
         profile_view.find_full_text('#status')
