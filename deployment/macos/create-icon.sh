@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function make_icns {
-  local file="status-icon.png"
+  local file="../status-icon.png"
   local iconset="$(mktemp -d)"
   local output_icon="status-icon.icns"
 

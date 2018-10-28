@@ -26,6 +26,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(USED_QT_MODULES Core Qml Quick WebSockets Svg)
 include(QtConfiguration)
 
+set(ICON_PNG_RESOURCE_PATH "${CMAKE_SOURCE_DIR}/../deployment/status-icon.png")
+if (WIN32)
+  set(ICO_RESOURCE_PATH "${CMAKE_SOURCE_DIR}/../deployment/windows/status.ico")
+  set(APPLICATION_MAIN_RC_PATH "${CMAKE_SOURCE_DIR}/../deployment/windows/Status.rc")
+
+  configure_file(
+    ${CMAKE_SOURCE_DIR}/../deployment/windows/Status.rc.in
+    ${APPLICATION_MAIN_RC_PATH}
+  )
+endif()
+
 message(STATUS "EXTERNAL_MODULES_DIR: ${EXTERNAL_MODULES_DIR}")
 
 string(REGEX MATCH "BUILD_FOR_BUNDLE" BUILD_FOR_BUNDLE "${CMAKE_CXX_FLAGS}")

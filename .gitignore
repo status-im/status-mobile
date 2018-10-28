@@ -138,6 +138,7 @@ CMakeCache.txt
 /desktop/run-app.sh
 /desktop/CMakeFiles/
 /desktop/reportApp/Makefile
+/deployment/windows/Status.rc
 *_autogen/
 CompleteBundleWin.cmake
 logger_settings.ini
