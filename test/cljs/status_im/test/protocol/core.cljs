@@ -33,7 +33,7 @@
            shh  (transport.utils/shh web3)
            from          (create-keys shh)]
        (reset! re-frame.db/app-db {:web3 web3
-                                   :current-public-key from})
+                                   :account/account {:public-key from}})
 
        (rf/reg-fx :data-store/save-chat (constantly nil))
        (rf/reg-fx :data-store/save-message (constantly nil))

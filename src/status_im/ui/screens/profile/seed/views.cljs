@@ -137,7 +137,7 @@
                               :label        (i18n/label :t/ok-got-it)}]])
 
 (defview backup-seed []
-  (letsubs [current-account [:get-current-account]
+  (letsubs [current-account [:account/account]
             {:keys [step first-word second-word error word]} [:my-profile/recovery]]
     [react/keyboard-avoiding-view {:style styles/backup-seed-container}
      [status-bar/status-bar]

@@ -13,7 +13,7 @@
 
 (views/defview network-details []
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]
-                  {:keys [network]} [:get-current-account]
+                  {:keys [network]} [:account/account]
                   networks          [:get-networks]]
     (let [{:keys [id name config]} selected-network
           connected?               (= id network)

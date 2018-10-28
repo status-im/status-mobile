@@ -1,5 +1,6 @@
 (ns status-im.chat.models.loading
   (:require [clojure.set :as set]
+            [status-im.accounts.db :as accounts.db]
             [status-im.chat.commands.core :as commands]
             [status-im.chat.models :as chat-model]
             [status-im.constants :as constants]
@@ -56,7 +57,7 @@
   [{:keys [db default-dapps all-stored-chats get-stored-messages get-stored-user-statuses
            get-stored-unviewed-messages get-referenced-messages stored-message-ids
            stored-deduplication-ids] :as cofx}]
-  (let [stored-unviewed-messages (get-stored-unviewed-messages (:current-public-key db))
+  (let [stored-unviewed-messages (get-stored-unviewed-messages (accounts.db/current-public-key cofx))
         chats (reduce (fn [acc {:keys [chat-id] :as chat}]
                         (let [chat-messages (index-messages (get-stored-messages chat-id))
                               message-ids   (keys chat-messages)
@@ -85,8 +86,8 @@
 (fx/defn initialize-pending-messages
   "Change status of own messages which are still in `sending` status to `not-sent`
   (If signal from status-go has not been received)"
-  [{:keys [db]}]
-  (let [me               (:current-public-key db)
+  [{:keys [db] :as cofx}]
+  (let [me               (accounts.db/current-public-key cofx)
         pending-statuses (->> (vals (:chats db))
                               (mapcat :message-statuses)
                               (mapcat (fn [[_ user-id->status]]

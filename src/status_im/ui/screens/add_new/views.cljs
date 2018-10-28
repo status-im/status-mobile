@@ -63,7 +63,7 @@
                                                :handle-qr-code])}]])
 
 (views/defview add-new []
-  (views/letsubs [account     [:get-current-account]
+  (views/letsubs [account     [:account/account]
                   device-UUID [:get-device-UUID]]
     [react/view {:flex 1 :background-color :white}
      [status-bar/status-bar]

@@ -1,5 +1,6 @@
 (ns status-im.chat.models
   (:require [re-frame.core :as re-frame]
+            [status-im.accounts.db :as accounts.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.data-store.user-statuses :as user-statuses-store]
@@ -154,7 +155,7 @@
   "Marks all unviewed loaded messages as seen in particular chat"
   [{:keys [db] :as cofx} chat-id]
   (when-let [all-unviewed-ids (seq (get-in db [:chats chat-id :unviewed-messages]))]
-    (let [me                  (:current-public-key db)
+    (let [me                  (accounts.db/current-public-key cofx)
           updated-statuses    (keep (fn [message-id]
                                       (some-> db
                                               (get-in [:chats chat-id :message-statuses
@@ -210,7 +211,7 @@
   "Start a chat, making sure it exists"
   [{:keys [db] :as cofx} chat-id opts]
   ;; don't allow to open chat with yourself
-  (when (not= (:current-public-key db) chat-id)
+  (when (not= (accounts.db/current-public-key cofx) chat-id)
     (fx/merge cofx
               (upsert-chat {:chat-id chat-id
                             :is-active true})

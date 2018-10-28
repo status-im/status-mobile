@@ -94,7 +94,7 @@
 
 (re-frame/reg-sub :wallet/visible-tokens-symbols
                   :<- [:network]
-                  :<- [:get-current-account]
+                  :<- [:account/account]
                   (fn [[network current-account]]
                     (let [chain (ethereum/network->chain-keyword network)]
                       (get-in current-account [:settings :wallet :visible-tokens chain]))))

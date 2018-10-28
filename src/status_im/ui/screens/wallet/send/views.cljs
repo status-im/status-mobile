@@ -67,7 +67,7 @@
      [advanced-cartouche native-currency transaction])])
 
 (defview password-input-panel [message-label spinning?]
-  (letsubs [account         [:get-current-account]
+  (letsubs [account         [:account/account]
             wrong-password? [:wallet.send/wrong-password?]
             signing-phrase  (:signing-phrase @account)
             bottom-value    (animation/create-value -250)
@@ -204,7 +204,7 @@
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
             advanced? [:wallet.send/advanced?]
-            network [:get-current-account-network]
+            network [:account/network]
             scroll (atom nil)
             network-status [:network-status]]
     [send-transaction-view {:modal? false
@@ -218,7 +218,7 @@
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/transaction]
             advanced? [:wallet.send/advanced?]
-            network [:get-current-account-network]
+            network [:account/network]
             scroll (atom nil)
             network-status [:network-status]]
     (if transaction

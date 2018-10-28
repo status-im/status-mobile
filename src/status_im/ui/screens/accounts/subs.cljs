@@ -5,25 +5,31 @@
             [cljs.spec.alpha :as spec]))
 
 (re-frame/reg-sub
- :get-current-public-key
- (fn [db]
-   (:current-public-key db)))
-
-(re-frame/reg-sub
- :get-accounts
+ :accounts/accounts
  (fn [db]
    (:accounts/accounts db)))
 
 (re-frame/reg-sub
- :get-current-account
+ :account/account
  (fn [db]
    (:account/account db)))
 
 (re-frame/reg-sub
- :get-current-account-hex
- :<- [:get-current-account]
+ :account/public-key
+ :<- [:account/account]
+ (fn [{:keys [public-key]}]
+   public-key))
+
+(re-frame/reg-sub
+ :account/hex-address
+ :<- [:account/account]
  (fn [{:keys [address]}]
    (ethereum/normalized-address address)))
+
+(re-frame/reg-sub
+ :account/network
+ (fn [{:keys [network] :as db}]
+   (get-in db [:account/account :networks network])))
 
 (re-frame/reg-sub
  :get-account-creation-next-enabled?

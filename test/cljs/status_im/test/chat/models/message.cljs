@@ -43,7 +43,7 @@
                                     :chat-id "a"})))))
 
 (deftest add-own-received-message
-  (let [db {:current-public-key "me"
+  (let [db {:account/account {:public-key "me"}
             :view-id :chat
             :current-chat-id "chat-id"
             :chats {"chat-id" {:messages {}}}}]
@@ -125,8 +125,7 @@
 
 (deftest receive-one-to-one
   (let [cofx                 {:db {:chats {"matching" {}}
-                                   :account/account {:public-key "a"}
-                                   :current-public-key "me"
+                                   :account/account {:public-key "me"}
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
         valid-message        {:chat-id     "matching"

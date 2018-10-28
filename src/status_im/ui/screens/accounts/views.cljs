@@ -30,7 +30,7 @@
     [icons/icon :icons/forward {:color (colors/alpha colors/black 0.4)}]]])
 
 (defview accounts []
-  (letsubs [accounts [:get-accounts]]
+  (letsubs [accounts [:accounts/accounts]]
     [react/view styles/accounts-view
      [status-bar/status-bar]
      [toolbar/toolbar nil nil

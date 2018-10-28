@@ -210,7 +210,7 @@
        [advanced-settings params on-show])]))
 
 (defview my-profile []
-  (letsubs [{:keys [public-key photo-path] :as current-account} [:get-current-account]
+  (letsubs [{:keys [public-key photo-path] :as current-account} [:account/account]
             editing?        [:get :my-profile/editing?]
             changed-account [:get :my-profile/profile]
             currency        [:wallet/currency]

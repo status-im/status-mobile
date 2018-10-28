@@ -24,7 +24,7 @@
 
 (defview transaction-fee []
   (letsubs [send-transaction            [:wallet.send/transaction]
-            network                     [:get-current-account-network]
+            network                     [:account/network]
             {gas-edit       :gas
              max-fee        :max-fee
              gas-price-edit :gas-price} [:wallet/edit]]

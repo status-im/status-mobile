@@ -23,6 +23,10 @@
       (and password-confirm (= :confirm-password step) (spec/valid? ::password password-confirm))
       (and name (= :enter-name step) (not (string/blank? name)))))
 
+(defn current-public-key
+  [cofx]
+  (get-in cofx [:db :account/account :public-key]))
+
 (spec/def ::password  (spec/and :global/not-empty-string valid-length?))
 
 (spec/def :account/address :global/address)

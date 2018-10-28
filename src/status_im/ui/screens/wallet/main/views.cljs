@@ -164,9 +164,9 @@
                   currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
                   {:keys [modal-history?]} [:get :wallet]
-                  {:keys [seed-backed-up?]} [:get-current-account]
+                  {:keys [seed-backed-up?]} [:account/account]
                   error-message   [:wallet/error-message]
-                  address-hex     [:get-current-account-hex]]
+                  address-hex     [:account/hex-address]]
     [react/view styles/main-section
      (if modal?
        [toolbar-modal modal-history?]
@@ -204,7 +204,7 @@
   [wallet-root true])
 
 (views/defview wallet []
-  (views/letsubs [{:keys [wallet-set-up-passed?]} [:get-current-account]]
+  (views/letsubs [{:keys [wallet-set-up-passed?]} [:account/account]]
     (if (not wallet-set-up-passed?)
       [onboarding.views/onboarding]
       [wallet-root false])))

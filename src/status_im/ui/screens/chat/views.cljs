@@ -117,7 +117,7 @@
 (defview messages-view [group-chat modal?]
   (letsubs [messages           [:get-current-chat-messages-stream]
             chat               [:get-current-chat]
-            current-public-key [:get-current-public-key]]
+            current-public-key [:account/public-key]]
     {:component-did-mount #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
                                                                            :input-focused? false}])}
     (if (empty? messages)

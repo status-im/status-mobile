@@ -1,5 +1,6 @@
 (ns status-im.contact.core
-  (:require [status-im.data-store.contacts :as contacts-store]
+  (:require [status-im.accounts.db :as accounts.db]
+            [status-im.data-store.contacts :as contacts-store]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.contact :as message.contact]
             [status-im.utils.contacts :as utils.contacts]
@@ -86,7 +87,7 @@
   [public-key
    timestamp
    {:keys [name profile-image address fcm-token] :as m}
-   {{:contacts/keys [contacts] :keys [current-public-key] :as db} :db :as cofx}]
+   {{:contacts/keys [contacts] :as db} :db :as cofx}]
   ;; We need to convert to timestamp ms as before we were using now in ms to
   ;; set last updated
   ;; Using whisper timestamp mostly works but breaks in a few scenarios:
@@ -94,8 +95,9 @@
   ;; when using multi-device & clocks are out of sync
   ;; Using logical clocks is probably the correct way to handle it, but an overkill
   ;; for now
-  (let [timestamp-ms      (* timestamp 1000)
-        prev-last-updated (get-in db [:contacts/contacts public-key :last-updated])]
+  (let [timestamp-ms       (* timestamp 1000)
+        prev-last-updated  (get-in db [:contacts/contacts public-key :last-updated])
+        current-public-key (accounts.db/current-public-key cofx)]
     (when (and (not= current-public-key public-key)
                (< prev-last-updated timestamp-ms))
       (let [contact          (get contacts public-key)

@@ -49,7 +49,7 @@
 
 (reg-sub :all-dapps
          :<- [:get-dapps]
-         :<- [:get-current-account]
+         :<- [:account/account]
          (fn [[dapps {:keys [dev-mode?]}]]
            (map (fn [m] (update m :data #(filter-dapps % dev-mode?))) dapps)))
 
@@ -85,7 +85,7 @@
 
 (reg-sub :get-contact-name-by-identity
          :<- [:get-contacts]
-         :<- [:get-current-account]
+         :<- [:account/account]
          (fn [[contacts current-account] [_ identity]]
            (let [me? (= (:public-key current-account) identity)]
              (if me?
@@ -108,7 +108,8 @@
                 (remove :dapp?)
                 (sort-by (comp clojure.string/lower-case :name)))))
 
-(defn get-all-contacts-in-group-chat [members contacts current-account]
+(defn get-all-contacts-in-group-chat
+  [members contacts current-account]
   (let [current-account-contact (-> current-account
                                     (select-keys [:name :photo-path :public-key]))
         all-contacts            (assoc contacts (:public-key current-account-contact) current-account-contact)]
@@ -121,7 +122,7 @@
 (reg-sub :get-current-chat-contacts
          :<- [:get-current-chat]
          :<- [:get-contacts]
-         :<- [:get-current-account]
+         :<- [:account/account]
          (fn [[{:keys [contacts]} all-contacts current-account]]
            (get-all-contacts-in-group-chat contacts all-contacts current-account)))
 

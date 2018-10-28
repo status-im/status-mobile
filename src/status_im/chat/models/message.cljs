@@ -1,6 +1,7 @@
 (ns status-im.chat.models.message
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.accounts.db :as accounts.db]
             [status-im.native-module.core :as status]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
@@ -71,8 +72,8 @@
                              {}))}))
 
 (fx/defn add-own-status
-  [{:keys [db]} chat-id message-id status]
-  (let [me     (:current-public-key db)
+  [{:keys [db] :as cofx} chat-id message-id status]
+  (let [me     (accounts.db/current-public-key cofx)
         status {:chat-id          chat-id
                 :message-id       message-id
                 :public-key       me
@@ -82,19 +83,18 @@
                               status)
      :data-store/tx [(user-statuses-store/save-status-tx status)]}))
 
-(defn add-outgoing-status [{:keys [from message-type] :as message} {:keys [db]}]
-  (assoc message
-         :outgoing
-         (and (= from (:current-public-key db))
-              (not= :system-message message-type))))
+(defn add-outgoing-status [{:keys [from message-type] :as message} current-public-key]
+  (assoc message :outgoing (and (= from current-public-key)
+                                (not= :system-message message-type))))
 
 (fx/defn add-message
   [{:keys [db] :as cofx} batch? {:keys [chat-id message-id clock-value timestamp content from] :as message} current-chat?]
-  (let [prepared-message (-> message
+  (let [current-public-key (accounts.db/current-public-key cofx)
+        prepared-message (-> message
                              (prepare-message chat-id current-chat?)
-                             (add-outgoing-status cofx))]
+                             (add-outgoing-status current-public-key))]
     (when (and platform/desktop?
-               (not= from (:current-public-key db))
+               (not= from current-public-key)
                (get-in db [:account/account :desktop-notifications?])
                (< (time/seconds-ago (time/to-date timestamp)) constants/one-earth-day))
       (.sendNotification react/desktop-notification (:text content)))
@@ -130,7 +130,7 @@
   [cofx chat-id]
   (when config/in-app-notifications-enabled?
     (let [view-id (get-in cofx [:db :view-id])
-          from (get-in cofx [:db :current-public-key])
+          from (accounts.db/current-public-key cofx)
           current-chat-id (get-in cofx [:db :current-chat-id])]
       (when-not (and (= :chat view-id)
                      (= current-chat-id chat-id))
@@ -144,13 +144,16 @@
    batch?
    {:keys [from message-id chat-id content content-type clock-value js-obj] :as raw-message}]
   (let [{:keys [web3 current-chat-id view-id]} db
-        current-chat?                 (and (or (= :chat view-id) (= :chat-modal view-id)) (= current-chat-id chat-id))
+        current-public-key            (accounts.db/current-public-key cofx)
+        current-chat?                 (and (or (= :chat view-id)
+                                               (= :chat-modal view-id))
+                                           (= current-chat-id chat-id))
         {:keys [group-chat] :as chat} (get-in db [:chats chat-id])
         message                       (-> raw-message
                                           (commands-receiving/enhance-receive-parameters cofx)
                                           (ensure-clock-value chat)
                                           ;; TODO (cammellos): Refactor so it's not computed twice
-                                          (add-outgoing-status cofx))]
+                                          (add-outgoing-status current-public-key))]
     (fx/merge cofx
               {:transport/confirm-messages-processed [{:web3   web3
                                                        :js-obj js-obj}]}
@@ -204,7 +207,7 @@
     (and (= :public-group-user-message message-type)
          (get-in cofx [:db :chats chat-id :public?])) chat-id
     (and (= :user-message message-type)
-         (= (get-in cofx [:db :current-public-key]) from)) chat-id
+         (= (accounts.db/current-public-key cofx) from)) chat-id
     (= :user-message message-type) from))
 
 (fx/defn receive-many
@@ -277,7 +280,7 @@
 
 (fx/defn send-push-notification [cofx fcm-token status]
   (when (and fcm-token (= status :sent))
-    {:send-notification {:message (js/JSON.stringify #js {:from (get-in cofx [:db :current-public-key])
+    {:send-notification {:message (js/JSON.stringify #js {:from (accounts.db/current-public-key cofx)
                                                           :to   (get-in cofx [:db :current-chat-id])})
                          :payload {:title (i18n/label :notifications-new-message-title)
                                    :body  (i18n/label :notifications-new-message-body)
@@ -332,10 +335,10 @@
 
 (fx/defn send-message
   [{:keys [db now] :as cofx} {:keys [chat-id] :as message}]
-  (let [{:keys [current-public-key chats]}  db
+  (let [{:keys [chats]}  db
         {:keys [last-clock-value] :as chat} (get chats chat-id)
         message-data                        (-> message
-                                                (assoc :from        current-public-key
+                                                (assoc :from        (accounts.db/current-public-key cofx)
                                                        :timestamp   now
                                                        :clock-value (utils.clocks/send
                                                                      last-clock-value))

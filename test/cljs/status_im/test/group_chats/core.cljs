@@ -334,7 +334,7 @@
   (testing "create a new chat"
     (with-redefs [utils.clocks/send inc]
       (let [cofx {:random-guid-generator (constantly "random")
-                  :db {:current-public-key "me"
+                  :db {:account/account {:public-key "me"}
                        :group/selected-contacts #{"1" "2"}}}]
         (is (= {:chat-id "randomme"
                 :from    "me"
@@ -395,12 +395,12 @@
                 :events [{:type "member-removed" :member member-3 :clock-value 4}]}
                (:group-chats/sign-membership
                 (group-chats/remove
-                 (assoc-in cofx [:db :current-public-key] member-3)
+                 (assoc-in cofx [:db :account/account :public-key] member-3)
                  chat-id)))))
       (testing "removing an admin"
         (is (not (:group-chats/sign-membership
                   (group-chats/remove
-                   (assoc-in cofx [:db :current-public-key] member-1)
+                   (assoc-in cofx [:db :account/account :public-key] member-1)
                    chat-id))))))))
 
 (deftest add-members-test
@@ -408,7 +408,7 @@
     (testing "add-members"
       (let [cofx {:db {:current-chat-id chat-id
                        :selected-participants ["new-member"]
-                       :current-public-key "me"
+                       :account/account {:public-key "me"}
                        :chats {chat-id {:last-clock-value   1
                                         :membership-updates [{:events [{:clock-value 1}]}]}}}}]
         (is (= {:chat-id chat-id
@@ -421,7 +421,7 @@
 (deftest remove-member-test
   (with-redefs [utils.clocks/send inc]
     (testing "remove-member"
-      (let [cofx {:db {:current-public-key "me"
+      (let [cofx {:db {:account/account {:public-key "me"}
                        :chats {chat-id {:admins #{"me"}
                                         :last-clock-value 1
                                         :contacts #{"member"}

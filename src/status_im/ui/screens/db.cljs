@@ -19,8 +19,7 @@
             status-im.ui.screens.add-new.new-public-chat.db))
 
 ;; initial state of app-db
-(def app-db {:current-public-key                 nil
-             :status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
+(def app-db {:status-module-initialized?         (or platform/ios? js/goog.DEBUG platform/desktop?)
              :keyboard-height                    0
              :tab-bar-visible?                   true
              :navigation-stack                   '()
@@ -70,8 +69,6 @@
 
 ;;;;GLOBAL
 
-;;public key of current logged in account
-(spec/def ::current-public-key (spec/nilable string?))
 (spec/def ::was-modal? (spec/nilable boolean?))
 ;;"http://localhost:8545"
 (spec/def ::rpc-url (spec/nilable string?))
@@ -244,8 +241,7 @@
                                 :ui/contact
                                 :ui/search
                                 :ui/chat]
-                          :opt-un [::current-public-key
-                                   ::modal
+                          :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url
                                    ::tooltips

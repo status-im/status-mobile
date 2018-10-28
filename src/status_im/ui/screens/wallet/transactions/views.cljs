@@ -101,7 +101,7 @@
 (defview history-list [& [hide-details?]]
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             filter-data               [:wallet.transactions/filters]
-            network                   [:get-current-account-network]]
+            network                   [:account/network]]
     [react/view components.styles/flex
      [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :key-fn          :hash
@@ -245,7 +245,7 @@
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations          [:wallet.transactions.details/confirmations]
             confirmations-progress [:wallet.transactions.details/confirmations-progress]
-            network                [:get-current-account-network]]
+            network                [:account/network]]
     [react/view {:style components.styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}

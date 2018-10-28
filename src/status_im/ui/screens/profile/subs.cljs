@@ -6,7 +6,7 @@
 
 (re-frame/reg-sub
  :get-profile-unread-messages-number
- :<- [:get-current-account]
+ :<- [:account/account]
  (fn [{:keys [seed-backed-up? mnemonic]}]
    (if (or seed-backed-up? (string/blank? mnemonic)) 0 1)))
 

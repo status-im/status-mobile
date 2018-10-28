@@ -27,7 +27,7 @@
    #(re-frame/dispatch [:accounts.ui/wallet-set-up-confirmed modal?])))
 
 (views/defview onboarding-panel [modal?]
-  (views/letsubs [{:keys [signing-phrase]} [:get-current-account]]
+  (views/letsubs [{:keys [signing-phrase]} [:account/account]]
     (let [signing-words  (string/split signing-phrase #" ")
           container      (if modal? react/view wallet.components/simple-screen)
           container-opts (if modal? components.styles/flex {:avoid-keyboard? true})]

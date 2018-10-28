@@ -95,7 +95,7 @@
  :get-active-chats
  :<- [:get-contacts]
  :<- [:get-chats]
- :<- [:get-current-account]
+ :<- [:account/account]
  active-chats)
 
 (reg-sub
@@ -348,7 +348,7 @@
 (reg-sub
  :get-photo-path
  :<- [:get-contacts]
- :<- [:get-current-account]
+ :<- [:account/account]
  (fn [[contacts account] [_ id]]
    (or (:photo-path (contacts id))
        (when (= id (:public-key account))

@@ -159,7 +159,6 @@
         account-network-id (get current-account :network network)
         account-network (get-in current-account [:networks account-network-id])]
     {:db (cond-> (assoc app-db
-                        :current-public-key (:public-key current-account)
                         :view-id view-id
                         :navigation-stack navigation-stack
                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)

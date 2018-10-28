@@ -66,7 +66,7 @@
                     public? chat-id] :as chat}    [:get-current-chat]
             chat-name                             [:get-current-chat-name]
             show-actions?                         [:get-current-chat-ui-prop :show-actions?]
-            accounts                              [:get-accounts]
+            accounts                              [:accounts/accounts]
             contact                               [:get-current-chat-contact]
             sync-state                            [:sync-state]]
     (let [has-subtitle? (or group-chat (not= :done sync-state))]

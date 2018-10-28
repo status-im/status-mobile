@@ -157,7 +157,7 @@
 
 (views/defview browser []
   (views/letsubs [webview    (atom nil)
-                  {:keys [address settings]} [:get-current-account]
+                  {:keys [address settings]} [:account/account]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:get :browser/options]
                   rpc-url    [:get :rpc-url]

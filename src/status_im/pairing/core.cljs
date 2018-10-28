@@ -1,15 +1,15 @@
 (ns status-im.pairing.core
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.config :as config]
-   [status-im.utils.platform :as utils.platform]
-   [status-im.transport.message.protocol :as protocol]
-   [status-im.data-store.installations :as data-store.installations]
-   [status-im.native-module.core :as native-module]
-   [status-im.utils.identicon :as identicon]
-   [status-im.data-store.contacts :as data-store.contacts]
-   [status-im.transport.message.pairing :as transport.pairing]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as utils.platform]
+            [status-im.transport.message.protocol :as protocol]
+            [status-im.data-store.installations :as data-store.installations]
+            [status-im.native-module.core :as native-module]
+            [status-im.accounts.db :as accounts.db]
+            [status-im.utils.identicon :as identicon]
+            [status-im.data-store.contacts :as data-store.contacts]
+            [status-im.transport.message.pairing :as transport.pairing]))
 
 (defn- parse-response [response-js]
   (-> response-js
@@ -22,7 +22,8 @@
     (protocol/send (transport.pairing/PairInstallation. installation-id device-type) nil cofx)))
 
 (defn send-pair-installation [cofx payload]
-  (let [{:keys [current-public-key web3]} (:db cofx)]
+  (let [{:keys [web3]} (:db cofx)
+        current-public-key (accounts.db/current-public-key cofx)]
     {:shh/send-pairing-message {:web3    web3
                                 :src     current-public-key
                                 :payload payload}}))
@@ -57,7 +58,7 @@
                               :has-bundle?     true}]
         (when
          (and (= (:identity bundle)
-                 (:current-public-key db))
+                 (accounts.db/current-public-key cofx))
               (not= (get-in db [:account/account :installation-id]) installation-id)
               (not (get-in db [:pairing/installations installation-id])))
           (upsert-installation cofx new-installation))))))
@@ -120,7 +121,8 @@
 
 (defn send-installation-message [cofx]
   ;; The message needs to be broken up in chunks as we hit the whisper size limit
-  (let [{:keys [current-public-key web3]} (:db cofx)
+  (let [{:keys [web3]} (:db cofx)
+        current-public-key (accounts.db/current-public-key cofx)
         sync-messages (sync-installation-messages cofx)]
     {:shh/send-direct-message
      (map #(hash-map :web3 web3
@@ -131,7 +133,7 @@
 (defn handle-sync-installation [{:keys [db] :as cofx} {:keys [contacts]} sender]
   (let [dev-mode? (get-in db [:account/account :dev-mode?])]
     (when (and (config/pairing-enabled? dev-mode?)
-               (= sender (get-in cofx [:db :current-public-key])))
+               (= sender (accounts.db/current-public-key cofx)))
       (let [new-contacts  (merge-contacts (:contacts/contacts db) contacts)]
         {:db (assoc db :contacts/contacts new-contacts)
          :data-store/tx [(data-store.contacts/save-contacts-tx (vals new-contacts))]}))))

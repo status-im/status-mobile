@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.react-native.js-dependencies :as rn]
             [taoensso.timbre :as log]
+            [status-im.accounts.db :as accounts.db]
             [status-im.accounts.login.core :as accounts.login]
             [status-im.chat.models :as chat-model]
             [status-im.utils.platform :as platform]
@@ -76,7 +77,7 @@
 
   (fx/defn handle-push-notification
     [{:keys [db] :as cofx} {:keys [from to] :as event}]
-    (let [current-public-key (get-in cofx [:db :current-public-key])]
+    (let [current-public-key (accounts.db/current-public-key cofx)]
       (if (= to current-public-key)
         (fx/merge cofx
                   {:db (update db :push-notifications/stored dissoc to)}

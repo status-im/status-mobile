@@ -1,6 +1,7 @@
 (ns ^{:doc "Protocol API and protocol utils"}
  status-im.transport.message.protocol
   (:require [cljs.spec.alpha :as spec]
+            [status-im.accounts.db :as accounts.db]
             [status-im.chat.core :as chat]
             [status-im.constants :as constants]
             [status-im.transport.db :as transport.db]
@@ -35,11 +36,11 @@
   "Sends the payload using symetric key and topic from db (looked up by `chat-id`)"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
   ;; we assume that the chat contains the contact public-key
-  (let [{:keys [current-public-key web3]} db
+  (let [{:keys [web3]} db
         {:keys [sym-key-id topic]} (get-in db [:transport/chats chat-id])]
     {:shh/post [{:web3          web3
                  :success-event success-event
-                 :message       (merge {:sig      current-public-key
+                 :message       (merge {:sig      (accounts.db/current-public-key cofx)
                                         :symKeyID sym-key-id
                                         :payload  payload
                                         :topic    topic}
@@ -48,30 +49,30 @@
 (fx/defn send-direct-message
   "Sends the payload using to dst"
   [{:keys [db] :as cofx} dst success-event payload]
-  (let [{:keys [current-public-key web3]} db]
+  (let [{:keys [web3]} db]
     {:shh/send-direct-message [{:web3 web3
                                 :success-event success-event
-                                :src     current-public-key
+                                :src     (accounts.db/current-public-key cofx)
                                 :dst     dst
                                 :payload payload}]}))
 
 (defn send-public-message
   "Sends the payload to topic"
   [{:keys [db] :as cofx} chat-id success-event payload]
-  (let [{:keys [current-public-key web3]} db]
+  (let [{:keys [web3]} db]
     {:shh/send-public-message [{:web3 web3
                                 :success-event success-event
-                                :src     current-public-key
+                                :src     (accounts.db/current-public-key cofx)
                                 :chat    chat-id
                                 :payload payload}]}))
 
 (fx/defn send-with-pubkey
-  "Sends the payload using asymetric key (`:current-public-key` in db) and fixed discovery topic"
+  "Sends the payload using asymetric key (account `:public-key` in db) and fixed discovery topic"
   [{:keys [db] :as cofx} {:keys [payload chat-id success-event]}]
-  (let [{:keys [current-public-key web3]} db]
+  (let [{:keys [web3]} db]
     {:shh/post [{:web3          web3
                  :success-event success-event
-                 :message       (merge {:sig     current-public-key
+                 :message       (merge {:sig     (accounts.db/current-public-key cofx)
                                         :pubKey  chat-id
                                         :payload payload
                                         :topic   (transport.utils/get-topic constants/contact-discovery)}

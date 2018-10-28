@@ -16,7 +16,8 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.utils.fx :as fx]
-            [status-im.chat.models :as models.chat]))
+            [status-im.chat.models :as models.chat]
+            [status-im.accounts.db :as accounts.db]))
 
 ;; Description of the flow:
 ;; the flow is complicated a bit by 2 asynchronous call to status-go, which might make the logic a bit more opaque.
@@ -105,7 +106,8 @@
   ([cofx payload chat-id removed-members]
    (let [members (clojure.set/union (get-in cofx [:db :chats chat-id :contacts])
                                     removed-members)
-         {:keys [current-public-key web3]} (:db cofx)]
+         {:keys [web3]} (:db cofx)
+         current-public-key (accounts.db/current-public-key cofx)]
      (fx/merge
       cofx
       {:shh/send-group-message {:web3          web3
@@ -169,7 +171,7 @@
 (fx/defn create
   "Format group update message and sign membership"
   [{:keys [db random-guid-generator] :as cofx} group-name]
-  (let [my-public-key     (:current-public-key db)
+  (let [my-public-key     (accounts.db/current-public-key cofx)
         chat-id           (str (random-guid-generator) my-public-key)
         selected-contacts (:group/selected-contacts db)
         clock-value       (utils.clocks/send 0)
@@ -187,7 +189,7 @@
 (fx/defn remove-member
   "Format group update message and sign membership"
   [{:keys [db] :as cofx} chat-id member]
-  (let [my-public-key     (:current-public-key db)
+  (let [my-public-key     (accounts.db/current-public-key cofx)
         last-clock-value  (get-last-clock-value cofx chat-id)
         chat              (get-in cofx [:db :chats chat-id])
         remove-event       {:type        "member-removed"
@@ -202,17 +204,17 @@
 
 (fx/defn add-members
   "Add members to a group chat"
-  [{{:keys [current-chat-id selected-participants current-public-key]} :db :as cofx}]
+  [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
   (let [last-clock-value  (get-last-clock-value cofx current-chat-id)
         events            [(members-added-event last-clock-value selected-participants)]]
 
     {:group-chats/sign-membership {:chat-id current-chat-id
-                                   :from    current-public-key
+                                   :from    (accounts.db/current-public-key cofx)
                                    :events  events}}))
 (fx/defn remove
   "Remove & leave chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [my-public-key     (:current-public-key db)]
+  (let [my-public-key (accounts.db/current-public-key cofx)]
     (fx/merge cofx
               (remove-member chat-id my-public-key)
               (models.chat/remove-chat chat-id))))
@@ -404,7 +406,7 @@
   [{:keys [db] :as cofx} {:keys [chat-id] :as signed-events}]
   (let [old-chat      (get-in db [:chats chat-id])
         updated-chat  (update old-chat :membership-updates conj signed-events)
-        my-public-key (:current-public-key db)
+        my-public-key (accounts.db/current-public-key cofx)
         group-update  (chat->group-update chat-id updated-chat)
         new-group-fx  (handle-membership-update group-update my-public-key)
         ;; We need to send to users who have been removed as well

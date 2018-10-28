@@ -53,7 +53,7 @@
      [react/view {:style styles/tooltip-triangle}]]))
 
 (views/defview qr-code []
-  (views/letsubs [{:keys [public-key]} [:get-current-account]
+  (views/letsubs [{:keys [public-key]} [:account/account]
                   tooltip-opacity      [:get-in [:tooltips :qr-copied]]]
     [react/view
      [react/view {:style styles/qr-code-container}
@@ -173,7 +173,7 @@
 
 (views/defview profile-data []
   (views/letsubs
-    [user [:get-current-account]]
+    [user [:account/account]]
     {:component-will-unmount
      #(re-frame/dispatch [:set :my-profile/editing? false])}
     [profile user]))

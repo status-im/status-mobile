@@ -27,7 +27,7 @@
 
 (views/defview send-transaction-request []
   ;; TODO(jeluard) both send and request flows should be merged
-  (views/letsubs [network                                           [:get-current-account-network]
+  (views/letsubs [network                                           [:account/network]
                   {:keys [to to-name public-key]}                   [:wallet.send/transaction]
                   {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
                   network-status [:network-status]
@@ -73,7 +73,7 @@
    (i18n/label :t/send-transaction-request)])
 
 (views/defview request-transaction []
-  (views/letsubs [address-hex [:get-current-account-hex]
+  (views/letsubs [address-hex [:account/hex-address]
                   chain-id    [:get-network-id]]
     [wallet.components/simple-screen
      [wallet.components/toolbar {}
