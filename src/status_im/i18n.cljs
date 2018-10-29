@@ -260,8 +260,7 @@
   ([path] (label path {}))
   ([path options]
    (if (exists? rn-dependencies/i18n.t)
-     (let [options (update options :amount label-number)]
-       (.t rn-dependencies/i18n (name path) (clj->js (label-options options))))
+     (.t rn-dependencies/i18n (name path) (clj->js (label-options options)))
      (name path))))
 
 (defn label-pluralize [count path & options]
