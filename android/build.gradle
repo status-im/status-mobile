@@ -3,7 +3,6 @@
 buildscript {
     repositories {
         google()
-        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -19,7 +18,6 @@ allprojects {
     repositories {
         mavenLocal()
         google()
-        jcenter()
         maven { url "$rootDir/../node_modules/react-native/android" }
         maven { url "$rootDir/../modules/react-native-status/android/libs" }
         // for geth, function, and status-go
