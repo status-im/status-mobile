@@ -26,9 +26,9 @@ external_modules_dir=( \
 )
 
 external_fonts=( \
-  '../../../../../resources/fonts/SF-Pro-Text-Regular.otf' \
-  '../../../../../resources/fonts/SF-Pro-Text-Medium.otf' \
-  '../../../../../resources/fonts/SF-Pro-Text-Light.otf' \
+  '../../../../../resources/fonts/Inter-UI-Bold.otf' \
+  '../../../../../resources/fonts/Inter-UI-Medium.otf' \
+  '../../../../../resources/fonts/Inter-UI-Regular.otf' \
 )
 
 function is_macos() {

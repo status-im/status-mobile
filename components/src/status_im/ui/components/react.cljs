@@ -82,12 +82,13 @@
 (def slider (get-class "Slider"))
 ;; Accessor methods for React Components
 
-(defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
-  (let [font (get-in platform/platform-specific [:fonts (keyword font)])
-        style (get opts style-key)]
+(def default-font {:font-family "Inter UI"})
+
+(defn add-font-style [style-key opts]
+  (let [style (get opts style-key)]
     (-> opts
         (dissoc :font)
-        (assoc style-key (merge style font)))))
+        (assoc style-key (merge default-font style)))))
 
 (defn transform-to-uppercase [{:keys [uppercase? force-uppercase?]} ts]
   (if (or force-uppercase? (and uppercase? platform/android?))
@@ -103,17 +104,15 @@
         (concat [text-class (add-font-style :style opts)])
         (vec))))
 
-(defn text-input [{:keys [font style] :as opts
-                   :or   {font :default}} text]
-  (let [font (get-in platform/platform-specific [:fonts (keyword font)])]
-    [text-input-class (merge
-                       {:underline-color-android :transparent
-                        :placeholder-text-color  colors/text-gray
-                        :placeholder             (i18n/label :t/type-a-message)
-                        :value                   text}
-                       (-> opts
-                           (dissoc :font)
-                           (assoc :style (merge style font))))]))
+(defn text-input [{:keys [style] :as opts} text]
+  [text-input-class (merge
+                     {:underline-color-android :transparent
+                      :placeholder-text-color  colors/text-gray
+                      :placeholder             (i18n/label :t/type-a-message)
+                      :value                   text}
+                     (-> opts
+                         (dissoc :font)
+                         (assoc :style (merge default-font style))))])
 
 (defn i18n-text
   [{:keys [style key]}]

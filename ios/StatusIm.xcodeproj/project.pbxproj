@@ -30,6 +30,9 @@
 		3E15DFEC1F6F4D7CAE088F49 /* libTcpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A4E93F6B154AEFA3485B45 /* libTcpSockets.a */; };
 		475D202F20B7450D00879A77 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 475D1FC020B7413500879A77 /* libRNFirebase.a */; };
 		4C16DE0C1F89508700AA10DB /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */; };
+		55C386232185E83600B7A324 /* Inter-UI-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 55C386202185E83600B7A324 /* Inter-UI-Medium.otf */; };
+		55C386242185E83600B7A324 /* Inter-UI-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 55C386212185E83600B7A324 /* Inter-UI-Regular.otf */; };
+		55C386252185E83600B7A324 /* Inter-UI-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 55C386222185E83600B7A324 /* Inter-UI-Bold.otf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
 		81C6E6AE0AA739BE9D87C1D0 /* libPods-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
@@ -519,6 +522,9 @@
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		52F6ED6465184513A082652B /* libRNI18n.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNI18n.a; sourceTree = "<group>"; };
 		5535217F57E44D77AA9CF083 /* libRCTOrientation.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTOrientation.a; sourceTree = "<group>"; };
+		55C386202185E83600B7A324 /* Inter-UI-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-UI-Medium.otf"; path = "fonts/Inter-UI-Medium.otf"; sourceTree = "<group>"; };
+		55C386212185E83600B7A324 /* Inter-UI-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-UI-Regular.otf"; path = "fonts/Inter-UI-Regular.otf"; sourceTree = "<group>"; };
+		55C386222185E83600B7A324 /* Inter-UI-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-UI-Bold.otf"; path = "fonts/Inter-UI-Bold.otf"; sourceTree = "<group>"; };
 		5E5A7625B76441D984EA8C0D /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTImageResizer.xcodeproj; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; };
 		674B3D9595A047AB8D518F4E /* libRNFS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFS.a; sourceTree = "<group>"; };
 		74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "launch-image-universal.storyboard"; sourceTree = "<group>"; };
@@ -736,6 +742,9 @@
 		1E7837547A9A40E18AD63CF3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				55C386222185E83600B7A324 /* Inter-UI-Bold.otf */,
+				55C386202185E83600B7A324 /* Inter-UI-Medium.otf */,
+				55C386212185E83600B7A324 /* Inter-UI-Regular.otf */,
 				983F07442119C9D2004133ED /* message.wav */,
 				2028E0111D4275BD00227DCD /* SF */,
 				B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */,
@@ -1071,7 +1080,6 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				20B6B6891D92C42700CC5C6A /* Embed Frameworks */,
 				E3914A731DF919ED00EBB515 /* Run Script */,
-				D286FF71BA61530E740B7C82 /* Strip Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1653,8 +1661,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55C386232185E83600B7A324 /* Inter-UI-Medium.otf in Resources */,
 				983F077E2119C9D2004133ED /* message.wav in Resources */,
 				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
+				55C386252185E83600B7A324 /* Inter-UI-Bold.otf in Resources */,
+				55C386242185E83600B7A324 /* Inter-UI-Regular.otf in Resources */,
 				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
 				92A0DF7D1F4DE3A4002051BC /* GoogleService-Info.plist in Resources */,
 			);
@@ -1675,7 +1686,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -o errexit\nexport NODE_BINARY=\"node --max-old-space-size=8192\"\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"node --max-old-space-size=8192\"\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2EAC54E16AB243C3EBBFE1BA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

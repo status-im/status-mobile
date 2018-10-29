@@ -20,9 +20,9 @@
     "node_modules/google-breakpad"
   ],
   "desktopFonts": [
-    "../../../../../resources/fonts/SF-Pro-Text-Regular.otf",
-    "../../../../../resources/fonts/SF-Pro-Text-Medium.otf",
-    "../../../../../resources/fonts/SF-Pro-Text-Light.otf"
+    "../../../../../resources/fonts/Inter-UI-Bold.otf",
+    "../../../../../resources/fonts/Inter-UI-Medium.otf",
+    "../../../../../resources/fonts/Inter-UI-Regular.otf"
   ],
   "dependencies": {
     "@babel/core": "7.0.1",

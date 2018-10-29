@@ -96,6 +96,12 @@
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Inter-UI-Bold.otf</string>
+		<string>Inter-UI-Medium.otf</string>
+		<string>Inter-UI-Regular.otf</string>
+	</array>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>1aa92c4d-6194-4d7d-b70a-16b48256b87e</string>
 </dict>

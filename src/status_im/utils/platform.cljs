@@ -28,7 +28,7 @@
   (cond
     android? android/platform-specific
     ios? ios/platform-specific
-    :else (desktop/platform-specific (if platform (.-isMacOs platform) true))))
+    :else desktop/platform-specific))
 
 (defn no-backup-directory []
   (cond
