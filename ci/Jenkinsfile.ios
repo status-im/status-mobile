@@ -2,10 +2,13 @@ pipeline {
   agent { label 'fastlane' }
 
   options {
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 25, unit: 'MINUTES')
+    /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '30',
+      numToKeepStr: '60',
       daysToKeepStr: '30',
-      artifactNumToKeepStr: '30',
+      artifactNumToKeepStr: '60',
     ))
   }
 

@@ -2,10 +2,13 @@ pipeline {
   agent { label 'linux' }
 
   options {
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 25, unit: 'MINUTES')
+    /* Limit builds retained */
     buildDiscarder(logRotator(
-      numToKeepStr: '60',
+      numToKeepStr: '90',
       daysToKeepStr: '30',
-      artifactNumToKeepStr: '60',
+      artifactNumToKeepStr: '90',
     ))
   }
 
