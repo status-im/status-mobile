@@ -243,12 +243,18 @@
   "Save chat from edited profile"
   [{:keys [db] :as cofx}]
   (let [current-chat-id (get-in cofx [:db :current-chat-id])
-        new-name (get-in cofx [:db :group-chat-profile/profile :name])]
+        my-public-key (get-in db [:account/account :public-key])
+        last-clock-value (get-last-clock-value cofx current-chat-id)
+        new-name (get-in cofx [:db :group-chat-profile/profile :name])
+        name-changed-event {:type        "name-changed"
+                            :name        new-name
+                            :clock-value (utils.clocks/send last-clock-value)}]
     (when (valid-name? new-name)
       (fx/merge cofx
-                {:db (assoc db :group-chat-profile/editing? false)}
-                (models.chat/upsert-chat {:chat-id current-chat-id
-                                          :name new-name})))))
+                {:db (assoc db :group-chat-profile/editing? false)
+                 :group-chats/sign-membership {:chat-id current-chat-id
+                                               :from my-public-key
+                                               :events [name-changed-event]}}))))
 
 (defn process-event
   "Add/remove an event to a group, carrying the clock-value at which it happened"
@@ -261,6 +267,7 @@
                         :contacts   #{from}}
       "name-changed"   (assoc group
                               :name name
+                              :name-changed-by from
                               :name-changed-at clock-value)
       "members-added"  (as-> group $
                          (update $ :contacts clojure.set/union (into #{} members))
@@ -288,26 +295,37 @@
 
 (defn membership-changes->system-messages [cofx
                                            clock-values
-                                           {:keys [chat-id chat-name creator members-added members-removed]}]
-  (let [get-contact      (partial models.contact/build-contact cofx)
-        format-message   (fn [contact text clock-value]
-                           {:chat-id chat-id
-                            :content {:text text}
-                            :clock-value clock-value
-                            :from (:whisper-identity contact)})
-        creator-contact  (when creator (get-contact creator))
-        contacts-added   (map
-                          get-contact
-                          (disj members-added creator))
-        contacts-removed (map
-                          get-contact
-                          members-removed)]
+                                           {:keys [chat-id
+                                                   chat-name
+                                                   creator
+                                                   members-added
+                                                   name-changed?
+                                                   members-removed]}]
+  (let [get-contact         (partial models.contact/build-contact cofx)
+        format-message      (fn [contact text clock-value]
+                              {:chat-id chat-id
+                               :content {:text text}
+                               :clock-value clock-value
+                               :from (:whisper-identity contact)})
+        creator-contact     (when creator (get-contact creator))
+        name-changed-author (when name-changed? (get-contact (:name-changed-by clock-values)))
+        contacts-added      (map
+                             get-contact
+                             (disj members-added creator))
+        contacts-removed    (map
+                             get-contact
+                             members-removed)]
     (cond-> []
       creator-contact (conj (format-message creator-contact
                                             (i18n/label :t/group-chat-created
                                                         {:name   chat-name
                                                          :member (:name creator-contact)})
                                             (:created-at clock-values)))
+      name-changed?  (conj (format-message name-changed-author
+                                           (i18n/label :t/group-chat-name-changed
+                                                       {:name   chat-name
+                                                        :member (:name name-changed-author)})
+                                           (:name-changed-at clock-values)))
       (seq members-added) (concat (map #(format-message
                                          %
                                          (i18n/label :t/group-chat-member-added {:member (:name %)})
@@ -322,15 +340,19 @@
 (fx/defn add-system-messages [cofx chat-id previous-chat clock-values]
   (let [current-chat (get-in cofx [:db :chats chat-id])
         current-public-key (get-in cofx [:db :current-public-key])
+        name-changed?  (and (seq previous-chat)
+                            (not= (:name previous-chat) (:name current-chat)))
         members-added (clojure.set/difference (:contacts current-chat) (:contacts previous-chat))
         members-removed (clojure.set/difference (:contacts previous-chat) (:contacts current-chat))
         membership-changes (cond-> {:chat-id         chat-id
+                                    :name-changed?   name-changed?
                                     :chat-name       (:name current-chat)
                                     :members-added   members-added
                                     :members-removed members-removed}
                              (nil? previous-chat)
                              (assoc :creator (extract-creator current-chat)))]
-    (when (or (seq members-added)
+    (when (or name-changed?
+              (seq members-added)
               (seq members-removed))
       (->> membership-changes
            (membership-changes->system-messages cofx clock-values)

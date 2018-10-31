@@ -101,7 +101,10 @@
                                                                                               :member member-3}
                                                                                              {:type "members-added"
                                                                                               :clock-value 12
-                                                                                              :members [member-4]}]}]}
+                                                                                              :members [member-4]}
+                                                                                             {:type "name-changed"
+                                                                                              :clock-value 13
+                                                                                              :name "new-name"}]}]}
                                                              member-3)
                 actual-chat (get-in actual [:db :chats chat-id])]
             (testing "the chat is updated"
@@ -110,14 +113,17 @@
               (is (= #{member-2} (:admins actual-chat))))
             (testing "members are updated"
               (is (= #{member-1 member-2 member-4} (:contacts actual-chat))))
+            (testing "the name is updated"
+              (is (= "new-name" (:name actual-chat))))
             (testing "it adds a system message"
-              (is (= 5 (count (:messages actual-chat)))))
+              (is (= 6 (count (:messages actual-chat)))))
             (testing "it sets the right text"
               (is (= ["group-chat-created"
                       "group-chat-member-added"
                       "group-chat-member-added"
                       "group-chat-member-added"
-                      "group-chat-member-removed"]
+                      "group-chat-member-removed"
+                      "group-chat-name-changed"]
                      (map (comp :text :content) (sort-by :clock-value (vals (:messages actual-chat)))))))))))))
 
 (deftest build-group-test
@@ -195,6 +201,7 @@
                    :name  "new-name"}]
           expected {:name "new-name"
                     :created-at 0
+                    :name-changed-by "2"
                     :name-changed-at 3
                     "2" {:added 1
                          :admin-added 2}
