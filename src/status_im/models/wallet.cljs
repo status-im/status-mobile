@@ -167,16 +167,13 @@
       {:db (-> db
                (assoc-in [:wallet :send-transaction :wrong-password?] true))}
 
-      (merge (let [cofx {:db
-                         (-> db
-                             (assoc-in [:wallet :transactions-queue] nil)
-                             (assoc-in [:wallet :send-transaction] {}))
-                         :wallet/show-transaction-error
-                         message}]
-               (navigation/navigate-back cofx))
-
-             (when on-error
-               {:dispatch (conj on-error message)})))))
+      (fx/merge {:db (-> db
+                         (assoc-in [:wallet :transactions-queue] nil)
+                         (assoc-in [:wallet :send-transaction] {}))}
+                {:wallet/show-transaction-error message}
+                (navigation/navigate-back)
+                (when on-error
+                  {:dispatch (conj on-error message)})))))
 
 (defn transform-data-for-message [{:keys [method] :as transaction}]
   (cond-> transaction
