@@ -15,17 +15,18 @@
             [status-im.i18n :as i18n]
             [status-im.utils.utils :as utils]))
 
-(defn group-chat-profile-toolbar []
+(defn group-chat-profile-toolbar [admin?]
   [toolbar/toolbar {}
    toolbar/default-nav-back
    [toolbar/content-title ""]
-   [react/touchable-highlight
-    {:on-press #(re-frame/dispatch [:group-chat-profile/start-editing])}
-    [react/view
-     [react/text {:style               common.styles/label-action-text
-                  :uppercase?          true
-                  :accessibility-label :edit-button}
-      (i18n/label :t/edit)]]]])
+   (when admin?
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:group-chat-profile/start-editing])}
+      [react/view
+       [react/text {:style               common.styles/label-action-text
+                    :uppercase?          true
+                    :accessibility-label :edit-button}
+        (i18n/label :t/edit)]]])])
 
 (defn group-chat-profile-edit-toolbar []
   [toolbar/toolbar {}
@@ -95,7 +96,7 @@
        [status-bar/status-bar]
        (if editing?
          [group-chat-profile-edit-toolbar]
-         [group-chat-profile-toolbar])
+         [group-chat-profile-toolbar admin?])
        [react/scroll-view
         [react/view profile.components.styles/profile-form
          [profile.components/profile-header

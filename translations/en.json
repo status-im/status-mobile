@@ -20,6 +20,7 @@
     "find": "Find",
     "close-app-title": "Warning!",
     "group-chat-created": "*{{member}}* created the group *{{name}}*",
+    "group-chat-name-changed": "*{{member}}* changed the group's name to *{{name}}*",
     "group-chat-member-added": "*{{member}}* joined the group",
     "group-chat-member-removed": "*{{member}}* left the group",
     "agree-by-continuing": "By continuing you agree\n to our ",

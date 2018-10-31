@@ -42,7 +42,7 @@
     (let [delete-action (if (:chat-id home-item)
                           (if (and (:group-chat home-item)
                                    (not (:public? home-item)))
-                            :group-chats.ui/remove-chat
+                            :group-chats.ui/remove-chat-pressed
                             :chat.ui/remove-chat)
                           :browser.ui/remove-browser-pressed)
           inner-item-view (if (:chat-id home-item)
