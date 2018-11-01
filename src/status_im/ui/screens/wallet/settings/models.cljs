@@ -25,10 +25,10 @@
             (wallet.events/update-token-balance-success symbol balance)))
 
 (fx/defn wallet-autoconfig-tokens [{:keys [db]}]
-  (let [{:keys [account/account web3 network-status]} db
+  (let [{:keys [account/account web3 network-status] :wallet/keys [all-tokens]} db
         network   (get (:networks account) (:network account))
         chain     (ethereum/network->chain-keyword network)
-        contracts (->> (tokens/tokens-for chain)
+        contracts (->> (tokens/tokens-for all-tokens chain)
                        (remove :hidden?))]
     (when-not (= network-status :offline)
       (doseq [{:keys [address symbol]} contracts]

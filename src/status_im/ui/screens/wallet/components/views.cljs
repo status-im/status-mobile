@@ -153,9 +153,10 @@
     (throw (str "Unknown type: " k))))
 
 (views/defview asset-selector [{:keys [disabled? type symbol error]}]
-  (views/letsubs [balance  [:balance]
-                  network  [:network]]
-    (let [{:keys [name icon decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+  (views/letsubs [balance    [:balance]
+                  network    [:network]
+                  all-tokens [:wallet/all-tokens]]
+    (let [{:keys [name icon decimals] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
       (when name
         [react/view
          [cartouche {:disabled? disabled? :on-press #(re-frame/dispatch [:navigate-to (type->view type)])}

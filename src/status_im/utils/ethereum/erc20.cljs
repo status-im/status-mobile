@@ -18,27 +18,99 @@
   (:require [status-im.utils.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
             [status-im.utils.security :as security]
+            [status-im.js-dependencies :as dependencies]
             [status-im.utils.types :as types])
   (:refer-clojure :exclude [name symbol]))
 
+(def utils dependencies/web3-utils)
+
+(def abi
+  (clj->js
+   [{:constant        true
+     :inputs          []
+     :name            "name"
+     :outputs         [{:name ""
+                        :type "string"}]
+     :payable         false
+     :stateMutability "view"
+     :type            "function"}
+    {:constant        true
+     :inputs          []
+     :name            "symbol"
+     :outputs         [{:name ""
+                        :type "string"}]
+     :payable         false
+     :stateMutability "view"
+     :type            "function"}
+    {:constant        true
+     :inputs          []
+     :name            "decimals"
+     :outputs         [{:name ""
+                        :type "uint8"}]
+     :payable         false
+     :stateMutability "view"
+     :type            "function"}
+    {:constant        true
+     :inputs          [{:name "_who"
+                        :type "address"}]
+     :name            "balanceOf"
+     :outputs         [{:name ""
+                        :type "uint256"}]
+     :payable         false
+     :stateMutability "view"
+     :type            "function"}
+    {:constant        true
+     :inputs          []
+     :name            "totalSupply"
+     :outputs         [{:name ""
+                        :type "uint256"}],
+     :payable         false
+     :stateMutability "view"
+     :type            "function"}
+    {:constant        false
+     :inputs          [{:name "_to"
+                        :type "address"}
+                       {:name "_value"
+                        :type "uint256"}]
+     :name            "transfer"
+     :outputs         [{:name ""
+                        :type "bool"}],
+     :payable         false
+     :stateMutability "nonpayable"
+     :type            "function"}
+    {:anonymous false
+     :inputs    [{:indexed true
+                  :name    "from"
+                  :type    "address"},
+                 {:indexed true
+                  :name    "to"
+                  :type    "address"},
+                 {:indexed false
+                  :name    "value"
+                  :type    "uint256"}]
+     :name      "Transfer"
+     :type      "event"}]))
+
+(defn get-instance* [web3 contract]
+  (.at (.contract (.-eth web3) abi) contract))
+
+(def get-instance
+  (memoize get-instance*))
+
 (defn name [web3 contract cb]
-  (ethereum/call web3 (ethereum/call-params contract "name()") cb))
+  (.name (get-instance web3 contract) cb))
 
 (defn symbol [web3 contract cb]
-  (ethereum/call web3 (ethereum/call-params contract "symbol()") cb))
+  (.symbol (get-instance web3 contract) cb))
 
 (defn decimals [web3 contract cb]
-  (ethereum/call web3 (ethereum/call-params contract "decimals()") cb))
+  (.decimals (get-instance web3 contract) cb))
 
 (defn total-supply [web3 contract cb]
-  (ethereum/call web3
-                 (ethereum/call-params contract "totalSupply()")
-                 #(cb %1 (ethereum/hex->bignumber %2))))
+  (.totalSupply (get-instance web3 contract) cb))
 
 (defn balance-of [web3 contract address cb]
-  (ethereum/call web3
-                 (ethereum/call-params contract "balanceOf(address)" (ethereum/normalized-address address))
-                 #(cb %1 (ethereum/hex->bignumber %2))))
+  (.balanceOf (get-instance web3 contract) address cb))
 
 (defn transfer [contract from to value gas gas-price masked-password on-completed]
   (status/send-transaction (types/clj->json

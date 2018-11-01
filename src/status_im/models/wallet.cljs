@@ -7,9 +7,11 @@
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.hex :as utils.hex]
+            [status-im.utils.core :as utils.core]
             [status-im.utils.money :as money]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.config :as config]))
 
 (def min-gas-price-wei (money/bignumber 1))
 
@@ -144,9 +146,10 @@
              {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
 (defn prepare-unconfirmed-transaction [db now hash]
-  (let [transaction (get-in db [:wallet :send-transaction])]
+  (let [transaction (get-in db [:wallet :send-transaction])
+        all-tokens  (:wallet/all-tokens db)]
     (let [chain (:chain db)
-          token (tokens/symbol->token (keyword chain) (:symbol transaction))]
+          token (tokens/symbol->token all-tokens (keyword chain) (:symbol transaction))]
       (-> transaction
           (assoc :confirmations "0"
                  :timestamp (str now)
@@ -183,16 +186,29 @@
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
 
-(defn tokens-symbols [v chain]
-  (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))
+(defn tokens-symbols [visible-token-symbols all-tokens chain]
+  (set/difference (set visible-token-symbols) (set (map :symbol (tokens/nfts-for all-tokens chain)))))
+
+(fx/defn initialize-tokens
+  [{:keys [db]}]
+  (let [network-id (get-in db [:account/account :network])
+        network    (get-in db [:account/account :networks network-id])
+        chain      (ethereum/network->chain-keyword network)]
+    (merge
+     {:db (assoc db :wallet/all-tokens
+                 (utils.core/map-values #(utils.core/index-by :address %) tokens/all-default-tokens))}
+     (when config/erc20-contract-warnings-enabled?
+       {:wallet/validate-tokens {:web3   (:web3 db)
+                                 :tokens (get tokens/all-default-tokens chain)}}))))
 
 (fx/defn update-wallet
   [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db}]
-  (let [network     (get-in db [:account/account :networks network])
+  (let [all-tokens  (:wallet/all-tokens db)
+        network     (get-in db [:account/account :networks network])
         chain       (ethereum/network->chain-keyword network)
         mainnet?    (= :mainnet chain)
         assets      (get-in settings [:wallet :visible-tokens chain])
-        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) chain)
+        tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) all-tokens chain)
         currency-id (or (get-in settings [:wallet :currency]) :usd)
         currency    (get constants/currencies currency-id)]
     (when (not= network-status :offline)
@@ -204,6 +220,7 @@
                             :account-id    address
                             :symbols       assets
                             :chain         chain
+                            :all-tokens    all-tokens
                             :success-event :update-token-balance-success
                             :error-event   :update-token-balance-fail}
        :get-prices         {:from          (if mainnet?

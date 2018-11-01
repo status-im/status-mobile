@@ -11,7 +11,9 @@
             [status-im.utils.money :as money]
             [status-im.utils.prices :as prices]
             [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.i18n :as i18n]
+            [status-im.utils.utils :as utils.utils]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -51,9 +53,9 @@
 
 (re-frame/reg-fx
  :get-tokens-balance
- (fn [{:keys [web3 symbols chain account-id success-event error-event]}]
+ (fn [{:keys [web3 symbols all-tokens chain account-id success-event error-event]}]
    (doseq [symbol symbols]
-     (let [contract (:address (tokens/symbol->token chain symbol))]
+     (let [contract (:address (tokens/symbol->token all-tokens chain symbol))]
        (get-token-balance {:web3       web3
                            :contract   contract
                            :account-id account-id
@@ -79,6 +81,51 @@
  :update-estimated-gas
  (fn [{:keys [web3 obj success-event]}]
    (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
+
+(defn- validate-token-name! [web3 {:keys [address symbol name]}]
+  (erc20/name web3 address #(when (and (seq %2) ;;NOTE(goranjovic): skipping check if field not set in contract
+                                       (not= name %2))
+                              (let [message (i18n/label :t/token-auto-validate-name-error
+                                                        {:symbol   symbol
+                                                         :expected name
+                                                         :actual   %2
+                                                         :address  address})]
+                                (log/warn message)
+                                (utils.utils/show-popup (i18n/label :t/warning) message)))))
+
+(defn- validate-token-symbol! [web3 {:keys [address symbol]}]
+  (erc20/symbol web3 address #(when (and (seq %2) ;;NOTE(goranjovic): skipping check if field not set in contract
+                                         (not= (clojure.core/name symbol) %2))
+                                (let [message (i18n/label :t/token-auto-validate-symbol-error
+                                                          {:symbol   symbol
+                                                           :expected (clojure.core/name symbol)
+                                                           :actual   %2
+                                                           :address  address})]
+                                  (log/warn message)
+                                  (utils.utils/show-popup (i18n/label :t/warning) message)))))
+
+(defn- validate-token-decimals! [web3 {:keys [address symbol decimals nft? skip-decimals-check?]}]
+  ;;NOTE(goranjovic): only skipping check if skip-decimals-check? flag is present because we can't differentiate
+  ;;between unset decimals and 0 decimals.
+  (when-not skip-decimals-check?
+    (erc20/decimals web3 address #(when (and %2
+                                             (not nft?)
+                                             (not= decimals (int %2)))
+                                    (let [message (i18n/label :t/token-auto-validate-decimals-error
+                                                              {:symbol   symbol
+                                                               :expected decimals
+                                                               :actual   %2
+                                                               :address  address})]
+                                      (log/warn message)
+                                      (utils.utils/show-popup (i18n/label :t/warning) message))))))
+
+(re-frame/reg-fx
+ :wallet/validate-tokens
+ (fn [{:keys [web3 tokens]}]
+   (doseq [token tokens]
+     (validate-token-decimals! web3 token)
+     (validate-token-symbol! web3 token)
+     (validate-token-name! web3 token))))
 
 ;; Handlers
 (handlers/register-handler-fx

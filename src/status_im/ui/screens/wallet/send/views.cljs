@@ -138,12 +138,12 @@
       (i18n/label :t/transactions-sign-transaction)
       [vector-icons/icon :icons/forward {:color (if sign-enabled? colors/white colors/white-light-transparent)}]]]))
 
-(defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network amount-input network-status]}]
+(defn- render-send-transaction-view [{:keys [modal? transaction scroll advanced? network all-tokens amount-input network-status]}]
   (let [{:keys [amount amount-text amount-error asset-error show-password-input? to to-name sufficient-funds?
                 sufficient-gas? in-progress? from-chat? symbol]} transaction
         chain                        (ethereum/network->chain-keyword network)
         native-currency              (tokens/native-currency chain)
-        {:keys [decimals] :as token} (tokens/asset-for chain symbol)
+        {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
         online? (= :online network-status)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}
@@ -202,31 +202,35 @@
 
 ;; SEND TRANSACTION FROM WALLET (CHAT)
 (defview send-transaction []
-  (letsubs [transaction [:wallet.send/transaction]
-            advanced? [:wallet.send/advanced?]
-            network [:account/network]
-            scroll (atom nil)
-            network-status [:network-status]]
-    [send-transaction-view {:modal? false
-                            :transaction transaction
-                            :scroll scroll
-                            :advanced? advanced?
-                            :network network
+  (letsubs [transaction    [:wallet.send/transaction]
+            advanced?      [:wallet.send/advanced?]
+            network        [:account/network]
+            scroll         (atom nil)
+            network-status [:network-status]
+            all-tokens     [:wallet/all-tokens]]
+    [send-transaction-view {:modal?         false
+                            :transaction    transaction
+                            :scroll         scroll
+                            :advanced?      advanced?
+                            :network        network
+                            :all-tokens     all-tokens
                             :network-status network-status}]))
 
 ;; SEND TRANSACTION FROM DAPP
 (defview send-transaction-modal []
-  (letsubs [transaction [:wallet.send/transaction]
-            advanced? [:wallet.send/advanced?]
-            network [:account/network]
-            scroll (atom nil)
-            network-status [:network-status]]
+  (letsubs [transaction    [:wallet.send/transaction]
+            advanced?      [:wallet.send/advanced?]
+            network        [:account/network]
+            scroll         (atom nil)
+            network-status [:network-status]
+            all-tokens     [:wallet/all-tokens]]
     (if transaction
-      [send-transaction-view {:modal? true
-                              :transaction transaction
-                              :scroll scroll
-                              :advanced? advanced?
-                              :network network
+      [send-transaction-view {:modal?         true
+                              :transaction    transaction
+                              :scroll         scroll
+                              :advanced?      advanced?
+                              :network        network
+                              :all-tokens     all-tokens
                               :network-status network-status}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex

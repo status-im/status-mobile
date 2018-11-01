@@ -180,6 +180,7 @@
 
 (defn initialize-wallet [cofx]
   (fx/merge cofx
+            (models.wallet/initialize-tokens)
             (models.wallet/update-wallet)
             (transactions/start-sync)))
 

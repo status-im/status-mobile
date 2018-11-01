@@ -39,9 +39,9 @@
 (defn- extract-details
   "First try to parse as EIP681 URI, if not assume this is an address directly.
    Returns a map containing at least the `address` and `chain-id` keys"
-  [s chain-id]
+  [s chain-id all-tokens]
   (or (let [m (eip681/parse-uri s)]
-        (merge m (eip681/extract-request-details m)))
+        (merge m (eip681/extract-request-details m all-tokens)))
       (when (ethereum/address? s)
         {:address s :chain-id chain-id})))
 
@@ -87,9 +87,9 @@
 
 (handlers/register-handler-fx
  :wallet/fill-request-from-url
- (fn [{{:keys [network] :as db} :db} [_ data origin]]
+ (fn [{{:keys [network] :wallet/keys [all-tokens] :as db} :db} [_ data origin]]
    (let [current-chain-id                       (get-in constants/default-networks [network :config :NetworkId])
-         {:keys [address chain-id] :as details} (extract-details data current-chain-id)
+         {:keys [address chain-id] :as details} (extract-details data current-chain-id all-tokens)
          valid-network?                         (boolean (= current-chain-id chain-id))
          previous-state                         (get-in db [:wallet :send-transaction])
          old-symbol                             (:symbol previous-state)

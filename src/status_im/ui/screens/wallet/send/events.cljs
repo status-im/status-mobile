@@ -27,16 +27,16 @@
                            (security/safe-unmask-data masked-password)
                            on-completed))
 
-(defn- send-tokens [symbol chain {:keys [from to value gas gasPrice]} on-completed masked-password]
-  (let [contract (:address (tokens/symbol->token (keyword chain) symbol))]
+(defn- send-tokens [all-tokens symbol chain {:keys [from to value gas gasPrice]} on-completed masked-password]
+  (let [contract (:address (tokens/symbol->token all-tokens (keyword chain) symbol))]
     (erc20/transfer contract from to value gas gasPrice masked-password on-completed)))
 
 (re-frame/reg-fx
  ::send-transaction
- (fn [[params symbol chain on-completed masked-password]]
+ (fn [[params all-tokens symbol chain on-completed masked-password]]
    (case symbol
      :ETH (send-ethers params on-completed masked-password)
-     (send-tokens symbol chain params on-completed masked-password))))
+     (send-tokens all-tokens symbol chain params on-completed masked-password))))
 
 (re-frame/reg-fx
  ::sign-message
@@ -57,12 +57,14 @@
  :wallet/send-transaction
  (fn [{{:keys [chain] :as db} :db} _]
    (let [{:keys [password symbol in-progress?] :as transaction} (get-in db [:wallet :send-transaction])
-         from (get-in db [:account/account :address])]
+         all-tokens (:wallet/all-tokens db)
+         from       (get-in db [:account/account :address])]
      (when-not in-progress?
        {:db                (-> db
                                (assoc-in [:wallet :send-transaction :wrong-password?] false)
                                (assoc-in [:wallet :send-transaction :in-progress?] true))
         ::send-transaction [(models.wallet/prepare-send-transaction from transaction)
+                            all-tokens
                             symbol
                             chain
                             #(re-frame/dispatch [::transaction-completed (types/json->clj %)])

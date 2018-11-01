@@ -45,7 +45,7 @@
 
 (defn map-values
   "Efficiently apply function to all map values"
-  [m f]
+  [f m]
   (into {}
         (map (fn [[k v]]
                [k (f v)]))
@@ -57,3 +57,9 @@
   (if (every? map? maps)
     (apply merge-with deep-merge maps)
     (last maps)))
+
+(defn index-by
+  "Given a collection and a unique key function, returns a map that indexes the collection.
+  Similar to group-by except that the map values are single objects (depends on key uniqueness)."
+  [key coll]
+  (into {} (map #(vector (key %) %) coll)))

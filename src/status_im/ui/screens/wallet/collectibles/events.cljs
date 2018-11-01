@@ -12,19 +12,20 @@
 
 (defmethod load-collectible-fx :default [_ _ _] nil)
 
-(defmulti load-collectibles-fx (fn [_ symbol _ _] symbol))
+(defmulti load-collectibles-fx (fn [_ _ symbol _ _] symbol))
 
-(defmethod load-collectibles-fx :default [web3 symbol items-number address chain-id]
-  {:load-collectibles-fx [web3 symbol items-number address chain-id]})
+(defmethod load-collectibles-fx :default [web3 all-tokens symbol items-number address chain-id]
+  {:load-collectibles-fx [web3 all-tokens symbol items-number address chain-id]})
 
 (handlers/register-handler-fx
  :show-collectibles-list
  (fn [{:keys [db]} [_ address {:keys [symbol amount] :as collectible}]]
-   (let [chain-id (get-in constants/default-networks [(:network db) :config :NetworkId])
+   (let [chain-id            (get-in constants/default-networks [(:network db) :config :NetworkId])
+         all-tokens          (:wallet/all-tokens db)
          items-number        (money/to-number amount)
          loaded-items-number (count (get-in db [:collectibles symbol]))]
      (merge (when (not= items-number loaded-items-number)
-              (load-collectibles-fx (:web3 db) symbol items-number address chain-id))
+              (load-collectibles-fx (:web3 db) all-tokens symbol items-number address chain-id))
             {:dispatch [:navigate-to :collectibles-list collectible]}))))
 
 (defn load-token [web3 i items-number contract address symbol]
@@ -36,9 +37,9 @@
 
 (re-frame/reg-fx
  :load-collectibles-fx
- (fn [[web3 symbol items-number address chain-id]]
+ (fn [[web3 all-tokens symbol items-number address chain-id]]
    (let [chain (ethereum/chain-id->chain-keyword chain-id)
-         contract (:address (tokens/symbol->token chain symbol))]
+         contract (:address (tokens/symbol->token all-tokens chain symbol))]
      (load-token web3 0 items-number contract address symbol))))
 
 (handlers/register-handler-fx

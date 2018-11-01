@@ -27,13 +27,14 @@
             network                     [:account/network]
             {gas-edit       :gas
              max-fee        :max-fee
-             gas-price-edit :gas-price} [:wallet/edit]]
+             gas-price-edit :gas-price} [:wallet/edit]
+            all-tokens                  [:wallet/all-tokens]]
     (let [{:keys [amount symbol]} send-transaction
           gas                (:value gas-edit)
           gas-price          (:value gas-price-edit)
           chain              (ethereum/network->chain-keyword network)
           native-currency    (tokens/native-currency chain)
-          {:keys [decimals] :as token} (tokens/asset-for chain symbol)]
+          {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)]
       [components/simple-screen {:status-bar-type :modal-wallet}
        [toolbar (i18n/label :t/wallet-transaction-fee)]
        [react/view components.styles/flex

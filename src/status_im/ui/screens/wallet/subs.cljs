@@ -50,14 +50,18 @@
                             .toNumber))
                  acc)) 0 balance))
 
+(re-frame/reg-sub :wallet/all-tokens
+                  (fn [db] (:wallet/all-tokens db)))
+
 (re-frame/reg-sub :portfolio-value
                   :<- [:balance]
                   :<- [:prices]
                   :<- [:wallet/currency]
                   :<- [:network]
-                  (fn [[balance prices currency network] [_ currency-code]]
+                  :<- [:wallet/all-tokens]
+                  (fn [[balance prices currency network all-tokens] [_ currency-code]]
                     (if (and balance prices)
-                      (let [assets          (tokens/tokens-for (ethereum/network->chain-keyword network))
+                      (let [assets          (tokens/tokens-for all-tokens (ethereum/network->chain-keyword network))
                             token->decimals (into {} (map #(vector (:symbol %) (:decimals %)) assets))
                             balance-total-value
                             (get-balance-total-value balance
@@ -102,10 +106,11 @@
 (re-frame/reg-sub :wallet/visible-assets
                   :<- [:network]
                   :<- [:wallet/visible-tokens-symbols]
-                  (fn [[network visible-tokens-symbols]]
+                  :<- [:wallet/all-tokens]
+                  (fn [[network visible-tokens-symbols all-tokens]]
                     (let [chain (ethereum/network->chain-keyword network)]
                       (conj (filter #(contains? visible-tokens-symbols (:symbol %))
-                                    (tokens/sorted-tokens-for (ethereum/network->chain-keyword network)))
+                                    (tokens/sorted-tokens-for all-tokens (ethereum/network->chain-keyword network)))
                             (tokens/native-currency chain)))))
 
 (re-frame/reg-sub :wallet/visible-assets-with-amount
