@@ -10,7 +10,11 @@
                 :current-chat-id   "recipient"
                 :contacts/contacts {"recipient" {:name             "Recipient"
                                                  :address          "0xAA"
-                                                 :public-key "0xBB"}}}})
+                                                 :public-key "0xBB"}}
+                :wallet/all-tokens {:mainnet {"0x744d70fdbe2ba4cf95131626614a1763df805b9e" {:address  "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+                                                                                            :name     "Status Network Token"
+                                                                                            :symbol   :SNT
+                                                                                            :decimals 18}}}}})
 
 ;; testing the `/send` command
 

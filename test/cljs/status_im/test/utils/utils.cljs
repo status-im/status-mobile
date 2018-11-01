@@ -30,9 +30,9 @@
   (is (= {:a 0} (u/update-if-present {:a 0} :b inc))))
 
 (deftest map-values-test
-  (is (= {} (u/map-values {} inc)))
-  (is (= {:a 1} (u/map-values {:a 0} inc)))
-  (is (= {:a 1 :b 2} (u/map-values {:a 0 :b 1} inc))))
+  (is (= {} (u/map-values inc {})))
+  (is (= {:a 1} (u/map-values inc {:a 0})))
+  (is (= {:a 1 :b 2} (u/map-values inc {:a 0 :b 1}))))
 
 (deftest deep-merge-test
   (is (= {} (u/deep-merge {} {})))

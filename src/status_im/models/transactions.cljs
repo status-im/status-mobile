@@ -360,11 +360,11 @@
 
 (defonce polling-executor (atom nil))
 
-(defn transactions-query-helper [web3 account-address chain done-fn]
+(defn transactions-query-helper [web3 all-tokens account-address chain done-fn]
   (get-transactions
    {:account-address account-address
     :chain           chain
-    :chain-tokens    (into {} (map (juxt :address identity) (tokens/tokens-for chain)))
+    :chain-tokens    (into {} (map (juxt :address identity) (tokens/tokens-for all-tokens chain)))
     :web3            web3
     :success-fn (fn [transactions]
                   #_(log/debug "Transactions received: " (pr-str (keys transactions)))
@@ -380,7 +380,7 @@
                   (log/debug "Unable to get transactions: " http-error)
                   (done-fn))}))
 
-(defn- sync-now! [{:keys [network-status :account/account app-state network web3] :as opts}]
+(defn- sync-now! [{:keys [network-status :account/account :wallet/all-tokens app-state network web3] :as opts}]
   (when @polling-executor
     (let [chain (ethereum/network->chain-keyword (get-in account [:networks network]))
           account-address (:address account)]
@@ -389,11 +389,11 @@
                  (not= :custom chain))
         (async-periodic-run!
          @polling-executor
-         (partial transactions-query-helper web3 account-address chain))))))
+         (partial transactions-query-helper web3 all-tokens account-address chain))))))
 
 ;; this function handles background syncing of transactions
 (defn- background-sync [web3 account-address done-fn]
-  (let [{:keys [network network-status :account/account app-state wallet chats]} @re-frame.db/app-db
+  (let [{:keys [network network-status :account/account app-state wallet chats :wallet/all-tokens]} @re-frame.db/app-db
         chain (ethereum/network->chain-keyword (get-in account [:networks network]))]
     (assert (and web3 account-address network network-status account app-state wallet chats)
             "Must have all necessary data to run background transaction sync")
@@ -407,7 +407,7 @@
         (if-not (or (have-unconfirmed-transactions? (vals transaction-map))
                     (not-empty (set/difference chat-transaction-ids transaction-ids)))
           (done-fn)
-          (transactions-query-helper web3 account-address chain done-fn))))))
+          (transactions-query-helper web3 all-tokens account-address chain done-fn))))))
 
 (defn- start-sync! [{:keys [:account/account network web3] :as options}]
   (let [account-address (:address account)]

@@ -30,9 +30,10 @@
   (views/letsubs [network                                           [:account/network]
                   {:keys [to to-name public-key]}                   [:wallet.send/transaction]
                   {:keys [amount amount-error amount-text symbol]}  [:wallet.request/transaction]
-                  network-status [:network-status]
-                  scroll (atom nil)]
-    (let [{:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)]
+                  network-status                                    [:network-status]
+                  all-tokens                                        [:wallet/all-tokens]
+                  scroll                                            (atom nil)]
+    (let [{:keys [decimals] :as token} (tokens/asset-for all-tokens (ethereum/network->chain-keyword network) symbol)]
       [wallet.components/simple-screen {:avoid-keyboard? true}
        [wallet.components/toolbar (i18n/label :t/new-request)]
        [react/view components.styles/flex
