@@ -23,7 +23,7 @@
          ;; Figwheel ClojureScript REPL
          cider/piggieback        {:mvn/version "0.3.9"
                                   :exclusions  [com.google.javascript/closure-compiler]}
-         figwheel-sidecar        {:mvn/version "0.5.16"
+         figwheel-sidecar        {:mvn/version "0.5.17"
                                   :exclusions  [com.google.javascript/closure-compiler]}
          re-frisk-remote         {:mvn/version "0.5.5"}
          re-frisk-sidecar        {:mvn/version "0.5.7"}

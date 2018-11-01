@@ -64,7 +64,7 @@
                         :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
              :figwheel [:dev
-                        {:dependencies [[figwheel-sidecar "0.5.16-SNAPSHOT"]
+                        {:dependencies [[figwheel-sidecar "0.5.17"]
                                         [re-frisk-remote "0.5.5"]
                                         [re-frisk-sidecar "0.5.7"]
                                         [day8.re-frame/tracing "0.5.0"]
