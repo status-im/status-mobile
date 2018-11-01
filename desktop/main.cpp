@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QFontDatabase>
 #include <QGuiApplication>
+#include <QMutexLocker>
 #include <QProcess>
 #include <QQuickView>
 #include <QStandardPaths>
@@ -28,12 +29,11 @@
 
 #include "exceptionglobalhandler.h"
 
-#ifdef BUILD_FOR_BUNDLE
-#include <QMutexLocker>
+static QStringList consoleOutputStrings;
+static QMutex consoleOutputMutex;
 
-QStringList consoleOutputStrings;
+#ifdef BUILD_FOR_BUNDLE
 bool ubuntuServerStarted = false;
-QMutex consoleOutputMutex;
 QProcess *g_ubuntuServerProcess = nullptr;
 #endif
 
@@ -42,6 +42,9 @@ const int MAIN_WINDOW_HEIGHT = 768;
 const QString CRASH_REPORT_EXECUTABLE = QStringLiteral("reportApp");
 const QString CRASH_REPORT_EXECUTABLE_RELATIVE_PATH =
     QStringLiteral("/../reportApp");
+
+const char *ENABLE_LOG_FILE_ENV_VAR_NAME = "STATUS_LOG_FILE_ENABLED";
+const char *LOG_FILE_PATH_ENV_VAR_NAME = "STATUS_LOG_PATH";
 
 // TODO: some way to change while running
 class ReactNativeProperties : public QObject {
@@ -55,7 +58,7 @@ class ReactNativeProperties : public QObject {
   Q_PROPERTY(
       QString executor READ executor WRITE setExecutor NOTIFY executorChanged)
 public:
-  ReactNativeProperties(QObject *parent = 0) : QObject(parent) {
+  ReactNativeProperties(QObject *parent = nullptr) : QObject(parent) {
     m_codeLocation = m_packagerTemplate.arg(m_packagerHost).arg(m_packagerPort);
   }
   bool liveReload() const { return m_liveReload; }
@@ -139,12 +142,14 @@ private:
 #endif
 };
 
-#ifdef BUILD_FOR_BUNDLE
-void runUbuntuServer();
 void saveMessage(QtMsgType type, const QMessageLogContext &context,
                  const QString &msg);
-
 void writeLogsToFile();
+
+#ifdef BUILD_FOR_BUNDLE
+
+void runUbuntuServer();
+
 #endif
 
 void loadFontsFromResources() {
@@ -167,16 +172,22 @@ void exceptionPostHandledCallback() {
 #endif
 }
 
-QString getDataStoragePath() {
-  QString dataStoragePath;
+bool redirectLogIntoFile() {
 #ifdef BUILD_FOR_BUNDLE
-  dataStoragePath =
+  return true;
+#else
+  return qEnvironmentVariable(ENABLE_LOG_FILE_ENV_VAR_NAME, "") ==
+         QStringLiteral("1");
+#endif
+}
+
+QString getDataStoragePath() {
+  QString dataStoragePath =
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
   QDir dir(dataStoragePath);
   if (!dir.exists()) {
     dir.mkpath(".");
   }
-#endif
   return dataStoragePath;
 }
 
@@ -185,23 +196,28 @@ int main(int argc, char **argv) {
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QGuiApplication app(argc, argv);
 
-  app.setApplicationName("Status");
+  QCoreApplication::setApplicationName("Status");
 
   QString appPath = QCoreApplication::applicationDirPath();
+  QString dataStoragePath = getDataStoragePath();
 #ifndef BUILD_FOR_BUNDLE
   appPath.append(CRASH_REPORT_EXECUTABLE_RELATIVE_PATH);
+  dataStoragePath = "";
 #endif
 
   ExceptionGlobalHandler exceptionHandler(
       appPath + QDir::separator() + CRASH_REPORT_EXECUTABLE,
-      exceptionPostHandledCallback, getDataStoragePath());
+      exceptionPostHandledCallback, dataStoragePath);
 
   Q_INIT_RESOURCE(react_resources);
 
   loadFontsFromResources();
 
+  if (redirectLogIntoFile()) {
+    qInstallMessageHandler(saveMessage);
+  }
+
 #ifdef BUILD_FOR_BUNDLE
-  qInstallMessageHandler(saveMessage);
   runUbuntuServer();
 #endif
 
@@ -244,21 +260,33 @@ int main(int argc, char **argv) {
   view.resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
   view.show();
 
-#ifdef BUILD_FOR_BUNDLE
-  QTimer t;
-  t.setInterval(500);
-  QObject::connect(&t, &QTimer::timeout, [=]() { writeLogsToFile(); });
-  t.start();
-#endif
+  QTimer flushLogsToFileTimer;
+  if (redirectLogIntoFile()) {
+    flushLogsToFileTimer.setInterval(500);
+    QObject::connect(&flushLogsToFileTimer, &QTimer::timeout,
+                     [=]() { writeLogsToFile(); });
+    flushLogsToFileTimer.start();
+  }
 
   return app.exec();
 }
 
+QString getLogFilePath() {
+  QString logFilePath;
 #ifdef BUILD_FOR_BUNDLE
+  logFilePath = getDataStoragePath() + "/Status.log";
+#else
+  logFilePath = qEnvironmentVariable(LOG_FILE_PATH_ENV_VAR_NAME, "");
+  if (logFilePath.isEmpty()) {
+    logFilePath = getDataStoragePath() + "/StatusDev.log";
+  }
+#endif
+  return logFilePath;
+}
 
 void writeLogsToFile() {
   QMutexLocker locker(&consoleOutputMutex);
-  QFile logFile(getDataStoragePath() + "/Status.log");
+  QFile logFile(getLogFilePath());
   if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
     for (QString message : consoleOutputStrings) {
       logFile.write(message.toStdString().c_str());
@@ -270,6 +298,7 @@ void writeLogsToFile() {
   }
 }
 
+#ifdef BUILD_FOR_BUNDLE
 void runUbuntuServer() {
   g_ubuntuServerProcess = new QProcess();
   g_ubuntuServerProcess->setWorkingDirectory(getDataStoragePath());
@@ -314,6 +343,7 @@ void runUbuntuServer() {
 
   qDebug() << "waiting finished";
 }
+#endif
 
 void appendConsoleString(const QString &msg) {
   QMutexLocker locker(&consoleOutputMutex);
@@ -322,7 +352,7 @@ void appendConsoleString(const QString &msg) {
 
 void saveMessage(QtMsgType type, const QMessageLogContext &context,
                  const QString &msg) {
-
+  Q_UNUSED(context);
   QByteArray localMsg = msg.toLocal8Bit();
   QString message = localMsg + "\n";
   QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
@@ -350,6 +380,5 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
     abort();
   }
 }
-#endif
 
 #include "main.moc"
