@@ -27,6 +27,9 @@
 (spec/def :request/attemps int?)
 (spec/def :request/cursor :global/not-empty-string)
 
+(spec/def :pairing/installation-id :global/not-empty-string)
+(spec/def :pairing/device-type :global/not-empty-string)
+
 (spec/def :transport.inbox.topic/last-request pos-int?)
 (spec/def :transport.inbox.topic/started-at pos-int?)
 (spec/def :transport.inbox.topic/chat-id (spec/or :keyword keyword?
@@ -105,6 +108,8 @@
 
 (spec/def :message/group-membership-update (spec/keys :req-un [:group-chat/membership-updates :group-chat/chat-id]))
 (spec/def :message/sync-installation (spec/keys :req-un [:contacts/contacts]))
+(spec/def :message/pair-installation (spec/keys :req-un [:pairing/installation-id
+                                                         :pairing/device-type]))
 
 (spec/def :message/message-common (spec/keys :req-un [::content-type ::message-type ::clock-value ::timestamp]))
 (spec/def :message.text/content (spec/keys :req-un [:message.content/text]

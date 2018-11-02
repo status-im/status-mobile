@@ -706,7 +706,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     StatusThreadPoolExecutor.getInstance().execute(r);
   }
 
-
   @ReactMethod
   public void signGroupMembership(final String content, final Callback callback) {
     Log.d(TAG, "signGroupMembership");
@@ -719,6 +718,46 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
       @Override
       public void run() {
         String result = Statusgo.SignGroupMembership(content);
+
+        callback.invoke(result);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
+  @ReactMethod
+  public void enableInstallation(final String installationId, final Callback callback) {
+    Log.d(TAG, "enableInstallation");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String result = Statusgo.EnableInstallation(installationId);
+
+        callback.invoke(result);
+      }
+    };
+
+    StatusThreadPoolExecutor.getInstance().execute(r);
+  }
+
+  @ReactMethod
+  public void disableInstallation(final String installationId, final Callback callback) {
+    Log.d(TAG, "disableInstallation");
+    if (!checkAvailability()) {
+      callback.invoke(false);
+      return;
+    }
+
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        String result = Statusgo.DisableInstallation(installationId);
 
         callback.invoke(result);
       }

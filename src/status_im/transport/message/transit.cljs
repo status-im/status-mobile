@@ -94,6 +94,12 @@
   (rep [this {:keys [contacts]}]
     #js [contacts]))
 
+(deftype PairInstallationHandler []
+  Object
+  (tag [this v] "p2")
+  (rep [this {:keys [installation-id device-type]}]
+    #js [installation-id device-type]))
+
 (def writer (transit/writer :json
                             {:handlers
                              {contact/NewContactKey            (NewContactKeyHandler.)
@@ -103,7 +109,8 @@
                               protocol/Message                 (MessageHandler.)
                               protocol/MessagesSeen            (MessagesSeenHandler.)
                               group-chat/GroupMembershipUpdate (GroupMembershipUpdateHandler.)
-                              pairing/SyncInstallation         (SyncInstallationHandler.)}}))
+                              pairing/SyncInstallation         (SyncInstallationHandler.)
+                              pairing/PairInstallation         (PairInstallationHandler.)}}))
 
 ;;
 ;; Reader handlers
@@ -156,7 +163,9 @@
                               "g5" (fn [[chat-id membership-updates message]]
                                      (group-chat/GroupMembershipUpdate. chat-id membership-updates message))
                               "p1" (fn [[contacts]]
-                                     (pairing/SyncInstallation. contacts))}}))
+                                     (pairing/SyncInstallation. contacts))
+                              "p2" (fn [[installation-id device-type]]
+                                     (pairing/PairInstallation. installation-id device-type))}}))
 
 (defn serialize
   "Serializes a record implementing the StatusMessage protocol using the custom writers"

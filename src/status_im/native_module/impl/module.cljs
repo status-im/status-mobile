@@ -142,6 +142,14 @@
   (when status
     (call-module #(.signGroupMembership status content callback))))
 
+(defn enable-installation [installation-id callback]
+  (when status
+    (call-module #(.enableInstallation status installation-id callback))))
+
+(defn disable-installation [installation-id callback]
+  (when status
+    (call-module #(.disableInstallation status installation-id callback))))
+
 (defn is24Hour []
   (when status
     (.-is24Hour status)))

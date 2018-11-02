@@ -103,7 +103,8 @@
                                   (update-in [:chats chat-id :messages] assoc message-id prepared-message)
                                      ;; this will increase last-clock-value twice when sending our own messages
                                   (update-in [:chats chat-id :last-clock-value] (partial utils.clocks/receive clock-value)))
-                               (not current-chat?)
+                               (and (not current-chat?)
+                                    (not= from (:current-public-key db)))
                                (update-in [:chats chat-id :unviewed-messages] (fnil conj #{}) message-id))
               :data-store/tx [(messages-store/save-message-tx prepared-message)]}]
       (if batch?
@@ -193,18 +194,20 @@
                          :accumulated []}
                         messages)))
 
-(defn valid-chat-id? [cofx {:keys [chat-id from message-type]}]
-  "Validate chat-id and message-type"
-  (case message-type
-    :group-user-message (get-in cofx [:db :chats chat-id :contacts from])
-    :public-group-user-message (get-in cofx [:db :chats chat-id :public?])
-    :user-message (or (= (get-in cofx [:db :current-public-key]) from)
-                      (= chat-id from))
-    false))
+(defn extract-chat-id [cofx {:keys [chat-id from message-type]}]
+  "Validate and return a valid chat-id"
+  (cond
+    (and (= :group-user-message message-type)
+         (get-in cofx [:db :chats chat-id :contacts from])) chat-id
+    (and (= :public-group-user-message message-type)
+         (get-in cofx [:db :chats chat-id :public?])) chat-id
+    (and (= :user-message message-type)
+         (= (get-in cofx [:db :current-public-key]) from)) chat-id
+    (= :user-message message-type) from))
 
 (fx/defn receive-many
   [{:keys [now] :as cofx} messages]
-  (let [valid-messages   (filter (partial valid-chat-id? cofx) messages)
+  (let [valid-messages   (keep #(when-let [chat-id (extract-chat-id cofx %)] (assoc % :chat-id chat-id)) messages)
         deduped-messages (filter-messages cofx valid-messages)
         chat->message    (group-by :chat-id deduped-messages)
         chat-ids         (keys chat->message)

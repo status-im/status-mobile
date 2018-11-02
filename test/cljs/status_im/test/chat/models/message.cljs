@@ -153,7 +153,7 @@
     (testing "our own message"
       (is (get-in (message/receive-many cofx [own-message]) [:db :chats "matching" :messages "1"])))
     (testing "a message with non matching chat-id"
-      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
+      (is (get-in (message/receive-many cofx [bad-chat-id-message]) [:db :chats "not-matching" :messages "1"])))))
 
 (deftest receive-send-seen
   (let [cofx         {:db {:chats {"chat-id" {}}

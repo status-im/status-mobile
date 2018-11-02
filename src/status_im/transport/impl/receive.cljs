@@ -31,3 +31,8 @@
   protocol/StatusMessage
   (receive [this _ signature _ cofx]
     (pairing/handle-sync-installation cofx this signature)))
+
+(extend-type transport.pairing/PairInstallation
+  protocol/StatusMessage
+  (receive [this _ signature timestamp cofx]
+    (pairing/handle-pair-installation cofx this timestamp signature)))

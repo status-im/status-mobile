@@ -7,7 +7,9 @@
    :background-color :white})
 
 (def installation-item-inner
-  {:padding-horizontal 16})
+  {:flex 1
+   :flex-direction     :row
+   :padding-horizontal 16})
 
 (defstyle installation-item
   {:flex-direction     :row

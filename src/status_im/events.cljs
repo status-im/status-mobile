@@ -1104,12 +1104,30 @@
 
 (handlers/register-handler-fx
  :pairing.ui/pair-devices-pressed
- []
  (fn [cofx _]
-   (pairing/start cofx)))
+   (pairing/pair-installation cofx)))
 
 (handlers/register-handler-fx
  :pairing.ui/synchronize-installation-pressed
- []
  (fn [cofx _]
    (pairing/send-installation-message cofx)))
+
+(handlers/register-handler-fx
+ :pairing.ui/enable-installation-pressed
+ (fn [cofx [_ installation-id]]
+   (pairing/enable-fx cofx installation-id)))
+
+(handlers/register-handler-fx
+ :pairing.ui/disable-installation-pressed
+ (fn [cofx [_ installation-id]]
+   (pairing/disable-fx cofx installation-id)))
+
+(handlers/register-handler-fx
+ :pairing.callback/enable-installation-success
+ (fn [cofx [_ installation-id]]
+   (pairing/enable cofx installation-id)))
+
+(handlers/register-handler-fx
+ :pairing.callback/disable-installation-success
+ (fn [cofx [_ installation-id]]
+   (pairing/disable cofx installation-id)))

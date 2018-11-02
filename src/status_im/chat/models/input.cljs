@@ -126,7 +126,8 @@
                 {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
                 (chat.message/send-message {:chat-id      current-chat-id
                                             :content-type constants/content-type-text
-                                            :content      (cond-> {:text input-text}
+                                            :content      (cond-> {:chat-id current-chat-id
+                                                                   :text    input-text}
                                                             reply-to-message
                                                             (assoc :response-to reply-to-message))})
                 (commands.input/set-command-reference nil)

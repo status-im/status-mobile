@@ -6,6 +6,8 @@
     "description": "Description",
     "devices": "Devices",
     "pair": "Pair devices",
+    "enabled": "enabled",
+    "disabled": "disabled",
     "currency-display-name-tzs": "Tanzanian Shilling",
     "currency-display-name-brl": "Brazil Real",
     "mainnet-network": "Main network",

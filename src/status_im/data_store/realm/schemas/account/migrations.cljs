@@ -119,7 +119,7 @@
   (log/debug "migrating v19 account database"))
 
 (defn v20 [old-realm new-realm]
-  (log/debug "migrating v19 account database")
+  (log/debug "migrating v20 account database")
   (some-> new-realm
           (.objects "message")
           (.filtered (str "content-type = \"text/plain\""))
@@ -128,3 +128,5 @@
                         new-content (message-content/enrich-content content)]
                     (aset message "content" (pr-str new-content)))))))
 
+(defn v21 [old-realm new-realm]
+  (log/debug "migrating v21 account database"))

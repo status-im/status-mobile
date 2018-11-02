@@ -46,6 +46,8 @@ public:
     Q_INVOKABLE void signMessage(QString rpcParams, double callbackId);
     Q_INVOKABLE void signGroupMembership(QString content, double callbackId);
     Q_INVOKABLE void extractGroupMembershipSignatures(QString signatures, double callbackId);
+    Q_INVOKABLE void enableInstallation(QString installationId, double callbackId);
+    Q_INVOKABLE void disableInstallation(QString installationId, double callbackId);
 
     Q_INVOKABLE void setAdjustResize();
     Q_INVOKABLE void setAdjustPan();

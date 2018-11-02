@@ -9,3 +9,8 @@
   protocol/StatusMessage
   (send [this chat-id cofx]
     (group-chats/send-membership-update cofx this chat-id)))
+
+(extend-type transport.pairing/PairInstallation
+  protocol/StatusMessage
+  (send [this _ cofx]
+    (pairing/send-pair-installation cofx this)))

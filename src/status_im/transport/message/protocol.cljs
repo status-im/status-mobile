@@ -80,12 +80,14 @@
 (defrecord Message [content content-type message-type clock-value timestamp]
   StatusMessage
   (send [this chat-id cofx]
-    (let [params     {:chat-id       chat-id
-                      :payload       this
-                      :success-event [:transport/message-sent
-                                      chat-id
-                                      (transport.utils/message-id this)
-                                      message-type]}]
+    (let [dev-mode?          (get-in cofx [:db :account/account :dev-mode?])
+          current-public-key (get-in cofx [:db :current-public-key])
+          params             {:chat-id       chat-id
+                              :payload       this
+                              :success-event [:transport/message-sent
+                                              chat-id
+                                              (transport.utils/message-id this)
+                                              message-type]}]
       (case message-type
         :public-group-user-message
         (if config/pfs-encryption-enabled?
@@ -103,7 +105,10 @@
            chat-id
            (:success-event params)
            this)
-          (send-with-pubkey cofx params)))))
+          (fx/merge cofx
+                    #(when (config/pairing-enabled? dev-mode?)
+                       (send-direct-message % current-public-key nil this))
+                    (send-with-pubkey params))))))
   (receive [this chat-id signature _ cofx]
     {:chat-received-message/add-fx
      [(assoc (into {} this)

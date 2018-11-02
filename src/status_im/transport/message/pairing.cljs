@@ -3,6 +3,14 @@
             [status-im.transport.message.protocol :as protocol]
             [taoensso.timbre :as log]))
 
+(defrecord PairInstallation
+           [installation-id device-type]
+  protocol/StatusMessage
+  (validate [this]
+    (if (spec/valid? :message/pair-installation this)
+      this
+      (log/warn "failed sync installation validation" (spec/explain :message/pair-installation this)))))
+
 (defrecord SyncInstallation
            [contacts]
   protocol/StatusMessage

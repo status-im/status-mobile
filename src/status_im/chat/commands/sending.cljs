@@ -15,7 +15,8 @@
                                (protocol/enhance-send-parameters type parameter-map cofx))]
     {:chat-id      chat-id
      :content-type constants/content-type-command
-     :content      {:command-path command-path
+     :content      {:chat-id      chat-id
+                    :command-path command-path
                     :params       (or new-parameter-map parameter-map)}}))
 
 (fx/defn validate-and-send

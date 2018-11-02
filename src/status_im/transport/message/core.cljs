@@ -11,7 +11,7 @@
             [taoensso.timbre :as log]))
 
 (fx/defn receive-message
-  [cofx now-in-s chat-id js-message]
+  [cofx now-in-s filter-chat-id js-message]
   (let [{:keys [payload sig timestamp ttl]} (js->clj js-message :keywordize-keys true)
         status-message (-> payload
                            transport.utils/to-utf8
@@ -20,7 +20,14 @@
       (try
         (when-let [valid-message (protocol/validate status-message)]
           (fx/merge (assoc cofx :js-obj js-message)
-                    #(protocol/receive valid-message (or chat-id sig) sig timestamp %)))
+                    #(protocol/receive valid-message
+                                       (or
+                                        filter-chat-id
+                                        (get-in valid-message [:content :chat-id])
+                                        sig)
+                                       sig
+                                       timestamp
+                                       %)))
         (catch :default e nil))))) ; ignore unknown message types
 
 (defn- js-array->seq [array]
