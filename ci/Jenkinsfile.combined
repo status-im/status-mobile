@@ -22,8 +22,6 @@ pipeline {
         cmn = load('ci/common.groovy')
         /* just for a shorter access */
         btype = cmn.getBuildType() 
-        /* to avoid missing build tag parallel builds */
-        print "Build Number: ${cmn.tagBuild(true)}"
       } }
     }
     stage('Build') {

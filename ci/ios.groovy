@@ -17,7 +17,7 @@ def compile(type = 'nightly') {
 
   /* configure build metadata */
   plutil('CFBundleShortVersionString', common.version())
-  plutil('CFBundleVersion', common.tagBuild())
+  plutil('CFBundleVersion', common.buildNumber())
   plutil('CFBundleBuildUrl', currentBuild.absoluteUrl)
   /* build the actual app */
   withCredentials([

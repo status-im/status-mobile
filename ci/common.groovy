@@ -56,7 +56,7 @@ def installJSDeps(platform) {
   /* prepare environment for specific platform build */
   sh "scripts/prepare-for-platform.sh ${platform}"
   while (!installed && attempt <= maxAttempts) {
-    println "#${attempt} attempt to install npm deps"
+    println("#${attempt} attempt to install npm deps")
     sh 'npm install'
     installed = fileExists('node_modules/web3/index.js')
     attemp = attempt + 1
@@ -72,19 +72,13 @@ def doGitRebase() {
   }
 }
 
-def tagBuild(increment = false) {
-  def opts = (increment ? '--increment' : '')
-  withCredentials([[
-    $class: 'UsernamePasswordMultiBinding',
-    credentialsId: 'status-im-auto',
-    usernameVariable: 'GIT_USER',
-    passwordVariable: 'GIT_PASS'
-  ]]) {
-    return sh(
-      returnStdout: true,
-      script: "./scripts/build_no.sh ${opts}"
-    ).trim()
-  }
+def buildNumber() {
+  def number = sh(
+    returnStdout: true,
+    script: "./scripts/gen_build_no.sh"
+  ).trim()
+  println("Build Number: ${number}")
+  return number
 }
 
 def getDirPath(path) {
