@@ -1,7 +1,7 @@
 common = load 'ci/common.groovy'
 
 def compile(type = 'nightly') {
-  common.tagBuild()
+  common.buildNumber()
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' "
   if (type == 'release') {
     gradleOpt += "-PreleaseVersion='${common.version()}'"

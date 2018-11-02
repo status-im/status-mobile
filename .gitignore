@@ -123,6 +123,7 @@ fastlane/README.md
 
 # Jenkins
 pkg
+/BUILD_NUMBER
 
 # Status Desktop
 cmake_install.cmake
