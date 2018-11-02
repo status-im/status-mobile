@@ -44,7 +44,7 @@ setup: ##@prepare Install all the requirements for status-react
 
 prepare-desktop: ##@prepare Install desktop platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh desktop
-	npm install
+	npm install --verbose
 
 _prepare-mobile: ##@prepare Install mobile platform dependencies and prepare workspace
 	scripts/prepare-for-platform.sh mobile
