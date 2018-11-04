@@ -251,12 +251,14 @@
 (handlers/register-handler-fx
  :wallet.send/reset-gas-default
  (fn [{:keys [db] :as cofx}]
-   (let [gas-estimate (money/to-fixed
-                       (ethereum/estimate-gas
-                        (-> db :wallet :send-transaction :symbol)))]
+   (let [gas-default (if-some [original-gas (-> db :wallet :send-transaction :original-gas)]
+                       (money/to-fixed original-gas)
+                       (money/to-fixed
+                        (ethereum/estimate-gas
+                         (-> db :wallet :send-transaction :symbol))))]
      (assoc (models.wallet/edit-value
              :gas
-             gas-estimate
+             gas-default
              cofx)
             :dispatch [:wallet/update-gas-price true]))))
 

@@ -238,7 +238,11 @@
  :wallet/update-estimated-gas-success
  (fn [{:keys [db]} [_ gas]]
    (when gas
-     {:db (assoc-in db [:wallet :send-transaction :gas] (money/bignumber (int (* gas 1.2))))})))
+     (let [adjusted-gas (money/bignumber (int (* gas 1.2)))
+           db-with-adjusted-gas (assoc-in db [:wallet :send-transaction :gas] adjusted-gas)]
+       {:db (if (some? (-> db :wallet :send-transaction :original-gas))
+              db-with-adjusted-gas
+              (assoc-in db-with-adjusted-gas [:wallet :send-transaction :original-gas] adjusted-gas))}))))
 
 (handlers/register-handler-fx
  :wallet-setup-navigate-back

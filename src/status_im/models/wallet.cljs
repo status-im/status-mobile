@@ -223,7 +223,9 @@
 (defn open-modal-wallet-for-transaction [db transaction tx-object]
   (let [{:keys [gas gas-price]} transaction
         {:keys [wallet-set-up-passed?]} (:account/account db)]
-    {:db         (assoc-in db [:wallet :send-transaction] transaction)
+    {:db         (-> db
+                     (assoc-in [:wallet :send-transaction] transaction)
+                     (assoc-in [:wallet :send-transaction :original-gas] gas))
      :dispatch-n [[:update-wallet]
                   (when-not gas
                     [:wallet/update-estimated-gas tx-object])
