@@ -453,7 +453,7 @@
                    {:symbol  :KDO
                     :nft?    true
                     :name    "KudosToken"
-                    :address "0x56c72cda0b04fc39a25d0b6a64fa258fad46d664"}])
+                    :address "0x2aea4add166ebf38b63d09a75de1a7b94aa24163"}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
