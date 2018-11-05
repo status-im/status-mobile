@@ -291,6 +291,9 @@ class HelpButton(BaseButton):
         super(HelpButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("help-button")
 
+    def click(self):
+        self.scroll_to_element().click()
+
 
 class SubmitBugButton(BaseButton):
 
