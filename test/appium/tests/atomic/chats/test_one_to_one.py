@@ -223,7 +223,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.testrail_id(5326)
     @marks.critical
     def test_offline_status(self):
-        self.create_drivers(1, offline_mode=True)
+        self.create_drivers(1)
         sign_in = SignInView(self.drivers[0])
         home_view = sign_in.create_user()
 
@@ -232,7 +232,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.home_button.click()
 
-        sign_in.driver.set_network_connection(1)  # airplane mode
+        sign_in.toggle_airplane_mode()
+        sign_in.accept_agreements()
+        home_view = sign_in.sign_in()
 
         chat = home_view.add_contact(transaction_senders['C']['public_key'])
         if chat.connection_status.text != 'Offline':
