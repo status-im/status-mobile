@@ -10,6 +10,11 @@ function downloadUrl() {
   fi
 }
 
+function install_nsis() {
+  # NSIS (Nullsoft Scriptable Install System) is a professional open source system to create Windows installers. It is designed to be as small and flexible as possible and is therefore very suitable for internet distribution.
+  linux_install nsis
+}
+
 function install_node() {
   if nvm_installed; then
     install_node_via_nvm

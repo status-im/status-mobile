@@ -130,7 +130,7 @@ CMakeCache.txt
 **/CMakeFiles/
 /StatusImPackage/*
 *.AppImage
-Status-Windows-x86_64.zip
+Status-Windows-x86_64.exe
 /desktop/bin/*
 /desktop/lib/*
 /desktop/modules/*
@@ -148,4 +148,3 @@ logger_settings.ini
 conan*.txt
 conanbuildinfo.*
 conan.cmake
-/.conan_*/

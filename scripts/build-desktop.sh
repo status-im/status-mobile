@@ -213,7 +213,14 @@ function compile() {
 
 function bundleWindows() {
   local buildType="$1"
-  # TODO: Produce a setup program instead of a ZIP
+
+  local version_file="${STATUSREACTPATH}/desktop_files/VERSION"
+  VERSION=$(cat $version_file)
+  if [ -z "$VERSION" ]; then
+    echo "${RED}Could not read version from ${version_file}!${NC}"
+    exit 1
+  fi
+
   pushd $WORKFOLDER
     rm -rf Windows
     mkdir Windows
@@ -224,30 +231,33 @@ function bundleWindows() {
     fi
     unzip "$STATUSIM_WINDOWS_BASEIMAGE_ZIP" -d Windows/
 
-    rm -f Status-Windows-x86_64.zip
-    pushd Windows
-      cp $STATUSREACTPATH/.env .
-      mkdir -p assets/resources notifier
-      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/snoreToast/SnoreToast.exe .
-      cp $STATUSREACTPATH/node_modules/node-notifier/vendor/notifu/*.exe notifier/
-      cp -r $STATUSREACTPATH/resources/fonts \
-            $STATUSREACTPATH/resources/icons \
-            $STATUSREACTPATH/resources/images \
-            assets/resources/
-      local _bin=$STATUSREACTPATH/desktop/bin
-      rm -rf $_bin/cmake_install.cmake $_bin/Makefile $_bin/CMakeFiles $_bin/Status_autogen && \
-      cp -r $_bin/* .
-
-      local zipOptions="-mr9"
-      if [ -z $buildType ]; then
-        zipOptions="-mr1"
-      elif [ "$buildType" = "pr" ]; then
-        zipOptions="-mr2"
-      fi
-      zip $zipOptions ../../Status-Windows-x86_64.zip .
+    pushd $STATUSREACTPATH/desktop/bin
+      rm -rf cmake_install.cmake Makefile CMakeFiles Status_autogen
     popd
-    rm -rf Windows
   popd
+
+  local compressionAlgo="lzma"
+  local compressionType="/SOLID"
+  if [ -z $buildType ]; then
+    compressionAlgo="bzip2"
+    compressionType=""
+  elif [ "$buildType" = "pr" ]; then
+    compressionAlgo="zlib"
+  fi
+
+  local top_srcdir=$(joinExistingPath "$STATUSREACTPATH" '.')
+  VERSION_MAJOR="$(cut -d'.' -f1 <<<"$VERSION")"
+  VERSION_MINOR="$(cut -d'.' -f2 <<<"$VERSION")"
+  VERSION_BUILD="$(cut -d'.' -f3 <<<"$VERSION")"
+  makensis -Dtop_srcdir=${top_srcdir} \
+           -DCOMPRESSION_ALGO=${compressionAlgo} \
+           -DCOMPRESSION_TYPE=${compressionType} \
+           -DVERSION_MAJOR=$VERSION_MAJOR \
+           -DVERSION_MINOR=$VERSION_MINOR \
+           -DVERSION_BUILD=$VERSION_BUILD \
+           -DPUBLISHER=Status.im \
+           -DWEBSITE_URL="https://status.im/" \
+           ./deployment/windows/nsis/setup.nsi
 }
 
 function bundleLinux() {

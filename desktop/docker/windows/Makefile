@@ -1,7 +1,7 @@
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 
 IMAGE_TAG = 1.0.0
-IMAGE_NAME = statusteam/windows-desktop-ubuntu:$(IMAGE_TAG)
+IMAGE_NAME = statusteam/windows-desktop-ubuntu:nsis-$(IMAGE_TAG)
 
 build:
 	docker build \

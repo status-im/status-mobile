@@ -77,22 +77,22 @@ pipeline {
         if (btype != 'release') {
           dmgUrl = cmn.uploadArtifact(cmn.pkgFind('dmg'))
           appUrl = cmn.uploadArtifact(cmn.pkgFind('AppImage'))
-          zipUrl = cmn.uploadArtifact(cmn.pkgFind('zip'))
+          exeUrl = cmn.uploadArtifact(cmn.pkgFind('exe'))
         } else {
           dmgUrl = null
           appUrl = null
-          zipUrl = null
+          exeUrl = null
         }
         /* special case for iOS Diawi links */
         ipaUrl = ios.getBuildVariables().get('DIAWI_URL')
         /* add URLs to the build description */
         cmn.setBuildDesc(
-          Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl, Win: zipUrl,
+          Apk: apkUrl, e2e: e2eUrl, iOS: ipaUrl, App: appUrl, Mac: dmgUrl, Win: exeUrl,
         )
         /* Create latest.json with newest nightly URLs */
         if (btype == 'nightly') {
           cmn.updateLatestNightlies(
-            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, WIN: zipUrl
+            APK: apkUrl, IOS: ipaUrl, APP: appUrl, MAC: dmgUrl, WIN: exeUrl
           )
         }
       } }
@@ -101,7 +101,7 @@ pipeline {
       steps { script {
         if (env.CHANGE_ID != null) {
           cmn.githubNotify(
-            apk: apkUrl, e2e: e2eUrl, ipa: ipaUrl, app: appUrl, dmg: dmgUrl, win: zipUrl,
+            apk: apkUrl, e2e: e2eUrl, ipa: ipaUrl, app: appUrl, dmg: dmgUrl, win: exeUrl,
           )
         }
       } }
