@@ -88,31 +88,6 @@
       nonce
       (assoc :nonce nonce))))
 
-;; EXTENSION TRANSACTION -> SEND TRANSACTION
-(defn  prepare-extension-transaction [params contacts on-result]
-  (let [{:keys [to value data gas gasPrice nonce]} params
-        contact (get contacts (utils.hex/normalize-hex to))]
-    (cond-> {:id               "extension-id"
-             :to-name          (or (when (nil? to)
-                                     (i18n/label :t/new-contract))
-                                   contact)
-             :symbol           :ETH
-             :method           constants/web3-send-transaction
-             :to               to
-             :amount           (money/bignumber (or value 0))
-             :gas              (cond
-                                 gas
-                                 (money/bignumber gas)
-                                 (and value (empty? data))
-                                 (money/bignumber 21000))
-             :gas-price        (when gasPrice
-                                 (money/bignumber gasPrice))
-             :data             data
-             :on-result        [:extensions/transaction-on-result on-result]
-             :on-error         [:extensions/transaction-on-error on-result]}
-      nonce
-      (assoc :nonce nonce))))
-
 ;; SEND TRANSACTION -> RPC TRANSACTION
 (defn prepare-send-transaction [from {:keys [amount to gas gas-price data nonce]}]
   (cond-> {:from     (ethereum/normalized-address from)

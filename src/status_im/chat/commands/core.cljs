@@ -136,10 +136,10 @@
     :preview       :view
     :on-send?      :event
     :on-receive?   :event
-    :parameters    [{:id           :keyword
-                     :type         {:one-of #{:text :phone :password :number}}
-                     :placeholder  :string
-                     :suggestions? :view}]}
+    :parameters?    [{:id           :keyword
+                      :type         {:one-of #{:text :phone :password :number}}
+                      :placeholder  :string
+                      :suggestions? :view}]}
    :hook
    (reify hooks/Hook
      (hook-in [_ id {:keys [description scope parameters preview short-preview on-send on-receive]} cofx]
@@ -149,8 +149,8 @@
                            (description [_] description)
                            (parameters [_] parameters)
                            (validate [_ _ _])
-                           (on-send [_ command-message _] (when on-send {:dispatch (on-send {:value command-message})}))
-                           (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive {:value command-message})}))
+                           (on-send [_ command-message _] (when on-send {:dispatch (on-send command-message)}))
+                           (on-receive [_ command-message _] (when on-receive {:dispatch (on-receive command-message)}))
                            (short-preview [_ props] (short-preview props))
                            (preview [_ props] (preview props)))]
          (load-commands cofx [new-command])))
